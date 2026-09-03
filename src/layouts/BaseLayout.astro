@@ -1,0 +1,27 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Cuisine du Cambodge — Saveurs, recettes et culture khmères',
+  description = 'Découvrez la cuisine cambodgienne à travers ses recettes, ses ingrédients, ses territoires et la mémoire des tables khmères.'
+} = Astro.props;
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#111111" />
+    <link rel="canonical" href={Astro.url} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

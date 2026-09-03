@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout>
+  <header class="site-nav" aria-label="Navigation principale">
+    <a class="brand" href="/">MALIS</a>
+    <nav class="nav-links">
+      <a href="#recettes">Recettes</a>
+      <a href="#saveurs">Saveurs</a>
+      <a href="#culture">Culture</a>
+      <a href="#selection">La sélection</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-media" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <p class="eyebrow">Saveurs · gestes · mémoire</p>
+        <h1 id="hero-title">Cuisine du Cambodge</h1>
+      </div>
+      <p class="hero-note">Un voyage contemporain au cœur de la table khmère, de ses ingrédients à ceux qui les transmettent.</p>
+    </section>
+
+    <section class="editorial" id="culture">
+      <p class="eyebrow">01 — Transmission</p>
+      <h2>Une cuisine de gestes, de parfums et de mémoire.</h2>
+      <div class="editorial-image" role="img" aria-label="Composition abstraite inspirée des herbes fraîches cambodgiennes"></div>
+    </section>
+
+    <section class="ingredients" id="saveurs" aria-label="Les parfums fondamentaux">
+      <div class="ingredients-stage">
+        <div class="ingredients-visual" role="img" aria-label="Composition évoquant un kroeung pilé au mortier"></div>
+        <span class="ingredient-label">Citronnelle</span>
+        <span class="ingredient-label">Galanga</span>
+        <span class="ingredient-label">Curcuma</span>
+        <span class="ingredient-label">Combava</span>
+      </div>
+    </section>
+
+    <section class="chapter" id="recettes">
+      <div>
+        <p class="eyebrow">02 — Les plats</p>
+        <h2>Amok Trey</h2>
+        <p>Le poisson, le lait de coco et les aromates se rencontrent dans l'un des plats emblématiques de la cuisine khmère. Ici commence le passage du récit à la cuisine.</p>
+      </div>
+    </section>
+
+    <section class="chapter chapter-dark kampot">
+      <div>
+        <p class="eyebrow">03 — Le territoire</p>
+        <h2>Kampot</h2>
+        <p>Un terroir entre montagne et golfe de Thaïlande. Le poivre y devient une porte d'entrée vers les producteurs, les paysages et les accords de la cuisine cambodgienne.</p>
+      </div>
+    </section>
+
+    <section class="selection" id="selection">
+      <div>
+        <p class="eyebrow">04 — La sélection</p>
+        <h2>Prolonger le voyage.</h2>
+      </div>
+      <div>
+        <p>Une sélection exigeante d'objets, de produits et d'éditions liés au Cambodge prendra place ici. Elle sera construite à partir d'une veille produit et d'une validation réelle de la demande — pas d'un catalogue générique.</p>
+        <a class="selection-link" href="mailto:bonjour@cuisine-du-cambodge.com?subject=La%20sélection">Être informé du lancement</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>© Cuisine du Cambodge</span>
+    <span>Paris · Phnom Penh</span>
+  </footer>
+
+  <script>
+    import { initStorytelling } from '../scripts/storytelling';
+    initStorytelling();
+  </script>
+</BaseLayout>
