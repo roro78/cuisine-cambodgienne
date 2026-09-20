@@ -1,11 +1,12 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import SiteHeader from '../../../components/SiteHeader.astro';
-import SiteFooter from '../../../components/SiteFooter.astro';
-import { ingredientGuides } from '../../../data/ingredients';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { ingredientGuides } from '../../data/ingredients';
+import type { IngredientGuide } from '../../data/ingredients';
 
 export function getStaticPaths() {
-  return ingredientGuides.map((ingredient) => ({
+  return ingredientGuides.map((ingredient: IngredientGuide) => ({
     params: { slug: ingredient.slug },
     props: { ingredient }
   }));
