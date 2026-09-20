@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.cuisine-du-cambodge.com/sitemap.xml
