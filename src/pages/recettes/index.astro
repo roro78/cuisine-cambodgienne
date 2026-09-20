@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+const recipes = [
+  { title: 'Amok Trey', note: 'Poisson, kroeung et lait de coco', status: 'Recette en préparation' },
+  { title: 'Lok Lak', note: 'Bœuf sauté, poivre et citron vert', status: 'Recette en préparation' },
+  { title: 'Kroeung', note: 'La base aromatique à maîtriser', status: 'Guide en préparation' }
+];
+---
+<BaseLayout title="Recettes cambodgiennes | Cuisine du Cambodge" description="Découvrez les recettes cambodgiennes et les techniques qui permettent de retrouver les saveurs de la cuisine khmère.">
+  <SiteHeader />
+  <main class="listing-page">
+    <header class="page-intro">
+      <p class="eyebrow">Cuisiner</p>
+      <h1>Recettes cambodgiennes</h1>
+      <p>Des plats emblématiques aux préparations du quotidien, avec le contexte, les gestes et les ingrédients qui font la différence.</p>
+    </header>
+    <section class="card-grid" aria-label="Recettes">
+      {recipes.map((recipe) => (
+        <article class="content-card">
+          <div class="card-visual" aria-hidden="true"></div>
+          <p class="card-meta">{recipe.status}</p>
+          <h2>{recipe.title}</h2>
+          <p>{recipe.note}</p>
+        </article>
+      ))}
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
