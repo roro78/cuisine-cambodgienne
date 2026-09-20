@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { recipes } from '../data/recipes';
 import { ingredientGuides } from '../data/ingredients';
 
-const staticPaths = ['/', '/recettes/', '/ingredients/', '/culture/', '/apprendre/'];
+const staticPaths = ['/', '/recettes/', '/ingredients/', '/culture/', '/apprendre/', '/a-propos/'];
 
 export const GET: APIRoute = ({ site }) => {
   const base = site ?? new URL('https://www.cuisine-du-cambodge.com');
