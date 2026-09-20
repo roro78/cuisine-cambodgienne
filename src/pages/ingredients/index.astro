@@ -2,12 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
-const items = [
-  ['Kroeung', 'Citronnelle, galanga, curcuma, combava : comprendre la construction aromatique.'],
-  ['Poivre de Kampot', 'Origine, profils aromatiques et usages en cuisine.'],
-  ['Tamarin', 'Acidité, équilibre et usages dans les sauces et soupes.'],
-  ['Prahok', 'Un condiment puissant et essentiel à replacer dans son contexte culinaire.']
-];
+import { ingredientGuides } from '../../data/ingredients';
 ---
 <BaseLayout title="Ingrédients khmers | Cuisine du Cambodge" description="Kroeung, poivre de Kampot, tamarin, prahok et aromates : comprendre les ingrédients de la cuisine cambodgienne.">
   <SiteHeader />
@@ -18,7 +13,16 @@ const items = [
       <p>Une cuisine se comprend aussi par ses produits : leurs parfums, leur rôle et la manière dont ils s'équilibrent.</p>
     </header>
     <section class="text-grid">
-      {items.map(([title, text]) => <article><h2>{title}</h2><p>{text}</p></article>)}
+      {ingredientGuides.map((item) => (
+        <a class="guide-link" href={`/ingredients/${item.slug}/`}>
+          <article>
+            <p class="card-meta">Guide ingrédient</p>
+            <h2>{item.title}</h2>
+            <p>{item.intro}</p>
+            <span class="text-link">Découvrir</span>
+          </article>
+        </a>
+      ))}
     </section>
   </main>
   <SiteFooter />
