@@ -1,0 +1,23 @@
+---
+import '../styles/global.css';
+interface Props { title?: string; description?: string; }
+const { title='Cuisine du Cambodge — Recettes cambodgiennes et culture khmère', description='Recettes cambodgiennes, ingrédients, techniques et culture culinaire khmère : découvrez et cuisinez les saveurs du Cambodge.' }=Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+---
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content={description} />
+<meta name="theme-color" content="#111111" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="fr_FR" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalURL} />
+<link rel="canonical" href={canonicalURL} />
+<title>{title}</title>
+</head>
+<body><slot /></body>
+</html>

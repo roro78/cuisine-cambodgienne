@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { cultureArticles } from '../../data/culture';
+---
+<BaseLayout title="Culture culinaire khmère | Cuisine du Cambodge" description="Histoires, territoires, gestes et transmission autour de la cuisine cambodgienne.">
+  <SiteHeader />
+  <main class="listing-page">
+    <header class="page-intro">
+      <p class="eyebrow">Comprendre</p>
+      <h1>Culture culinaire</h1>
+      <p>Au-delà des recettes : les territoires, les produits et les gestes qui donnent du contexte à la cuisine khmère.</p>
+    </header>
+
+    <section class="culture-grid">
+      {cultureArticles.map((article) => (
+        <a class="culture-card" href={`/culture/${article.slug}/`}>
+          <span class="card-meta">{article.eyebrow}</span>
+          <h2>{article.title}</h2>
+          <p>{article.intro}</p>
+          <span class="text-link">Lire</span>
+        </a>
+      ))}
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>

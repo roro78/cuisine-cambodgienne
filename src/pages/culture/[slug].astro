@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { cultureArticles } from '../../data/culture';
+import type { CultureArticle } from '../../data/culture';
+
+export function getStaticPaths() {
+  return cultureArticles.map((article: CultureArticle) => ({
+    params: { slug: article.slug },
+    props: { article }
+  }));
+}
+
+const { article } = Astro.props;
+---
+<BaseLayout title={`${article.title} | Cuisine du Cambodge`} description={article.intro}>
+  <SiteHeader />
+  <main class="culture-article">
+    <header class="culture-article-hero">
+      <p class="eyebrow">{article.eyebrow}</p>
+      <h1>{article.title}</h1>
+      <p>{article.intro}</p>
+    </header>
+
+    <div class="culture-visual" aria-hidden="true"></div>
+
+    <article class="culture-copy">
+      {article.sections.map((section: CultureArticle['sections'][number]) => (
+        <section>
+          <h2>{section.title}</h2>
+          {section.paragraphs.map((paragraph: string) => <p>{paragraph}</p>)}
+        </section>
+      ))}
+
+      <aside class="source-box">
+        <p class="eyebrow">Sources</p>
+        <ul>
+          {article.sources.map((source: CultureArticle['sources'][number]) => (
+            <li><a href={source.url} target="_blank" rel="noreferrer">{source.label}</a></li>
+          ))}
+        </ul>
+      </aside>
+    </article>
+
+    <a class="text-link" href="/culture/">← Tous les articles</a>
+  </main>
+  <SiteFooter />
+</BaseLayout>

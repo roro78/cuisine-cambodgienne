@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { recipes } from '../../data/recipes';
+---
+<BaseLayout title="Recettes cambodgiennes | Cuisine du Cambodge" description="Découvrez les recettes cambodgiennes et les techniques qui permettent de retrouver les saveurs de la cuisine khmère.">
+  <SiteHeader />
+  <main class="listing-page">
+    <header class="page-intro">
+      <p class="eyebrow">Cuisiner</p>
+      <h1>Recettes cambodgiennes</h1>
+      <p>Des plats emblématiques aux préparations du quotidien, avec le contexte, les gestes et les ingrédients qui font la différence.</p>
+    </header>
+
+    <section class="card-grid" aria-label="Recettes">
+      {recipes.map((recipe) => (
+        <a class="content-card-link" href={`/recettes/${recipe.slug}/`}>
+          <article class="content-card">
+            <div class="card-visual" aria-hidden="true"></div>
+            <p class="card-meta">{recipe.difficulty} · {recipe.prepTime}</p>
+            <h2>{recipe.title}</h2>
+            <p>{recipe.intro}</p>
+            <span class="text-link">Voir la recette</span>
+          </article>
+        </a>
+      ))}
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>

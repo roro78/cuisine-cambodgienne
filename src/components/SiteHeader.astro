@@ -1,0 +1,13 @@
+---
+interface Props { overlay?: boolean; }
+const { overlay = false } = Astro.props;
+---
+<header class:list={['site-nav', { 'site-nav-overlay': overlay }]} aria-label="Navigation principale">
+  <a class="brand" href="/">Cuisine du Cambodge</a>
+  <nav class="nav-links" aria-label="Rubriques">
+    <a href="/recettes/">Recettes</a>
+    <a href="/ingredients/">Ingrédients</a>
+    <a href="/culture/">Culture</a>
+    <a href="/apprendre/">Apprendre</a>
+  </nav>
+</header>

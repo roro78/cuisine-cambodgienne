@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { ingredientGuides } from '../../data/ingredients';
+---
+<BaseLayout title="Ingrédients khmers | Cuisine du Cambodge" description="Kroeung, poivre de Kampot, tamarin, prahok et aromates : comprendre les ingrédients de la cuisine cambodgienne.">
+  <SiteHeader />
+  <main class="listing-page">
+    <header class="page-intro">
+      <p class="eyebrow">Les saveurs</p>
+      <h1>Ingrédients & bases</h1>
+      <p>Une cuisine se comprend aussi par ses produits : leurs parfums, leur rôle et la manière dont ils s'équilibrent.</p>
+    </header>
+    <section class="text-grid">
+      {ingredientGuides.map((item) => (
+        <a class="guide-link" href={`/ingredients/${item.slug}/`}>
+          <article>
+            <p class="card-meta">Guide ingrédient</p>
+            <h2>{item.title}</h2>
+            <p>{item.intro}</p>
+            <span class="text-link">Découvrir</span>
+          </article>
+        </a>
+      ))}
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
