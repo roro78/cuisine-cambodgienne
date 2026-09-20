@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+---
+<BaseLayout title="À propos | Cuisine du Cambodge" description="Découvrez l'ambition éditoriale de Cuisine du Cambodge : transmettre recettes, ingrédients, gestes et culture culinaire khmère.">
+  <SiteHeader />
+  <main class="about-page">
+    <header class="page-intro">
+      <p class="eyebrow">Le projet</p>
+      <h1>Raconter la cuisine cambodgienne autrement.</h1>
+      <p>Cuisine du Cambodge est un projet éditorial francophone consacré aux recettes, aux ingrédients, aux gestes et aux histoires qui composent la cuisine khmère.</p>
+    </header>
+
+    <section class="about-grid">
+      <article>
+        <p class="eyebrow">01 — Cuisiner</p>
+        <h2>Des recettes qui expliquent les gestes.</h2>
+        <p>Une liste d’ingrédients ne suffit pas toujours. Le site met l’accent sur les textures, les équilibres et les techniques qui permettent de comprendre ce que l’on cuisine.</p>
+      </article>
+      <article>
+        <p class="eyebrow">02 — Comprendre</p>
+        <h2>Remettre les ingrédients dans leur contexte.</h2>
+        <p>Kroeung, prahok, tamarin, poivre de Kampot et herbes fraîches sont abordés par leur rôle dans le plat, leurs usages et les associations qui construisent les saveurs.</p>
+      </article>
+      <article>
+        <p class="eyebrow">03 — Transmettre</p>
+        <h2>Faire vivre une culture culinaire.</h2>
+        <p>L’ambition est de relier recettes, territoires et transmission sans réduire la cuisine cambodgienne à quelques plats ou à une esthétique folklorique.</p>
+      </article>
+    </section>
+
+    <section class="about-manifesto">
+      <p class="eyebrow">La ligne éditoriale</p>
+      <blockquote>Donner envie de cuisiner, mais aussi les clés pour comprendre pourquoi un plat fonctionne.</blockquote>
+      <a class="text-link" href="/recettes/">Commencer par les recettes</a>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
