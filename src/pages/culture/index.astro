@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+---
+<BaseLayout title="Culture culinaire khmère | Cuisine du Cambodge" description="Histoires, territoires, gestes et transmission autour de la cuisine cambodgienne.">
+  <SiteHeader />
+  <main class="listing-page">
+    <header class="page-intro">
+      <p class="eyebrow">Comprendre</p>
+      <h1>Culture culinaire</h1>
+      <p>Au-delà des recettes : les régions, les repas, les gestes et les personnes qui transmettent la cuisine khmère.</p>
+    </header>
+    <section class="feature-list">
+      <article><span>Territoires</span><h2>Kampot et ses paysages culinaires</h2><p>Le poivre comme point de départ pour raconter un terroir, des producteurs et des usages.</p></article>
+      <article><span>Transmission</span><h2>Les gestes qui ne tiennent pas dans une fiche recette</h2><p>Piler, goûter, ajuster : une partie de la cuisine s'apprend par l'observation et la répétition.</p></article>
+      <article><span>Table</span><h2>Manger ensemble</h2><p>Explorer la manière dont les plats se répondent et s'équilibrent autour d'un repas.</p></article>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
