@@ -3,12 +3,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 <BaseLayout>
   <header class="site-nav" aria-label="Navigation principale">
-    <a class="brand" href="/">MALIS</a>
+    <a class="brand" href="/">Cuisine du Cambodge</a>
     <nav class="nav-links">
       <a href="#recettes">Recettes</a>
-      <a href="#saveurs">Saveurs</a>
+      <a href="#saveurs">Ingrédients</a>
       <a href="#culture">Culture</a>
-      <a href="#selection">La sélection</a>
+      <a href="#transmission">Apprendre</a>
     </nav>
   </header>
 
@@ -16,21 +16,22 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-media" aria-hidden="true"></div>
       <div class="hero-copy">
-        <p class="eyebrow">Saveurs · gestes · mémoire</p>
-        <h1 id="hero-title">Cuisine du Cambodge</h1>
+        <p class="eyebrow">Recettes · gestes · mémoire</p>
+        <h1 id="hero-title">La cuisine khmère, vivante.</h1>
       </div>
-      <p class="hero-note">Un voyage contemporain au cœur de la table khmère, de ses ingrédients à ceux qui les transmettent.</p>
+      <p class="hero-note">Recettes cambodgiennes, ingrédients, techniques et histoires pour cuisiner le Cambodge sans folklore de carte postale.</p>
     </section>
 
     <section class="editorial" id="culture">
-      <p class="eyebrow">01 — Transmission</p>
-      <h2>Une cuisine de gestes, de parfums et de mémoire.</h2>
-      <div class="editorial-image" role="img" aria-label="Composition abstraite inspirée des herbes fraîches cambodgiennes"></div>
+      <p class="eyebrow">01 — Comprendre</p>
+      <h2>Une cuisine de gestes, de parfums et de transmission.</h2>
+      <p class="editorial-intro">Du marché au mortier, des repas familiaux aux spécialités régionales : découvrir ce qui donne à la cuisine cambodgienne son identité.</p>
+      <div class="editorial-image" role="img" aria-label="Espace réservé à une photographie de cuisine cambodgienne"></div>
     </section>
 
     <section class="ingredients" id="saveurs" aria-label="Les parfums fondamentaux">
       <div class="ingredients-stage">
-        <div class="ingredients-visual" role="img" aria-label="Composition évoquant un kroeung pilé au mortier"></div>
+        <div class="ingredients-visual" role="img" aria-label="Espace réservé à une photographie de kroeung au mortier"></div>
         <span class="ingredient-label">Citronnelle</span>
         <span class="ingredient-label">Galanga</span>
         <span class="ingredient-label">Curcuma</span>
@@ -40,35 +41,46 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     <section class="chapter" id="recettes">
       <div>
-        <p class="eyebrow">02 — Les plats</p>
+        <p class="eyebrow">02 — Cuisiner</p>
         <h2>Amok Trey</h2>
-        <p>Le poisson, le lait de coco et les aromates se rencontrent dans l'un des plats emblématiques de la cuisine khmère. Ici commence le passage du récit à la cuisine.</p>
+        <p>Poisson, lait de coco, kroeung et cuisson douce : une première porte d'entrée vers les recettes emblématiques du Cambodge.</p>
+        <a class="text-link" href="#recettes-a-venir">Découvrir les recettes</a>
       </div>
     </section>
 
     <section class="chapter chapter-dark kampot">
       <div>
-        <p class="eyebrow">03 — Le territoire</p>
+        <p class="eyebrow">03 — Les produits</p>
         <h2>Kampot</h2>
-        <p>Un terroir entre montagne et golfe de Thaïlande. Le poivre y devient une porte d'entrée vers les producteurs, les paysages et les accords de la cuisine cambodgienne.</p>
+        <p>Le poivre ouvre la porte sur les terroirs cambodgiens, leurs producteurs et les accords qui structurent la cuisine khmère.</p>
       </div>
     </section>
 
-    <section class="selection" id="selection">
+    <section class="content-roadmap" id="recettes-a-venir">
+      <p class="eyebrow">04 — Explorer</p>
+      <h2>Recettes, ingrédients, techniques.</h2>
+      <div class="roadmap-grid">
+        <article><span>Recettes</span><h3>Les classiques khmers</h3><p>Amok, lok lak, soupes, grillades, salades et recettes familiales.</p></article>
+        <article><span>Ingrédients</span><h3>Construire les saveurs</h3><p>Kroeung, prahok, tamarin, herbes fraîches, poivres et condiments.</p></article>
+        <article><span>Culture</span><h3>Comprendre la table</h3><p>Origines, régions, gestes et histoires derrière les plats.</p></article>
+      </div>
+    </section>
+
+    <section class="selection" id="transmission">
       <div>
-        <p class="eyebrow">04 — La sélection</p>
-        <h2>Prolonger le voyage.</h2>
+        <p class="eyebrow">05 — Aller plus loin</p>
+        <h2>Apprendre et transmettre.</h2>
       </div>
       <div>
-        <p>Une sélection exigeante d'objets, de produits et d'éditions liés au Cambodge prendra place ici. Elle sera construite à partir d'une veille produit et d'une validation réelle de la demande — pas d'un catalogue générique.</p>
-        <a class="selection-link" href="mailto:bonjour@cuisine-du-cambodge.com?subject=La%20sélection">Être informé du lancement</a>
+        <p>Le site accueillera progressivement des contenus approfondis autour de la cuisine khmère, dont Fusion Khmère et une masterclass consacrée au kroeung et à l'amok.</p>
+        <p class="coming-soon">E-book et masterclass — en préparation</p>
       </div>
     </section>
   </main>
 
   <footer>
-    <span>© Cuisine du Cambodge</span>
-    <span>Paris · Phnom Penh</span>
+    <strong>Cuisine du Cambodge</strong>
+    <span>Recettes · saveurs · culture khmère</span>
   </footer>
 
   <script>
