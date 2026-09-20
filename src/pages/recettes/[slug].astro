@@ -13,6 +13,7 @@ export function getStaticPaths() {
 }
 
 const { recipe } = Astro.props;
+const notes = recipe.notes ?? [];
 const totalMinutes = (value: string) => {
   const match = value.match(/(\d+)/);
   return match ? Number(match[1]) : 0;
@@ -62,10 +63,10 @@ const recipeSchema = {
         <ol>
           {recipe.steps.map((step: string) => <li>{step}</li>)}
         </ol>
-        {recipe.notes?.length > 0 && (
+        {notes.length > 0 && (
           <div class="recipe-notes">
             <h2>À retenir</h2>
-            <ul>{recipe.notes.map((note: string) => <li>{note}</li>)}</ul>
+            <ul>{notes.map((note: string) => <li>{note}</li>)}</ul>
           </div>
         )}
       </article>
