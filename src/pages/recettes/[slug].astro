@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SiteHeader from '../../../components/SiteHeader.astro';
+import SiteFooter from '../../../components/SiteFooter.astro';
+import { recipes } from '../../../data/recipes';
+
+export function getStaticPaths() {
+  return recipes.map((recipe) => ({
+    params: { slug: recipe.slug },
+    props: { recipe }
+  }));
+}
+
+const { recipe } = Astro.props;
+const totalMinutes = (value: string) => {
+  const match = value.match(/(\d+)/);
+  return match ? Number(match[1]) : 0;
+};
+const recipeSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Recipe',
+  name: recipe.title,
+  description: recipe.description,
+  recipeYield: recipe.servings,
+  prepTime: `PT${totalMinutes(recipe.prepTime)}M`,
+  cookTime: `PT${totalMinutes(recipe.cookTime)}M`,
+  recipeIngredient: recipe.ingredients,
+  recipeInstructions: recipe.steps.map((text: string) => ({ '@type': 'HowToStep', text })),
+  recipeCategory: 'Cuisine cambodgienne',
+  keywords: recipe.tags.join(', ')
+};
+---
+<BaseLayout title={`${recipe.title} — Recette cambodgienne | Cuisine du Cambodge`} description={recipe.description}>
+  <SiteHeader />
+  <main class="recipe-page">
+    <header class="recipe-hero">
+      <p class="eyebrow">Recette cambodgienne</p>
+      <h1>{recipe.title}</h1>
+      {recipe.khmerName && <p class="khmer-name">{recipe.khmerName}</p>}
+      <p class="recipe-intro">{recipe.intro}</p>
+      <dl class="recipe-facts">
+        <div><dt>Pour</dt><dd>{recipe.servings}</dd></div>
+        <div><dt>Préparation</dt><dd>{recipe.prepTime}</dd></div>
+        <div><dt>Cuisson</dt><dd>{recipe.cookTime}</dd></div>
+        <div><dt>Niveau</dt><dd>{recipe.difficulty}</dd></div>
+      </dl>
+    </header>
+
+    <div class="recipe-cover" aria-hidden="true"></div>
+
+    <section class="recipe-layout">
+      <aside class="ingredients-panel">
+        <p class="eyebrow">Ingrédients</p>
+        <ul>
+          {recipe.ingredients.map((ingredient: string) => <li>{ingredient}</li>)}
+        </ul>
+      </aside>
+
+      <article class="method-panel">
+        <p class="eyebrow">Méthode</p>
+        <ol>
+          {recipe.steps.map((step: string) => <li>{step}</li>)}
+        </ol>
+        {recipe.notes?.length > 0 && (
+          <div class="recipe-notes">
+            <h2>À retenir</h2>
+            <ul>{recipe.notes.map((note: string) => <li>{note}</li>)}</ul>
+          </div>
+        )}
+      </article>
+    </section>
+
+    <nav class="recipe-back">
+      <a class="text-link" href="/recettes/">← Toutes les recettes</a>
+    </nav>
+  </main>
+
+  <script type="application/ld+json" set:html={JSON.stringify(recipeSchema)} />
+  <SiteFooter />
+</BaseLayout>
