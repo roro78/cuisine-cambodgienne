@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+---
+<BaseLayout title="Page introuvable | Cuisine du Cambodge" description="Cette page n'existe pas ou a été déplacée.">
+  <SiteHeader />
+  <main class="not-found-page">
+    <p class="eyebrow">Erreur 404</p>
+    <h1>Cette page n’est plus à table.</h1>
+    <p>Revenez vers les recettes, les ingrédients ou la culture culinaire cambodgienne.</p>
+    <div class="not-found-links">
+      <a class="text-link" href="/recettes/">Voir les recettes</a>
+      <a class="text-link" href="/ingredients/">Explorer les ingrédients</a>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
