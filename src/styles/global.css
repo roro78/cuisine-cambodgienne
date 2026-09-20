@@ -39,3 +39,21 @@ body{margin:0;font-family:var(--sans);background:var(--porcelain);overflow-x:hid
 .guide-link{display:block}.guide-link article{height:100%}.guide-link:hover h2{opacity:.65}
 .guide-page{padding:clamp(6rem,9vw,9rem) var(--page-pad) 14vh}.guide-hero{max-width:68rem}.guide-hero h1{margin:.2rem 0 1.5rem;font:400 clamp(4rem,10vw,10rem)/.82 var(--serif);letter-spacing:-.065em}.guide-hero>p:last-child{max-width:44rem;font-size:clamp(1.1rem,1.9vw,1.4rem);line-height:1.65}.guide-visual{height:min(62vw,42rem);margin:8vh 0;background:linear-gradient(145deg,#b2a078,#768064 48%,#272a23)}.guide-body{display:grid;grid-template-columns:1fr 1.3fr;gap:9vw;margin-bottom:8vh}.guide-lead{font:400 clamp(2rem,4vw,4rem)/1.08 var(--serif);letter-spacing:-.035em;margin:0}.guide-lists{display:grid;gap:0}.guide-lists article{padding:2rem 0;border-top:1px solid rgba(17,17,17,.16)}.guide-lists h2{font:400 clamp(1.7rem,2.6vw,2.7rem)/1 var(--serif);margin:0 0 1rem}.guide-lists ul{list-style:none;padding:0;margin:0}.guide-lists li{padding:.55rem 0;line-height:1.55}
 @media(max-width:720px){.guide-body{grid-template-columns:1fr;gap:4rem}.guide-visual{height:65vh;min-height:25rem}}
+
+
+.recipe-context{max-width:48rem;margin:0 0 3rem;font-size:1rem;line-height:1.75;opacity:.78}
+.recipe-keypoints{margin-top:3rem;padding:2rem 0;border-top:1px solid rgba(17,17,17,.16)}
+.recipe-keypoints ul{list-style:none;padding:0;margin:0}
+.recipe-keypoints li{padding:.8rem 0;border-bottom:1px solid rgba(17,17,17,.1);line-height:1.6}
+.recipe-related{margin-top:10vh;padding-top:4rem;border-top:1px solid rgba(17,17,17,.18)}
+.recipe-related h2{margin:0 0 2rem;font:400 clamp(2.5rem,5vw,5rem)/.95 var(--serif);letter-spacing:-.045em}
+.related-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:rgba(17,17,17,.14)}
+.related-links a{display:flex;flex-direction:column;gap:.75rem;background:var(--porcelain);padding:2rem;transition:background .2s ease}
+.related-links a:hover{background:#ece7dd}
+.related-links strong{font:400 clamp(1.8rem,3vw,3rem)/1 var(--serif)}
+.related-links span{max-width:34rem;line-height:1.6}
+.not-found-page{min-height:70vh;padding:clamp(6rem,10vw,10rem) var(--page-pad);display:flex;flex-direction:column;justify-content:center}
+.not-found-page h1{max-width:9ch;margin:.25rem 0 2rem;font:400 clamp(4rem,10vw,9rem)/.84 var(--serif);letter-spacing:-.06em}
+.not-found-page>p:not(.eyebrow){max-width:36rem;line-height:1.7}
+.not-found-links{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1rem}
+@media(max-width:720px){.related-links{grid-template-columns:1fr}}
