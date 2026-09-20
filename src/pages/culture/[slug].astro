@@ -1,9 +1,9 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import SiteHeader from '../../../components/SiteHeader.astro';
-import SiteFooter from '../../../components/SiteFooter.astro';
-import { cultureArticles } from '../../../data/culture';
-import type { CultureArticle } from '../../../data/culture';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { cultureArticles } from '../../data/culture';
+import type { CultureArticle } from '../../data/culture';
 
 export function getStaticPaths() {
   return cultureArticles.map((article: CultureArticle) => ({
