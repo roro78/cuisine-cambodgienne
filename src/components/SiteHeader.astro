@@ -1,25 +1,27 @@
 ---
 interface Props { overlay?: boolean; }
 const { overlay = false } = Astro.props;
+const path = Astro.url.pathname;
+const current = (prefix: string) => path.startsWith(prefix);
 ---
 <header class:list={['site-nav', { 'site-nav-overlay': overlay }]} aria-label="Navigation principale">
-  <a class="brand" href="/">Cuisine du Cambodge</a>
+  <a class="brand" href="/" aria-current={path === '/' ? 'page' : undefined}>Cuisine du Cambodge</a>
 
   <nav class="nav-links" aria-label="Rubriques">
-    <a href="/recettes/">Recettes</a>
-    <a href="/ingredients/">Ingrédients</a>
-    <a href="/culture/">Culture</a>
-    <a href="/apprendre/">Apprendre</a>
+    <a href="/recettes/" aria-current={current('/recettes/') ? 'page' : undefined}>Recettes</a>
+    <a href="/ingredients/" aria-current={current('/ingredients/') ? 'page' : undefined}>Ingrédients</a>
+    <a href="/culture/" aria-current={current('/culture/') ? 'page' : undefined}>Culture</a>
+    <a href="/apprendre/" aria-current={current('/apprendre/') ? 'page' : undefined}>Apprendre</a>
   </nav>
 
   <details class="mobile-menu">
     <summary aria-label="Ouvrir le menu">Menu</summary>
     <nav aria-label="Navigation mobile">
-      <a href="/recettes/">Recettes</a>
-      <a href="/ingredients/">Ingrédients</a>
-      <a href="/culture/">Culture</a>
-      <a href="/apprendre/">Apprendre</a>
-      <a href="/a-propos/">À propos</a>
+      <a href="/recettes/" aria-current={current('/recettes/') ? 'page' : undefined}>Recettes</a>
+      <a href="/ingredients/" aria-current={current('/ingredients/') ? 'page' : undefined}>Ingrédients</a>
+      <a href="/culture/" aria-current={current('/culture/') ? 'page' : undefined}>Culture</a>
+      <a href="/apprendre/" aria-current={current('/apprendre/') ? 'page' : undefined}>Apprendre</a>
+      <a href="/a-propos/" aria-current={current('/a-propos/') ? 'page' : undefined}>À propos</a>
     </nav>
   </details>
 </header>
