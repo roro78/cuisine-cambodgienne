@@ -8,101 +8,75 @@ export function initStorytelling() {
   if (reduceMotion) return () => {};
 
   const context = gsap.context(() => {
-    const panels = gsap.utils.toArray<HTMLElement>('.story-panel');
-    const heroTimeline = gsap.timeline({
+    const stage = document.querySelector<HTMLElement>('.cinematic-stage');
+    const story = document.querySelector<HTMLElement>('.cinematic-story');
+    const scenes = gsap.utils.toArray<HTMLElement>('.cinematic-scene');
+    const copies = gsap.utils.toArray<HTMLElement>('.cinematic-copy');
+    const counter = document.querySelector<HTMLElement>('.counter-current');
+
+    if (!stage || !story || scenes.length < 5 || copies.length < 5) return;
+
+    gsap.set(scenes[0], { clipPath: 'inset(0% 0% 0% 0%)', scale: 1.03, opacity: 1 });
+    gsap.set(scenes[1], { clipPath: 'inset(0% 100% 0% 0%)', scale: 1.1, opacity: 1 });
+    gsap.set(scenes[2], { clipPath: 'circle(0% at 68% 52%)', scale: 1.14, opacity: 1 });
+    gsap.set(scenes[3], { clipPath: 'inset(100% 0% 0% 0%)', scale: 1.1, opacity: 1 });
+    gsap.set(scenes[4], { clipPath: 'inset(0% 0% 100% 0%)', scale: 1.12, opacity: 1 });
+
+    copies.forEach((copy, index) => {
+      gsap.set(copy, index === 0 ? { autoAlpha: 1, y: 0 } : { autoAlpha: 0, y: 34 });
+    });
+
+    const timeline = gsap.timeline({
+      defaults: { ease: 'none' },
       scrollTrigger: {
-        trigger: '.story-hero',
+        trigger: story,
         start: 'top top',
-        end: 'bottom bottom',
+        end: '+=520%',
+        pin: stage,
         scrub: 1,
+        anticipatePin: 1,
         onUpdate: (self) => {
-          const index = Math.min(panels.length - 1, Math.floor(self.progress * panels.length));
-          panels.forEach((panel, i) => panel.classList.toggle('is-active', i === index));
-          gsap.set('.story-progress span', { scaleX: self.progress });
+          const current = Math.min(5, Math.floor(self.progress * 5) + 1);
+          if (counter) counter.textContent = String(current).padStart(2, '0');
         }
       }
     });
 
-    heroTimeline
-      .fromTo('.story-hero-image',
-        { scale: 1.02, xPercent: 0, yPercent: 0 },
-        { scale: 1.22, xPercent: -3, yPercent: 2, ease: 'none', duration: 1 }
-      )
-      .to('.story-shade', { opacity: .68, ease: 'none', duration: .45 }, 0)
-      .to('.story-hero-image', { filter: 'saturate(.78) contrast(1.06)', duration: .35 }, .35)
-      .to('.story-shade', { opacity: .42, duration: .3 }, .7);
+    timeline
+      .to('.cinematic-progress__fill', { scaleY: 1, duration: 5 }, 0)
+      .to(scenes[0].querySelector('img'), { scale: 1.08, xPercent: -2, duration: 1 }, 0)
+      .to(copies[0], { autoAlpha: 0, y: -28, duration: .28 }, .58)
+      .to(scenes[1], { clipPath: 'inset(0% 0% 0% 0%)', scale: 1, duration: .7 }, .72)
+      .fromTo(copies[1], { autoAlpha: 0, y: 34 }, { autoAlpha: 1, y: 0, duration: .28 }, 1.05)
+      .to(scenes[1].querySelector('img'), { scale: 1.07, xPercent: 2, duration: 1 }, .95)
+      .to(copies[1], { autoAlpha: 0, y: -26, duration: .25 }, 1.62)
+      .to(scenes[2], { clipPath: 'circle(150% at 68% 52%)', scale: 1, duration: .72 }, 1.78)
+      .fromTo(copies[2], { autoAlpha: 0, y: 34 }, { autoAlpha: 1, y: 0, duration: .28 }, 2.12)
+      .to(scenes[2].querySelector('img'), { scale: 1.08, yPercent: 2, duration: 1 }, 2.0)
+      .to(copies[2], { autoAlpha: 0, y: -26, duration: .25 }, 2.64)
+      .to(scenes[3], { clipPath: 'inset(0% 0% 0% 0%)', scale: 1, duration: .72 }, 2.8)
+      .fromTo(copies[3], { autoAlpha: 0, y: 34 }, { autoAlpha: 1, y: 0, duration: .28 }, 3.12)
+      .to(scenes[3].querySelector('img'), { scale: 1.08, xPercent: -2, duration: 1 }, 3.0)
+      .to(copies[3], { autoAlpha: 0, y: -26, duration: .25 }, 3.66)
+      .to(scenes[4], { clipPath: 'inset(0% 0% 0% 0%)', scale: 1, duration: .72 }, 3.82)
+      .fromTo(copies[4], { autoAlpha: 0, y: 34 }, { autoAlpha: 1, y: 0, duration: .32 }, 4.18)
+      .to(scenes[4].querySelector('img'), { scale: 1.06, yPercent: -1.5, duration: .82 }, 4.18);
 
-    gsap.fromTo('.market-media img',
-      { scale: 1.12, yPercent: -5 },
-      {
-        scale: 1,
-        yPercent: 5,
-        ease: 'none',
-        scrollTrigger: { trigger: '.market-story', start: 'top bottom', end: 'bottom top', scrub: 1 }
-      }
-    );
-
-    gsap.from('.market-copy > *', {
-      y: 50,
-      opacity: 0,
-      stagger: .12,
-      scrollTrigger: { trigger: '.market-copy', start: 'top 72%', toggleActions: 'play none none reverse' }
+    gsap.fromTo('.statement-section h2', { y: 80, opacity: 0 }, {
+      y: 0, opacity: 1, duration: 1,
+      scrollTrigger: { trigger: '.statement-section', start: 'top 70%', toggleActions: 'play none none reverse' }
     });
 
-    const ingredientItems = gsap.utils.toArray<HTMLElement>('.ingredient-steps li');
-    ingredientItems.forEach((item, index) => {
-      gsap.fromTo(item,
-        { opacity: .2, x: 20 },
-        {
-          opacity: 1,
-          x: 0,
-          scrollTrigger: {
-            trigger: '.ingredient-story',
-            start: `${20 + index * 17}% top`,
-            end: `${36 + index * 17}% top`,
-            scrub: true
-          }
-        }
-      );
+    gsap.utils.toArray<HTMLElement>('.doorway').forEach((card, index) => {
+      gsap.from(card, {
+        y: 70 + index * 16, opacity: 0, duration: .9,
+        scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none reverse' }
+      });
     });
 
-    gsap.to('.ingredient-photo img', {
-      scale: 1.1,
-      yPercent: 4,
-      ease: 'none',
-      scrollTrigger: { trigger: '.ingredient-story', start: 'top top', end: 'bottom bottom', scrub: 1 }
-    });
-
-    gsap.fromTo('.feature-recipe-media img',
-      { scale: 1.14 },
-      {
-        scale: 1,
-        ease: 'none',
-        scrollTrigger: { trigger: '.feature-recipe', start: 'top bottom', end: 'bottom top', scrub: 1 }
-      }
-    );
-
-    gsap.from('.feature-recipe-copy > *', {
-      y: 45,
-      opacity: 0,
-      stagger: .1,
-      scrollTrigger: { trigger: '.feature-recipe-copy', start: 'top 72%', toggleActions: 'play none none reverse' }
-    });
-
-    gsap.fromTo('.kampot-story img',
-      { scale: 1.08 },
-      {
-        scale: 1.2,
-        ease: 'none',
-        scrollTrigger: { trigger: '.kampot-story', start: 'top bottom', end: 'bottom top', scrub: 1 }
-      }
-    );
-
-    gsap.from('.kampot-copy > *', {
-      y: 55,
-      opacity: 0,
-      stagger: .12,
-      scrollTrigger: { trigger: '.kampot-story', start: 'top 62%', toggleActions: 'play none none reverse' }
+    gsap.fromTo('.signature-visual img', { scale: 1.14 }, {
+      scale: 1, ease: 'none',
+      scrollTrigger: { trigger: '.signature-section', start: 'top bottom', end: 'bottom top', scrub: 1 }
     });
   });
 
