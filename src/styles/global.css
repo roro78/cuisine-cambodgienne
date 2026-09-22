@@ -205,3 +205,30 @@ body{margin:0;font-family:var(--sans);background:var(--porcelain);overflow-x:hid
   .ingredient-story{height:auto}.ingredient-sticky{position:relative;min-height:100svh}
   .ingredient-steps li{opacity:1!important;transform:none!important}
 }
+
+
+/* Real photography on content pages */
+.card-visual{overflow:hidden;background:#d8d1c5}
+.card-visual img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease}
+.content-card-link:hover .card-visual img{transform:scale(1.035)}
+.recipe-cover{position:relative;overflow:hidden;background:#d8d1c5}
+.recipe-cover img{display:block;width:100%;height:100%;object-fit:cover}
+.recipe-cover figcaption,
+.guide-visual figcaption,
+.culture-visual figcaption{position:absolute;right:1rem;bottom:1rem;margin:0;padding:.45rem .65rem;background:rgba(0,0,0,.58);color:#fff;font-size:.58rem;letter-spacing:.04em;line-height:1.35}
+.guide-card-image{aspect-ratio:4/3;margin-bottom:1.5rem;overflow:hidden;background:#d8d1c5}
+.guide-card-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease}
+.guide-link:hover .guide-card-image img{transform:scale(1.04)}
+.guide-visual{position:relative;overflow:hidden;background:#d8d1c5}
+.guide-visual img{width:100%;height:100%;object-fit:cover;display:block}
+.culture-card{padding:0 0 2rem}
+.culture-card>*:not(.culture-card-image){margin-left:2rem;margin-right:2rem}
+.culture-card-image{aspect-ratio:4/3;overflow:hidden;margin-bottom:2rem;background:#d8d1c5}
+.culture-card-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease}
+.culture-card:hover .culture-card-image img{transform:scale(1.04)}
+.culture-visual{position:relative;overflow:hidden;background:#d8d1c5}
+.culture-visual img{display:block;width:100%;height:100%;object-fit:cover}
+@media(max-width:720px){
+  .recipe-cover figcaption,.guide-visual figcaption,.culture-visual figcaption{font-size:.52rem;right:.65rem;bottom:.65rem}
+  .culture-card>*:not(.culture-card-image){margin-left:1.25rem;margin-right:1.25rem}
+}
