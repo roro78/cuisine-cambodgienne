@@ -14,7 +14,7 @@ export function getStaticPaths() {
 
 const { ingredient } = Astro.props;
 ---
-<BaseLayout title={`${ingredient.title} — Guide ingrédient | Cuisine du Cambodge`} description={ingredient.intro}>
+<BaseLayout title={`${ingredient.title} — Guide ingrédient | Cuisine du Cambodge`} description={ingredient.intro} image={ingredient.image}>
   <SiteHeader />
   <main class="guide-page">
     <header class="guide-hero">
@@ -23,7 +23,7 @@ const { ingredient } = Astro.props;
       <p>{ingredient.intro}</p>
     </header>
 
-    <div class="guide-visual" aria-hidden="true"></div>
+    <figure class="guide-visual"><img src={ingredient.image} alt={ingredient.imageAlt} /><figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption></figure>
 
     <section class="guide-body">
       <div class="guide-main">
