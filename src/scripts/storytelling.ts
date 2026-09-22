@@ -3,139 +3,234 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+type FilmImage = {
+  img: HTMLImageElement;
+  ready: boolean;
+};
+
+function clamp(value: number, min = 0, max = 1) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function smoothstep(value: number) {
+  const t = clamp(value);
+  return t * t * (3 - 2 * t);
+}
+
 export function initStorytelling() {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduceMotion) return () => {};
+  const section = document.querySelector<HTMLElement>('[data-scroll-film]');
+  const stage = document.querySelector<HTMLElement>('.scroll-film-stage');
+  const canvas = document.querySelector<HTMLCanvasElement>('.scroll-film-canvas');
+  const fallback = document.querySelector<HTMLElement>('.scroll-film-fallback');
+  const copies = gsap.utils.toArray<HTMLElement>('.film-copy');
+  const count = document.querySelector<HTMLElement>('.film-count');
+  const progressFill = document.querySelector<HTMLElement>('.film-progress i');
+
+  if (!section || !stage || !canvas || copies.length !== 5) return () => {};
+
+  if (reduceMotion) {
+    copies.forEach((copy, index) => copy.classList.toggle('is-active', index === 0));
+    return () => {};
+  }
+
+  const ctx = canvas.getContext('2d', { alpha: false });
+  if (!ctx) return () => {};
+
+  const urls = JSON.parse(stage.dataset.filmImages ?? '[]') as string[];
+  const images: FilmImage[] = urls.map((src) => {
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = src;
+    const state = { img, ready: false };
+    img.addEventListener('load', () => {
+      state.ready = true;
+      if (fallback) fallback.style.opacity = '0';
+      render(lastProgress);
+    });
+    return state;
+  });
+
+  let width = 1;
+  let height = 1;
+  let dpr = 1;
+  let lastProgress = 0;
+
+  function resize() {
+    const rect = stage.getBoundingClientRect();
+    width = Math.max(1, rect.width);
+    height = Math.max(1, rect.height);
+    dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    render(lastProgress);
+  }
+
+  function drawCover(
+    image: HTMLImageElement,
+    zoom = 1,
+    offsetX = 0,
+    offsetY = 0,
+    alpha = 1
+  ) {
+    const imageRatio = image.naturalWidth / image.naturalHeight;
+    const canvasRatio = width / height;
+    let drawWidth: number;
+    let drawHeight: number;
+
+    if (imageRatio > canvasRatio) {
+      drawHeight = height * zoom;
+      drawWidth = drawHeight * imageRatio;
+    } else {
+      drawWidth = width * zoom;
+      drawHeight = drawWidth / imageRatio;
+    }
+
+    const x = (width - drawWidth) / 2 + offsetX * width;
+    const y = (height - drawHeight) / 2 + offsetY * height;
+
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(image, x, y, drawWidth, drawHeight);
+    ctx.globalAlpha = 1;
+  }
+
+  function revealNext(index: number, t: number) {
+    const current = images[index];
+    const next = images[Math.min(index + 1, images.length - 1)];
+    if (!current?.ready) return;
+
+    const zoomA = 1.03 + t * 0.06;
+    const zoomB = 1.1 - t * 0.06;
+    const driftA = (index % 2 === 0 ? -1 : 1) * t * 0.018;
+    const driftB = (index % 2 === 0 ? 1 : -1) * (1 - t) * 0.018;
+
+    ctx.fillStyle = '#0a0a08';
+    ctx.fillRect(0, 0, width, height);
+    drawCover(current.img, zoomA, driftA, 0, 1);
+
+    if (!next?.ready || index === images.length - 1) return;
+
+    const eased = smoothstep(t);
+    ctx.save();
+
+    if (index === 0) {
+      const wipe = width * eased;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(wipe + width * 0.14, 0);
+      ctx.lineTo(wipe - width * 0.08, height);
+      ctx.lineTo(0, height);
+      ctx.closePath();
+      ctx.clip();
+    } else if (index === 1) {
+      const radius = Math.hypot(width, height) * 0.72 * eased;
+      ctx.beginPath();
+      ctx.arc(width * 0.68, height * 0.48, radius, 0, Math.PI * 2);
+      ctx.clip();
+    } else if (index === 2) {
+      const wipe = height * eased;
+      ctx.beginPath();
+      ctx.rect(0, height - wipe, width, wipe);
+      ctx.clip();
+    } else {
+      const inset = width * 0.18 * (1 - eased);
+      ctx.beginPath();
+      ctx.roundRect(inset, inset * 0.45, width - inset * 2, height - inset * 0.9, Math.max(18, inset * 0.18));
+      ctx.clip();
+    }
+
+    ctx.filter = `blur(${(1 - eased) * 5}px)`;
+    drawCover(next.img, zoomB, driftB, 0, 1);
+    ctx.filter = 'none';
+    ctx.restore();
+
+    if (t > 0.7) {
+      ctx.save();
+      ctx.globalAlpha = clamp((t - 0.7) / 0.3) * 0.08;
+      ctx.fillStyle = '#f7ead8';
+      ctx.fillRect(0, 0, width, height);
+      ctx.restore();
+    }
+  }
+
+  function updateCopy(progress: number) {
+    const segment = 1 / 5;
+    const raw = progress / segment;
+    const active = Math.min(4, Math.floor(raw));
+    const local = clamp(raw - active);
+
+    copies.forEach((copy, index) => {
+      if (index !== active) {
+        gsap.set(copy, { autoAlpha: 0, y: index < active ? -28 : 28, scale: 0.985 });
+        copy.classList.remove('is-active');
+        return;
+      }
+
+      const fadeIn = smoothstep(local / 0.16);
+      const fadeOut = 1 - smoothstep((local - 0.78) / 0.2);
+      const opacity = active === 4 ? fadeIn : Math.min(fadeIn, fadeOut);
+      const y = local < 0.18 ? (1 - fadeIn) * 26 : -smoothstep((local - 0.8) / 0.2) * 20;
+
+      gsap.set(copy, { autoAlpha: opacity, y, scale: 1 - (1 - opacity) * 0.015 });
+      copy.classList.toggle('is-active', opacity > 0.2);
+    });
+
+    if (count) count.textContent = String(active + 1).padStart(2, '0');
+    if (progressFill) gsap.set(progressFill, { scaleY: progress });
+  }
+
+  function render(progress: number) {
+    lastProgress = clamp(progress);
+    const scaled = lastProgress * 4;
+    const index = Math.min(4, Math.floor(scaled));
+    const local = index === 4 ? 1 : clamp(scaled - index);
+    revealNext(index, local);
+    updateCopy(lastProgress);
+  }
 
   const context = gsap.context(() => {
-    const stage = document.querySelector<HTMLElement>('.cinematic-stage');
-    const story = document.querySelector<HTMLElement>('.cinematic-story');
-    const scenes = gsap.utils.toArray<HTMLElement>('.cinematic-scene');
-    const copies = gsap.utils.toArray<HTMLElement>('.cinematic-copy');
-    const counter = document.querySelector<HTMLElement>('.counter-current');
+    resize();
 
-    if (stage && story && scenes.length >= 5 && copies.length >= 5) {
-      gsap.set(scenes[0], { clipPath: 'inset(0% 0% 0% 0%)', scale: 1.03, opacity: 1 });
-      gsap.set(scenes[1], { clipPath: 'inset(0% 100% 0% 0%)', scale: 1.1, opacity: 1 });
-      gsap.set(scenes[2], { clipPath: 'circle(0% at 68% 52%)', scale: 1.14, opacity: 1 });
-      gsap.set(scenes[3], { clipPath: 'inset(100% 0% 0% 0%)', scale: 1.1, opacity: 1 });
-      gsap.set(scenes[4], { clipPath: 'inset(0% 0% 100% 0%)', scale: 1.12, opacity: 1 });
-
-      copies.forEach((copy, index) => {
-        gsap.set(copy, index === 0 ? { autoAlpha: 1, y: 0 } : { autoAlpha: 0, y: 34 });
-      });
-
-      const timeline = gsap.timeline({
-        defaults: { ease: 'none' },
-        scrollTrigger: {
-          trigger: story,
-          start: 'top top',
-          end: '+=520%',
-          pin: stage,
-          scrub: 1,
-          anticipatePin: 1,
-          onUpdate: (self) => {
-            const current = Math.min(5, Math.floor(self.progress * 5) + 1);
-            if (counter) counter.textContent = String(current).padStart(2, '0');
-          }
-        }
-      });
-
-      timeline
-        .to('.cinematic-progress__fill', { scaleY: 1, duration: 5 }, 0)
-        .to(scenes[0].querySelector('img'), { scale: 1.08, xPercent: -2, duration: 1 }, 0)
-        .to(copies[0], { autoAlpha: 0, y: -28, duration: .28 }, .58)
-        .to(scenes[1], { clipPath: 'inset(0% 0% 0% 0%)', scale: 1, duration: .7 }, .72)
-        .fromTo(copies[1], { autoAlpha: 0, y: 34 }, { autoAlpha: 1, y: 0, duration: .28 }, 1.05)
-        .to(scenes[1].querySelector('img'), { scale: 1.07, xPercent: 2, duration: 1 }, .95)
-        .to(copies[1], { autoAlpha: 0, y: -26, duration: .25 }, 1.62)
-        .to(scenes[2], { clipPath: 'circle(150% at 68% 52%)', scale: 1, duration: .72 }, 1.78)
-        .fromTo(copies[2], { autoAlpha: 0, y: 34 }, { autoAlpha: 1, y: 0, duration: .28 }, 2.12)
-        .to(scenes[2].querySelector('img'), { scale: 1.08, yPercent: 2, duration: 1 }, 2.0)
-        .to(copies[2], { autoAlpha: 0, y: -26, duration: .25 }, 2.64)
-        .to(scenes[3], { clipPath: 'inset(0% 0% 0% 0%)', scale: 1, duration: .72 }, 2.8)
-        .fromTo(copies[3], { autoAlpha: 0, y: 34 }, { autoAlpha: 1, y: 0, duration: .28 }, 3.12)
-        .to(scenes[3].querySelector('img'), { scale: 1.08, xPercent: -2, duration: 1 }, 3.0)
-        .to(copies[3], { autoAlpha: 0, y: -26, duration: .25 }, 3.66)
-        .to(scenes[4], { clipPath: 'inset(0% 0% 0% 0%)', scale: 1, duration: .72 }, 3.82)
-        .fromTo(copies[4], { autoAlpha: 0, y: 34 }, { autoAlpha: 1, y: 0, duration: .32 }, 4.18)
-        .to(scenes[4].querySelector('img'), { scale: 1.06, yPercent: -1.5, duration: .82 }, 4.18);
-    }
-
-    gsap.fromTo('.bridge-copy h2', { y: 90, opacity: 0 }, {
-      y: 0, opacity: 1, duration: 1,
-      scrollTrigger: { trigger: '.bridge-section', start: 'top 72%', toggleActions: 'play none none reverse' }
+    ScrollTrigger.create({
+      trigger: section,
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: true,
+      onUpdate: (self) => render(self.progress),
+      onRefresh: () => resize()
     });
 
-    gsap.fromTo('.bridge-line', { scaleX: 0 }, {
-      scaleX: 1,
-      transformOrigin: 'left center',
-      ease: 'none',
-      scrollTrigger: { trigger: '.bridge-section', start: 'top 70%', end: 'bottom 35%', scrub: 1 }
+    gsap.fromTo('.after-film h2', { y: 80, opacity: 0 }, {
+      y: 0,
+      opacity: 1,
+      scrollTrigger: {
+        trigger: '.after-film',
+        start: 'top 72%',
+        end: 'top 42%',
+        scrub: 1
+      }
     });
 
-    const rail = document.querySelector<HTMLElement>('.worlds-rail');
-    const worlds = document.querySelector<HTMLElement>('.worlds-story');
-
-    if (rail && worlds) {
-      const panels = gsap.utils.toArray<HTMLElement>('.world-panel');
-      const horizontal = gsap.to(rail, {
-        x: () => -(rail.scrollWidth - window.innerWidth),
-        ease: 'none',
-        scrollTrigger: {
-          trigger: worlds,
-          start: 'top top',
-          end: () => '+=' + Math.max(window.innerWidth * 3.2, rail.scrollWidth - window.innerWidth),
-          pin: '.worlds-pin',
-          scrub: 1,
-          invalidateOnRefresh: true,
-          anticipatePin: 1
-        }
-      });
-
-      panels.forEach((panel) => {
-        gsap.fromTo(panel.querySelector('img'),
-          { scale: 1.12 },
-          {
-            scale: 1,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: panel,
-              containerAnimation: horizontal,
-              start: 'left right',
-              end: 'right left',
-              scrub: true
-            }
-          }
-        );
-      });
-
-      gsap.to('.worlds-progress span', {
-        scaleX: 1,
-        transformOrigin: 'left center',
-        ease: 'none',
-        scrollTrigger: {
-          trigger: worlds,
-          start: 'top top',
-          end: () => '+=' + Math.max(window.innerWidth * 3.2, rail.scrollWidth - window.innerWidth),
-          scrub: 1
-        }
-      });
-    }
-
-    gsap.fromTo('.amok-finale-image', { scale: 1.14 }, {
+    gsap.fromTo('.amok-poster img', { scale: 1.16 }, {
       scale: 1,
       ease: 'none',
-      scrollTrigger: { trigger: '.amok-finale', start: 'top bottom', end: 'bottom top', scrub: 1 }
-    });
-
-    gsap.from('.amok-finale-copy > *', {
-      y: 46,
-      opacity: 0,
-      stagger: .1,
-      scrollTrigger: { trigger: '.amok-finale', start: 'top 68%', toggleActions: 'play none none reverse' }
+      scrollTrigger: {
+        trigger: '.amok-poster',
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: 1
+      }
     });
   });
 
-  return () => context.revert();
+  const onResize = () => resize();
+  window.addEventListener('resize', onResize);
+
+  return () => {
+    window.removeEventListener('resize', onResize);
+    context.revert();
+  };
 }
