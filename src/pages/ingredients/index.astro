@@ -16,6 +16,7 @@ import { ingredientGuides } from '../../data/ingredients';
       {ingredientGuides.map((item) => (
         <a class="guide-link" href={`/ingredients/${item.slug}/`}>
           <article>
+            <div class="guide-card-image"><img src={item.image} alt={item.imageAlt} loading="lazy" /></div>
             <p class="card-meta">Guide ingrédient</p>
             <h2>{item.title}</h2>
             <p>{item.intro}</p>
