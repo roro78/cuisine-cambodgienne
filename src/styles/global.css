@@ -333,3 +333,59 @@ a:focus-visible,summary:focus-visible{outline:2px solid currentColor;outline-off
   .cinematic-scene:not(.scene-0),.cinematic-copy:not(.copy-0),.cinematic-ui{display:none}
   .cinematic-copy.copy-0{opacity:1!important;visibility:visible!important;transform:none!important}
 }
+
+
+/* V4 continuous narrative */
+.bridge-section{position:relative;min-height:86svh;padding:18vh var(--page-pad) 14vh;background:#0d0e0c;color:#fff;display:grid;grid-template-columns:.18fr 1fr;gap:5vw;align-items:center;overflow:hidden}
+.bridge-number{align-self:start;font:400 clamp(5rem,10vw,11rem)/.8 var(--serif);opacity:.12}
+.bridge-copy{max-width:68rem}
+.bridge-kicker{margin:0 0 1.5rem;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;opacity:.64}
+.bridge-copy h2{margin:0;font:400 clamp(4rem,8vw,8rem)/.84 var(--serif);letter-spacing:-.06em}
+.bridge-copy>p:last-child{max-width:34rem;margin:2rem 0 0;line-height:1.75;opacity:.72}
+.bridge-line{position:absolute;left:var(--page-pad);right:var(--page-pad);bottom:5vh;height:1px;background:rgba(255,255,255,.6);transform:scaleX(0);transform-origin:left}
+
+.worlds-story{position:relative;background:#0b0b0a;color:#fff}
+.worlds-pin{position:relative;height:100svh;overflow:hidden}
+.worlds-rail{height:100%;display:flex;will-change:transform}
+.world-panel{position:relative;flex:0 0 78vw;height:100svh;overflow:hidden;background:#111}
+.world-panel:first-child{margin-left:0}
+.world-panel>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform}
+.world-panel-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.06) 20%,rgba(0,0,0,.7) 100%)}
+.world-panel-copy{position:absolute;z-index:2;left:clamp(1.5rem,5vw,5rem);bottom:clamp(2rem,7vh,6rem);max-width:32rem}
+.world-panel-copy span{display:block;margin-bottom:1rem;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;opacity:.7}
+.world-panel-copy h2{margin:0 0 1.25rem;font:400 clamp(4rem,7vw,7.5rem)/.82 var(--serif);letter-spacing:-.06em}
+.world-panel-copy p{max-width:28rem;margin:0;line-height:1.68;opacity:.8}
+.world-panel-copy a{display:inline-block;margin-top:1.6rem;border-bottom:1px solid rgba(255,255,255,.7);padding-bottom:.3rem;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase}
+.world-panel-2,.world-panel-4{flex-basis:68vw}
+.worlds-progress{position:absolute;z-index:5;left:var(--page-pad);right:var(--page-pad);bottom:1.5rem;height:1px;background:rgba(255,255,255,.22)}
+.worlds-progress span{display:block;width:100%;height:100%;background:#fff;transform:scaleX(0);transform-origin:left center}
+
+.amok-finale{position:relative;min-height:120svh;display:grid;align-items:end;overflow:hidden;background:#111;color:#fff}
+.amok-finale-image{position:absolute;inset:-5%;width:110%;height:110%;object-fit:cover;will-change:transform}
+.amok-finale-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.03) 20%,rgba(0,0,0,.72) 100%)}
+.amok-finale-copy{position:relative;z-index:2;padding:0 var(--page-pad) 10vh;max-width:44rem}
+.amok-finale-copy h2{margin:0 0 1.4rem;font:400 clamp(5rem,11vw,11rem)/.76 var(--serif);letter-spacing:-.07em}
+.amok-finale-copy p:not(.eyebrow){max-width:31rem;line-height:1.7;opacity:.82}
+.amok-finale-copy a{display:inline-block;margin-top:1.5rem;border-bottom:1px solid rgba(255,255,255,.7);padding-bottom:.32rem;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase}
+
+@media(max-width:900px){
+  .world-panel{flex-basis:88vw}.world-panel-2,.world-panel-4{flex-basis:82vw}
+}
+@media(max-width:720px){
+  .bridge-section{grid-template-columns:1fr;min-height:78svh;padding-top:14vh}
+  .bridge-number{display:none}
+  .bridge-copy h2{font-size:clamp(3.7rem,17vw,6rem)}
+  .world-panel,.world-panel-2,.world-panel-4{flex-basis:92vw}
+  .world-panel-copy{left:var(--page-pad);right:2.5rem;bottom:10vh}
+  .world-panel-copy h2{font-size:clamp(3.8rem,17vw,6rem)}
+  .world-panel-copy p{font-size:.9rem}
+  .amok-finale{min-height:100svh}
+  .amok-finale-copy h2{font-size:clamp(5rem,22vw,8rem)}
+}
+@media(prefers-reduced-motion:reduce){
+  .worlds-pin{height:auto;overflow:visible}
+  .worlds-rail{display:block;transform:none!important}
+  .world-panel,.world-panel-2,.world-panel-4{height:72svh;min-height:34rem;margin:0;flex:none}
+  .worlds-progress{display:none}
+  .amok-finale-image{transform:none!important}
+}
