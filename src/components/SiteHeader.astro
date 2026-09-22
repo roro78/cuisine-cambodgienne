@@ -4,10 +4,22 @@ const { overlay = false } = Astro.props;
 ---
 <header class:list={['site-nav', { 'site-nav-overlay': overlay }]} aria-label="Navigation principale">
   <a class="brand" href="/">Cuisine du Cambodge</a>
+
   <nav class="nav-links" aria-label="Rubriques">
     <a href="/recettes/">Recettes</a>
     <a href="/ingredients/">Ingrédients</a>
     <a href="/culture/">Culture</a>
     <a href="/apprendre/">Apprendre</a>
   </nav>
+
+  <details class="mobile-menu">
+    <summary aria-label="Ouvrir le menu">Menu</summary>
+    <nav aria-label="Navigation mobile">
+      <a href="/recettes/">Recettes</a>
+      <a href="/ingredients/">Ingrédients</a>
+      <a href="/culture/">Culture</a>
+      <a href="/apprendre/">Apprendre</a>
+      <a href="/a-propos/">À propos</a>
+    </nav>
+  </details>
 </header>
