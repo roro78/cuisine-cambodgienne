@@ -232,3 +232,20 @@ body{margin:0;font-family:var(--sans);background:var(--porcelain);overflow-x:hid
   .recipe-cover figcaption,.guide-visual figcaption,.culture-visual figcaption{font-size:.52rem;right:.65rem;bottom:.65rem}
   .culture-card>*:not(.culture-card-image){margin-left:1.25rem;margin-right:1.25rem}
 }
+
+
+/* Mobile navigation */
+.mobile-menu{display:none;position:relative}
+.mobile-menu summary{list-style:none;cursor:pointer;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase}
+.mobile-menu summary::-webkit-details-marker{display:none}
+.mobile-menu[open] summary{opacity:.62}
+.mobile-menu nav{position:absolute;right:0;top:2rem;min-width:13rem;display:flex;flex-direction:column;background:rgba(17,17,17,.96);color:#fff;padding:1rem;box-shadow:0 1rem 3rem rgba(0,0,0,.18)}
+.mobile-menu nav a{padding:.75rem .4rem;border-bottom:1px solid rgba(255,255,255,.14);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+.mobile-menu nav a:last-child{border-bottom:0}
+@media(max-width:720px){
+  .site-nav{flex-direction:row;align-items:center}
+  .site-nav .nav-links{display:none}
+  .mobile-menu{display:block;margin-left:auto}
+  .site-nav:not(.site-nav-overlay) .mobile-menu nav{background:rgba(245,243,238,.98);color:var(--charcoal);border:1px solid rgba(17,17,17,.12)}
+  .site-nav:not(.site-nav-overlay) .mobile-menu nav a{border-bottom-color:rgba(17,17,17,.12)}
+}
