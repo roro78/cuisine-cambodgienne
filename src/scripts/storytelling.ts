@@ -29,15 +29,20 @@ export function initStorytelling() {
 
   if (!section || !stage || !canvas || copies.length !== 5) return () => {};
 
+  const sectionEl = section;
+  const stageEl = stage;
+  const canvasEl = canvas;
+
   if (reduceMotion) {
     copies.forEach((copy, index) => copy.classList.toggle('is-active', index === 0));
     return () => {};
   }
 
-  const ctx = canvas.getContext('2d', { alpha: false });
-  if (!ctx) return () => {};
+  const context2d = canvasEl.getContext('2d', { alpha: false });
+  if (!context2d) return () => {};
+  const ctx = context2d;
 
-  const urls = JSON.parse(stage.dataset.filmImages ?? '[]') as string[];
+  const urls = JSON.parse(stageEl.dataset.filmImages ?? '[]') as string[];
   const images: FilmImage[] = urls.map((src) => {
     const img = new Image();
     img.decoding = 'async';
@@ -57,14 +62,14 @@ export function initStorytelling() {
   let lastProgress = 0;
 
   function resize() {
-    const rect = stage.getBoundingClientRect();
+    const rect = stageEl.getBoundingClientRect();
     width = Math.max(1, rect.width);
     height = Math.max(1, rect.height);
     dpr = Math.min(window.devicePixelRatio || 1, 1.75);
-    canvas.width = Math.round(width * dpr);
-    canvas.height = Math.round(height * dpr);
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
+    canvasEl.width = Math.round(width * dpr);
+    canvasEl.height = Math.round(height * dpr);
+    canvasEl.style.width = `${width}px`;
+    canvasEl.style.height = `${height}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     render(lastProgress);
   }
@@ -195,7 +200,7 @@ export function initStorytelling() {
     resize();
 
     ScrollTrigger.create({
-      trigger: section,
+      trigger: sectionEl,
       start: 'top top',
       end: 'bottom bottom',
       scrub: true,
