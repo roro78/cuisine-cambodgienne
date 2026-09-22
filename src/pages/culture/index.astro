@@ -16,6 +16,7 @@ import { cultureArticles } from '../../data/culture';
     <section class="culture-grid">
       {cultureArticles.map((article) => (
         <a class="culture-card" href={`/culture/${article.slug}/`}>
+          <div class="culture-card-image"><img src={article.image} alt={article.imageAlt} loading="lazy" /></div>
           <span class="card-meta">{article.eyebrow}</span>
           <h2>{article.title}</h2>
           <p>{article.intro}</p>
