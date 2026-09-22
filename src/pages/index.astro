@@ -3,12 +3,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 
-const heroImage = 'https://upload.wikimedia.org/wikipedia/commons/8/84/Fish_Amok-_Khmer_specialty.jpg';
-const marketImage = 'https://upload.wikimedia.org/wikipedia/commons/a/ae/06-Kep_Crab_Market_Cambodia-nX-3.jpg';
-const pepperImage = 'https://upload.wikimedia.org/wikipedia/commons/d/d0/Kampot_Pepper.jpg';
-const amokImage = 'https://upload.wikimedia.org/wikipedia/commons/1/10/Fish_amok_amok_trei_Khmer_Cambodian_food.jpg';
+const heroImage = 'https://commons.wikimedia.org/wiki/Special:FilePath/Fish_Amok-_Khmer_specialty.jpg?width=1800';
+const marketImage = 'https://commons.wikimedia.org/wiki/Special:FilePath/06-Kep_Crab_Market_Cambodia-nX-3_(cropped).jpg?width=1800';
+const pepperImage = 'https://commons.wikimedia.org/wiki/Special:FilePath/Kampot_Pepper.jpg?width=1800';
+const amokImage = 'https://commons.wikimedia.org/wiki/Special:FilePath/Fish_amok_amok_trei_Khmer_Cambodian_food.jpg?width=1800';
 ---
-<BaseLayout>
+<BaseLayout image={heroImage}>
   <SiteHeader overlay />
 
   <main>
