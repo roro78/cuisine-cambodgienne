@@ -67,37 +67,76 @@ const images = {
       </div>
     </section>
 
-    <section class="statement-section">
-      <p class="statement-kicker">La ligne éditoriale</p>
-      <h2>Comprendre ce que l’on fait<br />change ce que l’on cuisine.</h2>
-      <p>Chaque recette relie le geste, le produit et le contexte. Pas de folklore plaqué. Pas de texte décoratif. Juste les clés pour cuisiner avec plus de précision.</p>
+    <section class="bridge-section">
+      <div class="bridge-number">05</div>
+      <div class="bridge-copy">
+        <p class="bridge-kicker">Une cuisine se lit en couches</p>
+        <h2>Le produit.<br />Le geste.<br />Le plat.</h2>
+        <p>Trois portes d’entrée, une seule histoire. Continuez à faire défiler : la page devient un parcours, pas une grille.</p>
+      </div>
+      <div class="bridge-line" aria-hidden="true"></div>
     </section>
 
-    <section class="doorway-section" aria-label="Explorer le site">
-      <a class="doorway doorway-recipes" href="/recettes/">
-        <img src={images.amok} alt="Amok cambodgien servi avec du riz" loading="lazy" />
-        <span class="doorway-shade"></span>
-        <div class="doorway-copy"><small>01 — Recettes</small><strong>Cuisiner</strong><em>Amok, lok lak, kroeung et classiques khmers.</em></div>
-      </a>
-      <a class="doorway doorway-ingredients" href="/ingredients/">
-        <img src={images.kroeung} alt="Plat cambodgien parfumé au kroeung" loading="lazy" />
-        <span class="doorway-shade"></span>
-        <div class="doorway-copy"><small>02 — Ingrédients</small><strong>Comprendre</strong><em>Kroeung, prahok, tamarin, poivres et aromates.</em></div>
-      </a>
-      <a class="doorway doorway-culture" href="/culture/">
-        <img src={images.kampot} alt="Poivre vert de Kampot sur le plant" loading="lazy" />
-        <span class="doorway-shade"></span>
-        <div class="doorway-copy"><small>03 — Culture</small><strong>Relier</strong><em>Territoires, gestes, produits et transmission.</em></div>
-      </a>
+    <section class="worlds-story" aria-label="Explorer la cuisine cambodgienne">
+      <div class="worlds-pin">
+        <div class="worlds-rail">
+          <article class="world-panel world-panel-1">
+            <img src={images.market} alt="Marché cambodgien avec poivres et épices" />
+            <div class="world-panel-shade"></div>
+            <div class="world-panel-copy">
+              <span>01 — Produits</span>
+              <h2>Partir<br />du marché.</h2>
+              <p>Poivre, herbes, racines, fermentations : comprendre les produits avant de les transformer.</p>
+              <a href="/ingredients/">Explorer les ingrédients</a>
+            </div>
+          </article>
+
+          <article class="world-panel world-panel-2">
+            <img src={images.kroeung} alt="Préparation cambodgienne à base de kroeung" />
+            <div class="world-panel-shade"></div>
+            <div class="world-panel-copy">
+              <span>02 — Gestes</span>
+              <h2>Piler.<br />Lier.<br />Goûter.</h2>
+              <p>Le kroeung n’est pas un simple mélange : c’est une technique de construction du goût.</p>
+              <a href="/culture/comprendre-le-kroeung/">Comprendre le kroeung</a>
+            </div>
+          </article>
+
+          <article class="world-panel world-panel-3">
+            <img src={images.amok} alt="Amok cambodgien servi avec du riz" />
+            <div class="world-panel-shade"></div>
+            <div class="world-panel-copy">
+              <span>03 — Recettes</span>
+              <h2>Faire<br />le lien.</h2>
+              <p>Les recettes deviennent plus simples quand on comprend ce que chaque geste apporte au plat.</p>
+              <a href="/recettes/">Voir les recettes</a>
+            </div>
+          </article>
+
+          <article class="world-panel world-panel-4">
+            <img src={images.kampot} alt="Poivre vert de Kampot sur le plant" />
+            <div class="world-panel-shade"></div>
+            <div class="world-panel-copy">
+              <span>04 — Territoires</span>
+              <h2>Relier<br />le goût<br />au lieu.</h2>
+              <p>De Kampot à Kep, les produits racontent aussi le paysage et les personnes qui les font vivre.</p>
+              <a href="/culture/">Lire les histoires</a>
+            </div>
+          </article>
+        </div>
+
+        <div class="worlds-progress" aria-hidden="true"><span></span></div>
+      </div>
     </section>
 
-    <section class="signature-section">
-      <div class="signature-visual"><img src={images.amokAlt} alt="Amok trei cambodgien présenté dans des feuilles" loading="lazy" /></div>
-      <div class="signature-copy">
+    <section class="amok-finale">
+      <img class="amok-finale-image" src={images.amokAlt} alt="Amok trei cambodgien présenté dans des feuilles" loading="lazy" />
+      <div class="amok-finale-shade"></div>
+      <div class="amok-finale-copy">
         <p class="eyebrow">Plat signature</p>
-        <h2>Amok Trey</h2>
-        <p>Un plat pour comprendre l’essentiel : le kroeung comme colonne vertébrale, le coco pour l’équilibre, une cuisson douce pour la texture.</p>
-        <a class="text-link" href="/recettes/amok-trey/">Voir la recette</a>
+        <h2>Amok<br />Trey.</h2>
+        <p>Le point d’arrivée du parcours : kroeung, coco, poisson, vapeur. Quatre éléments, un équilibre.</p>
+        <a href="/recettes/amok-trey/">Entrer dans la recette</a>
       </div>
     </section>
 
