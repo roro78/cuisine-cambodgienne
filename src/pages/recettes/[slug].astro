@@ -34,10 +34,11 @@ const recipeSchema = {
   recipeInstructions: recipe.steps.map((text: string) => ({ '@type': 'HowToStep', text })),
   recipeCategory: 'Cuisine cambodgienne',
   recipeCuisine: 'Cambodgienne',
-  keywords: recipe.tags.join(', ')
+  keywords: recipe.tags.join(', '),
+  image: recipe.image
 };
 ---
-<BaseLayout title={`${recipe.title} — Recette cambodgienne | Cuisine du Cambodge`} description={recipe.description}>
+<BaseLayout title={`${recipe.title} — Recette cambodgienne | Cuisine du Cambodge`} description={recipe.description} image={recipe.image}>
   <SiteHeader />
   <main class="recipe-page">
     <header class="recipe-hero">
@@ -54,7 +55,7 @@ const recipeSchema = {
       </dl>
     </header>
 
-    <div class="recipe-cover" aria-hidden="true"></div>
+    <figure class="recipe-cover"><img src={recipe.image} alt={recipe.imageAlt} /><figcaption>Photographie illustrative · voir les crédits en bas de page.</figcaption></figure>
 
     <section class="recipe-layout">
       <aside class="ingredients-panel">

@@ -15,6 +15,8 @@ export interface Recipe {
   notes?: string[];
   relatedIngredients?: string[];
   tags: string[];
+  image: string;
+  imageAlt: string;
 }
 
 export const recipes: Recipe[] = [
@@ -57,7 +59,9 @@ export const recipes: Recipe[] = [
       'Le kroeung peut être préparé à l’avance et conservé au frais dans un contenant hermétique.'
     ],
     relatedIngredients: ['kroeung'],
-    tags: ['poisson', 'kroeung', 'lait de coco', 'classique']
+    tags: ['poisson', 'kroeung', 'lait de coco', 'classique'],
+    image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Fish_Amok-_Khmer_specialty.jpg?width=1600',
+    imageAlt: 'Amok cambodgien servi dans une feuille de bananier avec du riz'
   },
   {
     slug: 'lok-lak',
@@ -93,7 +97,9 @@ export const recipes: Recipe[] = [
     ],
     notes: ['La réussite dépend surtout d’une poêle très chaude et d’une cuisson courte.'],
     relatedIngredients: ['poivre-de-kampot'],
-    tags: ['bœuf', 'poivre de Kampot', 'rapide']
+    tags: ['bœuf', 'poivre de Kampot', 'rapide'],
+    image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Cambodian_Lok_Lak.jpg?width=1600',
+    imageAlt: 'Lok lak cambodgien au bœuf accompagné de crudités'
   },
   {
     slug: 'kroeung-jaune',
@@ -127,7 +133,9 @@ export const recipes: Recipe[] = [
     ],
     notes: ['Un mortier donne une texture plus intéressante, mais un mixeur peut dépanner en ajoutant le moins de liquide possible.'],
     relatedIngredients: ['kroeung'],
-    tags: ['base', 'aromates', 'citronnelle', 'curcuma']
+    tags: ['base', 'aromates', 'citronnelle', 'curcuma'],
+    image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Cha_kroeung.jpg?width=1600',
+    imageAlt: 'Plat cambodgien cha kroeung préparé avec une base aromatique kroeung'
   }
 ];
 

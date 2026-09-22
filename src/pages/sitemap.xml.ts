@@ -3,7 +3,7 @@ import { recipes } from '../data/recipes';
 import { ingredientGuides } from '../data/ingredients';
 import { cultureArticles } from '../data/culture';
 
-const staticPaths = ['/', '/recettes/', '/ingredients/', '/culture/', '/apprendre/', '/a-propos/'];
+const staticPaths = ['/', '/recettes/', '/ingredients/', '/culture/', '/apprendre/', '/a-propos/', '/credits-photos/'];
 
 export const GET: APIRoute = ({ site }) => {
   const base = site ?? new URL('https://www.cuisine-du-cambodge.com');

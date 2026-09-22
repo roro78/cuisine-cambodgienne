@@ -17,7 +17,7 @@ import { recipes } from '../../data/recipes';
       {recipes.map((recipe) => (
         <a class="content-card-link" href={`/recettes/${recipe.slug}/`}>
           <article class="content-card">
-            <div class="card-visual" aria-hidden="true"></div>
+            <div class="card-visual"><img src={recipe.image} alt={recipe.imageAlt} loading="lazy" /></div>
             <p class="card-meta">{recipe.difficulty} · {recipe.prepTime}</p>
             <h2>{recipe.title}</h2>
             <p>{recipe.intro}</p>

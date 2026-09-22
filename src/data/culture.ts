@@ -5,6 +5,8 @@ export interface CultureArticle {
   intro: string;
   sections: { title: string; paragraphs: string[] }[];
   sources: { label: string; url: string }[];
+  image: string;
+  imageAlt: string;
 }
 
 export const cultureArticles: CultureArticle[] = [
@@ -29,6 +31,8 @@ export const cultureArticles: CultureArticle[] = [
         ]
       }
     ],
+    image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Kampot_Pepper.jpg?width=1600',
+    imageAlt: 'Grappes de poivre vert de Kampot sur le plant',
     sources: [
       { label: 'OMPI — Système de Lisbonne et Poivre de Kampot', url: 'https://www.wipo.int/fr/web/lisbon-system/w/news/2021/news_0001' },
       { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: 'https://tourismcambodia.org/public/index.php/official-activities/new-beginnings-a-gourmet-guide-to-cambodia' }
@@ -55,6 +59,8 @@ export const cultureArticles: CultureArticle[] = [
         ]
       }
     ],
+    image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Cha_kroeung.jpg?width=1600',
+    imageAlt: 'Plat cambodgien préparé avec du kroeung',
     sources: [
       { label: 'Ministère du Tourisme du Cambodge — glossaire gastronomique', url: 'https://tourismcambodia.org/public/index.php/official-activities/new-beginnings-a-gourmet-guide-to-cambodia' }
     ]
@@ -80,6 +86,8 @@ export const cultureArticles: CultureArticle[] = [
         ]
       }
     ],
+    image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Fish_amok_amok_trei_Khmer_Cambodian_food.jpg?width=1600',
+    imageAlt: 'Portions d’amok trei cambodgien présentées dans des feuilles',
     sources: [
       { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: 'https://tourismcambodia.org/public/index.php/official-activities/new-beginnings-a-gourmet-guide-to-cambodia' }
     ]

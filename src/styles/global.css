@@ -86,3 +86,169 @@ body{margin:0;font-family:var(--sans);background:var(--porcelain);overflow-x:hid
 .source-box li{padding:.65rem 0;border-bottom:1px solid rgba(17,17,17,.12)}
 .source-box a{text-decoration:underline;text-underline-offset:.2em}
 @media(max-width:720px){.culture-grid{grid-template-columns:1fr}}
+
+
+/* Immersive storytelling homepage */
+.story-hero{height:400svh;position:relative;background:#0d0d0b;color:#fff}
+.story-stage{position:sticky;top:0;height:100svh;overflow:hidden;background:#0d0d0b}
+.story-hero-image{position:absolute;inset:-4%;width:108%;height:108%;object-fit:cover;object-position:50% 48%;will-change:transform,filter}
+.story-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.72) 0%,rgba(0,0,0,.28) 48%,rgba(0,0,0,.18) 100%),linear-gradient(180deg,rgba(0,0,0,.14),rgba(0,0,0,.48));opacity:.38;will-change:opacity}
+.story-panel{position:absolute;z-index:4;left:var(--page-pad);top:50%;transform:translateY(-46%);width:min(44rem,78vw);opacity:0;visibility:hidden;transition:opacity .35s ease,visibility .35s ease}
+.story-panel.is-active{opacity:1;visibility:visible}
+.story-panel h1,.story-panel h2{margin:0 0 1.5rem;font:400 clamp(4rem,9.5vw,9.5rem)/.82 var(--serif);letter-spacing:-.065em;text-wrap:balance}
+.story-panel h2{font-size:clamp(3.5rem,8vw,8rem)}
+.story-panel>p:last-of-type{max-width:35rem;margin:0;font-size:clamp(1rem,1.5vw,1.25rem);line-height:1.7}
+.story-cta{display:inline-block;margin-top:2rem;padding-bottom:.35rem;border-bottom:1px solid rgba(255,255,255,.72);font-size:.72rem;letter-spacing:.13em;text-transform:uppercase}
+.story-progress{position:absolute;z-index:6;left:var(--page-pad);right:var(--page-pad);bottom:2.2rem;height:1px;background:rgba(255,255,255,.3)}
+.story-progress span{display:block;width:100%;height:100%;background:#fff;transform:scaleX(0);transform-origin:left center}
+.scroll-cue{position:absolute;z-index:6;right:var(--page-pad);bottom:3rem;display:flex;align-items:center;gap:.8rem;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase}
+.scroll-cue i{display:block;width:3.5rem;height:1px;background:rgba(255,255,255,.62)}
+
+.market-story{min-height:120svh;display:grid;grid-template-columns:1.2fr .8fr;background:#e9e5dc;overflow:hidden}
+.market-media{min-height:120svh;overflow:hidden}
+.market-media img{width:100%;height:120%;object-fit:cover;object-position:center;will-change:transform}
+.market-copy{display:flex;flex-direction:column;justify-content:center;padding:12vh var(--page-pad)}
+.market-copy h2{max-width:8ch;margin:0 0 2rem;font:400 clamp(3.5rem,7.5vw,7.5rem)/.88 var(--serif);letter-spacing:-.055em}
+.market-copy p:not(.eyebrow){max-width:31rem;line-height:1.75;font-size:1.05rem}
+
+.ingredient-story{height:320svh;background:#0d0e0c;color:#fff}
+.ingredient-sticky{position:sticky;top:0;height:100svh;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
+.ingredient-photo{height:100%;overflow:hidden}
+.ingredient-photo img{width:100%;height:110%;object-fit:cover;object-position:center 45%;will-change:transform}
+.ingredient-copy{padding:10vh var(--page-pad);display:flex;flex-direction:column;justify-content:center}
+.ingredient-copy h2{margin:0;font:400 clamp(3.5rem,7vw,7rem)/.88 var(--serif);letter-spacing:-.055em}
+.ingredient-intro{margin:1.2rem 0 2.4rem;opacity:.72}
+.ingredient-steps{list-style:none;margin:0;padding:0}
+.ingredient-steps li{display:grid;grid-template-columns:3.2rem minmax(8rem,.7fr) 1fr;align-items:baseline;gap:1rem;padding:1rem 0;border-top:1px solid rgba(255,255,255,.16);opacity:.2}
+.ingredient-steps li:last-child{border-bottom:1px solid rgba(255,255,255,.16)}
+.ingredient-steps span{font-size:.62rem;letter-spacing:.12em;opacity:.55}
+.ingredient-steps strong{font:400 clamp(1.35rem,2.3vw,2.35rem)/1 var(--serif)}
+.ingredient-steps em{font-style:normal;font-size:.76rem;opacity:.6}
+
+.feature-recipe{min-height:100svh;display:grid;grid-template-columns:.82fr 1.18fr;background:var(--porcelain)}
+.feature-recipe-copy{display:flex;flex-direction:column;justify-content:flex-end;padding:12vh var(--page-pad)}
+.feature-recipe-copy h2{margin:0;font:400 clamp(5rem,11vw,11rem)/.78 var(--serif);letter-spacing:-.07em}
+.feature-recipe-copy p:not(.eyebrow){max-width:32rem;font-size:1.08rem;line-height:1.75}
+.feature-recipe-media{min-height:100svh;overflow:hidden}
+.feature-recipe-media img{width:100%;height:100%;object-fit:cover;object-position:center;will-change:transform}
+
+.kampot-story{position:relative;min-height:110svh;display:grid;align-items:end;overflow:hidden;background:#111;color:#fff}
+.kampot-story>img{position:absolute;inset:-4%;width:108%;height:108%;object-fit:cover;will-change:transform}
+.kampot-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08) 25%,rgba(0,0,0,.72) 100%)}
+.kampot-copy{position:relative;z-index:2;padding:12vh var(--page-pad)}
+.kampot-copy h2{margin:0 0 1.5rem;font:400 clamp(5rem,14vw,14rem)/.74 var(--serif);letter-spacing:-.075em}
+.kampot-copy p:not(.eyebrow){max-width:34rem;font-size:1.05rem;line-height:1.7}
+
+.explore-grid{padding:16vh var(--page-pad);background:var(--porcelain)}
+.explore-heading{display:grid;grid-template-columns:.35fr 1fr;align-items:end;gap:4vw;margin-bottom:8vh}
+.explore-heading h2{max-width:10ch;margin:0;font:400 clamp(3rem,7vw,7rem)/.9 var(--serif);letter-spacing:-.055em}
+.explore-links{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(17,17,17,.16)}
+.explore-links a{min-height:22rem;background:var(--porcelain);padding:2rem;display:flex;flex-direction:column;transition:background .25s ease}
+.explore-links a:hover{background:#e9e4d9}
+.explore-links span{font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;opacity:.56}
+.explore-links strong{margin:auto 0 1rem;font:400 clamp(2.2rem,4vw,4rem)/1 var(--serif);letter-spacing:-.045em}
+.explore-links em{font-style:normal;line-height:1.55;opacity:.72}
+
+.photo-credit-strip{padding:1rem var(--page-pad);display:flex;justify-content:space-between;gap:1rem;border-top:1px solid rgba(17,17,17,.12);font-size:.62rem;line-height:1.4;opacity:.68}
+.photo-credit-strip a{text-decoration:underline;text-underline-offset:.15em}
+
+.credits-page{padding:clamp(6rem,10vw,10rem) var(--page-pad) 14vh}
+.credits-list{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(17,17,17,.14)}
+.credits-list article{background:var(--porcelain);padding:2rem}
+.credits-list h2{font:400 clamp(1.8rem,3vw,3rem)/1 var(--serif);margin:0 0 1rem}
+.credits-list p{line-height:1.6}
+.credits-list a{text-decoration:underline;text-underline-offset:.2em;font-size:.76rem}
+
+@media(max-width:900px){
+  .market-story,.feature-recipe{grid-template-columns:1fr}
+  .market-media{min-height:65svh;height:65svh}.market-media img{height:115%}
+  .market-copy{min-height:70svh}
+  .feature-recipe-media{min-height:70svh;height:70svh;order:-1}
+  .feature-recipe-copy{min-height:70svh}
+  .ingredient-sticky{grid-template-columns:1fr}
+  .ingredient-photo{position:absolute;inset:0;opacity:.34}
+  .ingredient-copy{position:relative;z-index:2;background:linear-gradient(90deg,rgba(8,9,7,.92),rgba(8,9,7,.5))}
+  .ingredient-steps{max-width:42rem}
+}
+@media(max-width:720px){
+  .story-hero{height:360svh}
+  .story-panel{left:var(--page-pad);right:var(--page-pad);width:auto;top:auto;bottom:14vh;transform:none}
+  .story-panel h1,.story-panel h2{font-size:clamp(3.5rem,17vw,6rem)}
+  .scroll-cue{display:none}
+  .story-progress{bottom:1.4rem}
+  .market-story{display:block}
+  .market-media{height:62svh;min-height:0}
+  .market-copy{padding-top:10vh;padding-bottom:10vh}
+  .market-copy h2{font-size:clamp(3.3rem,15vw,5.8rem)}
+  .ingredient-story{height:290svh}
+  .ingredient-copy{padding-top:12vh;padding-bottom:8vh}
+  .ingredient-copy h2{font-size:clamp(3.4rem,15vw,5.8rem)}
+  .ingredient-steps li{grid-template-columns:2.4rem 1fr;gap:.65rem}
+  .ingredient-steps em{grid-column:2}
+  .feature-recipe{display:flex;flex-direction:column}
+  .feature-recipe-media{order:-1;height:62svh;min-height:0}
+  .feature-recipe-copy{min-height:70svh;padding-top:10vh;padding-bottom:10vh}
+  .feature-recipe-copy h2{font-size:clamp(4rem,20vw,7rem)}
+  .kampot-story{min-height:95svh}
+  .kampot-copy h2{font-size:clamp(5rem,24vw,8rem)}
+  .explore-heading{grid-template-columns:1fr}
+  .explore-links{grid-template-columns:1fr}
+  .explore-links a{min-height:16rem}
+  .photo-credit-strip{flex-direction:column}
+  .credits-list{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  .story-hero{height:auto}.story-stage{position:relative;height:auto;min-height:100svh}
+  .story-hero-image{position:absolute;inset:0;width:100%;height:100%;transform:none!important}
+  .story-panel{position:relative;left:auto;top:auto;transform:none;width:auto;opacity:1!important;visibility:visible!important;padding:10vh var(--page-pad)}
+  .story-panel:not(.story-panel-1){background:rgba(0,0,0,.55)}
+  .ingredient-story{height:auto}.ingredient-sticky{position:relative;min-height:100svh}
+  .ingredient-steps li{opacity:1!important;transform:none!important}
+}
+
+
+/* Real photography on content pages */
+.card-visual{overflow:hidden;background:#d8d1c5}
+.card-visual img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease}
+.content-card-link:hover .card-visual img{transform:scale(1.035)}
+.recipe-cover{position:relative;overflow:hidden;background:#d8d1c5}
+.recipe-cover img{display:block;width:100%;height:100%;object-fit:cover}
+.recipe-cover figcaption,
+.guide-visual figcaption,
+.culture-visual figcaption{position:absolute;right:1rem;bottom:1rem;margin:0;padding:.45rem .65rem;background:rgba(0,0,0,.58);color:#fff;font-size:.58rem;letter-spacing:.04em;line-height:1.35}
+.guide-card-image{aspect-ratio:4/3;margin-bottom:1.5rem;overflow:hidden;background:#d8d1c5}
+.guide-card-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease}
+.guide-link:hover .guide-card-image img{transform:scale(1.04)}
+.guide-visual{position:relative;overflow:hidden;background:#d8d1c5}
+.guide-visual img{width:100%;height:100%;object-fit:cover;display:block}
+.culture-card{padding:0 0 2rem}
+.culture-card>*:not(.culture-card-image){margin-left:2rem;margin-right:2rem}
+.culture-card-image{aspect-ratio:4/3;overflow:hidden;margin-bottom:2rem;background:#d8d1c5}
+.culture-card-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease}
+.culture-card:hover .culture-card-image img{transform:scale(1.04)}
+.culture-visual{position:relative;overflow:hidden;background:#d8d1c5}
+.culture-visual img{display:block;width:100%;height:100%;object-fit:cover}
+@media(max-width:720px){
+  .recipe-cover figcaption,.guide-visual figcaption,.culture-visual figcaption{font-size:.52rem;right:.65rem;bottom:.65rem}
+  .culture-card>*:not(.culture-card-image){margin-left:1.25rem;margin-right:1.25rem}
+}
+
+
+/* Mobile navigation */
+.mobile-menu{display:none;position:relative}
+.mobile-menu summary{list-style:none;cursor:pointer;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase}
+.mobile-menu summary::-webkit-details-marker{display:none}
+.mobile-menu[open] summary{opacity:.62}
+.mobile-menu nav{position:absolute;right:0;top:2rem;min-width:13rem;display:flex;flex-direction:column;background:rgba(17,17,17,.96);color:#fff;padding:1rem;box-shadow:0 1rem 3rem rgba(0,0,0,.18)}
+.mobile-menu nav a{padding:.75rem .4rem;border-bottom:1px solid rgba(255,255,255,.14);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+.mobile-menu nav a:last-child{border-bottom:0}
+@media(max-width:720px){
+  .site-nav{flex-direction:row;align-items:center}
+  .site-nav .nav-links{display:none}
+  .mobile-menu{display:block;margin-left:auto}
+  .site-nav:not(.site-nav-overlay) .mobile-menu nav{background:rgba(245,243,238,.98);color:var(--charcoal);border:1px solid rgba(17,17,17,.12)}
+  .site-nav:not(.site-nav-overlay) .mobile-menu nav a{border-bottom-color:rgba(17,17,17,.12)}
+}
+
+a:focus-visible,summary:focus-visible{outline:2px solid currentColor;outline-offset:4px}
+.nav-links a[aria-current="page"],.mobile-menu a[aria-current="page"]{text-decoration:underline;text-underline-offset:.35em}

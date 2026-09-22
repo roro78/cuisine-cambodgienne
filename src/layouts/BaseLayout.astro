@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
-interface Props { title?: string; description?: string; }
-const { title='Cuisine du Cambodge — Recettes cambodgiennes et culture khmère', description='Recettes cambodgiennes, ingrédients, techniques et culture culinaire khmère : découvrez et cuisinez les saveurs du Cambodge.' }=Astro.props;
+interface Props { title?: string; description?: string; image?: string; }
+const { title='Cuisine du Cambodge — Recettes cambodgiennes et culture khmère', description='Recettes cambodgiennes, ingrédients, techniques et culture culinaire khmère : découvrez et cuisinez les saveurs du Cambodge.', image }=Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
 ---
 <!doctype html>
@@ -16,6 +16,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonicalURL} />
+{image && <meta property="og:image" content={image} />}
+<meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
 <link rel="canonical" href={canonicalURL} />
 <title>{title}</title>
 </head>
