@@ -7,14 +7,14 @@ import { recipes } from '../../data/recipes';
 <BaseLayout title="Recettes cambodgiennes | Cuisine du Cambodge" description="Découvrez les recettes cambodgiennes et les techniques qui permettent de retrouver les saveurs de la cuisine khmère.">
   <SiteHeader />
   <main class="listing-page editorial-listing recipes-listing">
-    <header class="page-intro page-intro-split">
+    <header class="page-intro page-intro-split" data-reveal="up">
       <p class="eyebrow">Cuisiner</p>
       <h1>Recettes cambodgiennes</h1>
       <p>Des plats à faire pour de vrai : amok crémeux, bœuf saisi, kroeung très parfumé, sauces fraîches et riz chaud. Des recettes pensées pour donner envie de passer en cuisine.</p>
-      <div class="page-intro-visual"><img src={recipes[0].image} alt={recipes[0].imageAlt} /></div>
+      <div class="page-intro-visual" data-parallax="0.10"><img src={recipes[0].image} alt={recipes[0].imageAlt} /></div>
     </header>
 
-    <section class="card-grid" aria-label="Recettes">
+    <section class="card-grid" aria-label="Recettes" data-reveal="up">
       {recipes.map((recipe) => (
         <a class="content-card-link" href={`/recettes/${recipe.slug}/`}>
           <article class="content-card">
