@@ -13,8 +13,28 @@ export function getStaticPaths() {
 }
 
 const { ingredient } = Astro.props;
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: ingredient.title,
+  description: ingredient.intro,
+  image: ingredient.image,
+  inLanguage: 'fr-FR',
+  mainEntityOfPage: `https://www.cuisine-du-cambodge.com/ingredients/${ingredient.slug}/`
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://www.cuisine-du-cambodge.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Ingrédients', item: 'https://www.cuisine-du-cambodge.com/ingredients/' },
+    { '@type': 'ListItem', position: 3, name: ingredient.title, item: `https://www.cuisine-du-cambodge.com/ingredients/${ingredient.slug}/` }
+  ]
+};
 ---
-<BaseLayout title={`${ingredient.title} — Guide ingrédient | Cuisine du Cambodge`} description={ingredient.intro} image={ingredient.image}>
+<BaseLayout title={`${ingredient.title} — Guide ingrédient | Cuisine du Cambodge`} description={ingredient.intro} image={ingredient.image} imageAlt={ingredient.imageAlt}>
   <SiteHeader />
   <main class="guide-page editorial-detail ingredient-detail">
     <header class="guide-hero">
@@ -48,5 +68,7 @@ const { ingredient } = Astro.props;
 
     <a class="text-link" href="/ingredients/">← Tous les ingrédients</a>
   </main>
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   <SiteFooter />
 </BaseLayout>
