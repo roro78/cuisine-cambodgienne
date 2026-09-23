@@ -18,6 +18,8 @@ export interface Recipe {
   tags: string[];
   image: string;
   imageAlt: string;
+  imageWidth: number;
+  imageHeight: number;
 }
 
 export const recipes: Recipe[] = [
@@ -63,7 +65,9 @@ export const recipes: Recipe[] = [
     relatedIngredients: ['kroeung'],
     tags: ['poisson', 'kroeung', 'lait de coco', 'classique'],
     image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Fish_Amok-_Khmer_specialty.jpg?width=1600',
-    imageAlt: 'Amok cambodgien servi dans une feuille de bananier avec du riz'
+    imageAlt: 'Amok cambodgien servi dans une feuille de bananier avec du riz',
+    imageWidth: 3888,
+    imageHeight: 2592
   },
   {
     slug: 'lok-lak',
@@ -102,7 +106,9 @@ export const recipes: Recipe[] = [
     relatedIngredients: ['poivre-de-kampot'],
     tags: ['bœuf', 'poivre de Kampot', 'rapide'],
     image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Cambodian_Lok_Lak.jpg?width=1600',
-    imageAlt: 'Lok lak cambodgien au bœuf accompagné de crudités'
+    imageAlt: 'Lok lak cambodgien au bœuf accompagné de crudités',
+    imageWidth: 800,
+    imageHeight: 716
   },
   {
     slug: 'kroeung-jaune',
@@ -139,7 +145,9 @@ export const recipes: Recipe[] = [
     relatedIngredients: ['kroeung'],
     tags: ['base', 'aromates', 'citronnelle', 'curcuma'],
     image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Cha_kroeung.jpg?width=1600',
-    imageAlt: 'Plat cambodgien cha kroeung préparé avec une base aromatique kroeung'
+    imageAlt: 'Plat cambodgien cha kroeung préparé avec une base aromatique kroeung',
+    imageWidth: 5184,
+    imageHeight: 3456
   }
 ];
 
