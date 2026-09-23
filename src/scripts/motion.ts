@@ -10,8 +10,9 @@ export function initGlobalMotion() {
   const objects = gsap.utils.toArray<HTMLElement>('[data-motion-object]');
   const reveals = gsap.utils.toArray<HTMLElement>('[data-reveal]');
   const parallax = gsap.utils.toArray<HTMLElement>('[data-parallax]');
+  const recipeSteps = gsap.utils.toArray<HTMLElement>('[data-recipe-step]');
 
-  if (!objects.length && !reveals.length && !parallax.length) return () => {};
+  if (!objects.length && !reveals.length && !parallax.length && !recipeSteps.length) return () => {};
 
   const context = gsap.context(() => {
     objects.forEach((el, index) => {
@@ -86,6 +87,24 @@ export function initGlobalMotion() {
             start: 'top bottom',
             end: 'bottom top',
             scrub: true
+          }
+        }
+      );
+    });
+
+    recipeSteps.forEach((step) => {
+      gsap.fromTo(step,
+        { autoAlpha: .36, x: 16 },
+        {
+          autoAlpha: 1,
+          x: 0,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: step,
+            start: 'top 72%',
+            end: 'bottom 48%',
+            scrub: true,
+            toggleActions: 'play reverse play reverse'
           }
         }
       );
