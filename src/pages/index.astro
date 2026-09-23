@@ -10,6 +10,14 @@ const images = {
   kampot: 'https://commons.wikimedia.org/wiki/Special:FilePath/Kampot_Pepper.jpg?width=2200',
   amokAlt: 'https://commons.wikimedia.org/wiki/Special:FilePath/Fish_amok_amok_trei_Khmer_Cambodian_food.jpg?width=2200'
 };
+
+const mobileImages = {
+  amok: 'https://commons.wikimedia.org/wiki/Special:FilePath/Fish_Amok-_Khmer_specialty.jpg?width=1200',
+  market: 'https://commons.wikimedia.org/wiki/Special:FilePath/06-Kep_Crab_Market_Cambodia-nX-3_(cropped).jpg?width=1200',
+  kroeung: 'https://commons.wikimedia.org/wiki/Special:FilePath/Cha_kroeung.jpg?width=1200',
+  kampot: 'https://commons.wikimedia.org/wiki/Special:FilePath/Kampot_Pepper.jpg?width=1200',
+  amokAlt: 'https://commons.wikimedia.org/wiki/Special:FilePath/Fish_amok_amok_trei_Khmer_Cambodian_food.jpg?width=1200'
+};
 ---
 <BaseLayout
   image={images.amok}
@@ -23,9 +31,19 @@ const images = {
       <div
         class="scroll-film-stage"
         data-film-images={JSON.stringify([images.amok, images.market, images.kroeung, images.kampot, images.amokAlt])}
+        data-film-images-mobile={JSON.stringify([mobileImages.amok, mobileImages.market, mobileImages.kroeung, mobileImages.kampot, mobileImages.amokAlt])}
       >
         <canvas class="scroll-film-canvas" aria-hidden="true"></canvas>
-        <img class="scroll-film-fallback" src={images.amok} alt="" aria-hidden="true" fetchpriority="high" decoding="async" />
+        <img
+          class="scroll-film-fallback"
+          src={images.amok}
+          srcset={`${mobileImages.amok} 1200w, ${images.amok} 2200w`}
+          sizes="100vw"
+          alt=""
+          aria-hidden="true"
+          fetchpriority="high"
+          decoding="async"
+        />
         <div class="scroll-film-vignette" aria-hidden="true"></div>
         <div class="scroll-film-grain" aria-hidden="true"></div>
 
