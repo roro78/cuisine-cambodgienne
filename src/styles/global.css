@@ -1342,3 +1342,130 @@ html.menu-open body{
     transition:none!important;
   }
 }
+
+
+/* V7 — recipe filters and culinary glossary */
+.recipe-filter-bar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.65rem;
+  margin:-2vh 0 1rem;
+}
+.recipe-filter-bar button{
+  appearance:none;
+  border:1px solid rgba(35,31,25,.16);
+  background:rgba(255,255,255,.34);
+  color:#2d2923;
+  padding:.72rem 1rem;
+  border-radius:999px;
+  font:600 .68rem/1 var(--sans);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:
+    background .22s ease,
+    color .22s ease,
+    border-color .22s ease,
+    transform .22s ease;
+}
+.recipe-filter-bar button:hover{
+  transform:translateY(-1px);
+  border-color:rgba(35,31,25,.34);
+}
+.recipe-filter-bar button.is-active{
+  background:#172017;
+  color:#f7f2e8;
+  border-color:#172017;
+}
+.recipe-filter-status{
+  margin:0 0 2rem;
+  font-size:.7rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  opacity:.56;
+}
+[data-recipe-card][hidden]{
+  display:none!important;
+}
+
+.glossary-strip{
+  margin:10vh 0;
+  padding:clamp(2rem,4vw,4rem);
+  background:#dfe4d8;
+  display:grid;
+  grid-template-columns:minmax(13rem,.7fr) minmax(0,1.3fr);
+  gap:6vw;
+  align-items:start;
+}
+.glossary-strip-head h2{
+  margin:0;
+  max-width:8ch;
+  font:400 clamp(2.8rem,5vw,5rem)/.95 var(--serif);
+  letter-spacing:-.045em;
+}
+.glossary-items{
+  border-top:1px solid rgba(31,43,31,.18);
+}
+.glossary-item{
+  border-bottom:1px solid rgba(31,43,31,.18);
+}
+.glossary-item summary{
+  list-style:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1.5rem;
+  padding:1.15rem 0;
+}
+.glossary-item summary::-webkit-details-marker{
+  display:none;
+}
+.glossary-item summary strong{
+  font:400 clamp(1.55rem,2.8vw,2.7rem)/1 var(--serif);
+  letter-spacing:-.03em;
+}
+.glossary-item summary span{
+  font:300 1.4rem/1 var(--sans);
+  transition:transform .25s ease;
+}
+.glossary-item[open] summary span{
+  transform:rotate(45deg);
+}
+.glossary-definition{
+  max-width:38rem;
+  padding:0 2.5rem 1.35rem 0;
+}
+.glossary-definition p{
+  margin:0;
+  line-height:1.7;
+  color:#465043;
+}
+.glossary-definition a{
+  display:inline-block;
+  margin-top:.9rem;
+  padding-bottom:.2rem;
+  border-bottom:1px solid currentColor;
+  font-size:.68rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+@media(max-width:720px){
+  .recipe-filter-bar{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    padding-bottom:.35rem;
+    scrollbar-width:none;
+    margin-top:0;
+  }
+  .recipe-filter-bar::-webkit-scrollbar{display:none}
+  .recipe-filter-bar button{flex:0 0 auto}
+  .glossary-strip{
+    grid-template-columns:1fr;
+    gap:2rem;
+    margin:8vh 0;
+    padding:2rem 1.25rem;
+  }
+  .glossary-strip-head h2{max-width:10ch}
+}
