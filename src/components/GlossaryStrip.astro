@@ -1,0 +1,27 @@
+---
+import type { GlossaryEntry } from '../data/glossary';
+interface Props { entries: GlossaryEntry[]; }
+const { entries } = Astro.props;
+---
+{entries.length > 0 && (
+  <aside class="glossary-strip" aria-labelledby="glossary-title" data-reveal="up">
+    <div class="glossary-strip-head">
+      <p class="eyebrow">Glossaire express</p>
+      <h2 id="glossary-title">Les mots à connaître</h2>
+    </div>
+    <div class="glossary-items">
+      {entries.map((entry) => (
+        <details class="glossary-item">
+          <summary>
+            <strong>{entry.term}</strong>
+            <span aria-hidden="true">+</span>
+          </summary>
+          <div class="glossary-definition">
+            <p>{entry.short}</p>
+            {entry.href && <a href={entry.href}>En savoir plus</a>}
+          </div>
+        </details>
+      ))}
+    </div>
+  </aside>
+)}
