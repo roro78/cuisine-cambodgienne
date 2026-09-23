@@ -37,15 +37,15 @@ const breadcrumbSchema = {
 <BaseLayout title={`${ingredient.title} — Guide ingrédient | Cuisine du Cambodge`} description={ingredient.intro} image={ingredient.image} imageAlt={ingredient.imageAlt}>
   <SiteHeader />
   <main class="guide-page editorial-detail ingredient-detail">
-    <header class="guide-hero">
+    <header class="guide-hero" data-reveal="up">
       <p class="eyebrow">Ingrédient khmer</p>
       <h1>{ingredient.title}</h1>
       <p>{ingredient.intro}</p>
     </header>
 
-    <figure class="guide-visual"><img src={ingredient.image} alt={ingredient.imageAlt} /><figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption></figure>
+    <figure class="guide-visual" data-parallax="0.10"><img src={ingredient.image} alt={ingredient.imageAlt} /><figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption></figure>
 
-    <section class="guide-body">
+    <section class="guide-body" data-reveal="up">
       <div class="guide-main">
         <p class="eyebrow">Comprendre</p>
         <p class="guide-lead">{ingredient.role}</p>
