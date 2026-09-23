@@ -9,6 +9,7 @@ export interface CultureArticle {
   imageAlt: string;
   imageWidth: number;
   imageHeight: number;
+  imageWidths: number[];
 }
 
 export const cultureArticles: CultureArticle[] = [
@@ -33,10 +34,11 @@ export const cultureArticles: CultureArticle[] = [
         ]
       }
     ],
-    image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Kampot_Pepper.jpg?width=1600',
+    image: '/images/cuisine/kampot-1600.webp',
     imageAlt: 'Grappes de poivre vert de Kampot sur le plant',
     imageWidth: 6000,
     imageHeight: 4000,
+    imageWidths: [480, 800, 1200, 1600],
     sources: [
       { label: 'OMPI — Système de Lisbonne et Poivre de Kampot', url: 'https://www.wipo.int/fr/web/lisbon-system/w/news/2021/news_0001' },
       { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: 'https://tourismcambodia.org/public/index.php/official-activities/new-beginnings-a-gourmet-guide-to-cambodia' }
@@ -63,10 +65,11 @@ export const cultureArticles: CultureArticle[] = [
         ]
       }
     ],
-    image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Cha_kroeung.jpg?width=1600',
+    image: '/images/cuisine/kroeung-1600.webp',
     imageAlt: 'Plat cambodgien préparé avec du kroeung',
     imageWidth: 5184,
     imageHeight: 3456,
+    imageWidths: [480, 800, 1200, 1600],
     sources: [
       { label: 'Ministère du Tourisme du Cambodge — glossaire gastronomique', url: 'https://tourismcambodia.org/public/index.php/official-activities/new-beginnings-a-gourmet-guide-to-cambodia' }
     ]
@@ -92,10 +95,11 @@ export const cultureArticles: CultureArticle[] = [
         ]
       }
     ],
-    image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Fish_amok_amok_trei_Khmer_Cambodian_food.jpg?width=1600',
+    image: '/images/cuisine/amok-alt-1600.webp',
     imageAlt: 'Portions d’amok trei cambodgien présentées dans des feuilles',
     imageWidth: 1836,
     imageHeight: 4080,
+    imageWidths: [480, 800, 1200, 1600],
     sources: [
       { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: 'https://tourismcambodia.org/public/index.php/official-activities/new-beginnings-a-gourmet-guide-to-cambodia' }
     ]
