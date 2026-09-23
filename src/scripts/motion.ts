@@ -8,7 +8,10 @@ export function initGlobalMotion() {
   if (reduced) return () => {};
 
   const objects = gsap.utils.toArray<HTMLElement>('[data-motion-object]');
-  if (!objects.length) return () => {};
+  const reveals = gsap.utils.toArray<HTMLElement>('[data-reveal]');
+  const parallax = gsap.utils.toArray<HTMLElement>('[data-parallax]');
+
+  if (!objects.length && !reveals.length && !parallax.length) return () => {};
 
   const context = gsap.context(() => {
     objects.forEach((el, index) => {
@@ -36,6 +39,56 @@ export function initGlobalMotion() {
           invalidateOnRefresh: true
         }
       });
+    });
+
+    reveals.forEach((el) => {
+      const direction = el.dataset.reveal ?? 'up';
+      const distance = Number(el.dataset.revealDistance ?? 42);
+      const delay = Number(el.dataset.revealDelay ?? 0);
+
+      const from = direction === 'left'
+        ? { x: -distance, y: 0 }
+        : direction === 'right'
+          ? { x: distance, y: 0 }
+          : { x: 0, y: distance };
+
+      gsap.fromTo(el,
+        { ...from, autoAlpha: 0 },
+        {
+          x: 0,
+          y: 0,
+          autoAlpha: 1,
+          delay,
+          duration: 1.05,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 86%',
+            toggleActions: 'play none none reverse'
+          }
+        }
+      );
+    });
+
+    parallax.forEach((el) => {
+      const speed = Number(el.dataset.parallax ?? .1);
+      const target = el.tagName === 'IMG' ? el : el.querySelector<HTMLElement>('img');
+      if (!target) return;
+
+      gsap.fromTo(target,
+        { yPercent: speed * -45, scale: 1.06 },
+        {
+          yPercent: speed * 45,
+          scale: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true
+          }
+        }
+      );
     });
   });
 
