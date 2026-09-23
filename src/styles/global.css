@@ -1771,3 +1771,139 @@ main{position:relative;z-index:1}
     transition:none!important;
   }
 }
+
+
+/* V9 — richer cards and controlled editorial scale */
+.page-intro-split{
+  min-height:70svh;
+}
+.page-intro-visual{
+  min-height:32rem;
+  max-height:62svh;
+  border-radius:2rem;
+  overflow:hidden;
+}
+.card-grid{
+  gap:1.5rem;
+}
+.content-card-link,
+.guide-link,
+.culture-card{
+  display:block;
+  border-radius:1.4rem;
+  overflow:hidden;
+  transition:transform .38s cubic-bezier(.2,.75,.2,1),box-shadow .38s ease;
+}
+.content-card-link:hover,
+.guide-link:hover,
+.culture-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 26px 64px rgba(48,31,15,.12);
+}
+.content-card{
+  height:100%;
+  padding:1rem 1rem 1.5rem;
+  border-top:0;
+  background:#e7dac6;
+}
+.content-card-link:nth-child(2n) .content-card{background:#d8dfd1}
+.content-card-link:nth-child(3n) .content-card{background:#ead7c7}
+.card-visual{
+  margin:-1rem -1rem 1.4rem;
+  aspect-ratio:4/3;
+  border-radius:1.2rem 1.2rem .35rem .35rem;
+}
+.card-visual img,
+.guide-card-image img,
+.culture-card-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:transform .7s cubic-bezier(.2,.7,.2,1),filter .4s ease;
+}
+.content-card-link:hover .card-visual img,
+.guide-link:hover .guide-card-image img,
+.culture-card:hover .culture-card-image img{
+  transform:scale(1.035);
+  filter:saturate(1.06);
+}
+.ingredients-listing .text-grid{
+  gap:1.5rem;
+}
+.guide-link article{
+  height:100%;
+  padding:1rem 1rem 1.7rem;
+  border-top:0;
+  background:#e2d5c1;
+}
+.guide-link:nth-child(2n) article{background:#d6dfd0}
+.guide-card-image{
+  height:clamp(16rem,28vw,26rem);
+  margin:-1rem -1rem 1.5rem;
+  overflow:hidden;
+  border-radius:1.2rem 1.2rem .35rem .35rem;
+}
+.culture-grid{
+  gap:1.5rem;
+}
+.culture-card{
+  padding:1rem 1rem 1.7rem;
+  background:#ded0bb;
+}
+.culture-card:nth-child(2n){background:#d5ded0}
+.culture-card-image{
+  height:clamp(16rem,28vw,25rem);
+  margin:-1rem -1rem 1.5rem;
+  overflow:hidden;
+  border-radius:1.2rem 1.2rem .35rem .35rem;
+}
+.learn-listing .offer-grid article{
+  border:0;
+  border-radius:1.4rem;
+  box-shadow:0 20px 54px rgba(54,37,20,.08);
+}
+.learn-path{
+  border-radius:1.5rem;
+  box-shadow:0 20px 54px rgba(54,37,20,.07);
+}
+
+/* Home film: warmer cinematic finish */
+.scroll-film-vignette{
+  background:
+    linear-gradient(90deg,rgba(8,10,7,.76) 0%,rgba(8,10,7,.18) 50%,rgba(8,10,7,.38) 100%),
+    linear-gradient(180deg,rgba(64,36,19,.08),rgba(0,0,0,.48));
+}
+.film-kicker{
+  color:#f1d397;
+}
+.film-copy h1,.film-copy h2{
+  text-shadow:0 3px 30px rgba(0,0,0,.22);
+}
+.film-cta{
+  border-bottom-color:#f0cf8f;
+}
+.film-progress i{
+  background:linear-gradient(180deg,#f0cf8f,#b65a43);
+}
+.film-count{color:#f0cf8f}
+
+@media(max-width:900px){
+  .page-intro-visual{
+    min-height:48svh;
+    max-height:none;
+  }
+}
+@media(max-width:720px){
+  .page-intro-visual{
+    min-height:42svh;
+    border-radius:1.2rem;
+  }
+  .content-card-link,
+  .guide-link,
+  .culture-card{
+    border-radius:1rem;
+  }
+  .card-visual{
+    aspect-ratio:16/11;
+  }
+}
