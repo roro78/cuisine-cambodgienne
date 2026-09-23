@@ -77,7 +77,7 @@ const recipeSchema = {
       </dl>
     </header>
 
-    <figure class="recipe-cover" data-parallax="0.11"><img src={recipe.image} srcset={imageSrcSet(recipe.image, [800, 1200, 1600])} sizes="100vw" alt={recipe.imageAlt} decoding="async" /><figcaption>Photographie illustrative · voir les crédits en bas de page.</figcaption></figure>
+    <figure class="recipe-cover" data-parallax="0.11"><img src={recipe.image} srcset={imageSrcSet(recipe.image, [800, 1200, 1600])} sizes="100vw" alt={recipe.imageAlt} width={recipe.imageWidth} height={recipe.imageHeight} decoding="async" /><figcaption>Photographie illustrative · voir les crédits en bas de page.</figcaption></figure>
 
     <section class="recipe-layout" data-reveal="up">
       <aside class="ingredients-panel">
