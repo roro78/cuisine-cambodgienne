@@ -51,8 +51,10 @@ const recipeSchema = {
   totalTime: `PT${totalMinutes(recipe.prepTime) + totalMinutes(recipe.cookTime)}M`,
   recipeIngredient: recipe.ingredients,
   recipeInstructions: recipe.steps.map((text: string) => ({ '@type': 'HowToStep', text })),
-  recipeCategory: 'Cuisine cambodgienne',
+  recipeCategory: recipe.category,
   recipeCuisine: 'Cambodgienne',
+  author: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
+  publisher: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
   keywords: recipe.tags.join(', '),
   image: recipe.image
 };
