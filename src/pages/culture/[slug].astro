@@ -16,7 +16,7 @@ const { article } = Astro.props;
 ---
 <BaseLayout title={`${article.title} | Cuisine du Cambodge`} description={article.intro} image={article.image}>
   <SiteHeader />
-  <main class="culture-article">
+  <main class="culture-article editorial-detail culture-detail">
     <header class="culture-article-hero">
       <p class="eyebrow">{article.eyebrow}</p>
       <h1>{article.title}</h1>
