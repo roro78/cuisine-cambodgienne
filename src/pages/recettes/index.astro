@@ -3,6 +3,25 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { recipes } from '../../data/recipes';
+
+const minutes = (value: string) => Number(value.match(/\d+/)?.[0] ?? 0);
+const collectionSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Recettes cambodgiennes',
+  description: 'Recettes cambodgiennes, techniques et plats khmers à cuisiner chez soi.',
+  url: 'https://www.cuisine-du-cambodge.com/recettes/',
+  inLanguage: 'fr-FR',
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: recipes.map((recipe, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: recipe.title,
+      url: `https://www.cuisine-du-cambodge.com/recettes/${recipe.slug}/`
+    }))
+  }
+};
 ---
 <BaseLayout title="Recettes cambodgiennes | Cuisine du Cambodge" description="Découvrez les recettes cambodgiennes et les techniques qui permettent de retrouver les saveurs de la cuisine khmère.">
   <SiteHeader />
@@ -16,6 +35,7 @@ import { recipes } from '../../data/recipes';
 
     <section class="recipe-filter-bar" aria-label="Filtrer les recettes" data-reveal="up">
       <button type="button" class="is-active" data-recipe-filter="all" aria-pressed="true">Toutes</button>
+      <button type="button" data-recipe-filter="rapide" aria-pressed="false">≤ 30 min</button>
       <button type="button" data-recipe-filter="facile" aria-pressed="false">Facile</button>
       <button type="button" data-recipe-filter="intermediaire" aria-pressed="false">Intermédiaire</button>
       <button type="button" data-recipe-filter="poisson" aria-pressed="false">Poisson</button>
@@ -33,6 +53,7 @@ import { recipes } from '../../data/recipes';
           data-recipe-card
           data-difficulty={recipe.difficulty.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}
           data-tags={recipe.tags.join(' ').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}
+          data-total-minutes={minutes(recipe.prepTime) + minutes(recipe.cookTime)}
         >
           <article class="content-card">
             <div class="card-visual"><img src={recipe.image} alt={recipe.imageAlt} loading="lazy" /></div>
@@ -45,5 +66,6 @@ import { recipes } from '../../data/recipes';
       ))}
     </section>
   </main>
+  <script type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
   <SiteFooter />
 </BaseLayout>
