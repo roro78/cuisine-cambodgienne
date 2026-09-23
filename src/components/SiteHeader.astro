@@ -4,7 +4,12 @@ const { overlay = false } = Astro.props;
 const path = Astro.url.pathname;
 const current = (prefix: string) => path.startsWith(prefix);
 ---
-<header class:list={['site-nav', { 'site-nav-overlay': overlay }]} aria-label="Navigation principale">
+<header
+  class:list={['site-nav', { 'site-nav-overlay': overlay }]}
+  aria-label="Navigation principale"
+  data-site-header
+  data-overlay={overlay ? 'true' : 'false'}
+>
   <a class="brand" href="/" aria-current={path === '/' ? 'page' : undefined}>Cuisine du Cambodge</a>
 
   <nav class="nav-links" aria-label="Rubriques">
@@ -12,16 +17,24 @@ const current = (prefix: string) => path.startsWith(prefix);
     <a href="/ingredients/" aria-current={current('/ingredients/') ? 'page' : undefined}>Ingrédients</a>
     <a href="/culture/" aria-current={current('/culture/') ? 'page' : undefined}>Culture</a>
     <a href="/apprendre/" aria-current={current('/apprendre/') ? 'page' : undefined}>Apprendre</a>
+    <a href="/a-propos/" aria-current={current('/a-propos/') ? 'page' : undefined}>À propos</a>
   </nav>
 
-  <details class="mobile-menu">
-    <summary aria-label="Ouvrir le menu">Menu</summary>
-    <nav aria-label="Navigation mobile">
-      <a href="/recettes/" aria-current={current('/recettes/') ? 'page' : undefined}>Recettes</a>
-      <a href="/ingredients/" aria-current={current('/ingredients/') ? 'page' : undefined}>Ingrédients</a>
-      <a href="/culture/" aria-current={current('/culture/') ? 'page' : undefined}>Culture</a>
-      <a href="/apprendre/" aria-current={current('/apprendre/') ? 'page' : undefined}>Apprendre</a>
-      <a href="/a-propos/" aria-current={current('/a-propos/') ? 'page' : undefined}>À propos</a>
-    </nav>
+  <details class="mobile-menu" data-mobile-menu>
+    <summary aria-label="Ouvrir le menu">
+      <span>Menu</span>
+      <i aria-hidden="true"></i>
+    </summary>
+    <div class="mobile-menu-panel">
+      <div class="mobile-menu-ornament" aria-hidden="true"></div>
+      <p class="mobile-menu-kicker">Cuisine du Cambodge</p>
+      <nav aria-label="Navigation mobile">
+        <a href="/recettes/" aria-current={current('/recettes/') ? 'page' : undefined}><span>01</span>Recettes</a>
+        <a href="/ingredients/" aria-current={current('/ingredients/') ? 'page' : undefined}><span>02</span>Ingrédients</a>
+        <a href="/culture/" aria-current={current('/culture/') ? 'page' : undefined}><span>03</span>Culture</a>
+        <a href="/apprendre/" aria-current={current('/apprendre/') ? 'page' : undefined}><span>04</span>Apprendre</a>
+        <a href="/a-propos/" aria-current={current('/a-propos/') ? 'page' : undefined}><span>05</span>À propos</a>
+      </nav>
+    </div>
   </details>
 </header>

@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import MotionLayer from '../components/MotionLayer.astro';
 
 interface Props {
   title?: string;
@@ -66,10 +67,23 @@ const webpageSchema = {
 {image && <meta name="twitter:image" content={image} />}
 
 <link rel="canonical" href={canonicalURL} />
+<link rel="preconnect" href="https://commons.wikimedia.org" crossorigin />
+<link rel="dns-prefetch" href="//commons.wikimedia.org" />
 <title>{title}</title>
 
 <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
 <script type="application/ld+json" set:html={JSON.stringify(webpageSchema)} />
 </head>
-<body><slot /></body>
+<body>
+  <MotionLayer pathname={Astro.url.pathname} />
+  <slot />
+  <script>
+    import { initGlobalMotion } from '../scripts/motion';
+    import { initNavigation } from '../scripts/navigation';
+    import { initRecipeFilters } from '../scripts/recipeFilters';
+    initGlobalMotion();
+    initNavigation();
+    initRecipeFilters();
+  </script>
+</body>
 </html>

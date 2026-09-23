@@ -1,0 +1,81 @@
+---
+interface Props {
+  type: 'pepper' | 'lemongrass' | 'banana-leaf' | 'steam' | 'rice' | 'kaffir-leaf';
+  side?: 'left' | 'right';
+  speed?: number;
+  drift?: number;
+  rotate?: number;
+  scale?: number;
+  opacity?: number;
+  start?: number;
+}
+
+const {
+  type,
+  side = 'right',
+  speed = .35,
+  drift = 24,
+  rotate = 6,
+  scale = 1,
+  opacity = .18,
+  start = 10
+} = Astro.props;
+---
+
+<div
+  class={`motion-object motion-object--${type} motion-object--${side}`}
+  data-motion-object
+  data-motion-speed={speed}
+  data-motion-drift={drift}
+  data-motion-rotate={rotate}
+  style={`--motion-scale:${scale};--motion-opacity:${opacity};--motion-start:${start}vh`}
+  aria-hidden="true"
+>
+  {type === 'pepper' && (
+    <svg viewBox="0 0 120 120" role="presentation">
+      <circle cx="38" cy="44" r="18" />
+      <circle cx="68" cy="32" r="14" />
+      <circle cx="76" cy="66" r="20" />
+      <circle cx="45" cy="82" r="12" />
+    </svg>
+  )}
+
+  {type === 'lemongrass' && (
+    <svg viewBox="0 0 120 260" role="presentation">
+      <path d="M52 248C61 191 57 131 71 12" />
+      <path d="M66 247C72 180 76 112 97 30" />
+      <path d="M39 248C45 196 42 122 34 38" />
+      <path d="M48 244C59 211 63 175 63 133" />
+    </svg>
+  )}
+
+  {type === 'banana-leaf' && (
+    <svg viewBox="0 0 180 340" role="presentation">
+      <path d="M88 329C66 271 42 212 46 145C50 80 78 33 98 11C113 45 133 92 132 149C130 220 105 282 88 329Z" />
+      <path d="M91 315C94 220 96 123 99 20" class="motion-stroke" />
+    </svg>
+  )}
+
+  {type === 'steam' && (
+    <svg viewBox="0 0 180 280" role="presentation">
+      <path d="M64 268C44 230 84 204 71 166C61 136 36 120 56 83C71 55 75 34 62 11" />
+      <path d="M114 266C93 228 133 204 119 164C108 133 86 112 105 77C120 49 126 29 116 10" />
+    </svg>
+  )}
+
+  {type === 'rice' && (
+    <svg viewBox="0 0 150 180" role="presentation">
+      <ellipse cx="38" cy="45" rx="8" ry="21" transform="rotate(-26 38 45)" />
+      <ellipse cx="91" cy="39" rx="8" ry="21" transform="rotate(18 91 39)" />
+      <ellipse cx="61" cy="92" rx="8" ry="21" transform="rotate(34 61 92)" />
+      <ellipse cx="108" cy="111" rx="8" ry="21" transform="rotate(-18 108 111)" />
+      <ellipse cx="45" cy="145" rx="8" ry="21" transform="rotate(10 45 145)" />
+    </svg>
+  )}
+
+  {type === 'kaffir-leaf' && (
+    <svg viewBox="0 0 180 220" role="presentation">
+      <path d="M92 108C55 92 23 54 25 23C58 24 91 47 103 82C115 46 144 24 166 28C164 63 138 99 101 111C133 126 154 160 150 195C115 188 90 160 88 125C75 157 47 181 19 174C26 142 51 116 92 108Z" />
+    </svg>
+  )}
+</div>

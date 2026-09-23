@@ -3,18 +3,36 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { cultureArticles } from '../../data/culture';
+
+const collectionSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Culture culinaire khmère',
+  description: 'Territoires, gestes, ingrédients et transmission autour de la cuisine cambodgienne.',
+  url: 'https://www.cuisine-du-cambodge.com/culture/',
+  inLanguage: 'fr-FR',
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: cultureArticles.map((article, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: article.title,
+      url: `https://www.cuisine-du-cambodge.com/culture/${article.slug}/`
+    }))
+  }
+};
 ---
 <BaseLayout title="Culture culinaire khmère | Cuisine du Cambodge" description="Histoires, territoires, gestes et transmission autour de la cuisine cambodgienne.">
   <SiteHeader />
   <main class="listing-page editorial-listing culture-listing">
-    <header class="page-intro page-intro-split">
+    <header class="page-intro page-intro-split" data-reveal="up">
       <p class="eyebrow">Comprendre</p>
       <h1>Culture culinaire</h1>
       <p>Pourquoi le poivre de Kampot a ce goût, comment le kroeung parfume une cuisine entière, ce que l’on mange et partage autour de la table : la culture culinaire racontée par ce qui se cuisine vraiment.</p>
-      <div class="page-intro-visual"><img src={cultureArticles[0].image} alt={cultureArticles[0].imageAlt} /></div>
+      <div class="page-intro-visual" data-parallax="0.10"><img src={cultureArticles[0].image} alt={cultureArticles[0].imageAlt} fetchpriority="high" decoding="async" /></div>
     </header>
 
-    <section class="culture-grid">
+    <section class="culture-grid" data-reveal="up">
       {cultureArticles.map((article) => (
         <a class="culture-card" href={`/culture/${article.slug}/`}>
           <div class="culture-card-image"><img src={article.image} alt={article.imageAlt} loading="lazy" /></div>
@@ -26,5 +44,6 @@ import { cultureArticles } from '../../data/culture';
       ))}
     </section>
   </main>
+  <script type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
   <SiteFooter />
 </BaseLayout>

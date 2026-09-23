@@ -3,20 +3,58 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { recipes } from '../../data/recipes';
+
+const minutes = (value: string) => Number(value.match(/\d+/)?.[0] ?? 0);
+const collectionSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Recettes cambodgiennes',
+  description: 'Recettes cambodgiennes, techniques et plats khmers à cuisiner chez soi.',
+  url: 'https://www.cuisine-du-cambodge.com/recettes/',
+  inLanguage: 'fr-FR',
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: recipes.map((recipe, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: recipe.title,
+      url: `https://www.cuisine-du-cambodge.com/recettes/${recipe.slug}/`
+    }))
+  }
+};
 ---
 <BaseLayout title="Recettes cambodgiennes | Cuisine du Cambodge" description="Découvrez les recettes cambodgiennes et les techniques qui permettent de retrouver les saveurs de la cuisine khmère.">
   <SiteHeader />
   <main class="listing-page editorial-listing recipes-listing">
-    <header class="page-intro page-intro-split">
+    <header class="page-intro page-intro-split" data-reveal="up">
       <p class="eyebrow">Cuisiner</p>
       <h1>Recettes cambodgiennes</h1>
       <p>Des plats à faire pour de vrai : amok crémeux, bœuf saisi, kroeung très parfumé, sauces fraîches et riz chaud. Des recettes pensées pour donner envie de passer en cuisine.</p>
-      <div class="page-intro-visual"><img src={recipes[0].image} alt={recipes[0].imageAlt} /></div>
+      <div class="page-intro-visual" data-parallax="0.10"><img src={recipes[0].image} alt={recipes[0].imageAlt} fetchpriority="high" decoding="async" /></div>
     </header>
 
-    <section class="card-grid" aria-label="Recettes">
+    <section class="recipe-filter-bar" aria-label="Filtrer les recettes" data-reveal="up">
+      <button type="button" class="is-active" data-recipe-filter="all" aria-pressed="true">Toutes</button>
+      <button type="button" data-recipe-filter="rapide" aria-pressed="false">≤ 30 min</button>
+      <button type="button" data-recipe-filter="facile" aria-pressed="false">Facile</button>
+      <button type="button" data-recipe-filter="intermediaire" aria-pressed="false">Intermédiaire</button>
+      <button type="button" data-recipe-filter="poisson" aria-pressed="false">Poisson</button>
+      <button type="button" data-recipe-filter="bœuf" aria-pressed="false">Bœuf</button>
+      <button type="button" data-recipe-filter="base" aria-pressed="false">Bases</button>
+    </section>
+
+    <p class="recipe-filter-status" aria-live="polite" data-filter-status>{recipes.length} recettes</p>
+
+    <section class="card-grid" aria-label="Recettes" data-reveal="up" data-recipe-grid>
       {recipes.map((recipe) => (
-        <a class="content-card-link" href={`/recettes/${recipe.slug}/`}>
+        <a
+          class="content-card-link"
+          href={`/recettes/${recipe.slug}/`}
+          data-recipe-card
+          data-difficulty={recipe.difficulty.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}
+          data-tags={recipe.tags.join(' ').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}
+          data-total-minutes={minutes(recipe.prepTime) + minutes(recipe.cookTime)}
+        >
           <article class="content-card">
             <div class="card-visual"><img src={recipe.image} alt={recipe.imageAlt} loading="lazy" /></div>
             <p class="card-meta">{recipe.difficulty} · {recipe.prepTime}</p>
@@ -28,5 +66,6 @@ import { recipes } from '../../data/recipes';
       ))}
     </section>
   </main>
+  <script type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
   <SiteFooter />
 </BaseLayout>

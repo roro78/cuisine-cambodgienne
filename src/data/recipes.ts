@@ -9,6 +9,7 @@ export interface Recipe {
   prepTime: string;
   cookTime: string;
   difficulty: 'Facile' | 'Intermédiaire' | 'Avancé';
+  category: 'Plat principal' | 'Base aromatique';
   ingredients: string[];
   steps: string[];
   keyPoints?: string[];
@@ -31,6 +32,7 @@ export const recipes: Recipe[] = [
     prepTime: '30 min',
     cookTime: '25 min',
     difficulty: 'Intermédiaire',
+    category: 'Plat principal',
     ingredients: [
       '600 g de poisson blanc ferme',
       '250 ml de lait de coco',
@@ -73,6 +75,7 @@ export const recipes: Recipe[] = [
     prepTime: '20 min',
     cookTime: '10 min',
     difficulty: 'Facile',
+    category: 'Plat principal',
     ingredients: [
       '600 g de bœuf tendre',
       '2 c. à soupe de sauce soja',
@@ -111,6 +114,7 @@ export const recipes: Recipe[] = [
     prepTime: '25 min',
     cookTime: '0 min',
     difficulty: 'Intermédiaire',
+    category: 'Base aromatique',
     ingredients: [
       '4 tiges de citronnelle',
       '30 g de galanga',

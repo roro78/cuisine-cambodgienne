@@ -4,6 +4,10 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { cultureArticles } from '../../data/culture';
 import type { CultureArticle } from '../../data/culture';
+import { recipes } from '../../data/recipes';
+import { ingredientGuides } from '../../data/ingredients';
+import GlossaryStrip from '../../components/GlossaryStrip.astro';
+import { getGlossaryEntries } from '../../data/glossary';
 
 export function getStaticPaths() {
   return cultureArticles.map((article: CultureArticle) => ({
@@ -14,6 +18,30 @@ export function getStaticPaths() {
 
 const { article } = Astro.props;
 
+const glossary = getGlossaryEntries(
+  article.slug === 'poivre-de-kampot'
+    ? ['poivre-de-kampot']
+    : article.slug === 'comprendre-le-kroeung'
+      ? ['kroeung', 'combava', 'galanga']
+      : ['amok', 'kroeung']
+);
+
+const relatedContent = article.slug === 'poivre-de-kampot'
+  ? [
+      ingredientGuides.find((item) => item.slug === 'poivre-de-kampot'),
+      recipes.find((item) => item.slug === 'lok-lak')
+    ].filter(Boolean)
+  : article.slug === 'comprendre-le-kroeung'
+    ? [
+        ingredientGuides.find((item) => item.slug === 'kroeung'),
+        recipes.find((item) => item.slug === 'kroeung-jaune'),
+        recipes.find((item) => item.slug === 'amok-trey')
+      ].filter(Boolean)
+    : [
+        recipes.find((item) => item.slug === 'amok-trey'),
+        ingredientGuides.find((item) => item.slug === 'kroeung')
+      ].filter(Boolean);
+
 const articleSchema = {
   '@context': 'https://schema.org',
   '@type': 'Article',
@@ -21,6 +49,8 @@ const articleSchema = {
   description: article.intro,
   image: article.image,
   inLanguage: 'fr-FR',
+  author: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
+  publisher: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
   mainEntityOfPage: `https://www.cuisine-du-cambodge.com/culture/${article.slug}/`
 };
 
@@ -37,15 +67,15 @@ const breadcrumbSchema = {
 <BaseLayout title={`${article.title} | Cuisine du Cambodge`} description={article.intro} image={article.image} imageAlt={article.imageAlt}>
   <SiteHeader />
   <main class="culture-article editorial-detail culture-detail">
-    <header class="culture-article-hero">
+    <header class="culture-article-hero" data-reveal="up">
       <p class="eyebrow">{article.eyebrow}</p>
       <h1>{article.title}</h1>
       <p>{article.intro}</p>
     </header>
 
-    <figure class="culture-visual"><img src={article.image} alt={article.imageAlt} /><figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption></figure>
+    <figure class="culture-visual" data-parallax="0.08"><img src={article.image} alt={article.imageAlt} /><figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption></figure>
 
-    <article class="culture-copy">
+    <article class="culture-copy" data-reveal="up">
       {article.sections.map((section: CultureArticle['sections'][number]) => (
         <section>
           <h2>{section.title}</h2>
@@ -62,6 +92,28 @@ const breadcrumbSchema = {
         </ul>
       </aside>
     </article>
+
+    <GlossaryStrip entries={glossary} />
+
+    {relatedContent.length > 0 && (
+      <section class="culture-related" data-reveal="up">
+        <p class="eyebrow">Pour continuer</p>
+        <h2>Passer de l’histoire à la cuisine</h2>
+        <div class="culture-related-links">
+          {relatedContent.map((item: any) => {
+            const isRecipe = 'prepTime' in item;
+            const href = isRecipe ? `/recettes/${item.slug}/` : `/ingredients/${item.slug}/`;
+            return (
+              <a href={href}>
+                <span>{isRecipe ? 'Recette' : 'Ingrédient'}</span>
+                <strong>{item.title}</strong>
+                <em>{item.intro}</em>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    )}
 
     <a class="text-link" href="/culture/">← Tous les articles</a>
   </main>
