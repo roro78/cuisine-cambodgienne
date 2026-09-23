@@ -4,6 +4,8 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { cultureArticles } from '../../data/culture';
 import type { CultureArticle } from '../../data/culture';
+import { recipes } from '../../data/recipes';
+import { ingredientGuides } from '../../data/ingredients';
 
 export function getStaticPaths() {
   return cultureArticles.map((article: CultureArticle) => ({
@@ -13,6 +15,22 @@ export function getStaticPaths() {
 }
 
 const { article } = Astro.props;
+
+const relatedContent = article.slug === 'poivre-de-kampot'
+  ? [
+      ingredientGuides.find((item) => item.slug === 'poivre-de-kampot'),
+      recipes.find((item) => item.slug === 'lok-lak')
+    ].filter(Boolean)
+  : article.slug === 'comprendre-le-kroeung'
+    ? [
+        ingredientGuides.find((item) => item.slug === 'kroeung'),
+        recipes.find((item) => item.slug === 'kroeung-jaune'),
+        recipes.find((item) => item.slug === 'amok-trey')
+      ].filter(Boolean)
+    : [
+        recipes.find((item) => item.slug === 'amok-trey'),
+        ingredientGuides.find((item) => item.slug === 'kroeung')
+      ].filter(Boolean);
 
 const articleSchema = {
   '@context': 'https://schema.org',
@@ -62,6 +80,26 @@ const breadcrumbSchema = {
         </ul>
       </aside>
     </article>
+
+    {relatedContent.length > 0 && (
+      <section class="culture-related" data-reveal="up">
+        <p class="eyebrow">Pour continuer</p>
+        <h2>Passer de l’histoire à la cuisine</h2>
+        <div class="culture-related-links">
+          {relatedContent.map((item: any) => {
+            const isRecipe = 'prepTime' in item;
+            const href = isRecipe ? `/recettes/${item.slug}/` : `/ingredients/${item.slug}/`;
+            return (
+              <a href={href}>
+                <span>{isRecipe ? 'Recette' : 'Ingrédient'}</span>
+                <strong>{item.title}</strong>
+                <em>{item.intro}</em>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    )}
 
     <a class="text-link" href="/culture/">← Tous les articles</a>
   </main>
