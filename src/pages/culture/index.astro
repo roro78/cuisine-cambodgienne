@@ -30,7 +30,7 @@ const collectionSchema = {
       <p class="eyebrow">Comprendre</p>
       <h1>Culture culinaire</h1>
       <p>Pourquoi le poivre de Kampot a ce goût, comment le kroeung parfume une cuisine entière, ce que l’on mange et partage autour de la table : la culture culinaire racontée par ce qui se cuisine vraiment.</p>
-      <div class="page-intro-visual" data-parallax="0.10"><img src={cultureArticles[0].image} srcset={imageSrcSet(cultureArticles[0].image, [800, 1200, 1600])} sizes="100vw" alt={cultureArticles[0].imageAlt} fetchpriority="high" decoding="async" /></div>
+      <div class="page-intro-visual" data-parallax="0.10"><img src={cultureArticles[0].image} srcset={imageSrcSet(cultureArticles[0].image, [800, 1200, 1600])} sizes="(max-width: 900px) 100vw, 58vw" alt={cultureArticles[0].imageAlt} fetchpriority="high" decoding="async" /></div>
     </header>
 
     <section class="culture-grid" data-reveal="up">
