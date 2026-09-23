@@ -1,4 +1,8 @@
 export function imageAtWidth(src: string, width: number) {
+  if (/-(\d+)\.webp$/.test(src)) {
+    return src.replace(/-(\d+)\.webp$/, `-${width}.webp`);
+  }
+
   if (/([?&])width=\d+/.test(src)) {
     return src.replace(/([?&])width=\d+/, `$1width=${width}`);
   }
