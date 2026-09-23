@@ -31,7 +31,7 @@ const collectionSchema = {
       <p class="eyebrow">Cuisiner</p>
       <h1>Recettes cambodgiennes</h1>
       <p>Des plats à faire pour de vrai : amok crémeux, bœuf saisi, kroeung très parfumé, sauces fraîches et riz chaud. Des recettes pensées pour donner envie de passer en cuisine.</p>
-      <div class="page-intro-visual" data-parallax="0.10"><img src={recipes[0].image} srcset={imageSrcSet(recipes[0].image, [800, 1200, 1600])} sizes="100vw" alt={recipes[0].imageAlt} fetchpriority="high" decoding="async" /></div>
+      <div class="page-intro-visual" data-parallax="0.10"><img src={recipes[0].image} srcset={imageSrcSet(recipes[0].image, [800, 1200, 1600])} sizes="(max-width: 900px) 100vw, 58vw" alt={recipes[0].imageAlt} fetchpriority="high" decoding="async" /></div>
     </header>
 
     <section class="recipe-filter-bar" aria-label="Filtrer les recettes" data-reveal="up">
