@@ -101,7 +101,7 @@ const mobileImages = {
     </section>
 
     <section class="amok-poster" data-parallax="0.12">
-      <img src={images.amokAlt} alt="Amok trei cambodgien présenté dans des feuilles" loading="lazy" />
+      <img src={images.amokAlt} srcset={`${mobileImages.amokAlt} 1200w, ${images.amokAlt} 2200w`} sizes="100vw" alt="Amok trei cambodgien présenté dans des feuilles" loading="lazy" decoding="async" />
       <div class="amok-poster-shade"></div>
       <div class="amok-poster-copy">
         <p class="eyebrow">À cuisiner ce soir</p>
