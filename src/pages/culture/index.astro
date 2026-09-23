@@ -34,8 +34,8 @@ const collectionSchema = {
     </header>
 
     <section class="culture-grid" data-reveal="up">
-      {cultureArticles.map((article) => (
-        <a class="culture-card" href={`/culture/${article.slug}/`}>
+      {cultureArticles.map((article, index) => (
+        <a class="culture-card" href={`/culture/${article.slug}/`} data-reveal="up" data-reveal-delay={String(Math.min(index * 0.08, 0.16))}>
           <div class="culture-card-image"><img src={article.image} srcset={imageSrcSet(article.image, article.imageWidths)} sizes="(max-width: 720px) 100vw, 33vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} loading="lazy" decoding="async" /></div>
           <span class="card-meta">{article.eyebrow}</span>
           <h2>{article.title}</h2>
