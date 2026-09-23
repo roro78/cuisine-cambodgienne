@@ -5,7 +5,9 @@ gsap.registerPlugin(ScrollTrigger);
 
 type FilmImage = {
   img: HTMLImageElement;
+  src: string;
   ready: boolean;
+  requested: boolean;
 };
 
 function clamp(value: number, min = 0, max = 1) {
@@ -46,14 +48,7 @@ export function initStorytelling() {
   const images: FilmImage[] = urls.map((src) => {
     const img = new Image();
     img.decoding = 'async';
-    img.src = src;
-    const state = { img, ready: false };
-    img.addEventListener('load', () => {
-      state.ready = true;
-      if (fallback) fallback.style.opacity = '0';
-      render(lastProgress);
-    });
-    return state;
+    return { img, src, ready: false, requested: false };
   });
 
   let width = 1;
@@ -61,11 +56,50 @@ export function initStorytelling() {
   let dpr = 1;
   let lastProgress = 0;
 
+  function requestImage(index: number) {
+    const state = images[index];
+    if (!state || state.requested) return;
+
+    state.requested = true;
+    state.img.addEventListener('load', () => {
+      state.ready = true;
+      if (index === 0 && fallback) fallback.style.opacity = '0';
+      render(lastProgress);
+    }, { once: true });
+    state.img.src = state.src;
+  }
+
+  requestImage(0);
+  requestImage(1);
+
+  const scheduleIdleLoads = () => {
+    let index = 2;
+    const loadNext = () => {
+      if (index >= images.length) return;
+      requestImage(index);
+      index += 1;
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(loadNext, { timeout: 1800 });
+      } else {
+        window.setTimeout(loadNext, 700);
+      }
+    };
+
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(loadNext, { timeout: 1200 });
+    } else {
+      window.setTimeout(loadNext, 500);
+    }
+  };
+
+  scheduleIdleLoads();
+
   function resize() {
     const rect = stageEl.getBoundingClientRect();
     width = Math.max(1, rect.width);
     height = Math.max(1, rect.height);
-    dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+    const dprCap = window.innerWidth < 720 ? 1.25 : 1.5;
+    dpr = Math.min(window.devicePixelRatio || 1, dprCap);
     canvasEl.width = Math.round(width * dpr);
     canvasEl.height = Math.round(height * dpr);
     canvasEl.style.width = `${width}px`;
@@ -147,7 +181,8 @@ export function initStorytelling() {
       ctx.clip();
     }
 
-    ctx.filter = `blur(${(1 - eased) * 5}px)`;
+    const maxBlur = window.innerWidth < 720 ? 2 : 5;
+    ctx.filter = `blur(${(1 - eased) * maxBlur}px)`;
     drawCover(next.img, zoomB, driftB, 0, 1);
     ctx.filter = 'none';
     ctx.restore();
@@ -192,6 +227,10 @@ export function initStorytelling() {
     const scaled = lastProgress * 4;
     const index = Math.min(4, Math.floor(scaled));
     const local = index === 4 ? 1 : clamp(scaled - index);
+
+    requestImage(index);
+    requestImage(Math.min(index + 1, images.length - 1));
+
     revealNext(index, local);
     updateCopy(lastProgress);
   }
