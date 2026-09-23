@@ -37,15 +37,15 @@ const breadcrumbSchema = {
 <BaseLayout title={`${article.title} | Cuisine du Cambodge`} description={article.intro} image={article.image} imageAlt={article.imageAlt}>
   <SiteHeader />
   <main class="culture-article editorial-detail culture-detail">
-    <header class="culture-article-hero">
+    <header class="culture-article-hero" data-reveal="up">
       <p class="eyebrow">{article.eyebrow}</p>
       <h1>{article.title}</h1>
       <p>{article.intro}</p>
     </header>
 
-    <figure class="culture-visual"><img src={article.image} alt={article.imageAlt} /><figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption></figure>
+    <figure class="culture-visual" data-parallax="0.08"><img src={article.image} alt={article.imageAlt} /><figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption></figure>
 
-    <article class="culture-copy">
+    <article class="culture-copy" data-reveal="up">
       {article.sections.map((section: CultureArticle['sections'][number]) => (
         <section>
           <h2>{section.title}</h2>
