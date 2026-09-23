@@ -1082,3 +1082,48 @@ img[data-parallax]{
 @media(prefers-reduced-motion:reduce){
   .motion-layer{display:none}
 }
+
+
+/* V7 — about page continuity */
+.about-detail{
+  padding-top:0;
+  background:#efe8dc;
+}
+.about-detail .page-intro{
+  max-width:none;
+  margin:0 calc(var(--page-pad) * -1) 0;
+  padding:15vh var(--page-pad) 12vh;
+  background:#dfe4d8;
+}
+.about-detail .page-intro h1{
+  max-width:11ch;
+  font-size:clamp(4rem,8vw,8rem);
+  line-height:.88;
+}
+.about-detail .page-intro>p:last-child{
+  max-width:42rem;
+  font-size:clamp(1rem,1.45vw,1.22rem);
+  line-height:1.75;
+}
+.about-detail .about-grid{
+  padding:10vh 0;
+  gap:1.1rem;
+}
+.about-detail .about-grid article{
+  padding:clamp(2rem,4vw,4rem);
+  background:#f6f0e7;
+}
+.about-detail .about-grid article:nth-child(2){background:#e5d8c5}
+.about-detail .about-grid article:nth-child(3){background:#dce2d6}
+.about-detail .about-manifesto{
+  margin:4vh calc(var(--page-pad) * -1) 0;
+  padding:12vh var(--page-pad);
+  background:#172017;
+  color:#f7f2e8;
+}
+.about-detail .about-manifesto blockquote{
+  max-width:18ch;
+  margin:1.5rem 0 2rem;
+  font:400 clamp(3rem,6vw,6rem)/.92 var(--serif);
+  letter-spacing:-.05em;
+}
