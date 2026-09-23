@@ -10,7 +10,13 @@ const current = (prefix: string) => path.startsWith(prefix);
   data-site-header
   data-overlay={overlay ? 'true' : 'false'}
 >
-  <a class="brand" href="/" aria-current={path === '/' ? 'page' : undefined}>Cuisine du Cambodge</a>
+  <a class="brand brand-lockup" href="/" aria-current={path === '/' ? 'page' : undefined}>
+    <span class="brand-flag" aria-hidden="true">🇰🇭</span>
+    <span class="brand-copy">
+      <strong>Cuisine du Cambodge</strong>
+      <small>Recettes · gestes · culture khmère</small>
+    </span>
+  </a>
 
   <nav class="nav-links" aria-label="Rubriques">
     <a href="/recettes/" aria-current={current('/recettes/') ? 'page' : undefined}>Recettes</a>
@@ -27,7 +33,7 @@ const current = (prefix: string) => path.startsWith(prefix);
     </summary>
     <div class="mobile-menu-panel">
       <div class="mobile-menu-ornament" aria-hidden="true"></div>
-      <p class="mobile-menu-kicker">Cuisine du Cambodge</p>
+      <p class="mobile-menu-kicker"><span aria-hidden="true">🇰🇭</span> Cuisine du Cambodge · Khmer culinary journal</p>
       <nav aria-label="Navigation mobile">
         <a href="/recettes/" aria-current={current('/recettes/') ? 'page' : undefined}><span>01</span>Recettes</a>
         <a href="/ingredients/" aria-current={current('/ingredients/') ? 'page' : undefined}><span>02</span>Ingrédients</a>
