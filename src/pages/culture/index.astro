@@ -30,13 +30,13 @@ const collectionSchema = {
       <p class="eyebrow">Comprendre</p>
       <h1>Culture culinaire</h1>
       <p>Pourquoi le poivre de Kampot a ce goût, comment le kroeung parfume une cuisine entière, ce que l’on mange et partage autour de la table : la culture culinaire racontée par ce qui se cuisine vraiment.</p>
-      <div class="page-intro-visual" data-parallax="0.10"><img src={cultureArticles[0].image} srcset={imageSrcSet(cultureArticles[0].image, [800, 1200, 1600])} sizes="(max-width: 900px) 100vw, 58vw" alt={cultureArticles[0].imageAlt} fetchpriority="high" decoding="async" /></div>
+      <div class="page-intro-visual" data-parallax="0.10"><img src={cultureArticles[0].image} srcset={imageSrcSet(cultureArticles[0].image, [800, 1200, 1600])} sizes="(max-width: 900px) 100vw, 58vw" alt={cultureArticles[0].imageAlt} width={cultureArticles[0].imageWidth} height={cultureArticles[0].imageHeight} fetchpriority="high" decoding="async" /></div>
     </header>
 
     <section class="culture-grid" data-reveal="up">
       {cultureArticles.map((article) => (
         <a class="culture-card" href={`/culture/${article.slug}/`}>
-          <div class="culture-card-image"><img src={article.image} srcset={imageSrcSet(article.image, [480, 800, 1200])} sizes="(max-width: 720px) 100vw, 33vw" alt={article.imageAlt} loading="lazy" decoding="async" /></div>
+          <div class="culture-card-image"><img src={article.image} srcset={imageSrcSet(article.image, [480, 800, 1200])} sizes="(max-width: 720px) 100vw, 33vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} loading="lazy" decoding="async" /></div>
           <span class="card-meta">{article.eyebrow}</span>
           <h2>{article.title}</h2>
           <p>{article.intro}</p>
