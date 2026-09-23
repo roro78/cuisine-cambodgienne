@@ -11,7 +11,7 @@ import { recipes } from '../../data/recipes';
       <p class="eyebrow">Cuisiner</p>
       <h1>Recettes cambodgiennes</h1>
       <p>Des plats à faire pour de vrai : amok crémeux, bœuf saisi, kroeung très parfumé, sauces fraîches et riz chaud. Des recettes pensées pour donner envie de passer en cuisine.</p>
-      <div class="page-intro-visual" data-parallax="0.10"><img src={recipes[0].image} alt={recipes[0].imageAlt} /></div>
+      <div class="page-intro-visual" data-parallax="0.10"><img src={recipes[0].image} alt={recipes[0].imageAlt} fetchpriority="high" decoding="async" /></div>
     </header>
 
     <section class="recipe-filter-bar" aria-label="Filtrer les recettes" data-reveal="up">
