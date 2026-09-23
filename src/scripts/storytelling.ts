@@ -81,14 +81,14 @@ export function initStorytelling() {
       if ('requestIdleCallback' in window) {
         window.requestIdleCallback(loadNext, { timeout: 1800 });
       } else {
-        window.setTimeout(loadNext, 700);
+        globalThis.setTimeout(loadNext, 700);
       }
     };
 
     if ('requestIdleCallback' in window) {
       window.requestIdleCallback(loadNext, { timeout: 1200 });
     } else {
-      window.setTimeout(loadNext, 500);
+      globalThis.setTimeout(loadNext, 500);
     }
   };
 
