@@ -50,7 +50,7 @@ const mobileImages = {
         <div class="scroll-film-grain" aria-hidden="true"></div>
 
         <div class="film-copy film-copy-0 is-active">
-          <p class="film-kicker">Cuisine du Cambodge</p>
+          <p class="film-kicker"><span aria-hidden="true">🇰🇭</span> Cuisine du Cambodge</p>
           <h1 id="scroll-film-title">Le Cambodge<br />commence dans le mortier.</h1>
           <p>Citronnelle fraîche, galanga, curcuma, combava : on pile jusqu’à ce que le parfum remplisse la cuisine. Ensuite seulement, on allume le feu.</p>
         </div>
@@ -88,8 +88,8 @@ const mobileImages = {
       </div>
     </section>
 
-    <section class="after-film" data-reveal="up">
-      <div class="after-film-copy">
+    <section class="after-film">
+      <div class="after-film-copy" data-reveal="up">
         <p class="eyebrow">Choisissez votre envie</p>
         <h2>Aujourd’hui,<br />vous avez envie de quoi ?</h2>
         <p>Un plat cambodgien très parfumé à préparer ce soir, une base comme le kroeung à maîtriser, ou une saveur khmère à découvrir avant de cuisiner ?</p>
@@ -102,8 +102,8 @@ const mobileImages = {
       </div>
     </section>
 
-    <section class="amok-poster" data-parallax="0.12">
-      <img src={images.amokAlt} srcset={`${mobileImages.amokAlt} 1200w, ${images.amokAlt} 2200w`} sizes="100vw" alt="Amok trei cambodgien présenté dans des feuilles" width="1836" height="4080" loading="lazy" decoding="async" />
+    <section class="amok-poster">
+      <img src={images.amokAlt} srcset={`${mobileImages.amokAlt} 1200w, ${images.amokAlt} 1600w`} sizes="100vw" alt="Amok trei cambodgien présenté dans des feuilles" width="1836" height="4080" loading="lazy" decoding="async" />
       <div class="amok-poster-shade"></div>
       <div class="amok-poster-copy">
         <p class="eyebrow">À cuisiner ce soir</p>

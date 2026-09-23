@@ -1472,3 +1472,437 @@ html.menu-open body{
     gap:2.5rem;
   }
 }
+
+
+/* V9 — premium Cambodian culinary restoration */
+:root{
+  --khmer-ink:#171813;
+  --khmer-green:#1b291f;
+  --khmer-green-soft:#344a38;
+  --khmer-cream:#efe4d3;
+  --khmer-sand:#dfcfb7;
+  --khmer-clay:#a94f3d;
+  --khmer-gold:#c59a4b;
+  --khmer-rice:#f4eddf;
+}
+html,body{
+  background:var(--khmer-cream);
+  color:var(--khmer-ink);
+}
+body{
+  background:
+    radial-gradient(circle at 16% 8%,rgba(197,154,75,.10),transparent 28rem),
+    linear-gradient(180deg,#efe4d3 0%,#f4eddf 45%,#e7dbc8 100%);
+}
+main{position:relative;z-index:1}
+.editorial-listing,.editorial-detail,.about-detail{
+  background:transparent;
+}
+
+/* Header / brand */
+.site-nav[data-site-header]{
+  padding-top:1rem;
+  padding-bottom:1rem;
+}
+.site-nav[data-site-header]:not(.is-overlay-top):not(.is-menu-open){
+  background:rgba(239,228,211,.88);
+  border-color:rgba(70,52,32,.13);
+  backdrop-filter:blur(18px) saturate(1.08);
+  -webkit-backdrop-filter:blur(18px) saturate(1.08);
+}
+.site-nav[data-site-header].is-scrolled{
+  background:rgba(239,228,211,.9);
+  box-shadow:0 12px 38px rgba(44,31,18,.08);
+}
+.brand-lockup{
+  display:flex;
+  align-items:center;
+  gap:.7rem;
+  text-transform:none;
+  letter-spacing:0;
+}
+.brand-flag{
+  display:grid;
+  place-items:center;
+  width:2rem;
+  height:2rem;
+  border-radius:999px;
+  background:rgba(255,255,255,.18);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);
+  font-size:1.02rem;
+}
+.brand-copy{
+  display:grid;
+  gap:.18rem;
+}
+.brand-copy strong{
+  font:600 .78rem/1 var(--sans);
+  letter-spacing:.11em;
+  text-transform:uppercase;
+}
+.brand-copy small{
+  font:500 .54rem/1.2 var(--sans);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  opacity:.62;
+}
+.site-nav[data-site-header].is-overlay-top .brand-copy small{opacity:.72}
+.site-nav[data-site-header] .nav-links{
+  font-size:.68rem;
+}
+.site-nav[data-site-header] .nav-links a:after{
+  height:2px;
+  bottom:-.48rem;
+  background:linear-gradient(90deg,var(--khmer-clay),var(--khmer-gold));
+}
+.mobile-menu-panel{
+  background:
+    radial-gradient(circle at 82% 18%,rgba(197,154,75,.14),transparent 26rem),
+    linear-gradient(145deg,#142019 0%,#1b2b20 56%,#101711 100%);
+}
+.mobile-menu-ornament{
+  border-color:rgba(197,154,75,.24);
+}
+.mobile-menu-ornament:after{background:rgba(197,154,75,.2)}
+.mobile-menu-kicker{
+  color:#e8d6b8;
+}
+.mobile-menu-panel nav a{
+  border-bottom:1px solid rgba(255,255,255,.08)!important;
+}
+.mobile-menu-panel nav a:hover{color:#e6c88d}
+
+/* Home warmth and depth */
+.after-film{
+  background:
+    radial-gradient(circle at 84% 12%,rgba(169,79,61,.09),transparent 28rem),
+    var(--khmer-rice);
+}
+.after-film-links a{
+  transition:padding-left .3s ease,background .3s ease,color .3s ease;
+}
+.after-film-links a:hover{
+  padding-left:1rem;
+  background:rgba(197,154,75,.08);
+}
+.amok-poster-copy{
+  text-shadow:0 2px 18px rgba(0,0,0,.2);
+}
+.amok-poster-copy a{
+  border-bottom-color:#e9cb8e;
+}
+.home-credits{
+  background:#cdbb9f;
+  color:#34291f;
+}
+
+/* Editorial pages: less white, more crafted */
+.page-intro-split{
+  background:
+    linear-gradient(135deg,rgba(169,79,61,.08),transparent 45%),
+    #decfb9;
+}
+.page-intro-split:before{
+  content:'CAMBODGE · KHMER';
+  position:absolute;
+  right:var(--page-pad);
+  top:7rem;
+  font:600 .58rem/1 var(--sans);
+  letter-spacing:.22em;
+  opacity:.35;
+}
+.page-intro-visual{
+  box-shadow:0 30px 80px rgba(54,37,20,.16);
+}
+.page-intro-visual img,
+.recipe-cover img,
+.guide-visual img,
+.culture-visual img{
+  transition:filter .45s ease;
+}
+.page-intro-visual:hover img,
+.recipe-cover:hover img,
+.guide-visual:hover img,
+.culture-visual:hover img{
+  filter:saturate(1.05) contrast(1.02);
+}
+
+.recipe-detail .recipe-hero{background:#d9c6aa}
+.recipe-detail .ingredients-panel{background:#d6c19e}
+.recipe-detail .method-panel{
+  background:
+    radial-gradient(circle at 88% 8%,rgba(197,154,75,.14),transparent 22rem),
+    #172017;
+}
+.recipe-detail .recipe-notes{
+  background:var(--khmer-clay);
+}
+.ingredient-detail .guide-hero{background:#cfd8c7}
+.ingredient-detail .guide-main{background:#e5eadf}
+.culture-detail .culture-article-hero{background:#d8c6aa}
+.culture-detail .source-box{background:#162019}
+
+/* Keep big photography editorial, not billboard-sized on internal pages */
+.editorial-detail .recipe-cover,
+.editorial-detail .guide-visual,
+.editorial-detail .culture-visual{
+  width:min(100%,72rem);
+  margin-left:auto;
+  margin-right:auto;
+  height:clamp(24rem,52vw,46rem);
+  border-radius:clamp(1rem,2vw,2rem);
+  box-shadow:0 26px 70px rgba(48,31,15,.14);
+}
+.editorial-detail .recipe-cover img,
+.editorial-detail .guide-visual img,
+.editorial-detail .culture-visual img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* Footer: dark, fragrant, editorial */
+.site-footer-premium{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 15% 18%,rgba(197,154,75,.13),transparent 24rem),
+    radial-gradient(circle at 92% 82%,rgba(169,79,61,.15),transparent 22rem),
+    #172017;
+  color:#f5ead8;
+  border-top:0;
+}
+.site-footer-premium:before{
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.09;
+  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
+  background-size:26px 26px;
+}
+.footer-intro,.footer-primary,.footer-meta{position:relative;z-index:1}
+.footer-country{
+  margin:0 0 2rem;
+  color:#dfc18a;
+  font-size:.66rem;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.footer-intro h2{
+  max-width:12ch;
+  color:#fff6e9;
+}
+.footer-intro>p:last-child{color:#cfc4b4}
+.footer-primary{
+  border-top-color:rgba(255,255,255,.13);
+}
+.footer-primary a{
+  border-bottom-color:rgba(255,255,255,.13);
+  transition:padding-left .3s ease,color .3s ease,background .3s ease;
+}
+.footer-primary a:hover{
+  padding-left:1rem;
+  color:#f0cf8f;
+  background:rgba(255,255,255,.025);
+}
+.footer-primary a>em{color:#bfb5a7}
+.footer-meta{
+  border-top-color:rgba(255,255,255,.13);
+}
+.footer-meta a:hover{color:#f0cf8f}
+
+/* About continuity */
+.about-detail .page-intro{
+  background:
+    radial-gradient(circle at 84% 15%,rgba(197,154,75,.12),transparent 24rem),
+    #cad4c4;
+}
+.about-detail .about-grid article{
+  box-shadow:0 18px 48px rgba(56,39,20,.07);
+}
+.about-detail .about-manifesto{
+  background:
+    radial-gradient(circle at 80% 20%,rgba(169,79,61,.16),transparent 22rem),
+    #172017;
+}
+
+/* Motion should read as intentional decoration */
+.motion-layer{z-index:4}
+.motion-object{
+  filter:drop-shadow(0 12px 20px rgba(30,25,18,.05));
+}
+.motion-object--pepper{color:#5d4334}
+.motion-object--lemongrass{color:#70825f}
+.motion-object--banana-leaf{color:#4f6a4b}
+.motion-object--rice{color:#c6aa75}
+.motion-object--kaffir-leaf{color:#60765a}
+
+@media(max-width:900px){
+  .brand-copy small{display:none}
+  .page-intro-split:before{display:none}
+  .editorial-detail .recipe-cover,
+  .editorial-detail .guide-visual,
+  .editorial-detail .culture-visual{
+    width:calc(100% - 2rem);
+    height:clamp(22rem,70vw,38rem);
+  }
+}
+@media(max-width:720px){
+  .brand-flag{width:1.8rem;height:1.8rem}
+  .brand-copy strong{font-size:.68rem}
+  .site-nav[data-site-header]{padding-left:1rem;padding-right:1rem}
+  .mobile-menu-panel{padding-left:1.25rem;padding-right:1.25rem}
+  .editorial-detail .recipe-cover,
+  .editorial-detail .guide-visual,
+  .editorial-detail .culture-visual{
+    width:calc(100% - 1rem);
+    height:clamp(21rem,92vw,32rem);
+    border-radius:1rem;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .after-film-links a,
+  .footer-primary a,
+  .page-intro-visual img,
+  .recipe-cover img,
+  .guide-visual img,
+  .culture-visual img{
+    transition:none!important;
+  }
+}
+
+
+/* V9 — richer cards and controlled editorial scale */
+.page-intro-split{
+  min-height:70svh;
+}
+.page-intro-visual{
+  min-height:32rem;
+  max-height:62svh;
+  border-radius:2rem;
+  overflow:hidden;
+}
+.card-grid{
+  gap:1.5rem;
+}
+.content-card-link,
+.guide-link,
+.culture-card{
+  display:block;
+  border-radius:1.4rem;
+  overflow:hidden;
+  transition:box-shadow .38s ease;
+}
+.content-card-link:hover,
+.guide-link:hover,
+.culture-card:hover{
+  box-shadow:0 26px 64px rgba(48,31,15,.12);
+}
+.content-card{
+  height:100%;
+  padding:1rem 1rem 1.5rem;
+  border-top:0;
+  background:#e7dac6;
+}
+.content-card-link:nth-child(2n) .content-card{background:#d8dfd1}
+.content-card-link:nth-child(3n) .content-card{background:#ead7c7}
+.card-visual{
+  margin:-1rem -1rem 1.4rem;
+  aspect-ratio:4/3;
+  border-radius:1.2rem 1.2rem .35rem .35rem;
+}
+.card-visual img,
+.guide-card-image img,
+.culture-card-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:transform .7s cubic-bezier(.2,.7,.2,1),filter .4s ease;
+}
+.content-card-link:hover .card-visual img,
+.guide-link:hover .guide-card-image img,
+.culture-card:hover .culture-card-image img{
+  transform:scale(1.035);
+  filter:saturate(1.06);
+}
+.ingredients-listing .text-grid{
+  gap:1.5rem;
+}
+.guide-link article{
+  height:100%;
+  padding:1rem 1rem 1.7rem;
+  border-top:0;
+  background:#e2d5c1;
+}
+.guide-link:nth-child(2n) article{background:#d6dfd0}
+.guide-card-image{
+  height:clamp(16rem,28vw,26rem);
+  margin:-1rem -1rem 1.5rem;
+  overflow:hidden;
+  border-radius:1.2rem 1.2rem .35rem .35rem;
+}
+.culture-grid{
+  gap:1.5rem;
+}
+.culture-card{
+  padding:1rem 1rem 1.7rem;
+  background:#ded0bb;
+}
+.culture-card:nth-child(2n){background:#d5ded0}
+.culture-card-image{
+  height:clamp(16rem,28vw,25rem);
+  margin:-1rem -1rem 1.5rem;
+  overflow:hidden;
+  border-radius:1.2rem 1.2rem .35rem .35rem;
+}
+.learn-listing .offer-grid article{
+  border:0;
+  border-radius:1.4rem;
+  box-shadow:0 20px 54px rgba(54,37,20,.08);
+}
+.learn-path{
+  border-radius:1.5rem;
+  box-shadow:0 20px 54px rgba(54,37,20,.07);
+}
+
+/* Home film: warmer cinematic finish */
+.scroll-film-vignette{
+  background:
+    linear-gradient(90deg,rgba(8,10,7,.76) 0%,rgba(8,10,7,.18) 50%,rgba(8,10,7,.38) 100%),
+    linear-gradient(180deg,rgba(64,36,19,.08),rgba(0,0,0,.48));
+}
+.film-kicker{
+  color:#f1d397;
+}
+.film-copy h1,.film-copy h2{
+  text-shadow:0 3px 30px rgba(0,0,0,.22);
+}
+.film-cta{
+  border-bottom-color:#f0cf8f;
+}
+.film-progress i{
+  background:linear-gradient(180deg,#f0cf8f,#b65a43);
+}
+.film-count{color:#f0cf8f}
+
+@media(max-width:900px){
+  .page-intro-visual{
+    min-height:48svh;
+    max-height:none;
+  }
+}
+@media(max-width:720px){
+  .page-intro-visual{
+    min-height:42svh;
+    border-radius:1.2rem;
+  }
+  .content-card-link,
+  .guide-link,
+  .culture-card{
+    border-radius:1rem;
+  }
+  .card-visual{
+    aspect-ratio:16/11;
+  }
+}

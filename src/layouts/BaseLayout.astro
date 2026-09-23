@@ -77,13 +77,11 @@ const webpageSchema = {
   <MotionLayer pathname={Astro.url.pathname} />
   <slot />
   <script>
+    import { initGlobalMotion } from '../scripts/motion';
     import { initNavigation } from '../scripts/navigation';
 
+    initGlobalMotion();
     initNavigation();
-
-    if (document.querySelector('[data-motion-object],[data-reveal],[data-parallax],[data-recipe-step]')) {
-      import('../scripts/motion').then(({ initGlobalMotion }) => initGlobalMotion());
-    }
 
     if (document.querySelector('[data-recipe-filter]')) {
       import('../scripts/recipeFilters').then(({ initRecipeFilters }) => initRecipeFilters());

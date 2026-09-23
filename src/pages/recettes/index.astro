@@ -47,10 +47,12 @@ const collectionSchema = {
     <p class="recipe-filter-status" aria-live="polite" data-filter-status>{recipes.length} recettes</p>
 
     <section class="card-grid" aria-label="Recettes" data-reveal="up" data-recipe-grid>
-      {recipes.map((recipe) => (
+      {recipes.map((recipe, index) => (
         <a
           class="content-card-link"
           href={`/recettes/${recipe.slug}/`}
+          data-reveal="up"
+          data-reveal-delay={String(Math.min(index * 0.06, 0.18))}
           data-recipe-card
           data-difficulty={recipe.difficulty.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}
           data-tags={recipe.tags.join(' ').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}
