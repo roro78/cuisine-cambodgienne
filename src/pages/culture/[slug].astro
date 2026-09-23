@@ -6,6 +6,8 @@ import { cultureArticles } from '../../data/culture';
 import type { CultureArticle } from '../../data/culture';
 import { recipes } from '../../data/recipes';
 import { ingredientGuides } from '../../data/ingredients';
+import GlossaryStrip from '../../components/GlossaryStrip.astro';
+import { getGlossaryEntries } from '../../data/glossary';
 
 export function getStaticPaths() {
   return cultureArticles.map((article: CultureArticle) => ({
@@ -15,6 +17,14 @@ export function getStaticPaths() {
 }
 
 const { article } = Astro.props;
+
+const glossary = getGlossaryEntries(
+  article.slug === 'poivre-de-kampot'
+    ? ['poivre-de-kampot']
+    : article.slug === 'comprendre-le-kroeung'
+      ? ['kroeung', 'combava', 'galanga']
+      : ['amok', 'kroeung']
+);
 
 const relatedContent = article.slug === 'poivre-de-kampot'
   ? [
@@ -80,6 +90,8 @@ const breadcrumbSchema = {
         </ul>
       </aside>
     </article>
+
+    <GlossaryStrip entries={glossary} />
 
     {relatedContent.length > 0 && (
       <section class="culture-related" data-reveal="up">
