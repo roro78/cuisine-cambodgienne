@@ -6,6 +6,8 @@ import { ingredientGuides } from '../../data/ingredients';
 import type { IngredientGuide } from '../../data/ingredients';
 import GlossaryStrip from '../../components/GlossaryStrip.astro';
 import { getGlossaryEntries } from '../../data/glossary';
+import { recipes } from '../../data/recipes';
+import { cultureArticles } from '../../data/culture';
 
 export function getStaticPaths() {
   return ingredientGuides.map((ingredient: IngredientGuide) => ({
@@ -20,6 +22,19 @@ const glossary = getGlossaryEntries([
   ...(ingredient.slug === 'kroeung' ? ['combava', 'galanga'] : []),
   ...(ingredient.slug === 'prahok' ? ['kroeung'] : [])
 ]);
+
+const relatedContent = ingredient.slug === 'kroeung'
+  ? [
+      recipes.find((item) => item.slug === 'amok-trey'),
+      recipes.find((item) => item.slug === 'kroeung-jaune'),
+      cultureArticles.find((item) => item.slug === 'comprendre-le-kroeung')
+    ].filter(Boolean)
+  : ingredient.slug === 'poivre-de-kampot'
+    ? [
+        recipes.find((item) => item.slug === 'lok-lak'),
+        cultureArticles.find((item) => item.slug === 'poivre-de-kampot')
+      ].filter(Boolean)
+    : [];
 
 const articleSchema = {
   '@context': 'https://schema.org',
@@ -74,6 +89,28 @@ const breadcrumbSchema = {
     </section>
 
     <GlossaryStrip entries={glossary} />
+
+    {relatedContent.length > 0 && (
+      <section class="editorial-related" data-reveal="up">
+        <p class="eyebrow">À cuisiner ensuite</p>
+        <h2>Voir cet ingrédient dans son contexte</h2>
+        <div class="editorial-related-links">
+          {relatedContent.map((item: any) => {
+            const isRecipe = 'prepTime' in item;
+            const href = isRecipe
+              ? `/recettes/${item.slug}/`
+              : `/culture/${item.slug}/`;
+            return (
+              <a href={href}>
+                <span>{isRecipe ? 'Recette' : 'Culture'}</span>
+                <strong>{item.title}</strong>
+                <em>{item.intro}</em>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    )}
 
     <a class="text-link" href="/ingredients/">← Tous les ingrédients</a>
   </main>
