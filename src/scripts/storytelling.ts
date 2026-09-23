@@ -24,7 +24,7 @@ export function initStorytelling() {
   const section = document.querySelector<HTMLElement>('[data-scroll-film]');
   const stage = document.querySelector<HTMLElement>('.scroll-film-stage');
   const canvas = document.querySelector<HTMLCanvasElement>('.scroll-film-canvas');
-  const fallback = document.querySelector<HTMLElement>('.scroll-film-fallback');
+  const fallback = document.querySelector<HTMLImageElement>('.scroll-film-fallback');
   const copies = gsap.utils.toArray<HTMLElement>('.film-copy');
   const count = document.querySelector<HTMLElement>('.film-count');
   const progressFill = document.querySelector<HTMLElement>('.film-progress i');
@@ -45,7 +45,16 @@ export function initStorytelling() {
   const ctx = context2d;
 
   const urls = JSON.parse(stageEl.dataset.filmImages ?? '[]') as string[];
-  const images: FilmImage[] = urls.map((src) => {
+  const images: FilmImage[] = urls.map((src, index) => {
+    if (index === 0 && fallback) {
+      return {
+        img: fallback,
+        src,
+        ready: fallback.complete && fallback.naturalWidth > 0,
+        requested: true
+      };
+    }
+
     const img = new Image();
     img.decoding = 'async';
     return { img, src, ready: false, requested: false };
@@ -69,7 +78,19 @@ export function initStorytelling() {
     state.img.src = state.src;
   }
 
-  requestImage(0);
+  if (fallback && !images[0]?.ready) {
+    fallback.addEventListener('load', () => {
+      const first = images[0];
+      if (!first) return;
+      first.ready = true;
+      render(lastProgress);
+      fallback.style.opacity = '0';
+    }, { once: true });
+  } else if (images[0]?.ready && fallback) {
+    render(lastProgress);
+    fallback.style.opacity = '0';
+  }
+
   requestImage(1);
 
   const scheduleIdleLoads = () => {
