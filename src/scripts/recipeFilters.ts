@@ -11,7 +11,11 @@ export function initRecipeFilters() {
     cards.forEach((card) => {
       const difficulty = card.dataset.difficulty ?? '';
       const tags = card.dataset.tags ?? '';
-      const show = filter === 'all' || difficulty === filter || tags.includes(filter);
+      const totalMinutes = Number(card.dataset.totalMinutes ?? Number.POSITIVE_INFINITY);
+      const show = filter === 'all'
+        || (filter === 'rapide' && totalMinutes <= 30)
+        || difficulty === filter
+        || tags.includes(filter);
 
       card.hidden = !show;
       if (show) visible += 1;
