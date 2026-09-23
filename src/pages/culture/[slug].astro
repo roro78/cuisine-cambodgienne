@@ -8,6 +8,7 @@ import { recipes } from '../../data/recipes';
 import { ingredientGuides } from '../../data/ingredients';
 import GlossaryStrip from '../../components/GlossaryStrip.astro';
 import { getGlossaryEntries } from '../../data/glossary';
+import { imageSrcSet } from '../../utils/images';
 
 export function getStaticPaths() {
   return cultureArticles.map((article: CultureArticle) => ({
@@ -73,7 +74,7 @@ const breadcrumbSchema = {
       <p>{article.intro}</p>
     </header>
 
-    <figure class="culture-visual" data-parallax="0.08"><img src={article.image} alt={article.imageAlt} /><figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption></figure>
+    <figure class="culture-visual" data-parallax="0.08"><img src={article.image} srcset={imageSrcSet(article.image, [800, 1200, 1600])} sizes="100vw" alt={article.imageAlt} decoding="async" /><figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption></figure>
 
     <article class="culture-copy" data-reveal="up">
       {article.sections.map((section: CultureArticle['sections'][number]) => (
