@@ -25,7 +25,7 @@ const images = {
         data-film-images={JSON.stringify([images.amok, images.market, images.kroeung, images.kampot, images.amokAlt])}
       >
         <canvas class="scroll-film-canvas" aria-hidden="true"></canvas>
-        <img class="scroll-film-fallback" src={images.amok} alt="" aria-hidden="true" />
+        <img class="scroll-film-fallback" src={images.amok} alt="" aria-hidden="true" fetchpriority="high" decoding="async" />
         <div class="scroll-film-vignette" aria-hidden="true"></div>
         <div class="scroll-film-grain" aria-hidden="true"></div>
 
