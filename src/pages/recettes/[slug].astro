@@ -5,6 +5,8 @@ import SiteFooter from '../../components/SiteFooter.astro';
 import { recipes } from '../../data/recipes';
 import type { Recipe } from '../../data/recipes';
 import { ingredientGuides } from '../../data/ingredients';
+import GlossaryStrip from '../../components/GlossaryStrip.astro';
+import { getGlossaryEntries } from '../../data/glossary';
 
 export function getStaticPaths() {
   return recipes.map((recipe: Recipe) => ({
@@ -17,6 +19,13 @@ const { recipe } = Astro.props;
 const notes = recipe.notes ?? [];
 const keyPoints = recipe.keyPoints ?? [];
 const relatedIngredients = ingredientGuides.filter((item) => (recipe.relatedIngredients ?? []).includes(item.slug));
+
+const glossarySlugs = [
+  ...(recipe.slug === 'amok-trey' ? ['amok', 'kroeung', 'combava'] : []),
+  ...(recipe.slug === 'lok-lak' ? ['poivre-de-kampot'] : []),
+  ...(recipe.slug === 'kroeung-jaune' ? ['kroeung', 'combava', 'galanga'] : [])
+];
+const glossary = getGlossaryEntries(glossarySlugs);
 const totalMinutes = (value: string) => {
   const match = value.match(/(\d+)/);
   return match ? Number(match[1]) : 0;
@@ -94,6 +103,8 @@ const recipeSchema = {
         )}
       </article>
     </section>
+
+    <GlossaryStrip entries={glossary} />
 
     {relatedIngredients.length > 0 && (
       <section class="recipe-related" data-reveal="up">
