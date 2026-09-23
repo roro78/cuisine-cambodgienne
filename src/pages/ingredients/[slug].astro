@@ -16,7 +16,7 @@ const { ingredient } = Astro.props;
 ---
 <BaseLayout title={`${ingredient.title} — Guide ingrédient | Cuisine du Cambodge`} description={ingredient.intro} image={ingredient.image}>
   <SiteHeader />
-  <main class="guide-page">
+  <main class="guide-page editorial-detail ingredient-detail">
     <header class="guide-hero">
       <p class="eyebrow">Ingrédient khmer</p>
       <h1>{ingredient.title}</h1>
