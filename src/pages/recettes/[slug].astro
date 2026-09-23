@@ -78,7 +78,7 @@ const recipeSchema = {
       <article class="method-panel">
         <p class="eyebrow">Méthode</p>
         <ol>
-          {recipe.steps.map((step: string) => <li>{step}</li>)}
+          {recipe.steps.map((step: string) => <li data-recipe-step>{step}</li>)}
         </ol>
         {keyPoints.length > 0 && (
           <div class="recipe-keypoints">
