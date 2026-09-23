@@ -998,3 +998,87 @@ a:focus-visible,summary:focus-visible{outline:2px solid currentColor;outline-off
     grid-column:1;
   }
 }
+
+
+/* V7 — global culinary motion layer */
+.motion-layer{
+  position:fixed;
+  inset:0;
+  z-index:5;
+  pointer-events:none;
+  overflow:hidden;
+}
+.motion-object{
+  position:absolute;
+  top:var(--motion-start);
+  width:clamp(4.5rem,8vw,9rem);
+  opacity:var(--motion-opacity);
+  transform:scale(var(--motion-scale));
+  transform-origin:center;
+  will-change:transform;
+  color:#6f765f;
+  mix-blend-mode:multiply;
+}
+.motion-object--left{left:clamp(-1.2rem,1.5vw,2rem)}
+.motion-object--right{right:clamp(-1.2rem,1.5vw,2rem)}
+.motion-object svg{
+  display:block;
+  width:100%;
+  height:auto;
+  overflow:visible;
+}
+.motion-object path,
+.motion-object circle,
+.motion-object ellipse{
+  fill:currentColor;
+}
+.motion-object .motion-stroke{
+  fill:none;
+  stroke:rgba(255,255,255,.35);
+  stroke-width:2;
+}
+.motion-object--pepper{color:#50483e}
+.motion-object--lemongrass{color:#75806a;width:clamp(4rem,6vw,6.5rem)}
+.motion-object--banana-leaf{color:#5f6f58;width:clamp(5.5rem,9vw,10rem)}
+.motion-object--steam{
+  color:#fff;
+  width:clamp(5rem,8vw,8rem);
+  mix-blend-mode:screen;
+}
+.motion-object--steam path{
+  fill:none;
+  stroke:currentColor;
+  stroke-width:5;
+  stroke-linecap:round;
+  opacity:.78;
+}
+.motion-object--rice{color:#c8b899;width:clamp(4rem,6vw,6rem)}
+.motion-object--kaffir-leaf{color:#6f7b63;width:clamp(4rem,7vw,7rem)}
+
+[data-reveal]{
+  will-change:transform,opacity;
+}
+[data-parallax]{
+  overflow:hidden;
+}
+[data-parallax] img,
+img[data-parallax]{
+  will-change:transform;
+}
+
+@media(max-width:900px){
+  .motion-object{
+    width:clamp(3.5rem,9vw,6rem);
+    opacity:calc(var(--motion-opacity) * .82);
+  }
+}
+@media(max-width:720px){
+  .motion-layer .motion-object:nth-child(n+2){display:none}
+  .motion-object{
+    width:clamp(3rem,13vw,5rem);
+    opacity:calc(var(--motion-opacity) * .68);
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .motion-layer{display:none}
+}
