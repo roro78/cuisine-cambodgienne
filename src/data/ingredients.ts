@@ -40,7 +40,6 @@ export const ingredientGuides: IngredientGuide[] = [
     imageAlt: 'Grappes de poivre vert de Kampot sur le plant',
     imageWidth: 6000,
     imageHeight: 4000,
-    imageWidths: [480, 800, 1200, 1600],
     imageWidths: [480, 800, 1200, 1600]
   },
   {
@@ -68,6 +67,7 @@ export const ingredientGuides: IngredientGuide[] = [
     image: '/images/cuisine/prahok-1600.webp',
     imageAlt: 'Prahok ktis cambodgien servi avec des légumes',
     imageWidth: 3000,
-    imageHeight: 4000
+    imageHeight: 4000,
+    imageWidths: [480, 800, 1200, 1600]
   }
 ];
