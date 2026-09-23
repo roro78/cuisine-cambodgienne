@@ -43,6 +43,8 @@ const articleSchema = {
   description: ingredient.intro,
   image: ingredient.image,
   inLanguage: 'fr-FR',
+  author: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
+  publisher: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
   mainEntityOfPage: `https://www.cuisine-du-cambodge.com/ingredients/${ingredient.slug}/`
 };
 
