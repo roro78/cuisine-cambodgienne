@@ -1,0 +1,86 @@
+name: Localize cuisine images
+
+on:
+  push:
+    branches:
+      - perf/images-v8
+    paths:
+      - ".github/workflows/localize-images.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  localize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: perf/images-v8
+
+      - name: Install image tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+
+      - name: Download and optimize Creative Commons images
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/images/cuisine /tmp/cuisine-src
+
+          fetch() {
+            local url="$1"
+            local name="$2"
+            curl --fail --location --retry 3 --retry-delay 2 \
+              -A "CuisineDuCambodge/1.0 (+https://www.cuisine-du-cambodge.com)" \
+              "$url" -o "/tmp/cuisine-src/$name.jpg"
+          }
+
+          make_webp() {
+            local name="$1"
+            shift
+            for width in "$@"; do
+              convert "/tmp/cuisine-src/$name.jpg" \
+                -auto-orient \
+                -strip \
+                -resize "${width}x>" \
+                -quality 82 \
+                "public/images/cuisine/${name}-${width}.webp"
+            done
+          }
+
+          fetch "https://commons.wikimedia.org/wiki/Special:FilePath/Fish_Amok-_Khmer_specialty.jpg" "amok"
+          fetch "https://commons.wikimedia.org/wiki/Special:FilePath/06-Kep_Crab_Market_Cambodia-nX-3_%28cropped%29.jpg" "kep-market"
+          fetch "https://commons.wikimedia.org/wiki/Special:FilePath/Cha_kroeung.jpg" "kroeung"
+          fetch "https://commons.wikimedia.org/wiki/Special:FilePath/Kampot_Pepper.jpg" "kampot"
+          fetch "https://commons.wikimedia.org/wiki/Special:FilePath/Fish_amok_amok_trei_Khmer_Cambodian_food.jpg" "amok-alt"
+          fetch "https://commons.wikimedia.org/wiki/Special:FilePath/Cambodian_Lok_Lak.jpg" "lok-lak"
+          fetch "https://commons.wikimedia.org/wiki/Special:FilePath/Tamarind_fruit_%28Tamarindus_indica%29.jpg" "tamarind"
+          fetch "https://commons.wikimedia.org/wiki/Special:FilePath/Prahok_ktis.jpg" "prahok"
+
+          make_webp amok 480 800 1200 1600 2200
+          make_webp kep-market 480 800 1200 1600 2200
+          make_webp kroeung 480 800 1200 1600 2200
+          make_webp kampot 480 800 1200 1600 2200
+          make_webp amok-alt 480 800 1200 1600
+          make_webp lok-lak 480 800
+          make_webp tamarind 480 800 1200 1600
+          make_webp prahok 480 800 1200 1600
+
+          identify public/images/cuisine/*
+
+      - name: Commit optimized assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/images/cuisine
+          if git diff --cached --quiet; then
+            echo "No image changes to commit"
+            exit 0
+          fi
+          git commit -m "perf: localize optimized cuisine imagery"
+          git push origin HEAD:perf/images-v8
