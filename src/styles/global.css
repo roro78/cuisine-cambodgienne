@@ -1469,3 +1469,56 @@ html.menu-open body{
   }
   .glossary-strip-head h2{max-width:10ch}
 }
+
+
+/* V7 — contextual internal linking */
+.culture-related{
+  margin:10vh 0;
+  padding:clamp(2rem,4vw,4rem);
+  background:#e5d8c5;
+}
+.culture-related h2{
+  margin:0 0 2rem;
+  max-width:12ch;
+  font:400 clamp(2.8rem,5vw,5rem)/.94 var(--serif);
+  letter-spacing:-.045em;
+}
+.culture-related-links{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:1px;
+  background:rgba(44,34,25,.14);
+}
+.culture-related-links a{
+  display:flex;
+  flex-direction:column;
+  gap:.8rem;
+  min-height:14rem;
+  padding:1.6rem;
+  background:#f6f0e7;
+  transition:transform .25s ease,background .25s ease;
+}
+.culture-related-links a:hover{
+  background:#efe7da;
+  transform:translateY(-2px);
+}
+.culture-related-links span{
+  font-size:.62rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  opacity:.55;
+}
+.culture-related-links strong{
+  font:400 clamp(1.8rem,3vw,3rem)/1 var(--serif);
+  letter-spacing:-.035em;
+}
+.culture-related-links em{
+  margin-top:auto;
+  max-width:32rem;
+  font-style:normal;
+  line-height:1.6;
+  color:#4f463d;
+}
+@media(max-width:720px){
+  .culture-related-links{grid-template-columns:1fr}
+}
