@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import MotionLayer from '../components/MotionLayer.astro';
 
 interface Props {
   title?: string;
@@ -71,5 +72,12 @@ const webpageSchema = {
 <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
 <script type="application/ld+json" set:html={JSON.stringify(webpageSchema)} />
 </head>
-<body><slot /></body>
+<body>
+  <MotionLayer pathname={Astro.url.pathname} />
+  <slot />
+  <script>
+    import { initGlobalMotion } from '../scripts/motion';
+    initGlobalMotion();
+  </script>
+</body>
 </html>
