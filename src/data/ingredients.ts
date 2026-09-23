@@ -8,6 +8,8 @@ export interface IngredientGuide {
   tips: string[];
   image: string;
   imageAlt: string;
+  imageWidth: number;
+  imageHeight: number;
 }
 
 export const ingredientGuides: IngredientGuide[] = [
@@ -20,7 +22,9 @@ export const ingredientGuides: IngredientGuide[] = [
     uses: ['Amok', 'Soupes et currys', 'Marinades', 'Grillades'],
     tips: ['Émincer finement avant de piler.', 'Travailler les ingrédients les plus fibreux en premier.', 'Éviter d’ajouter trop de liquide au mixeur.'],
     image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Cha_kroeung.jpg?width=1600',
-    imageAlt: 'Plat cambodgien parfumé au kroeung'
+    imageAlt: 'Plat cambodgien parfumé au kroeung',
+    imageWidth: 5184,
+    imageHeight: 3456
   },
   {
     slug: 'poivre-de-kampot',
@@ -31,7 +35,9 @@ export const ingredientGuides: IngredientGuide[] = [
     uses: ['Lok lak', 'Crabe et fruits de mer', 'Sauces au citron vert', 'Viandes grillées'],
     tips: ['Moudre au dernier moment.', 'Éviter une cuisson longue pour préserver les arômes.', 'Comparer plusieurs maturités sur un même plat.'],
     image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Kampot_Pepper.jpg?width=1600',
-    imageAlt: 'Grappes de poivre vert de Kampot sur le plant'
+    imageAlt: 'Grappes de poivre vert de Kampot sur le plant',
+    imageWidth: 6000,
+    imageHeight: 4000
   },
   {
     slug: 'tamarin',
@@ -42,7 +48,9 @@ export const ingredientGuides: IngredientGuide[] = [
     uses: ['Soupes', 'Sauces', 'Poissons', 'Préparations aigres-douces'],
     tips: ['Diluer la pulpe puis filtrer.', 'Ajouter progressivement et goûter.', 'Équilibrer avec sucre, sel et umami.'],
     image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Tamarind_fruit_(Tamarindus_indica).jpg?width=1600',
-    imageAlt: 'Gousses de tamarin ouvertes et entières'
+    imageAlt: 'Gousses de tamarin ouvertes et entières',
+    imageWidth: 2304,
+    imageHeight: 1268
   },
   {
     slug: 'prahok',
@@ -53,6 +61,8 @@ export const ingredientGuides: IngredientGuide[] = [
     uses: ['Sauces et dips', 'Soupes', 'Plats mijotés', 'Assaisonnement de préparations traditionnelles'],
     tips: ['Commencer par une petite quantité.', 'Tenir compte de sa salinité avant d’ajouter d’autres sauces.', 'Choisir un produit adapté à l’usage prévu.'],
     image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Prahok_ktis.jpg?width=1600',
-    imageAlt: 'Prahok ktis cambodgien servi avec des légumes'
+    imageAlt: 'Prahok ktis cambodgien servi avec des légumes',
+    imageWidth: 3000,
+    imageHeight: 4000
   }
 ];
