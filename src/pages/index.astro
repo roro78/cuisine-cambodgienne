@@ -4,11 +4,19 @@ import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 
 const images = {
-  amok: 'https://commons.wikimedia.org/wiki/Special:FilePath/Fish_Amok-_Khmer_specialty.jpg?width=2200',
-  market: 'https://commons.wikimedia.org/wiki/Special:FilePath/06-Kep_Crab_Market_Cambodia-nX-3_(cropped).jpg?width=2200',
-  kroeung: 'https://commons.wikimedia.org/wiki/Special:FilePath/Cha_kroeung.jpg?width=2200',
-  kampot: 'https://commons.wikimedia.org/wiki/Special:FilePath/Kampot_Pepper.jpg?width=2200',
-  amokAlt: 'https://commons.wikimedia.org/wiki/Special:FilePath/Fish_amok_amok_trei_Khmer_Cambodian_food.jpg?width=2200'
+  amok: '/images/cuisine/amok-2200.webp',
+  market: '/images/cuisine/kep-market-2200.webp',
+  kroeung: '/images/cuisine/kroeung-2200.webp',
+  kampot: '/images/cuisine/kampot-2200.webp',
+  amokAlt: '/images/cuisine/amok-alt-1600.webp'
+};
+
+const mobileImages = {
+  amok: '/images/cuisine/amok-1200.webp',
+  market: '/images/cuisine/kep-market-1200.webp',
+  kroeung: '/images/cuisine/kroeung-1200.webp',
+  kampot: '/images/cuisine/kampot-1200.webp',
+  amokAlt: '/images/cuisine/amok-alt-1200.webp'
 };
 ---
 <BaseLayout
@@ -23,9 +31,21 @@ const images = {
       <div
         class="scroll-film-stage"
         data-film-images={JSON.stringify([images.amok, images.market, images.kroeung, images.kampot, images.amokAlt])}
+        data-film-images-mobile={JSON.stringify([mobileImages.amok, mobileImages.market, mobileImages.kroeung, mobileImages.kampot, mobileImages.amokAlt])}
       >
         <canvas class="scroll-film-canvas" aria-hidden="true"></canvas>
-        <img class="scroll-film-fallback" src={images.amok} alt="" aria-hidden="true" fetchpriority="high" decoding="async" />
+        <img
+          class="scroll-film-fallback"
+          src={images.amok}
+          srcset={`${mobileImages.amok} 1200w, ${images.amok} 2200w`}
+          sizes="100vw"
+          alt=""
+          width="3888"
+          height="2592"
+          aria-hidden="true"
+          fetchpriority="high"
+          decoding="async"
+        />
         <div class="scroll-film-vignette" aria-hidden="true"></div>
         <div class="scroll-film-grain" aria-hidden="true"></div>
 
@@ -83,7 +103,7 @@ const images = {
     </section>
 
     <section class="amok-poster" data-parallax="0.12">
-      <img src={images.amokAlt} alt="Amok trei cambodgien présenté dans des feuilles" loading="lazy" />
+      <img src={images.amokAlt} srcset={`${mobileImages.amokAlt} 1200w, ${images.amokAlt} 2200w`} sizes="100vw" alt="Amok trei cambodgien présenté dans des feuilles" width="1836" height="4080" loading="lazy" decoding="async" />
       <div class="amok-poster-shade"></div>
       <div class="amok-poster-copy">
         <p class="eyebrow">À cuisiner ce soir</p>

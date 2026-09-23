@@ -7,6 +7,7 @@ import type { Recipe } from '../../data/recipes';
 import { ingredientGuides } from '../../data/ingredients';
 import GlossaryStrip from '../../components/GlossaryStrip.astro';
 import { getGlossaryEntries } from '../../data/glossary';
+import { imageSrcSet } from '../../utils/images';
 
 export function getStaticPaths() {
   return recipes.map((recipe: Recipe) => ({
@@ -56,7 +57,7 @@ const recipeSchema = {
   author: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
   publisher: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
   keywords: recipe.tags.join(', '),
-  image: recipe.image
+  image: new URL(recipe.image, Astro.site ?? new URL('https://www.cuisine-du-cambodge.com')).href
 };
 ---
 <BaseLayout title={`${recipe.title} — Recette cambodgienne | Cuisine du Cambodge`} description={recipe.description} image={recipe.image} imageAlt={recipe.imageAlt}>
@@ -76,7 +77,7 @@ const recipeSchema = {
       </dl>
     </header>
 
-    <figure class="recipe-cover" data-parallax="0.11"><img src={recipe.image} alt={recipe.imageAlt} /><figcaption>Photographie illustrative · voir les crédits en bas de page.</figcaption></figure>
+    <figure class="recipe-cover" data-parallax="0.11"><img src={recipe.image} srcset={imageSrcSet(recipe.image, recipe.imageWidths)} sizes="100vw" alt={recipe.imageAlt} width={recipe.imageWidth} height={recipe.imageHeight} decoding="async" /><figcaption>Photographie illustrative · voir les crédits en bas de page.</figcaption></figure>
 
     <section class="recipe-layout" data-reveal="up">
       <aside class="ingredients-panel">

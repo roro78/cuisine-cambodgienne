@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { recipes } from '../../data/recipes';
+import { imageSrcSet } from '../../utils/images';
 
 const minutes = (value: string) => Number(value.match(/\d+/)?.[0] ?? 0);
 const collectionSchema = {
@@ -30,7 +31,7 @@ const collectionSchema = {
       <p class="eyebrow">Cuisiner</p>
       <h1>Recettes cambodgiennes</h1>
       <p>Des plats à faire pour de vrai : amok crémeux, bœuf saisi, kroeung très parfumé, sauces fraîches et riz chaud. Des recettes pensées pour donner envie de passer en cuisine.</p>
-      <div class="page-intro-visual" data-parallax="0.10"><img src={recipes[0].image} alt={recipes[0].imageAlt} fetchpriority="high" decoding="async" /></div>
+      <div class="page-intro-visual" data-parallax="0.10"><img src={recipes[0].image} srcset={imageSrcSet(recipes[0].image, recipes[0].imageWidths)} sizes="(max-width: 900px) 100vw, 58vw" alt={recipes[0].imageAlt} width={recipes[0].imageWidth} height={recipes[0].imageHeight} fetchpriority="high" decoding="async" /></div>
     </header>
 
     <section class="recipe-filter-bar" aria-label="Filtrer les recettes" data-reveal="up">
@@ -56,7 +57,7 @@ const collectionSchema = {
           data-total-minutes={minutes(recipe.prepTime) + minutes(recipe.cookTime)}
         >
           <article class="content-card">
-            <div class="card-visual"><img src={recipe.image} alt={recipe.imageAlt} loading="lazy" /></div>
+            <div class="card-visual"><img src={recipe.image} srcset={imageSrcSet(recipe.image, recipe.imageWidths)} sizes="(max-width: 720px) 100vw, 33vw" alt={recipe.imageAlt} width={recipe.imageWidth} height={recipe.imageHeight} loading="lazy" decoding="async" /></div>
             <p class="card-meta">{recipe.difficulty} · {recipe.prepTime}</p>
             <h2>{recipe.title}</h2>
             <p>{recipe.intro}</p>
