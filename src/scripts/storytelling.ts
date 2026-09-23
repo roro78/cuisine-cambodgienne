@@ -44,7 +44,11 @@ export function initStorytelling() {
   if (!context2d) return () => {};
   const ctx = context2d;
 
-  const urls = JSON.parse(stageEl.dataset.filmImages ?? '[]') as string[];
+  const desktopUrls = JSON.parse(stageEl.dataset.filmImages ?? '[]') as string[];
+  const mobileUrls = JSON.parse(stageEl.dataset.filmImagesMobile ?? '[]') as string[];
+  const urls = window.innerWidth < 720 && mobileUrls.length === desktopUrls.length
+    ? mobileUrls
+    : desktopUrls;
   const images: FilmImage[] = urls.map((src, index) => {
     if (index === 0 && fallback) {
       return {
