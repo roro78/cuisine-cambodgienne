@@ -30,13 +30,13 @@ const collectionSchema = {
       <p class="eyebrow">Les saveurs</p>
       <h1>Ingrédients & bases</h1>
       <p>Citronnelle fraîche, tamarin acidulé, poivre de Kampot, prahok, coco : ici, on découvre surtout ce que chaque ingrédient apporte dans la bouche et comment l’utiliser en cuisine.</p>
-      <div class="page-intro-visual" data-parallax="0.10"><img src={ingredientGuides[0].image} srcset={imageSrcSet(ingredientGuides[0].image, [800, 1200, 1600])} sizes="(max-width: 900px) 100vw, 58vw" alt={ingredientGuides[0].imageAlt} fetchpriority="high" decoding="async" /></div>
+      <div class="page-intro-visual" data-parallax="0.10"><img src={ingredientGuides[0].image} srcset={imageSrcSet(ingredientGuides[0].image, [800, 1200, 1600])} sizes="(max-width: 900px) 100vw, 58vw" alt={ingredientGuides[0].imageAlt} width={ingredientGuides[0].imageWidth} height={ingredientGuides[0].imageHeight} fetchpriority="high" decoding="async" /></div>
     </header>
     <section class="text-grid" data-reveal="up">
       {ingredientGuides.map((item) => (
         <a class="guide-link" href={`/ingredients/${item.slug}/`}>
           <article>
-            <div class="guide-card-image"><img src={item.image} srcset={imageSrcSet(item.image, [480, 800, 1200])} sizes="(max-width: 720px) 100vw, 50vw" alt={item.imageAlt} loading="lazy" decoding="async" /></div>
+            <div class="guide-card-image"><img src={item.image} srcset={imageSrcSet(item.image, [480, 800, 1200])} sizes="(max-width: 720px) 100vw, 50vw" alt={item.imageAlt} width={item.imageWidth} height={item.imageHeight} loading="lazy" decoding="async" /></div>
             <p class="card-meta">Guide ingrédient</p>
             <h2>{item.title}</h2>
             <p>{item.intro}</p>
