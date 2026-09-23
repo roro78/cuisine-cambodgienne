@@ -20,6 +20,7 @@ const {
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
 const siteURL = Astro.site ?? new URL('https://www.cuisine-du-cambodge.com');
+const imageURL = image ? new URL(image, siteURL).href : undefined;
 
 const websiteSchema = {
   '@context': 'https://schema.org',
@@ -40,7 +41,7 @@ const webpageSchema = {
   description,
   inLanguage: 'fr-FR',
   isPartOf: { '@id': new URL('/#website', siteURL).href },
-  ...(image ? { primaryImageOfPage: { '@type': 'ImageObject', url: image } } : {})
+  ...(imageURL ? { primaryImageOfPage: { '@type': 'ImageObject', url: imageURL } } : {})
 };
 ---
 <!doctype html>
@@ -58,19 +59,15 @@ const webpageSchema = {
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonicalURL} />
-{image && <meta property="og:image" content={image} />}
-{image && <meta property="og:image:alt" content={imageAlt} />}
+{imageURL && <meta property="og:image" content={imageURL} />}
+{imageURL && <meta property="og:image:alt" content={imageAlt} />}
 
-<meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+<meta name="twitter:card" content={imageURL ? 'summary_large_image' : 'summary'} />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
-{image && <meta name="twitter:image" content={image} />}
+{imageURL && <meta name="twitter:image" content={imageURL} />}
 
 <link rel="canonical" href={canonicalURL} />
-<link rel="preconnect" href="https://commons.wikimedia.org" crossorigin />
-<link rel="dns-prefetch" href="//commons.wikimedia.org" />
-<link rel="preconnect" href="https://upload.wikimedia.org" crossorigin />
-<link rel="dns-prefetch" href="//upload.wikimedia.org" />
 <title>{title}</title>
 
 <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
