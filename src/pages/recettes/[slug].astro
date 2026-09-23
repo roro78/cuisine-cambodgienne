@@ -51,7 +51,7 @@ const recipeSchema = {
 <BaseLayout title={`${recipe.title} — Recette cambodgienne | Cuisine du Cambodge`} description={recipe.description} image={recipe.image} imageAlt={recipe.imageAlt}>
   <SiteHeader />
   <main class="recipe-page editorial-detail recipe-detail">
-    <header class="recipe-hero">
+    <header class="recipe-hero" data-reveal="up">
       <p class="eyebrow">Recette cambodgienne</p>
       <h1>{recipe.title}</h1>
       {recipe.khmerName && <p class="khmer-name">{recipe.khmerName}</p>}
@@ -65,9 +65,9 @@ const recipeSchema = {
       </dl>
     </header>
 
-    <figure class="recipe-cover"><img src={recipe.image} alt={recipe.imageAlt} /><figcaption>Photographie illustrative · voir les crédits en bas de page.</figcaption></figure>
+    <figure class="recipe-cover" data-parallax="0.11"><img src={recipe.image} alt={recipe.imageAlt} /><figcaption>Photographie illustrative · voir les crédits en bas de page.</figcaption></figure>
 
-    <section class="recipe-layout">
+    <section class="recipe-layout" data-reveal="up">
       <aside class="ingredients-panel">
         <p class="eyebrow">Ingrédients</p>
         <ul>
@@ -96,7 +96,7 @@ const recipeSchema = {
     </section>
 
     {relatedIngredients.length > 0 && (
-      <section class="recipe-related">
+      <section class="recipe-related" data-reveal="up">
         <p class="eyebrow">Pour comprendre le plat</p>
         <h2>Les ingrédients à connaître</h2>
         <div class="related-links">
