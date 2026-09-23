@@ -1792,12 +1792,11 @@ main{position:relative;z-index:1}
   display:block;
   border-radius:1.4rem;
   overflow:hidden;
-  transition:transform .38s cubic-bezier(.2,.75,.2,1),box-shadow .38s ease;
+  transition:box-shadow .38s ease;
 }
 .content-card-link:hover,
 .guide-link:hover,
 .culture-card:hover{
-  transform:translateY(-6px);
   box-shadow:0 26px 64px rgba(48,31,15,.12);
 }
 .content-card{
