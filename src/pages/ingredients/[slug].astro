@@ -42,7 +42,7 @@ const articleSchema = {
   '@type': 'Article',
   headline: ingredient.title,
   description: ingredient.intro,
-  image: ingredient.image,
+  image: new URL(ingredient.image, Astro.site ?? new URL('https://www.cuisine-du-cambodge.com')).href,
   inLanguage: 'fr-FR',
   author: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
   publisher: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
