@@ -1,0 +1,63 @@
+---
+import FloatingObject from './FloatingObject.astro';
+
+interface Props { pathname: string; }
+const { pathname } = Astro.props;
+
+type MotionType = 'pepper' | 'lemongrass' | 'banana-leaf' | 'steam' | 'rice' | 'kaffir-leaf';
+type MotionItem = {
+  type: MotionType;
+  side: 'left' | 'right';
+  speed: number;
+  drift: number;
+  rotate: number;
+  scale: number;
+  opacity: number;
+  start: number;
+};
+
+const map: Record<string, MotionItem[]> = {
+  home: [
+    { type:'banana-leaf', side:'right', speed:.26, drift:-34, rotate:-7, scale:1.05, opacity:.11, start:14 },
+    { type:'steam', side:'left', speed:.42, drift:26, rotate:3, scale:.92, opacity:.08, start:48 }
+  ],
+  recettes: [
+    { type:'steam', side:'right', speed:.34, drift:-22, rotate:2, scale:.82, opacity:.09, start:18 },
+    { type:'rice', side:'left', speed:.48, drift:30, rotate:12, scale:.7, opacity:.13, start:58 }
+  ],
+  ingredients: [
+    { type:'lemongrass', side:'left', speed:.3, drift:18, rotate:7, scale:.86, opacity:.11, start:12 },
+    { type:'pepper', side:'right', speed:.52, drift:-28, rotate:-10, scale:.7, opacity:.13, start:62 }
+  ],
+  culture: [
+    { type:'banana-leaf', side:'left', speed:.24, drift:18, rotate:5, scale:.82, opacity:.08, start:20 },
+    { type:'pepper', side:'right', speed:.44, drift:-20, rotate:-8, scale:.62, opacity:.10, start:64 }
+  ],
+  apprendre: [
+    { type:'lemongrass', side:'right', speed:.3, drift:-24, rotate:-6, scale:.82, opacity:.1, start:14 },
+    { type:'steam', side:'left', speed:.46, drift:20, rotate:2, scale:.72, opacity:.07, start:58 }
+  ],
+  apropos: [
+    { type:'rice', side:'right', speed:.28, drift:-18, rotate:8, scale:.66, opacity:.09, start:18 },
+    { type:'banana-leaf', side:'left', speed:.4, drift:24, rotate:5, scale:.72, opacity:.08, start:62 }
+  ],
+  default: [
+    { type:'kaffir-leaf', side:'right', speed:.32, drift:-20, rotate:-5, scale:.62, opacity:.07, start:24 }
+  ]
+};
+
+const key = pathname === '/'
+  ? 'home'
+  : pathname.startsWith('/recettes') ? 'recettes'
+  : pathname.startsWith('/ingredients') ? 'ingredients'
+  : pathname.startsWith('/culture') ? 'culture'
+  : pathname.startsWith('/apprendre') ? 'apprendre'
+  : pathname.startsWith('/a-propos') ? 'apropos'
+  : 'default';
+
+const items = map[key];
+---
+
+<div class="motion-layer" data-motion-layer aria-hidden="true">
+  {items.map((item) => <FloatingObject {...item} />)}
+</div>
