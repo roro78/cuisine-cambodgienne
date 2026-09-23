@@ -67,6 +67,8 @@ const webpageSchema = {
 {image && <meta name="twitter:image" content={image} />}
 
 <link rel="canonical" href={canonicalURL} />
+<link rel="preconnect" href="https://commons.wikimedia.org" crossorigin />
+<link rel="dns-prefetch" href="//commons.wikimedia.org" />
 <title>{title}</title>
 
 <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
