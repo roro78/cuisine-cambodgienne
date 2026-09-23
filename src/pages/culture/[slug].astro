@@ -13,8 +13,28 @@ export function getStaticPaths() {
 }
 
 const { article } = Astro.props;
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: article.title,
+  description: article.intro,
+  image: article.image,
+  inLanguage: 'fr-FR',
+  mainEntityOfPage: `https://www.cuisine-du-cambodge.com/culture/${article.slug}/`
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://www.cuisine-du-cambodge.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Culture', item: 'https://www.cuisine-du-cambodge.com/culture/' },
+    { '@type': 'ListItem', position: 3, name: article.title, item: `https://www.cuisine-du-cambodge.com/culture/${article.slug}/` }
+  ]
+};
 ---
-<BaseLayout title={`${article.title} | Cuisine du Cambodge`} description={article.intro} image={article.image}>
+<BaseLayout title={`${article.title} | Cuisine du Cambodge`} description={article.intro} image={article.image} imageAlt={article.imageAlt}>
   <SiteHeader />
   <main class="culture-article editorial-detail culture-detail">
     <header class="culture-article-hero">
@@ -45,5 +65,7 @@ const { article } = Astro.props;
 
     <a class="text-link" href="/culture/">← Tous les articles</a>
   </main>
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   <SiteFooter />
 </BaseLayout>
