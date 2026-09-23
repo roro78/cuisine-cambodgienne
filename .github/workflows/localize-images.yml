@@ -35,7 +35,7 @@ jobs:
           fetch() {
             local url="$1"
             local name="$2"
-            curl --fail --location --retry 3 --retry-delay 2 \
+            curl --fail --location --retry 4 --retry-all-errors --retry-delay 3 --connect-timeout 20 --max-time 240 \
               -A "CuisineDuCambodge/1.0 (+https://www.cuisine-du-cambodge.com)" \
               "$url" -o "/tmp/cuisine-src/$name.jpg"
           }
@@ -53,14 +53,14 @@ jobs:
             done
           }
 
-          fetch "https://commons.wikimedia.org/wiki/Special:FilePath/Fish_Amok-_Khmer_specialty.jpg" "amok"
-          fetch "https://commons.wikimedia.org/wiki/Special:FilePath/06-Kep_Crab_Market_Cambodia-nX-3_%28cropped%29.jpg" "kep-market"
-          fetch "https://commons.wikimedia.org/wiki/Special:FilePath/Cha_kroeung.jpg" "kroeung"
-          fetch "https://commons.wikimedia.org/wiki/Special:FilePath/Kampot_Pepper.jpg" "kampot"
-          fetch "https://commons.wikimedia.org/wiki/Special:FilePath/Fish_amok_amok_trei_Khmer_Cambodian_food.jpg" "amok-alt"
-          fetch "https://commons.wikimedia.org/wiki/Special:FilePath/Cambodian_Lok_Lak.jpg" "lok-lak"
-          fetch "https://commons.wikimedia.org/wiki/Special:FilePath/Tamarind_fruit_%28Tamarindus_indica%29.jpg" "tamarind"
-          fetch "https://commons.wikimedia.org/wiki/Special:FilePath/Prahok_ktis.jpg" "prahok"
+          fetch "https://upload.wikimedia.org/wikipedia/commons/8/84/Fish_Amok-_Khmer_specialty.jpg" "amok"
+          fetch "https://upload.wikimedia.org/wikipedia/commons/c/c9/06-Kep_Crab_Market_Cambodia-nX-3_%28cropped%29.jpg" "kep-market"
+          fetch "https://upload.wikimedia.org/wikipedia/commons/8/80/Cha_kroeung.jpg" "kroeung"
+          fetch "https://upload.wikimedia.org/wikipedia/commons/d/d0/Kampot_Pepper.jpg" "kampot"
+          fetch "https://upload.wikimedia.org/wikipedia/commons/1/10/Fish_amok_amok_trei_Khmer_Cambodian_food.jpg" "amok-alt"
+          fetch "https://upload.wikimedia.org/wikipedia/commons/d/dd/Cambodian_Lok_Lak.jpg" "lok-lak"
+          fetch "https://upload.wikimedia.org/wikipedia/commons/f/f6/Tamarind_fruit_%28Tamarindus_indica%29.jpg" "tamarind"
+          fetch "https://upload.wikimedia.org/wikipedia/commons/9/9c/Prahok_ktis.jpg" "prahok"
 
           make_webp amok 480 800 1200 1600 2200
           make_webp kep-market 480 800 1200 1600 2200
