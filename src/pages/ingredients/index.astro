@@ -3,6 +3,24 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { ingredientGuides } from '../../data/ingredients';
+
+const collectionSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Ingrédients de la cuisine cambodgienne',
+  description: 'Kroeung, poivre de Kampot, tamarin, prahok et ingrédients de la cuisine khmère.',
+  url: 'https://www.cuisine-du-cambodge.com/ingredients/',
+  inLanguage: 'fr-FR',
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: ingredientGuides.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.title,
+      url: `https://www.cuisine-du-cambodge.com/ingredients/${item.slug}/`
+    }))
+  }
+};
 ---
 <BaseLayout title="Ingrédients khmers | Cuisine du Cambodge" description="Kroeung, poivre de Kampot, tamarin, prahok et aromates : comprendre les ingrédients de la cuisine cambodgienne.">
   <SiteHeader />
@@ -27,5 +45,6 @@ import { ingredientGuides } from '../../data/ingredients';
       ))}
     </section>
   </main>
+  <script type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
   <SiteFooter />
 </BaseLayout>
