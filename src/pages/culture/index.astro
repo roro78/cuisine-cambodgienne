@@ -6,11 +6,12 @@ import { cultureArticles } from '../../data/culture';
 ---
 <BaseLayout title="Culture culinaire khmère | Cuisine du Cambodge" description="Histoires, territoires, gestes et transmission autour de la cuisine cambodgienne.">
   <SiteHeader />
-  <main class="listing-page">
-    <header class="page-intro">
+  <main class="listing-page editorial-listing culture-listing">
+    <header class="page-intro page-intro-split">
       <p class="eyebrow">Comprendre</p>
       <h1>Culture culinaire</h1>
-      <p>Au-delà des recettes : les territoires, les produits et les gestes qui donnent du contexte à la cuisine khmère.</p>
+      <p>Pourquoi le poivre de Kampot a ce goût, comment le kroeung parfume une cuisine entière, ce que l’on mange et partage autour de la table : la culture culinaire racontée par ce qui se cuisine vraiment.</p>
+      <div class="page-intro-visual"><img src={cultureArticles[0].image} alt={cultureArticles[0].imageAlt} /></div>
     </header>
 
     <section class="culture-grid">
