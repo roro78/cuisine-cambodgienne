@@ -68,7 +68,7 @@ const breadcrumbSchema = {
       <p>{ingredient.intro}</p>
     </header>
 
-    <figure class="guide-visual" data-parallax="0.10"><img src={ingredient.image} srcset={imageSrcSet(ingredient.image, [800, 1200, 1600])} sizes="100vw" alt={ingredient.imageAlt} decoding="async" /><figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption></figure>
+    <figure class="guide-visual" data-parallax="0.10"><img src={ingredient.image} srcset={imageSrcSet(ingredient.image, [800, 1200, 1600])} sizes="100vw" alt={ingredient.imageAlt} width={ingredient.imageWidth} height={ingredient.imageHeight} decoding="async" /><figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption></figure>
 
     <section class="guide-body" data-reveal="up">
       <div class="guide-main">
