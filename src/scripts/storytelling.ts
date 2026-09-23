@@ -97,28 +97,6 @@ export function initStorytelling() {
 
   requestImage(1);
 
-  const scheduleIdleLoads = () => {
-    let index = 2;
-    const loadNext = () => {
-      if (index >= images.length) return;
-      requestImage(index);
-      index += 1;
-      if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(loadNext, { timeout: 1800 });
-      } else {
-        globalThis.setTimeout(loadNext, 700);
-      }
-    };
-
-    if ('requestIdleCallback' in window) {
-      window.requestIdleCallback(loadNext, { timeout: 1200 });
-    } else {
-      globalThis.setTimeout(loadNext, 500);
-    }
-  };
-
-  scheduleIdleLoads();
-
   function resize() {
     const rect = stageEl.getBoundingClientRect();
     width = Math.max(1, rect.width);
