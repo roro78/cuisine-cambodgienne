@@ -1,8 +1,46 @@
 ---
 import '../styles/global.css';
-interface Props { title?: string; description?: string; image?: string; }
-const { title='Cuisine du Cambodge — Recettes cambodgiennes et culture khmère', description='Recettes cambodgiennes, ingrédients, techniques et culture culinaire khmère : découvrez et cuisinez les saveurs du Cambodge.', image }=Astro.props;
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = 'Cuisine du Cambodge — Recettes cambodgiennes et cuisine khmère',
+  description = 'Recettes cambodgiennes, ingrédients, techniques et culture culinaire khmère : découvrez et cuisinez les saveurs du Cambodge.',
+  image,
+  imageAlt = 'Cuisine cambodgienne',
+  noindex = false
+} = Astro.props;
+
 const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+const siteURL = Astro.site ?? new URL('https://www.cuisine-du-cambodge.com');
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': new URL('/#website', siteURL).href,
+  url: new URL('/', siteURL).href,
+  name: 'Cuisine du Cambodge',
+  description: 'Recettes cambodgiennes, ingrédients, techniques et culture culinaire khmère.',
+  inLanguage: 'fr-FR'
+};
+
+const webpageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  '@id': `${canonicalURL.href}#webpage`,
+  url: canonicalURL.href,
+  name: title,
+  description,
+  inLanguage: 'fr-FR',
+  isPartOf: { '@id': new URL('/#website', siteURL).href },
+  ...(image ? { primaryImageOfPage: { '@type': 'ImageObject', url: image } } : {})
+};
 ---
 <!doctype html>
 <html lang="fr">
@@ -10,16 +48,28 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="description" content={description} />
-<meta name="theme-color" content="#111111" />
+<meta name="robots" content={noindex ? 'noindex,follow' : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1'} />
+<meta name="theme-color" content="#efe8dc" />
+
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="fr_FR" />
+<meta property="og:site_name" content="Cuisine du Cambodge" />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonicalURL} />
 {image && <meta property="og:image" content={image} />}
-<meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
+{image && <meta property="og:image:alt" content={imageAlt} />}
+
+<meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{image && <meta name="twitter:image" content={image} />}
+
 <link rel="canonical" href={canonicalURL} />
 <title>{title}</title>
+
+<script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+<script type="application/ld+json" set:html={JSON.stringify(webpageSchema)} />
 </head>
 <body><slot /></body>
 </html>

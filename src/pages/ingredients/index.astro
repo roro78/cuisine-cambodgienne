@@ -6,11 +6,12 @@ import { ingredientGuides } from '../../data/ingredients';
 ---
 <BaseLayout title="Ingrédients khmers | Cuisine du Cambodge" description="Kroeung, poivre de Kampot, tamarin, prahok et aromates : comprendre les ingrédients de la cuisine cambodgienne.">
   <SiteHeader />
-  <main class="listing-page">
-    <header class="page-intro">
+  <main class="listing-page editorial-listing ingredients-listing">
+    <header class="page-intro page-intro-split">
       <p class="eyebrow">Les saveurs</p>
       <h1>Ingrédients & bases</h1>
-      <p>Une cuisine se comprend aussi par ses produits : leurs parfums, leur rôle et la manière dont ils s'équilibrent.</p>
+      <p>Citronnelle fraîche, tamarin acidulé, poivre de Kampot, prahok, coco : ici, on découvre surtout ce que chaque ingrédient apporte dans la bouche et comment l’utiliser en cuisine.</p>
+      <div class="page-intro-visual"><img src={ingredientGuides[0].image} alt={ingredientGuides[0].imageAlt} /></div>
     </header>
     <section class="text-grid">
       {ingredientGuides.map((item) => (

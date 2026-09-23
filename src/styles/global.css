@@ -389,3 +389,612 @@ a:focus-visible,summary:focus-visible{outline:2px solid currentColor;outline-off
   .worlds-progress{display:none}
   .amok-finale-image{transform:none!important}
 }
+
+
+/* V6 — single scroll-driven canvas film */
+.scroll-film{
+  position:relative;
+  height:620svh;
+  background:#090a08;
+  color:#fff;
+}
+.scroll-film-stage{
+  position:sticky;
+  top:0;
+  height:100svh;
+  overflow:hidden;
+  background:#090a08;
+  isolation:isolate;
+}
+.scroll-film-canvas,
+.scroll-film-fallback{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+.scroll-film-canvas{
+  z-index:1;
+  display:block;
+}
+.scroll-film-fallback{
+  z-index:0;
+  object-fit:cover;
+  object-position:56% 48%;
+  transition:opacity .45s ease;
+}
+.scroll-film-vignette{
+  position:absolute;
+  z-index:3;
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(0,0,0,.7) 0%,rgba(0,0,0,.2) 48%,rgba(0,0,0,.38) 100%),
+    linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.45));
+  pointer-events:none;
+}
+.scroll-film-grain{
+  position:absolute;
+  z-index:4;
+  inset:0;
+  pointer-events:none;
+  opacity:.12;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.24'/%3E%3C/svg%3E");
+  mix-blend-mode:soft-light;
+}
+.film-copy{
+  position:absolute;
+  z-index:6;
+  left:var(--page-pad);
+  bottom:10vh;
+  width:min(43rem,68vw);
+  opacity:0;
+  visibility:hidden;
+  will-change:opacity,transform;
+}
+.film-copy.is-active{
+  visibility:visible;
+}
+.film-copy-1,.film-copy-3{
+  left:auto;
+  right:clamp(4rem,8vw,8rem);
+  width:min(36rem,52vw);
+}
+.film-kicker{
+  margin:0 0 1rem;
+  font-size:.62rem;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  opacity:.78;
+}
+.film-copy h1,
+.film-copy h2{
+  margin:0 0 1.3rem;
+  font:400 clamp(3.4rem,6vw,6.6rem)/.88 var(--serif);
+  letter-spacing:-.058em;
+  text-wrap:balance;
+}
+.film-copy p:not(.film-kicker){
+  max-width:31rem;
+  margin:0;
+  font-size:clamp(.94rem,1.15vw,1.08rem);
+  line-height:1.68;
+}
+.film-cta{
+  display:inline-block;
+  margin-top:1.7rem;
+  padding-bottom:.35rem;
+  border-bottom:1px solid rgba(255,255,255,.72);
+  font-size:.68rem;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+}
+.film-side-ui{
+  position:absolute;
+  z-index:7;
+  top:50%;
+  right:1.4rem;
+  transform:translateY(-50%);
+  display:grid;
+  grid-template-columns:auto .25rem;
+  grid-template-rows:auto 15rem auto;
+  gap:.75rem .7rem;
+  color:#fff;
+}
+.film-count{
+  grid-column:1;
+  grid-row:1;
+  writing-mode:vertical-rl;
+  transform:rotate(180deg);
+  font-size:.58rem;
+  letter-spacing:.14em;
+}
+.film-progress{
+  grid-column:2;
+  grid-row:1/4;
+  width:1px;
+  height:100%;
+  background:rgba(255,255,255,.24);
+  overflow:hidden;
+}
+.film-progress i{
+  display:block;
+  width:100%;
+  height:100%;
+  background:#fff;
+  transform:scaleY(0);
+  transform-origin:top;
+}
+.film-label{
+  grid-column:1;
+  grid-row:3;
+  align-self:end;
+  writing-mode:vertical-rl;
+  transform:rotate(180deg);
+  font-size:.54rem;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  opacity:.6;
+}
+
+.after-film{
+  min-height:100svh;
+  padding:17vh var(--page-pad) 14vh;
+  background:var(--porcelain);
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(18rem,.72fr);
+  gap:8vw;
+  align-items:center;
+}
+.after-film-copy h2{
+  margin:0 0 1.7rem;
+  max-width:9ch;
+  font:400 clamp(4rem,7vw,7.5rem)/.86 var(--serif);
+  letter-spacing:-.06em;
+}
+.after-film-copy>p:last-child{
+  max-width:34rem;
+  line-height:1.75;
+}
+.after-film-links{
+  display:flex;
+  flex-direction:column;
+  border-top:1px solid rgba(17,17,17,.16);
+}
+.after-film-links a{
+  display:grid;
+  grid-template-columns:2.6rem 1fr;
+  gap:.4rem 1rem;
+  padding:1.4rem 0;
+  border-bottom:1px solid rgba(17,17,17,.16);
+}
+.after-film-links span{
+  grid-row:1/3;
+  font-size:.58rem;
+  letter-spacing:.14em;
+  opacity:.45;
+}
+.after-film-links strong{
+  font:400 clamp(1.8rem,2.8vw,3rem)/1 var(--serif);
+  letter-spacing:-.035em;
+}
+.after-film-links em{
+  font-style:normal;
+  line-height:1.55;
+  opacity:.68;
+}
+
+.amok-poster{
+  position:relative;
+  min-height:110svh;
+  display:grid;
+  align-items:end;
+  overflow:hidden;
+  background:#111;
+  color:#fff;
+}
+.amok-poster>img{
+  position:absolute;
+  inset:-5%;
+  width:110%;
+  height:110%;
+  object-fit:cover;
+  object-position:center;
+  will-change:transform;
+}
+.amok-poster-shade{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.02) 24%,rgba(0,0,0,.72) 100%);
+}
+.amok-poster-copy{
+  position:relative;
+  z-index:2;
+  max-width:42rem;
+  padding:0 var(--page-pad) 10vh;
+}
+.amok-poster-copy h2{
+  margin:0 0 1.3rem;
+  font:400 clamp(5rem,11vw,11rem)/.78 var(--serif);
+  letter-spacing:-.07em;
+}
+.amok-poster-copy p:not(.eyebrow){
+  max-width:32rem;
+  line-height:1.72;
+}
+.amok-poster-copy a{
+  display:inline-block;
+  margin-top:1.5rem;
+  padding-bottom:.32rem;
+  border-bottom:1px solid rgba(255,255,255,.7);
+  font-size:.68rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+@media(max-width:900px){
+  .film-copy,.film-copy-1,.film-copy-3{
+    left:var(--page-pad);
+    right:3.4rem;
+    width:auto;
+  }
+  .after-film{
+    grid-template-columns:1fr;
+    gap:8vh;
+  }
+}
+@media(max-width:720px){
+  .scroll-film{height:560svh}
+  .film-copy,.film-copy-1,.film-copy-3{
+    left:var(--page-pad);
+    right:2.8rem;
+    bottom:11vh;
+  }
+  .film-copy h1,.film-copy h2{
+    font-size:clamp(3rem,13vw,4.8rem);
+    line-height:.9;
+  }
+  .film-copy p:not(.film-kicker){
+    font-size:.9rem;
+    line-height:1.58;
+    max-width:24rem;
+  }
+  .film-side-ui{right:.75rem}
+  .after-film{
+    padding-top:14vh;
+    padding-bottom:12vh;
+  }
+  .after-film-copy h2{
+    font-size:clamp(3.5rem,15vw,5.5rem);
+  }
+  .amok-poster{min-height:100svh}
+  .amok-poster-copy h2{
+    font-size:clamp(5rem,22vw,8rem);
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .scroll-film{height:auto}
+  .scroll-film-stage{
+    position:relative;
+    min-height:100svh;
+  }
+  .scroll-film-canvas,.film-side-ui{
+    display:none;
+  }
+  .scroll-film-fallback{
+    opacity:1!important;
+  }
+  .film-copy{
+    display:none;
+  }
+  .film-copy-0{
+    display:block;
+    opacity:1!important;
+    visibility:visible!important;
+    transform:none!important;
+  }
+}
+
+
+/* V6 — warm culinary editorial system */
+.editorial-listing,
+.editorial-detail{
+  background:#efe8dc;
+}
+.editorial-listing{
+  padding-top:0;
+}
+.page-intro-split{
+  position:relative;
+  min-height:78svh;
+  display:grid;
+  grid-template-columns:minmax(0,.85fr) minmax(22rem,1.15fr);
+  gap:5vw;
+  align-items:end;
+  max-width:none;
+  margin:0 calc(var(--page-pad) * -1) 12vh;
+  padding:14vh var(--page-pad) 8vh;
+  overflow:hidden;
+  background:#e7ddcf;
+}
+.page-intro-split>.eyebrow,
+.page-intro-split>h1,
+.page-intro-split>p:not(.eyebrow){
+  grid-column:1;
+  position:relative;
+  z-index:2;
+}
+.page-intro-split h1{
+  max-width:9ch;
+  margin:.3rem 0 1.5rem;
+  font-size:clamp(4.2rem,8vw,8.5rem);
+}
+.page-intro-split>p:not(.eyebrow){
+  max-width:38rem;
+  margin:0;
+  font-size:clamp(1rem,1.5vw,1.25rem);
+  line-height:1.68;
+}
+.page-intro-visual{
+  grid-column:2;
+  grid-row:1/5;
+  align-self:stretch;
+  min-height:62svh;
+  overflow:hidden;
+  border-radius:48% 48% 2rem 2rem / 28% 28% 2rem 2rem;
+}
+.page-intro-visual img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  transition:transform .8s cubic-bezier(.2,.7,.2,1);
+}
+.page-intro-split:hover .page-intro-visual img{
+  transform:scale(1.025);
+}
+
+.recipes-listing .card-grid,
+.ingredients-listing .text-grid,
+.culture-listing .culture-grid,
+.learn-listing .offer-grid{
+  padding-bottom:6vh;
+}
+.recipes-listing .content-card,
+.ingredients-listing .guide-link article,
+.culture-listing .culture-card,
+.learn-listing .offer-grid article{
+  background:#f6f0e7;
+  border:0;
+  padding:1.1rem;
+}
+.recipes-listing .content-card,
+.ingredients-listing .guide-link article,
+.culture-listing .culture-card{
+  box-shadow:0 1rem 3rem rgba(52,38,25,.045);
+}
+.recipes-listing .card-visual,
+.ingredients-listing .guide-card-image,
+.culture-listing .culture-card-image{
+  margin:-1.1rem -1.1rem 1.4rem;
+  aspect-ratio:4/3;
+}
+.recipes-listing .content-card h2,
+.ingredients-listing .guide-link h2,
+.culture-listing .culture-card h2,
+.learn-listing .offer-grid h2{
+  font-size:clamp(2rem,3.2vw,3.4rem);
+}
+.recipes-listing .content-card p,
+.ingredients-listing .guide-link p,
+.culture-listing .culture-card p,
+.learn-listing .offer-grid p{
+  color:#4e453b;
+}
+.learn-listing .offer-grid{
+  gap:1.2rem;
+}
+.learn-listing .offer-grid article{
+  min-height:28rem;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  background:
+    linear-gradient(180deg,rgba(73,67,52,.08),rgba(73,67,52,.18)),
+    #e8dfd1;
+}
+.learn-listing .offer-grid article:nth-child(2){
+  background:
+    linear-gradient(180deg,rgba(66,86,58,.08),rgba(66,86,58,.2)),
+    #dfe4d8;
+}
+
+/* Recipe detail */
+.recipe-detail{
+  padding-top:0;
+}
+.recipe-detail .recipe-hero{
+  max-width:none;
+  margin:0 calc(var(--page-pad) * -1);
+  padding:14vh var(--page-pad) 8vh;
+  background:#eadfce;
+}
+.recipe-detail .recipe-intro{
+  color:#3c352e;
+}
+.recipe-detail .recipe-context{
+  max-width:48rem;
+  line-height:1.7;
+  color:#655b50;
+}
+.recipe-detail .recipe-facts{
+  margin-top:3rem;
+  background:#cfc1ae;
+}
+.recipe-detail .recipe-facts div{
+  background:#f4ecdf;
+}
+.recipe-detail .recipe-cover{
+  margin:0 calc(var(--page-pad) * -1) 10vh;
+  height:min(72vw,54rem);
+}
+.recipe-detail .recipe-layout{
+  gap:4vw;
+}
+.recipe-detail .ingredients-panel{
+  top:6rem;
+  padding:2rem;
+  background:#dfd3c2;
+}
+.recipe-detail .method-panel{
+  background:#172017;
+  color:#f7f2e8;
+  padding:clamp(2rem,4vw,4rem);
+}
+.recipe-detail .method-panel ol li{
+  border-top-color:rgba(255,255,255,.16);
+}
+.recipe-detail .recipe-keypoints{
+  margin-top:3rem;
+  padding-top:2rem;
+  border-top:1px solid rgba(255,255,255,.18);
+}
+.recipe-detail .recipe-notes{
+  background:#b3563f;
+  color:#fff7ef;
+}
+.recipe-detail .recipe-related{
+  margin:12vh calc(var(--page-pad) * -1) 0;
+  padding:10vh var(--page-pad);
+  background:#d9c9b5;
+}
+
+/* Ingredient detail */
+.ingredient-detail{
+  padding-top:0;
+}
+.ingredient-detail .guide-hero{
+  margin:0 calc(var(--page-pad) * -1);
+  padding:14vh var(--page-pad) 8vh;
+  background:#dce2d6;
+}
+.ingredient-detail .guide-hero>p:last-child{
+  color:#4d5749;
+}
+.ingredient-detail .guide-visual{
+  margin:0 calc(var(--page-pad) * -1);
+  height:min(72vw,52rem);
+}
+.ingredient-detail .guide-body{
+  padding:11vh 0;
+}
+.ingredient-detail .guide-main{
+  padding:2.5rem;
+  background:#eef0e8;
+}
+.ingredient-detail .guide-lists{
+  gap:1rem;
+}
+.ingredient-detail .guide-lists article{
+  padding:2rem;
+  background:#f5efe6;
+}
+.ingredient-detail .guide-lists article:nth-child(2){
+  background:#e7ddcf;
+}
+.ingredient-detail .guide-lists article:nth-child(3){
+  background:#dce2d6;
+}
+
+/* Culture detail */
+.culture-detail{
+  padding-top:0;
+}
+.culture-detail .culture-article-hero{
+  margin:0 calc(var(--page-pad) * -1);
+  padding:14vh var(--page-pad) 8vh;
+  background:#e5d8c5;
+}
+.culture-detail .culture-visual{
+  margin:0 calc(var(--page-pad) * -1);
+  height:min(68vw,50rem);
+}
+.culture-detail .culture-copy{
+  padding:10vh 0 4vh;
+}
+.culture-detail .culture-copy>section{
+  display:grid;
+  grid-template-columns:minmax(12rem,.38fr) minmax(0,1fr);
+  gap:5vw;
+  padding:4rem 0;
+  border-top:1px solid rgba(17,17,17,.16);
+}
+.culture-detail .culture-copy h2{
+  margin:0;
+  font:400 clamp(2.3rem,4vw,4rem)/.95 var(--serif);
+}
+.culture-detail .culture-copy section p{
+  grid-column:2;
+  max-width:44rem;
+  font-size:1.05rem;
+  line-height:1.82;
+}
+.culture-detail .source-box{
+  background:#1b211a;
+  color:#f6f0e7;
+}
+
+/* soften white UI globally on editorial pages */
+.editorial-listing .text-link,
+.editorial-detail .text-link{
+  border-bottom-color:currentColor;
+}
+.editorial-listing .site-footer,
+.editorial-detail .site-footer{
+  background:#efe8dc;
+}
+
+@media(max-width:900px){
+  .page-intro-split{
+    grid-template-columns:1fr;
+    padding-top:11vh;
+  }
+  .page-intro-split>.eyebrow,
+  .page-intro-split>h1,
+  .page-intro-split>p:not(.eyebrow),
+  .page-intro-visual{
+    grid-column:1;
+  }
+  .page-intro-visual{
+    grid-row:auto;
+    min-height:52svh;
+    margin-top:3rem;
+    border-radius:2rem;
+  }
+}
+@media(max-width:720px){
+  .page-intro-split{
+    min-height:auto;
+    padding-top:10vh;
+    padding-bottom:3rem;
+  }
+  .page-intro-split h1{
+    font-size:clamp(3.7rem,17vw,5.8rem);
+  }
+  .page-intro-visual{
+    min-height:46svh;
+  }
+  .recipe-detail .recipe-layout{
+    grid-template-columns:1fr;
+  }
+  .recipe-detail .ingredients-panel{
+    position:relative;
+    top:auto;
+  }
+  .culture-detail .culture-copy>section{
+    grid-template-columns:1fr;
+    gap:1.5rem;
+  }
+  .culture-detail .culture-copy section p{
+    grid-column:1;
+  }
+}
