@@ -2588,3 +2588,85 @@ main{position:relative;z-index:1}
 @media(max-width:720px){
   .brand-flag{width:1.65rem;height:1.1rem}
 }
+
+
+/* V10 — deep-page polish */
+.recipe-detail .method-panel ol{
+  counter-reset:recipe-step;
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+.recipe-detail .method-panel ol li{
+  counter-increment:recipe-step;
+  position:relative;
+  padding:2rem 0 2rem 4.8rem;
+  min-height:6rem;
+}
+.recipe-detail .method-panel ol li:before{
+  content:counter(recipe-step, decimal-leading-zero);
+  position:absolute;
+  left:0;
+  top:2.2rem;
+  font:600 .62rem/1 var(--sans);
+  letter-spacing:.16em;
+  color:#e1c587;
+}
+.recipe-detail .method-panel ol li:after{
+  content:'';
+  position:absolute;
+  left:2.65rem;
+  top:0;
+  bottom:0;
+  width:1px;
+  background:rgba(255,255,255,.12);
+}
+.recipe-detail .recipe-cover{
+  height:min(76vh,50rem);
+}
+.ingredient-detail .guide-lists{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+}
+.ingredient-detail .guide-lists article{
+  min-height:24rem;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+}
+.ingredient-detail .guide-lists article h2{
+  margin:0 0 1.2rem;
+  max-width:8ch;
+  font:400 clamp(2.2rem,3.5vw,3.8rem)/.94 var(--serif);
+  letter-spacing:-.04em;
+}
+.culture-detail .culture-copy>section{
+  position:relative;
+  margin:0 calc(var(--page-pad) * -1);
+  padding:clamp(4rem,8vh,7rem) var(--page-pad);
+}
+.culture-detail .culture-copy>section:nth-child(odd){
+  background:#efe4d3;
+}
+.culture-detail .culture-copy>section:nth-child(even){
+  background:#d8dfd1;
+}
+.culture-detail .culture-copy>section h2{
+  position:sticky;
+  top:8rem;
+  align-self:start;
+}
+.culture-detail .source-box{
+  margin-top:0;
+  padding:clamp(2rem,4vw,4rem);
+}
+@media(max-width:900px){
+  .ingredient-detail .guide-lists{grid-template-columns:1fr}
+  .ingredient-detail .guide-lists article{min-height:auto}
+  .culture-detail .culture-copy>section h2{position:static}
+}
+@media(max-width:720px){
+  .recipe-detail .method-panel ol li{padding-left:3.8rem}
+  .recipe-detail .method-panel ol li:after{left:2.1rem}
+  .recipe-detail .recipe-cover{height:58vh}
+}
