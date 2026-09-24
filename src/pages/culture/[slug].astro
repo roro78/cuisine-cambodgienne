@@ -41,10 +41,25 @@ const relatedContent = article.slug === 'poivre-de-kampot'
         recipes.find((item) => item.slug === 'kroeung-jaune'),
         recipes.find((item) => item.slug === 'amok-trey')
       ].filter(Boolean)
-    : [
-        recipes.find((item) => item.slug === 'amok-trey'),
-        ingredientGuides.find((item) => item.slug === 'kroeung')
-      ].filter(Boolean);
+    : article.slug === 'comprendre-amok'
+      ? [
+          recipes.find((item) => item.slug === 'amok-trey'),
+          ingredientGuides.find((item) => item.slug === 'kroeung')
+        ].filter(Boolean)
+      : article.slug === 'prahok-fermentation'
+        ? [
+            ingredientGuides.find((item) => item.slug === 'prahok'),
+            ingredientGuides.find((item) => item.slug === 'kroeung')
+          ].filter(Boolean)
+        : article.slug === 'marches-herbes-cuisine-khmere'
+          ? [
+              ingredientGuides.find((item) => item.slug === 'tamarin'),
+              ingredientGuides.find((item) => item.slug === 'poivre-de-kampot')
+            ].filter(Boolean)
+          : [
+              recipes.find((item) => item.slug === 'kroeung-jaune'),
+              recipes.find((item) => item.slug === 'amok-trey')
+            ].filter(Boolean);
 
 const articleSchema = {
   '@context': 'https://schema.org',
@@ -55,7 +70,9 @@ const articleSchema = {
   inLanguage: 'fr-FR',
   author: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
   publisher: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
-  mainEntityOfPage: `https://www.cuisine-du-cambodge.com/culture/${article.slug}/`
+  mainEntityOfPage: `https://www.cuisine-du-cambodge.com/culture/${article.slug}/`,
+  about: { '@type': 'Thing', name: article.eyebrow },
+  keywords: [article.eyebrow, 'cuisine cambodgienne', 'culture culinaire khmère'].join(', ')
 };
 
 const breadcrumbSchema = {
