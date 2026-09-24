@@ -33,14 +33,19 @@ const collectionSchema = {
       <div class="page-intro-visual" data-parallax="0.10"><img src={cultureArticles[0].image} srcset={imageSrcSet(cultureArticles[0].image, cultureArticles[0].imageWidths)} sizes="(max-width: 900px) 100vw, 58vw" alt={cultureArticles[0].imageAlt} width={cultureArticles[0].imageWidth} height={cultureArticles[0].imageHeight} fetchpriority="high" decoding="async" /></div>
     </header>
 
-    <section class="culture-grid" data-reveal="up">
+    <section class="culture-editorial" aria-label="Articles culturels">
       {cultureArticles.map((article, index) => (
-        <a class="culture-card" href={`/culture/${article.slug}/`} data-reveal="up" data-reveal-delay={String(Math.min(index * 0.08, 0.16))}>
-          <div class="culture-card-image"><img src={article.image} srcset={imageSrcSet(article.image, article.imageWidths)} sizes="(max-width: 720px) 100vw, 33vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} loading="lazy" decoding="async" /></div>
-          <span class="card-meta">{article.eyebrow}</span>
-          <h2>{article.title}</h2>
-          <p>{article.intro}</p>
-          <span class="text-link">Lire</span>
+        <a class:list={['culture-feature', { 'culture-feature--lead': index === 0, 'culture-feature--split': index > 0 }]} href={`/culture/${article.slug}/`} data-reveal="up">
+          <figure class="culture-feature-media" data-parallax="0.09">
+            <img src={article.image} srcset={imageSrcSet(article.image, article.imageWidths)} sizes={index === 0 ? '100vw' : '(max-width: 800px) 100vw, 50vw'} alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} loading="lazy" decoding="async" />
+          </figure>
+          <div class="culture-feature-copy">
+            <span class="culture-rule" aria-hidden="true"></span>
+            <p class="card-meta">{article.eyebrow}</p>
+            <h2>{article.title}</h2>
+            <p>{article.intro}</p>
+            <span class="text-link">Lire l’histoire</span>
+          </div>
         </a>
       ))}
     </section>
