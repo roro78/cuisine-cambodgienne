@@ -11,8 +11,21 @@ export function initGlobalMotion() {
   const reveals = gsap.utils.toArray<HTMLElement>('[data-reveal]');
   const parallax = gsap.utils.toArray<HTMLElement>('[data-parallax]');
   const recipeSteps = gsap.utils.toArray<HTMLElement>('[data-recipe-step]');
+  const desireEntries = gsap.utils.toArray<HTMLElement>('[data-desire-entry]');
+  const cultureRules = gsap.utils.toArray<HTMLElement>('.culture-rule');
+  const companions = gsap.utils.toArray<HTMLElement>('[data-scroll-companion]');
+  const learningPaths = gsap.utils.toArray<HTMLElement>('[data-learning-path]');
 
-  if (!objects.length && !reveals.length && !parallax.length && !recipeSteps.length) return () => {};
+  if (
+    !objects.length &&
+    !reveals.length &&
+    !parallax.length &&
+    !recipeSteps.length &&
+    !desireEntries.length &&
+    !cultureRules.length &&
+    !companions.length &&
+    !learningPaths.length
+  ) return () => {};
 
   const context = gsap.context(() => {
     objects.forEach((el, index) => {
@@ -21,12 +34,7 @@ export function initGlobalMotion() {
       const rotate = Number(el.dataset.motionRotate ?? 5);
       const direction = el.classList.contains('motion-object--left') ? 1 : -1;
 
-      gsap.set(el, {
-        y: 0,
-        x: 0,
-        rotate: -rotate * .45
-      });
-
+      gsap.set(el, { y: 0, x: 0, rotate: -rotate * .45 });
       gsap.to(el, {
         y: () => window.innerHeight * (1.15 + speed * 1.8),
         x: direction * drift,
@@ -46,29 +54,25 @@ export function initGlobalMotion() {
       const direction = el.dataset.reveal ?? 'up';
       const distance = Number(el.dataset.revealDistance ?? 42);
       const delay = Number(el.dataset.revealDelay ?? 0);
-
       const from = direction === 'left'
         ? { x: -distance, y: 0 }
         : direction === 'right'
           ? { x: distance, y: 0 }
           : { x: 0, y: distance };
 
-      gsap.fromTo(el,
-        { ...from, autoAlpha: 0 },
-        {
-          x: 0,
-          y: 0,
-          autoAlpha: 1,
-          delay,
-          duration: 1.05,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: el,
-            start: 'top 86%',
-            toggleActions: 'play none none reverse'
-          }
+      gsap.fromTo(el, { ...from, autoAlpha: 0 }, {
+        x: 0,
+        y: 0,
+        autoAlpha: 1,
+        delay,
+        duration: 1.05,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 86%',
+          toggleActions: 'play none none reverse'
         }
-      );
+      });
     });
 
     parallax.forEach((el) => {
@@ -76,38 +80,132 @@ export function initGlobalMotion() {
       const target = el.tagName === 'IMG' ? el : el.querySelector<HTMLElement>('img');
       if (!target) return;
 
-      gsap.fromTo(target,
-        { yPercent: speed * -45, scale: 1.06 },
-        {
-          yPercent: speed * 45,
-          scale: 1,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: el,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true
-          }
+      gsap.fromTo(target, { yPercent: speed * -45, scale: 1.06 }, {
+        yPercent: speed * 45,
+        scale: 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true
         }
-      );
+      });
     });
 
     recipeSteps.forEach((step) => {
-      gsap.fromTo(step,
-        { autoAlpha: .36, x: 16 },
-        {
+      gsap.fromTo(step, { autoAlpha: .36, x: 16 }, {
+        autoAlpha: 1,
+        x: 0,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: step,
+          start: 'top 72%',
+          end: 'bottom 48%',
+          scrub: true,
+          toggleActions: 'play reverse play reverse'
+        }
+      });
+    });
+
+    desireEntries.forEach((entry, index) => {
+      const copy = entry.querySelector<HTMLElement>('.desire-copy');
+      const media = entry.querySelector<HTMLElement>('.desire-media');
+      if (copy) {
+        gsap.fromTo(copy, { autoAlpha: .28, y: 54 }, {
+          autoAlpha: 1,
+          y: 0,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: entry,
+            start: 'top 82%',
+            end: 'center 54%',
+            scrub: .8
+          }
+        });
+      }
+      if (media) {
+        gsap.fromTo(media, {
+          clipPath: index % 2 === 0 ? 'inset(8% 0 8% 16% round 28px)' : 'inset(8% 16% 8% 0 round 28px)',
+          yPercent: 7
+        }, {
+          clipPath: 'inset(0% 0% 0% 0% round 28px)',
+          yPercent: -3,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: entry,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1
+          }
+        });
+      }
+    });
+
+    cultureRules.forEach((rule) => {
+      gsap.fromTo(rule, { scaleX: 0 }, {
+        scaleX: 1,
+        transformOrigin: 'left center',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: rule.closest('.culture-feature') ?? rule,
+          start: 'top 78%',
+          end: 'top 46%',
+          scrub: .8
+        }
+      });
+    });
+
+    companions.forEach((el) => {
+      const targetSelector = el.dataset.companionTarget ?? '.about-story';
+      const target = document.querySelector<HTMLElement>(targetSelector);
+      if (!target) return;
+
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: target,
+          start: 'top 72%',
+          end: 'bottom 28%',
+          scrub: 1.1,
+          invalidateOnRefresh: true
+        }
+      })
+        .fromTo(el, { y: 0, x: 0, rotate: -6, autoAlpha: .16 }, { y: '42vh', x: '-5vw', rotate: 3, autoAlpha: .26, ease: 'none' })
+        .to(el, { y: '92vh', x: '4vw', rotate: -4, autoAlpha: .22, ease: 'none' })
+        .to(el, { y: '145vh', x: '-2vw', rotate: 5, autoAlpha: 0, ease: 'none' });
+    });
+
+    learningPaths.forEach((path) => {
+      const fill = path.querySelector<HTMLElement>('.learn-progress i');
+      const steps = gsap.utils.toArray<HTMLElement>('[data-learning-step]', path);
+
+      if (fill) {
+        gsap.fromTo(fill, { scaleY: 0 }, {
+          scaleY: 1,
+          transformOrigin: 'top center',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: path,
+            start: 'top 72%',
+            end: 'bottom 52%',
+            scrub: true
+          }
+        });
+      }
+
+      steps.forEach((step) => {
+        gsap.fromTo(step, { autoAlpha: .38, x: 18 }, {
           autoAlpha: 1,
           x: 0,
           ease: 'none',
           scrollTrigger: {
             trigger: step,
             start: 'top 72%',
-            end: 'bottom 48%',
-            scrub: true,
-            toggleActions: 'play reverse play reverse'
+            end: 'center 52%',
+            scrub: .6
           }
-        }
-      );
+        });
+      });
     });
   });
 
