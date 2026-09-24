@@ -5,6 +5,15 @@ import SiteFooter from '../../components/SiteFooter.astro';
 import { ingredientGuides } from '../../data/ingredients';
 import { imageSrcSet } from '../../utils/images';
 
+const pantry = [
+  ['Citronnelle', 'Fraîche, citronnée, fibreuse : la base de nombreux kroeung.', 'citronnelle'],
+  ['Galanga', 'Boisé, camphré, plus ferme et plus sec que le gingembre.', 'galanga'],
+  ['Combava', 'Zeste et feuilles très parfumés pour réveiller sauces et currys.', 'combava'],
+  ['Curcuma', 'Couleur jaune intense, chaleur terreuse et légère amertume.', 'curcuma'],
+  ['Lait de coco', 'Rondeur, texture et douceur dans currys et amok.', 'lait-de-coco'],
+  ['Sucre de palme', 'Une douceur caramélisée utilisée pour équilibrer, pas pour sucrer.', 'sucre-de-palme']
+];
+
 const collectionSchema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
@@ -23,7 +32,7 @@ const collectionSchema = {
   }
 };
 ---
-<BaseLayout title="Ingrédients khmers | Cuisine du Cambodge" description="Kroeung, poivre de Kampot, tamarin, prahok et aromates : comprendre les ingrédients de la cuisine cambodgienne.">
+<BaseLayout title="Ingrédients cuisine cambodgienne : kroeung, prahok, Kampot…" description="Kroeung, prahok, poivre de Kampot, tamarin, citronnelle, galanga, combava : comprendre le goût, l’usage et les accords des ingrédients de la cuisine cambodgienne.">
   <SiteHeader />
   <main class="listing-page editorial-listing ingredients-listing">
     <header class="page-intro page-intro-split" data-reveal="up">
@@ -48,6 +57,23 @@ const collectionSchema = {
           </div>
         </a>
       ))}
+    </section>
+
+    <section class="ingredient-pantry" aria-labelledby="ingredient-pantry-title" data-reveal="up">
+      <header>
+        <p class="eyebrow">Le garde-manger aromatique</p>
+        <h2 id="ingredient-pantry-title">Six autres saveurs à reconnaître.</h2>
+        <p>Pas encore de fiche complète pour chacune, mais assez de repères pour savoir ce qu’elles apportent et où les retrouver.</p>
+      </header>
+      <div class="ingredient-pantry-grid">
+        {pantry.map(([name, text, slug]) => (
+          <a href={`/glossaire/#${slug}`}>
+            <strong>{name}</strong>
+            <p>{text}</p>
+            <span>Voir dans le glossaire →</span>
+          </a>
+        ))}
+      </div>
     </section>
   </main>
   <script type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
