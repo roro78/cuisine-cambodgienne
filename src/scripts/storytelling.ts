@@ -35,11 +35,6 @@ export function initStorytelling() {
   const stageEl = stage;
   const canvasEl = canvas;
 
-  if (reduceMotion) {
-    copies.forEach((copy, index) => copy.classList.toggle('is-active', index === 0));
-    return () => {};
-  }
-
   const context2d = canvasEl.getContext('2d', { alpha: false });
   if (!context2d) return () => {};
   const ctx = context2d;
@@ -144,10 +139,10 @@ export function initStorytelling() {
     const next = images[Math.min(index + 1, images.length - 1)];
     if (!current?.ready) return;
 
-    const zoomA = 1.03 + t * 0.06;
-    const zoomB = 1.1 - t * 0.06;
-    const driftA = (index % 2 === 0 ? -1 : 1) * t * 0.018;
-    const driftB = (index % 2 === 0 ? 1 : -1) * (1 - t) * 0.018;
+    const zoomA = reduceMotion ? 1 : 1.03 + t * 0.06;
+    const zoomB = reduceMotion ? 1 : 1.1 - t * 0.06;
+    const driftA = reduceMotion ? 0 : (index % 2 === 0 ? -1 : 1) * t * 0.018;
+    const driftB = reduceMotion ? 0 : (index % 2 === 0 ? 1 : -1) * (1 - t) * 0.018;
 
     ctx.fillStyle = '#0a0a08';
     ctx.fillRect(0, 0, width, height);
@@ -158,37 +153,42 @@ export function initStorytelling() {
     const eased = smoothstep(t);
     ctx.save();
 
-    if (index === 0) {
-      const wipe = width * eased;
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(wipe + width * 0.14, 0);
-      ctx.lineTo(wipe - width * 0.08, height);
-      ctx.lineTo(0, height);
-      ctx.closePath();
-      ctx.clip();
-    } else if (index === 1) {
-      const radius = Math.hypot(width, height) * 0.72 * eased;
-      ctx.beginPath();
-      ctx.arc(width * 0.68, height * 0.48, radius, 0, Math.PI * 2);
-      ctx.clip();
-    } else if (index === 2) {
-      const wipe = height * eased;
-      ctx.beginPath();
-      ctx.rect(0, height - wipe, width, wipe);
-      ctx.clip();
+    if (reduceMotion) {
+      drawCover(next.img, 1, 0, 0, eased);
+      ctx.restore();
     } else {
-      const inset = width * 0.18 * (1 - eased);
-      ctx.beginPath();
-      ctx.roundRect(inset, inset * 0.45, width - inset * 2, height - inset * 0.9, Math.max(18, inset * 0.18));
-      ctx.clip();
-    }
+      if (index === 0) {
+        const wipe = width * eased;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(wipe + width * 0.14, 0);
+        ctx.lineTo(wipe - width * 0.08, height);
+        ctx.lineTo(0, height);
+        ctx.closePath();
+        ctx.clip();
+      } else if (index === 1) {
+        const radius = Math.hypot(width, height) * 0.72 * eased;
+        ctx.beginPath();
+        ctx.arc(width * 0.68, height * 0.48, radius, 0, Math.PI * 2);
+        ctx.clip();
+      } else if (index === 2) {
+        const wipe = height * eased;
+        ctx.beginPath();
+        ctx.rect(0, height - wipe, width, wipe);
+        ctx.clip();
+      } else {
+        const inset = width * 0.18 * (1 - eased);
+        ctx.beginPath();
+        ctx.roundRect(inset, inset * 0.45, width - inset * 2, height - inset * 0.9, Math.max(18, inset * 0.18));
+        ctx.clip();
+      }
 
-    const maxBlur = window.innerWidth < 720 ? 2 : 5;
-    ctx.filter = `blur(${(1 - eased) * maxBlur}px)`;
-    drawCover(next.img, zoomB, driftB, 0, 1);
-    ctx.filter = 'none';
-    ctx.restore();
+      const maxBlur = window.innerWidth < 720 ? 2 : 5;
+      ctx.filter = `blur(${(1 - eased) * maxBlur}px)`;
+      drawCover(next.img, zoomB, driftB, 0, 1);
+      ctx.filter = 'none';
+      ctx.restore();
+    }
 
     if (t > 0.7) {
       ctx.save();
@@ -207,7 +207,11 @@ export function initStorytelling() {
 
     copies.forEach((copy, index) => {
       if (index !== active) {
-        gsap.set(copy, { autoAlpha: 0, y: index < active ? -28 : 28, scale: 0.985 });
+        gsap.set(copy, {
+          autoAlpha: 0,
+          y: reduceMotion ? 0 : (index < active ? -28 : 28),
+          scale: reduceMotion ? 1 : 0.985
+        });
         copy.classList.remove('is-active');
         return;
       }
@@ -215,9 +219,17 @@ export function initStorytelling() {
       const fadeIn = smoothstep(local / 0.16);
       const fadeOut = 1 - smoothstep((local - 0.78) / 0.2);
       const opacity = active === 4 ? fadeIn : Math.min(fadeIn, fadeOut);
-      const y = local < 0.18 ? (1 - fadeIn) * 26 : -smoothstep((local - 0.8) / 0.2) * 20;
+      const y = reduceMotion
+        ? 0
+        : local < 0.18
+          ? (1 - fadeIn) * 26
+          : -smoothstep((local - 0.8) / 0.2) * 20;
 
-      gsap.set(copy, { autoAlpha: opacity, y, scale: 1 - (1 - opacity) * 0.015 });
+      gsap.set(copy, {
+        autoAlpha: opacity,
+        y,
+        scale: reduceMotion ? 1 : 1 - (1 - opacity) * 0.015
+      });
       copy.classList.toggle('is-active', opacity > 0.2);
     });
 
@@ -250,34 +262,44 @@ export function initStorytelling() {
       onRefresh: () => resize()
     });
 
-    gsap.fromTo('.after-film h2', { y: 80, opacity: 0 }, {
-      y: 0,
-      opacity: 1,
-      scrollTrigger: {
-        trigger: '.after-film',
-        start: 'top 72%',
-        end: 'top 42%',
-        scrub: 1
+    gsap.fromTo('.after-film h2',
+      { y: reduceMotion ? 0 : 80, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        scrollTrigger: {
+          trigger: '.after-film',
+          start: 'top 72%',
+          end: 'top 42%',
+          scrub: reduceMotion ? .35 : 1
+        }
       }
-    });
+    );
 
-    gsap.fromTo('.amok-poster img', { scale: 1.16 }, {
-      scale: 1,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: '.amok-poster',
-        start: 'top bottom',
-        end: 'bottom top',
-        scrub: 1
-      }
-    });
+    if (!reduceMotion) {
+      gsap.fromTo('.amok-poster img', { scale: 1.16 }, {
+        scale: 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.amok-poster',
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1
+        }
+      });
+    }
+
+    ScrollTrigger.refresh();
   });
 
   const onResize = () => resize();
+  const onLoad = () => ScrollTrigger.refresh();
   window.addEventListener('resize', onResize);
+  window.addEventListener('load', onLoad, { once: true });
 
   return () => {
     window.removeEventListener('resize', onResize);
+    window.removeEventListener('load', onLoad);
     context.revert();
   };
 }
