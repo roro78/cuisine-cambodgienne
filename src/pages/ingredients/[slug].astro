@@ -9,6 +9,7 @@ import { getGlossaryEntries } from '../../data/glossary';
 import { recipes } from '../../data/recipes';
 import { cultureArticles } from '../../data/culture';
 import { imageSrcSet } from '../../utils/images';
+import CulinaryIcon from '../../components/CulinaryIcon.astro';
 
 export function getStaticPaths() {
   return ingredientGuides.map((ingredient: IngredientGuide) => ({
@@ -62,13 +63,18 @@ const breadcrumbSchema = {
 <BaseLayout title={`${ingredient.title} — Guide ingrédient | Cuisine du Cambodge`} description={ingredient.intro} image={ingredient.image} imageAlt={ingredient.imageAlt}>
   <SiteHeader />
   <main class="guide-page editorial-detail ingredient-detail">
-    <header class="guide-hero" data-reveal="up">
-      <p class="eyebrow">Ingrédient khmer</p>
-      <h1>{ingredient.title}</h1>
-      <p>{ingredient.intro}</p>
-    </header>
+    <section class="detail-hero-shell detail-hero-shell--ingredient">
+      <header class="guide-hero" data-reveal="up">
+        <p class="eyebrow">Ingrédient khmer</p>
+        <h1>{ingredient.title}</h1>
+        <p>{ingredient.intro}</p>
+      </header>
 
-    <figure class="guide-visual" data-parallax="0.10"><img src={ingredient.image} srcset={imageSrcSet(ingredient.image, ingredient.imageWidths)} sizes="100vw" alt={ingredient.imageAlt} width={ingredient.imageWidth} height={ingredient.imageHeight} decoding="async" /><figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption></figure>
+      <figure class="guide-visual" data-parallax="0.07">
+        <img src={ingredient.image} srcset={imageSrcSet(ingredient.image, ingredient.imageWidths)} sizes="(max-width: 900px) 100vw, 52vw" alt={ingredient.imageAlt} width={ingredient.imageWidth} height={ingredient.imageHeight} decoding="async" />
+        <figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption>
+      </figure>
+    </section>
 
     <section class="guide-body" data-reveal="up">
       <div class="guide-main">
@@ -77,15 +83,15 @@ const breadcrumbSchema = {
       </div>
       <div class="guide-lists">
         <article>
-          <h2>Quel goût&nbsp;?</h2>
+          <h2><CulinaryIcon name="taste" size={22} />Quel goût&nbsp;?</h2>
           <ul>{ingredient.profile.map((item: string) => <li>{item}</li>)}</ul>
         </article>
         <article>
-          <h2>Comment l’utiliser&nbsp;?</h2>
+          <h2><CulinaryIcon name="use" size={22} />Comment l’utiliser&nbsp;?</h2>
           <ul>{ingredient.uses.map((item: string) => <li>{item}</li>)}</ul>
         </article>
         <article>
-          <h2>Bien le travailler</h2>
+          <h2><CulinaryIcon name="tip" size={22} />Bien le travailler</h2>
           <ul>{ingredient.tips.map((item: string) => <li>{item}</li>)}</ul>
         </article>
       </div>

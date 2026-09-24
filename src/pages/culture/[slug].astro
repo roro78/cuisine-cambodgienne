@@ -9,6 +9,7 @@ import { ingredientGuides } from '../../data/ingredients';
 import GlossaryStrip from '../../components/GlossaryStrip.astro';
 import { getGlossaryEntries } from '../../data/glossary';
 import { imageSrcSet } from '../../utils/images';
+import CulinaryIcon from '../../components/CulinaryIcon.astro';
 
 export function getStaticPaths() {
   return cultureArticles.map((article: CultureArticle) => ({
@@ -68,13 +69,18 @@ const breadcrumbSchema = {
 <BaseLayout title={`${article.title} | Cuisine du Cambodge`} description={article.intro} image={article.image} imageAlt={article.imageAlt}>
   <SiteHeader />
   <main class="culture-article editorial-detail culture-detail">
-    <header class="culture-article-hero" data-reveal="up">
-      <p class="eyebrow">{article.eyebrow}</p>
-      <h1>{article.title}</h1>
-      <p>{article.intro}</p>
-    </header>
+    <section class="detail-hero-shell detail-hero-shell--culture">
+      <header class="culture-article-hero" data-reveal="up">
+        <p class="eyebrow"><CulinaryIcon name="story" size={17} /> {article.eyebrow}</p>
+        <h1>{article.title}</h1>
+        <p>{article.intro}</p>
+      </header>
 
-    <figure class="culture-visual" data-parallax="0.08"><img src={article.image} srcset={imageSrcSet(article.image, article.imageWidths)} sizes="100vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} decoding="async" /><figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption></figure>
+      <figure class="culture-visual" data-parallax="0.06">
+        <img src={article.image} srcset={imageSrcSet(article.image, article.imageWidths)} sizes="(max-width: 900px) 100vw, 52vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} decoding="async" />
+        <figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption>
+      </figure>
+    </section>
 
     <article class="culture-copy">
       {article.sections.map((section: CultureArticle['sections'][number], index: number) => (

@@ -4,6 +4,7 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { recipes } from '../../data/recipes';
 import { imageSrcSet } from '../../utils/images';
+import CulinaryIcon from '../../components/CulinaryIcon.astro';
 
 const minutes = (value: string) => Number(value.match(/\d+/)?.[0] ?? 0);
 const collectionSchema = {
@@ -61,7 +62,10 @@ const collectionSchema = {
           </figure>
           <div class="recipe-feature-copy">
             <span class="recipe-feature-index">{String(index + 1).padStart(2, '0')}</span>
-            <p class="card-meta">{recipe.difficulty} · {recipe.prepTime}</p>
+            <div class="recipe-card-facts">
+              <span><CulinaryIcon name="prep" size={16} />{recipe.prepTime}</span>
+              <span><CulinaryIcon name="level" size={16} />{recipe.difficulty}</span>
+            </div>
             <h2>{recipe.title}</h2>
             <p>{recipe.intro}</p>
             <span class="text-link">Voir la recette</span>

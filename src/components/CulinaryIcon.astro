@@ -1,0 +1,70 @@
+---
+interface Props {
+  name: 'servings' | 'prep' | 'cook' | 'level' | 'taste' | 'use' | 'tip' | 'story';
+  size?: number;
+}
+const { name, size = 20 } = Astro.props;
+---
+<svg
+  class="culinary-icon"
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.7"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  {name === 'servings' && (
+    <>
+      <circle cx="9" cy="8" r="3" />
+      <path d="M3.8 19c.7-3.5 2.4-5.3 5.2-5.3s4.5 1.8 5.2 5.3" />
+      <circle cx="17.2" cy="9" r="2.2" />
+      <path d="M15.2 14.5c2.8-.7 4.7.8 5.2 3.8" />
+    </>
+  )}
+  {name === 'prep' && (
+    <>
+      <circle cx="12" cy="13" r="7.5" />
+      <path d="M12 9v4l2.8 1.8M9 3h6M12 3v2.5" />
+    </>
+  )}
+  {name === 'cook' && (
+    <>
+      <path d="M5 11h14v7H5zM8 8.5c0-1.6 1.1-2.5 1.1-4M12 8.5c0-1.7 1.2-2.6 1.2-4.2M16 8.5c0-1.4.9-2.2.9-3.5" />
+      <path d="M3 13h2M19 13h2" />
+    </>
+  )}
+  {name === 'level' && (
+    <>
+      <path d="M4 18V13M10 18V9M16 18V5M22 18V2" />
+      <path d="M2 18h20" />
+    </>
+  )}
+  {name === 'taste' && (
+    <>
+      <path d="M4 12c2.3-4.8 5-7.2 8-7.2s5.7 2.4 8 7.2c-2.3 4.8-5 7.2-8 7.2S6.3 16.8 4 12Z" />
+      <circle cx="12" cy="12" r="2.2" />
+    </>
+  )}
+  {name === 'use' && (
+    <>
+      <path d="M7 20c4-6.2 7.1-10.4 12-15M14 5h5v5" />
+      <path d="M5 18c2.2.2 3.7.7 5 2" />
+    </>
+  )}
+  {name === 'tip' && (
+    <>
+      <path d="M9 18h6M10 21h4" />
+      <path d="M8.1 14.5C6.8 13.4 6 11.8 6 10a6 6 0 1 1 12 0c0 1.8-.8 3.4-2.1 4.5-.8.7-1.2 1.3-1.4 2.1h-5c-.2-.8-.6-1.4-1.4-2.1Z" />
+    </>
+  )}
+  {name === 'story' && (
+    <>
+      <path d="M5 4.5h10.5A2.5 2.5 0 0 1 18 7v12H7.5A2.5 2.5 0 0 1 5 16.5z" />
+      <path d="M7.5 19A2.5 2.5 0 0 1 5 16.5M8.5 8h6M8.5 11.5h6" />
+    </>
+  )}
+</svg>

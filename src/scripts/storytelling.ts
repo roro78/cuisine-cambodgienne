@@ -150,7 +150,8 @@ export function initStorytelling() {
 
     if (!next?.ready || index === images.length - 1) return;
 
-    const eased = smoothstep(t);
+    const transition = clamp((t - .5) / .36);
+    const eased = smoothstep(transition);
     ctx.save();
 
     if (reduceMotion) {
@@ -204,33 +205,39 @@ export function initStorytelling() {
     const raw = progress / segment;
     const active = Math.min(4, Math.floor(raw));
     const local = clamp(raw - active);
+    const handoff = active < 4 ? smoothstep((local - .76) / .16) : 0;
 
     copies.forEach((copy, index) => {
-      if (index !== active) {
+      if (index === active) {
+        const opacity = active === 4 ? 1 : 1 - handoff;
+        const y = reduceMotion ? 0 : -handoff * 18;
         gsap.set(copy, {
-          autoAlpha: 0,
-          y: reduceMotion ? 0 : (index < active ? -28 : 28),
-          scale: reduceMotion ? 1 : 0.985
+          autoAlpha: opacity,
+          y,
+          scale: reduceMotion ? 1 : 1 - handoff * .012
         });
-        copy.classList.remove('is-active');
+        copy.classList.toggle('is-active', opacity > .08);
         return;
       }
 
-      const fadeIn = smoothstep(local / 0.16);
-      const fadeOut = 1 - smoothstep((local - 0.78) / 0.2);
-      const opacity = active === 4 ? fadeIn : Math.min(fadeIn, fadeOut);
-      const y = reduceMotion
-        ? 0
-        : local < 0.18
-          ? (1 - fadeIn) * 26
-          : -smoothstep((local - 0.8) / 0.2) * 20;
+      if (index === active + 1 && active < 4) {
+        const opacity = handoff;
+        const y = reduceMotion ? 0 : (1 - handoff) * 20;
+        gsap.set(copy, {
+          autoAlpha: opacity,
+          y,
+          scale: reduceMotion ? 1 : .988 + handoff * .012
+        });
+        copy.classList.toggle('is-active', opacity > .08);
+        return;
+      }
 
       gsap.set(copy, {
-        autoAlpha: opacity,
-        y,
-        scale: reduceMotion ? 1 : 1 - (1 - opacity) * 0.015
+        autoAlpha: 0,
+        y: 0,
+        scale: 1
       });
-      copy.classList.toggle('is-active', opacity > 0.2);
+      copy.classList.remove('is-active');
     });
 
     if (count) count.textContent = String(active + 1).padStart(2, '0');
