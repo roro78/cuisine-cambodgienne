@@ -75,19 +75,23 @@ const recipeSchema = {
         <dl class="recipe-facts" aria-label="Informations de la recette">
           <div>
             <CulinaryIcon name="servings" />
-            <span><dt>Pour</dt><dd>{recipe.servings}</dd></span>
+            <dt>Pour</dt>
+            <dd>{recipe.servings}</dd>
           </div>
           <div>
             <CulinaryIcon name="prep" />
-            <span><dt>Préparation</dt><dd>{recipe.prepTime}</dd></span>
+            <dt>Préparation</dt>
+            <dd>{recipe.prepTime}</dd>
           </div>
           <div>
             <CulinaryIcon name="cook" />
-            <span><dt>Cuisson</dt><dd>{recipe.cookTime}</dd></span>
+            <dt>Cuisson</dt>
+            <dd>{recipe.cookTime}</dd>
           </div>
           <div>
             <CulinaryIcon name="level" />
-            <span><dt>Niveau</dt><dd>{recipe.difficulty}</dd></span>
+            <dt>Niveau</dt>
+            <dd>{recipe.difficulty}</dd>
           </div>
         </dl>
       </header>
