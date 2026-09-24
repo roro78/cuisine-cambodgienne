@@ -36,7 +36,16 @@ const relatedContent = ingredient.slug === 'kroeung'
         recipes.find((item) => item.slug === 'lok-lak'),
         cultureArticles.find((item) => item.slug === 'poivre-de-kampot')
       ].filter(Boolean)
-    : [];
+    : ingredient.slug === 'tamarin'
+      ? [
+          cultureArticles.find((item) => item.slug === 'marches-herbes-cuisine-khmere')
+        ].filter(Boolean)
+      : ingredient.slug === 'prahok'
+        ? [
+            cultureArticles.find((item) => item.slug === 'prahok-fermentation'),
+            cultureArticles.find((item) => item.slug === 'marches-herbes-cuisine-khmere')
+          ].filter(Boolean)
+        : [];
 
 const articleSchema = {
   '@context': 'https://schema.org',
@@ -47,7 +56,9 @@ const articleSchema = {
   inLanguage: 'fr-FR',
   author: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
   publisher: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
-  mainEntityOfPage: `https://www.cuisine-du-cambodge.com/ingredients/${ingredient.slug}/`
+  mainEntityOfPage: `https://www.cuisine-du-cambodge.com/ingredients/${ingredient.slug}/`,
+  about: { '@type': 'Thing', name: ingredient.title },
+  keywords: [ingredient.title, 'cuisine cambodgienne', 'cuisine khmère', ...ingredient.profile].join(', ')
 };
 
 const breadcrumbSchema = {
