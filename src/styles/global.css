@@ -2671,3 +2671,205 @@ main{position:relative;z-index:1}
   .recipe-detail .method-panel ol li:after{left:2.1rem}
   .recipe-detail .recipe-cover{height:58vh}
 }
+
+
+/* V11 — home rhythm, scale and visible culinary motion */
+.scroll-film{
+  height:455svh;
+}
+.film-copy-0{
+  opacity:1;
+  visibility:visible;
+}
+.film-copy{
+  bottom:clamp(4rem,8vh,7rem);
+  width:min(39rem,62vw);
+}
+.film-copy-1,.film-copy-3{
+  width:min(33rem,48vw);
+}
+.film-copy h1,
+.film-copy h2{
+  font-size:clamp(2.9rem,5vw,5.35rem);
+  line-height:.91;
+  letter-spacing:-.05em;
+}
+.film-copy p:not(.film-kicker){
+  max-width:29rem;
+  font-size:clamp(.9rem,1vw,1rem);
+}
+.scroll-film-vignette{
+  background:
+    linear-gradient(90deg,rgba(8,10,7,.69) 0%,rgba(8,10,7,.10) 52%,rgba(8,10,7,.26) 100%),
+    linear-gradient(180deg,rgba(30,22,13,.04),rgba(0,0,0,.38));
+}
+.motion-layer{
+  z-index:5;
+}
+.motion-object{
+  width:clamp(5.5rem,9.5vw,10.5rem);
+  mix-blend-mode:normal;
+  filter:drop-shadow(0 14px 24px rgba(19,24,17,.14));
+}
+.motion-object--banana-leaf{width:clamp(7rem,11vw,12rem)}
+.motion-object--lemongrass{width:clamp(4.8rem,7vw,7.5rem)}
+.motion-object--steam{width:clamp(6rem,9vw,9.5rem)}
+.motion-object--pepper{width:clamp(5rem,8vw,8rem)}
+
+.desire-story{
+  padding-top:clamp(4rem,7vh,6rem);
+  padding-bottom:clamp(4.5rem,8vh,7rem);
+  overflow:hidden;
+}
+.desire-intro{
+  padding-bottom:clamp(2.5rem,5vh,4rem);
+}
+.desire-intro h2{
+  max-width:10ch;
+  font-size:clamp(2.9rem,5.5vw,5.9rem);
+  line-height:.91;
+}
+.desire-entry{
+  min-height:clamp(21rem,30vh,28rem);
+  padding:clamp(2rem,4vh,3.25rem) 0;
+}
+.desire-copy h3{
+  max-width:16ch;
+  font-size:clamp(2.05rem,3.55vw,3.9rem);
+  line-height:.97;
+}
+.desire-media{
+  height:clamp(16rem,23vw,22rem);
+}
+.desire-story>.scroll-companion{
+  display:block;
+  right:3vw;
+  top:8rem;
+  width:clamp(8rem,11vw,11.5rem);
+  color:#526d4b;
+  opacity:.25;
+  z-index:0;
+}
+.desire-intro,
+.desire-list{
+  position:relative;
+  z-index:1;
+}
+
+.amok-finale{
+  height:min(68svh,46rem);
+  min-height:31rem;
+}
+.amok-finale-copy{
+  bottom:clamp(2.5rem,6vh,5rem);
+  max-width:31rem;
+}
+.amok-finale-copy h2{
+  font-size:clamp(3.8rem,7vw,7.2rem);
+  line-height:.84;
+}
+.amok-finale-steam{
+  opacity:.52;
+}
+
+/* Compact editorial footer: closing scene, not a second homepage */
+.site-footer-premium{
+  gap:5vw;
+  padding:clamp(3.5rem,7vh,5.5rem) var(--page-pad) 2rem;
+}
+.footer-intro{
+  position:static;
+}
+.footer-intro h2{
+  max-width:12ch;
+  font-size:clamp(2.5rem,4vw,4.2rem);
+  line-height:.94;
+  margin-bottom:1rem;
+}
+.footer-intro>p:last-child{
+  max-width:29rem;
+  font-size:.94rem;
+  line-height:1.6;
+}
+.footer-primary a{
+  padding:1.05rem 0;
+}
+.footer-primary a>strong{
+  font-size:clamp(1.65rem,2.4vw,2.45rem);
+}
+.footer-primary a>em{
+  font-size:.88rem;
+  line-height:1.45;
+}
+.footer-meta{
+  padding-top:1.5rem;
+  margin-top:0;
+}
+
+@media(max-width:900px){
+  .scroll-film{height:430svh}
+  .film-copy,
+  .film-copy-1,
+  .film-copy-3{
+    width:min(36rem,78vw);
+  }
+  .desire-entry{min-height:auto}
+}
+@media(max-width:720px){
+  .scroll-film{height:410svh}
+  .film-copy,
+  .film-copy-1,
+  .film-copy-3{
+    left:1.25rem;
+    right:1.25rem;
+    bottom:5rem;
+    width:auto;
+  }
+  .film-copy h1,
+  .film-copy h2{
+    font-size:clamp(2.6rem,12vw,4.1rem);
+  }
+  .desire-intro h2{
+    font-size:clamp(2.7rem,12vw,4.4rem);
+  }
+  .desire-copy h3{
+    font-size:clamp(2rem,9.5vw,3.15rem);
+  }
+  .desire-media{
+    min-height:15rem;
+    height:52vw;
+  }
+  .desire-story>.scroll-companion{
+    display:none;
+  }
+  .amok-finale{
+    height:62svh;
+    min-height:29rem;
+  }
+  .amok-finale-copy h2{
+    font-size:clamp(3.5rem,17vw,5.4rem);
+  }
+  .site-footer-premium{
+    gap:2.25rem;
+    padding:3.5rem 1.25rem 1.5rem;
+  }
+  .footer-intro h2{
+    font-size:clamp(2.3rem,10vw,3.3rem);
+  }
+  .footer-primary a{
+    padding:.9rem 0;
+  }
+  .footer-primary a>strong{
+    font-size:1.65rem;
+  }
+  .footer-primary a>em{
+    font-size:.82rem;
+  }
+  .footer-meta{
+    padding-top:1rem;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .scroll-film{height:400svh}
+  .desire-story>.scroll-companion{display:none}
+}
