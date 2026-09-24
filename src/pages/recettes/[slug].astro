@@ -23,9 +23,9 @@ const keyPoints = recipe.keyPoints ?? [];
 const relatedIngredients = ingredientGuides.filter((item) => (recipe.relatedIngredients ?? []).includes(item.slug));
 
 const glossarySlugs = [
-  ...(recipe.slug === 'amok-trey' ? ['amok', 'kroeung', 'combava'] : []),
+  ...(recipe.slug === 'amok-trey' ? ['amok', 'kroeung', 'combava', 'lait-de-coco', 'sucre-de-palme'] : []),
   ...(recipe.slug === 'lok-lak' ? ['poivre-de-kampot'] : []),
-  ...(recipe.slug === 'kroeung-jaune' ? ['kroeung', 'combava', 'galanga'] : [])
+  ...(recipe.slug === 'kroeung-jaune' ? ['kroeung', 'citronnelle', 'combava', 'galanga', 'curcuma'] : [])
 ];
 const glossary = getGlossaryEntries(glossarySlugs);
 const totalMinutes = (value: string) => {
@@ -52,12 +52,19 @@ const recipeSchema = {
   cookTime: `PT${totalMinutes(recipe.cookTime)}M`,
   totalTime: `PT${totalMinutes(recipe.prepTime) + totalMinutes(recipe.cookTime)}M`,
   recipeIngredient: recipe.ingredients,
-  recipeInstructions: recipe.steps.map((text: string) => ({ '@type': 'HowToStep', text })),
+  recipeInstructions: recipe.steps.map((text: string, index: number) => ({
+    '@type': 'HowToStep',
+    position: index + 1,
+    name: `Étape ${index + 1}`,
+    text
+  })),
   recipeCategory: recipe.category,
   recipeCuisine: 'Cambodgienne',
   author: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
   publisher: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
   keywords: recipe.tags.join(', '),
+  inLanguage: 'fr-FR',
+  url: `https://www.cuisine-du-cambodge.com/recettes/${recipe.slug}/`,
   image: new URL(recipe.image, Astro.site ?? new URL('https://www.cuisine-du-cambodge.com')).href
 };
 ---
