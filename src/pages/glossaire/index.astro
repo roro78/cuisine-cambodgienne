@@ -33,7 +33,7 @@ const glossarySchema = {
 
     <section class="glossary-directory" aria-label="Glossaire de la cuisine cambodgienne">
       {glossaryEntries.map((entry, index) => (
-        <article class="glossary-card" data-reveal="up" data-reveal-delay={Math.min(index * .03, .18)}>
+        <article class="glossary-card" id={entry.slug} data-reveal="up" data-reveal-delay={Math.min(index * .03, .18)}>
           <span class="glossary-card-index">{String(index + 1).padStart(2, '0')}</span>
           <div>
             <h2>{entry.term}</h2>
