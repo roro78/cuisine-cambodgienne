@@ -6,6 +6,7 @@
     "dev": "astro dev",
     "check": "astro check",
     "build": "astro build",
+    "test:motion": "node scripts/check-motion-contract.mjs",
     "preview": "astro preview"
   },
   "dependencies": {

@@ -5,7 +5,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 export function initGlobalMotion() {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduced) return () => {};
 
   const objects = gsap.utils.toArray<HTMLElement>('[data-motion-object]');
   const reveals = gsap.utils.toArray<HTMLElement>('[data-reveal]');
@@ -34,7 +33,9 @@ export function initGlobalMotion() {
       const rotate = Number(el.dataset.motionRotate ?? 5);
       const direction = el.classList.contains('motion-object--left') ? 1 : -1;
 
-      gsap.set(el, { y: 0, x: 0, rotate: -rotate * .45 });
+      gsap.set(el, { y: 0, x: 0, rotate: reduced ? 0 : -rotate * .45 });
+      if (reduced) return;
+
       gsap.to(el, {
         y: () => window.innerHeight * (1.15 + speed * 1.8),
         x: direction * drift,
@@ -54,19 +55,21 @@ export function initGlobalMotion() {
       const direction = el.dataset.reveal ?? 'up';
       const distance = Number(el.dataset.revealDistance ?? 42);
       const delay = Number(el.dataset.revealDelay ?? 0);
-      const from = direction === 'left'
-        ? { x: -distance, y: 0 }
-        : direction === 'right'
-          ? { x: distance, y: 0 }
-          : { x: 0, y: distance };
+      const from = reduced
+        ? { x: 0, y: 0 }
+        : direction === 'left'
+          ? { x: -distance, y: 0 }
+          : direction === 'right'
+            ? { x: distance, y: 0 }
+            : { x: 0, y: distance };
 
       gsap.fromTo(el, { ...from, autoAlpha: 0 }, {
         x: 0,
         y: 0,
         autoAlpha: 1,
         delay,
-        duration: 1.05,
-        ease: 'power3.out',
+        duration: reduced ? .38 : 1.05,
+        ease: reduced ? 'power1.out' : 'power3.out',
         scrollTrigger: {
           trigger: el,
           start: 'top 86%',
@@ -76,6 +79,7 @@ export function initGlobalMotion() {
     });
 
     parallax.forEach((el) => {
+      if (reduced) return;
       const speed = Number(el.dataset.parallax ?? .1);
       const target = el.tagName === 'IMG' ? el : el.querySelector<HTMLElement>('img');
       if (!target) return;
@@ -94,7 +98,7 @@ export function initGlobalMotion() {
     });
 
     recipeSteps.forEach((step) => {
-      gsap.fromTo(step, { autoAlpha: .36, x: 16 }, {
+      gsap.fromTo(step, { autoAlpha: reduced ? .68 : .36, x: reduced ? 0 : 16 }, {
         autoAlpha: 1,
         x: 0,
         ease: 'none',
@@ -111,6 +115,13 @@ export function initGlobalMotion() {
     desireEntries.forEach((entry, index) => {
       const copy = entry.querySelector<HTMLElement>('.desire-copy');
       const media = entry.querySelector<HTMLElement>('.desire-media');
+
+      if (reduced) {
+        if (copy) gsap.set(copy, { autoAlpha: 1, y: 0 });
+        if (media) gsap.set(media, { clipPath: 'none', yPercent: 0 });
+        return;
+      }
+
       if (copy) {
         gsap.fromTo(copy, { autoAlpha: .28, y: 54 }, {
           autoAlpha: 1,
@@ -143,6 +154,10 @@ export function initGlobalMotion() {
     });
 
     cultureRules.forEach((rule) => {
+      if (reduced) {
+        gsap.set(rule, { scaleX: 1, transformOrigin: 'left center' });
+        return;
+      }
       gsap.fromTo(rule, { scaleX: 0 }, {
         scaleX: 1,
         transformOrigin: 'left center',
@@ -161,6 +176,11 @@ export function initGlobalMotion() {
       const target = document.querySelector<HTMLElement>(targetSelector);
       if (!target) return;
 
+      if (reduced) {
+        gsap.set(el, { y: 0, x: 0, rotate: 0, autoAlpha: .16 });
+        return;
+      }
+
       gsap.timeline({
         scrollTrigger: {
           trigger: target,
@@ -178,6 +198,12 @@ export function initGlobalMotion() {
     learningPaths.forEach((path) => {
       const fill = path.querySelector<HTMLElement>('.learn-progress i');
       const steps = gsap.utils.toArray<HTMLElement>('[data-learning-step]', path);
+
+      if (reduced) {
+        if (fill) gsap.set(fill, { scaleY: 1, transformOrigin: 'top center' });
+        steps.forEach((step) => gsap.set(step, { autoAlpha: 1, x: 0 }));
+        return;
+      }
 
       if (fill) {
         gsap.fromTo(fill, { scaleY: 0 }, {
@@ -207,6 +233,8 @@ export function initGlobalMotion() {
         });
       });
     });
+
+    ScrollTrigger.refresh();
   });
 
   return () => context.revert();
