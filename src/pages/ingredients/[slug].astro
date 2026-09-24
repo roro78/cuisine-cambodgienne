@@ -42,7 +42,7 @@ const articleSchema = {
   '@context': 'https://schema.org',
   '@type': 'Article',
   headline: ingredient.title,
-  description: ingredient.intro,
+  description: ingredient.seoDescription,
   image: new URL(ingredient.image, Astro.site ?? new URL('https://www.cuisine-du-cambodge.com')).href,
   inLanguage: 'fr-FR',
   author: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
@@ -60,7 +60,7 @@ const breadcrumbSchema = {
   ]
 };
 ---
-<BaseLayout title={`${ingredient.title} — Guide ingrédient | Cuisine du Cambodge`} description={ingredient.intro} image={ingredient.image} imageAlt={ingredient.imageAlt}>
+<BaseLayout title={`${ingredient.title} : goût, usages et conseils | Cuisine du Cambodge`} description={ingredient.seoDescription} image={ingredient.image} imageAlt={ingredient.imageAlt}>
   <SiteHeader />
   <main class="guide-page editorial-detail ingredient-detail">
     <section class="detail-hero-shell detail-hero-shell--ingredient">
@@ -93,6 +93,33 @@ const breadcrumbSchema = {
         <article>
           <h2><CulinaryIcon name="tip" size={22} />Bien le travailler</h2>
           <ul>{ingredient.tips.map((item: string) => <li>{item}</li>)}</ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="ingredient-practical" aria-labelledby="ingredient-practical-title" data-reveal="up">
+      <header class="ingredient-practical-head">
+        <p class="eyebrow">En pratique</p>
+        <h2 id="ingredient-practical-title">Bien choisir, conserver et utiliser {ingredient.title}</h2>
+        <p>Les détails qui évitent d’acheter au hasard, de perdre les arômes ou de déséquilibrer le plat.</p>
+      </header>
+
+      <div class="ingredient-practical-grid">
+        <article>
+          <h3><CulinaryIcon name="taste" size={20} /> Bien choisir</h3>
+          <ul>{ingredient.choose.map((item: string) => <li>{item}</li>)}</ul>
+        </article>
+        <article>
+          <h3><CulinaryIcon name="tip" size={20} /> Conservation</h3>
+          <ul>{ingredient.keep.map((item: string) => <li>{item}</li>)}</ul>
+        </article>
+        <article>
+          <h3><CulinaryIcon name="use" size={20} /> Bons accords</h3>
+          <ul>{ingredient.pairings.map((item: string) => <li>{item}</li>)}</ul>
+        </article>
+        <article>
+          <h3><CulinaryIcon name="level" size={20} /> Erreurs à éviter</h3>
+          <ul>{ingredient.mistakes.map((item: string) => <li>{item}</li>)}</ul>
         </article>
       </div>
     </section>
