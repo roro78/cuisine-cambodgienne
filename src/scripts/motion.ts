@@ -5,7 +5,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 export function initGlobalMotion() {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduced) return () => {};
 
   const objects = gsap.utils.toArray<HTMLElement>('[data-motion-object]');
   const reveals = gsap.utils.toArray<HTMLElement>('[data-reveal]');
@@ -24,8 +23,10 @@ export function initGlobalMotion() {
       gsap.set(el, {
         y: 0,
         x: 0,
-        rotate: -rotate * .45
+        rotate: reduced ? 0 : -rotate * .45
       });
+
+      if (reduced) return;
 
       gsap.to(el, {
         y: () => window.innerHeight * (1.15 + speed * 1.8),
@@ -47,11 +48,13 @@ export function initGlobalMotion() {
       const distance = Number(el.dataset.revealDistance ?? 42);
       const delay = Number(el.dataset.revealDelay ?? 0);
 
-      const from = direction === 'left'
-        ? { x: -distance, y: 0 }
-        : direction === 'right'
-          ? { x: distance, y: 0 }
-          : { x: 0, y: distance };
+      const from = reduced
+        ? { x: 0, y: 0 }
+        : direction === 'left'
+          ? { x: -distance, y: 0 }
+          : direction === 'right'
+            ? { x: distance, y: 0 }
+            : { x: 0, y: distance };
 
       gsap.fromTo(el,
         { ...from, autoAlpha: 0 },
@@ -60,8 +63,8 @@ export function initGlobalMotion() {
           y: 0,
           autoAlpha: 1,
           delay,
-          duration: 1.05,
-          ease: 'power3.out',
+          duration: reduced ? .38 : 1.05,
+          ease: reduced ? 'power1.out' : 'power3.out',
           scrollTrigger: {
             trigger: el,
             start: 'top 86%',
@@ -72,6 +75,7 @@ export function initGlobalMotion() {
     });
 
     parallax.forEach((el) => {
+      if (reduced) return;
       const speed = Number(el.dataset.parallax ?? .1);
       const target = el.tagName === 'IMG' ? el : el.querySelector<HTMLElement>('img');
       if (!target) return;
@@ -94,7 +98,7 @@ export function initGlobalMotion() {
 
     recipeSteps.forEach((step) => {
       gsap.fromTo(step,
-        { autoAlpha: .36, x: 16 },
+        { autoAlpha: reduced ? .68 : .36, x: reduced ? 0 : 16 },
         {
           autoAlpha: 1,
           x: 0,
@@ -109,6 +113,8 @@ export function initGlobalMotion() {
         }
       );
     });
+
+    ScrollTrigger.refresh();
   });
 
   return () => context.revert();
