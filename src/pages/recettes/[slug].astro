@@ -8,6 +8,7 @@ import { ingredientGuides } from '../../data/ingredients';
 import GlossaryStrip from '../../components/GlossaryStrip.astro';
 import { getGlossaryEntries } from '../../data/glossary';
 import { imageSrcSet } from '../../utils/images';
+import CulinaryIcon from '../../components/CulinaryIcon.astro';
 
 export function getStaticPaths() {
   return recipes.map((recipe: Recipe) => ({
@@ -63,32 +64,50 @@ const recipeSchema = {
 <BaseLayout title={`${recipe.title} — Recette cambodgienne | Cuisine du Cambodge`} description={recipe.description} image={recipe.image} imageAlt={recipe.imageAlt}>
   <SiteHeader />
   <main class="recipe-page editorial-detail recipe-detail">
-    <header class="recipe-hero" data-reveal="up">
-      <p class="eyebrow">Recette cambodgienne</p>
-      <h1>{recipe.title}</h1>
-      {recipe.khmerName && <p class="khmer-name">{recipe.khmerName}</p>}
-      <p class="recipe-intro">{recipe.intro}</p>
-      <p class="recipe-context">{recipe.context}</p>
-      <dl class="recipe-facts">
-        <div><dt>Pour</dt><dd>{recipe.servings}</dd></div>
-        <div><dt>Préparation</dt><dd>{recipe.prepTime}</dd></div>
-        <div><dt>Cuisson</dt><dd>{recipe.cookTime}</dd></div>
-        <div><dt>Niveau</dt><dd>{recipe.difficulty}</dd></div>
-      </dl>
-    </header>
+    <section class="recipe-hero-shell">
+      <header class="recipe-hero" data-reveal="up">
+        <p class="eyebrow">Recette cambodgienne</p>
+        <h1>{recipe.title}</h1>
+        {recipe.khmerName && <p class="khmer-name">{recipe.khmerName}</p>}
+        <p class="recipe-intro">{recipe.intro}</p>
+        <p class="recipe-context">{recipe.context}</p>
 
-    <figure class="recipe-cover" data-parallax="0.11"><img src={recipe.image} srcset={imageSrcSet(recipe.image, recipe.imageWidths)} sizes="100vw" alt={recipe.imageAlt} width={recipe.imageWidth} height={recipe.imageHeight} decoding="async" /><figcaption>Photographie illustrative · voir les crédits en bas de page.</figcaption></figure>
+        <dl class="recipe-facts" aria-label="Informations de la recette">
+          <div>
+            <CulinaryIcon name="servings" />
+            <span><dt>Pour</dt><dd>{recipe.servings}</dd></span>
+          </div>
+          <div>
+            <CulinaryIcon name="prep" />
+            <span><dt>Préparation</dt><dd>{recipe.prepTime}</dd></span>
+          </div>
+          <div>
+            <CulinaryIcon name="cook" />
+            <span><dt>Cuisson</dt><dd>{recipe.cookTime}</dd></span>
+          </div>
+          <div>
+            <CulinaryIcon name="level" />
+            <span><dt>Niveau</dt><dd>{recipe.difficulty}</dd></span>
+          </div>
+        </dl>
+      </header>
+
+      <figure class="recipe-cover" data-parallax="0.07">
+        <img src={recipe.image} srcset={imageSrcSet(recipe.image, recipe.imageWidths)} sizes="(max-width: 900px) 100vw, 52vw" alt={recipe.imageAlt} width={recipe.imageWidth} height={recipe.imageHeight} decoding="async" />
+        <figcaption>Photographie illustrative · voir les crédits en bas de page.</figcaption>
+      </figure>
+    </section>
 
     <section class="recipe-layout" data-reveal="up">
       <aside class="ingredients-panel">
-        <p class="eyebrow">Ingrédients</p>
+        <p class="eyebrow recipe-section-label"><CulinaryIcon name="servings" size={17} /> Ingrédients</p>
         <ul>
           {recipe.ingredients.map((ingredient: string) => <li>{ingredient}</li>)}
         </ul>
       </aside>
 
       <article class="method-panel">
-        <p class="eyebrow">Méthode</p>
+        <p class="eyebrow recipe-section-label"><CulinaryIcon name="cook" size={17} /> Méthode</p>
         <ol>
           {recipe.steps.map((step: string) => <li data-recipe-step>{step}</li>)}
         </ol>
