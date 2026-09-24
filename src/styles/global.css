@@ -3653,3 +3653,698 @@ main{position:relative;z-index:1}
   grid-column:2;
   grid-row:2;
 }
+
+
+/* V12 — content depth, culinary trail, recipe readability and SEO hubs */
+
+/* Recipe method regression: old grid forced raw text into a 3rem column */
+.recipe-detail .method-panel ol li{
+  display:block!important;
+  grid-template-columns:none!important;
+  width:100%;
+  padding-left:4.2rem;
+}
+.recipe-detail .method-panel ol li::before{
+  position:absolute;
+  left:0;
+  top:1.7rem;
+}
+.recipe-detail .method-panel ol li::after{
+  left:2.5rem;
+}
+
+/* Home: four visible, local culinary objects tied to the content */
+.home-culinary-trail{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  overflow:visible;
+}
+.home-trail-object{
+  position:absolute;
+  width:clamp(5.5rem,9vw,10rem);
+  color:#466244;
+  opacity:.22;
+  filter:drop-shadow(0 16px 28px rgba(36,45,30,.10));
+  will-change:transform,opacity;
+}
+.home-trail-object svg{
+  display:block;
+  width:100%;
+  height:auto;
+  overflow:visible;
+}
+.home-trail-object path,
+.home-trail-object circle{
+  fill:currentColor;
+}
+.home-trail-object .trail-stroke{
+  fill:none;
+  stroke:rgba(245,239,224,.7);
+  stroke-width:2;
+}
+.home-trail-object--leaf{
+  top:3%;
+  right:1.2%;
+  width:clamp(8rem,12vw,13rem);
+  color:#516f4e;
+}
+.home-trail-object--lemongrass{
+  top:24%;
+  left:1.5%;
+  width:clamp(4.5rem,6vw,6.5rem);
+  color:#71825f;
+}
+.home-trail-object--pepper{
+  top:48%;
+  right:2.5%;
+  width:clamp(5rem,7vw,7.5rem);
+  color:#6f523f;
+}
+.home-trail-object--steam{
+  top:69%;
+  left:2%;
+  width:clamp(6rem,8vw,8.5rem);
+  color:rgba(112,120,99,.72);
+}
+.home-trail-object--steam path{
+  fill:none;
+  stroke:currentColor;
+  stroke-width:5;
+  stroke-linecap:round;
+}
+.desire-story>.home-culinary-trail + .desire-intro,
+.desire-story>.home-culinary-trail ~ .desire-list{
+  position:relative;
+  z-index:1;
+}
+
+/* Rich glossary strip */
+.glossary-strip{
+  margin:clamp(4rem,8vh,7rem) 0;
+  padding:clamp(2rem,4vw,3.5rem);
+  border-radius:1.2rem;
+  background:#dfe4d7;
+}
+.glossary-strip-head{
+  max-width:42rem;
+  margin-bottom:2rem;
+}
+.glossary-strip-head h2{
+  margin:.3rem 0 .8rem;
+  font:400 clamp(2.3rem,4vw,4rem)/.95 var(--serif);
+  letter-spacing:-.04em;
+}
+.glossary-strip-head>p:last-child{
+  max-width:36rem;
+  margin:0;
+  line-height:1.65;
+  color:#4f574a;
+}
+.glossary-items{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.75rem;
+}
+.glossary-item{
+  border:1px solid rgba(50,62,45,.12);
+  border-radius:.8rem;
+  background:rgba(255,255,255,.38);
+  overflow:hidden;
+}
+.glossary-item summary{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:1rem;
+  padding:1rem 1.15rem;
+  cursor:pointer;
+  list-style:none;
+}
+.glossary-item summary::-webkit-details-marker{display:none}
+.glossary-item summary strong{
+  font:400 clamp(1.35rem,2vw,1.85rem)/1 var(--serif);
+}
+.glossary-definition{
+  padding:0 1.15rem 1.2rem;
+}
+.glossary-definition p{
+  margin:.65rem 0 0;
+  line-height:1.65;
+  color:#4e5549;
+}
+.glossary-definition b{
+  color:#252b22;
+}
+.glossary-definition a{
+  display:inline-block;
+  margin-top:.9rem;
+  border-bottom:1px solid;
+  font-size:.7rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.glossary-all-link{margin-top:1.5rem}
+
+/* Full glossary hub */
+.glossary-page{
+  padding-top:clamp(6rem,9vh,8rem);
+}
+.glossary-hero{
+  display:grid;
+  grid-template-columns:minmax(0,.9fr) minmax(18rem,.6fr);
+  gap:3rem 7vw;
+  align-items:end;
+  max-width:76rem;
+  margin:0 auto clamp(4rem,8vh,7rem);
+}
+.glossary-hero .eyebrow{grid-column:1/-1}
+.glossary-hero h1{
+  margin:0;
+  max-width:12ch;
+  font:400 clamp(3rem,5.2vw,5.5rem)/.91 var(--serif);
+  letter-spacing:-.05em;
+}
+.glossary-hero>p:last-child{
+  margin:0 0 .4rem;
+  line-height:1.7;
+  color:#5b5145;
+}
+.glossary-directory{
+  max-width:76rem;
+  margin:0 auto;
+  border-top:1px solid rgba(50,42,34,.15);
+}
+.glossary-card{
+  display:grid;
+  grid-template-columns:4rem minmax(0,1fr);
+  gap:clamp(1rem,3vw,3rem);
+  padding:clamp(2rem,4vh,3.2rem) 0;
+  border-bottom:1px solid rgba(50,42,34,.15);
+  scroll-margin-top:7rem;
+}
+.glossary-card-index{
+  padding-top:.5rem;
+  font-size:.6rem;
+  letter-spacing:.15em;
+  color:#8b7356;
+}
+.glossary-card h2{
+  margin:0 0 .8rem;
+  font:400 clamp(2rem,3.4vw,3.4rem)/.96 var(--serif);
+  letter-spacing:-.04em;
+}
+.glossary-card p{
+  max-width:50rem;
+  margin:.5rem 0;
+  line-height:1.7;
+  color:#544b40;
+}
+.glossary-cue{
+  padding-left:1rem;
+  border-left:2px solid #b06b4c;
+}
+
+/* Ingredient guide depth */
+.ingredient-practical{
+  max-width:76rem;
+  margin:0 auto clamp(4rem,8vh,7rem);
+  padding-top:clamp(3rem,6vh,5rem);
+  border-top:1px solid rgba(52,43,34,.14);
+}
+.ingredient-practical-head{
+  display:grid;
+  grid-template-columns:minmax(0,.9fr) minmax(18rem,.6fr);
+  gap:1rem 6vw;
+  align-items:end;
+  margin-bottom:2.2rem;
+}
+.ingredient-practical-head .eyebrow{grid-column:1/-1}
+.ingredient-practical-head h2{
+  margin:0;
+  max-width:13ch;
+  font:400 clamp(2.45rem,4vw,4.15rem)/.94 var(--serif);
+  letter-spacing:-.045em;
+}
+.ingredient-practical-head>p:last-child{
+  margin:0 0 .35rem;
+  line-height:1.65;
+  color:#5b5145;
+}
+.ingredient-practical-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.8rem;
+}
+.ingredient-practical-grid article{
+  padding:1.5rem;
+  border-radius:.9rem;
+  background:#e6dccd;
+}
+.ingredient-practical-grid article:nth-child(2){background:#d9e0d2}
+.ingredient-practical-grid article:nth-child(3){background:#ead8c7}
+.ingredient-practical-grid article:nth-child(4){background:#ddd4c8}
+.ingredient-practical-grid h3{
+  display:flex;
+  align-items:center;
+  gap:.55rem;
+  margin:0 0 1rem;
+  font:400 clamp(1.7rem,2.5vw,2.45rem)/1 var(--serif);
+  letter-spacing:-.03em;
+}
+.ingredient-practical-grid .culinary-icon{
+  flex:0 0 auto;
+  color:#9c5d45;
+}
+.ingredient-practical-grid ul{
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+.ingredient-practical-grid li{
+  position:relative;
+  padding:.55rem 0 .55rem 1rem;
+  line-height:1.55;
+  border-top:1px solid rgba(49,40,31,.1);
+}
+.ingredient-practical-grid li::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:1.15rem;
+  width:.32rem;
+  height:.32rem;
+  border-radius:50%;
+  background:#9c6b50;
+}
+
+/* Ingredient index supporting pantry */
+.ingredient-pantry{
+  margin-top:clamp(5rem,10vh,8rem);
+  padding-top:clamp(3rem,6vh,5rem);
+  border-top:1px solid rgba(49,40,31,.15);
+}
+.ingredient-pantry>header{
+  max-width:48rem;
+  margin-bottom:2.2rem;
+}
+.ingredient-pantry h2{
+  margin:.3rem 0 .8rem;
+  max-width:12ch;
+  font:400 clamp(2.45rem,4vw,4.1rem)/.95 var(--serif);
+  letter-spacing:-.04em;
+}
+.ingredient-pantry>header>p:last-child{
+  max-width:36rem;
+  line-height:1.65;
+  color:#574e43;
+}
+.ingredient-pantry-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:.7rem;
+}
+.ingredient-pantry-grid a{
+  min-height:12rem;
+  padding:1.4rem;
+  border-radius:.8rem;
+  background:#e4d8c7;
+  transition:transform .25s ease,background .25s ease;
+}
+.ingredient-pantry-grid a:nth-child(even){background:#dce1d5}
+.ingredient-pantry-grid a:hover{
+  transform:translateY(-3px);
+  background:#d8c7b2;
+}
+.ingredient-pantry-grid strong{
+  display:block;
+  font:400 1.75rem/1 var(--serif);
+}
+.ingredient-pantry-grid p{
+  margin:.75rem 0 1.2rem;
+  line-height:1.55;
+  color:#574e43;
+}
+.ingredient-pantry-grid span{
+  font-size:.65rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+/* Learning V12: practical and appetizing */
+.learn-v12 .page-intro-split{
+  background:#e8dccb;
+}
+.learning-pantry{
+  display:grid;
+  grid-template-columns:minmax(16rem,.65fr) minmax(0,1.35fr);
+  gap:clamp(2.5rem,6vw,6rem);
+  align-items:start;
+  padding:clamp(3rem,6vh,5rem) 0 clamp(4rem,8vh,7rem);
+}
+.learning-pantry>header h2{
+  margin:.35rem 0 1rem;
+  max-width:11ch;
+  font:400 clamp(2.45rem,4vw,4rem)/.95 var(--serif);
+  letter-spacing:-.04em;
+}
+.learning-pantry>header>p:last-child{
+  max-width:30rem;
+  line-height:1.65;
+  color:#574e43;
+}
+.learning-pantry-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  border-top:1px solid rgba(50,41,32,.15);
+}
+.learning-pantry-grid article{
+  display:grid;
+  grid-template-columns:2.5rem 1fr;
+  gap:.3rem .8rem;
+  padding:1.25rem 0;
+  border-bottom:1px solid rgba(50,41,32,.15);
+}
+.learning-pantry-grid article:nth-child(odd){padding-right:1.3rem}
+.learning-pantry-grid article:nth-child(even){padding-left:1.3rem;border-left:1px solid rgba(50,41,32,.15)}
+.learning-pantry-grid article>span{
+  grid-row:1/3;
+  font-size:.58rem;
+  letter-spacing:.13em;
+  color:#8f7657;
+}
+.learning-pantry-grid strong{
+  font:400 1.45rem/1 var(--serif);
+}
+.learning-pantry-grid p{
+  margin:.4rem 0 0;
+  font-size:.9rem;
+  line-height:1.5;
+  color:#625749;
+}
+
+.learning-lessons{
+  display:flex;
+  flex-direction:column;
+  gap:clamp(5rem,10vh,8rem);
+  padding:clamp(4rem,8vh,7rem) 0;
+  border-top:1px solid rgba(50,41,32,.14);
+}
+.learning-lesson{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(19rem,.86fr);
+  gap:clamp(2rem,6vw,6rem);
+  align-items:center;
+}
+.learning-lesson--reverse{
+  grid-template-columns:minmax(19rem,.86fr) minmax(0,1fr);
+}
+.learning-lesson--reverse .learning-lesson-media{grid-column:2;grid-row:1}
+.learning-lesson--reverse .learning-lesson-copy{grid-column:1;grid-row:1}
+.learning-lesson-media{
+  height:clamp(23rem,38vw,34rem);
+  margin:0;
+  border-radius:1.1rem;
+  overflow:hidden;
+  background:#d5c8b5;
+}
+.learning-lesson-media img{
+  width:100%;
+  height:112%;
+  object-fit:cover;
+}
+.learning-lesson-copy h2{
+  margin:.3rem 0 1rem;
+  max-width:14ch;
+  font:400 clamp(2.55rem,4.2vw,4.3rem)/.94 var(--serif);
+  letter-spacing:-.045em;
+}
+.learning-lesson-intro{
+  max-width:35rem;
+  line-height:1.68;
+  color:#564c40;
+}
+.learning-objective,
+.learning-taste{
+  display:flex;
+  gap:.8rem;
+  align-items:flex-start;
+  max-width:38rem;
+  margin-top:1.3rem;
+  padding:1rem 1.1rem;
+  border-radius:.75rem;
+  background:#dde2d6;
+}
+.learning-objective .culinary-icon,
+.learning-taste .culinary-icon{
+  flex:0 0 auto;
+  color:#a05e45;
+  margin-top:.1rem;
+}
+.learning-objective strong{
+  display:block;
+  margin-bottom:.25rem;
+  font-size:.68rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.learning-objective p,
+.learning-taste p{
+  margin:0;
+  line-height:1.58;
+}
+.learning-taste{
+  background:#ead7c5;
+}
+.learning-do{
+  margin-top:1.4rem;
+}
+.learning-do>strong{
+  display:block;
+  margin-bottom:.6rem;
+  font-size:.68rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.learning-do ul{
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+.learning-do li{
+  padding:.55rem 0;
+  border-top:1px solid rgba(50,41,32,.12);
+  line-height:1.55;
+}
+.learning-practice{
+  display:grid;
+  grid-template-columns:minmax(16rem,.8fr) repeat(3,minmax(0,1fr));
+  gap:1px;
+  margin:clamp(4rem,8vh,7rem) 0;
+  background:rgba(45,37,29,.14);
+}
+.learning-practice>div,
+.learning-practice>a{
+  min-height:14rem;
+  padding:1.5rem;
+  background:#e8dccb;
+}
+.learning-practice>a{
+  display:flex;
+  flex-direction:column;
+}
+.learning-practice>a:nth-child(3){background:#dce2d5}
+.learning-practice>a:nth-child(4){background:#e6d3c1}
+.learning-practice h2{
+  margin:.35rem 0 0;
+  max-width:10ch;
+  font:400 clamp(2rem,3vw,3rem)/.97 var(--serif);
+}
+.learning-practice a>span{
+  font-size:.58rem;
+  letter-spacing:.13em;
+  color:#8c7356;
+}
+.learning-practice a>strong{
+  margin-top:auto;
+  font:400 1.9rem/1 var(--serif);
+}
+.learning-practice a>em{
+  margin-top:.6rem;
+  font-style:normal;
+  font-size:.88rem;
+  line-height:1.45;
+  color:#5b5145;
+}
+
+/* Culture with a larger editorial library */
+.culture-editorial{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+.culture-feature-copy .card-meta{
+  color:#876d50;
+}
+
+/* Mobile V12 */
+@media(max-width:900px){
+  .glossary-hero,
+  .ingredient-practical-head,
+  .learning-pantry{
+    grid-template-columns:1fr;
+  }
+  .glossary-hero .eyebrow,
+  .ingredient-practical-head .eyebrow{
+    grid-column:1;
+  }
+  .learning-practice{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .learning-practice>div{
+    grid-column:1/-1;
+    min-height:auto;
+  }
+}
+@media(max-width:720px){
+  .recipe-detail .method-panel ol li{
+    padding-left:3.25rem!important;
+  }
+  .recipe-detail .method-panel ol li::before{left:0;top:1.45rem}
+  .recipe-detail .method-panel ol li::after{left:1.85rem}
+
+  .home-culinary-trail{
+    overflow:hidden;
+  }
+  .home-trail-object{
+    opacity:.24;
+  }
+  .home-trail-object--lemongrass,
+  .home-trail-object--steam{
+    display:none;
+  }
+  .home-trail-object--leaf{
+    width:6.5rem;
+    right:-1.5rem;
+  }
+  .home-trail-object--pepper{
+    width:4.2rem;
+    right:-.5rem;
+  }
+
+  .glossary-strip{
+    padding:1.25rem;
+    border-radius:.85rem;
+  }
+  .glossary-items{
+    grid-template-columns:1fr;
+  }
+  .glossary-strip-head h2{
+    font-size:clamp(2.1rem,9.5vw,2.9rem);
+  }
+
+  .glossary-page{
+    padding-top:5.75rem;
+  }
+  .glossary-hero{
+    gap:1.2rem;
+    margin-bottom:3rem;
+  }
+  .glossary-hero h1{
+    font-size:clamp(2.55rem,11vw,3.55rem);
+  }
+  .glossary-card{
+    grid-template-columns:2rem minmax(0,1fr);
+    gap:.75rem;
+    padding:1.8rem 0;
+  }
+  .glossary-card h2{
+    font-size:2.15rem;
+  }
+
+  .ingredient-practical{
+    padding-top:3rem;
+  }
+  .ingredient-practical-head{
+    gap:.7rem;
+  }
+  .ingredient-practical-head h2{
+    font-size:clamp(2.2rem,9.5vw,3rem);
+  }
+  .ingredient-practical-grid{
+    grid-template-columns:1fr;
+  }
+  .ingredient-practical-grid article{
+    padding:1.2rem;
+  }
+  .ingredient-pantry-grid{
+    grid-template-columns:1fr;
+  }
+  .ingredient-pantry-grid a{
+    min-height:0;
+    padding:1.2rem;
+  }
+
+  .learning-pantry{
+    padding:3rem 0;
+    gap:1.5rem;
+  }
+  .learning-pantry>header h2{
+    font-size:clamp(2.2rem,9.5vw,3rem);
+  }
+  .learning-pantry-grid{
+    grid-template-columns:1fr;
+  }
+  .learning-pantry-grid article:nth-child(odd),
+  .learning-pantry-grid article:nth-child(even){
+    padding:1rem 0;
+    border-left:0;
+  }
+  .learning-lessons{
+    gap:4rem;
+    padding:3.5rem 0;
+  }
+  .learning-lesson,
+  .learning-lesson--reverse{
+    grid-template-columns:1fr;
+    gap:1.4rem;
+  }
+  .learning-lesson--reverse .learning-lesson-media,
+  .learning-lesson--reverse .learning-lesson-copy{
+    grid-column:1;
+    grid-row:auto;
+  }
+  .learning-lesson-media{
+    height:58vw;
+    min-height:15rem;
+    max-height:21rem;
+    border-radius:.85rem;
+  }
+  .learning-lesson-copy h2{
+    font-size:clamp(2.2rem,9.5vw,3.05rem);
+  }
+  .learning-objective,
+  .learning-taste{
+    padding:.9rem;
+  }
+  .learning-practice{
+    grid-template-columns:1fr;
+  }
+  .learning-practice>div,
+  .learning-practice>a{
+    grid-column:1;
+    min-height:0;
+  }
+  .learning-practice>a>strong{
+    margin-top:2.25rem;
+  }
+
+  .footer-meta nav{
+    gap:.8rem 1rem;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .home-trail-object{
+    transform:none!important;
+    opacity:.22!important;
+  }
+}
