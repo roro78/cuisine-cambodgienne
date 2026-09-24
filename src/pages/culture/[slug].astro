@@ -20,13 +20,15 @@ export function getStaticPaths() {
 
 const { article } = Astro.props;
 
-const glossary = getGlossaryEntries(
-  article.slug === 'poivre-de-kampot'
-    ? ['poivre-de-kampot']
-    : article.slug === 'comprendre-le-kroeung'
-      ? ['kroeung', 'combava', 'galanga']
-      : ['amok', 'kroeung']
-);
+const glossaryByArticle: Record<string, string[]> = {
+  'poivre-de-kampot': ['poivre-de-kampot'],
+  'comprendre-le-kroeung': ['kroeung', 'citronnelle', 'galanga', 'combava', 'curcuma'],
+  'comprendre-amok': ['amok', 'kroeung', 'lait-de-coco', 'combava'],
+  'prahok-fermentation': ['prahok', 'kroeung'],
+  'marches-herbes-cuisine-khmere': ['citronnelle', 'galanga', 'combava', 'num-banh-chok'],
+  'transmission-cuisine-khmere': ['kroeung', 'prahok', 'amok', 'bobor']
+};
+const glossary = getGlossaryEntries(glossaryByArticle[article.slug] ?? []);
 
 const relatedContent = article.slug === 'poivre-de-kampot'
   ? [
@@ -48,7 +50,7 @@ const articleSchema = {
   '@context': 'https://schema.org',
   '@type': 'Article',
   headline: article.title,
-  description: article.intro,
+  description: article.seoDescription,
   image: new URL(article.image, Astro.site ?? new URL('https://www.cuisine-du-cambodge.com')).href,
   inLanguage: 'fr-FR',
   author: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
@@ -66,12 +68,12 @@ const breadcrumbSchema = {
   ]
 };
 ---
-<BaseLayout title={`${article.title} | Cuisine du Cambodge`} description={article.intro} image={article.image} imageAlt={article.imageAlt}>
+<BaseLayout title={`${article.title} | Culture culinaire cambodgienne`} description={article.seoDescription} image={article.image} imageAlt={article.imageAlt}>
   <SiteHeader />
   <main class="culture-article editorial-detail culture-detail">
     <section class="detail-hero-shell detail-hero-shell--culture">
       <header class="culture-article-hero" data-reveal="up">
-        <p class="eyebrow"><CulinaryIcon name="story" size={17} /> {article.eyebrow}</p>
+        <p class="eyebrow"><CulinaryIcon name="story" size={17} /> {article.eyebrow} · {article.readingTime}</p>
         <h1>{article.title}</h1>
         <p>{article.intro}</p>
       </header>
