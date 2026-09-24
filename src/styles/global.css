@@ -3630,3 +3630,26 @@ main{position:relative;z-index:1}
     max-height:22rem;
   }
 }
+
+
+/* V11 — semantic recipe fact layout */
+.recipe-facts>div{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  grid-template-rows:auto auto;
+  column-gap:.75rem;
+  row-gap:.15rem;
+}
+.recipe-facts>div>.culinary-icon{
+  grid-column:1;
+  grid-row:1/3;
+  align-self:center;
+}
+.recipe-facts>div>dt{
+  grid-column:2;
+  grid-row:1;
+}
+.recipe-facts>div>dd{
+  grid-column:2;
+  grid-row:2;
+}
