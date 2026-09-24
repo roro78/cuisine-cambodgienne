@@ -828,7 +828,7 @@ img[data-parallax]{
 @media(prefers-reduced-motion:reduce){
   .motion-layer{display:block}
   .motion-layer .motion-object:nth-child(n+2){display:none}
-  .motion-object{transform:none!important}
+  .motion-object{transform:scale(var(--motion-scale))!important}
 }
 
 
