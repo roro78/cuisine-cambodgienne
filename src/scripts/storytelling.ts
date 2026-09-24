@@ -250,25 +250,25 @@ export function initStorytelling() {
       onRefresh: () => resize()
     });
 
-    gsap.fromTo('.after-film h2', { y: 80, opacity: 0 }, {
-      y: 0,
-      opacity: 1,
+    gsap.fromTo('.amok-finale-media img', { scale: 1.12 }, {
+      scale: 1,
+      ease: 'none',
       scrollTrigger: {
-        trigger: '.after-film',
-        start: 'top 72%',
-        end: 'top 42%',
+        trigger: '.amok-finale',
+        start: 'top bottom',
+        end: 'bottom top',
         scrub: 1
       }
     });
 
-    gsap.fromTo('.amok-poster img', { scale: 1.16 }, {
-      scale: 1,
+    gsap.fromTo('.amok-finale-copy', { y: 44 }, {
+      y: -18,
       ease: 'none',
       scrollTrigger: {
-        trigger: '.amok-poster',
-        start: 'top bottom',
-        end: 'bottom top',
-        scrub: 1
+        trigger: '.amok-finale',
+        start: 'top 82%',
+        end: 'bottom 42%',
+        scrub: .8
       }
     });
   });
