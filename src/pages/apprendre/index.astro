@@ -3,51 +3,96 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { imageSrcSet } from '../../utils/images';
+
+const learningSteps = [
+  {
+    n: '01',
+    title: 'Kroeung',
+    text: 'Comprendre ce que font la citronnelle, le galanga, le curcuma et le combava avant même d’allumer le feu.',
+    href: '/ingredients/kroeung/',
+    cta: 'Comprendre le kroeung',
+    accent: 'citronnelle'
+  },
+  {
+    n: '02',
+    title: 'Équilibres',
+    text: 'Goûter le sel, le sucre, l’acidité, le coco et les fermentations comme des curseurs que l’on ajuste.',
+    href: '/ingredients/tamarin/',
+    cta: 'Explorer le tamarin',
+    accent: 'tamarin'
+  },
+  {
+    n: '03',
+    title: 'Cuissons',
+    text: 'Saisir vite, cuire doucement, laisser la vapeur travailler : choisir une cuisson qui respecte la texture.',
+    href: '/recettes/lok-lak/',
+    cta: 'Voir une cuisson vive',
+    accent: 'vapeur'
+  },
+  {
+    n: '04',
+    title: 'Amok',
+    text: 'Assembler kroeung, coco et poisson pour obtenir une texture douce, chaude, parfumée et juste prise.',
+    href: '/recettes/amok-trey/',
+    cta: 'Cuisiner l’Amok',
+    accent: 'feuille'
+  },
+  {
+    n: '05',
+    title: 'Variations',
+    text: 'Une fois les équilibres compris, adapter les parfums à ce que l’on trouve sans perdre l’esprit du plat.',
+    href: '/recettes/',
+    cta: 'Continuer à cuisiner',
+    accent: 'poivre'
+  }
+];
 ---
-<BaseLayout title="Apprendre la cuisine cambodgienne | Cuisine du Cambodge" description="Guides, e-book Fusion Khmère et future masterclass consacrée au kroeung et à l'amok.">
+<BaseLayout title="Apprendre la cuisine cambodgienne | Cuisine du Cambodge" description="Guides, gestes et parcours pour apprendre la cuisine cambodgienne en cuisinant.">
   <SiteHeader />
   <main class="listing-page editorial-listing learn-listing">
     <header class="page-intro page-intro-split" data-reveal="up">
       <p class="eyebrow">Transmission</p>
       <h1>Apprendre en cuisinant</h1>
-      <p>Commencer par un bon kroeung, réussir un amok, apprendre à équilibrer coco, acidité, sel et aromates : des formats conçus pour cuisiner davantage, pas pour accumuler de la théorie.</p>
+      <p>Commencer par un bon kroeung, comprendre les équilibres, choisir la bonne cuisson puis mettre tout cela en pratique dans un amok : un parcours pour faire, goûter et recommencer.</p>
       <div class="page-intro-visual" data-parallax="0.10"><img src="/images/cuisine/amok-alt-1600.webp" srcset={imageSrcSet('/images/cuisine/amok-alt-1600.webp', [480, 800, 1200, 1600])} sizes="(max-width: 900px) 100vw, 58vw" alt="Amok trei cambodgien présenté dans des feuilles" width="1836" height="4080" fetchpriority="high" decoding="async" /></div>
     </header>
-    <section class="learn-path" aria-labelledby="learn-path-title" data-reveal="up">
-      <div class="learn-path-head" data-reveal="left">
-        <p class="eyebrow">Commencer ici</p>
-        <h2 id="learn-path-title">Trois étapes pour entrer dans la cuisine khmère.</h2>
-      </div>
-      <div class="learn-path-steps" data-reveal="right" data-reveal-delay="0.08">
-        <a href="/ingredients/kroeung/">
-          <span>01</span>
-          <strong>Comprendre le kroeung</strong>
-          <em>Les aromates, le rôle de la pâte et les gestes qui changent tout.</em>
-        </a>
-        <a href="/recettes/kroeung-jaune/">
-          <span>02</span>
-          <strong>Préparer une base</strong>
-          <em>Citronnelle, galanga, curcuma et combava : passer de la théorie au mortier.</em>
-        </a>
-        <a href="/recettes/amok-trey/">
-          <span>03</span>
-          <strong>Cuisiner l’Amok Trey</strong>
-          <em>Mettre le kroeung en pratique dans une cuisson douce et parfumée.</em>
-        </a>
+
+    <section class="learning-journey" aria-labelledby="learning-title" data-learning-path>
+      <header class="learning-journey-head" data-reveal="up">
+        <p class="eyebrow">Le parcours</p>
+        <h2 id="learning-title">Cinq gestes pour entrer dans la cuisine khmère.</h2>
+        <p>La ligne avance avec vous. Chaque étape doit donner envie d’aller en cuisine, pas de lire un cours de plus.</p>
+      </header>
+
+      <div class="learning-track">
+        <div class="learn-progress" aria-hidden="true"><i></i></div>
+        <div class="learning-steps">
+          {learningSteps.map((step) => (
+            <article class:list={['learning-step', `learning-step--${step.accent}`]} data-learning-step>
+              <span class="learning-step-number">{step.n}</span>
+              <div class="learning-step-copy">
+                <h3>{step.title}</h3>
+                <p>{step.text}</p>
+                <a class="text-link" href={step.href}>{step.cta}</a>
+              </div>
+              <span class="learning-step-mark" aria-hidden="true"></span>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
 
-    <section class="offer-grid" data-reveal="up">
-      <article>
-        <p class="card-meta">E-book · en préparation</p>
+    <section class="learning-next" data-reveal="up">
+      <div>
+        <p class="card-meta">À venir</p>
         <h2>Fusion Khmère</h2>
-        <p>Des recettes qui partent des parfums khmers — kroeung, coco, tamarin, poivre — pour créer des assiettes simples, généreuses et modernes.</p>
-      </article>
-      <article>
-        <p class="card-meta">Masterclass · en préparation</p>
+        <p>Un e-book pour partir des parfums khmers et créer des assiettes simples, généreuses et modernes.</p>
+      </div>
+      <div>
+        <p class="card-meta">À venir</p>
         <h2>Kroeung & Amok</h2>
-        <p>Préparer un kroeung très parfumé, obtenir une texture d’amok douce et soyeuse, ajuster le coco, le sel et les aromates jusqu’au bon équilibre.</p>
-      </article>
+        <p>Une masterclass centrée sur les gestes, les textures et les ajustements qui font la différence.</p>
+      </div>
     </section>
   </main>
   <SiteFooter />
