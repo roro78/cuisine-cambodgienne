@@ -1,0 +1,17 @@
+---
+interface Props {
+  target?: string;
+  label?: string;
+}
+const { target = '.about-story', label = 'Feuille de bananier' } = Astro.props;
+---
+<div class="scroll-companion" data-scroll-companion data-companion-target={target} aria-hidden="true" title={label}>
+  <svg viewBox="0 0 220 420" role="presentation">
+    <path class="scroll-companion-leaf" d="M111 404C78 331 46 259 49 176C52 99 82 43 117 15C147 55 174 114 170 184C166 270 137 344 111 404Z" />
+    <path class="scroll-companion-vein" d="M112 390C114 284 116 178 119 28" />
+    <path class="scroll-companion-vein" d="M116 126C142 101 153 78 161 52" />
+    <path class="scroll-companion-vein" d="M114 181C86 151 73 123 65 94" />
+    <path class="scroll-companion-vein" d="M113 243C142 214 155 186 163 155" />
+    <path class="scroll-companion-vein" d="M112 301C87 273 72 244 62 215" />
+  </svg>
+</div>

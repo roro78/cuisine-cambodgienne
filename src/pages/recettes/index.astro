@@ -43,28 +43,29 @@ const collectionSchema = {
       <button type="button" data-recipe-filter="bœuf" aria-pressed="false">Bœuf</button>
       <button type="button" data-recipe-filter="base" aria-pressed="false">Bases</button>
     </section>
-
     <p class="recipe-filter-status" aria-live="polite" data-filter-status>{recipes.length} recettes</p>
 
-    <section class="card-grid" aria-label="Recettes" data-reveal="up" data-recipe-grid>
+    <section class="recipe-editorial-list" aria-label="Recettes" data-recipe-grid>
       {recipes.map((recipe, index) => (
         <a
-          class="content-card-link"
+          class:list={['recipe-feature', { 'recipe-feature--reverse': index % 2 === 1, 'recipe-feature--wide': index === 2 }]}
           href={`/recettes/${recipe.slug}/`}
-          data-reveal="up"
-          data-reveal-delay={String(Math.min(index * 0.06, 0.18))}
           data-recipe-card
           data-difficulty={recipe.difficulty.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}
           data-tags={recipe.tags.join(' ').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}
           data-total-minutes={minutes(recipe.prepTime) + minutes(recipe.cookTime)}
+          data-reveal="up"
         >
-          <article class="content-card">
-            <div class="card-visual"><img src={recipe.image} srcset={imageSrcSet(recipe.image, recipe.imageWidths)} sizes="(max-width: 720px) 100vw, 33vw" alt={recipe.imageAlt} width={recipe.imageWidth} height={recipe.imageHeight} loading="lazy" decoding="async" /></div>
+          <figure class="recipe-feature-media" data-parallax="0.08">
+            <img src={recipe.image} srcset={imageSrcSet(recipe.image, recipe.imageWidths)} sizes={index === 2 ? '100vw' : '(max-width: 800px) 100vw, 56vw'} alt={recipe.imageAlt} width={recipe.imageWidth} height={recipe.imageHeight} loading="lazy" decoding="async" />
+          </figure>
+          <div class="recipe-feature-copy">
+            <span class="recipe-feature-index">{String(index + 1).padStart(2, '0')}</span>
             <p class="card-meta">{recipe.difficulty} · {recipe.prepTime}</p>
             <h2>{recipe.title}</h2>
             <p>{recipe.intro}</p>
             <span class="text-link">Voir la recette</span>
-          </article>
+          </div>
         </a>
       ))}
     </section>

@@ -18,6 +18,45 @@ const mobileImages = {
   kampot: '/images/cuisine/kampot-1200.webp',
   amokAlt: '/images/cuisine/amok-alt-1200.webp'
 };
+
+const desires = [
+  {
+    number: '01',
+    eyebrow: 'Ce soir',
+    title: 'Cuisiner quelque chose qui parfume toute la maison.',
+    text: 'Amok, lok lak, riz chaud et sauces fraîches : commencer par un plat qui donne immédiatement envie de passer à table.',
+    href: '/recettes/',
+    cta: 'Choisir une recette',
+    image: images.market,
+    mobile: mobileImages.market,
+    alt: 'Marché cambodgien et produits frais',
+    tone: 'clay'
+  },
+  {
+    number: '02',
+    eyebrow: 'Au mortier',
+    title: 'Maîtriser les gestes qui changent vraiment le goût.',
+    text: 'Piler la citronnelle, équilibrer le coco, réveiller les aromates : apprendre les bases en les faisant.',
+    href: '/apprendre/',
+    cta: 'Apprendre les gestes',
+    image: images.kroeung,
+    mobile: mobileImages.kroeung,
+    alt: 'Kroeung cambodgien et aromates frais',
+    tone: 'green'
+  },
+  {
+    number: '03',
+    eyebrow: 'Dans le panier',
+    title: 'Comprendre une saveur avant de la mettre dans la casserole.',
+    text: 'Poivre de Kampot, tamarin, prahok, combava : connaître leur goût, leur rôle et les bons accords.',
+    href: '/ingredients/',
+    cta: 'Explorer les ingrédients',
+    image: images.kampot,
+    mobile: mobileImages.kampot,
+    alt: 'Poivre de Kampot au Cambodge',
+    tone: 'gold'
+  }
+];
 ---
 <BaseLayout
   image={images.amok}
@@ -88,28 +127,42 @@ const mobileImages = {
       </div>
     </section>
 
-    <section class="after-film">
-      <div class="after-film-copy" data-reveal="up">
+    <section class="desire-story" aria-labelledby="desire-title">
+      <header class="desire-intro" data-reveal="up">
         <p class="eyebrow">Choisissez votre envie</p>
-        <h2>Aujourd’hui,<br />vous avez envie de quoi ?</h2>
-        <p>Un plat cambodgien très parfumé à préparer ce soir, une base comme le kroeung à maîtriser, ou une saveur khmère à découvrir avant de cuisiner ?</p>
-      </div>
+        <h2 id="desire-title">Aujourd’hui,<br />vous avez envie de quoi&nbsp;?</h2>
+        <p>Pas de catalogue. Trois portes d’entrée pour cuisiner, apprendre un geste ou comprendre ce que l’on met dans l’assiette.</p>
+      </header>
 
-      <div class="after-film-links" data-reveal="right" data-reveal-delay="0.08">
-        <a href="/recettes/"><span>01</span><strong>Cuisiner ce soir</strong><em>Amok fondant, lok lak saisi à feu vif, currys parfumés et plats à servir avec du riz chaud.</em></a>
-        <a href="/apprendre/"><span>02</span><strong>Maîtriser les bases</strong><em>Kroeung, coco, sauces, cuissons et gestes essentiels à refaire dans votre cuisine.</em></a>
-        <a href="/ingredients/"><span>03</span><strong>Explorer les saveurs</strong><em>Citronnelle, tamarin, prahok, herbes fraîches et poivre de Kampot.</em></a>
+      <div class="desire-list">
+        {desires.map((item) => (
+          <a class:list={['desire-entry', `desire-entry--${item.tone}`]} href={item.href} data-desire-entry>
+            <div class="desire-copy">
+              <span class="desire-number">{item.number}</span>
+              <p class="eyebrow">{item.eyebrow}</p>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+              <span class="desire-cta">{item.cta}</span>
+            </div>
+            <figure class="desire-media">
+              <img src={item.image} srcset={`${item.mobile} 1200w, ${item.image} 2200w`} sizes="(max-width: 800px) 100vw, 48vw" alt={item.alt} loading="lazy" decoding="async" />
+            </figure>
+          </a>
+        ))}
       </div>
     </section>
 
-    <section class="amok-poster">
-      <img src={images.amokAlt} srcset={`${mobileImages.amokAlt} 1200w, ${images.amokAlt} 1600w`} sizes="100vw" alt="Amok trei cambodgien présenté dans des feuilles" width="1836" height="4080" loading="lazy" decoding="async" />
-      <div class="amok-poster-shade"></div>
-      <div class="amok-poster-copy">
+    <section class="amok-finale" data-amok-finale>
+      <figure class="amok-finale-media">
+        <img src={images.amok} srcset={`${mobileImages.amok} 1200w, ${images.amok} 2200w`} sizes="100vw" alt="Amok cambodgien servi avec du riz et des feuilles de bananier" width="3888" height="2592" loading="lazy" decoding="async" />
+      </figure>
+      <div class="amok-finale-shade"></div>
+      <div class="amok-finale-steam" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="amok-finale-copy" data-reveal="up">
         <p class="eyebrow">À cuisiner ce soir</p>
         <h2>Amok Trey.</h2>
-        <p>Poisson tendre, coco soyeux, kroeung très parfumé, quelques feuilles de combava et une cuisson douce à la vapeur. À servir brûlant avec du riz.</p>
-        <a href="/recettes/amok-trey/">Voir la recette et cuisiner</a>
+        <p>Poisson tendre, coco soyeux, kroeung très parfumé et une cuisson douce. Une recette emblématique à servir brûlante avec du riz.</p>
+        <a href="/recettes/amok-trey/">Voir la recette</a>
       </div>
     </section>
 

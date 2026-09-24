@@ -77,15 +77,15 @@ const breadcrumbSchema = {
       </div>
       <div class="guide-lists">
         <article>
-          <h2>Profil</h2>
+          <h2>Quel goût&nbsp;?</h2>
           <ul>{ingredient.profile.map((item: string) => <li>{item}</li>)}</ul>
         </article>
         <article>
-          <h2>Usages</h2>
+          <h2>Comment l’utiliser&nbsp;?</h2>
           <ul>{ingredient.uses.map((item: string) => <li>{item}</li>)}</ul>
         </article>
         <article>
-          <h2>Conseils</h2>
+          <h2>Bien le travailler</h2>
           <ul>{ingredient.tips.map((item: string) => <li>{item}</li>)}</ul>
         </article>
       </div>
@@ -95,8 +95,8 @@ const breadcrumbSchema = {
 
     {relatedContent.length > 0 && (
       <section class="editorial-related" data-reveal="up">
-        <p class="eyebrow">À cuisiner ensuite</p>
-        <h2>Voir cet ingrédient dans son contexte</h2>
+        <p class="eyebrow">Dans quels plats&nbsp;?</p>
+        <h2>Voir cet ingrédient en cuisine</h2>
         <div class="editorial-related-links">
           {relatedContent.map((item: any) => {
             const isRecipe = 'prepTime' in item;

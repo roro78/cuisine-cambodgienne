@@ -32,16 +32,20 @@ const collectionSchema = {
       <p>Citronnelle fraîche, tamarin acidulé, poivre de Kampot, prahok, coco : ici, on découvre surtout ce que chaque ingrédient apporte dans la bouche et comment l’utiliser en cuisine.</p>
       <div class="page-intro-visual" data-parallax="0.10"><img src={ingredientGuides[0].image} srcset={imageSrcSet(ingredientGuides[0].image, ingredientGuides[0].imageWidths)} sizes="(max-width: 900px) 100vw, 58vw" alt={ingredientGuides[0].imageAlt} width={ingredientGuides[0].imageWidth} height={ingredientGuides[0].imageHeight} fetchpriority="high" decoding="async" /></div>
     </header>
-    <section class="text-grid" data-reveal="up">
+
+    <section class="ingredient-editorial-list" aria-label="Guides ingrédients">
       {ingredientGuides.map((item, index) => (
-        <a class="guide-link" href={`/ingredients/${item.slug}/`} data-reveal="up" data-reveal-delay={String(Math.min(index * 0.07, 0.21))}>
-          <article>
-            <div class="guide-card-image"><img src={item.image} srcset={imageSrcSet(item.image, item.imageWidths)} sizes="(max-width: 720px) 100vw, 50vw" alt={item.imageAlt} width={item.imageWidth} height={item.imageHeight} loading="lazy" decoding="async" /></div>
+        <a class:list={['ingredient-feature', `ingredient-feature--v${index + 1}`]} href={`/ingredients/${item.slug}/`} data-reveal="up">
+          <figure class="ingredient-feature-media" data-parallax={index % 2 === 0 ? '0.08' : '0.12'}>
+            <img src={item.image} srcset={imageSrcSet(item.image, item.imageWidths)} sizes={index === 2 ? '100vw' : '(max-width: 800px) 100vw, 58vw'} alt={item.imageAlt} width={item.imageWidth} height={item.imageHeight} loading="lazy" decoding="async" />
+          </figure>
+          <div class="ingredient-feature-copy">
+            <span>{String(index + 1).padStart(2, '0')}</span>
             <p class="card-meta">Guide ingrédient</p>
             <h2>{item.title}</h2>
             <p>{item.intro}</p>
             <span class="text-link">Découvrir</span>
-          </article>
+          </div>
         </a>
       ))}
     </section>
