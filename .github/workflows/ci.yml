@@ -36,5 +36,8 @@ jobs:
       - name: Type and Astro checks
         run: npm run check
 
+      - name: Motion regression contract
+        run: npm run test:motion
+
       - name: Production build
         run: npm run build
