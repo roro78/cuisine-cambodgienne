@@ -5455,3 +5455,78 @@ main{position:relative;z-index:1}
     margin-bottom:1.2rem;
   }
 }
+
+
+/* V12.1 — guaranteed four-object home culinary trail visibility */
+.home-culinary-trail{
+  z-index:2;
+  overflow:hidden;
+}
+.home-trail-object{
+  display:block;
+  opacity:.3;
+  visibility:visible;
+}
+.home-trail-object--leaf{
+  top:4%;
+  right:2.5vw;
+}
+.home-trail-object--lemongrass{
+  display:block;
+  top:30%;
+  left:3vw;
+}
+.home-trail-object--pepper{
+  top:55%;
+  right:4vw;
+}
+.home-trail-object--steam{
+  display:block;
+  top:76%;
+  left:4vw;
+  color:rgba(86,98,77,.78);
+}
+
+@media(max-width:720px){
+  .home-trail-object,
+  .home-trail-object--lemongrass,
+  .home-trail-object--steam{
+    display:block;
+  }
+  .home-trail-object{
+    opacity:.34;
+  }
+  .home-trail-object--leaf{
+    top:4%;
+    right:-.8rem;
+    width:6.4rem;
+  }
+  .home-trail-object--lemongrass{
+    top:29%;
+    left:-.45rem;
+    width:4rem;
+  }
+  .home-trail-object--pepper{
+    top:55%;
+    right:-.35rem;
+    width:4.6rem;
+  }
+  .home-trail-object--steam{
+    top:76%;
+    left:-.4rem;
+    width:4.8rem;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .home-trail-object{
+    display:block!important;
+    visibility:visible!important;
+    transform:none!important;
+    opacity:.32!important;
+  }
+  .home-trail-object--leaf{opacity:.34!important}
+  .home-trail-object--lemongrass{opacity:.30!important}
+  .home-trail-object--pepper{opacity:.38!important}
+  .home-trail-object--steam{opacity:.42!important}
+}

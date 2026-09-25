@@ -200,7 +200,8 @@ export function initGlobalMotion() {
 
     homeCulinaryObjects.forEach((el, index) => {
       if (reduced) {
-        gsap.set(el, { autoAlpha: index === 0 ? .2 : 0, x: 0, y: 0, rotate: 0 });
+        const staticOpacity = [.34, .3, .38, .42][index] ?? .32;
+        gsap.set(el, { autoAlpha: staticOpacity, x: 0, y: 0, rotate: 0 });
         return;
       }
 
@@ -220,10 +221,10 @@ export function initGlobalMotion() {
       const end = ends[index] ?? ends[0];
 
       gsap.fromTo(el,
-        { ...start, autoAlpha: 0 },
+        { ...start, autoAlpha: .3 },
         {
           ...end,
-          autoAlpha: .72,
+          autoAlpha: .78,
           ease: 'none',
           scrollTrigger: {
             trigger: '.desire-story',
