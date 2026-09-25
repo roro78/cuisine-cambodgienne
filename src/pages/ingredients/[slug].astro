@@ -36,7 +36,8 @@ const relatedContent = ingredient.slug === 'kroeung'
   : ingredient.slug === 'poivre-de-kampot'
     ? [
         recipes.find((item) => item.slug === 'lok-lak'),
-        cultureArticles.find((item) => item.slug === 'poivre-de-kampot')
+        cultureArticles.find((item) => item.slug === 'poivre-de-kampot'),
+      cultureArticles.find((item) => item.slug === 'kep-crabe-poivre')
       ].filter(Boolean)
     : ingredient.slug === 'tamarin'
       ? [
