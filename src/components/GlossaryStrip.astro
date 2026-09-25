@@ -6,9 +6,10 @@ const { entries } = Astro.props;
 {entries.length > 0 && (
   <aside class="glossary-strip" aria-labelledby="glossary-title" data-reveal="up">
     <div class="glossary-strip-head">
-      <p class="eyebrow">Glossaire culinaire</p>
-      <h2 id="glossary-title">Les mots à reconnaître en cuisine</h2>
-      <p>Pas seulement une définition : à quoi sert le terme, ce qu’il faut chercher au goût et comment l’utiliser.</p>
+      <p class="eyebrow">Glossaire express</p>
+      <h2 id="glossary-title">Les mots à connaître</h2>
+      <p>Un repère rapide pour comprendre ce que l’ingrédient apporte vraiment dans la recette.</p>
+      <a class="text-link" href="/glossaire/">Voir tout le glossaire</a>
     </div>
     <div class="glossary-items">
       {entries.map((entry) => (
@@ -19,13 +20,12 @@ const { entries } = Astro.props;
           </summary>
           <div class="glossary-definition">
             <p>{entry.short}</p>
-            {entry.culinaryUse && <p><b>En cuisine.</b> {entry.culinaryUse}</p>}
-            {entry.cue && <p><b>Repère.</b> {entry.cue}</p>}
+            {entry.culinaryUse && <p><strong>En cuisine :</strong> {entry.culinaryUse}</p>}
+            {entry.cue && <p><strong>Repère :</strong> {entry.cue}</p>}
             {entry.href && <a href={entry.href}>Voir le guide détaillé</a>}
           </div>
         </details>
       ))}
     </div>
-    <a class="text-link glossary-all-link" href="/glossaire/">Voir tout le glossaire</a>
   </aside>
 )}
