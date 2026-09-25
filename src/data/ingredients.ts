@@ -2,12 +2,13 @@ export interface IngredientGuide {
   slug: string;
   title: string;
   intro: string;
+  seoDescription: string;
   role: string;
   profile: string[];
   uses: string[];
   tips: string[];
-  buying: string[];
-  storage: string[];
+  choose: string[];
+  keep: string[];
   pairings: string[];
   mistakes: string[];
   image: string;
@@ -22,6 +23,7 @@ export const ingredientGuides: IngredientGuide[] = [
     slug: 'kroeung',
     title: 'Kroeung',
     intro: 'La base aromatique qui donne sa profondeur à de nombreux plats khmers : citronnelle, galanga, curcuma, combava et alliacées pilés jusqu’à former une pâte très parfumée.',
+    seoDescription: 'Kroeung cambodgien : goût, composition, ingrédients, préparation au mortier, conservation et usages dans l’amok, les currys et les sautés khmers.',
     role: 'Le kroeung n’est pas un simple mélange d’épices. C’est une technique : les aromates frais sont découpés finement puis pilés pour libérer leurs huiles, casser les fibres et créer une pâte qui va parfumer toute la cuisson. La recette varie selon le plat, mais la logique reste la même : construire le parfum avant d’ajouter les ingrédients principaux.',
     profile: [
       'Citronnelle : fraîche, citronnée et végétale',
@@ -43,12 +45,12 @@ export const ingredientGuides: IngredientGuide[] = [
       'Au mixeur, travailler par impulsions et ajouter le moins de liquide possible.',
       'Goûter la pâte : elle doit sentir fort avant même la cuisson.'
     ],
-    buying: [
+    choose: [
       'Choisir une citronnelle ferme, claire et lourde, sans partie molle.',
       'Privilégier le galanga frais quand il est disponible : il doit être ferme et parfumé.',
       'Pour le combava, utiliser surtout le zeste ou les feuilles ; le parfum doit être net dès qu’on les froisse.'
     ],
-    storage: [
+    keep: [
       'Conserver le kroeung frais 3 à 4 jours au réfrigérateur dans un récipient bien fermé.',
       'Le congeler en petites portions pour pouvoir prélever uniquement la quantité nécessaire.',
       'Les aromates entiers se conservent mieux non lavés et protégés de l’humidité.'
@@ -74,6 +76,7 @@ export const ingredientGuides: IngredientGuide[] = [
     slug: 'poivre-de-kampot',
     title: 'Poivre de Kampot',
     intro: 'Un produit de terroir cambodgien à utiliser comme un véritable ingrédient : vert et végétal, noir et chaud, rouge plus mûr, blanc plus direct.',
+    seoDescription: 'Poivre de Kampot : différences entre vert, noir, rouge et blanc, conseils d’achat, conservation, accords et usages dans la cuisine cambodgienne.',
     role: 'Le poivre de Kampot peut structurer un plat à lui seul. Il ne sert pas seulement à relever : sa fraîcheur, sa chaleur et ses notes aromatiques peuvent accompagner une sauce au citron vert, un crabe, une viande saisie ou simplement finir une assiette au dernier moment.',
     profile: [
       'Vert frais : végétal, vif et très aromatique',
@@ -94,12 +97,12 @@ export const ingredientGuides: IngredientGuide[] = [
       'Avec le poivre vert frais, cuisiner les grappes entières ou légèrement écrasées.',
       'Goûter avant de saler davantage : la sauce d’accompagnement peut déjà être très assaisonnée.'
     ],
-    buying: [
+    choose: [
       'Rechercher la mention d’origine Kampot et un producteur ou conditionneur identifiable.',
       'Les grains secs doivent être entiers, très odorants et non poussiéreux.',
       'Le poivre vert frais doit rester souple, bien vert et sans grains desséchés.'
     ],
-    storage: [
+    keep: [
       'Conserver le poivre sec entier dans un contenant opaque et hermétique.',
       'Éviter la chaleur et la lumière qui font perdre les arômes volatils.',
       'Le poivre vert frais se garde peu de temps au réfrigérateur ; l’utiliser rapidement.'
@@ -125,6 +128,7 @@ export const ingredientGuides: IngredientGuide[] = [
     slug: 'tamarin',
     title: 'Tamarin',
     intro: 'Une acidité ronde, fruitée et profonde qui permet de construire l’équilibre d’une sauce ou d’une soupe sans donner la même fraîcheur tranchante qu’un citron.',
+    seoDescription: 'Tamarin en cuisine cambodgienne : goût, dosage, préparation de la pulpe, conservation, accords et rôle dans les sauces, soupes et équilibres aigres-doux.',
     role: 'Le tamarin apporte une acidité qui reste longtemps en bouche. C’est un bon outil pour équilibrer une préparation riche, un bouillon ou une sauce aigre-douce : on l’ajoute progressivement, puis on ajuste sucre, sel et umami autour de lui.',
     profile: [
       'Acidité ronde et persistante',
@@ -145,12 +149,12 @@ export const ingredientGuides: IngredientGuide[] = [
       'Équilibrer avec sucre de palme plutôt qu’avec beaucoup de sucre blanc.',
       'Toujours regoûter après réduction, car l’acidité se concentre.'
     ],
-    buying: [
+    choose: [
       'La pulpe compacte est pratique et permet de doser la concentration.',
       'Vérifier la liste d’ingrédients : certaines pâtes prêtes à l’emploi contiennent déjà sucre ou sel.',
       'Une pulpe naturelle doit sentir le fruit acidulé, sans arôme artificiel dominant.'
     ],
-    storage: [
+    keep: [
       'La pulpe compacte se conserve longtemps au sec une fois bien emballée.',
       'Une eau de tamarin préparée maison se conserve quelques jours au réfrigérateur.',
       'Congeler l’extrait en petits glaçons pour un dosage rapide.'
@@ -176,6 +180,7 @@ export const ingredientGuides: IngredientGuide[] = [
     slug: 'prahok',
     title: 'Prahok',
     intro: 'Un condiment de poisson fermenté puissant, salin et très umami, essentiel pour comprendre une partie de la profondeur aromatique de la cuisine khmère.',
+    seoDescription: 'Prahok cambodgien : comprendre ce condiment de poisson fermenté, son goût umami, ses usages, son dosage, sa conservation et les erreurs à éviter.',
     role: 'Le prahok apporte fermentation, sel et longueur en bouche. Son intensité varie selon les produits et les préparations. On peut l’utiliser comme assaisonnement dans un plat, le cuire dans une sauce ou le travailler au centre d’une préparation comme le prahok ktis.',
     profile: [
       'Très umami',
@@ -196,12 +201,12 @@ export const ingredientGuides: IngredientGuide[] = [
       'Le chauffer dans une préparation adoucit son impact aromatique.',
       'Associer avec herbes, agrumes et légumes frais pour créer du contraste.'
     ],
-    buying: [
+    choose: [
       'Choisir un produit clairement étiqueté et destiné à l’usage culinaire.',
       'Comparer la texture et la salinité : certains prahok sont très concentrés.',
       'Pour une première découverte, privilégier une préparation où il est cuit et associé à d’autres ingrédients.'
     ],
-    storage: [
+    keep: [
       'Après ouverture, suivre les indications du fabricant et conserver au froid quand c’est demandé.',
       'Utiliser toujours un ustensile propre pour éviter les contaminations croisées.',
       'Fermer soigneusement le contenant : son parfum est puissant.'
