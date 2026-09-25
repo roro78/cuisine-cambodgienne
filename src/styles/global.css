@@ -4696,3 +4696,63 @@ main{position:relative;z-index:1}
     grid-template-columns:1fr;
   }
 }
+
+
+/* V12 — fix recipe step flow + visible home culinary trail */
+.recipe-detail .method-panel ol li{
+  display:block;
+  position:relative;
+  grid-template-columns:none;
+  padding-left:4.25rem;
+}
+.recipe-detail .method-panel ol li:before{
+  position:absolute;
+  left:0;
+  top:1.65rem;
+}
+.recipe-detail .method-panel ol li:after{
+  left:2.45rem;
+}
+
+.desire-story{position:relative}
+.home-culinary-trail{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  overflow:hidden;
+}
+.home-trail-object{
+  position:absolute;
+  top:2%;
+  width:clamp(5.5rem,10vw,11rem);
+  color:#496544;
+  opacity:0;
+  will-change:transform,opacity;
+  filter:drop-shadow(0 18px 34px rgba(32,43,28,.16));
+}
+.home-trail-object svg{display:block;width:100%;height:auto;overflow:visible}
+.home-trail-object path,
+.home-trail-object circle{fill:currentColor}
+.home-trail-object .trail-stroke{fill:none;stroke:rgba(246,239,222,.58);stroke-width:2}
+.home-trail-object--leaf{right:3vw;width:clamp(7rem,12vw,13rem);color:#526d4b}
+.home-trail-object--lemongrass{left:4vw;top:12%;width:clamp(4rem,6vw,6.5rem);color:#788765}
+.home-trail-object--pepper{right:6vw;top:20%;width:clamp(5rem,7vw,7.4rem);color:#58483d}
+.home-trail-object--steam{left:8vw;top:28%;width:clamp(5rem,8vw,8.5rem);color:rgba(255,255,255,.82)}
+.home-trail-object--steam path{fill:none;stroke:currentColor;stroke-width:5;stroke-linecap:round}
+.desire-intro,.desire-list{position:relative;z-index:3}
+
+@media(max-width:720px){
+  .recipe-detail .method-panel ol li{
+    padding-left:3.5rem;
+  }
+  .recipe-detail .method-panel ol li:after{left:2rem}
+  .home-trail-object{width:4.6rem}
+  .home-trail-object--leaf{width:6rem;right:-1.5rem}
+  .home-trail-object--lemongrass{left:-.8rem;width:3.7rem}
+  .home-trail-object--pepper{right:-.6rem;width:4.5rem}
+  .home-trail-object--steam{left:-.6rem;width:4.4rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .home-trail-object{display:none}
+}
