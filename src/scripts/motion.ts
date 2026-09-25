@@ -25,7 +25,7 @@ export function initGlobalMotion() {
     !cultureRules.length &&
     !companions.length &&
     !learningPaths.length &&
-    !homeCulinaryObjects.length &&
+    !homeCulinaryObjects.length
   ) return () => {};
 
   const context = gsap.context(() => {
