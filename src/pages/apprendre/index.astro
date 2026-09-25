@@ -2,98 +2,331 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
+import CulinaryIcon from '../../components/CulinaryIcon.astro';
 import { imageSrcSet } from '../../utils/images';
 
 const learningSteps = [
   {
     n: '01',
-    title: 'Kroeung',
-    text: 'Comprendre ce que font la citronnelle, le galanga, le curcuma et le combava avant même d’allumer le feu.',
-    href: '/ingredients/kroeung/',
-    cta: 'Comprendre le kroeung',
-    accent: 'citronnelle'
+    eyebrow: 'Le mortier',
+    title: 'Construire un kroeung',
+    promise: 'Apprendre à préparer une base aromatique fraîche et comprendre pourquoi l’ordre des ingrédients change la texture.',
+    learn: ['Émincer les fibres avant de piler', 'Commencer par citronnelle et galanga', 'Reconnaître une pâte assez fine au parfum et au toucher'],
+    exercise: 'Préparer un petit pot de kroeung jaune puis sentir la pâte avant et après cuisson.',
+    href: '/recettes/kroeung-jaune/',
+    cta: 'Faire le kroeung jaune',
+    image: '/images/cuisine/kroeung-1600.webp',
+    widths: [480, 800, 1200, 1600],
+    width: 5184,
+    height: 3456,
+    alt: 'Kroeung et aromates de la cuisine cambodgienne',
+    icon: 'prep' as const
   },
   {
     n: '02',
-    title: 'Équilibres',
-    text: 'Goûter le sel, le sucre, l’acidité, le coco et les fermentations comme des curseurs que l’on ajuste.',
+    eyebrow: 'L’équilibre',
+    title: 'Goûter sel, sucre, acide et umami',
+    promise: 'Sortir du dosage automatique et apprendre à corriger une sauce en comprenant ce qui manque réellement.',
+    learn: ['Utiliser le tamarin pour une acidité ronde', 'Arrondir avec le sucre de palme sans sucrer le plat', 'Ajouter les condiments fermentés par petites touches'],
+    exercise: 'Préparer trois petites sauces en faisant varier uniquement l’acidité, puis comparer avec du riz chaud.',
     href: '/ingredients/tamarin/',
-    cta: 'Explorer le tamarin',
-    accent: 'tamarin'
+    cta: 'Comprendre le tamarin',
+    image: '/images/cuisine/tamarind-1600.webp',
+    widths: [480, 800, 1200, 1600],
+    width: 2304,
+    height: 1268,
+    alt: 'Tamarin utilisé pour équilibrer les sauces cambodgiennes',
+    icon: 'taste' as const
   },
   {
     n: '03',
-    title: 'Cuissons',
-    text: 'Saisir vite, cuire doucement, laisser la vapeur travailler : choisir une cuisson qui respecte la texture.',
+    eyebrow: 'Le feu',
+    title: 'Saisir vite sans faire bouillir',
+    promise: 'Comprendre ce qui se passe dans une poêle très chaude et pourquoi une petite quantité de viande colore mieux.',
+    learn: ['Sécher et portionner avant de cuire', 'Ne pas surcharger la poêle', 'Ajouter la sauce seulement quand la coloration est obtenue'],
+    exercise: 'Cuire le lok lak en deux fournées et observer la différence de coloration et de texture.',
     href: '/recettes/lok-lak/',
-    cta: 'Voir une cuisson vive',
-    accent: 'vapeur'
+    cta: 'Pratiquer avec le Lok Lak',
+    image: '/images/cuisine/lok-lak-800.webp',
+    widths: [480, 800],
+    width: 800,
+    height: 716,
+    alt: 'Lok lak cambodgien au bœuf saisi',
+    icon: 'cook' as const
   },
   {
     n: '04',
-    title: 'Amok',
-    text: 'Assembler kroeung, coco et poisson pour obtenir une texture douce, chaude, parfumée et juste prise.',
+    eyebrow: 'La douceur',
+    title: 'Lier coco, kroeung et vapeur',
+    promise: 'Maîtriser une cuisson douce pour obtenir un amok pris mais encore souple, sans dessécher le poisson.',
+    learn: ['Goûter la base avant le poisson', 'Contrôler une cuisson vapeur régulière', 'Savoir quand arrêter avant que la texture ne se resserre'],
+    exercise: 'Préparer l’amok dans de petits ramequins : les petites portions rendent le point de cuisson plus facile à observer.',
     href: '/recettes/amok-trey/',
-    cta: 'Cuisiner l’Amok',
-    accent: 'feuille'
+    cta: 'Cuisiner l’Amok Trey',
+    image: '/images/cuisine/amok-1600.webp',
+    widths: [480, 800, 1200, 1600],
+    width: 3888,
+    height: 2592,
+    alt: 'Amok trei cambodgien servi avec du riz',
+    icon: 'cook' as const
   },
   {
     n: '05',
-    title: 'Variations',
-    text: 'Une fois les équilibres compris, adapter les parfums à ce que l’on trouve sans perdre l’esprit du plat.',
-    href: '/recettes/',
-    cta: 'Continuer à cuisiner',
-    accent: 'poivre'
+    eyebrow: 'La table',
+    title: 'Composer un repas qui respire',
+    promise: 'Assembler riz, plat chaud, fraîcheur et condiment pour que chaque bouchée puisse être différente.',
+    learn: ['Utiliser le riz comme point d’équilibre', 'Ajouter une fraîcheur acide ou végétale', 'Éviter de multiplier les plats lourds et similaires'],
+    exercise: 'Servir un plat principal avec riz, crudités et un condiment. Goûter plusieurs combinaisons au lieu de tout mélanger.',
+    href: '/culture/construire-repas-cambodgien/',
+    cta: 'Comprendre la table cambodgienne',
+    image: '/images/cuisine/kep-market-1600.webp',
+    widths: [480, 800, 1200, 1600],
+    width: 1600,
+    height: 1067,
+    alt: 'Produits frais au marché de Kep au Cambodge',
+    icon: 'servings' as const
   }
 ];
+
+const learningWorkshops = [
+  {
+    eyebrow: 'Atelier 01',
+    title: 'Mortier & kroeung',
+    text: 'Préparer une petite quantité de kroeung, puis comparer son parfum cru et après cuisson. C’est l’exercice le plus direct pour comprendre la base aromatique.',
+    href: '/recettes/kroeung-jaune/',
+    cta: 'Faire l’atelier',
+    image: '/images/cuisine/kroeung-1600.webp',
+    widths: [480, 800, 1200, 1600],
+    width: 5184,
+    height: 3456,
+    alt: 'Kroeung cambodgien et aromates au mortier'
+  },
+  {
+    eyebrow: 'Atelier 02',
+    title: 'Feu vif & Lok Lak',
+    text: 'Faire deux petites fournées de bœuf pour observer la coloration. On apprend immédiatement pourquoi la taille de la poêle et la quantité comptent.',
+    href: '/recettes/lok-lak/',
+    cta: 'Faire l’atelier',
+    image: '/images/cuisine/lok-lak-800.webp',
+    widths: [480, 800],
+    width: 800,
+    height: 716,
+    alt: 'Lok lak cambodgien au bœuf saisi'
+  },
+  {
+    eyebrow: 'Atelier 03',
+    title: 'Vapeur & Amok',
+    text: 'Cuire de petites portions pour apprendre à reconnaître une texture prise mais encore souple. Le point de cuisson devient beaucoup plus facile à sentir.',
+    href: '/recettes/amok-trey/',
+    cta: 'Faire l’atelier',
+    image: '/images/cuisine/amok-1600.webp',
+    widths: [480, 800, 1200, 1600],
+    width: 3888,
+    height: 2592,
+    alt: 'Amok trei cambodgien cuit doucement'
+  }
+];
+
+const learningFaqs = [
+  {
+    question: 'Par quelle recette commencer quand on découvre la cuisine cambodgienne ?',
+    answer: 'Commencez par le kroeung jaune pour apprendre les aromates, puis le Lok Lak pour travailler le feu. L’Amok vient ensuite pour comprendre la cuisson douce et la liaison coco-kroeung.'
+  },
+  {
+    question: 'Faut-il absolument un mortier ?',
+    answer: 'Non. Un mixeur peut dépanner, mais coupez les aromates très finement et ajoutez le moins de liquide possible. Le mortier reste intéressant pour sentir l’évolution de la texture.'
+  },
+  {
+    question: 'Comment apprendre à équilibrer une sauce sans suivre une quantité exacte ?',
+    answer: 'Ajoutez sel, acidité, douceur et umami par petites touches et goûtez entre chaque ajout. Cherchez ce qui manque plutôt que de corriger plusieurs éléments à la fois.'
+  },
+  {
+    question: 'Quels ingrédients acheter en premier ?',
+    answer: 'Citronnelle, galanga, curcuma, combava, lait de coco, sauce de poisson, tamarin et un bon poivre permettent déjà de travailler beaucoup de gestes et de recettes du site.'
+  }
+];
+
+const learningSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Apprendre la cuisine cambodgienne',
+  description: 'Parcours pratique pour apprendre le kroeung, les équilibres, les cuissons et les gestes essentiels de la cuisine cambodgienne.',
+  url: 'https://www.cuisine-du-cambodge.com/apprendre/',
+  inLanguage: 'fr-FR',
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: learningSteps.map((step, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: step.title,
+      description: step.promise,
+      url: new URL(step.href, 'https://www.cuisine-du-cambodge.com').href
+    }))
+  }
+};
+
+const learningFaqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: learningFaqs.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer }
+  }))
+};
 ---
-<BaseLayout title="Apprendre la cuisine cambodgienne | Cuisine du Cambodge" description="Guides, gestes et parcours pour apprendre la cuisine cambodgienne en cuisinant.">
+<BaseLayout
+  title="Apprendre la cuisine cambodgienne : gestes, kroeung, cuissons"
+  description="Un parcours gourmand et pratique pour apprendre la cuisine cambodgienne : préparer un kroeung, équilibrer une sauce, saisir un lok lak, réussir un amok et composer un repas khmer."
+>
   <SiteHeader />
   <main class="listing-page editorial-listing learn-listing">
-    <header class="page-intro page-intro-split" data-reveal="up">
-      <p class="eyebrow">Transmission</p>
-      <h1>Apprendre en cuisinant</h1>
-      <p>Commencer par un bon kroeung, comprendre les équilibres, choisir la bonne cuisson puis mettre tout cela en pratique dans un amok : un parcours pour faire, goûter et recommencer.</p>
-      <div class="page-intro-visual" data-parallax="0.10"><img src="/images/cuisine/amok-alt-1600.webp" srcset={imageSrcSet('/images/cuisine/amok-alt-1600.webp', [480, 800, 1200, 1600])} sizes="(max-width: 900px) 100vw, 58vw" alt="Amok trei cambodgien présenté dans des feuilles" width="1836" height="4080" fetchpriority="high" decoding="async" /></div>
+    <header class="page-intro page-intro-split learn-hero" data-reveal="up">
+      <p class="eyebrow">Apprendre avec les mains</p>
+      <h1>La cuisine khmère s’apprend en goûtant.</h1>
+      <p>Pas de cours abstrait : cinq apprentissages, cinq exercices et des recettes pour sentir la citronnelle, comprendre une sauce, maîtriser le feu et reconnaître le bon point de cuisson.</p>
+      <div class="page-intro-visual" data-parallax="0.07">
+        <img src="/images/cuisine/kroeung-1600.webp" srcset={imageSrcSet('/images/cuisine/kroeung-1600.webp', [480, 800, 1200, 1600])} sizes="(max-width: 900px) 100vw, 52vw" alt="Kroeung et aromates pour apprendre la cuisine cambodgienne" width="5184" height="3456" fetchpriority="high" decoding="async" />
+      </div>
     </header>
 
-    <section class="learning-journey" aria-labelledby="learning-title" data-learning-path>
-      <header class="learning-journey-head" data-reveal="up">
-        <p class="eyebrow">Le parcours</p>
-        <h2 id="learning-title">Cinq gestes pour entrer dans la cuisine khmère.</h2>
-        <p>La ligne avance avec vous. Chaque étape doit donner envie d’aller en cuisine, pas de lire un cours de plus.</p>
+    <section class="learning-principles" aria-labelledby="principles-title">
+      <header data-reveal="up">
+        <p class="eyebrow">La méthode</p>
+        <h2 id="principles-title">Sentir. Goûter. Cuire. Recommencer.</h2>
+        <p>Chaque module donne un repère concret. Le but n’est pas de mémoriser des quantités, mais de savoir quoi regarder et quoi corriger.</p>
       </header>
-
-      <div class="learning-track">
-        <div class="learn-progress" aria-hidden="true"><i></i></div>
-        <div class="learning-steps">
-          {learningSteps.map((step) => (
-            <article class:list={['learning-step', `learning-step--${step.accent}`]} data-learning-step>
-              <span class="learning-step-number">{step.n}</span>
-              <div class="learning-step-copy">
-                <h3>{step.title}</h3>
-                <p>{step.text}</p>
-                <a class="text-link" href={step.href}>{step.cta}</a>
-              </div>
-              <span class="learning-step-mark" aria-hidden="true"></span>
-            </article>
-          ))}
-        </div>
+      <div class="learning-principle-grid">
+        <article data-reveal="up">
+          <CulinaryIcon name="prep" size={24} />
+          <h3>Sentir</h3>
+          <p>Avant la cuisson, les aromates doivent déjà raconter le plat.</p>
+        </article>
+        <article data-reveal="up" data-reveal-delay=".05">
+          <CulinaryIcon name="taste" size={24} />
+          <h3>Goûter</h3>
+          <p>Corriger sel, acidité, douceur et umami en plusieurs petites étapes.</p>
+        </article>
+        <article data-reveal="up" data-reveal-delay=".1">
+          <CulinaryIcon name="cook" size={24} />
+          <h3>Cuire</h3>
+          <p>Choisir la chaleur pour la texture recherchée, pas par habitude.</p>
+        </article>
+        <article data-reveal="up" data-reveal-delay=".15">
+          <CulinaryIcon name="servings" size={24} />
+          <h3>Assembler</h3>
+          <p>Penser le riz, le plat, les herbes et les condiments comme un repas entier.</p>
+        </article>
       </div>
     </section>
 
-    <section class="learning-next" data-reveal="up">
+    <section class="learning-course" aria-labelledby="learning-title" data-learning-path>
+      <header class="learning-course-head" data-reveal="up">
+        <p class="eyebrow">Le parcours</p>
+        <h2 id="learning-title">Cinq ateliers pour vraiment progresser.</h2>
+      </header>
+
+      <div class="learn-progress" aria-hidden="true"><i></i></div>
+      <div class="learning-course-list">
+        {learningSteps.map((step) => (
+          <article class="learning-module" data-learning-step>
+            <figure class="learning-module-media" data-parallax="0.05">
+              <img src={step.image} srcset={imageSrcSet(step.image, step.widths)} sizes="(max-width: 900px) 100vw, 45vw" alt={step.alt} width={step.width} height={step.height} loading="lazy" decoding="async" />
+            </figure>
+            <div class="learning-module-copy">
+              <div class="learning-module-topline">
+                <span>{step.n}</span>
+                <p class="eyebrow"><CulinaryIcon name={step.icon} size={17} /> {step.eyebrow}</p>
+              </div>
+              <h3>{step.title}</h3>
+              <p class="learning-module-promise">{step.promise}</p>
+
+              <div class="learning-module-learn">
+                <p class="card-meta">Ce que vous allez apprendre</p>
+                <ul>{step.learn.map((item) => <li>{item}</li>)}</ul>
+              </div>
+
+              <div class="learning-exercise">
+                <p class="card-meta">Exercice</p>
+                <p>{step.exercise}</p>
+              </div>
+              <a class="text-link" href={step.href}>{step.cta}</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="learning-workshops" aria-labelledby="workshops-title">
+      <header data-reveal="up">
+        <p class="eyebrow">Passer à la pratique</p>
+        <h2 id="workshops-title">Trois ateliers, trois sensations à mémoriser.</h2>
+        <p>Chaque atelier isole un geste. Faites-le une première fois pour comprendre, une seconde pour corriger, puis une troisième sans regarder toutes les étapes.</p>
+      </header>
+      <div class="learning-workshop-grid">
+        {learningWorkshops.map((workshop) => (
+          <a class="learning-workshop" href={workshop.href} data-reveal="up">
+            <figure>
+              <img src={workshop.image} srcset={imageSrcSet(workshop.image, workshop.widths)} sizes="(max-width: 900px) 100vw, 32vw" alt={workshop.alt} width={workshop.width} height={workshop.height} loading="lazy" decoding="async" />
+            </figure>
+            <div>
+              <p class="card-meta">{workshop.eyebrow}</p>
+              <h3>{workshop.title}</h3>
+              <p>{workshop.text}</p>
+              <span class="text-link">{workshop.cta}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="learning-rules" aria-label="Trois règles pour progresser" data-reveal="up">
       <div>
-        <p class="card-meta">À venir</p>
-        <h2>Fusion Khmère</h2>
-        <p>Un e-book pour partir des parfums khmers et créer des assiettes simples, généreuses et modernes.</p>
+        <CulinaryIcon name="taste" size={24} />
+        <h2>Goûter avant de corriger.</h2>
+        <p>Une seule correction à la fois : sel, acidité, douceur ou umami. Sinon on ne sait plus ce qui a réellement amélioré la sauce.</p>
       </div>
       <div>
-        <p class="card-meta">À venir</p>
-        <h2>Kroeung & Amok</h2>
-        <p>Une masterclass centrée sur les gestes, les textures et les ajustements qui font la différence.</p>
+        <CulinaryIcon name="cook" size={24} />
+        <h2>Regarder la texture.</h2>
+        <p>La couleur, l’humidité et la résistance sous la cuillère donnent souvent plus d’informations qu’un minuteur pris au pied de la lettre.</p>
+      </div>
+      <div>
+        <CulinaryIcon name="prep" size={24} />
+        <h2>Préparer avant d’allumer.</h2>
+        <p>Les cuissons vives ne laissent pas le temps de chercher une sauce ou de couper une herbe. Tout doit être prêt avant la poêle.</p>
+      </div>
+    </section>
+
+    <section class="learning-menu" data-reveal="up">
+      <div>
+        <p class="eyebrow">Premier menu d’entraînement</p>
+        <h2>Un mortier, une poêle, un panier vapeur.</h2>
+        <p>Commencez par le kroeung jaune, enchaînez avec le lok lak pour travailler la saisie, puis terminez avec l’amok pour apprendre la cuisson douce. Trois recettes, trois gestes complètement différents.</p>
+      </div>
+      <nav aria-label="Recettes pour apprendre">
+        <a href="/recettes/kroeung-jaune/"><span>01</span><strong>Kroeung jaune</strong><em>Piler et sentir</em></a>
+        <a href="/recettes/lok-lak/"><span>02</span><strong>Lok Lak</strong><em>Saisir et assaisonner</em></a>
+        <a href="/recettes/amok-trey/"><span>03</span><strong>Amok Trey</strong><em>Lier et cuire doucement</em></a>
+      </nav>
+    </section>
+
+    <section class="learning-faq" aria-labelledby="learning-faq-title">
+      <header data-reveal="up">
+        <p class="eyebrow">Questions de débutant</p>
+        <h2 id="learning-faq-title">Ce qu’on se demande avant de se lancer.</h2>
+      </header>
+      <div>
+        {learningFaqs.map((item) => (
+          <details>
+            <summary>{item.question}<span aria-hidden="true">+</span></summary>
+            <p>{item.answer}</p>
+          </details>
+        ))}
       </div>
     </section>
   </main>
+  <script type="application/ld+json" set:html={JSON.stringify(learningSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(learningFaqSchema)} />
   <SiteFooter />
 </BaseLayout>

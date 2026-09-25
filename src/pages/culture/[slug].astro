@@ -20,13 +20,15 @@ export function getStaticPaths() {
 
 const { article } = Astro.props;
 
-const glossary = getGlossaryEntries(
-  article.slug === 'poivre-de-kampot'
-    ? ['poivre-de-kampot']
-    : article.slug === 'comprendre-le-kroeung'
-      ? ['kroeung', 'combava', 'galanga']
-      : ['amok', 'kroeung']
-);
+const glossaryByArticle: Record<string, string[]> = {
+  'poivre-de-kampot': ['poivre-de-kampot'],
+  'comprendre-le-kroeung': ['kroeung', 'citronnelle', 'galanga', 'combava', 'curcuma'],
+  'comprendre-amok': ['amok', 'kroeung', 'lait-de-coco', 'combava', 'feuille-bananier'],
+  'kep-marche-crabe-poivre': ['poivre-de-kampot'],
+  'prahok-fermentation-umami': ['prahok', 'sauce-poisson'],
+  'construire-repas-cambodgien': ['riz-jasmin', 'amok', 'lok-lak']
+};
+const glossary = getGlossaryEntries(glossaryByArticle[article.slug] ?? []);
 
 const relatedContent = article.slug === 'poivre-de-kampot'
   ? [
@@ -39,21 +41,39 @@ const relatedContent = article.slug === 'poivre-de-kampot'
         recipes.find((item) => item.slug === 'kroeung-jaune'),
         recipes.find((item) => item.slug === 'amok-trey')
       ].filter(Boolean)
-    : [
-        recipes.find((item) => item.slug === 'amok-trey'),
-        ingredientGuides.find((item) => item.slug === 'kroeung')
-      ].filter(Boolean);
+    : article.slug === 'comprendre-amok'
+      ? [
+          recipes.find((item) => item.slug === 'amok-trey'),
+          ingredientGuides.find((item) => item.slug === 'kroeung')
+        ].filter(Boolean)
+      : article.slug === 'kep-marche-crabe-poivre'
+        ? [
+            ingredientGuides.find((item) => item.slug === 'poivre-de-kampot'),
+            recipes.find((item) => item.slug === 'lok-lak')
+          ].filter(Boolean)
+        : article.slug === 'prahok-fermentation-umami'
+          ? [
+              ingredientGuides.find((item) => item.slug === 'prahok'),
+              ingredientGuides.find((item) => item.slug === 'kroeung')
+            ].filter(Boolean)
+          : [
+              recipes.find((item) => item.slug === 'amok-trey'),
+              recipes.find((item) => item.slug === 'lok-lak'),
+              recipes.find((item) => item.slug === 'kroeung-jaune')
+            ].filter(Boolean);
 
 const articleSchema = {
   '@context': 'https://schema.org',
   '@type': 'Article',
   headline: article.title,
-  description: article.intro,
+  description: article.seoDescription,
   image: new URL(article.image, Astro.site ?? new URL('https://www.cuisine-du-cambodge.com')).href,
   inLanguage: 'fr-FR',
   author: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
   publisher: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
-  mainEntityOfPage: `https://www.cuisine-du-cambodge.com/culture/${article.slug}/`
+  mainEntityOfPage: `https://www.cuisine-du-cambodge.com/culture/${article.slug}/`,
+  about: { '@type': 'Thing', name: article.eyebrow },
+  keywords: [article.eyebrow, 'cuisine cambodgienne', 'culture culinaire khmère'].join(', ')
 };
 
 const breadcrumbSchema = {
@@ -66,12 +86,12 @@ const breadcrumbSchema = {
   ]
 };
 ---
-<BaseLayout title={`${article.title} | Cuisine du Cambodge`} description={article.intro} image={article.image} imageAlt={article.imageAlt}>
+<BaseLayout title={`${article.title} | Culture culinaire cambodgienne`} description={article.seoDescription} image={article.image} imageAlt={article.imageAlt}>
   <SiteHeader />
   <main class="culture-article editorial-detail culture-detail">
     <section class="detail-hero-shell detail-hero-shell--culture">
       <header class="culture-article-hero" data-reveal="up">
-        <p class="eyebrow"><CulinaryIcon name="story" size={17} /> {article.eyebrow}</p>
+        <p class="eyebrow"><CulinaryIcon name="story" size={17} /> {article.eyebrow} · {article.readingTime}</p>
         <h1>{article.title}</h1>
         <p>{article.intro}</p>
       </header>

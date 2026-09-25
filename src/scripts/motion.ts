@@ -14,6 +14,7 @@ export function initGlobalMotion() {
   const cultureRules = gsap.utils.toArray<HTMLElement>('.culture-rule');
   const companions = gsap.utils.toArray<HTMLElement>('[data-scroll-companion]');
   const learningPaths = gsap.utils.toArray<HTMLElement>('[data-learning-path]');
+  const homeCulinaryObjects = gsap.utils.toArray<HTMLElement>('[data-home-culinary-object]');
 
   if (
     !objects.length &&
@@ -23,7 +24,8 @@ export function initGlobalMotion() {
     !desireEntries.length &&
     !cultureRules.length &&
     !companions.length &&
-    !learningPaths.length
+    !learningPaths.length &&
+    !homeCulinaryObjects.length
   ) return () => {};
 
   const context = gsap.context(() => {
@@ -194,6 +196,46 @@ export function initGlobalMotion() {
         .to(el, { y: '92vh', x: '4vw', rotate: -4, autoAlpha: .22, ease: 'none' })
         .to(el, { y: '145vh', x: '-2vw', rotate: 5, autoAlpha: 0, ease: 'none' });
     });
+
+
+    homeCulinaryObjects.forEach((el, index) => {
+      if (reduced) {
+        gsap.set(el, { autoAlpha: index === 0 ? .2 : 0, x: 0, y: 0, rotate: 0 });
+        return;
+      }
+
+      const starts = [
+        { x: 0, y: 0, rotate: -10 },
+        { x: 0, y: 0, rotate: 7 },
+        { x: 0, y: 0, rotate: -8 },
+        { x: 0, y: 0, rotate: 3 }
+      ];
+      const ends = [
+        { x: '-10vw', y: '86vh', rotate: 8 },
+        { x: '9vw', y: '76vh', rotate: -5 },
+        { x: '-7vw', y: '70vh', rotate: 10 },
+        { x: '6vw', y: '64vh', rotate: -3 }
+      ];
+      const start = starts[index] ?? starts[0];
+      const end = ends[index] ?? ends[0];
+
+      gsap.fromTo(el,
+        { ...start, autoAlpha: 0 },
+        {
+          ...end,
+          autoAlpha: .72,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '.desire-story',
+            start: `top ${88 - index * 9}%`,
+            end: `bottom ${28 + index * 5}%`,
+            scrub: .65 + index * .1,
+            invalidateOnRefresh: true
+          }
+        }
+      );
+    });
+
 
     learningPaths.forEach((path) => {
       const fill = path.querySelector<HTMLElement>('.learn-progress i');

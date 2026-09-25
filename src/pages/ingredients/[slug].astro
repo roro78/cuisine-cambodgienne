@@ -21,8 +21,10 @@ export function getStaticPaths() {
 const { ingredient } = Astro.props;
 const glossary = getGlossaryEntries([
   ingredient.slug,
-  ...(ingredient.slug === 'kroeung' ? ['combava', 'galanga'] : []),
-  ...(ingredient.slug === 'prahok' ? ['kroeung'] : [])
+  ...(ingredient.slug === 'kroeung' ? ['combava', 'galanga', 'citronnelle', 'curcuma'] : []),
+  ...(ingredient.slug === 'poivre-de-kampot' ? ['sauce-poisson'] : []),
+  ...(ingredient.slug === 'tamarin' ? ['sucre-de-palme', 'sauce-poisson'] : []),
+  ...(ingredient.slug === 'prahok' ? ['kroeung', 'sauce-poisson', 'citronnelle'] : [])
 ]);
 
 const relatedContent = ingredient.slug === 'kroeung'
@@ -34,20 +36,54 @@ const relatedContent = ingredient.slug === 'kroeung'
   : ingredient.slug === 'poivre-de-kampot'
     ? [
         recipes.find((item) => item.slug === 'lok-lak'),
-        cultureArticles.find((item) => item.slug === 'poivre-de-kampot')
+        cultureArticles.find((item) => item.slug === 'poivre-de-kampot'),
+      cultureArticles.find((item) => item.slug === 'kep-marche-crabe-poivre')
       ].filter(Boolean)
-    : [];
+    : ingredient.slug === 'tamarin'
+      ? [
+          cultureArticles.find((item) => item.slug === 'construire-repas-cambodgien')
+        ].filter(Boolean)
+      : ingredient.slug === 'prahok'
+        ? [
+            cultureArticles.find((item) => item.slug === 'prahok-fermentation-umami'),
+            cultureArticles.find((item) => item.slug === 'construire-repas-cambodgien')
+          ].filter(Boolean)
+        : [];
 
 const articleSchema = {
   '@context': 'https://schema.org',
   '@type': 'Article',
   headline: ingredient.title,
-  description: ingredient.intro,
+  description: ingredient.seoDescription,
   image: new URL(ingredient.image, Astro.site ?? new URL('https://www.cuisine-du-cambodge.com')).href,
   inLanguage: 'fr-FR',
   author: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
   publisher: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
-  mainEntityOfPage: `https://www.cuisine-du-cambodge.com/ingredients/${ingredient.slug}/`
+  mainEntityOfPage: `https://www.cuisine-du-cambodge.com/ingredients/${ingredient.slug}/`,
+  about: { '@type': 'Thing', name: ingredient.title },
+  keywords: [ingredient.title, 'cuisine cambodgienne', 'cuisine khmère', ...ingredient.profile].join(', ')
+};
+
+const ingredientFaqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: `Comment utiliser ${ingredient.title} en cuisine ?`,
+      acceptedAnswer: { '@type': 'Answer', text: ingredient.uses.join(' · ') }
+    },
+    {
+      '@type': 'Question',
+      name: `Comment choisir ${ingredient.title} ?`,
+      acceptedAnswer: { '@type': 'Answer', text: ingredient.choose.join(' ') }
+    },
+    {
+      '@type': 'Question',
+      name: `Comment conserver ${ingredient.title} ?`,
+      acceptedAnswer: { '@type': 'Answer', text: ingredient.keep.join(' ') }
+    }
+  ]
 };
 
 const breadcrumbSchema = {
@@ -60,7 +96,7 @@ const breadcrumbSchema = {
   ]
 };
 ---
-<BaseLayout title={`${ingredient.title} — Guide ingrédient | Cuisine du Cambodge`} description={ingredient.intro} image={ingredient.image} imageAlt={ingredient.imageAlt}>
+<BaseLayout title={`${ingredient.title} : goût, usages et conseils | Cuisine du Cambodge`} description={ingredient.seoDescription} image={ingredient.image} imageAlt={ingredient.imageAlt}>
   <SiteHeader />
   <main class="guide-page editorial-detail ingredient-detail">
     <section class="detail-hero-shell detail-hero-shell--ingredient">
@@ -74,6 +110,16 @@ const breadcrumbSchema = {
         <img src={ingredient.image} srcset={imageSrcSet(ingredient.image, ingredient.imageWidths)} sizes="(max-width: 900px) 100vw, 52vw" alt={ingredient.imageAlt} width={ingredient.imageWidth} height={ingredient.imageHeight} decoding="async" />
         <figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption>
       </figure>
+    </section>
+
+    <section class="ingredient-deep-dive" data-reveal="up">
+      <div class="ingredient-deep-heading">
+        <p class="eyebrow">Comprendre avant de cuisiner</p>
+        <h2>Ce qu’il apporte vraiment dans l’assiette</h2>
+      </div>
+      <div class="ingredient-deep-copy">
+        {ingredient.deepDive.map((paragraph: string) => <p>{paragraph}</p>)}
+      </div>
     </section>
 
     <section class="guide-body" data-reveal="up">
@@ -93,6 +139,33 @@ const breadcrumbSchema = {
         <article>
           <h2><CulinaryIcon name="tip" size={22} />Bien le travailler</h2>
           <ul>{ingredient.tips.map((item: string) => <li>{item}</li>)}</ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="ingredient-practical" aria-labelledby="ingredient-practical-title" data-reveal="up">
+      <header class="ingredient-practical-head">
+        <p class="eyebrow">En pratique</p>
+        <h2 id="ingredient-practical-title">Bien choisir, conserver et utiliser {ingredient.title}</h2>
+        <p>Les détails qui évitent d’acheter au hasard, de perdre les arômes ou de déséquilibrer le plat.</p>
+      </header>
+
+      <div class="ingredient-practical-grid">
+        <article>
+          <h3><CulinaryIcon name="taste" size={20} /> Bien choisir</h3>
+          <ul>{ingredient.choose.map((item: string) => <li>{item}</li>)}</ul>
+        </article>
+        <article>
+          <h3><CulinaryIcon name="tip" size={20} /> Conservation</h3>
+          <ul>{ingredient.keep.map((item: string) => <li>{item}</li>)}</ul>
+        </article>
+        <article>
+          <h3><CulinaryIcon name="use" size={20} /> Bons accords</h3>
+          <ul>{ingredient.pairings.map((item: string) => <li>{item}</li>)}</ul>
+        </article>
+        <article>
+          <h3><CulinaryIcon name="level" size={20} /> Erreurs à éviter</h3>
+          <ul>{ingredient.mistakes.map((item: string) => <li>{item}</li>)}</ul>
         </article>
       </div>
     </section>
@@ -124,6 +197,7 @@ const breadcrumbSchema = {
     <a class="text-link" href="/ingredients/">← Tous les ingrédients</a>
   </main>
   <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(ingredientFaqSchema)} />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   <SiteFooter />
 </BaseLayout>

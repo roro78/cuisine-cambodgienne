@@ -4,6 +4,38 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { cultureArticles } from '../../data/culture';
 import { imageSrcSet } from '../../utils/images';
+import CulinaryIcon from '../../components/CulinaryIcon.astro';
+
+const culturePaths = [
+  {
+    icon: 'prep' as const,
+    eyebrow: 'Gestes',
+    title: 'Commencer par le mortier',
+    text: 'Comprendre le kroeung, l’ordre des aromates et ce que le pilage change vraiment dans la texture.',
+    href: '/culture/comprendre-le-kroeung/'
+  },
+  {
+    icon: 'taste' as const,
+    eyebrow: 'Produits',
+    title: 'Goûter le territoire',
+    text: 'Du poivre de Kampot au marché de Kep : voir comment un produit local devient un repère culinaire.',
+    href: '/culture/poivre-de-kampot/'
+  },
+  {
+    icon: 'story' as const,
+    eyebrow: 'Fermentation',
+    title: 'Apprivoiser le prahok',
+    text: 'Comprendre la fermentation, l’umami et le dosage au lieu de réduire le prahok à son odeur.',
+    href: '/culture/prahok-fermentation-umami/'
+  },
+  {
+    icon: 'servings' as const,
+    eyebrow: 'À table',
+    title: 'Composer un repas',
+    text: 'Riz, plat chaud, légumes, herbes et condiment : apprendre comment les éléments se répondent.',
+    href: '/culture/construire-repas-cambodgien/'
+  }
+];
 
 const collectionSchema = {
   '@context': 'https://schema.org',
@@ -23,7 +55,7 @@ const collectionSchema = {
   }
 };
 ---
-<BaseLayout title="Culture culinaire khmère | Cuisine du Cambodge" description="Histoires, territoires, gestes et transmission autour de la cuisine cambodgienne.">
+<BaseLayout title="Culture culinaire cambodgienne : gestes, marchés et mémoire" description="Poivre de Kampot, kroeung, amok, prahok, marchés et transmission : découvrir la culture culinaire cambodgienne à travers ses produits, ses gestes et son histoire.">
   <SiteHeader />
   <main class="listing-page editorial-listing culture-listing">
     <header class="page-intro page-intro-split" data-reveal="up">
@@ -33,6 +65,25 @@ const collectionSchema = {
       <div class="page-intro-visual" data-parallax="0.10"><img src={cultureArticles[0].image} srcset={imageSrcSet(cultureArticles[0].image, cultureArticles[0].imageWidths)} sizes="(max-width: 900px) 100vw, 58vw" alt={cultureArticles[0].imageAlt} width={cultureArticles[0].imageWidth} height={cultureArticles[0].imageHeight} fetchpriority="high" decoding="async" /></div>
     </header>
 
+    <section class="culture-paths" aria-labelledby="culture-paths-title">
+      <header data-reveal="up">
+        <p class="eyebrow">Par où commencer ?</p>
+        <h2 id="culture-paths-title">Quatre portes d’entrée dans la culture culinaire khmère.</h2>
+        <p>Un geste, un produit, une fermentation ou la table entière : choisissez ce qui vous donne envie de comprendre avant de cuisiner.</p>
+      </header>
+      <div class="culture-path-grid">
+        {culturePaths.map((path, index) => (
+          <a href={path.href} data-reveal="up" data-reveal-delay={Math.min(index * .05, .15)}>
+            <CulinaryIcon name={path.icon} size={23} />
+            <p class="card-meta">{path.eyebrow}</p>
+            <h3>{path.title}</h3>
+            <p>{path.text}</p>
+            <span>Explorer →</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
     <section class="culture-editorial" aria-label="Articles culturels">
       {cultureArticles.map((article, index) => (
         <a class:list={['culture-feature', { 'culture-feature--lead': index === 0, 'culture-feature--split': index > 0 }]} href={`/culture/${article.slug}/`} data-reveal="up">
@@ -41,7 +92,7 @@ const collectionSchema = {
           </figure>
           <div class="culture-feature-copy">
             <span class="culture-rule" aria-hidden="true"></span>
-            <p class="card-meta">{article.eyebrow}</p>
+            <p class="card-meta">{article.eyebrow} · {article.readingTime}</p>
             <h2>{article.title}</h2>
             <p>{article.intro}</p>
             <span class="text-link">Lire l’histoire</span>

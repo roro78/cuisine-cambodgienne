@@ -4,6 +4,18 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { ingredientGuides } from '../../data/ingredients';
 import { imageSrcSet } from '../../utils/images';
+import { getGlossaryEntries } from '../../data/glossary';
+
+const pantryEntries = getGlossaryEntries([
+  'citronnelle',
+  'galanga',
+  'curcuma',
+  'combava',
+  'sauce-poisson',
+  'sucre-de-palme',
+  'lait-de-coco',
+  'riz-jasmin'
+]);
 
 const collectionSchema = {
   '@context': 'https://schema.org',
@@ -23,7 +35,7 @@ const collectionSchema = {
   }
 };
 ---
-<BaseLayout title="Ingrédients khmers | Cuisine du Cambodge" description="Kroeung, poivre de Kampot, tamarin, prahok et aromates : comprendre les ingrédients de la cuisine cambodgienne.">
+<BaseLayout title="Ingrédients cuisine cambodgienne : kroeung, prahok, Kampot…" description="Kroeung, prahok, poivre de Kampot, tamarin, citronnelle, galanga, combava : comprendre le goût, l’usage et les accords des ingrédients de la cuisine cambodgienne.">
   <SiteHeader />
   <main class="listing-page editorial-listing ingredients-listing">
     <header class="page-intro page-intro-split" data-reveal="up">
@@ -48,6 +60,24 @@ const collectionSchema = {
           </div>
         </a>
       ))}
+    </section>
+
+    <section class="ingredient-pantry" aria-labelledby="pantry-title" data-reveal="up">
+      <header>
+        <p class="eyebrow">Le garde-manger khmer</p>
+        <h2 id="pantry-title">Huit autres saveurs à reconnaître.</h2>
+        <p>Pas besoin d’une fiche longue pour commencer : voici les aromates et condiments que vous croiserez le plus souvent dans les recettes et les gestes de base.</p>
+      </header>
+      <div class="ingredient-pantry-grid">
+        {pantryEntries.map((entry, index) => (
+          <a href={`/glossaire/#${entry.slug}`} data-reveal="up" data-reveal-delay={Math.min(index * .03, .15)}>
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <strong>{entry.term}</strong>
+            <p>{entry.short}</p>
+          </a>
+        ))}
+      </div>
+      <a class="text-link" href="/glossaire/">Voir tout le glossaire</a>
     </section>
   </main>
   <script type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
