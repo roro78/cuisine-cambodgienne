@@ -22,9 +22,9 @@ const { ingredient } = Astro.props;
 const glossary = getGlossaryEntries([
   ingredient.slug,
   ...(ingredient.slug === 'kroeung' ? ['combava', 'galanga', 'citronnelle', 'curcuma'] : []),
-  ...(ingredient.slug === 'poivre-de-kampot' ? ['sauce-de-poisson'] : []),
-  ...(ingredient.slug === 'tamarin' ? ['sucre-de-palme', 'sauce-de-poisson'] : []),
-  ...(ingredient.slug === 'prahok' ? ['kroeung', 'sauce-de-poisson', 'citronnelle'] : [])
+  ...(ingredient.slug === 'poivre-de-kampot' ? ['sauce-poisson'] : []),
+  ...(ingredient.slug === 'tamarin' ? ['sucre-de-palme', 'sauce-poisson'] : []),
+  ...(ingredient.slug === 'prahok' ? ['kroeung', 'sauce-poisson', 'citronnelle'] : [])
 ]);
 
 const relatedContent = ingredient.slug === 'kroeung'
@@ -37,16 +37,16 @@ const relatedContent = ingredient.slug === 'kroeung'
     ? [
         recipes.find((item) => item.slug === 'lok-lak'),
         cultureArticles.find((item) => item.slug === 'poivre-de-kampot'),
-      cultureArticles.find((item) => item.slug === 'kep-crabe-poivre')
+      cultureArticles.find((item) => item.slug === 'kep-marche-crabe-poivre')
       ].filter(Boolean)
     : ingredient.slug === 'tamarin'
       ? [
-          cultureArticles.find((item) => item.slug === 'marches-herbes-cuisine-khmere')
+          cultureArticles.find((item) => item.slug === 'construire-repas-cambodgien')
         ].filter(Boolean)
       : ingredient.slug === 'prahok'
         ? [
-            cultureArticles.find((item) => item.slug === 'prahok-fermentation'),
-            cultureArticles.find((item) => item.slug === 'marches-herbes-cuisine-khmere')
+            cultureArticles.find((item) => item.slug === 'prahok-fermentation-umami'),
+            cultureArticles.find((item) => item.slug === 'construire-repas-cambodgien')
           ].filter(Boolean)
         : [];
 
@@ -76,12 +76,12 @@ const ingredientFaqSchema = {
     {
       '@type': 'Question',
       name: `Comment choisir ${ingredient.title} ?`,
-      acceptedAnswer: { '@type': 'Answer', text: ingredient.buying.join(' ') }
+      acceptedAnswer: { '@type': 'Answer', text: ingredient.choose.join(' ') }
     },
     {
       '@type': 'Question',
       name: `Comment conserver ${ingredient.title} ?`,
-      acceptedAnswer: { '@type': 'Answer', text: ingredient.storage.join(' ') }
+      acceptedAnswer: { '@type': 'Answer', text: ingredient.keep.join(' ') }
     }
   ]
 };
@@ -168,31 +168,6 @@ const breadcrumbSchema = {
           <ul>{ingredient.mistakes.map((item: string) => <li>{item}</li>)}</ul>
         </article>
       </div>
-    </section>
-
-    <section class="ingredient-practical" data-reveal="up">
-      <article>
-        <p class="eyebrow">À l’achat</p>
-        <h2>Bien le choisir</h2>
-        <ul>{ingredient.buying.map((item: string) => <li>{item}</li>)}</ul>
-      </article>
-      <article>
-        <p class="eyebrow">Après ouverture</p>
-        <h2>Le conserver</h2>
-        <ul>{ingredient.storage.map((item: string) => <li>{item}</li>)}</ul>
-      </article>
-      <article>
-        <p class="eyebrow">Avec quoi&nbsp;?</p>
-        <h2>Les bons accords</h2>
-        <div class="ingredient-pairings">
-          {ingredient.pairings.map((item: string) => <span>{item}</span>)}
-        </div>
-      </article>
-      <article class="ingredient-practical--avoid">
-        <p class="eyebrow">À éviter</p>
-        <h2>Les erreurs fréquentes</h2>
-        <ul>{ingredient.avoid.map((item: string) => <li>{item}</li>)}</ul>
-      </article>
     </section>
 
     <GlossaryStrip entries={glossary} />
