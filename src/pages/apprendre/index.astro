@@ -16,6 +16,9 @@ const learningSteps = [
     href: '/recettes/kroeung-jaune/',
     cta: 'Faire le kroeung jaune',
     image: '/images/cuisine/kroeung-1600.webp',
+    widths: [480, 800, 1200, 1600],
+    width: 5184,
+    height: 3456,
     alt: 'Kroeung et aromates de la cuisine cambodgienne',
     icon: 'prep' as const
   },
@@ -29,6 +32,9 @@ const learningSteps = [
     href: '/ingredients/tamarin/',
     cta: 'Comprendre le tamarin',
     image: '/images/cuisine/tamarind-1600.webp',
+    widths: [480, 800, 1200, 1600],
+    width: 2304,
+    height: 1268,
     alt: 'Tamarin utilisé pour équilibrer les sauces cambodgiennes',
     icon: 'taste' as const
   },
@@ -42,6 +48,9 @@ const learningSteps = [
     href: '/recettes/lok-lak/',
     cta: 'Pratiquer avec le Lok Lak',
     image: '/images/cuisine/lok-lak-800.webp',
+    widths: [480, 800],
+    width: 800,
+    height: 716,
     alt: 'Lok lak cambodgien au bœuf saisi',
     icon: 'cook' as const
   },
@@ -55,6 +64,9 @@ const learningSteps = [
     href: '/recettes/amok-trey/',
     cta: 'Cuisiner l’Amok Trey',
     image: '/images/cuisine/amok-1600.webp',
+    widths: [480, 800, 1200, 1600],
+    width: 3888,
+    height: 2592,
     alt: 'Amok trei cambodgien servi avec du riz',
     icon: 'cook' as const
   },
@@ -68,6 +80,9 @@ const learningSteps = [
     href: '/culture/construire-repas-cambodgien/',
     cta: 'Comprendre la table cambodgienne',
     image: '/images/cuisine/kep-market-1600.webp',
+    widths: [480, 800, 1200, 1600],
+    width: 1600,
+    height: 1067,
     alt: 'Produits frais au marché de Kep au Cambodge',
     icon: 'servings' as const
   }
@@ -148,7 +163,7 @@ const learningSchema = {
         {learningSteps.map((step) => (
           <article class="learning-module" data-learning-step>
             <figure class="learning-module-media" data-parallax="0.05">
-              <img src={step.image} alt={step.alt} loading="lazy" decoding="async" />
+              <img src={step.image} srcset={imageSrcSet(step.image, step.widths)} sizes="(max-width: 900px) 100vw, 45vw" alt={step.alt} width={step.width} height={step.height} loading="lazy" decoding="async" />
             </figure>
             <div class="learning-module-copy">
               <div class="learning-module-topline">
