@@ -17,15 +17,6 @@ const pantryEntries = getGlossaryEntries([
   'riz-jasmin'
 ]);
 
-const pantry = [
-  ['Citronnelle', 'Fraîche, citronnée, fibreuse : la base de nombreux kroeung.', 'citronnelle'],
-  ['Galanga', 'Boisé, camphré, plus ferme et plus sec que le gingembre.', 'galanga'],
-  ['Combava', 'Zeste et feuilles très parfumés pour réveiller sauces et currys.', 'combava'],
-  ['Curcuma', 'Couleur jaune intense, chaleur terreuse et légère amertume.', 'curcuma'],
-  ['Lait de coco', 'Rondeur, texture et douceur dans currys et amok.', 'lait-de-coco'],
-  ['Sucre de palme', 'Une douceur caramélisée utilisée pour équilibrer, pas pour sucrer.', 'sucre-de-palme']
-];
-
 const collectionSchema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
@@ -71,27 +62,10 @@ const collectionSchema = {
       ))}
     </section>
 
-    <section class="ingredient-pantry" aria-labelledby="ingredient-pantry-title" data-reveal="up">
-      <header>
-        <p class="eyebrow">Le garde-manger aromatique</p>
-        <h2 id="ingredient-pantry-title">Six autres saveurs à reconnaître.</h2>
-        <p>Pas encore de fiche complète pour chacune, mais assez de repères pour savoir ce qu’elles apportent et où les retrouver.</p>
-      </header>
-      <div class="ingredient-pantry-grid">
-        {pantry.map(([name, text, slug]) => (
-          <a href={`/glossaire/#${slug}`}>
-            <strong>{name}</strong>
-            <p>{text}</p>
-            <span>Voir dans le glossaire →</span>
-          </a>
-        ))}
-      </div>
-    </section>
-
     <section class="ingredient-pantry" aria-labelledby="pantry-title" data-reveal="up">
       <header>
-        <p class="eyebrow">Le placard khmer</p>
-        <h2 id="pantry-title">Les autres saveurs à connaître.</h2>
+        <p class="eyebrow">Le garde-manger khmer</p>
+        <h2 id="pantry-title">Huit autres saveurs à reconnaître.</h2>
         <p>Pas besoin d’une fiche longue pour commencer : voici les aromates et condiments que vous croiserez le plus souvent dans les recettes et les gestes de base.</p>
       </header>
       <div class="ingredient-pantry-grid">
