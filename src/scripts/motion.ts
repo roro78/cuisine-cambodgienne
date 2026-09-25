@@ -14,9 +14,7 @@ export function initGlobalMotion() {
   const cultureRules = gsap.utils.toArray<HTMLElement>('.culture-rule');
   const companions = gsap.utils.toArray<HTMLElement>('[data-scroll-companion]');
   const learningPaths = gsap.utils.toArray<HTMLElement>('[data-learning-path]');
-  const homeTrailObjects = gsap.utils.toArray<HTMLElement>('[data-home-culinary-object]');
   const homeCulinaryObjects = gsap.utils.toArray<HTMLElement>('[data-home-culinary-object]');
-  const homeTrailObjects = gsap.utils.toArray<HTMLElement>('[data-home-culinary-object]');
 
   if (
     !objects.length &&
@@ -27,9 +25,7 @@ export function initGlobalMotion() {
     !cultureRules.length &&
     !companions.length &&
     !learningPaths.length &&
-    !homeTrailObjects.length &&
     !homeCulinaryObjects.length &&
-    !homeTrailObjects.length
   ) return () => {};
 
   const context = gsap.context(() => {
@@ -201,36 +197,6 @@ export function initGlobalMotion() {
         .to(el, { y: '145vh', x: '-2vw', rotate: 5, autoAlpha: 0, ease: 'none' });
     });
 
-    homeTrailObjects.forEach((el, index) => {
-      const trail = el.closest<HTMLElement>('[data-home-culinary-trail]');
-      if (!trail) return;
-
-      if (reduced) {
-        gsap.set(el, { x: 0, y: 0, rotate: 0, autoAlpha: .28 });
-        return;
-      }
-
-      const direction = index % 2 === 0 ? 1 : -1;
-      gsap.fromTo(el, {
-        x: direction * 24,
-        y: -36,
-        rotate: direction * -7,
-        autoAlpha: .1
-      }, {
-        x: direction * -36,
-        y: () => window.innerHeight * (.72 + index * .08),
-        rotate: direction * 8,
-        autoAlpha: .34,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: trail,
-          start: 'top 82%',
-          end: 'bottom 18%',
-          scrub: .65 + index * .08,
-          invalidateOnRefresh: true
-        }
-      });
-    });
 
     homeCulinaryObjects.forEach((el, index) => {
       if (reduced) {
@@ -270,43 +236,6 @@ export function initGlobalMotion() {
       );
     });
 
-    homeTrailObjects.forEach((el, index) => {
-      const trail = el.closest<HTMLElement>('[data-home-culinary-trail]');
-      const section = trail?.closest<HTMLElement>('.desire-story');
-      if (!section) return;
-
-      if (reduced) {
-        gsap.set(el, { autoAlpha: index === 0 ? .2 : 0, x: 0, y: 0, rotate: 0 });
-        return;
-      }
-
-      const side = index % 2 === 0 ? 1 : -1;
-      const startX = side > 0 ? '8vw' : '-8vw';
-      const endX = side > 0 ? '-10vw' : '10vw';
-
-      gsap.fromTo(el,
-        {
-          x: startX,
-          y: index * 14,
-          rotate: side * (index === 2 ? 12 : 6),
-          autoAlpha: 0
-        },
-        {
-          x: endX,
-          y: () => section.offsetHeight * (.42 + index * .09),
-          rotate: side * -(12 + index * 5),
-          autoAlpha: index === 3 ? .32 : .46,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: section,
-            start: 'top 88%',
-            end: 'bottom 22%',
-            scrub: .75 + index * .12,
-            invalidateOnRefresh: true
-          }
-        }
-      );
-    });
 
     learningPaths.forEach((path) => {
       const fill = path.querySelector<HTMLElement>('.learn-progress i');
