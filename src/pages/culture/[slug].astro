@@ -46,20 +46,30 @@ const relatedContent = article.slug === 'poivre-de-kampot'
           recipes.find((item) => item.slug === 'amok-trey'),
           ingredientGuides.find((item) => item.slug === 'kroeung')
         ].filter(Boolean)
-      : article.slug === 'prahok-fermentation'
+      : article.slug === 'kep-crabe-poivre'
         ? [
-            ingredientGuides.find((item) => item.slug === 'prahok'),
-            ingredientGuides.find((item) => item.slug === 'kroeung')
+            ingredientGuides.find((item) => item.slug === 'poivre-de-kampot'),
+            recipes.find((item) => item.slug === 'lok-lak')
           ].filter(Boolean)
-        : article.slug === 'marches-herbes-cuisine-khmere'
+        : article.slug === 'prahok-fermentation'
           ? [
-              ingredientGuides.find((item) => item.slug === 'tamarin'),
-              ingredientGuides.find((item) => item.slug === 'poivre-de-kampot')
+              ingredientGuides.find((item) => item.slug === 'prahok'),
+              ingredientGuides.find((item) => item.slug === 'kroeung')
             ].filter(Boolean)
-          : [
-              recipes.find((item) => item.slug === 'kroeung-jaune'),
-              recipes.find((item) => item.slug === 'amok-trey')
-            ].filter(Boolean);
+          : article.slug === 'marches-herbes-cuisine-khmere'
+            ? [
+                ingredientGuides.find((item) => item.slug === 'tamarin'),
+                ingredientGuides.find((item) => item.slug === 'kroeung')
+              ].filter(Boolean)
+            : article.slug === 'marches-et-cuisine-cambodgienne'
+              ? [
+                  ingredientGuides.find((item) => item.slug === 'prahok'),
+                  ingredientGuides.find((item) => item.slug === 'poivre-de-kampot')
+                ].filter(Boolean)
+              : [
+                  recipes.find((item) => item.slug === 'kroeung-jaune'),
+                  recipes.find((item) => item.slug === 'amok-trey')
+                ].filter(Boolean);
 
 const articleSchema = {
   '@context': 'https://schema.org',
