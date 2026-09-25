@@ -28,6 +28,51 @@ const glossarySlugs = [
   ...(recipe.slug === 'kroeung-jaune' ? ['kroeung', 'citronnelle', 'combava', 'galanga', 'curcuma'] : [])
 ];
 const glossary = getGlossaryEntries(glossarySlugs);
+
+const recipeFaqs = recipe.slug === 'amok-trey'
+  ? [
+      {
+        question: 'Pourquoi mon amok devient-il sec ?',
+        answer: 'La cuisson est probablement trop forte ou trop longue. L’amok doit être juste pris et encore souple : une vapeur douce et un arrêt de cuisson dès que la texture se tient donnent un meilleur résultat.'
+      },
+      {
+        question: 'Peut-on préparer le kroeung à l’avance ?',
+        answer: 'Oui. Le kroeung peut être préparé à l’avance et conservé au réfrigérateur dans un récipient hermétique. Son parfum reste meilleur quand il est utilisé assez rapidement.'
+      },
+      {
+        question: 'Comment savoir si l’assaisonnement est juste avant cuisson ?',
+        answer: 'Goûtez la base coco-kroeung avant d’ajouter le poisson. Elle doit être parfumée, salée sans excès et légèrement arrondie par le sucre.'
+      }
+    ]
+  : recipe.slug === 'lok-lak'
+    ? [
+        {
+          question: 'Pourquoi le bœuf rend-il de l’eau au lieu de colorer ?',
+          answer: 'La poêle n’est pas assez chaude ou elle est trop chargée. Saisissez le bœuf en petites quantités et laissez l’humidité s’évaporer rapidement pour obtenir une vraie coloration.'
+        },
+        {
+          question: 'Quand ajouter la sauce du lok lak ?',
+          answer: 'Ajoutez-la en fin de cuisson, une fois la viande bien colorée. Elle doit juste enrober les morceaux sans les faire bouillir.'
+        },
+        {
+          question: 'Comment utiliser le poivre de Kampot dans le lok lak ?',
+          answer: 'Moulez-le au dernier moment dans le condiment au citron vert ou juste avant le service pour conserver sa fraîcheur aromatique.'
+        }
+      ]
+    : [
+        {
+          question: 'Pourquoi mon kroeung reste-t-il fibreux ?',
+          answer: 'Les aromates ont probablement été coupés trop gros. Émincez très finement citronnelle et galanga avant de piler, puis travaillez les ingrédients les plus durs en premier.'
+        },
+        {
+          question: 'Peut-on faire un kroeung au mixeur ?',
+          answer: 'Oui, mais ajoutez le moins de liquide possible. Trop d’eau dilue les parfums et donne une texture moins concentrée.'
+        },
+        {
+          question: 'Comment savoir si le kroeung est assez travaillé ?',
+          answer: 'La pâte doit devenir homogène, humide et très parfumée, sans gros morceaux fibreux perceptibles.'
+        }
+      ];
 const totalMinutes = (value: string) => {
   const match = value.match(/(\d+)/);
   return match ? Number(match[1]) : 0;
@@ -40,6 +85,16 @@ const breadcrumbSchema = {
     { '@type': 'ListItem', position: 2, name: 'Recettes', item: 'https://www.cuisine-du-cambodge.com/recettes/' },
     { '@type': 'ListItem', position: 3, name: recipe.title, item: `https://www.cuisine-du-cambodge.com/recettes/${recipe.slug}/` }
   ]
+};
+
+const recipeFaqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: recipeFaqs.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer }
+  }))
 };
 
 const recipeSchema = {
@@ -137,6 +192,21 @@ const recipeSchema = {
       </article>
     </section>
 
+    <section class="recipe-faq" aria-labelledby="recipe-faq-title" data-reveal="up">
+      <header>
+        <p class="eyebrow">Questions de cuisine</p>
+        <h2 id="recipe-faq-title">Les réponses qui évitent de rater la recette.</h2>
+      </header>
+      <div>
+        {recipeFaqs.map((item) => (
+          <details>
+            <summary>{item.question}<span aria-hidden="true">+</span></summary>
+            <p>{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
     <GlossaryStrip entries={glossary} />
 
     {relatedIngredients.length > 0 && (
@@ -160,6 +230,7 @@ const recipeSchema = {
   </main>
 
   <script type="application/ld+json" set:html={JSON.stringify(recipeSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(recipeFaqSchema)} />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   <SiteFooter />
 </BaseLayout>
