@@ -4430,50 +4430,6 @@ main{position:relative;z-index:1}
 .desire-story{isolation:isolate}
 .desire-story>.home-culinary-trail{display:block}
 
-/* V12 — practical ingredient guide expansion */
-.ingredient-practical{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:1px;
-  max-width:76rem;
-  margin:0 auto clamp(5rem,9vh,8rem);
-  background:rgba(45,37,28,.14);
-}
-.ingredient-practical article{
-  padding:clamp(1.6rem,3vw,2.5rem);
-  background:#f2e9dc;
-}
-.ingredient-practical article:nth-child(2){background:#e2e8dd}
-.ingredient-practical article:nth-child(3){background:#ead9c8}
-.ingredient-practical article:nth-child(4){background:#d9dfd4}
-.ingredient-practical h2{
-  margin:.2rem 0 1rem;
-  max-width:14ch;
-  font:400 clamp(1.9rem,3vw,3rem)/.98 var(--serif);
-  letter-spacing:-.035em;
-}
-.ingredient-practical ul{
-  list-style:none;
-  margin:0;
-  padding:0;
-}
-.ingredient-practical li{
-  position:relative;
-  padding:.65rem 0 .65rem 1.1rem;
-  border-top:1px solid rgba(52,43,34,.12);
-  line-height:1.58;
-}
-.ingredient-practical li:before{
-  content:'';
-  position:absolute;
-  left:0;
-  top:1.12rem;
-  width:.35rem;
-  height:.35rem;
-  border-radius:50%;
-  background:#a45d43;
-}
-
 @media(max-width:720px){
   .recipe-detail .method-panel ol li{
     padding-left:3.35rem!important;
@@ -4507,12 +4463,236 @@ main{position:relative;z-index:1}
     left:-.8rem;
     width:4.8rem;
   }
-  .ingredient-practical{
-    grid-template-columns:1fr;
-    margin-bottom:4rem;
-  }
 }
 @media(prefers-reduced-motion:reduce){
   .home-trail-object{opacity:0!important;transform:none!important}
   .home-trail-object--leaf{opacity:.16!important}
+}
+
+
+/* V12 — final learning curriculum presentation */
+.learning-journey .learning-step-copy{
+  max-width:46rem;
+}
+.learning-objective,
+.learning-success{
+  margin:.9rem 0 0;
+  padding:.9rem 1rem;
+  border-radius:.7rem;
+  line-height:1.6;
+}
+.learning-objective{
+  background:#e2e7dc;
+}
+.learning-success{
+  background:#ead9c7;
+}
+.learning-objective strong,
+.learning-success strong{
+  color:#7d4e3a;
+}
+.learning-workshops{
+  padding:clamp(4rem,8vh,7rem) 0;
+  border-top:1px solid rgba(50,41,32,.14);
+}
+.learning-workshops>header{
+  max-width:52rem;
+  margin-bottom:2.4rem;
+}
+.learning-workshops>header h2{
+  margin:.3rem 0 .9rem;
+  max-width:12ch;
+  font:400 clamp(2.5rem,4vw,4rem)/.95 var(--serif);
+  letter-spacing:-.04em;
+}
+.learning-workshops>header>p:last-child{
+  max-width:38rem;
+  line-height:1.65;
+  color:#584e42;
+}
+.learning-workshop-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:1rem;
+}
+.learning-workshop{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  background:#e7dccb;
+  border-radius:1rem;
+  overflow:hidden;
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+.learning-workshop:nth-child(2){background:#dce3d6}
+.learning-workshop:nth-child(3){background:#ead6c5}
+.learning-workshop:hover{
+  transform:translateY(-4px);
+  box-shadow:0 20px 44px rgba(48,35,23,.10);
+}
+.learning-workshop figure{
+  height:clamp(15rem,24vw,23rem);
+  margin:0;
+  overflow:hidden;
+}
+.learning-workshop figure img{
+  display:block;
+  width:100%;
+  height:108%;
+  object-fit:cover;
+  transition:transform .4s ease;
+}
+.learning-workshop:hover figure img{transform:scale(1.025)}
+.learning-workshop>div{
+  display:flex;
+  flex:1;
+  flex-direction:column;
+  padding:1.4rem;
+}
+.learning-workshop h3{
+  margin:.35rem 0 .8rem;
+  font:400 clamp(2rem,3vw,3rem)/.96 var(--serif);
+  letter-spacing:-.035em;
+}
+.learning-workshop>div>p:not(.card-meta){
+  margin:0;
+  line-height:1.6;
+  color:#5a5044;
+}
+.learning-workshop .text-link{margin-top:auto;padding-top:1.4rem}
+
+.learning-rules{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:1px;
+  margin:clamp(4rem,8vh,7rem) 0;
+  background:rgba(52,43,34,.14);
+}
+.learning-rules>div{
+  padding:clamp(1.6rem,3vw,2.5rem);
+  background:#172017;
+  color:#f5eddf;
+}
+.learning-rules>div:nth-child(2){background:#7b4f3c}
+.learning-rules>div:nth-child(3){background:#344a38}
+.learning-rules .culinary-icon{color:#dfbd79}
+.learning-rules h2{
+  margin:.8rem 0 .8rem;
+  font:400 clamp(1.9rem,2.8vw,2.8rem)/.98 var(--serif);
+  letter-spacing:-.035em;
+}
+.learning-rules p{
+  margin:0;
+  line-height:1.65;
+  color:rgba(245,237,223,.82);
+}
+
+.learning-faq{
+  display:grid;
+  grid-template-columns:minmax(15rem,.6fr) minmax(0,1.4fr);
+  gap:clamp(2.5rem,6vw,6rem);
+  padding:clamp(4rem,8vh,7rem) 0 0;
+  border-top:1px solid rgba(50,41,32,.14);
+}
+.learning-faq>header h2{
+  margin:.3rem 0 0;
+  max-width:10ch;
+  font:400 clamp(2.4rem,4vw,3.9rem)/.95 var(--serif);
+  letter-spacing:-.04em;
+}
+.learning-faq details{
+  border-top:1px solid rgba(50,41,32,.16);
+}
+.learning-faq details:last-child{
+  border-bottom:1px solid rgba(50,41,32,.16);
+}
+.learning-faq summary{
+  display:flex;
+  justify-content:space-between;
+  gap:1.5rem;
+  padding:1.35rem 0;
+  cursor:pointer;
+  list-style:none;
+  font:400 clamp(1.25rem,2vw,1.65rem)/1.2 var(--serif);
+}
+.learning-faq summary::-webkit-details-marker{display:none}
+.learning-faq summary span{
+  font-family:var(--sans);
+  font-size:1.1rem;
+  transition:transform .2s ease;
+}
+.learning-faq details[open] summary span{transform:rotate(45deg)}
+.learning-faq details p{
+  max-width:43rem;
+  margin:0 0 1.35rem;
+  line-height:1.7;
+  color:#5c5145;
+}
+
+/* Reassert the original rich practical ingredient layout after V12 cleanup */
+.ingredient-practical{
+  display:block;
+  max-width:76rem;
+  margin:0 auto clamp(4rem,8vh,7rem);
+  padding-top:clamp(3rem,6vh,5rem);
+  background:transparent;
+  border-top:1px solid rgba(52,43,34,.14);
+}
+.ingredient-practical-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.8rem;
+}
+
+@media(max-width:900px){
+  .learning-workshop-grid,
+  .learning-rules{
+    grid-template-columns:1fr;
+  }
+  .learning-workshop{
+    display:grid;
+    grid-template-columns:minmax(15rem,.8fr) minmax(0,1.2fr);
+  }
+  .learning-workshop figure{
+    height:100%;
+    min-height:18rem;
+  }
+  .learning-faq{
+    grid-template-columns:1fr;
+  }
+}
+@media(max-width:720px){
+  .learning-workshops{
+    padding:3.5rem 0;
+  }
+  .learning-workshops>header h2{
+    font-size:clamp(2.25rem,9.5vw,3.1rem);
+  }
+  .learning-workshop-grid{
+    gap:.8rem;
+  }
+  .learning-workshop{
+    display:block;
+  }
+  .learning-workshop figure{
+    height:58vw;
+    min-height:15rem;
+    max-height:21rem;
+  }
+  .learning-rules{
+    margin:3.5rem 0;
+  }
+  .learning-rules>div{
+    padding:1.35rem;
+  }
+  .learning-faq{
+    padding-top:3.5rem;
+    gap:1.5rem;
+  }
+  .learning-faq>header h2{
+    font-size:clamp(2.2rem,9vw,3rem);
+  }
+  .ingredient-practical-grid{
+    grid-template-columns:1fr;
+  }
 }
