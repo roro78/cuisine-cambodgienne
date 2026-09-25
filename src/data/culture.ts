@@ -3,6 +3,8 @@ export interface CultureArticle {
   title: string;
   eyebrow: string;
   intro: string;
+  seoDescription: string;
+  readingTime: string;
   sections: { title: string; paragraphs: string[] }[];
   sources: { label: string; url: string }[];
   image: string;
@@ -20,6 +22,8 @@ export const cultureArticles: CultureArticle[] = [
     title: 'Poivre de Kampot : un produit lié à son territoire',
     eyebrow: 'Territoires',
     intro: 'Comprendre pourquoi le poivre de Kampot est plus qu’un simple assaisonnement : son nom, son origine et ses usages sont liés à un territoire précis du sud du Cambodge.',
+    seoDescription: 'Poivre de Kampot : origine, indication géographique, profils vert, noir, rouge et blanc, usages avec le crabe, les produits de la mer et le lok lak.',
+    readingTime: '6 min',
     sections: [
       {
         title: 'Une indication géographique',
@@ -58,6 +62,8 @@ export const cultureArticles: CultureArticle[] = [
     title: 'Kroeung : comprendre une famille de pâtes aromatiques',
     eyebrow: 'Gestes',
     intro: 'Le kroeung n’est pas une seule recette figée. C’est une famille de pâtes d’aromates qui forme la base de nombreux plats cambodgiens.',
+    seoDescription: 'Kroeung cambodgien : comprendre cette famille de pâtes aromatiques, le rôle de la citronnelle, du galanga, du curcuma et du combava et le geste du mortier.',
+    readingTime: '6 min',
     sections: [
       {
         title: 'Une base, plusieurs expressions',
@@ -95,6 +101,8 @@ export const cultureArticles: CultureArticle[] = [
     title: 'Amok : comprendre la logique du plat',
     eyebrow: 'Plats',
     intro: 'Derrière le nom Amok se trouve une logique de cuisson douce, de kroeung et de texture liée qui aide à mieux réussir le plat.',
+    seoDescription: 'Amok cambodgien : comprendre le rôle du kroeung, du lait de coco et de la cuisson vapeur pour réussir une texture liée, parfumée et encore souple.',
+    readingTime: '5 min',
     sections: [
       {
         title: 'Une préparation liée et parfumée',
@@ -132,6 +140,8 @@ export const cultureArticles: CultureArticle[] = [
     title: 'Kep : quand le marché rencontre le poivre et la mer',
     eyebrow: 'Marchés',
     intro: 'À Kep, produits de la mer, marché et poivre de Kampot racontent une cuisine qui naît d’abord de ce qui est frais et disponible.',
+    seoDescription: 'Kep au Cambodge : marché, crabe, produits de la mer et poivre de Kampot, pour comprendre une cuisine fondée sur la fraîcheur, le terroir et les cuissons courtes.',
+    readingTime: '5 min',
     sections: [
       {
         title: 'Le marché comme point de départ',
@@ -170,6 +180,8 @@ export const cultureArticles: CultureArticle[] = [
     title: 'Prahok : comprendre la fermentation et l’umami',
     eyebrow: 'Fermentation',
     intro: 'Le prahok est souvent présenté uniquement comme un condiment très puissant. En cuisine, son intérêt est surtout la profondeur salée et fermentée qu’il apporte.',
+    seoDescription: 'Prahok cambodgien : fermentation, umami, dosage et usages culinaires pour comprendre ce condiment essentiel de la cuisine khmère au-delà de son odeur.',
+    readingTime: '5 min',
     sections: [
       {
         title: 'Une saveur qui dépasse l’odeur',
@@ -207,6 +219,8 @@ export const cultureArticles: CultureArticle[] = [
     title: 'Comment se construit un repas cambodgien',
     eyebrow: 'À table',
     intro: 'Riz, plat principal, légumes, herbes, sauces et condiments : comprendre la table aide à cuisiner des recettes qui fonctionnent ensemble.',
+    seoDescription: 'Comment composer un repas cambodgien : rôle du riz, plats chauds, légumes, herbes, sauces et condiments pour construire une table équilibrée et gourmande.',
+    readingTime: '5 min',
     sections: [
       {
         title: 'Le riz comme point d’équilibre',
