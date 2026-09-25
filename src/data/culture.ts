@@ -3,6 +3,8 @@ export interface CultureArticle {
   title: string;
   eyebrow: string;
   intro: string;
+  seoDescription: string;
+  readingTime: string;
   sections: { title: string; paragraphs: string[] }[];
   sources: { label: string; url: string }[];
   image: string;
@@ -18,6 +20,8 @@ export const cultureArticles: CultureArticle[] = [
     title: 'Poivre de Kampot : un produit lié à son territoire',
     eyebrow: 'Territoires',
     intro: 'Comprendre pourquoi le poivre de Kampot est plus qu’un simple assaisonnement : son nom, son origine et ses usages sont liés à un territoire précis du sud du Cambodge.',
+    seoDescription: 'Poivre de Kampot : origine, indication géographique, différences entre vert, noir, rouge et blanc, usages culinaires et lien avec Kep.',
+    readingTime: '6 min',
     sections: [
       {
         title: 'Une indication géographique',
@@ -63,6 +67,8 @@ export const cultureArticles: CultureArticle[] = [
     title: 'Kroeung : comprendre une famille de pâtes aromatiques',
     eyebrow: 'Gestes',
     intro: 'Le kroeung n’est pas une seule recette figée. C’est une famille de pâtes d’aromates qui forme la base de nombreux plats cambodgiens.',
+    seoDescription: 'Kroeung cambodgien : comprendre les aromates, le rôle du mortier, les différentes pâtes et les gestes essentiels de cette base de la cuisine khmère.',
+    readingTime: '6 min',
     sections: [
       {
         title: 'Une base, plusieurs expressions',
@@ -107,6 +113,8 @@ export const cultureArticles: CultureArticle[] = [
     title: 'Amok : comprendre la logique du plat',
     eyebrow: 'Plats',
     intro: 'Derrière le nom Amok se trouve une logique de cuisson douce, de kroeung et de texture liée qui aide à mieux réussir le plat.',
+    seoDescription: 'Amok cambodgien : comprendre le rôle du kroeung, du lait de coco, de la vapeur et de la texture pour réussir ce plat emblématique.',
+    readingTime: '5 min',
     sections: [
       {
         title: 'Une préparation liée et parfumée',
@@ -151,6 +159,8 @@ export const cultureArticles: CultureArticle[] = [
     title: 'Kep : quand le crabe rencontre le poivre vert',
     eyebrow: 'Kep & Kampot',
     intro: 'À Kep, la cuisine des produits de la mer rencontre naturellement le poivre de Kampot voisin : une association simple, vive et devenue emblématique.',
+    seoDescription: 'Kep et le crabe au poivre vert : comprendre l’association entre produits de la mer et poivre de Kampot dans la cuisine côtière cambodgienne.',
+    readingTime: '5 min',
     sections: [
       {
         title: 'Une cuisine tournée vers la mer',
@@ -189,6 +199,8 @@ export const cultureArticles: CultureArticle[] = [
     title: 'Marchés cambodgiens : comprendre la cuisine par les produits frais',
     eyebrow: 'Cuisine quotidienne',
     intro: 'Herbes, poissons, légumes, racines et condiments : regarder un marché aide à comprendre pourquoi la cuisine cambodgienne repose autant sur la fraîcheur et les préparations du jour.',
+    seoDescription: 'Marchés cambodgiens : herbes fraîches, poissons, riz, légumes et condiments pour comprendre la logique quotidienne de la cuisine khmère.',
+    readingTime: '5 min',
     sections: [
       {
         title: 'Les aromates sont au premier plan',
@@ -214,6 +226,98 @@ export const cultureArticles: CultureArticle[] = [
     ],
     image: '/images/cuisine/kep-market-1600.webp',
     imageAlt: 'Marché cambodgien avec produits frais et cuisine du quotidien',
+    imageWidth: 4608,
+    imageHeight: 3072,
+    imageWidths: [480, 800, 1200, 1600],
+    sources: [
+      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: 'https://tourismcambodia.org/public/index.php/official-activities/new-beginnings-a-gourmet-guide-to-cambodia' }
+    ]
+  },
+  {
+    slug: 'prahok-fermentation',
+    title: 'Prahok : la fermentation qui donne de la profondeur',
+    eyebrow: 'Fermentation',
+    intro: 'Le prahok est souvent résumé à son odeur. En cuisine, il faut surtout comprendre son rôle : sel, umami, fermentation et longueur en bouche.',
+    seoDescription: 'Prahok cambodgien : comprendre le poisson fermenté, son rôle dans la cuisine khmère, son dosage, ses associations et la façon dont la cuisson transforme son goût.',
+    readingTime: '5 min',
+    sections: [
+      {
+        title: 'Un condiment, pas seulement une odeur',
+        paragraphs: [
+          'Le prahok est un produit de poisson fermenté utilisé dans différentes préparations cambodgiennes. Son intensité varie selon le produit, sa texture et la façon dont il est incorporé au plat.',
+          'Cru, son parfum peut sembler très puissant. Mélangé à d’autres ingrédients et cuit, il devient plus rond et apporte surtout de la profondeur.'
+        ]
+      },
+      {
+        title: 'Sel, umami et fermentation',
+        paragraphs: [
+          'Le prahok remplit plusieurs fonctions à la fois : il sale, renforce l’umami et ajoute une note fermentée que l’on n’obtient pas avec une simple sauce salée.',
+          'C’est pour cette raison qu’il vaut mieux doser les autres assaisonnements après l’avoir ajouté, et non avant.'
+        ]
+      },
+      {
+        title: 'Le contraste avec les éléments frais',
+        paragraphs: [
+          'Les préparations à base de prahok gagnent souvent à être accompagnées de légumes croquants, d’herbes ou d’agrumes. La fraîcheur équilibre sa richesse et rend le contraste plus lisible.',
+          'Dans le prahok ktis, par exemple, le lait de coco et les légumes crus créent une opposition entre rondeur, fermentation et fraîcheur.'
+        ]
+      },
+      {
+        title: 'Comment l’aborder à la maison',
+        paragraphs: [
+          'Commencer par une petite quantité, chauffer la préparation et goûter avant de corriger. Le bon dosage n’est pas celui qui fait sentir le prahok seul, mais celui qui donne plus de profondeur à tout le plat.',
+          'Pour une première découverte, une préparation cuite et associée au coco ou à des aromates est souvent plus facile à lire qu’un usage très brut.'
+        ]
+      }
+    ],
+    image: '/images/cuisine/prahok-1600.webp',
+    imageAlt: 'Prahok ktis cambodgien servi avec des légumes frais',
+    imageWidth: 3000,
+    imageHeight: 4000,
+    imageWidths: [480, 800, 1200, 1600],
+    sources: [
+      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: 'https://tourismcambodia.org/public/index.php/official-activities/new-beginnings-a-gourmet-guide-to-cambodia' }
+    ]
+  },
+  {
+    slug: 'marches-herbes-cuisine-khmere',
+    title: 'Herbes, racines et marchés : là où commence le goût khmer',
+    eyebrow: 'Produits frais',
+    intro: 'Avant la casserole, il y a les bottes de citronnelle, le galanga, les feuilles parfumées, les légumes et les herbes : une cuisine qui commence par des produits très frais.',
+    seoDescription: 'Herbes et marchés cambodgiens : citronnelle, galanga, combava, basilic, légumes et produits frais pour comprendre la construction des saveurs de la cuisine khmère.',
+    readingTime: '5 min',
+    sections: [
+      {
+        title: 'Une cuisine d’aromates frais',
+        paragraphs: [
+          'Une grande partie du parfum de la cuisine cambodgienne vient d’ingrédients frais : citronnelle, galanga, curcuma, feuilles de combava, ail, échalotes et herbes.',
+          'Ils ne jouent pas le même rôle que des épices sèches. Leur eau, leurs fibres et leurs huiles aromatiques influencent à la fois la texture et le parfum.'
+        ]
+      },
+      {
+        title: 'Le marché comme garde-manger',
+        paragraphs: [
+          'Les marchés réunissent poissons, viandes, légumes, racines, fruits, herbes et condiments qui permettent de cuisiner rapidement avec ce qui est disponible.',
+          'Observer ces produits aide à comprendre pourquoi de nombreuses recettes reposent sur des préparations fraîches plutôt que sur de longues listes d’épices sèches.'
+        ]
+      },
+      {
+        title: 'Couper, froisser, piler',
+        paragraphs: [
+          'Chaque aromate demande un geste différent : la citronnelle se coupe très finement, les feuilles se froissent ou s’émincent, les racines se pilent et les herbes s’ajoutent souvent à la fin.',
+          'Apprendre ces gestes est une manière directe de comprendre le goût, car ils déterminent ce qui sera libéré pendant la cuisson.'
+        ]
+      },
+      {
+        title: 'Ce que cela change à la maison',
+        paragraphs: [
+          'Mieux vaut acheter peu d’aromates mais les utiliser très frais. Un petit kroeung préparé le jour même donnera souvent plus de caractère qu’une grande quantité de pâte aromatique conservée trop longtemps.',
+          'Quand certains produits sont difficiles à trouver, l’objectif est de préserver la logique du plat : fraîcheur, équilibre et parfum, plutôt que de multiplier les substituts au hasard.'
+        ]
+      }
+    ],
+    image: '/images/cuisine/kep-market-1600.webp',
+    imageAlt: 'Marché cambodgien et produits frais utilisés en cuisine khmère',
     imageWidth: 4608,
     imageHeight: 3072,
     imageWidths: [480, 800, 1200, 1600],
