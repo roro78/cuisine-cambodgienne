@@ -14,6 +14,7 @@ export function initGlobalMotion() {
   const cultureRules = gsap.utils.toArray<HTMLElement>('.culture-rule');
   const companions = gsap.utils.toArray<HTMLElement>('[data-scroll-companion]');
   const learningPaths = gsap.utils.toArray<HTMLElement>('[data-learning-path]');
+  const homeTrailObjects = gsap.utils.toArray<HTMLElement>('[data-home-culinary-object]');
   const homeCulinaryObjects = gsap.utils.toArray<HTMLElement>('[data-home-culinary-object]');
   const homeTrailObjects = gsap.utils.toArray<HTMLElement>('[data-home-culinary-object]');
 
@@ -26,6 +27,7 @@ export function initGlobalMotion() {
     !cultureRules.length &&
     !companions.length &&
     !learningPaths.length &&
+    !homeTrailObjects.length &&
     !homeCulinaryObjects.length &&
     !homeTrailObjects.length
   ) return () => {};
@@ -262,6 +264,44 @@ export function initGlobalMotion() {
             start: `top ${88 - index * 9}%`,
             end: `bottom ${28 + index * 5}%`,
             scrub: .65 + index * .1,
+            invalidateOnRefresh: true
+          }
+        }
+      );
+    });
+
+    homeTrailObjects.forEach((el, index) => {
+      const trail = el.closest<HTMLElement>('[data-home-culinary-trail]');
+      const section = trail?.closest<HTMLElement>('.desire-story');
+      if (!section) return;
+
+      if (reduced) {
+        gsap.set(el, { autoAlpha: index === 0 ? .2 : 0, x: 0, y: 0, rotate: 0 });
+        return;
+      }
+
+      const side = index % 2 === 0 ? 1 : -1;
+      const startX = side > 0 ? '8vw' : '-8vw';
+      const endX = side > 0 ? '-10vw' : '10vw';
+
+      gsap.fromTo(el,
+        {
+          x: startX,
+          y: index * 14,
+          rotate: side * (index === 2 ? 12 : 6),
+          autoAlpha: 0
+        },
+        {
+          x: endX,
+          y: () => section.offsetHeight * (.42 + index * .09),
+          rotate: side * -(12 + index * 5),
+          autoAlpha: index === 3 ? .32 : .46,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 88%',
+            end: 'bottom 22%',
+            scrub: .75 + index * .12,
             invalidateOnRefresh: true
           }
         }
