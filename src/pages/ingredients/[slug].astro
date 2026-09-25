@@ -138,29 +138,6 @@ const breadcrumbSchema = {
       </div>
     </section>
 
-    <section class="ingredient-practical" aria-label="Conseils pratiques" data-reveal="up">
-      <article>
-        <p class="eyebrow">Bien acheter</p>
-        <h2>Choisir un bon produit</h2>
-        <ul>{ingredient.buying.map((item: string) => <li>{item}</li>)}</ul>
-      </article>
-      <article>
-        <p class="eyebrow">Conservation</p>
-        <h2>Le garder parfumé</h2>
-        <ul>{ingredient.storage.map((item: string) => <li>{item}</li>)}</ul>
-      </article>
-      <article>
-        <p class="eyebrow">Accords</p>
-        <h2>Avec quoi l’associer</h2>
-        <ul>{ingredient.pairings.map((item: string) => <li>{item}</li>)}</ul>
-      </article>
-      <article>
-        <p class="eyebrow">À éviter</p>
-        <h2>Les erreurs fréquentes</h2>
-        <ul>{ingredient.mistakes.map((item: string) => <li>{item}</li>)}</ul>
-      </article>
-    </section>
-
     <GlossaryStrip entries={glossary} />
 
     {relatedContent.length > 0 && (
