@@ -23,10 +23,10 @@ const { article } = Astro.props;
 const glossaryByArticle: Record<string, string[]> = {
   'poivre-de-kampot': ['poivre-de-kampot'],
   'comprendre-le-kroeung': ['kroeung', 'citronnelle', 'galanga', 'combava', 'curcuma'],
-  'comprendre-amok': ['amok', 'kroeung', 'lait-de-coco', 'combava'],
-  'prahok-fermentation': ['prahok', 'kroeung'],
-  'marches-herbes-cuisine-khmere': ['citronnelle', 'galanga', 'combava', 'num-banh-chok'],
-  'transmission-cuisine-khmere': ['kroeung', 'prahok', 'amok', 'bobor']
+  'comprendre-amok': ['amok', 'kroeung', 'lait-de-coco', 'combava', 'feuille-bananier'],
+  'kep-marche-crabe-poivre': ['poivre-de-kampot'],
+  'prahok-fermentation-umami': ['prahok', 'sauce-poisson'],
+  'construire-repas-cambodgien': ['riz-jasmin', 'amok', 'lok-lak']
 };
 const glossary = getGlossaryEntries(glossaryByArticle[article.slug] ?? []);
 
@@ -46,30 +46,21 @@ const relatedContent = article.slug === 'poivre-de-kampot'
           recipes.find((item) => item.slug === 'amok-trey'),
           ingredientGuides.find((item) => item.slug === 'kroeung')
         ].filter(Boolean)
-      : article.slug === 'kep-crabe-poivre'
+      : article.slug === 'kep-marche-crabe-poivre'
         ? [
             ingredientGuides.find((item) => item.slug === 'poivre-de-kampot'),
             recipes.find((item) => item.slug === 'lok-lak')
           ].filter(Boolean)
-        : article.slug === 'prahok-fermentation'
+        : article.slug === 'prahok-fermentation-umami'
           ? [
               ingredientGuides.find((item) => item.slug === 'prahok'),
               ingredientGuides.find((item) => item.slug === 'kroeung')
             ].filter(Boolean)
-          : article.slug === 'marches-herbes-cuisine-khmere'
-            ? [
-                ingredientGuides.find((item) => item.slug === 'tamarin'),
-                ingredientGuides.find((item) => item.slug === 'kroeung')
-              ].filter(Boolean)
-            : article.slug === 'marches-et-cuisine-cambodgienne'
-              ? [
-                  ingredientGuides.find((item) => item.slug === 'prahok'),
-                  ingredientGuides.find((item) => item.slug === 'poivre-de-kampot')
-                ].filter(Boolean)
-              : [
-                  recipes.find((item) => item.slug === 'kroeung-jaune'),
-                  recipes.find((item) => item.slug === 'amok-trey')
-                ].filter(Boolean);
+          : [
+              recipes.find((item) => item.slug === 'amok-trey'),
+              recipes.find((item) => item.slug === 'lok-lak'),
+              recipes.find((item) => item.slug === 'kroeung-jaune')
+            ].filter(Boolean);
 
 const articleSchema = {
   '@context': 'https://schema.org',
