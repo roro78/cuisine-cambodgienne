@@ -26,6 +26,24 @@ if (!storytelling.includes('drawCover(next.img, 1, 0, 0, eased)')) {
   failures.push('reduced-motion storytelling crossfade fallback is missing');
 }
 
+const homeTrailMarker = '/* V12.1 — guaranteed four-object home culinary trail visibility */';
+const homeTrailHotfixIndex = css.lastIndexOf(homeTrailMarker);
+if (homeTrailHotfixIndex < 0) {
+  failures.push('home culinary trail visibility hotfix is missing');
+} else {
+  const homeTrailHotfix = css.slice(homeTrailHotfixIndex);
+  if (!/@media\(max-width:720px\)[\s\S]*?\.home-trail-object[\s\S]*?display\s*:\s*block/.test(homeTrailHotfix)) {
+    failures.push('mobile CSS must keep all home culinary objects visible');
+  }
+  if (!/@media\(prefers-reduced-motion:reduce\)[\s\S]*?\.home-trail-object\s*\{[^}]*display\s*:\s*block!important/.test(homeTrailHotfix)) {
+    failures.push('reduced-motion CSS must keep all home culinary objects visible');
+  }
+}
+
+if (/data-home-culinary-object[\s\S]*?autoAlpha:\s*index\s*===\s*0\s*\?\s*\.2\s*:\s*0/.test(motion)) {
+  failures.push('reduced-motion JS must not hide three of the four home culinary objects');
+}
+
 if (failures.length) {
   console.error('Motion contract failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));
