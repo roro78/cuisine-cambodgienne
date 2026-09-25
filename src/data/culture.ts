@@ -3,8 +3,6 @@ export interface CultureArticle {
   title: string;
   eyebrow: string;
   intro: string;
-  seoDescription: string;
-  readingTime: string;
   sections: { title: string; paragraphs: string[] }[];
   sources: { label: string; url: string }[];
   image: string;
@@ -14,14 +12,14 @@ export interface CultureArticle {
   imageWidths: number[];
 }
 
+const tourismGuide = 'https://tourismcambodia.org/public/index.php/official-activities/new-beginnings-a-gourmet-guide-to-cambodia';
+
 export const cultureArticles: CultureArticle[] = [
   {
     slug: 'poivre-de-kampot',
     title: 'Poivre de Kampot : un produit lié à son territoire',
     eyebrow: 'Territoires',
     intro: 'Comprendre pourquoi le poivre de Kampot est plus qu’un simple assaisonnement : son nom, son origine et ses usages sont liés à un territoire précis du sud du Cambodge.',
-    seoDescription: 'Poivre de Kampot : origine, indication géographique, différences entre vert, noir, rouge et blanc, usages culinaires et lien avec Kep.',
-    readingTime: '6 min',
     sections: [
       {
         title: 'Une indication géographique',
@@ -31,24 +29,17 @@ export const cultureArticles: CultureArticle[] = [
         ]
       },
       {
-        title: 'Vert, noir, rouge ou blanc',
+        title: 'Vert, noir, rouge, blanc : quatre lectures du même poivre',
         paragraphs: [
-          'La couleur ne raconte pas seulement l’apparence du grain : elle correspond à une maturité et à un traitement différents. Le poivre vert frais est végétal et très vif, le noir plus chaud, le rouge plus mûr et fruité, le blanc plus direct.',
-          'En cuisine, ces profils invitent à goûter le poivre comme on goûterait un ingrédient à part entière, plutôt que de le réduire à un simple geste de moulin.'
+          'Le stade de maturité et le traitement changent profondément le profil aromatique. Le vert frais est végétal et juteux ; le noir développe davantage de chaleur ; le rouge est plus mûr et fruité ; le blanc se montre plus direct.',
+          'En cuisine, cette diversité permet de choisir le poivre comme on choisirait une herbe ou une acidité. Le geste le plus simple reste souvent le meilleur : moudre au dernier moment pour conserver les parfums.'
         ]
       },
       {
         title: 'Kampot, Kep et les produits de la mer',
         paragraphs: [
-          'La proximité de Kampot et de Kep explique la présence fréquente du poivre aux côtés des produits de la mer dans les récits gastronomiques de la région.',
-          'Le crabe au poivre vert est devenu l’une des associations les plus connues : le piquant frais du poivre répond à la douceur iodée du crabe sans demander une sauce lourde.'
-        ]
-      },
-      {
-        title: 'Comment le traiter à la maison',
-        paragraphs: [
-          'Le poivre sec gagne à être concassé au dernier moment. Une cuisson longue émousse son parfum ; il est souvent plus intéressant d’en ajouter une partie en fin de cuisson.',
-          'Avec le poivre vert frais, on peut garder les grappes entières ou légèrement écraser les grains pour libérer leur parfum dans une sauce courte.'
+          'Dans le sud du Cambodge, le poivre est naturellement associé aux produits de la mer et notamment aux préparations de crabe. Cette proximité entre terroir, marché et cuisine explique pourquoi le poivre peut devenir le cœur d’un plat.',
+          'À la maison, on peut retrouver cette logique avec un poisson, des crevettes ou un bœuf sauté : peu d’ingrédients, une cuisson juste, puis le poivre ajouté suffisamment tard pour rester expressif.'
         ]
       }
     ],
@@ -59,7 +50,7 @@ export const cultureArticles: CultureArticle[] = [
     imageWidths: [480, 800, 1200, 1600],
     sources: [
       { label: 'OMPI — Système de Lisbonne et Poivre de Kampot', url: 'https://www.wipo.int/fr/web/lisbon-system/w/news/2021/news_0001' },
-      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: 'https://tourismcambodia.org/public/index.php/official-activities/new-beginnings-a-gourmet-guide-to-cambodia' }
+      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: tourismGuide }
     ]
   },
   {
@@ -67,35 +58,26 @@ export const cultureArticles: CultureArticle[] = [
     title: 'Kroeung : comprendre une famille de pâtes aromatiques',
     eyebrow: 'Gestes',
     intro: 'Le kroeung n’est pas une seule recette figée. C’est une famille de pâtes d’aromates qui forme la base de nombreux plats cambodgiens.',
-    seoDescription: 'Kroeung cambodgien : comprendre les aromates, le rôle du mortier, les différentes pâtes et les gestes essentiels de cette base de la cuisine khmère.',
-    readingTime: '6 min',
     sections: [
       {
         title: 'Une base, plusieurs expressions',
         paragraphs: [
-          'Le terme kroeung désigne différentes pâtes d’herbes et d’épices utilisées comme fondation aromatique. Citronnelle, galanga, curcuma, combava, ail ou échalote peuvent entrer dans leur composition selon le plat.',
+          'Le terme kroeung désigne différentes pâtes d’herbes, de racines et d’épices utilisées comme fondation aromatique. Citronnelle, galanga, curcuma, combava, ail ou échalote peuvent entrer dans leur composition selon le plat.',
           'La couleur et le profil aromatique changent avec les ingrédients dominants. L’important est donc moins de chercher une formule unique que de comprendre la logique de construction.'
         ]
       },
       {
         title: 'Le geste compte autant que la liste',
         paragraphs: [
-          'Le fait de couper finement puis de piler progressivement modifie la texture et permet aux fibres et aux huiles aromatiques de se mélanger intimement.',
-          'Cette étape explique pourquoi le kroeung est souvent traité comme une technique de base autant que comme un simple mélange d’ingrédients.'
+          'Couper finement puis piler progressivement modifie la texture et permet aux fibres et aux huiles aromatiques de se mélanger intimement. Les ingrédients les plus durs sont généralement travaillés avant les plus tendres.',
+          'Cette étape explique pourquoi le kroeung est autant une technique de base qu’un mélange d’ingrédients. Une pâte bien travaillée parfume le plat de façon homogène et évite les fibres désagréables en bouche.'
         ]
       },
       {
-        title: 'Pourquoi le mortier change le résultat',
+        title: 'Sentir avant de cuire',
         paragraphs: [
-          'Le mortier écrase les fibres et les aromates au lieu de simplement les couper. Le parfum obtenu est plus lié, et la pâte garde une texture qui se mêle bien à la cuisson.',
-          'Un mixeur reste possible à la maison, mais il vaut mieux travailler par impulsions et éviter de noyer la préparation dans de l’eau.'
-        ]
-      },
-      {
-        title: 'Apprendre à le reconnaître',
-        paragraphs: [
-          'Un kroeung prêt à cuisiner doit sentir très fort avant même de toucher la poêle. La citronnelle, le galanga et le combava doivent rester identifiables sans qu’un seul arôme écrase tous les autres.',
-          'Cette lecture au nez est un bon exercice pour apprendre la cuisine khmère : on corrige la pâte avant la cuisson plutôt que d’essayer de rattraper le plat à la fin.'
+          'Un bon repère consiste à sentir la pâte avant qu’elle ne touche la casserole. La citronnelle doit être nette, le galanga présent sans dominer et le combava rester précis.',
+          'Après cuisson, les notes les plus vives s’arrondissent. C’est ce passage du frais au chaud qui donne au kroeung sa profondeur et permet de comprendre pourquoi il structure autant de plats.'
         ]
       }
     ],
@@ -105,7 +87,7 @@ export const cultureArticles: CultureArticle[] = [
     imageHeight: 3456,
     imageWidths: [480, 800, 1200, 1600],
     sources: [
-      { label: 'Ministère du Tourisme du Cambodge — glossaire gastronomique', url: 'https://tourismcambodia.org/public/index.php/official-activities/new-beginnings-a-gourmet-guide-to-cambodia' }
+      { label: 'Ministère du Tourisme du Cambodge — glossaire gastronomique', url: tourismGuide }
     ]
   },
   {
@@ -113,35 +95,26 @@ export const cultureArticles: CultureArticle[] = [
     title: 'Amok : comprendre la logique du plat',
     eyebrow: 'Plats',
     intro: 'Derrière le nom Amok se trouve une logique de cuisson douce, de kroeung et de texture liée qui aide à mieux réussir le plat.',
-    seoDescription: 'Amok cambodgien : comprendre le rôle du kroeung, du lait de coco, de la vapeur et de la texture pour réussir ce plat emblématique.',
-    readingTime: '5 min',
     sections: [
       {
         title: 'Une préparation liée et parfumée',
         paragraphs: [
-          'Dans les descriptions culinaires cambodgiennes, l’amok de poisson associe poisson, œuf et kroeung avant une cuisson douce à la vapeur.',
-          'Le résultat attendu n’est pas celui d’un curry très liquide : la préparation doit prendre tout en conservant une texture souple.'
+          'Dans l’amok de poisson, le kroeung construit la base aromatique, le lait de coco arrondit l’ensemble et la cuisson douce permet à la préparation de prendre sans devenir sèche.',
+          'Le résultat attendu n’est pas celui d’un curry très liquide : la préparation doit garder une texture souple, presque tremblante, qui enrobe le poisson.'
         ]
       },
       {
-        title: 'Le rôle de chaque élément',
+        title: 'Pourquoi la vapeur change tout',
         paragraphs: [
-          'Le kroeung apporte la structure aromatique, le lait de coco arrondit l’ensemble et les œufs participent à la prise. Le poisson, lui, doit rester tendre.',
-          'La feuille de bananier n’est pas qu’un décor lorsqu’elle sert de contenant : elle participe à la mise en scène du plat et supporte bien la cuisson vapeur.'
+          'Une chaleur douce et régulière aide les œufs et le coco à lier la préparation progressivement. Une cuisson trop forte resserre rapidement la texture et peut séparer les matières grasses.',
+          'La vapeur est donc moins un effet spectaculaire qu’un outil de précision : elle permet d’obtenir une cuisson régulière jusque dans les portions épaisses.'
         ]
       },
       {
-        title: 'La cuisson est le vrai point délicat',
+        title: 'Ce qu’il faut retenir en cuisine',
         paragraphs: [
-          'Une chaleur trop forte resserre la texture et peut sécher le poisson. Une vapeur régulière et douce permet d’obtenir une préparation prise mais encore moelleuse.',
-          'Le bon repère n’est donc pas seulement un nombre de minutes : il faut regarder la texture au centre du ramequin ou du panier.'
-        ]
-      },
-      {
-        title: 'Ce qu’il faut retenir à la maison',
-        paragraphs: [
-          'Goûter la base avant d’ajouter le poisson permet d’ajuster sel, sucre et intensité du kroeung.',
-          'Les variantes sont nombreuses ; comprendre cette architecture permet d’adapter la recette sans perdre l’équilibre entre aromates, coco et cuisson douce.'
+          'Goûter la base avant d’ajouter le poisson, travailler un kroeung assez fin et arrêter la cuisson dès que la préparation est prise sont trois repères simples pour progresser.',
+          'Les variantes sont nombreuses ; comprendre cette architecture permet d’ajuster la recette plus intelligemment que de suivre une liste au gramme près.'
         ]
       }
     ],
@@ -151,178 +124,119 @@ export const cultureArticles: CultureArticle[] = [
     imageHeight: 4080,
     imageWidths: [480, 800, 1200, 1600],
     sources: [
-      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: 'https://tourismcambodia.org/public/index.php/official-activities/new-beginnings-a-gourmet-guide-to-cambodia' }
+      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: tourismGuide }
     ]
   },
   {
-    slug: 'kep-crabe-poivre',
-    title: 'Kep : quand le crabe rencontre le poivre vert',
-    eyebrow: 'Kep & Kampot',
-    intro: 'À Kep, la cuisine des produits de la mer rencontre naturellement le poivre de Kampot voisin : une association simple, vive et devenue emblématique.',
-    seoDescription: 'Kep et le crabe au poivre vert : comprendre l’association entre produits de la mer et poivre de Kampot dans la cuisine côtière cambodgienne.',
-    readingTime: '5 min',
+    slug: 'kep-marche-crabe-poivre',
+    title: 'Kep : quand le marché rencontre le poivre et la mer',
+    eyebrow: 'Marchés',
+    intro: 'À Kep, produits de la mer, marché et poivre de Kampot racontent une cuisine qui naît d’abord de ce qui est frais et disponible.',
     sections: [
       {
-        title: 'Une cuisine tournée vers la mer',
+        title: 'Le marché comme point de départ',
         paragraphs: [
-          'Kep est connue pour ses produits de la mer et son marché au crabe. Dans cette cuisine côtière, la fraîcheur du produit compte davantage qu’une accumulation de sauces.',
-          'Le crabe, les crevettes et d’autres produits marins se prêtent bien aux cuissons courtes et aux assaisonnements aromatiques.'
+          'Dans une cuisine fortement liée aux produits frais, le marché n’est pas seulement un lieu d’achat : il décide souvent de ce que l’on va cuisiner. Poissons, crustacés, herbes, fruits et légumes imposent leur saison et leur qualité.',
+          'Cette logique encourage des cuissons courtes et des assaisonnements précis. Quand le produit est bon, il n’a pas besoin d’être noyé sous une sauce compliquée.'
         ]
       },
       {
-        title: 'Pourquoi le poivre vert fonctionne si bien',
+        title: 'Crabe et poivre : une association devenue emblématique',
         paragraphs: [
-          'Le poivre vert frais apporte à la fois chaleur, fraîcheur végétale et parfum. Il accompagne la douceur du crabe sans masquer son goût.',
-          'Les grappes peuvent cuire directement dans la sauce ; certains grains s’écrasent alors légèrement et parfument l’ensemble.'
+          'La région de Kep est connue pour ses produits de la mer et sa proximité avec Kampot. L’association du crabe avec le poivre frais résume bien cette cuisine : un produit principal identifiable et un condiment local très expressif.',
+          'Le même principe fonctionne à la maison avec crevettes ou poisson : cuire juste, garder le jus du produit et ajouter le poivre suffisamment tard pour qu’il reste vivant.'
         ]
       },
       {
-        title: 'Reproduire l’esprit du plat',
+        title: 'Ce que l’on peut apprendre de cette cuisine',
         paragraphs: [
-          'À la maison, l’idée à retenir est celle d’une sauce courte : ail, matière grasse, poivre vert, un peu d’assaisonnement et une cuisson rapide.',
-          'Si le poivre vert frais est introuvable, un bon poivre noir de Kampot fraîchement concassé donnera un résultat différent mais gardera la logique aromatique.'
+          'Acheter moins d’ingrédients mais les choisir mieux change la façon de cuisiner. On commence par le produit, puis on construit autour de lui l’acidité, le sel, les aromates et la chaleur.',
+          'C’est une bonne porte d’entrée dans la cuisine cambodgienne : apprendre à observer et goûter avant de chercher des recettes de plus en plus complexes.'
         ]
       }
     ],
     image: '/images/cuisine/kep-market-1600.webp',
-    imageAlt: 'Marché aux produits de la mer à Kep au Cambodge',
-    imageWidth: 4608,
-    imageHeight: 3072,
+    imageAlt: 'Marché de Kep au Cambodge avec produits frais',
+    imageWidth: 1600,
+    imageHeight: 1067,
     imageWidths: [480, 800, 1200, 1600],
     sources: [
-      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: 'https://tourismcambodia.org/public/index.php/official-activities/new-beginnings-a-gourmet-guide-to-cambodia' },
+      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: tourismGuide },
       { label: 'OMPI — Poivre de Kampot', url: 'https://www.wipo.int/fr/web/lisbon-system/w/news/2021/news_0001' }
     ]
   },
   {
-    slug: 'marches-et-cuisine-cambodgienne',
-    title: 'Marchés cambodgiens : comprendre la cuisine par les produits frais',
-    eyebrow: 'Cuisine quotidienne',
-    intro: 'Herbes, poissons, légumes, racines et condiments : regarder un marché aide à comprendre pourquoi la cuisine cambodgienne repose autant sur la fraîcheur et les préparations du jour.',
-    seoDescription: 'Marchés cambodgiens : herbes fraîches, poissons, riz, légumes et condiments pour comprendre la logique quotidienne de la cuisine khmère.',
-    readingTime: '5 min',
-    sections: [
-      {
-        title: 'Les aromates sont au premier plan',
-        paragraphs: [
-          'Citronnelle, galanga, curcuma, feuilles parfumées, ail, échalotes et herbes fraîches reviennent dans de nombreuses préparations.',
-          'Ces ingrédients sont souvent achetés en petites quantités et travaillés rapidement, ce qui explique l’importance du mortier, de la coupe fine et des préparations fraîches.'
-        ]
-      },
-      {
-        title: 'Poisson, riz et légumes structurent le repas',
-        paragraphs: [
-          'Les plats ne se pensent pas toujours comme une assiette unique. Riz, légumes, soupe, poisson, viande ou condiments peuvent se compléter sur la table.',
-          'Cette logique aide à comprendre pourquoi certains plats sont très parfumés ou salins : ils sont destinés à être mangés avec du riz et d’autres éléments plus doux.'
-        ]
-      },
-      {
-        title: 'Observer avant de cuisiner',
-        paragraphs: [
-          'Pour apprendre, un bon réflexe consiste à regarder les textures et les familles d’ingrédients : frais, fermenté, acide, aromatique, coco, grillé ou vapeur.',
-          'Cette lecture donne des repères plus utiles qu’une simple liste de recettes et aide à improviser ensuite avec ce que l’on trouve chez soi.'
-        ]
-      }
-    ],
-    image: '/images/cuisine/kep-market-1600.webp',
-    imageAlt: 'Marché cambodgien avec produits frais et cuisine du quotidien',
-    imageWidth: 4608,
-    imageHeight: 3072,
-    imageWidths: [480, 800, 1200, 1600],
-    sources: [
-      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: 'https://tourismcambodia.org/public/index.php/official-activities/new-beginnings-a-gourmet-guide-to-cambodia' }
-    ]
-  },
-  {
-    slug: 'prahok-fermentation',
-    title: 'Prahok : la fermentation qui donne de la profondeur',
+    slug: 'prahok-fermentation-umami',
+    title: 'Prahok : comprendre la fermentation et l’umami',
     eyebrow: 'Fermentation',
-    intro: 'Le prahok est souvent résumé à son odeur. En cuisine, il faut surtout comprendre son rôle : sel, umami, fermentation et longueur en bouche.',
-    seoDescription: 'Prahok cambodgien : comprendre le poisson fermenté, son rôle dans la cuisine khmère, son dosage, ses associations et la façon dont la cuisson transforme son goût.',
-    readingTime: '5 min',
+    intro: 'Le prahok est souvent présenté uniquement comme un condiment très puissant. En cuisine, son intérêt est surtout la profondeur salée et fermentée qu’il apporte.',
     sections: [
       {
-        title: 'Un condiment, pas seulement une odeur',
+        title: 'Une saveur qui dépasse l’odeur',
         paragraphs: [
-          'Le prahok est un produit de poisson fermenté utilisé dans différentes préparations cambodgiennes. Son intensité varie selon le produit, sa texture et la façon dont il est incorporé au plat.',
-          'Cru, son parfum peut sembler très puissant. Mélangé à d’autres ingrédients et cuit, il devient plus rond et apporte surtout de la profondeur.'
+          'À l’ouverture, le prahok peut sembler impressionnant. Mais son rôle culinaire apparaît surtout quand il est dosé dans un ensemble : il renforce la profondeur et donne une sensation de plat plus complet.',
+          'La cuisson arrondit certaines notes et permet à la fermentation de se fondre avec coco, aromates, légumes ou viande.'
         ]
       },
       {
-        title: 'Sel, umami et fermentation',
+        title: 'Le dosage comme apprentissage',
         paragraphs: [
-          'Le prahok remplit plusieurs fonctions à la fois : il sale, renforce l’umami et ajoute une note fermentée que l’on n’obtient pas avec une simple sauce salée.',
-          'C’est pour cette raison qu’il vaut mieux doser les autres assaisonnements après l’avoir ajouté, et non avant.'
+          'Le prahok n’a pas une salinité identique d’un produit à l’autre. Le meilleur réflexe consiste donc à commencer par une quantité modeste, goûter, puis décider si le plat a réellement besoin de plus.',
+          'Cette méthode évite l’erreur la plus fréquente : ajouter prahok, sauce de poisson et sel sans tenir compte de leur rôle commun.'
         ]
       },
       {
-        title: 'Le contraste avec les éléments frais',
+        title: 'Avec quoi le découvrir',
         paragraphs: [
-          'Les préparations à base de prahok gagnent souvent à être accompagnées de légumes croquants, d’herbes ou d’agrumes. La fraîcheur équilibre sa richesse et rend le contraste plus lisible.',
-          'Dans le prahok ktis, par exemple, le lait de coco et les légumes crus créent une opposition entre rondeur, fermentation et fraîcheur.'
-        ]
-      },
-      {
-        title: 'Comment l’aborder à la maison',
-        paragraphs: [
-          'Commencer par une petite quantité, chauffer la préparation et goûter avant de corriger. Le bon dosage n’est pas celui qui fait sentir le prahok seul, mais celui qui donne plus de profondeur à tout le plat.',
-          'Pour une première découverte, une préparation cuite et associée au coco ou à des aromates est souvent plus facile à lire qu’un usage très brut.'
+          'Pour apprivoiser le prahok, les légumes crus ou croquants, les sauces à base de coco et les préparations mijotées sont de bons terrains d’apprentissage.',
+          'Le contraste entre fraîcheur végétale et fermentation puissante rend son intérêt beaucoup plus évident que lorsqu’on le goûte seul.'
         ]
       }
     ],
     image: '/images/cuisine/prahok-1600.webp',
-    imageAlt: 'Prahok ktis cambodgien servi avec des légumes frais',
+    imageAlt: 'Prahok ktis servi avec des légumes',
     imageWidth: 3000,
     imageHeight: 4000,
     imageWidths: [480, 800, 1200, 1600],
     sources: [
-      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: 'https://tourismcambodia.org/public/index.php/official-activities/new-beginnings-a-gourmet-guide-to-cambodia' }
+      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: tourismGuide }
     ]
   },
   {
-    slug: 'marches-herbes-cuisine-khmere',
-    title: 'Herbes, racines et marchés : là où commence le goût khmer',
-    eyebrow: 'Produits frais',
-    intro: 'Avant la casserole, il y a les bottes de citronnelle, le galanga, les feuilles parfumées, les légumes et les herbes : une cuisine qui commence par des produits très frais.',
-    seoDescription: 'Herbes et marchés cambodgiens : citronnelle, galanga, combava, basilic, légumes et produits frais pour comprendre la construction des saveurs de la cuisine khmère.',
-    readingTime: '5 min',
+    slug: 'construire-repas-cambodgien',
+    title: 'Comment se construit un repas cambodgien',
+    eyebrow: 'À table',
+    intro: 'Riz, plat principal, légumes, herbes, sauces et condiments : comprendre la table aide à cuisiner des recettes qui fonctionnent ensemble.',
     sections: [
       {
-        title: 'Une cuisine d’aromates frais',
+        title: 'Le riz comme point d’équilibre',
         paragraphs: [
-          'Une grande partie du parfum de la cuisine cambodgienne vient d’ingrédients frais : citronnelle, galanga, curcuma, feuilles de combava, ail, échalotes et herbes.',
-          'Ils ne jouent pas le même rôle que des épices sèches. Leur eau, leurs fibres et leurs huiles aromatiques influencent à la fois la texture et le parfum.'
+          'Le riz n’est pas un simple accompagnement neutre. Il absorbe les sauces, calme le sel ou le piment et permet de passer d’une bouchée très parfumée à une autre plus douce.',
+          'Penser le riz avec le plat aide à mieux doser les assaisonnements : une sauce destinée à être mangée avec du riz peut sembler trop intense si on la goûte seule.'
         ]
       },
       {
-        title: 'Le marché comme garde-manger',
+        title: 'Contraster plutôt que tout répéter',
         paragraphs: [
-          'Les marchés réunissent poissons, viandes, légumes, racines, fruits, herbes et condiments qui permettent de cuisiner rapidement avec ce qui est disponible.',
-          'Observer ces produits aide à comprendre pourquoi de nombreuses recettes reposent sur des préparations fraîches plutôt que sur de longues listes d’épices sèches.'
+          'Un repas devient plus intéressant quand les éléments ne racontent pas tous la même chose. Un plat chaud et riche peut être accompagné de crudités, d’herbes fraîches ou d’un condiment acide.',
+          'Cette alternance de chaud, frais, doux, salé et acidulé donne du rythme à la table et évite la sensation de lourdeur.'
         ]
       },
       {
-        title: 'Couper, froisser, piler',
+        title: 'Composer à la maison',
         paragraphs: [
-          'Chaque aromate demande un geste différent : la citronnelle se coupe très finement, les feuilles se froissent ou s’émincent, les racines se pilent et les herbes s’ajoutent souvent à la fin.',
-          'Apprendre ces gestes est une manière directe de comprendre le goût, car ils déterminent ce qui sera libéré pendant la cuisson.'
-        ]
-      },
-      {
-        title: 'Ce que cela change à la maison',
-        paragraphs: [
-          'Mieux vaut acheter peu d’aromates mais les utiliser très frais. Un petit kroeung préparé le jour même donnera souvent plus de caractère qu’une grande quantité de pâte aromatique conservée trop longtemps.',
-          'Quand certains produits sont difficiles à trouver, l’objectif est de préserver la logique du plat : fraîcheur, équilibre et parfum, plutôt que de multiplier les substituts au hasard.'
+          'Pour commencer simplement : un riz jasmin, un plat principal comme le lok lak ou l’amok, des légumes frais et un condiment suffisent. Inutile de multiplier les préparations.',
+          'L’objectif est de créer plusieurs bouchées possibles : un peu de riz, davantage de sauce, une herbe fraîche, un trait d’acidité. C’est cette liberté qui rend le repas vivant.'
         ]
       }
     ],
-    image: '/images/cuisine/kep-market-1600.webp',
-    imageAlt: 'Marché cambodgien et produits frais utilisés en cuisine khmère',
-    imageWidth: 4608,
-    imageHeight: 3072,
+    image: '/images/cuisine/amok-1600.webp',
+    imageAlt: 'Repas cambodgien avec amok, riz et feuilles de bananier',
+    imageWidth: 3888,
+    imageHeight: 2592,
     imageWidths: [480, 800, 1200, 1600],
     sources: [
-      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: 'https://tourismcambodia.org/public/index.php/official-activities/new-beginnings-a-gourmet-guide-to-cambodia' }
+      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: tourismGuide }
     ]
   }
 ];
