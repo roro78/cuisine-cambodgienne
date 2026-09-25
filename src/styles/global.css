@@ -4348,3 +4348,171 @@ main{position:relative;z-index:1}
     opacity:.22!important;
   }
 }
+
+
+/* V12 — hard fix: recipe steps must never collapse into the number column */
+.recipe-detail .method-panel ol li{
+  display:block!important;
+  position:relative;
+  grid-template-columns:none!important;
+  padding-left:4.5rem!important;
+  width:100%;
+  max-width:none;
+  overflow-wrap:normal;
+  word-break:normal;
+}
+.recipe-detail .method-panel ol li:before{
+  position:absolute!important;
+  left:0!important;
+  top:1.55rem!important;
+  width:2.5rem;
+  text-align:left;
+}
+.recipe-detail .method-panel ol li:after{
+  left:3rem!important;
+}
+
+/* V12 — visible four-object home culinary trail */
+.home-culinary-trail{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  overflow:hidden;
+}
+.home-trail-object{
+  position:absolute;
+  width:clamp(5.5rem,9vw,9.5rem);
+  color:#496245;
+  filter:drop-shadow(0 16px 28px rgba(43,48,32,.18));
+  will-change:transform,opacity;
+  opacity:0;
+}
+.home-trail-object svg{display:block;width:100%;height:auto;overflow:visible}
+.home-trail-object path,
+.home-trail-object circle{fill:currentColor}
+.home-trail-object .trail-stroke{
+  fill:none;
+  stroke:rgba(244,237,223,.58);
+  stroke-width:2;
+}
+.home-trail-object--leaf{
+  top:4%;
+  right:2.5%;
+  width:clamp(7rem,12vw,12.5rem);
+  color:#4f6c48;
+}
+.home-trail-object--lemongrass{
+  top:28%;
+  left:2.5%;
+  width:clamp(4.5rem,7vw,7rem);
+  color:#75855d;
+}
+.home-trail-object--pepper{
+  top:51%;
+  right:4%;
+  width:clamp(4.8rem,7.5vw,7.5rem);
+  color:#6c4d3f;
+}
+.home-trail-object--steam{
+  top:70%;
+  left:5%;
+  width:clamp(5rem,8vw,8rem);
+  color:rgba(255,255,255,.7);
+  filter:drop-shadow(0 14px 28px rgba(72,64,50,.12));
+}
+.home-trail-object--steam path{
+  fill:none;
+  stroke:currentColor;
+  stroke-width:5;
+  stroke-linecap:round;
+}
+.desire-story{isolation:isolate}
+.desire-story>.home-culinary-trail{display:block}
+
+/* V12 — practical ingredient guide expansion */
+.ingredient-practical{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:1px;
+  max-width:76rem;
+  margin:0 auto clamp(5rem,9vh,8rem);
+  background:rgba(45,37,28,.14);
+}
+.ingredient-practical article{
+  padding:clamp(1.6rem,3vw,2.5rem);
+  background:#f2e9dc;
+}
+.ingredient-practical article:nth-child(2){background:#e2e8dd}
+.ingredient-practical article:nth-child(3){background:#ead9c8}
+.ingredient-practical article:nth-child(4){background:#d9dfd4}
+.ingredient-practical h2{
+  margin:.2rem 0 1rem;
+  max-width:14ch;
+  font:400 clamp(1.9rem,3vw,3rem)/.98 var(--serif);
+  letter-spacing:-.035em;
+}
+.ingredient-practical ul{
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+.ingredient-practical li{
+  position:relative;
+  padding:.65rem 0 .65rem 1.1rem;
+  border-top:1px solid rgba(52,43,34,.12);
+  line-height:1.58;
+}
+.ingredient-practical li:before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:1.12rem;
+  width:.35rem;
+  height:.35rem;
+  border-radius:50%;
+  background:#a45d43;
+}
+
+@media(max-width:720px){
+  .recipe-detail .method-panel ol li{
+    padding-left:3.35rem!important;
+  }
+  .recipe-detail .method-panel ol li:before{
+    width:2rem;
+  }
+  .recipe-detail .method-panel ol li:after{
+    left:2.35rem!important;
+  }
+  .home-culinary-trail{
+    display:block;
+  }
+  .home-trail-object{
+    width:4.5rem;
+    opacity:.5;
+  }
+  .home-trail-object--leaf{
+    right:-1.2rem;
+    width:6.8rem;
+  }
+  .home-trail-object--lemongrass{
+    left:-1rem;
+    width:4rem;
+  }
+  .home-trail-object--pepper{
+    right:-.8rem;
+    width:4.5rem;
+  }
+  .home-trail-object--steam{
+    left:-.8rem;
+    width:4.8rem;
+  }
+  .ingredient-practical{
+    grid-template-columns:1fr;
+    margin-bottom:4rem;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .home-trail-object{opacity:0!important;transform:none!important}
+  .home-trail-object--leaf{opacity:.16!important}
+}
