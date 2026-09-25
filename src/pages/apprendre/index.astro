@@ -88,6 +88,64 @@ const learningSteps = [
   }
 ];
 
+const learningWorkshops = [
+  {
+    eyebrow: 'Atelier 01',
+    title: 'Mortier & kroeung',
+    text: 'Préparer une petite quantité de kroeung, puis comparer son parfum cru et après cuisson. C’est l’exercice le plus direct pour comprendre la base aromatique.',
+    href: '/recettes/kroeung-jaune/',
+    cta: 'Faire l’atelier',
+    image: '/images/cuisine/kroeung-1600.webp',
+    widths: [480, 800, 1200, 1600],
+    width: 5184,
+    height: 3456,
+    alt: 'Kroeung cambodgien et aromates au mortier'
+  },
+  {
+    eyebrow: 'Atelier 02',
+    title: 'Feu vif & Lok Lak',
+    text: 'Faire deux petites fournées de bœuf pour observer la coloration. On apprend immédiatement pourquoi la taille de la poêle et la quantité comptent.',
+    href: '/recettes/lok-lak/',
+    cta: 'Faire l’atelier',
+    image: '/images/cuisine/lok-lak-800.webp',
+    widths: [480, 800],
+    width: 800,
+    height: 716,
+    alt: 'Lok lak cambodgien au bœuf saisi'
+  },
+  {
+    eyebrow: 'Atelier 03',
+    title: 'Vapeur & Amok',
+    text: 'Cuire de petites portions pour apprendre à reconnaître une texture prise mais encore souple. Le point de cuisson devient beaucoup plus facile à sentir.',
+    href: '/recettes/amok-trey/',
+    cta: 'Faire l’atelier',
+    image: '/images/cuisine/amok-1600.webp',
+    widths: [480, 800, 1200, 1600],
+    width: 3888,
+    height: 2592,
+    alt: 'Amok trei cambodgien cuit doucement'
+  }
+];
+
+const learningFaqs = [
+  {
+    question: 'Par quelle recette commencer quand on découvre la cuisine cambodgienne ?',
+    answer: 'Commencez par le kroeung jaune pour apprendre les aromates, puis le Lok Lak pour travailler le feu. L’Amok vient ensuite pour comprendre la cuisson douce et la liaison coco-kroeung.'
+  },
+  {
+    question: 'Faut-il absolument un mortier ?',
+    answer: 'Non. Un mixeur peut dépanner, mais coupez les aromates très finement et ajoutez le moins de liquide possible. Le mortier reste intéressant pour sentir l’évolution de la texture.'
+  },
+  {
+    question: 'Comment apprendre à équilibrer une sauce sans suivre une quantité exacte ?',
+    answer: 'Ajoutez sel, acidité, douceur et umami par petites touches et goûtez entre chaque ajout. Cherchez ce qui manque plutôt que de corriger plusieurs éléments à la fois.'
+  },
+  {
+    question: 'Quels ingrédients acheter en premier ?',
+    answer: 'Citronnelle, galanga, curcuma, combava, lait de coco, sauce de poisson, tamarin et un bon poivre permettent déjà de travailler beaucoup de gestes et de recettes du site.'
+  }
+];
+
 const learningSchema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
@@ -105,6 +163,16 @@ const learningSchema = {
       url: new URL(step.href, 'https://www.cuisine-du-cambodge.com').href
     }))
   }
+};
+
+const learningFaqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: learningFaqs.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer }
+  }))
 };
 ---
 <BaseLayout
@@ -189,6 +257,47 @@ const learningSchema = {
       </div>
     </section>
 
+    <section class="learning-workshops" aria-labelledby="workshops-title">
+      <header data-reveal="up">
+        <p class="eyebrow">Passer à la pratique</p>
+        <h2 id="workshops-title">Trois ateliers, trois sensations à mémoriser.</h2>
+        <p>Chaque atelier isole un geste. Faites-le une première fois pour comprendre, une seconde pour corriger, puis une troisième sans regarder toutes les étapes.</p>
+      </header>
+      <div class="learning-workshop-grid">
+        {learningWorkshops.map((workshop) => (
+          <a class="learning-workshop" href={workshop.href} data-reveal="up">
+            <figure>
+              <img src={workshop.image} srcset={imageSrcSet(workshop.image, workshop.widths)} sizes="(max-width: 900px) 100vw, 32vw" alt={workshop.alt} width={workshop.width} height={workshop.height} loading="lazy" decoding="async" />
+            </figure>
+            <div>
+              <p class="card-meta">{workshop.eyebrow}</p>
+              <h3>{workshop.title}</h3>
+              <p>{workshop.text}</p>
+              <span class="text-link">{workshop.cta}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="learning-rules" aria-label="Trois règles pour progresser" data-reveal="up">
+      <div>
+        <CulinaryIcon name="taste" size={24} />
+        <h2>Goûter avant de corriger.</h2>
+        <p>Une seule correction à la fois : sel, acidité, douceur ou umami. Sinon on ne sait plus ce qui a réellement amélioré la sauce.</p>
+      </div>
+      <div>
+        <CulinaryIcon name="cook" size={24} />
+        <h2>Regarder la texture.</h2>
+        <p>La couleur, l’humidité et la résistance sous la cuillère donnent souvent plus d’informations qu’un minuteur pris au pied de la lettre.</p>
+      </div>
+      <div>
+        <CulinaryIcon name="prep" size={24} />
+        <h2>Préparer avant d’allumer.</h2>
+        <p>Les cuissons vives ne laissent pas le temps de chercher une sauce ou de couper une herbe. Tout doit être prêt avant la poêle.</p>
+      </div>
+    </section>
+
     <section class="learning-menu" data-reveal="up">
       <div>
         <p class="eyebrow">Premier menu d’entraînement</p>
@@ -201,7 +310,23 @@ const learningSchema = {
         <a href="/recettes/amok-trey/"><span>03</span><strong>Amok Trey</strong><em>Lier et cuire doucement</em></a>
       </nav>
     </section>
+
+    <section class="learning-faq" aria-labelledby="learning-faq-title">
+      <header data-reveal="up">
+        <p class="eyebrow">Questions de débutant</p>
+        <h2 id="learning-faq-title">Ce qu’on se demande avant de se lancer.</h2>
+      </header>
+      <div>
+        {learningFaqs.map((item) => (
+          <details>
+            <summary>{item.question}<span aria-hidden="true">+</span></summary>
+            <p>{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
   </main>
   <script type="application/ld+json" set:html={JSON.stringify(learningSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(learningFaqSchema)} />
   <SiteFooter />
 </BaseLayout>
