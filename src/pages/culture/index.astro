@@ -4,6 +4,38 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { cultureArticles } from '../../data/culture';
 import { imageSrcSet } from '../../utils/images';
+import CulinaryIcon from '../../components/CulinaryIcon.astro';
+
+const culturePaths = [
+  {
+    icon: 'prep' as const,
+    eyebrow: 'Gestes',
+    title: 'Commencer par le mortier',
+    text: 'Comprendre le kroeung, l’ordre des aromates et ce que le pilage change vraiment dans la texture.',
+    href: '/culture/comprendre-le-kroeung/'
+  },
+  {
+    icon: 'taste' as const,
+    eyebrow: 'Produits',
+    title: 'Goûter le territoire',
+    text: 'Du poivre de Kampot au marché de Kep : voir comment un produit local devient un repère culinaire.',
+    href: '/culture/poivre-de-kampot/'
+  },
+  {
+    icon: 'story' as const,
+    eyebrow: 'Fermentation',
+    title: 'Apprivoiser le prahok',
+    text: 'Comprendre la fermentation, l’umami et le dosage au lieu de réduire le prahok à son odeur.',
+    href: '/culture/prahok-fermentation-umami/'
+  },
+  {
+    icon: 'servings' as const,
+    eyebrow: 'À table',
+    title: 'Composer un repas',
+    text: 'Riz, plat chaud, légumes, herbes et condiment : apprendre comment les éléments se répondent.',
+    href: '/culture/construire-repas-cambodgien/'
+  }
+];
 
 const collectionSchema = {
   '@context': 'https://schema.org',
@@ -32,6 +64,25 @@ const collectionSchema = {
       <p>Pourquoi le poivre de Kampot a ce goût, comment le kroeung parfume une cuisine entière, ce que l’on mange et partage autour de la table : la culture culinaire racontée par ce qui se cuisine vraiment.</p>
       <div class="page-intro-visual" data-parallax="0.10"><img src={cultureArticles[0].image} srcset={imageSrcSet(cultureArticles[0].image, cultureArticles[0].imageWidths)} sizes="(max-width: 900px) 100vw, 58vw" alt={cultureArticles[0].imageAlt} width={cultureArticles[0].imageWidth} height={cultureArticles[0].imageHeight} fetchpriority="high" decoding="async" /></div>
     </header>
+
+    <section class="culture-paths" aria-labelledby="culture-paths-title">
+      <header data-reveal="up">
+        <p class="eyebrow">Par où commencer ?</p>
+        <h2 id="culture-paths-title">Quatre portes d’entrée dans la culture culinaire khmère.</h2>
+        <p>Un geste, un produit, une fermentation ou la table entière : choisissez ce qui vous donne envie de comprendre avant de cuisiner.</p>
+      </header>
+      <div class="culture-path-grid">
+        {culturePaths.map((path, index) => (
+          <a href={path.href} data-reveal="up" data-reveal-delay={Math.min(index * .05, .15)}>
+            <CulinaryIcon name={path.icon} size={23} />
+            <p class="card-meta">{path.eyebrow}</p>
+            <h3>{path.title}</h3>
+            <p>{path.text}</p>
+            <span>Explorer →</span>
+          </a>
+        ))}
+      </div>
+    </section>
 
     <section class="culture-editorial" aria-label="Articles culturels">
       {cultureArticles.map((article, index) => (
