@@ -54,6 +54,18 @@ if (!storytelling.includes('updateCulinaryObjects(progress)')) {
   failures.push('storytelling.ts must own the chapter-bound culinary object progression');
 }
 
+if (!storytelling.includes("classList.toggle('is-reduced-current', isCurrent)")) {
+  failures.push('reduced-motion mode must mark only the current culinary object');
+}
+
+if (!css.includes('.home-trail-object.is-reduced-current')) {
+  failures.push('reduced-motion CSS must reveal only the current culinary object');
+}
+
+if (!storytelling.includes('if (transition <= 0) return;')) {
+  failures.push('the next chapter image must stay hidden until its transition starts');
+}
+
 if (motion.includes('homeCulinaryObjects') || motion.includes("'[data-home-culinary-object]'")) {
   failures.push('global motion must not compete with storytelling for home culinary objects');
 }

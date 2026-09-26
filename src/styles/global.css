@@ -5731,11 +5731,12 @@ main{position:relative;z-index:1}
     display:block!important;
     visibility:visible!important;
     transform:scale(.82)!important;
+    opacity:0!important;
   }
-  .scroll-film-stage .home-trail-object--leaf{opacity:.3!important}
-  .scroll-film-stage .home-trail-object--lemongrass{opacity:.26!important}
-  .scroll-film-stage .home-trail-object--pepper{opacity:.34!important}
-  .scroll-film-stage .home-trail-object--steam{opacity:.38!important}
+  .scroll-film-stage .home-trail-object.is-reduced-current.home-trail-object--leaf{opacity:.3!important}
+  .scroll-film-stage .home-trail-object.is-reduced-current.home-trail-object--lemongrass{opacity:.26!important}
+  .scroll-film-stage .home-trail-object.is-reduced-current.home-trail-object--pepper{opacity:.34!important}
+  .scroll-film-stage .home-trail-object.is-reduced-current.home-trail-object--steam{opacity:.38!important}
   .desire-media img{
     scale:1!important;
     filter:none!important;

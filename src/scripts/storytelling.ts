@@ -153,6 +153,7 @@ export function initStorytelling() {
     if (!next?.ready || index === images.length - 1) return;
 
     const transition = clamp((t - .5) / .36);
+    if (transition <= 0) return;
     const eased = smoothstep(transition);
     ctx.save();
 
@@ -253,9 +254,12 @@ export function initStorytelling() {
 
     if (reduceMotion) {
       const opacities = [.3, .26, .34, .38];
+      const activeObject = Math.min(3, Math.floor(progress * 5) - 1);
       trailObjects.forEach((object, index) => {
+        const isCurrent = index === activeObject;
+        object.classList.toggle('is-reduced-current', isCurrent);
         gsap.set(object, {
-          autoAlpha: opacities[index],
+          autoAlpha: isCurrent ? opacities[index] : 0,
           x: 0,
           y: 0,
           rotate: 0,
@@ -265,6 +269,8 @@ export function initStorytelling() {
       if (chapterLight) gsap.set(chapterLight, { autoAlpha: .2, xPercent: 0 });
       return;
     }
+
+    trailObjects.forEach((object) => object.classList.remove('is-reduced-current'));
 
     const mobileFactor = window.innerWidth < 720 ? .62 : 1;
     const plans = [
