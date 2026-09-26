@@ -88,35 +88,52 @@ const desires = [
         />
         <div class="scroll-film-vignette" aria-hidden="true"></div>
         <div class="scroll-film-grain" aria-hidden="true"></div>
+        <div class="film-chapter-light" aria-hidden="true"></div>
+        <HomeCulinaryTrail />
 
-        <div class="film-copy film-copy-0 is-active">
+        <div class="film-copy film-copy-0 is-active" data-film-copy>
           <p class="film-kicker"><span aria-hidden="true">🇰🇭</span> Cuisine du Cambodge</p>
-          <h1 id="scroll-film-title">Le Cambodge<br />commence dans le mortier.</h1>
-          <p>Citronnelle fraîche, galanga, curcuma, combava : on pile jusqu’à ce que le parfum remplisse la cuisine. Ensuite seulement, on allume le feu.</p>
+          <h1 id="scroll-film-title">
+            <span class="film-title-line"><span>Le Cambodge</span></span>
+            <span class="film-title-line"><span>commence dans le mortier.</span></span>
+          </h1>
+          <p class="film-body-reveal">Citronnelle fraîche, galanga, curcuma, combava : on pile jusqu’à ce que le parfum remplisse la cuisine. Ensuite seulement, on allume le feu.</p>
         </div>
 
-        <div class="film-copy film-copy-1">
+        <div class="film-copy film-copy-1" data-film-copy>
           <p class="film-kicker">01 — Frais</p>
-          <h2>Choisir ce qu’on<br />a envie de cuisiner.</h2>
-          <p>Herbes fraîches, racines, poivre, poisson : on regarde, on sent, on goûte. Le repas commence bien avant la casserole.</p>
+          <h2>
+            <span class="film-title-line"><span>Choisir ce qu’on</span></span>
+            <span class="film-title-line"><span>a envie de cuisiner.</span></span>
+          </h2>
+          <p class="film-body-reveal">Herbes fraîches, racines, poivre, poisson : on regarde, on sent, on goûte. Le repas commence bien avant la casserole.</p>
         </div>
 
-        <div class="film-copy film-copy-2">
+        <div class="film-copy film-copy-2" data-film-copy>
           <p class="film-kicker">02 — Kroeung</p>
-          <h2>Le mortier réveille<br />les parfums.</h2>
-          <p>La citronnelle s’écrase, le curcuma colore, le combava éclate. Le kroeung devient humide, puissant, frais : c’est là que le plat prend vie.</p>
+          <h2>
+            <span class="film-title-line"><span>Le mortier réveille</span></span>
+            <span class="film-title-line"><span>les parfums.</span></span>
+          </h2>
+          <p class="film-body-reveal">La citronnelle s’écrase, le curcuma colore, le combava éclate. Le kroeung devient humide, puissant, frais : c’est là que le plat prend vie.</p>
         </div>
 
-        <div class="film-copy film-copy-3">
+        <div class="film-copy film-copy-3" data-film-copy>
           <p class="film-kicker">03 — Kampot</p>
-          <h2>Un tour de poivre.<br />Et tout s’ouvre.</h2>
-          <p>Frais, chaud, presque floral : le poivre de Kampot ne se cache pas dans le plat. Il le réveille.</p>
+          <h2>
+            <span class="film-title-line"><span>Un tour de poivre.</span></span>
+            <span class="film-title-line"><span>Et tout s’ouvre.</span></span>
+          </h2>
+          <p class="film-body-reveal">Frais, chaud, presque floral : le poivre de Kampot ne se cache pas dans le plat. Il le réveille.</p>
         </div>
 
-        <div class="film-copy film-copy-4">
+        <div class="film-copy film-copy-4" data-film-copy>
           <p class="film-kicker">04 — Amok</p>
-          <h2>Crémeux, parfumé,<br />juste pris à la vapeur.</h2>
-          <p>Le lait de coco enveloppe le kroeung, le poisson reste tendre, le combava arrive à la fin. L’Amok Trey se mange doux, chaud et très parfumé.</p>
+          <h2>
+            <span class="film-title-line"><span>Crémeux, parfumé,</span></span>
+            <span class="film-title-line"><span>juste pris à la vapeur.</span></span>
+          </h2>
+          <p class="film-body-reveal">Le lait de coco enveloppe le kroeung, le poisson reste tendre, le combava arrive à la fin. L’Amok Trey se mange doux, chaud et très parfumé.</p>
           <a class="film-cta" href="/recettes/amok-trey/">Cuisiner l’Amok Trey</a>
         </div>
 
@@ -129,7 +146,6 @@ const desires = [
     </section>
 
     <section class="desire-story" aria-labelledby="desire-title">
-      <HomeCulinaryTrail />
       <header class="desire-intro" data-reveal="up">
         <p class="eyebrow">Choisissez votre envie</p>
         <h2 id="desire-title">Aujourd’hui,<br />vous avez envie de quoi&nbsp;?</h2>
@@ -160,7 +176,7 @@ const desires = [
       </figure>
       <div class="amok-finale-shade"></div>
       <div class="amok-finale-steam" aria-hidden="true"><i></i><i></i><i></i></div>
-      <div class="amok-finale-copy" data-reveal="up">
+      <div class="amok-finale-copy">
         <p class="eyebrow">À cuisiner ce soir</p>
         <h2>Amok Trey.</h2>
         <p>Poisson tendre, coco soyeux, kroeung très parfumé et une cuisson douce. Une recette emblématique à servir brûlante avec du riz.</p>

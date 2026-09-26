@@ -3,6 +3,8 @@ import fs from 'node:fs';
 const motion = fs.readFileSync('src/scripts/motion.ts', 'utf8');
 const storytelling = fs.readFileSync('src/scripts/storytelling.ts', 'utf8');
 const css = fs.readFileSync('src/styles/global.css', 'utf8');
+const home = fs.readFileSync('src/pages/index.astro', 'utf8');
+const culinaryTrail = fs.readFileSync('src/components/HomeCulinaryTrail.astro', 'utf8');
 
 const failures = [];
 
@@ -42,6 +44,31 @@ if (homeTrailHotfixIndex < 0) {
 
 if (/data-home-culinary-object[\s\S]*?autoAlpha:\s*index\s*===\s*0\s*\?\s*\.2\s*:\s*0/.test(motion)) {
   failures.push('reduced-motion JS must not hide three of the four home culinary objects');
+}
+
+if (!storytelling.includes('const scaled = lastProgress * 5;')) {
+  failures.push('film imagery and five copy chapters must share the same five-segment progression');
+}
+
+if (!storytelling.includes('updateCulinaryObjects(progress)')) {
+  failures.push('storytelling.ts must own the chapter-bound culinary object progression');
+}
+
+if (motion.includes('homeCulinaryObjects') || motion.includes("'[data-home-culinary-object]'")) {
+  failures.push('global motion must not compete with storytelling for home culinary objects');
+}
+
+if (!home.includes('<HomeCulinaryTrail />') || home.indexOf('<HomeCulinaryTrail />') > home.indexOf('film-copy film-copy-0')) {
+  failures.push('the culinary trail must live inside the film stage before its chapter copy');
+}
+
+const filmScenes = culinaryTrail.match(/data-film-scene=/g) ?? [];
+if (filmScenes.length !== 4) {
+  failures.push('leaf, lemongrass, pepper and steam must each declare a film chapter');
+}
+
+if (!css.includes('/* V13 — cinematic scroll film and chapter-bound culinary objects */')) {
+  failures.push('V13 cinematic film styles are missing');
 }
 
 if (failures.length) {
