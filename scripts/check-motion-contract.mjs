@@ -2,9 +2,8 @@ import fs from 'node:fs';
 
 const motion = fs.readFileSync('src/scripts/motion.ts', 'utf8');
 const storytelling = fs.readFileSync('src/scripts/storytelling.ts', 'utf8');
-const css = fs.readFileSync('src/styles/global.css', 'utf8');
+const css = fs.readFileSync('src/styles/home-v14.css', 'utf8');
 const home = fs.readFileSync('src/pages/index.astro', 'utf8');
-const culinaryTrail = fs.readFileSync('src/components/HomeCulinaryTrail.astro', 'utf8');
 
 const failures = [];
 
@@ -12,75 +11,71 @@ if (/prefers-reduced-motion:[^\n]*reduce[\s\S]{0,180}?return \(\) => \{\};/.test
   failures.push('motion.ts must not abort the whole motion system in reduced-motion mode');
 }
 
-if (/if \(reduceMotion\)[\s\S]{0,220}?return \(\) => \{\};/.test(storytelling)) {
-  failures.push('storytelling.ts must not abort the entire storytelling experience in reduced-motion mode');
+if (!home.includes("import '../styles/home-v14.css';")) {
+  failures.push('Home V14 must load its dedicated stylesheet');
 }
 
-if (/@media\(prefers-reduced-motion:reduce\)[\s\S]{0,220}?\.scroll-film-canvas[^\{]*\{[^}]*display\s*:\s*none/.test(css)) {
-  failures.push('reduced-motion CSS must not hide the storytelling canvas');
+const requiredSections = [
+  'data-v14-hero',
+  'data-v14-dishes',
+  'data-v14-flavors',
+  'data-v14-market',
+  'data-v14-tastes',
+  'data-v14-home-cook',
+  'data-v14-desire',
+  'data-v14-table'
+];
+
+requiredSections.forEach((marker) => {
+  if (!home.includes(marker)) failures.push(`Home V14 section missing: ${marker}`);
+});
+
+if (home.includes('data-scroll-film') || home.includes('<HomeCulinaryTrail')) {
+  failures.push('V14 home must not fall back to the old five-photo V13 scroll-film architecture');
 }
 
-if (/@media\(prefers-reduced-motion:reduce\)[\s\S]{0,120}?\.motion-layer\s*\{[^}]*display\s*:\s*none/.test(css)) {
-  failures.push('reduced-motion CSS must not hide the entire global motion layer');
+if (!home.includes('Les plats à découvrir.') || !home.includes('Les saveurs du Cambodge.') || !home.includes('Street food & marchés.')) {
+  failures.push('V14 culinary narrative headings are incomplete');
 }
 
-if (!storytelling.includes('drawCover(next.img, 1, 0, 0, eased)')) {
-  failures.push('reduced-motion storytelling crossfade fallback is missing');
+if (home.includes('02 — Kroeung') || home.includes('Le mortier réveille')) {
+  failures.push('Kroeung must not be a central homepage chapter in V14');
 }
 
-const homeTrailMarker = '/* V12.1 — guaranteed four-object home culinary trail visibility */';
-const homeTrailHotfixIndex = css.lastIndexOf(homeTrailMarker);
-if (homeTrailHotfixIndex < 0) {
-  failures.push('home culinary trail visibility hotfix is missing');
-} else {
-  const homeTrailHotfix = css.slice(homeTrailHotfixIndex);
-  if (!/@media\(max-width:720px\)[\s\S]*?\.home-trail-object[\s\S]*?display\s*:\s*block/.test(homeTrailHotfix)) {
-    failures.push('mobile CSS must keep all home culinary objects visible');
-  }
-  if (!/@media\(prefers-reduced-motion:reduce\)[\s\S]*?\.home-trail-object\s*\{[^}]*display\s*:\s*block!important/.test(homeTrailHotfix)) {
-    failures.push('reduced-motion CSS must keep all home culinary objects visible');
-  }
+if (!storytelling.includes('setupHero(hero)') || !storytelling.includes('setupMarket(market)') || !storytelling.includes('setupTable(table)')) {
+  failures.push('V14 storytelling must own hero, market and table scroll mechanics');
 }
 
-if (/data-home-culinary-object[\s\S]*?autoAlpha:\s*index\s*===\s*0\s*\?\s*\.2\s*:\s*0/.test(motion)) {
-  failures.push('reduced-motion JS must not hide three of the four home culinary objects');
+if (!storytelling.includes("gsap.set(track, { xPercent: -80 * p })")) {
+  failures.push('The market chapter must travel horizontally while the page scrolls vertically');
 }
 
-if (!storytelling.includes('const scaled = lastProgress * 5;')) {
-  failures.push('film imagery and five copy chapters must share the same five-segment progression');
+if (!storytelling.includes('setupDesireTabs(reducedMotion, cleanup)')) {
+  failures.push('The desire chapter must remain explicitly interactive');
 }
 
-if (!storytelling.includes('updateCulinaryObjects(progress)')) {
-  failures.push('storytelling.ts must own the chapter-bound culinary object progression');
+if (!storytelling.includes("document.documentElement.classList.add('v14-reduced-motion')")) {
+  failures.push('V14 reduced-motion mode must keep a dedicated static fallback');
 }
 
-if (!storytelling.includes("classList.toggle('is-reduced-current', isCurrent)")) {
-  failures.push('reduced-motion mode must mark only the current culinary object');
+if (!css.includes('/* Home V14 — culinary journey')) {
+  failures.push('Home V14 stylesheet marker is missing');
 }
 
-if (!css.includes('.home-trail-object.is-reduced-current')) {
-  failures.push('reduced-motion CSS must reveal only the current culinary object');
+if (!css.includes('.v14-market-track') || !css.includes('width:500%')) {
+  failures.push('Market horizontal track styles are missing');
 }
 
-if (!storytelling.includes('if (transition <= 0) return;')) {
-  failures.push('the next chapter image must stay hidden until its transition starts');
+if (!css.includes('@media(prefers-reduced-motion:reduce)')) {
+  failures.push('V14 reduced-motion CSS is missing');
 }
 
-if (motion.includes('homeCulinaryObjects') || motion.includes("'[data-home-culinary-object]'")) {
-  failures.push('global motion must not compete with storytelling for home culinary objects');
+if (!/@media\(prefers-reduced-motion:reduce\)[\s\S]*?\.v14-scroll-section\{height:auto!important\}/.test(css)) {
+  failures.push('Reduced motion must return V14 scroll chapters to natural document flow');
 }
 
-if (!home.includes('<HomeCulinaryTrail />') || home.indexOf('<HomeCulinaryTrail />') > home.indexOf('film-copy film-copy-0')) {
-  failures.push('the culinary trail must live inside the film stage before its chapter copy');
-}
-
-const filmScenes = culinaryTrail.match(/data-film-scene=/g) ?? [];
-if (filmScenes.length !== 4) {
-  failures.push('leaf, lemongrass, pepper and steam must each declare a film chapter');
-}
-
-if (!css.includes('/* V13 — cinematic scroll film and chapter-bound culinary objects */')) {
-  failures.push('V13 cinematic film styles are missing');
+if (!home.includes('role="tablist"') || !home.includes('role="tabpanel"')) {
+  failures.push('Desire interaction must expose accessible tab semantics');
 }
 
 if (failures.length) {

@@ -1,0 +1,829 @@
+/* Home V14 — culinary journey
+   Grail is a motion/pace benchmark only: this visual language is culinary, Cambodian and source-asset driven. */
+
+.v14-home{
+  --v14-ink:#171811;
+  --v14-cream:#f2e9da;
+  --v14-paper:#e7dcc9;
+  --v14-green:#263426;
+  --v14-green-deep:#111a13;
+  --v14-clay:#a95f45;
+  --v14-gold:#d6a75c;
+  --v14-muted:#cabda8;
+  overflow:clip;
+  background:var(--v14-ink);
+  color:#f7efe3;
+}
+.v14-home img{display:block;width:100%;height:100%;object-fit:cover}
+.v14-home a{color:inherit}
+.v14-home .v14-kicker{
+  margin:0 0 1rem;
+  font:600 .68rem/1.2 var(--sans);
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+.v14-scroll-section{position:relative}
+.v14-sticky{
+  position:sticky;
+  top:0;
+  height:100svh;
+  overflow:hidden;
+  isolation:isolate;
+}
+.v14-section-head{
+  position:absolute;
+  z-index:20;
+  top:clamp(6rem,11vh,8.5rem);
+  left:var(--page-pad);
+  width:min(35rem,44vw);
+  color:var(--v14-ink);
+}
+.v14-section-head--light{color:#fff8ed}
+.v14-section-head h2,
+.v14-desire-head h2,
+.v14-home-cook-copy h2,
+.v14-recipes>header h2{
+  margin:.15rem 0 1rem;
+  font:400 clamp(3.2rem,6vw,6.5rem)/.88 var(--serif);
+  letter-spacing:-.055em;
+}
+.v14-section-head>p:last-child,
+.v14-home-cook-copy>p,
+.v14-recipes>header>p{
+  max-width:32rem;
+  margin:0;
+  font-size:clamp(.95rem,1.25vw,1.1rem);
+  line-height:1.65;
+}
+
+/* 00 — Hero */
+.v14-hero{height:245svh;background:#090b09}
+.v14-hero-stage{background:#090b09}
+.v14-hero-backdrop,
+.v14-hero-shade{
+  position:absolute;
+  inset:0;
+}
+.v14-hero-backdrop{z-index:-3;overflow:hidden}
+.v14-hero-backdrop img{
+  transform:scale(1.1);
+  filter:saturate(.88) brightness(.72);
+  will-change:transform,filter;
+}
+.v14-hero-shade{
+  z-index:-2;
+  background:
+    linear-gradient(180deg,rgba(7,8,6,.28),rgba(7,8,6,.66)),
+    radial-gradient(circle at 50% 42%,transparent 0 18%,rgba(6,7,5,.38) 68%,rgba(6,7,5,.74) 100%);
+}
+.v14-hero-copy{
+  position:absolute;
+  z-index:6;
+  top:50%;
+  left:50%;
+  width:min(92vw,86rem);
+  transform:translate(-50%,-50%);
+  text-align:center;
+}
+.v14-hero-copy .v14-kicker{color:#e7dac5}
+.v14-hero-copy h1{
+  margin:0;
+  font:400 clamp(4.7rem,11.6vw,12.2rem)/.76 var(--serif);
+  letter-spacing:-.07em;
+  text-transform:none;
+  text-wrap:balance;
+  will-change:transform,opacity;
+}
+.v14-hero-copy h1 span{display:block}
+.v14-hero-copy>p:last-child{
+  max-width:38rem;
+  margin:2rem auto 0;
+  font-size:clamp(.95rem,1.25vw,1.1rem);
+  line-height:1.65;
+  color:#e0d6c7;
+  text-wrap:balance;
+  will-change:transform,opacity;
+}
+.v14-hero-orbit{position:absolute;z-index:7;inset:0;pointer-events:none}
+.v14-hero-card{
+  position:absolute;
+  width:clamp(10rem,20vw,20rem);
+  margin:0;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:1.1rem;
+  background:#111;
+  box-shadow:0 2rem 5rem rgba(0,0,0,.32);
+  will-change:transform,opacity,filter;
+}
+.v14-hero-card img{aspect-ratio:4/5}
+.v14-hero-card figcaption{
+  position:absolute;
+  right:0;
+  bottom:0;
+  left:0;
+  display:flex;
+  justify-content:space-between;
+  gap:1rem;
+  padding:.9rem 1rem;
+  background:linear-gradient(180deg,transparent,rgba(6,7,5,.88));
+  font-size:.67rem;
+}
+.v14-hero-card figcaption strong{font-weight:600}
+.v14-hero-card figcaption span{opacity:.7}
+.hero-card--amok{top:7%;left:5%;transform:rotate(-8deg)}
+.hero-card--loklak{top:8%;right:4%;transform:rotate(7deg)}
+.hero-card--market{bottom:5%;left:8%;width:clamp(11rem,22vw,22rem);transform:rotate(5deg)}
+.hero-card--tamarind{right:9%;bottom:5%;width:clamp(9rem,17vw,17rem);transform:rotate(-7deg)}
+.v14-scroll-cue{
+  position:absolute;
+  z-index:8;
+  right:2rem;
+  bottom:2rem;
+  display:flex;
+  align-items:center;
+  gap:.8rem;
+  writing-mode:vertical-rl;
+  font-size:.58rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+.v14-scroll-cue i{display:block;width:1px;height:3.4rem;background:rgba(255,255,255,.45)}
+
+/* 01 — dishes */
+.v14-dishes{height:305svh;background:var(--v14-cream);color:var(--v14-ink)}
+.v14-dishes-stage{background:var(--v14-cream)}
+.v14-dish-stack{
+  position:absolute;
+  z-index:10;
+  right:var(--page-pad);
+  bottom:6vh;
+  width:min(64vw,62rem);
+  height:72vh;
+}
+.v14-dish-card{
+  position:absolute;
+  inset:auto 0 0 auto;
+  display:grid;
+  grid-template-columns:minmax(0,1.35fr) minmax(15rem,.65fr);
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  border-radius:1.2rem;
+  background:#182118;
+  color:#fff7e9;
+  box-shadow:0 2.2rem 6rem rgba(64,48,28,.18);
+  transform-origin:center;
+  will-change:transform,opacity;
+}
+.v14-dish-card figure{margin:0;overflow:hidden}
+.v14-dish-card>div{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  padding:clamp(1.5rem,3vw,3rem);
+}
+.v14-dish-card>div>span{font-size:.65rem;letter-spacing:.16em;opacity:.55}
+.v14-dish-card h3{
+  margin:.7rem 0 1rem;
+  font:400 clamp(2.8rem,4.5vw,5rem)/.9 var(--serif);
+  letter-spacing:-.05em;
+}
+.v14-dish-card p{margin:0 0 1.8rem;line-height:1.6;color:#d6d1c5}
+.v14-dish-card a{
+  width:max-content;
+  padding-bottom:.25rem;
+  border-bottom:1px solid currentColor;
+  font-size:.78rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.v14-chapter-progress{
+  position:absolute;
+  z-index:25;
+  left:var(--page-pad);
+  bottom:2.2rem;
+  display:grid;
+  grid-template-columns:10rem auto;
+  align-items:center;
+  gap:.8rem;
+  color:#5f5649;
+  font-size:.65rem;
+}
+.v14-chapter-progress:before{content:'';grid-column:1;grid-row:1;height:1px;background:rgba(27,25,19,.18)}
+.v14-chapter-progress i{
+  grid-column:1;grid-row:1;
+  height:2px;
+  background:var(--v14-ink);
+  transform:scaleX(0);
+  transform-origin:left;
+}
+.v14-chapter-progress span{grid-column:2}
+
+/* 02 — flavors */
+.v14-flavors{height:280svh;background:var(--v14-green-deep)}
+.v14-flavors-stage{
+  background:
+    radial-gradient(circle at 65% 28%,rgba(115,137,86,.18),transparent 32%),
+    linear-gradient(140deg,#101912,#19251a 48%,#10150f);
+}
+.v14-flavor-words{
+  position:absolute;
+  z-index:3;
+  inset:0;
+  display:grid;
+  place-items:center;
+  pointer-events:none;
+}
+.v14-flavor-words span{
+  position:absolute;
+  font:400 clamp(5rem,17vw,17rem)/.78 var(--serif);
+  letter-spacing:-.075em;
+  color:rgba(245,238,224,.92);
+  text-transform:uppercase;
+  will-change:transform,opacity;
+}
+.v14-flavor-objects{position:absolute;z-index:8;inset:0;pointer-events:none}
+.v14-flavor-object{
+  position:absolute;
+  width:clamp(10rem,22vw,23rem);
+  margin:0;
+  overflow:hidden;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 2rem 6rem rgba(0,0,0,.38);
+  will-change:transform,opacity,filter;
+}
+.v14-flavor-object img{aspect-ratio:1/1}
+.v14-flavor-object figcaption{
+  position:absolute;
+  bottom:.9rem;
+  left:50%;
+  transform:translateX(-50%);
+  padding:.45rem .7rem;
+  border-radius:999px;
+  background:rgba(9,13,9,.72);
+  font-size:.62rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.flavor-object-1{top:12%;left:8%}
+.flavor-object-2{top:8%;right:8%;width:clamp(8rem,17vw,18rem)}
+.flavor-object-3{bottom:7%;left:15%;width:clamp(9rem,19vw,20rem)}
+.flavor-object-4{right:13%;bottom:4%;width:clamp(11rem,24vw,25rem)}
+.flavor-object-5{top:40%;left:42%;width:clamp(7rem,14vw,15rem)}
+
+/* 03 — market */
+.v14-market{height:425svh;background:#11130f}
+.v14-market-stage{background:#11130f}
+.v14-market-heading{
+  position:absolute;
+  z-index:20;
+  top:clamp(5.8rem,10vh,8rem);
+  left:var(--page-pad);
+  width:min(34rem,42vw);
+  pointer-events:none;
+  text-shadow:0 2px 20px rgba(0,0,0,.35);
+}
+.v14-market-heading h2{
+  margin:.2rem 0 .8rem;
+  font:400 clamp(3.2rem,6vw,6.5rem)/.87 var(--serif);
+  letter-spacing:-.055em;
+}
+.v14-market-heading>p:last-child{max-width:28rem;line-height:1.55;color:#ded4c6}
+.v14-market-window{position:absolute;inset:0;overflow:hidden}
+.v14-market-track{
+  display:flex;
+  width:500%;
+  height:100%;
+  will-change:transform;
+}
+.v14-market-panel{
+  position:relative;
+  flex:0 0 20%;
+  height:100%;
+  overflow:hidden;
+}
+.v14-market-panel:after{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  content:'';
+  background:
+    linear-gradient(90deg,rgba(8,9,7,.52),transparent 42%,rgba(8,9,7,.22)),
+    linear-gradient(180deg,rgba(8,9,7,.22),transparent 44%,rgba(8,9,7,.58));
+}
+.v14-market-panel figure{position:absolute;inset:0;margin:0}
+.v14-market-panel figure img{will-change:transform}
+.v14-market-copy{
+  position:absolute;
+  z-index:6;
+  right:8vw;
+  bottom:8vh;
+  width:min(34rem,42vw);
+}
+.v14-market-copy>span{font-size:.7rem;letter-spacing:.15em;opacity:.7}
+.v14-market-copy h3{
+  margin:.45rem 0 .8rem;
+  font:400 clamp(3.4rem,6.5vw,7rem)/.86 var(--serif);
+  letter-spacing:-.055em;
+}
+.v14-market-copy p{max-width:27rem;margin:0;font-size:1.02rem;line-height:1.55;color:#e6ddce}
+.v14-market-depth{
+  position:absolute;
+  z-index:4;
+  border-radius:999px;
+  background:rgba(231,202,144,.16);
+  backdrop-filter:blur(14px);
+  will-change:transform;
+}
+.v14-market-depth--back{top:18%;right:7%;width:22vw;height:22vw;opacity:.28}
+.v14-market-depth--front{left:-6vw;bottom:-8vw;width:28vw;height:28vw;opacity:.34}
+.v14-market-index{
+  position:absolute;
+  z-index:22;
+  right:2rem;
+  top:50%;
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+  transform:translateY(-50%) rotate(90deg);
+  transform-origin:center;
+  font-size:.62rem;
+  letter-spacing:.12em;
+}
+.v14-market-index i{width:7rem;height:1px;background:rgba(255,255,255,.38)}
+
+/* 04 — tastes */
+.v14-tastes{height:285svh;background:#d8c7ae;color:var(--v14-ink)}
+.v14-tastes-stage{background:linear-gradient(140deg,#e1d4c0,#cdb99d)}
+.v14-taste-stack{
+  position:absolute;
+  z-index:10;
+  right:var(--page-pad);
+  bottom:5vh;
+  width:min(62vw,60rem);
+  height:70vh;
+}
+.v14-taste-card{
+  position:absolute;
+  inset:0;
+  display:grid;
+  grid-template-columns:1.35fr .65fr;
+  overflow:hidden;
+  border-radius:1.15rem;
+  background:#f0e5d2;
+  color:var(--v14-ink);
+  box-shadow:0 2rem 5rem rgba(47,35,22,.2);
+  will-change:transform,opacity;
+}
+.v14-taste-card figure{margin:0;overflow:hidden}
+.v14-taste-card>div{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  padding:clamp(1.4rem,3vw,3rem);
+}
+.v14-taste-card>div>span{font-size:.62rem;letter-spacing:.15em;color:#776752}
+.v14-taste-card h3{margin:.55rem 0 .7rem;font:400 clamp(2.6rem,4.3vw,4.8rem)/.9 var(--serif);letter-spacing:-.05em}
+.v14-taste-card p{margin:0;line-height:1.6;color:#5c5143}
+
+/* 05 — cook at home */
+.v14-home-cook{
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(20rem,.85fr);
+  min-height:115svh;
+  background:#f0e6d5;
+  color:var(--v14-ink);
+}
+.v14-home-cook-media{
+  position:relative;
+  min-height:100svh;
+  overflow:hidden;
+}
+.v14-home-cook-media>img{position:absolute;inset:-4% 0;width:100%;height:108%;will-change:transform}
+.v14-ingredient-label{
+  position:absolute;
+  z-index:5;
+  padding:.65rem .85rem;
+  border-radius:999px;
+  background:rgba(248,240,226,.9);
+  border:1px solid rgba(32,30,23,.12);
+  box-shadow:0 .8rem 2rem rgba(32,28,20,.14);
+  font-size:.67rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  will-change:transform,opacity;
+}
+.ingredient-label-1{left:8%;top:20%}
+.ingredient-label-2{right:7%;top:31%}
+.ingredient-label-3{left:12%;bottom:24%}
+.ingredient-label-4{right:10%;bottom:12%}
+.v14-home-cook-copy{
+  align-self:center;
+  max-width:38rem;
+  padding:clamp(4rem,8vw,8rem);
+}
+.v14-home-cook-copy strong{
+  display:block;
+  margin:2rem 0 1.5rem;
+  font:400 clamp(1.8rem,2.8vw,2.8rem)/1 var(--serif);
+}
+.v14-home-cook-copy a{
+  display:inline-block;
+  padding:.9rem 1.1rem;
+  border-radius:999px;
+  background:var(--v14-ink);
+  color:#fff7ea;
+  font-size:.72rem;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
+
+/* 06 — desire */
+.v14-desire{
+  min-height:100svh;
+  padding:clamp(7rem,12vh,10rem) var(--page-pad);
+  background:#111912;
+}
+.v14-desire-head{max-width:52rem;margin-bottom:clamp(3rem,7vh,6rem)}
+.v14-desire-head h2{max-width:11ch}
+.v14-desire-layout{
+  display:grid;
+  grid-template-columns:minmax(12rem,.35fr) minmax(0,1.65fr);
+  gap:clamp(2rem,5vw,6rem);
+  align-items:start;
+}
+.v14-desire-tabs{
+  display:flex;
+  flex-direction:column;
+  border-top:1px solid rgba(255,255,255,.16);
+}
+.v14-desire-tabs button{
+  display:grid;
+  grid-template-columns:2.1rem 1fr;
+  align-items:center;
+  width:100%;
+  padding:1.15rem 0;
+  border:0;
+  border-bottom:1px solid rgba(255,255,255,.16);
+  background:transparent;
+  color:#d7cdbd;
+  text-align:left;
+  font:400 clamp(1.35rem,2vw,2rem)/1 var(--serif);
+  cursor:pointer;
+  transition:color .25s ease,padding-left .25s ease;
+}
+.v14-desire-tabs button span{font:500 .57rem/1 var(--sans);letter-spacing:.12em;opacity:.5}
+.v14-desire-tabs button[aria-selected="true"]{padding-left:.6rem;color:#fff}
+.v14-desire-panel{
+  display:grid;
+  grid-template-columns:minmax(0,1.25fr) minmax(16rem,.75fr);
+  min-height:66vh;
+  overflow:hidden;
+  border-radius:1rem;
+  background:#e8ddca;
+  color:var(--v14-ink);
+}
+.v14-desire-panel[hidden]{display:none}
+.v14-desire-panel figure{margin:0;overflow:hidden}
+.v14-desire-panel>div{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  padding:clamp(1.5rem,3.2vw,3.2rem);
+}
+.v14-desire-panel h3{
+  margin:.4rem 0 .9rem;
+  font:400 clamp(2.8rem,4.7vw,5rem)/.9 var(--serif);
+  letter-spacing:-.05em;
+}
+.v14-desire-panel>div>p:not(.eyebrow){margin:0 0 1.7rem;line-height:1.6;color:#5e5446}
+.v14-desire-panel a{
+  width:max-content;
+  padding-bottom:.25rem;
+  border-bottom:1px solid currentColor;
+  font-size:.72rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+/* 07 — table */
+.v14-table{height:300svh;background:#14100c}
+.v14-table-stage{
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(circle at 50% 50%,rgba(126,82,45,.32),transparent 52%),
+    repeating-linear-gradient(90deg,#20170f 0 3.5rem,#261b12 3.5rem 7rem);
+}
+.v14-table-surface{
+  position:absolute;
+  inset:7vh 7vw;
+  will-change:transform;
+}
+.v14-table-plate{
+  position:absolute;
+  margin:0;
+  overflow:hidden;
+  border:clamp(.45rem,.8vw,.8rem) solid #eee1cc;
+  border-radius:50%;
+  background:#f5ead8;
+  box-shadow:0 1.4rem 3rem rgba(0,0,0,.35);
+  will-change:transform,opacity;
+}
+.v14-table-plate img{aspect-ratio:1/1}
+.plate-1{left:30%;top:18%;width:34vw;max-width:34rem}
+.plate-2{left:7%;bottom:8%;width:24vw;max-width:25rem}
+.plate-3{right:7%;top:10%;width:19vw;max-width:20rem}
+.plate-4{right:11%;bottom:4%;width:20vw;max-width:21rem}
+.v14-table-bowl{
+  position:absolute;
+  display:block;
+  width:7vw;height:7vw;
+  min-width:4.5rem;min-height:4.5rem;
+  border:.5rem solid #e7d4ba;
+  border-radius:50%;
+  background:radial-gradient(circle,#fff0d4 0 26%,#b88952 28% 34%,#f0e1c9 36%);
+  box-shadow:0 1rem 2rem rgba(0,0,0,.28);
+}
+.bowl-1{left:18%;top:14%}
+.bowl-2{left:58%;bottom:8%}
+.bowl-3{right:16%;top:43%}
+.v14-table-copy{
+  position:absolute;
+  z-index:10;
+  left:var(--page-pad);
+  bottom:6vh;
+  width:min(35rem,42vw);
+  padding:1.4rem 1.5rem;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:.9rem;
+  background:rgba(13,11,8,.66);
+  backdrop-filter:blur(14px);
+  opacity:0;
+}
+.v14-table-copy h2{
+  margin:.2rem 0 .8rem;
+  font:400 clamp(3rem,5.5vw,6rem)/.88 var(--serif);
+  letter-spacing:-.055em;
+}
+.v14-table-copy>p:last-of-type{margin:0 0 1.4rem;line-height:1.6;color:#ddd2c4}
+.v14-table-copy a{display:inline-block;border-bottom:1px solid currentColor;padding-bottom:.2rem;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+
+/* 08 — recipes */
+.v14-recipes{
+  padding:clamp(6rem,12vh,10rem) var(--page-pad) clamp(5rem,10vh,8rem);
+  background:#eee4d4;
+  color:var(--v14-ink);
+}
+.v14-recipes>header{max-width:58rem;margin-bottom:clamp(3rem,6vh,5rem)}
+.v14-recipes>header h2{max-width:12ch}
+.v14-recipe-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:1.4rem;
+}
+.v14-recipe-card{
+  overflow:hidden;
+  border-radius:1rem;
+  background:#f6ecdc;
+}
+.v14-recipe-card figure{margin:0;height:clamp(20rem,36vw,34rem);overflow:hidden}
+.v14-recipe-card img{transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.v14-recipe-card>div{padding:1.4rem}
+.v14-recipe-card span{font-size:.63rem;letter-spacing:.11em;text-transform:uppercase;color:#756652}
+.v14-recipe-card h3{margin:.55rem 0 .6rem;font:400 clamp(2.4rem,4vw,4rem)/.9 var(--serif);letter-spacing:-.045em}
+.v14-recipe-card p{margin:0 0 1.1rem;color:#5f5548}
+.v14-recipe-card strong{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase}
+@media(hover:hover) and (pointer:fine){
+  .v14-recipe-card:hover img{transform:scale(1.035)}
+}
+.v14-recipes-links{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.7rem;
+  margin-top:2rem;
+}
+.v14-recipes-links a{
+  padding:.85rem 1rem;
+  border:1px solid rgba(27,25,19,.2);
+  border-radius:999px;
+  font-size:.7rem;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+}
+
+/* Tablet */
+@media(max-width:1000px){
+  .v14-section-head{width:min(31rem,48vw)}
+  .v14-dish-stack,.v14-taste-stack{width:66vw}
+  .v14-dish-card,.v14-taste-card{grid-template-columns:1.15fr .85fr}
+  .v14-market-copy{right:5vw;width:46vw}
+  .v14-home-cook{grid-template-columns:1fr 1fr}
+  .v14-home-cook-copy{padding:3rem}
+}
+
+/* Mobile */
+@media(max-width:720px){
+  .v14-section-head{
+    top:5.4rem;
+    left:1.2rem;
+    width:calc(100% - 2.4rem);
+  }
+  .v14-section-head h2,
+  .v14-desire-head h2,
+  .v14-home-cook-copy h2,
+  .v14-recipes>header h2{
+    font-size:clamp(2.65rem,12.5vw,4.4rem);
+  }
+  .v14-hero{height:220svh}
+  .v14-hero-copy{top:46%;width:92vw}
+  .v14-hero-copy h1{font-size:clamp(4rem,19vw,6.4rem);line-height:.8}
+  .v14-hero-copy>p:last-child{max-width:21rem;font-size:.88rem}
+  .v14-hero-card{width:38vw;border-radius:.75rem}
+  .v14-hero-card figcaption{padding:.55rem;font-size:.52rem}
+  .v14-hero-card figcaption span{display:none}
+  .hero-card--amok{top:9%;left:-3%}
+  .hero-card--loklak{top:10%;right:-4%}
+  .hero-card--market{bottom:7%;left:-4%;width:43vw}
+  .hero-card--tamarind{right:-2%;bottom:8%;width:34vw}
+  .v14-scroll-cue{right:.7rem;bottom:1rem}
+
+  .v14-dishes{height:285svh}
+  .v14-dish-stack{
+    right:1.1rem;
+    bottom:4.8rem;
+    width:calc(100% - 2.2rem);
+    height:63vh;
+  }
+  .v14-dish-card{
+    grid-template-columns:1fr;
+    grid-template-rows:1.25fr .75fr;
+  }
+  .v14-dish-card>div{padding:1.1rem}
+  .v14-dish-card h3{font-size:2.55rem;margin:.35rem 0 .55rem}
+  .v14-dish-card p{margin-bottom:1rem;font-size:.82rem;line-height:1.5}
+  .v14-chapter-progress{left:1.2rem;bottom:1.3rem;grid-template-columns:6rem auto}
+
+  .v14-flavors{height:250svh}
+  .v14-flavor-words span{font-size:clamp(4.4rem,22vw,7.5rem)}
+  .v14-flavor-object{width:38vw}
+  .flavor-object-1{top:18%;left:-8%}
+  .flavor-object-2{top:14%;right:-8%;width:31vw}
+  .flavor-object-3{bottom:10%;left:-5%;width:34vw}
+  .flavor-object-4{right:-8%;bottom:8%;width:42vw}
+  .flavor-object-5{top:44%;left:38%;width:28vw}
+
+  .v14-market{height:380svh}
+  .v14-market-heading{
+    top:5.4rem;
+    left:1.2rem;
+    width:calc(100% - 2.4rem);
+  }
+  .v14-market-heading h2{font-size:clamp(2.9rem,13vw,4.7rem)}
+  .v14-market-heading>p:last-child{font-size:.82rem;max-width:19rem}
+  .v14-market-copy{right:1.2rem;bottom:4.5rem;width:calc(100% - 2.4rem)}
+  .v14-market-copy h3{font-size:clamp(3.2rem,15vw,5rem)}
+  .v14-market-copy p{max-width:18rem;font-size:.86rem}
+  .v14-market-index{right:-2.6rem}
+  .v14-market-depth--back{width:42vw;height:42vw}
+  .v14-market-depth--front{width:54vw;height:54vw}
+
+  .v14-tastes{height:260svh}
+  .v14-taste-stack{
+    right:1rem;
+    bottom:4.5rem;
+    width:calc(100% - 2rem);
+    height:61vh;
+  }
+  .v14-taste-card{
+    grid-template-columns:1fr;
+    grid-template-rows:1.2fr .8fr;
+  }
+  .v14-taste-card>div{padding:1rem}
+  .v14-taste-card h3{font-size:2.5rem}
+
+  .v14-home-cook{grid-template-columns:1fr;min-height:0}
+  .v14-home-cook-media{min-height:65svh}
+  .v14-home-cook-copy{padding:3.5rem 1.25rem}
+  .v14-ingredient-label{font-size:.56rem;padding:.5rem .6rem}
+
+  .v14-desire{padding:5.5rem 1.2rem}
+  .v14-desire-head{margin-bottom:2.4rem}
+  .v14-desire-layout{grid-template-columns:1fr;gap:1.5rem}
+  .v14-desire-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:rgba(255,255,255,.14)}
+  .v14-desire-tabs button{padding:.85rem;background:#111912;border:0;font-size:1.3rem}
+  .v14-desire-tabs button[aria-selected="true"]{padding-left:.85rem;background:#283328}
+  .v14-desire-panel{grid-template-columns:1fr;grid-template-rows:55svh auto}
+  .v14-desire-panel>div{padding:1.15rem}
+  .v14-desire-panel h3{font-size:2.8rem}
+
+  .v14-table{height:270svh}
+  .v14-table-surface{inset:10vh 3vw}
+  .plate-1{left:19%;top:22%;width:58vw}
+  .plate-2{left:-2%;bottom:13%;width:41vw}
+  .plate-3{right:-2%;top:13%;width:34vw}
+  .plate-4{right:0;bottom:9%;width:36vw}
+  .v14-table-bowl{width:14vw;height:14vw;border-width:.32rem}
+  .bowl-1{left:5%;top:25%}
+  .bowl-2{left:47%;bottom:5%}
+  .bowl-3{right:5%;top:47%}
+  .v14-table-copy{
+    left:1rem;
+    right:1rem;
+    bottom:1rem;
+    width:auto;
+    padding:1rem;
+  }
+  .v14-table-copy h2{font-size:clamp(2.8rem,13vw,4.7rem)}
+
+  .v14-recipes{padding:5.5rem 1.2rem 4rem}
+  .v14-recipe-grid{grid-template-columns:1fr}
+  .v14-recipe-card figure{height:62vw;min-height:17rem}
+  .v14-recipes-links{flex-direction:column;align-items:flex-start}
+}
+
+/* Reduced motion: same story, no simulated camera or travelling. */
+@media(prefers-reduced-motion:reduce){
+  .v14-scroll-section{height:auto!important}
+  .v14-sticky{position:relative;height:auto;min-height:0;overflow:visible}
+  .v14-hero-stage{min-height:100svh;overflow:hidden}
+  .v14-hero-backdrop img,
+  .v14-hero-copy h1,
+  .v14-hero-copy>p,
+  .v14-hero-card,
+  .v14-dish-card,
+  .v14-flavor-object,
+  .v14-taste-card,
+  .v14-table-surface,
+  .v14-table-plate,
+  .v14-ingredient-label{
+    transform:none!important;
+    filter:none!important;
+    opacity:1!important;
+    visibility:visible!important;
+  }
+  .v14-hero-orbit{opacity:.75}
+  .v14-dishes-stage,
+  .v14-tastes-stage,
+  .v14-flavors-stage,
+  .v14-market-stage,
+  .v14-table-stage{
+    min-height:auto;
+    padding:6rem var(--page-pad);
+  }
+  .v14-dishes-stage .v14-section-head,
+  .v14-tastes-stage .v14-section-head,
+  .v14-flavors-stage .v14-section-head{
+    position:relative;
+    top:auto;left:auto;
+    width:min(44rem,100%);
+    margin-bottom:2rem;
+  }
+  .v14-dish-stack,
+  .v14-taste-stack{
+    position:relative;
+    right:auto;bottom:auto;
+    display:grid;
+    width:auto;height:auto;
+    gap:1rem;
+  }
+  .v14-dish-card,
+  .v14-taste-card{
+    position:relative;
+    inset:auto;
+    min-height:34rem;
+  }
+  .v14-flavor-words{
+    position:relative;
+    display:flex;
+    flex-wrap:wrap;
+    gap:.65rem;
+    margin:2rem 0;
+  }
+  .v14-flavor-words span{
+    position:static!important;
+    font-size:clamp(2rem,7vw,4rem);
+  }
+  .v14-flavor-objects{
+    position:relative;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:1rem;
+  }
+  .v14-flavor-object{
+    position:relative;
+    top:auto;right:auto;bottom:auto;left:auto;
+    width:100%!important;
+  }
+  .v14-market-stage{padding:0;overflow:visible}
+  .v14-market-heading{position:relative;top:auto;left:auto;width:auto;padding:6rem var(--page-pad) 2rem}
+  .v14-market-window{position:relative;overflow:visible}
+  .v14-market-track{display:grid;width:auto;height:auto;transform:none!important}
+  .v14-market-panel{min-height:75svh}
+  .v14-market-index{display:none}
+  .v14-table-stage{min-height:100svh;overflow:hidden}
+  .v14-table-surface{position:absolute}
+  .v14-table-copy{opacity:1!important;transform:none!important}
+}
