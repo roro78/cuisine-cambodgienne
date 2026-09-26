@@ -34,7 +34,7 @@ if (home.includes('data-scroll-film') || home.includes('<HomeCulinaryTrail')) {
   failures.push('V14 home must not fall back to the old five-photo V13 scroll-film architecture');
 }
 
-if (!home.includes('Les plats à découvrir.') || !home.includes('Les saveurs du Cambodge.') || !home.includes('Street food & marchés.')) {
+if (!home.includes('Par où commencer ?') || !home.includes('Les saveurs du Cambodge.') || !home.includes('Street food & marchés.')) {
   failures.push('V14 culinary narrative headings are incomplete');
 }
 
