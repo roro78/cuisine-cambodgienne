@@ -26,6 +26,8 @@ export function initStorytelling() {
   const canvas = document.querySelector<HTMLCanvasElement>('.scroll-film-canvas');
   const fallback = document.querySelector<HTMLImageElement>('.scroll-film-fallback');
   const copies = gsap.utils.toArray<HTMLElement>('.film-copy');
+  const trailObjects = gsap.utils.toArray<HTMLElement>('[data-home-culinary-object]');
+  const chapterLight = document.querySelector<HTMLElement>('.film-chapter-light');
   const count = document.querySelector<HTMLElement>('.film-count');
   const progressFill = document.querySelector<HTMLElement>('.film-progress i');
 
@@ -151,6 +153,7 @@ export function initStorytelling() {
     if (!next?.ready || index === images.length - 1) return;
 
     const transition = clamp((t - .5) / .36);
+    if (transition <= 0) return;
     const eased = smoothstep(transition);
     ctx.save();
 
@@ -200,6 +203,134 @@ export function initStorytelling() {
     }
   }
 
+  function rangeProgress(progress: number, start: number, end: number) {
+    return smoothstep((progress - start) / Math.max(.001, end - start));
+  }
+
+  function updateCopyContent(copy: HTMLElement, index: number, progress: number) {
+    const kicker = copy.querySelector<HTMLElement>('.film-kicker');
+    const titleLines = gsap.utils.toArray<HTMLElement>('.film-title-line > span', copy);
+    const body = copy.querySelector<HTMLElement>('.film-body-reveal');
+    const cta = copy.querySelector<HTMLElement>('.film-cta');
+    const revealStart = Math.max(0, index / 5 - .035);
+    const reveal = index === 0 ? 1 : rangeProgress(progress, revealStart, revealStart + .075);
+
+    if (reduceMotion) {
+      gsap.set([kicker, ...titleLines, body, cta].filter(Boolean), {
+        autoAlpha: 1,
+        x: 0,
+        y: 0,
+        yPercent: 0
+      });
+      return;
+    }
+
+    if (kicker) {
+      const phase = rangeProgress(reveal, 0, .35);
+      gsap.set(kicker, { autoAlpha: phase, y: (1 - phase) * 10 });
+    }
+
+    titleLines.forEach((line, lineIndex) => {
+      const phase = rangeProgress(reveal, lineIndex * .13, .5 + lineIndex * .13);
+      gsap.set(line, {
+        autoAlpha: phase,
+        yPercent: (1 - phase) * 108
+      });
+    });
+
+    if (body) {
+      const phase = rangeProgress(reveal, .36, .82);
+      gsap.set(body, { autoAlpha: phase, y: (1 - phase) * 14 });
+    }
+
+    if (cta) {
+      const phase = rangeProgress(progress, .91, .97);
+      gsap.set(cta, { autoAlpha: phase, y: (1 - phase) * 12 });
+    }
+  }
+
+  function updateCulinaryObjects(progress: number) {
+    if (trailObjects.length !== 4) return;
+
+    if (reduceMotion) {
+      const opacities = [.3, .26, .34, .38];
+      const activeObject = Math.min(3, Math.floor(progress * 5) - 1);
+      trailObjects.forEach((object, index) => {
+        const isCurrent = index === activeObject;
+        object.classList.toggle('is-reduced-current', isCurrent);
+        gsap.set(object, {
+          autoAlpha: isCurrent ? opacities[index] : 0,
+          x: 0,
+          y: 0,
+          rotate: 0,
+          scale: .82
+        });
+      });
+      if (chapterLight) gsap.set(chapterLight, { autoAlpha: .2, xPercent: 0 });
+      return;
+    }
+
+    trailObjects.forEach((object) => object.classList.remove('is-reduced-current'));
+
+    const mobileFactor = window.innerWidth < 720 ? .62 : 1;
+    const plans = [
+      {
+        start: .11, peak: .22, end: .4,
+        from: { x: 22, y: -15, scale: 1.28, rotate: -16 },
+        middle: { x: -4, y: 4, scale: .92, rotate: 2 },
+        to: { x: -48, y: 31, scale: 1.22, rotate: 13 }
+      },
+      {
+        start: .31, peak: .48, end: .61,
+        from: { x: -17, y: 25, scale: 1.18, rotate: 12 },
+        middle: { x: 39, y: -7, scale: .88, rotate: -4 },
+        to: { x: 58, y: -24, scale: 1.12, rotate: -12 }
+      },
+      {
+        start: .52, peak: .67, end: .82,
+        from: { x: 18, y: -11, scale: 1.32, rotate: -12 },
+        middle: { x: -9, y: 8, scale: .94, rotate: 3 },
+        to: { x: -53, y: 27, scale: 1.2, rotate: 14 }
+      },
+      {
+        start: .74, peak: .88, end: 1.3,
+        from: { x: -7, y: 19, scale: .78, rotate: -4 },
+        middle: { x: 2, y: -5, scale: 1, rotate: 3 },
+        to: { x: 8, y: -28, scale: 1.12, rotate: -2 }
+      }
+    ];
+
+    trailObjects.forEach((object, index) => {
+      const plan = plans[index];
+      const enter = rangeProgress(progress, plan.start, plan.peak);
+      const leave = rangeProgress(progress, plan.peak, plan.end);
+      const blend = (from: number, middle: number, to: number) =>
+        gsap.utils.interpolate(
+          gsap.utils.interpolate(from, middle, enter),
+          to,
+          leave
+        );
+      const opacity = enter * (1 - leave) * (index === 3 ? .82 : .9);
+
+      gsap.set(object, {
+        autoAlpha: opacity,
+        x: `${blend(plan.from.x, plan.middle.x, plan.to.x) * mobileFactor}vw`,
+        y: `${blend(plan.from.y, plan.middle.y, plan.to.y) * mobileFactor}vh`,
+        scale: blend(plan.from.scale, plan.middle.scale, plan.to.scale),
+        rotate: blend(plan.from.rotate, plan.middle.rotate, plan.to.rotate)
+      });
+    });
+
+    if (chapterLight) {
+      const amokWarmth = rangeProgress(progress, .73, .96);
+      gsap.set(chapterLight, {
+        autoAlpha: .12 + amokWarmth * .34,
+        xPercent: gsap.utils.interpolate(-22, 16, progress),
+        scale: 1 + amokWarmth * .18
+      });
+    }
+  }
+
   function updateCopy(progress: number) {
     const segment = 1 / 5;
     const raw = progress / segment;
@@ -208,6 +339,7 @@ export function initStorytelling() {
     const handoff = active < 4 ? smoothstep((local - .76) / .16) : 0;
 
     copies.forEach((copy, index) => {
+      updateCopyContent(copy, index, progress);
       if (index === active) {
         const opacity = active === 4 ? 1 : 1 - handoff;
         const y = reduceMotion ? 0 : -handoff * 18;
@@ -242,13 +374,14 @@ export function initStorytelling() {
 
     if (count) count.textContent = String(active + 1).padStart(2, '0');
     if (progressFill) gsap.set(progressFill, { scaleY: progress });
+    updateCulinaryObjects(progress);
   }
 
   function render(progress: number) {
     lastProgress = clamp(progress);
-    const scaled = lastProgress * 4;
+    const scaled = lastProgress * 5;
     const index = Math.min(4, Math.floor(scaled));
-    const local = index === 4 ? 1 : clamp(scaled - index);
+    const local = clamp(scaled - index);
 
     requestImage(index);
     requestImage(Math.min(index + 1, images.length - 1));
@@ -270,7 +403,7 @@ export function initStorytelling() {
     });
 
     if (!reduceMotion) {
-      gsap.fromTo('.amok-finale-media img', { scale: 1.12 }, {
+      gsap.fromTo('.amok-finale-media img', { scale: 1.09 }, {
         scale: 1,
         ease: 'none',
         scrollTrigger: {
@@ -281,8 +414,9 @@ export function initStorytelling() {
         }
       });
 
-      gsap.fromTo('.amok-finale-copy', { y: 44 }, {
-        y: -18,
+      gsap.fromTo('.amok-finale-copy', { y: 48, autoAlpha: .45 }, {
+        y: -16,
+        autoAlpha: 1,
         ease: 'none',
         scrollTrigger: {
           trigger: '.amok-finale',
@@ -291,9 +425,41 @@ export function initStorytelling() {
           scrub: .8
         }
       });
+
+      gsap.utils.toArray<HTMLElement>('.amok-finale-steam i').forEach((steam, index) => {
+        const directions = [-18, 13, 22];
+        const rotations = [-7, 5, -3];
+        gsap.fromTo(steam, {
+          x: 0,
+          yPercent: 18 + index * 5,
+          scaleY: .72,
+          rotate: rotations[index] * -1,
+          autoAlpha: .08
+        }, {
+          x: directions[index],
+          yPercent: -28 - index * 12,
+          scaleY: 1.08 + index * .06,
+          rotate: rotations[index],
+          autoAlpha: .64 - index * .08,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '.amok-finale',
+            start: 'top 88%',
+            end: 'bottom 22%',
+            scrub: .7 + index * .18
+          }
+        });
+      });
     } else {
       gsap.set('.amok-finale-media img', { scale: 1 });
-      gsap.set('.amok-finale-copy', { y: 0 });
+      gsap.set('.amok-finale-copy', { y: 0, autoAlpha: 1 });
+      gsap.set('.amok-finale-steam i', {
+        x: 0,
+        yPercent: 0,
+        scaleY: 1,
+        rotate: 0,
+        autoAlpha: .28
+      });
     }
 
     ScrollTrigger.refresh();
