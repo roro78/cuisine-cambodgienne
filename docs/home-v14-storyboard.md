@@ -35,7 +35,7 @@ Décision V14 : ne pas utiliser le kroeung comme chapitre central de Home. Il re
 ### 00 — Découvrez la cuisine cambodgienne
 Hero spatial : très grand titre, quatre cartes culinaires sur plusieurs plans, profondeur, rotation et dispersion au scroll.
 
-### 01 — Les plats à découvrir
+### 01 — Par où commencer ?
 Trois grandes scènes coexistantes : Amok, Lok Lak, cuisine des marchés. Passage de l’une à l’autre par déplacement spatial, pas par slideshow.
 
 ### 02 — Les saveurs du Cambodge
