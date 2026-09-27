@@ -159,10 +159,15 @@ const recipeSchema = {
             <section class="recipe-ingredient-group" aria-label={group}>
               <h3>{group}</h3>
               <ul class="recipe-ingredient-list">
-                {ingredients.map((ingredient) => (
+                {ingredients.map((ingredient, ingredientIndex) => (
                   <li>
-                    <input type="checkbox" data-ingredient-check aria-label={`Cocher ${ingredient.name}`} />
-                    <label>
+                    <input
+                      id={`ingredient-${recipe.slug}-${group.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${ingredientIndex}`}
+                      type="checkbox"
+                      data-ingredient-check
+                      aria-label={`Cocher ${ingredient.name}`}
+                    />
+                    <label for={`ingredient-${recipe.slug}-${group.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${ingredientIndex}`}>
                       <span>
                         {ingredient.quantity !== undefined && (
                           <>
