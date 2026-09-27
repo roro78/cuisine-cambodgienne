@@ -78,6 +78,22 @@ if (!home.includes('role="tablist"') || !home.includes('role="tabpanel"')) {
   failures.push('Desire interaction must expose accessible tab semantics');
 }
 
+if (!home.includes('tabindex={index === 0 ? 0 : -1}')) {
+  failures.push('Desire tabs must start with a single tab stop');
+}
+
+if (!storytelling.includes('setCardInteractive(card, isActive)') || !storytelling.includes('setCardInteractive(card, Math.abs(distance) < .48)')) {
+  failures.push('Off-screen dish and taste cards must be removed from the tab order');
+}
+
+if (!storytelling.includes('if (cta) cta.tabIndex = -1') || !storytelling.includes('cta.tabIndex = reveal >= .5 ? 0 : -1')) {
+  failures.push('Table CTA tab order must follow its scroll reveal');
+}
+
+if (!storytelling.includes("event.key === 'ArrowRight'") || !storytelling.includes("event.key === 'Home'") || !storytelling.includes("event.key === 'End'")) {
+  failures.push('Desire tablist must implement keyboard arrow/Home/End navigation');
+}
+
 if (failures.length) {
   console.error('Motion contract failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));
