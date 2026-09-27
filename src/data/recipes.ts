@@ -43,6 +43,7 @@ export interface Recipe {
   equipment?: string[];
   faqs?: RecipeFaq[];
   relatedIngredients?: string[];
+  glossarySlugs?: string[];
   tags: string[];
   image?: string;
   imageAlt?: string;
@@ -91,6 +92,7 @@ export const recipes: Recipe[] = [
       { question: 'Peut-on préparer la base à l’avance ?', answer: 'Oui. La base aromatique peut être préparée quelques heures à l’avance et gardée au frais.' }
     ],
     relatedIngredients: ['kroeung'],
+    glossarySlugs: ['amok', 'kroeung', 'combava', 'lait-de-coco', 'sucre-de-palme'],
     tags: ['poisson', 'coco', 'classique', 'vapeur'],
     image: '/images/cuisine/amok-1600.webp',
     imageAlt: 'Amok cambodgien servi dans une feuille de bananier avec du riz',
@@ -136,6 +138,7 @@ export const recipes: Recipe[] = [
       { question: 'Puis-je préparer la marinade à l’avance ?', answer: 'Oui, mais gardez la viande marinée peu de temps pour conserver une texture nette.' }
     ],
     relatedIngredients: ['poivre-de-kampot'],
+    glossarySlugs: ['poivre-de-kampot', 'lok-lak'],
     tags: ['bœuf', 'rapide', 'poivre', 'citron vert'],
     image: '/images/cuisine/lok-lak-800.webp',
     imageAlt: 'Lok lak cambodgien au bœuf accompagné de crudités',
@@ -178,6 +181,7 @@ export const recipes: Recipe[] = [
       { question: 'Pourquoi mon kroeung reste-t-il fibreux ?', answer: 'Les morceaux de citronnelle et galanga sont probablement trop gros. Émincez-les plus finement avant de piler.' }
     ],
     relatedIngredients: ['kroeung'],
+    glossarySlugs: ['kroeung', 'citronnelle', 'combava', 'galanga', 'curcuma'],
     tags: ['base', 'aromates', 'citronnelle', 'curcuma'],
     image: '/images/cuisine/kroeung-1600.webp',
     imageAlt: 'Kroeung cambodgien et aromates',
