@@ -33,8 +33,8 @@ export function initRecipeServings() {
   const base = Number(root.dataset.baseServings ?? 1);
   const min = Number(root.dataset.minServings ?? 1);
   const max = Number(root.dataset.maxServings ?? 12);
-  const currentEl = root.querySelector<HTMLElement>('[data-serving-current]');
-  const labelEl = root.querySelector<HTMLElement>('[data-serving-label]');
+  const currentEls = Array.from(root.querySelectorAll<HTMLElement>('[data-serving-current]'));
+  const labelEls = Array.from(root.querySelectorAll<HTMLElement>('[data-serving-label]'));
   const quantityEls = Array.from(document.querySelectorAll<HTMLElement>('[data-ingredient-quantity]'));
   const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-serving-action], [data-serving-value]'));
 
@@ -42,8 +42,8 @@ export function initRecipeServings() {
 
   const render = () => {
     const factor = current / base;
-    if (currentEl) currentEl.textContent = String(current);
-    if (labelEl) labelEl.textContent = `personne${current > 1 ? 's' : ''}`;
+    currentEls.forEach((el) => { el.textContent = String(current); });
+    labelEls.forEach((el) => { el.textContent = `personne${current > 1 ? 's' : ''}`; });
 
     quantityEls.forEach((el) => {
       const original = Number(el.dataset.baseQuantity ?? 0);
