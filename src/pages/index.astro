@@ -2,186 +2,340 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import HomeCulinaryTrail from '../components/HomeCulinaryTrail.astro';
+import '../styles/home-v14.css';
 
 const images = {
-  amok: '/images/cuisine/amok-2200.webp',
-  market: '/images/cuisine/kep-market-2200.webp',
-  kroeung: '/images/cuisine/kroeung-2200.webp',
-  kampot: '/images/cuisine/kampot-2200.webp',
-  amokAlt: '/images/cuisine/amok-alt-1600.webp'
+  amok: {
+    src: '/images/cuisine/amok-2200.webp',
+    srcset: '/images/cuisine/amok-800.webp 800w, /images/cuisine/amok-1200.webp 1200w, /images/cuisine/amok-1600.webp 1600w, /images/cuisine/amok-2200.webp 2200w'
+  },
+  amokAlt: {
+    src: '/images/cuisine/amok-alt-1600.webp',
+    srcset: '/images/cuisine/amok-alt-800.webp 800w, /images/cuisine/amok-alt-1200.webp 1200w, /images/cuisine/amok-alt-1600.webp 1600w'
+  },
+  lokLak: {
+    src: '/images/cuisine/lok-lak-800.webp',
+    srcset: '/images/cuisine/lok-lak-480.webp 480w, /images/cuisine/lok-lak-800.webp 800w'
+  },
+  market: {
+    src: '/images/cuisine/kep-market-2200.webp',
+    srcset: '/images/cuisine/kep-market-800.webp 800w, /images/cuisine/kep-market-1200.webp 1200w, /images/cuisine/kep-market-1600.webp 1600w, /images/cuisine/kep-market-2200.webp 2200w'
+  },
+  kampot: {
+    src: '/images/cuisine/kampot-2200.webp',
+    srcset: '/images/cuisine/kampot-800.webp 800w, /images/cuisine/kampot-1200.webp 1200w, /images/cuisine/kampot-1600.webp 1600w, /images/cuisine/kampot-2200.webp 2200w'
+  },
+  tamarind: {
+    src: '/images/cuisine/tamarind-1600.webp',
+    srcset: '/images/cuisine/tamarind-800.webp 800w, /images/cuisine/tamarind-1200.webp 1200w, /images/cuisine/tamarind-1600.webp 1600w'
+  },
+  prahok: {
+    src: '/images/cuisine/prahok-1600.webp',
+    srcset: '/images/cuisine/prahok-800.webp 800w, /images/cuisine/prahok-1200.webp 1200w, /images/cuisine/prahok-1600.webp 1600w'
+  }
 };
 
-const mobileImages = {
-  amok: '/images/cuisine/amok-1200.webp',
-  market: '/images/cuisine/kep-market-1200.webp',
-  kroeung: '/images/cuisine/kroeung-1200.webp',
-  kampot: '/images/cuisine/kampot-1200.webp',
-  amokAlt: '/images/cuisine/amok-alt-1200.webp'
-};
+const heroCards = [
+  { className: 'hero-card--amok', title: 'Amok Trey', meta: 'Poisson · coco · vapeur', image: images.amok, alt: 'Amok cambodgien servi avec du riz' },
+  { className: 'hero-card--loklak', title: 'Lok Lak', meta: 'Bœuf · citron vert · poivre', image: images.lokLak, alt: 'Lok lak cambodgien au bœuf' },
+  { className: 'hero-card--market', title: 'Marchés', meta: 'Fruits · herbes · grillades', image: images.market, alt: 'Marché cambodgien' },
+  { className: 'hero-card--tamarind', title: 'Tamarin', meta: 'Acidulé · fruité · profond', image: images.tamarind, alt: 'Tamarin utilisé dans la cuisine cambodgienne' }
+];
 
-const desires = [
+const dishes = [
   {
     number: '01',
-    eyebrow: 'Ce soir',
-    title: 'Cuisiner quelque chose qui parfume toute la maison.',
-    text: 'Amok, lok lak, riz chaud et sauces fraîches : commencer par un plat qui donne immédiatement envie de passer à table.',
-    href: '/recettes/',
-    cta: 'Choisir une recette',
-    image: images.market,
-    mobile: mobileImages.market,
-    alt: 'Marché cambodgien et produits frais',
-    tone: 'clay'
+    title: 'Amok Trey',
+    text: 'Poisson tendre, coco soyeux et cuisson douce. Un plat emblématique à découvrir sans détour.',
+    href: '/recettes/amok-trey/',
+    cta: 'Voir la recette',
+    image: images.amokAlt,
+    alt: 'Amok Trey cambodgien'
   },
   {
     number: '02',
-    eyebrow: 'Au mortier',
-    title: 'Maîtriser les gestes qui changent vraiment le goût.',
-    text: 'Piler la citronnelle, équilibrer le coco, réveiller les aromates : apprendre les bases en les faisant.',
-    href: '/apprendre/',
-    cta: 'Apprendre les gestes',
-    image: images.kroeung,
-    mobile: mobileImages.kroeung,
-    alt: 'Kroeung cambodgien et aromates frais',
-    tone: 'green'
+    title: 'Lok Lak',
+    text: 'Bœuf saisi très chaud, condiment citron vert-poivre et crudités fraîches. Rapide, net, généreux.',
+    href: '/recettes/lok-lak/',
+    cta: 'Voir la recette',
+    image: images.lokLak,
+    alt: 'Lok lak cambodgien'
   },
   {
     number: '03',
-    eyebrow: 'Dans le panier',
-    title: 'Comprendre une saveur avant de la mettre dans la casserole.',
-    text: 'Poivre de Kampot, tamarin, prahok, combava : connaître leur goût, leur rôle et les bons accords.',
-    href: '/ingredients/',
-    cta: 'Explorer les ingrédients',
-    image: images.kampot,
-    mobile: mobileImages.kampot,
-    alt: 'Poivre de Kampot au Cambodge',
-    tone: 'gold'
+    title: 'Cuisine des marchés',
+    text: 'Brochettes, fruits, poissons, sauces, soupes et petits plats : une cuisine vivante qui se goûte en marchant.',
+    href: '/culture/',
+    cta: 'Découvrir la culture',
+    image: images.market,
+    alt: 'Étal de marché au Cambodge'
   }
+];
+
+const marketStops = [
+  { title: 'Grillades', text: 'Brochettes, viandes marinées et cuisson vive.', image: images.market, alt: 'Marché cambodgien et grillades' },
+  { title: 'Soupes', text: 'Bouillons parfumés, herbes fraîches et nouilles.', image: images.prahok, alt: 'Préparation culinaire cambodgienne' },
+  { title: 'Fruits', text: 'Tamarin, agrumes, fruits tropicaux et fraîcheur.', image: images.tamarind, alt: 'Tamarin cambodgien' },
+  { title: 'Poivre', text: 'Le poivre de Kampot, floral, chaud et très aromatique.', image: images.kampot, alt: 'Poivre de Kampot sur son plant' },
+  { title: 'Plats minute', text: 'Une poêle très chaude, quelques minutes, et on passe à table.', image: images.lokLak, alt: 'Lok lak cambodgien prêt à servir' }
+];
+
+const tasteCards = [
+  { number: '01', title: 'Amok Trey', text: 'Doux, parfumé, crémeux.', image: images.amok, alt: 'Amok Trey cambodgien', href: '/recettes/amok-trey/' },
+  { number: '02', title: 'Lok Lak', text: 'Saisi, poivré, acidulé.', image: images.lokLak, alt: 'Lok lak cambodgien', href: '/recettes/lok-lak/' },
+  { number: '03', title: 'Cuisine des marchés', text: 'Vive, spontanée, généreuse.', image: images.market, alt: 'Marché cambodgien', href: '/culture/' }
+];
+
+const desireChoices = [
+  { key: 'viande', label: 'Viande', eyebrow: 'Envie de viande', title: 'Lok Lak', text: 'Bœuf saisi à feu vif, citron vert, poivre et crudités. Une recette courte et très accessible.', href: '/recettes/lok-lak/', cta: 'Cuisiner le Lok Lak', image: images.lokLak, alt: 'Lok lak cambodgien au bœuf' },
+  { key: 'poisson', label: 'Poisson', eyebrow: 'Envie de poisson', title: 'Amok Trey', text: 'Poisson, lait de coco et cuisson douce : une recette plus lente, mais très parfumée.', href: '/recettes/amok-trey/', cta: 'Cuisiner l’Amok', image: images.amok, alt: 'Amok Trey cambodgien' },
+  { key: 'rapide', label: 'Rapide', eyebrow: 'Peu de temps', title: 'Prêt en 30 minutes', text: 'Le Lok Lak se prépare rapidement : la réussite vient surtout d’une poêle très chaude et d’une cuisson courte.', href: '/recettes/lok-lak/', cta: 'Voir la recette rapide', image: images.lokLak, alt: 'Lok lak rapide à préparer' },
+  { key: 'vegetal', label: 'Végétal', eyebrow: 'Envie de végétal', title: 'Commencer par les saveurs', text: 'Tamarin, citron vert, herbes et aromates : explorez les ingrédients pour composer une assiette plus végétale.', href: '/ingredients/', cta: 'Explorer les ingrédients', image: images.tamarind, alt: 'Tamarin et ingrédients cambodgiens' }
+];
+
+const finalRecipes = [
+  { title: 'Lok Lak', time: '30 min', difficulty: 'Facile', text: 'Bœuf sauté, poivre et citron vert.', href: '/recettes/lok-lak/', image: images.lokLak, alt: 'Lok lak cambodgien' },
+  { title: 'Amok Trey', time: '55 min', difficulty: 'Intermédiaire', text: 'Poisson, coco et cuisson douce.', href: '/recettes/amok-trey/', image: images.amokAlt, alt: 'Amok Trey cambodgien' }
 ];
 ---
 <BaseLayout
-  image={images.amok}
-  title="Cuisine du Cambodge — Recettes, parfums et cuisine khmère"
-  description="Citronnelle, kroeung, poivre de Kampot, coco, poissons et recettes cambodgiennes : une cuisine à sentir, goûter et refaire chez soi."
+  image={images.amok.src}
+  title="Cuisine du Cambodge — Recettes, saveurs et cuisine khmère"
+  description="Découvrez les plats, les marchés, les saveurs et les recettes cambodgiennes : Amok, Lok Lak, poivre de Kampot, tamarin et cuisine à refaire chez soi."
 >
   <SiteHeader overlay />
 
-  <main>
-    <section class="scroll-film" aria-labelledby="scroll-film-title" data-scroll-film>
-      <div
-        class="scroll-film-stage"
-        data-film-images={JSON.stringify([images.amok, images.market, images.kroeung, images.kampot, images.amokAlt])}
-        data-film-images-mobile={JSON.stringify([mobileImages.amok, mobileImages.market, mobileImages.kroeung, mobileImages.kampot, mobileImages.amokAlt])}
-      >
-        <canvas class="scroll-film-canvas" aria-hidden="true"></canvas>
-        <img
-          class="scroll-film-fallback"
-          src={images.amok}
-          srcset={`${mobileImages.amok} 1200w, ${images.amok} 2200w`}
-          sizes="100vw"
-          alt=""
-          width="3888"
-          height="2592"
-          aria-hidden="true"
-          fetchpriority="high"
-          decoding="async"
-        />
-        <div class="scroll-film-vignette" aria-hidden="true"></div>
-        <div class="scroll-film-grain" aria-hidden="true"></div>
-        <div class="film-chapter-light" aria-hidden="true"></div>
-        <HomeCulinaryTrail />
-
-        <div class="film-copy film-copy-0 is-active" data-film-copy>
-          <p class="film-kicker"><span aria-hidden="true">🇰🇭</span> Cuisine du Cambodge</p>
-          <h1 id="scroll-film-title">
-            <span class="film-title-line"><span>Le Cambodge</span></span>
-            <span class="film-title-line"><span>commence dans le mortier.</span></span>
+  <main class="v14-home">
+    <section class="v14-hero v14-scroll-section" data-v14-section data-v14-hero aria-labelledby="v14-hero-title">
+      <div class="v14-sticky v14-hero-stage">
+        <div class="v14-hero-backdrop" aria-hidden="true">
+          <img src={images.market.src} srcset={images.market.srcset} sizes="100vw" alt="" width="3888" height="2592" fetchpriority="high" decoding="async" />
+        </div>
+        <div class="v14-hero-shade" aria-hidden="true"></div>
+        <div class="v14-hero-copy">
+          <p class="v14-kicker"><span aria-hidden="true">🇰🇭</span> Cuisine du Cambodge</p>
+          <h1 id="v14-hero-title">
+            <span>Découvrez</span>
+            <span>la cuisine</span>
+            <span>cambodgienne</span>
           </h1>
-          <p class="film-body-reveal">Citronnelle fraîche, galanga, curcuma, combava : on pile jusqu’à ce que le parfum remplisse la cuisine. Ensuite seulement, on allume le feu.</p>
+          <p>Des plats généreux, des marchés vivants, des saveurs franches et des recettes que l’on peut vraiment refaire chez soi.</p>
         </div>
 
-        <div class="film-copy film-copy-1" data-film-copy>
-          <p class="film-kicker">01 — Frais</p>
-          <h2>
-            <span class="film-title-line"><span>Choisir ce qu’on</span></span>
-            <span class="film-title-line"><span>a envie de cuisiner.</span></span>
-          </h2>
-          <p class="film-body-reveal">Herbes fraîches, racines, poivre, poisson : on regarde, on sent, on goûte. Le repas commence bien avant la casserole.</p>
+        <div class="v14-hero-orbit" aria-hidden="true">
+          {heroCards.map((card) => (
+            <figure class:list={['v14-hero-card', card.className]} data-v14-hero-card>
+              <img src={card.image.src} srcset={card.image.srcset} sizes="(max-width: 720px) 44vw, 24vw" alt="" loading="eager" decoding="async" />
+              <figcaption><strong>{card.title}</strong><span>{card.meta}</span></figcaption>
+            </figure>
+          ))}
         </div>
 
-        <div class="film-copy film-copy-2" data-film-copy>
-          <p class="film-kicker">02 — Kroeung</p>
-          <h2>
-            <span class="film-title-line"><span>Le mortier réveille</span></span>
-            <span class="film-title-line"><span>les parfums.</span></span>
-          </h2>
-          <p class="film-body-reveal">La citronnelle s’écrase, le curcuma colore, le combava éclate. Le kroeung devient humide, puissant, frais : c’est là que le plat prend vie.</p>
+        <div class="v14-scroll-cue" aria-hidden="true"><span>Défiler</span><i></i></div>
+      </div>
+    </section>
+
+    <section class="v14-dishes v14-scroll-section" data-v14-section data-v14-dishes aria-labelledby="v14-dishes-title">
+      <div class="v14-sticky v14-dishes-stage">
+        <header class="v14-section-head">
+          <p class="v14-kicker">01 — Pour commencer</p>
+          <h2 id="v14-dishes-title">Par où commencer ?</h2>
+          <p>Deux plats emblématiques et l’énergie des marchés pour entrer simplement dans la cuisine cambodgienne.</p>
+        </header>
+        <div class="v14-dish-stack">
+          {dishes.map((dish, index) => (
+            <article class:list={['v14-dish-card', index === 0 && 'is-active']} data-v14-dish-card>
+              <figure><img src={dish.image.src} srcset={dish.image.srcset} sizes="(max-width: 720px) 88vw, 56vw" alt={dish.alt} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" /></figure>
+              <div>
+                <span>{dish.number}</span>
+                <h3>{dish.title}</h3>
+                <p>{dish.text}</p>
+                <a href={dish.href}>{dish.cta}</a>
+              </div>
+            </article>
+          ))}
+        </div>
+        <div class="v14-chapter-progress" aria-hidden="true"><i></i><span>03</span></div>
+      </div>
+    </section>
+
+    <section class="v14-flavors v14-scroll-section" data-v14-section data-v14-flavors aria-labelledby="v14-flavors-title">
+      <div class="v14-sticky v14-flavors-stage">
+        <header class="v14-section-head v14-section-head--light">
+          <p class="v14-kicker">02 — Ce qui reste en bouche</p>
+          <h2 id="v14-flavors-title">Les saveurs du Cambodge.</h2>
+          <p>Citronnelle, coco, citron vert, herbes, poivre, piment et tamarin : des contrastes plus que des complications.</p>
+        </header>
+
+        <div class="v14-flavor-words" aria-hidden="true">
+          <span class="is-active" data-v14-flavor-word>Frais</span>
+          <span data-v14-flavor-word>Acidulé</span>
+          <span data-v14-flavor-word>Parfumé</span>
+          <span data-v14-flavor-word>Épicé</span>
         </div>
 
-        <div class="film-copy film-copy-3" data-film-copy>
-          <p class="film-kicker">03 — Kampot</p>
-          <h2>
-            <span class="film-title-line"><span>Un tour de poivre.</span></span>
-            <span class="film-title-line"><span>Et tout s’ouvre.</span></span>
-          </h2>
-          <p class="film-body-reveal">Frais, chaud, presque floral : le poivre de Kampot ne se cache pas dans le plat. Il le réveille.</p>
-        </div>
-
-        <div class="film-copy film-copy-4" data-film-copy>
-          <p class="film-kicker">04 — Amok</p>
-          <h2>
-            <span class="film-title-line"><span>Crémeux, parfumé,</span></span>
-            <span class="film-title-line"><span>juste pris à la vapeur.</span></span>
-          </h2>
-          <p class="film-body-reveal">Le lait de coco enveloppe le kroeung, le poisson reste tendre, le combava arrive à la fin. L’Amok Trey se mange doux, chaud et très parfumé.</p>
-          <a class="film-cta" href="/recettes/amok-trey/">Cuisiner l’Amok Trey</a>
-        </div>
-
-        <div class="film-side-ui" aria-hidden="true">
-          <span class="film-count">01</span>
-          <div class="film-progress"><i></i></div>
-          <span class="film-label">Défiler</span>
+        <div class="v14-flavor-objects" aria-hidden="true">
+          <figure class="v14-flavor-object flavor-object-1" data-v14-flavor-object><img src={images.tamarind.src} srcset={images.tamarind.srcset} sizes="32vw" alt="" loading="lazy" decoding="async" /><figcaption>Tamarin</figcaption></figure>
+          <figure class="v14-flavor-object flavor-object-2" data-v14-flavor-object><img src={images.kampot.src} srcset={images.kampot.srcset} sizes="30vw" alt="" loading="lazy" decoding="async" /><figcaption>Poivre</figcaption></figure>
+          <figure class="v14-flavor-object flavor-object-3" data-v14-flavor-object><img src={images.amokAlt.src} srcset={images.amokAlt.srcset} sizes="30vw" alt="" loading="lazy" decoding="async" /><figcaption>Coco</figcaption></figure>
+          <figure class="v14-flavor-object flavor-object-4" data-v14-flavor-object><img src={images.market.src} srcset={images.market.srcset} sizes="30vw" alt="" loading="lazy" decoding="async" /><figcaption>Herbes</figcaption></figure>
+          <figure class="v14-flavor-object flavor-object-5" data-v14-flavor-object><img src={images.lokLak.src} srcset={images.lokLak.srcset} sizes="28vw" alt="" loading="lazy" decoding="async" /><figcaption>Citron vert</figcaption></figure>
         </div>
       </div>
     </section>
 
-    <section class="desire-story" aria-labelledby="desire-title">
-      <header class="desire-intro" data-reveal="up">
-        <p class="eyebrow">Choisissez votre envie</p>
-        <h2 id="desire-title">Aujourd’hui,<br />vous avez envie de quoi&nbsp;?</h2>
-        <p>Pas de catalogue. Trois portes d’entrée pour cuisiner, apprendre un geste ou comprendre ce que l’on met dans l’assiette.</p>
-      </header>
+    <section class="v14-market v14-scroll-section" data-v14-section data-v14-market aria-labelledby="v14-market-title">
+      <div class="v14-sticky v14-market-stage">
+        <div class="v14-market-heading">
+          <p class="v14-kicker">03 — Dans la rue</p>
+          <h2 id="v14-market-title">Street food & marchés.</h2>
+          <p>Brochettes, soupes, fruits, épices et plats minute : au Cambodge, les marchés se mangent autant qu’ils se visitent.</p>
+        </div>
+        <div class="v14-market-window">
+          <div class="v14-market-track" data-v14-market-track>
+            {marketStops.map((stop, index) => (
+              <article class="v14-market-panel">
+                <figure>
+                  <img src={stop.image.src} srcset={stop.image.srcset} sizes="100vw" alt={stop.alt} loading={index < 2 ? 'eager' : 'lazy'} decoding="async" />
+                </figure>
+                <div class="v14-market-depth v14-market-depth--back" aria-hidden="true"></div>
+                <div class="v14-market-depth v14-market-depth--front" aria-hidden="true"></div>
+                <div class="v14-market-copy">
+                  <span>0{index + 1}</span>
+                  <h3>{stop.title}</h3>
+                  <p>{stop.text}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+        <div class="v14-market-index" aria-hidden="true"><span data-v14-market-count>01</span><i></i><span>05</span></div>
+      </div>
+    </section>
 
-      <div class="desire-list">
-        {desires.map((item) => (
-          <a class:list={['desire-entry', `desire-entry--${item.tone}`]} href={item.href} data-desire-entry>
-            <div class="desire-copy">
-              <span class="desire-number">{item.number}</span>
-              <p class="eyebrow">{item.eyebrow}</p>
-              <h3>{item.title}</h3>
-              <p>{item.text}</p>
-              <span class="desire-cta">{item.cta}</span>
+    <section class="v14-tastes v14-scroll-section" data-v14-section data-v14-tastes aria-labelledby="v14-tastes-title">
+      <div class="v14-sticky v14-tastes-stage">
+        <header class="v14-section-head">
+          <p class="v14-kicker">04 — À goûter</p>
+          <h2 id="v14-tastes-title">Au moins une fois.</h2>
+          <p>Des plats et des saveurs que l’on retient dès la première bouchée.</p>
+        </header>
+        <div class="v14-taste-stack">
+          {tasteCards.map((card, index) => (
+            <a class="v14-taste-card" data-v14-taste-card href={card.href}>
+              <figure><img src={card.image.src} srcset={card.image.srcset} sizes="(max-width: 720px) 88vw, 58vw" alt={card.alt} loading="lazy" decoding="async" /></figure>
+              <div><span>{card.number}</span><h3>{card.title}</h3><p>{card.text}</p></div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="v14-home-cook" data-v14-section data-v14-home-cook aria-labelledby="v14-home-cook-title">
+      <div class="v14-home-cook-media" data-v14-home-cook-media>
+        <img src={images.lokLak.src} srcset={images.lokLak.srcset} sizes="(max-width: 720px) 100vw, 58vw" alt="Lok lak cambodgien au bœuf" loading="lazy" decoding="async" />
+        <div class="v14-ingredient-label ingredient-label-1" data-v14-ingredient>01 · Bœuf</div>
+        <div class="v14-ingredient-label ingredient-label-2" data-v14-ingredient>02 · Citron vert</div>
+        <div class="v14-ingredient-label ingredient-label-3" data-v14-ingredient>03 · Poivre</div>
+        <div class="v14-ingredient-label ingredient-label-4" data-v14-ingredient>04 · Crudités</div>
+      </div>
+      <div class="v14-home-cook-copy" data-reveal="up">
+        <p class="v14-kicker">05 — À la maison</p>
+        <h2 id="v14-home-cook-title">Facile à cuisiner chez soi.</h2>
+        <p>Pas besoin de vingt ingrédients ni d’une journée entière. Le Lok Lak repose surtout sur une bonne saisie, du citron vert et du poivre fraîchement moulu.</p>
+        <strong>Quelques ingrédients. Beaucoup de parfum.</strong>
+        <a href="/recettes/lok-lak/">Voir la recette facile</a>
+      </div>
+    </section>
+
+    <section class="v14-desire" data-v14-section data-v14-desire aria-labelledby="v14-desire-title">
+      <header class="v14-desire-head" data-reveal="up">
+        <p class="v14-kicker">06 — À vous de choisir</p>
+        <h2 id="v14-desire-title">Vous avez envie de quoi ?</h2>
+      </header>
+      <div class="v14-desire-layout">
+        <div class="v14-desire-tabs" role="tablist" aria-label="Choisir une envie">
+          {desireChoices.map((choice, index) => (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={index === 0 ? 'true' : 'false'}
+              tabindex={index === 0 ? 0 : -1}
+              aria-controls={`v14-desire-panel-${choice.key}`}
+              id={`v14-desire-tab-${choice.key}`}
+              data-v14-desire-tab={choice.key}
+            >
+              <span>0{index + 1}</span>{choice.label}
+            </button>
+          ))}
+        </div>
+        <div class="v14-desire-panels">
+          {desireChoices.map((choice, index) => (
+            <article
+              class:list={['v14-desire-panel', index === 0 && 'is-active']}
+              id={`v14-desire-panel-${choice.key}`}
+              role="tabpanel"
+              aria-labelledby={`v14-desire-tab-${choice.key}`}
+              hidden={index !== 0}
+              data-v14-desire-panel={choice.key}
+            >
+              <figure><img src={choice.image.src} srcset={choice.image.srcset} sizes="(max-width: 720px) 100vw, 56vw" alt={choice.alt} loading="lazy" decoding="async" /></figure>
+              <div>
+                <p class="eyebrow">{choice.eyebrow}</p>
+                <h3>{choice.title}</h3>
+                <p>{choice.text}</p>
+                <a href={choice.href}>{choice.cta}</a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="v14-table v14-scroll-section" data-v14-section data-v14-table aria-labelledby="v14-table-title">
+      <div class="v14-sticky v14-table-stage">
+        <div class="v14-table-surface" data-v14-table-surface aria-hidden="true">
+          <figure class="v14-table-plate plate-1" data-v14-table-plate><img src={images.amok.src} srcset={images.amok.srcset} sizes="42vw" alt="" loading="lazy" decoding="async" /></figure>
+          <figure class="v14-table-plate plate-2" data-v14-table-plate><img src={images.lokLak.src} srcset={images.lokLak.srcset} sizes="34vw" alt="" loading="lazy" decoding="async" /></figure>
+          <figure class="v14-table-plate plate-3" data-v14-table-plate><img src={images.tamarind.src} srcset={images.tamarind.srcset} sizes="28vw" alt="" loading="lazy" decoding="async" /></figure>
+          <figure class="v14-table-plate plate-4" data-v14-table-plate><img src={images.kampot.src} srcset={images.kampot.srcset} sizes="28vw" alt="" loading="lazy" decoding="async" /></figure>
+          <span class="v14-table-bowl bowl-1"></span>
+          <span class="v14-table-bowl bowl-2"></span>
+          <span class="v14-table-bowl bowl-3"></span>
+        </div>
+        <div class="v14-table-copy">
+          <p class="v14-kicker">07 — Le repas</p>
+          <h2 id="v14-table-title">À table au Cambodge.</h2>
+          <p>Plusieurs plats au centre. Du riz. Des sauces et des accompagnements. Et chacun se sert.</p>
+          <a href="/culture/">Découvrir les habitudes à table</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="v14-recipes" data-v14-section aria-labelledby="v14-recipes-title">
+      <header data-reveal="up">
+        <p class="v14-kicker">08 — Maintenant</p>
+        <h2 id="v14-recipes-title">Qu’est-ce qu’on cuisine aujourd’hui ?</h2>
+        <p>Deux recettes pour commencer, puis tout le reste à explorer.</p>
+      </header>
+      <div class="v14-recipe-grid">
+        {finalRecipes.map((recipe) => (
+          <a href={recipe.href} class="v14-recipe-card" data-reveal="up">
+            <figure><img src={recipe.image.src} srcset={recipe.image.srcset} sizes="(max-width: 720px) 100vw, 46vw" alt={recipe.alt} loading="lazy" decoding="async" /></figure>
+            <div>
+              <span>{recipe.time} · {recipe.difficulty}</span>
+              <h3>{recipe.title}</h3>
+              <p>{recipe.text}</p>
+              <strong>Voir la recette</strong>
             </div>
-            <figure class="desire-media">
-              <img src={item.image} srcset={`${item.mobile} 1200w, ${item.image} 2200w`} sizes="(max-width: 800px) 100vw, 48vw" alt={item.alt} loading="lazy" decoding="async" />
-            </figure>
           </a>
         ))}
       </div>
-    </section>
-
-    <section class="amok-finale" data-amok-finale>
-      <figure class="amok-finale-media">
-        <img src={images.amok} srcset={`${mobileImages.amok} 1200w, ${images.amok} 2200w`} sizes="100vw" alt="Amok cambodgien servi avec du riz et des feuilles de bananier" width="3888" height="2592" loading="lazy" decoding="async" />
-      </figure>
-      <div class="amok-finale-shade"></div>
-      <div class="amok-finale-steam" aria-hidden="true"><i></i><i></i><i></i></div>
-      <div class="amok-finale-copy">
-        <p class="eyebrow">À cuisiner ce soir</p>
-        <h2>Amok Trey.</h2>
-        <p>Poisson tendre, coco soyeux, kroeung très parfumé et une cuisson douce. Une recette emblématique à servir brûlante avec du riz.</p>
-        <a href="/recettes/amok-trey/">Voir la recette</a>
-      </div>
+      <nav class="v14-recipes-links" aria-label="Explorer le site">
+        <a href="/recettes/">Voir toutes les recettes</a>
+        <a href="/ingredients/">Explorer les ingrédients</a>
+        <a href="/culture/">Découvrir la culture cambodgienne</a>
+      </nav>
     </section>
 
     <section class="home-credits">
