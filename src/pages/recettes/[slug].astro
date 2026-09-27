@@ -24,7 +24,7 @@ const substitutions = recipe.substitutions ?? [];
 const equipment = recipe.equipment ?? [];
 const faqs = recipe.faqs ?? [];
 const relatedIngredients = ingredientGuides.filter((item) => (recipe.relatedIngredients ?? []).includes(item.slug));
-const glossary = getGlossaryEntries((recipe.relatedIngredients ?? []).filter((slug) => ['kroeung','poivre-de-kampot','tamarin','prahok'].includes(slug)));
+const glossary = getGlossaryEntries(recipe.glossarySlugs ?? recipe.relatedIngredients ?? []);
 
 const groupedIngredients = recipe.ingredients.reduce<Record<string, RecipeIngredient[]>>((groups, ingredient) => {
   const key = ingredient.group ?? 'Ingrédients';
