@@ -2,13 +2,13 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
-import { recipes } from '../../data/recipes';
-import type { Recipe } from '../../data/recipes';
+import { recipes, ingredientText, getServingsLabel } from '../../data/recipes';
+import type { Recipe, RecipeIngredient } from '../../data/recipes';
 import { ingredientGuides } from '../../data/ingredients';
 import GlossaryStrip from '../../components/GlossaryStrip.astro';
 import { getGlossaryEntries } from '../../data/glossary';
 import { imageSrcSet } from '../../utils/images';
-import CulinaryIcon from '../../components/CulinaryIcon.astro';
+import '../../styles/recipe-v15.css';
 
 export function getStaticPaths() {
   return recipes.map((recipe: Recipe) => ({
@@ -17,66 +17,27 @@ export function getStaticPaths() {
   }));
 }
 
-const { recipe } = Astro.props;
+const { recipe } = Astro.props as { recipe: Recipe };
 const notes = recipe.notes ?? [];
 const keyPoints = recipe.keyPoints ?? [];
+const substitutions = recipe.substitutions ?? [];
+const equipment = recipe.equipment ?? [];
+const faqs = recipe.faqs ?? [];
 const relatedIngredients = ingredientGuides.filter((item) => (recipe.relatedIngredients ?? []).includes(item.slug));
+const glossary = getGlossaryEntries((recipe.relatedIngredients ?? []).filter((slug) => ['kroeung','poivre-de-kampot','tamarin','prahok'].includes(slug)));
 
-const glossarySlugs = [
-  ...(recipe.slug === 'amok-trey' ? ['amok', 'kroeung', 'combava', 'lait-de-coco', 'sucre-de-palme'] : []),
-  ...(recipe.slug === 'lok-lak' ? ['poivre-de-kampot'] : []),
-  ...(recipe.slug === 'kroeung-jaune' ? ['kroeung', 'citronnelle', 'combava', 'galanga', 'curcuma'] : [])
-];
-const glossary = getGlossaryEntries(glossarySlugs);
+const groupedIngredients = recipe.ingredients.reduce<Record<string, RecipeIngredient[]>>((groups, ingredient) => {
+  const key = ingredient.group ?? 'Ingrédients';
+  groups[key] ??= [];
+  groups[key].push(ingredient);
+  return groups;
+}, {});
 
-const recipeFaqs = recipe.slug === 'amok-trey'
-  ? [
-      {
-        question: 'Pourquoi mon amok devient-il sec ?',
-        answer: 'La cuisson est probablement trop forte ou trop longue. L’amok doit être juste pris et encore souple : une vapeur douce et un arrêt de cuisson dès que la texture se tient donnent un meilleur résultat.'
-      },
-      {
-        question: 'Peut-on préparer le kroeung à l’avance ?',
-        answer: 'Oui. Le kroeung peut être préparé à l’avance et conservé au réfrigérateur dans un récipient hermétique. Son parfum reste meilleur quand il est utilisé assez rapidement.'
-      },
-      {
-        question: 'Comment savoir si l’assaisonnement est juste avant cuisson ?',
-        answer: 'Goûtez la base coco-kroeung avant d’ajouter le poisson. Elle doit être parfumée, salée sans excès et légèrement arrondie par le sucre.'
-      }
-    ]
-  : recipe.slug === 'lok-lak'
-    ? [
-        {
-          question: 'Pourquoi le bœuf rend-il de l’eau au lieu de colorer ?',
-          answer: 'La poêle n’est pas assez chaude ou elle est trop chargée. Saisissez le bœuf en petites quantités et laissez l’humidité s’évaporer rapidement pour obtenir une vraie coloration.'
-        },
-        {
-          question: 'Quand ajouter la sauce du lok lak ?',
-          answer: 'Ajoutez-la en fin de cuisson, une fois la viande bien colorée. Elle doit juste enrober les morceaux sans les faire bouillir.'
-        },
-        {
-          question: 'Comment utiliser le poivre de Kampot dans le lok lak ?',
-          answer: 'Moulez-le au dernier moment dans le condiment au citron vert ou juste avant le service pour conserver sa fraîcheur aromatique.'
-        }
-      ]
-    : [
-        {
-          question: 'Pourquoi mon kroeung reste-t-il fibreux ?',
-          answer: 'Les aromates ont probablement été coupés trop gros. Émincez très finement citronnelle et galanga avant de piler, puis travaillez les ingrédients les plus durs en premier.'
-        },
-        {
-          question: 'Peut-on faire un kroeung au mixeur ?',
-          answer: 'Oui, mais ajoutez le moins de liquide possible. Trop d’eau dilue les parfums et donne une texture moins concentrée.'
-        },
-        {
-          question: 'Comment savoir si le kroeung est assez travaillé ?',
-          answer: 'La pâte doit devenir homogène, humide et très parfumée, sans gros morceaux fibreux perceptibles.'
-        }
-      ];
 const totalMinutes = (value: string) => {
   const match = value.match(/(\d+)/);
   return match ? Number(match[1]) : 0;
 };
+
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -87,31 +48,31 @@ const breadcrumbSchema = {
   ]
 };
 
-const recipeFaqSchema = {
+const recipeFaqSchema = faqs.length ? {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
-  mainEntity: recipeFaqs.map((item) => ({
+  mainEntity: faqs.map((item) => ({
     '@type': 'Question',
     name: item.question,
     acceptedAnswer: { '@type': 'Answer', text: item.answer }
   }))
-};
+} : null;
 
 const recipeSchema = {
   '@context': 'https://schema.org',
   '@type': 'Recipe',
   name: recipe.title,
   description: recipe.description,
-  recipeYield: recipe.servings,
+  recipeYield: getServingsLabel(recipe),
   prepTime: `PT${totalMinutes(recipe.prepTime)}M`,
   cookTime: `PT${totalMinutes(recipe.cookTime)}M`,
   totalTime: `PT${totalMinutes(recipe.prepTime) + totalMinutes(recipe.cookTime)}M`,
-  recipeIngredient: recipe.ingredients,
-  recipeInstructions: recipe.steps.map((text: string, index: number) => ({
+  recipeIngredient: recipe.ingredients.map(ingredientText),
+  recipeInstructions: recipe.steps.map((step, index) => ({
     '@type': 'HowToStep',
     position: index + 1,
-    name: `Étape ${index + 1}`,
-    text
+    name: step.title,
+    text: step.text
   })),
   recipeCategory: recipe.category,
   recipeCuisine: 'Cambodgienne',
@@ -120,92 +81,188 @@ const recipeSchema = {
   keywords: recipe.tags.join(', '),
   inLanguage: 'fr-FR',
   url: `https://www.cuisine-du-cambodge.com/recettes/${recipe.slug}/`,
-  image: new URL(recipe.image, Astro.site ?? new URL('https://www.cuisine-du-cambodge.com')).href
+  ...(recipe.image ? { image: new URL(recipe.image, Astro.site ?? new URL('https://www.cuisine-du-cambodge.com')).href } : {})
 };
 ---
 <BaseLayout title={`${recipe.title} — Recette cambodgienne | Cuisine du Cambodge`} description={recipe.description} image={recipe.image} imageAlt={recipe.imageAlt}>
   <SiteHeader />
-  <main class="recipe-page editorial-detail recipe-detail">
-    <section class="recipe-hero-shell">
-      <header class="recipe-hero" data-reveal="up">
-        <p class="eyebrow">Recette cambodgienne</p>
+
+  <main class="recipe-v15">
+    <section class="recipe-v15-hero">
+      <div class="recipe-v15-hero-copy" data-reveal="up">
+        <p class="eyebrow">Recette cambodgienne · {recipe.category}</p>
         <h1>{recipe.title}</h1>
         {recipe.khmerName && <p class="khmer-name">{recipe.khmerName}</p>}
         <p class="recipe-intro">{recipe.intro}</p>
         <p class="recipe-context">{recipe.context}</p>
 
-        <dl class="recipe-facts" aria-label="Informations de la recette">
-          <div>
-            <CulinaryIcon name="servings" />
-            <dt>Pour</dt>
-            <dd>{recipe.servings}</dd>
-          </div>
-          <div>
-            <CulinaryIcon name="prep" />
-            <dt>Préparation</dt>
-            <dd>{recipe.prepTime}</dd>
-          </div>
-          <div>
-            <CulinaryIcon name="cook" />
-            <dt>Cuisson</dt>
-            <dd>{recipe.cookTime}</dd>
-          </div>
-          <div>
-            <CulinaryIcon name="level" />
-            <dt>Niveau</dt>
-            <dd>{recipe.difficulty}</dd>
-          </div>
+        <dl class="recipe-v15-facts" aria-label="Informations de la recette">
+          <div><dt>Pour</dt><dd>{getServingsLabel(recipe)}</dd></div>
+          <div><dt>Préparation</dt><dd>{recipe.prepTime}</dd></div>
+          <div><dt>Cuisson</dt><dd>{recipe.cookTime}</dd></div>
+          <div><dt>Niveau</dt><dd>{recipe.difficulty}</dd></div>
         </dl>
-      </header>
+      </div>
 
-      <figure class="recipe-cover" data-parallax="0.07">
-        <img src={recipe.image} srcset={imageSrcSet(recipe.image, recipe.imageWidths)} sizes="(max-width: 900px) 100vw, 52vw" alt={recipe.imageAlt} width={recipe.imageWidth} height={recipe.imageHeight} decoding="async" />
-        <figcaption>Photographie illustrative · voir les crédits en bas de page.</figcaption>
-      </figure>
+      {recipe.image ? (
+        <figure class="recipe-v15-cover" data-parallax="0.045">
+          <img
+            src={recipe.image}
+            srcset={imageSrcSet(recipe.image, recipe.imageWidths ?? [480,800,1200,1600])}
+            sizes="(max-width: 900px) 100vw, 52vw"
+            alt={recipe.imageAlt ?? recipe.title}
+            width={recipe.imageWidth ?? 1600}
+            height={recipe.imageHeight ?? 1067}
+            decoding="async"
+          />
+        </figure>
+      ) : (
+        <div class="recipe-v15-cover recipe-v15-cover-fallback" aria-label={`Illustration typographique de ${recipe.title}`}>
+          <span>{recipe.moment ?? 'Cuisine cambodgienne'}</span>
+          <strong>{recipe.title}</strong>
+        </div>
+      )}
     </section>
 
-    <section class="recipe-layout" data-reveal="up">
-      <aside class="ingredients-panel">
-        <p class="eyebrow recipe-section-label"><CulinaryIcon name="servings" size={17} /> Ingrédients</p>
-        <ul>
-          {recipe.ingredients.map((ingredient: string) => <li>{ingredient}</li>)}
-        </ul>
+    <section class="recipe-v15-kitchen">
+      <aside class="recipe-v15-sidebar">
+        <div
+          class="recipe-servings-card"
+          data-recipe-servings-root
+          data-base-servings={recipe.baseServings}
+          data-min-servings={recipe.servingsLabel ? recipe.baseServings : 1}
+          data-max-servings={recipe.servingsLabel ? recipe.baseServings : 12}
+        >
+          <div class="recipe-serving-title">
+            <h2>Ingrédients</h2>
+            {!recipe.servingsLabel && (
+              <span class="recipe-serving-current"><strong data-serving-current>{recipe.baseServings}</strong> <span data-serving-label>personnes</span></span>
+            )}
+          </div>
+
+          {!recipe.servingsLabel && (
+            <>
+              <div class="recipe-serving-controls" aria-label="Ajuster le nombre de personnes">
+                <button type="button" data-serving-action="decrease" aria-label="Retirer une personne">−</button>
+                <strong data-serving-current>{recipe.baseServings}</strong>
+                <button type="button" data-serving-action="increase" aria-label="Ajouter une personne">+</button>
+              </div>
+              <div class="recipe-serving-presets" aria-label="Portions rapides">
+                {[2,4,6,8].map((value) => (
+                  <button type="button" data-serving-value={value} aria-pressed={value === recipe.baseServings ? 'true' : 'false'}>{value} pers.</button>
+                ))}
+              </div>
+            </>
+          )}
+
+          {Object.entries(groupedIngredients).map(([group, ingredients]) => (
+            <section class="recipe-ingredient-group" aria-label={group}>
+              <h3>{group}</h3>
+              <ul class="recipe-ingredient-list">
+                {ingredients.map((ingredient) => (
+                  <li>
+                    <input type="checkbox" data-ingredient-check aria-label={`Cocher ${ingredient.name}`} />
+                    <label>
+                      <span>
+                        {ingredient.quantity !== undefined && (
+                          <>
+                            <span
+                              class="qty"
+                              data-ingredient-quantity
+                              data-base-quantity={ingredient.quantity}
+                              data-unit={ingredient.unit ?? ''}
+                              data-scalable={ingredient.scalable === false ? 'false' : 'true'}
+                            >{ingredient.quantity}</span>
+                            {ingredient.unit && <span class="unit"> {ingredient.unit}</span>}
+                          </>
+                        )}
+                      </span>
+                      <span>{ingredient.name}{ingredient.note ? ` — ${ingredient.note}` : ''}</span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+
+          {equipment.length > 0 && (
+            <section class="recipe-equipment">
+              <h3>Matériel</h3>
+              <ul>{equipment.map((item) => <li>{item}</li>)}</ul>
+            </section>
+          )}
+
+          {substitutions.length > 0 && (
+            <section class="recipe-substitutions">
+              <h3>Si vous cuisinez en France</h3>
+              <ul>{substitutions.map((item) => <li>{item}</li>)}</ul>
+            </section>
+          )}
+        </div>
       </aside>
 
-      <article class="method-panel">
-        <p class="eyebrow recipe-section-label"><CulinaryIcon name="cook" size={17} /> Méthode</p>
-        <ol>
-          {recipe.steps.map((step: string) => <li data-recipe-step>{step}</li>)}
-        </ol>
-        {keyPoints.length > 0 && (
-          <div class="recipe-keypoints">
-            <p class="eyebrow">Les points clés</p>
-            <ul>{keyPoints.map((point: string) => <li>{point}</li>)}</ul>
-          </div>
-        )}
-        {notes.length > 0 && (
-          <div class="recipe-notes">
-            <h2>À retenir</h2>
-            <ul>{notes.map((note: string) => <li>{note}</li>)}</ul>
-          </div>
-        )}
+      <article class="recipe-guided-method">
+        <header>
+          <p class="eyebrow">Cuisine guidée</p>
+          <h2>Faites la recette étape par étape.</h2>
+          <p>Chaque étape vous dit quoi faire, quoi regarder et quelle erreur éviter. Cochez au fur et à mesure.</p>
+        </header>
+
+        <div class="recipe-guided-steps">
+          {recipe.steps.map((step, index) => (
+            <section class="recipe-guided-step" data-guided-step>
+              <div class="recipe-step-number">{String(index + 1).padStart(2,'0')}</div>
+              <div>
+                <div class="recipe-step-topline">
+                  <h3>{step.title}</h3>
+                  {step.duration && <span class="recipe-step-duration">{step.duration}</span>}
+                </div>
+                <p>{step.text}</p>
+                {step.cue && <div class="recipe-step-cue"><strong>Le bon repère</strong>{step.cue}</div>}
+                {step.mistake && <div class="recipe-step-mistake"><strong>À éviter</strong>{step.mistake}</div>}
+                <button type="button" class="recipe-step-toggle" data-step-toggle aria-pressed="false">Marquer comme faite</button>
+              </div>
+            </section>
+          ))}
+        </div>
       </article>
     </section>
 
-    <section class="recipe-faq" aria-labelledby="recipe-faq-title" data-reveal="up">
-      <header>
-        <p class="eyebrow">Questions de cuisine</p>
-        <h2 id="recipe-faq-title">Les réponses qui évitent de rater la recette.</h2>
-      </header>
-      <div>
-        {recipeFaqs.map((item) => (
-          <details>
-            <summary>{item.question}<span aria-hidden="true">+</span></summary>
-            <p>{item.answer}</p>
-          </details>
-        ))}
+    {(keyPoints.length > 0 || notes.length > 0) && (
+      <div class="recipe-v15-after">
+        {keyPoints.length > 0 && (
+          <section>
+            <p class="eyebrow">Les points clés</p>
+            <h2>Ce qu’il faut retenir.</h2>
+            <ul>{keyPoints.map((point) => <li>{point}</li>)}</ul>
+          </section>
+        )}
+        {notes.length > 0 && (
+          <section>
+            <p class="eyebrow">Mémo</p>
+            <h2>Pour la prochaine fois.</h2>
+            <ul>{notes.map((note) => <li>{note}</li>)}</ul>
+          </section>
+        )}
       </div>
-    </section>
+    )}
+
+    {faqs.length > 0 && (
+      <section class="recipe-v15-faq" aria-labelledby="recipe-faq-title">
+        <header>
+          <p class="eyebrow">Questions de cuisine</p>
+          <h2 id="recipe-faq-title">Les réponses qui évitent de rater la recette.</h2>
+        </header>
+        <div>
+          {faqs.map((item) => (
+            <details>
+              <summary>{item.question}<span aria-hidden="true">+</span></summary>
+              <p>{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+    )}
 
     <GlossaryStrip entries={glossary} />
 
@@ -229,8 +286,15 @@ const recipeSchema = {
     </nav>
   </main>
 
+  <script>
+    import { initRecipeServings, initRecipeChecklist, initRecipeSteps } from '../../scripts/recipeServings';
+    initRecipeServings();
+    initRecipeChecklist();
+    initRecipeSteps();
+  </script>
+
   <script type="application/ld+json" set:html={JSON.stringify(recipeSchema)} />
-  <script type="application/ld+json" set:html={JSON.stringify(recipeFaqSchema)} />
+  {recipeFaqSchema && <script type="application/ld+json" set:html={JSON.stringify(recipeFaqSchema)} />}
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   <SiteFooter />
 </BaseLayout>
