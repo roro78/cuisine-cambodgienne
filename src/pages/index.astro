@@ -260,6 +260,7 @@ const finalRecipes = [
               type="button"
               role="tab"
               aria-selected={index === 0 ? 'true' : 'false'}
+              tabindex={index === 0 ? 0 : -1}
               aria-controls={`v14-desire-panel-${choice.key}`}
               id={`v14-desire-tab-${choice.key}`}
               data-v14-desire-tab={choice.key}
