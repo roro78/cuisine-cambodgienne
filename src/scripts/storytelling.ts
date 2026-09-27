@@ -148,7 +148,9 @@ function setupDishes(section: HTMLElement) {
           autoAlpha: alpha,
           zIndex: 20 - Math.round(magnitude * 5)
         });
-        card.classList.toggle('is-active', Math.abs(distance) < .48);
+        const isActive = Math.abs(distance) < .48;
+        card.classList.toggle('is-active', isActive);
+        setCardInteractive(card, isActive);
       });
       if (progress) gsap.set(progress, { scaleX: self.progress });
     }
@@ -255,6 +257,7 @@ function setupTastes(section: HTMLElement) {
           autoAlpha: clamp(1.08 - abs * .6),
           zIndex: 30 - Math.round(abs * 8)
         });
+        setCardInteractive(card, Math.abs(distance) < .48);
       });
     }
   });
@@ -302,7 +305,9 @@ function setupTable(section: HTMLElement) {
   const surface = section.querySelector<HTMLElement>('[data-v14-table-surface]');
   const plates = gsap.utils.toArray<HTMLElement>('[data-v14-table-plate]', section);
   const copy = section.querySelector<HTMLElement>('.v14-table-copy');
+  const cta = copy?.querySelector<HTMLAnchorElement>('a');
   if (!surface || !plates.length) return;
+  if (cta) cta.tabIndex = -1;
 
   const thresholds = [0, .17, .35, .53];
 
@@ -335,8 +340,19 @@ function setupTable(section: HTMLElement) {
           autoAlpha: reveal,
           y: (1 - reveal) * 28
         });
+        if (cta) cta.tabIndex = reveal >= .5 ? 0 : -1;
       }
     }
+  });
+}
+
+function setCardInteractive(card: HTMLElement, active: boolean) {
+  card.inert = !active;
+  if (card instanceof HTMLAnchorElement) {
+    card.tabIndex = active ? 0 : -1;
+  }
+  card.querySelectorAll<HTMLElement>('a, button, input, select, textarea, [tabindex]').forEach((control) => {
+    control.tabIndex = active ? 0 : -1;
   });
 }
 
@@ -348,10 +364,12 @@ function setupDesireTabs(reducedMotion: boolean, cleanup: Array<() => void>) {
   const panels = gsap.utils.toArray<HTMLElement>('[data-v14-desire-panel]', section);
   if (!buttons.length || !panels.length) return;
 
-  const activate = (key: string) => {
+  const activate = (key: string, moveFocus = false) => {
     buttons.forEach((button) => {
       const active = button.dataset.v14DesireTab === key;
       button.setAttribute('aria-selected', active ? 'true' : 'false');
+      button.tabIndex = active ? 0 : -1;
+      if (active && moveFocus) button.focus();
     });
 
     panels.forEach((panel) => {
@@ -367,9 +385,34 @@ function setupDesireTabs(reducedMotion: boolean, cleanup: Array<() => void>) {
     });
   };
 
-  buttons.forEach((button) => {
+  const moveTo = (index: number) => {
+    const target = buttons[(index + buttons.length) % buttons.length];
+    activate(target.dataset.v14DesireTab ?? '', true);
+  };
+
+  buttons.forEach((button, index) => {
+    button.tabIndex = button.getAttribute('aria-selected') === 'true' ? 0 : -1;
+
     const onClick = () => activate(button.dataset.v14DesireTab ?? '');
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        event.preventDefault();
+        moveTo(index + 1);
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        moveTo(index - 1);
+      } else if (event.key === 'Home') {
+        event.preventDefault();
+        moveTo(0);
+      } else if (event.key === 'End') {
+        event.preventDefault();
+        moveTo(buttons.length - 1);
+      }
+    };
+
     button.addEventListener('click', onClick);
+    button.addEventListener('keydown', onKeyDown);
     cleanup.push(() => button.removeEventListener('click', onClick));
+    cleanup.push(() => button.removeEventListener('keydown', onKeyDown));
   });
 }
