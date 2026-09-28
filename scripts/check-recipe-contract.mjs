@@ -4,6 +4,7 @@ const recipes = fs.readFileSync('src/data/recipes.ts','utf8');
 const detail = fs.readFileSync('src/pages/recettes/[slug].astro','utf8');
 const listing = fs.readFileSync('src/pages/recettes/index.astro','utf8');
 const servings = fs.readFileSync('src/scripts/recipeServings.ts','utf8');
+const recipeCss = fs.readFileSync('src/styles/recipe-v15.css','utf8');
 
 const failures = [];
 
@@ -19,6 +20,7 @@ if (!detail.includes('data-ingredient-quantity')) failures.push('Recipe detail m
 if (!detail.includes('data-ingredient-check')) failures.push('Recipe detail must expose ingredient checklist controls');
 if (!detail.includes('data-guided-step')) failures.push('Recipe detail must render guided steps');
 if (!detail.includes('Le bon repère') || !detail.includes('À éviter')) failures.push('Recipe detail must teach cues and common mistakes');
+if (!detail.includes('getGlossaryEntries(recipe.glossarySlugs ?? recipe.relatedIngredients ?? [])')) failures.push('Recipe detail must use per-recipe glossary metadata without restrictive whitelists');
 
 if (!servings.includes('currentEls.forEach')) failures.push('All visible serving counters must update together');
 if (!servings.includes('original * factor')) failures.push('Ingredient quantities must scale from base servings');
@@ -26,6 +28,19 @@ if (!servings.includes("data.scalable !== 'false'") && !servings.includes("datas
 
 if (!listing.includes('Portions ajustables') || !listing.includes('Étapes guidées')) failures.push('Recipe listing must advertise guided/scalable recipe value');
 if (!listing.includes('data-recipe-filter="soupe"') || !listing.includes('data-recipe-filter="dessert"')) failures.push('Recipe catalog must expose broader discovery filters');
+
+if (!recipeCss.includes('top:var(--site-header-offset, 4.75rem)')) failures.push('Sticky recipe filters must stay below the fixed site header');
+if (!recipeCss.includes('top:calc(var(--site-header-offset, 4.75rem) + 1rem)')) failures.push('Sticky ingredients card must stay below the fixed site header');
+if (!recipeCss.includes('.recipe-v15 .recipe-related,') || !recipeCss.includes('.recipe-v15 .recipe-back{')) failures.push('Trailing recipe content must retain horizontal page gutters');
+
+const requiredGlossaryContracts = [
+  "glossarySlugs: ['amok', 'kroeung', 'combava', 'lait-de-coco', 'sucre-de-palme']",
+  "glossarySlugs: ['poivre-de-kampot', 'lok-lak']",
+  "glossarySlugs: ['kroeung', 'citronnelle', 'combava', 'galanga', 'curcuma']"
+];
+requiredGlossaryContracts.forEach((signature) => {
+  if (!recipes.includes(signature)) failures.push(`Missing preserved glossary coverage: ${signature}`);
+});
 
 const requiredNewRecipes = ['bai-sach-chrouk','kuy-teav','num-banh-chok','num-pang','samlor-machu','prahok-ktis','chek-ktis'];
 requiredNewRecipes.forEach((slug) => {
