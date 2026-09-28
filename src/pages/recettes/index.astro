@@ -4,14 +4,14 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { recipes } from '../../data/recipes';
 import { imageSrcSet } from '../../utils/images';
-import CulinaryIcon from '../../components/CulinaryIcon.astro';
+import '../../styles/recipe-v15.css';
 
 const minutes = (value: string) => Number(value.match(/\d+/)?.[0] ?? 0);
 const collectionSchema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
   name: 'Recettes cambodgiennes',
-  description: 'Recettes cambodgiennes, techniques et plats khmers à cuisiner chez soi.',
+  description: 'Recettes cambodgiennes guidées, ajustables et pensées pour cuisiner chez soi.',
   url: 'https://www.cuisine-du-cambodge.com/recettes/',
   inLanguage: 'fr-FR',
   mainEntity: {
@@ -24,56 +24,108 @@ const collectionSchema = {
     }))
   }
 };
+
+const toneMap: Record<string,string> = {
+  river: '--tone-a:#24465a;--tone-b:#8fb6b5',
+  market: '--tone-a:#7a3f2f;--tone-b:#d7a24e',
+  pepper: '--tone-a:#302f24;--tone-b:#82915f',
+  coconut: '--tone-a:#6f5a43;--tone-b:#e0c79e',
+  herbs: '--tone-a:#31533b;--tone-b:#9cb96d',
+  fire: '--tone-a:#6c2f22;--tone-b:#dc8a44',
+  rice: '--tone-a:#7a6849;--tone-b:#d9c9a0',
+  sunset: '--tone-a:#884d38;--tone-b:#e0a05f'
+};
 ---
-<BaseLayout title="Recettes cambodgiennes | Cuisine du Cambodge" description="Découvrez les recettes cambodgiennes et les techniques qui permettent de retrouver les saveurs de la cuisine khmère.">
+<BaseLayout
+  title="Recettes cambodgiennes guidées | Cuisine du Cambodge"
+  description="Découvrez des recettes cambodgiennes guidées pas à pas : portions ajustables, repères de cuisson, substitutions et conseils pour cuisiner chez soi."
+>
   <SiteHeader />
-  <main class="listing-page editorial-listing recipes-listing">
-    <header class="page-intro page-intro-split" data-reveal="up">
-      <p class="eyebrow">Cuisiner</p>
-      <h1>Recettes cambodgiennes</h1>
-      <p>Des plats à faire pour de vrai : amok crémeux, bœuf saisi, kroeung très parfumé, sauces fraîches et riz chaud. Des recettes pensées pour donner envie de passer en cuisine.</p>
-      <div class="page-intro-visual" data-parallax="0.10"><img src={recipes[0].image} srcset={imageSrcSet(recipes[0].image, recipes[0].imageWidths)} sizes="(max-width: 900px) 100vw, 58vw" alt={recipes[0].imageAlt} width={recipes[0].imageWidth} height={recipes[0].imageHeight} fetchpriority="high" decoding="async" /></div>
-    </header>
+
+  <main class="recipes-v15">
+    <section class="recipes-journey-hero">
+      <div class="recipes-journey-copy" data-reveal="up">
+        <p class="eyebrow">Cuisiner le Cambodge</p>
+        <h1>Des recettes qui vous accompagnent vraiment.</h1>
+        <p>Street food, plats familiaux, soupes, poisson, desserts : choisissez une envie, ajustez les portions et cuisinez avec des repères concrets plutôt qu’une simple liste d’étapes.</p>
+        <div class="recipes-journey-stamp" aria-label="Atouts des recettes">
+          <span>{recipes.length} recettes</span>
+          <span>Portions ajustables</span>
+          <span>Étapes guidées</span>
+          <span>Substitutions en France</span>
+        </div>
+      </div>
+
+      <div class="recipes-journey-visual" aria-hidden="true">
+        <figure><img src="/images/cuisine/kep-market-1600.webp" srcset={imageSrcSet('/images/cuisine/kep-market-1600.webp',[480,800,1200,1600])} sizes="35vw" alt="" width="1600" height="1067" decoding="async" /></figure>
+        <figure><img src="/images/cuisine/amok-1600.webp" srcset={imageSrcSet('/images/cuisine/amok-1600.webp',[480,800,1200,1600])} sizes="30vw" alt="" width="3888" height="2592" decoding="async" /></figure>
+      </div>
+    </section>
 
     <section class="recipe-filter-bar" aria-label="Filtrer les recettes" data-reveal="up">
       <button type="button" class="is-active" data-recipe-filter="all" aria-pressed="true">Toutes</button>
       <button type="button" data-recipe-filter="rapide" aria-pressed="false">≤ 30 min</button>
-      <button type="button" data-recipe-filter="facile" aria-pressed="false">Facile</button>
-      <button type="button" data-recipe-filter="intermediaire" aria-pressed="false">Intermédiaire</button>
+      <button type="button" data-recipe-filter="facile" aria-pressed="false">Faciles</button>
       <button type="button" data-recipe-filter="poisson" aria-pressed="false">Poisson</button>
       <button type="button" data-recipe-filter="bœuf" aria-pressed="false">Bœuf</button>
-      <button type="button" data-recipe-filter="base" aria-pressed="false">Bases</button>
+      <button type="button" data-recipe-filter="porc" aria-pressed="false">Porc</button>
+      <button type="button" data-recipe-filter="soupe" aria-pressed="false">Soupes</button>
+      <button type="button" data-recipe-filter="street" aria-pressed="false">Street food</button>
+      <button type="button" data-recipe-filter="dessert" aria-pressed="false">Desserts</button>
     </section>
+
     <p class="recipe-filter-status" aria-live="polite" data-filter-status>{recipes.length} recettes</p>
 
-    <section class="recipe-editorial-list" aria-label="Recettes" data-recipe-grid>
-      {recipes.map((recipe, index) => (
+    <section class="recipe-v15-grid" aria-label="Recettes" data-recipe-grid>
+      {recipes.map((recipe) => (
         <a
-          class:list={['recipe-feature', { 'recipe-feature--reverse': index % 2 === 1, 'recipe-feature--wide': index === 2 }]}
+          class="recipe-v15-card"
           href={`/recettes/${recipe.slug}/`}
           data-recipe-card
           data-difficulty={recipe.difficulty.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}
-          data-tags={recipe.tags.join(' ').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}
+          data-tags={`${recipe.tags.join(' ')} ${recipe.category}`.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}
           data-total-minutes={minutes(recipe.prepTime) + minutes(recipe.cookTime)}
           data-reveal="up"
         >
-          <figure class="recipe-feature-media" data-parallax="0.08">
-            <img src={recipe.image} srcset={imageSrcSet(recipe.image, recipe.imageWidths)} sizes={index === 2 ? '100vw' : '(max-width: 800px) 100vw, 56vw'} alt={recipe.imageAlt} width={recipe.imageWidth} height={recipe.imageHeight} loading="lazy" decoding="async" />
-          </figure>
-          <div class="recipe-feature-copy">
-            <span class="recipe-feature-index">{String(index + 1).padStart(2, '0')}</span>
-            <div class="recipe-card-facts">
-              <span><CulinaryIcon name="prep" size={16} />{recipe.prepTime}</span>
-              <span><CulinaryIcon name="level" size={16} />{recipe.difficulty}</span>
+          {recipe.image ? (
+            <figure class="recipe-v15-card-media">
+              <img
+                src={recipe.image}
+                srcset={imageSrcSet(recipe.image, recipe.imageWidths ?? [480,800,1200,1600])}
+                sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 34vw"
+                alt={recipe.imageAlt ?? recipe.title}
+                width={recipe.imageWidth ?? 1600}
+                height={recipe.imageHeight ?? 1067}
+                loading="lazy"
+                decoding="async"
+              />
+            </figure>
+          ) : (
+            <div class="recipe-v15-card-fallback" style={toneMap[recipe.visualTone ?? 'market']}>
+              <strong>{recipe.title}</strong>
+            </div>
+          )}
+
+          <div class="recipe-v15-card-copy">
+            <div class="recipe-v15-card-meta">
+              <span>{recipe.category}</span>
+              <span>{recipe.prepTime} + {recipe.cookTime}</span>
+              <span>{recipe.difficulty}</span>
             </div>
             <h2>{recipe.title}</h2>
             <p>{recipe.intro}</p>
-            <span class="text-link">Voir la recette</span>
+            <span class="recipe-v15-card-cta">Cuisiner cette recette</span>
           </div>
         </a>
       ))}
     </section>
   </main>
+
+  <script>
+    import { initRecipeFilters } from '../../scripts/recipeFilters';
+    initRecipeFilters();
+  </script>
+
   <script type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
   <SiteFooter />
 </BaseLayout>

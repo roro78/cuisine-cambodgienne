@@ -81,9 +81,9 @@ const marketStops = [
 ];
 
 const tasteCards = [
-  { number: '01', title: 'Amok Trey', text: 'Doux, parfumé, crémeux.', image: images.amok, alt: 'Amok Trey cambodgien', href: '/recettes/amok-trey/' },
-  { number: '02', title: 'Lok Lak', text: 'Saisi, poivré, acidulé.', image: images.lokLak, alt: 'Lok lak cambodgien', href: '/recettes/lok-lak/' },
-  { number: '03', title: 'Cuisine des marchés', text: 'Vive, spontanée, généreuse.', image: images.market, alt: 'Marché cambodgien', href: '/culture/' }
+  { number: '01', title: 'Marché de Kep', text: 'Poissons, fruits, herbes et paniers : le Cambodge commence aussi par ce que l’on voit et sent.', image: images.market, alt: 'Marché de Kep au Cambodge', href: '/culture/' },
+  { number: '02', title: 'Poivre de Kampot', text: 'Une escale plus terrienne : poivriers, chaleur et parfum floral.', image: images.kampot, alt: 'Poivre de Kampot sur son plant', href: '/ingredients/poivre-de-kampot/' },
+  { number: '03', title: 'À table', text: 'Plusieurs plats au centre, du riz, des sauces et le plaisir de goûter un peu de tout.', image: images.amok, alt: 'Plat cambodgien servi à table', href: '/culture/' }
 ];
 
 const desireChoices = [
@@ -113,13 +113,13 @@ const finalRecipes = [
         </div>
         <div class="v14-hero-shade" aria-hidden="true"></div>
         <div class="v14-hero-copy">
-          <p class="v14-kicker"><span aria-hidden="true">🇰🇭</span> Cuisine du Cambodge</p>
+          <p class="v14-kicker"><span aria-hidden="true">🇰🇭</span> Du Mékong aux marchés de Kep</p>
           <h1 id="v14-hero-title">
             <span>Découvrez</span>
             <span>la cuisine</span>
             <span>cambodgienne</span>
           </h1>
-          <p>Des plats généreux, des marchés vivants, des saveurs franches et des recettes que l’on peut vraiment refaire chez soi.</p>
+          <p>Un voyage par les marchés, les gestes, les parfums et les plats — puis des recettes guidées pour ramener un peu du Cambodge dans votre cuisine.</p>
         </div>
 
         <div class="v14-hero-orbit" aria-hidden="true">
@@ -216,9 +216,9 @@ const finalRecipes = [
     <section class="v14-tastes v14-scroll-section" data-v14-section data-v14-tastes aria-labelledby="v14-tastes-title">
       <div class="v14-sticky v14-tastes-stage">
         <header class="v14-section-head">
-          <p class="v14-kicker">04 — À goûter</p>
-          <h2 id="v14-tastes-title">Au moins une fois.</h2>
-          <p>Des plats et des saveurs que l’on retient dès la première bouchée.</p>
+          <p class="v14-kicker">04 — Le voyage continue</p>
+          <h2 id="v14-tastes-title">Trois escales gourmandes.</h2>
+          <p>Kep, Kampot, puis la table : trois façons différentes d’entrer dans la cuisine cambodgienne.</p>
         </header>
         <div class="v14-taste-stack">
           {tasteCards.map((card, index) => (
@@ -316,7 +316,7 @@ const finalRecipes = [
       <header data-reveal="up">
         <p class="v14-kicker">08 — Maintenant</p>
         <h2 id="v14-recipes-title">Qu’est-ce qu’on cuisine aujourd’hui ?</h2>
-        <p>Deux recettes pour commencer, puis tout le reste à explorer.</p>
+        <p>Dix recettes sont maintenant disponibles, avec portions ajustables et étapes guidées. Commencez par deux incontournables ou explorez tout le catalogue.</p>
       </header>
       <div class="v14-recipe-grid">
         {finalRecipes.map((recipe) => (
