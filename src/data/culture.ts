@@ -33,16 +33,16 @@ export const cultureArticles: CultureArticle[] = [
         ]
       },
       {
-        title: 'Vert, noir, rouge, blanc : quatre lectures du même poivre',
+        title: 'Vert, noir, rouge, blanc : quatre façons de le découvrir',
         paragraphs: [
           'Le stade de maturité et le traitement changent profondément le profil aromatique. Le vert frais est végétal et juteux ; le noir développe davantage de chaleur ; le rouge est plus mûr et fruité ; le blanc se montre plus direct.',
-          'En cuisine, cette diversité permet de choisir le poivre comme on choisirait une herbe ou une acidité. Le geste le plus simple reste souvent le meilleur : moudre au dernier moment pour conserver les parfums.'
+          'En cuisine, chaque maturité apporte quelque chose de différent. Le plus simple est souvent le meilleur : choisir le poivre selon le plat et le moudre au dernier moment pour garder tout son parfum.'
         ]
       },
       {
         title: 'Kampot, Kep et les produits de la mer',
         paragraphs: [
-          'Dans le sud du Cambodge, le poivre est naturellement associé aux produits de la mer et notamment aux préparations de crabe. Cette proximité entre terroir, marché et cuisine explique pourquoi le poivre peut devenir le cœur d’un plat.',
+          'Dans le sud du Cambodge, le poivre accompagne naturellement les produits de la mer, notamment le crabe. À Kep et Kampot, cette association est devenue emblématique : peu d’ingrédients, mais des produits très parfumés et très frais.',
           'À la maison, on peut retrouver cette logique avec un poisson, des crevettes ou un bœuf sauté : peu d’ingrédients, une cuisson juste, puis le poivre ajouté suffisamment tard pour rester expressif.'
         ]
       }
@@ -66,24 +66,24 @@ export const cultureArticles: CultureArticle[] = [
     readingTime: '6 min',
     sections: [
       {
-        title: 'Une base, plusieurs expressions',
+        title: 'Une même famille, plusieurs recettes',
         paragraphs: [
           'Le terme kroeung désigne différentes pâtes d’herbes, de racines et d’épices utilisées comme fondation aromatique. Citronnelle, galanga, curcuma, combava, ail ou échalote peuvent entrer dans leur composition selon le plat.',
-          'La couleur et le profil aromatique changent avec les ingrédients dominants. L’important est donc moins de chercher une formule unique que de comprendre la logique de construction.'
+          'La couleur et le parfum changent selon les ingrédients utilisés. Il n’existe donc pas une seule formule à apprendre par cœur : mieux vaut comprendre le rôle de chaque aromate et ajuster selon le plat.'
         ]
       },
       {
         title: 'Le geste compte autant que la liste',
         paragraphs: [
           'Couper finement puis piler progressivement modifie la texture et permet aux fibres et aux huiles aromatiques de se mélanger intimement. Les ingrédients les plus durs sont généralement travaillés avant les plus tendres.',
-          'Cette étape explique pourquoi le kroeung est autant une technique de base qu’un mélange d’ingrédients. Une pâte bien travaillée parfume le plat de façon homogène et évite les fibres désagréables en bouche.'
+          'C’est pour cela que le geste compte autant que les ingrédients. Un kroeung bien pilé parfume le plat de façon régulière et évite de retrouver des fibres trop dures en bouche.'
         ]
       },
       {
         title: 'Sentir avant de cuire',
         paragraphs: [
           'Un bon repère consiste à sentir la pâte avant qu’elle ne touche la casserole. La citronnelle doit être nette, le galanga présent sans dominer et le combava rester précis.',
-          'Après cuisson, les notes les plus vives s’arrondissent. C’est ce passage du frais au chaud qui donne au kroeung sa profondeur et permet de comprendre pourquoi il structure autant de plats.'
+          'À la cuisson, les parfums deviennent plus doux et se mêlent davantage. C’est ce qui donne au kroeung cette saveur chaude, fraîche et très reconnaissable dans de nombreux plats.'
         ]
       }
     ],
@@ -98,16 +98,16 @@ export const cultureArticles: CultureArticle[] = [
   },
   {
     slug: 'comprendre-amok',
-    title: 'Amok : comprendre la logique du plat',
+    title: 'Amok : comprendre ce qui fait sa texture et son parfum',
     eyebrow: 'Plats',
-    intro: 'Derrière le nom Amok se trouve une logique de cuisson douce, de kroeung et de texture liée qui aide à mieux réussir le plat.',
+    intro: 'L’amok repose sur quelques éléments simples : un kroeung parfumé, du lait de coco et une cuisson douce qui garde le poisson tendre.',
     seoDescription: 'Amok cambodgien : comprendre le rôle du kroeung, du lait de coco et de la cuisson vapeur pour réussir une texture liée, parfumée et encore souple.',
     readingTime: '5 min',
     sections: [
       {
         title: 'Une préparation liée et parfumée',
         paragraphs: [
-          'Dans l’amok de poisson, le kroeung construit la base aromatique, le lait de coco arrondit l’ensemble et la cuisson douce permet à la préparation de prendre sans devenir sèche.',
+          'Dans l’amok de poisson, le kroeung apporte les parfums, le lait de coco donne de l’onctuosité et la cuisson douce permet à la préparation de prendre sans dessécher le poisson.',
           'Le résultat attendu n’est pas celui d’un curry très liquide : la préparation doit garder une texture souple, presque tremblante, qui enrobe le poisson.'
         ]
       },
@@ -122,7 +122,7 @@ export const cultureArticles: CultureArticle[] = [
         title: 'Ce qu’il faut retenir en cuisine',
         paragraphs: [
           'Goûter la base avant d’ajouter le poisson, travailler un kroeung assez fin et arrêter la cuisson dès que la préparation est prise sont trois repères simples pour progresser.',
-          'Les variantes sont nombreuses ; comprendre cette architecture permet d’ajuster la recette plus intelligemment que de suivre une liste au gramme près.'
+          'Les variantes sont nombreuses. Une fois que l’on comprend la texture recherchée et l’équilibre des saveurs, on peut adapter la recette beaucoup plus facilement.'
         ]
       }
     ],
@@ -139,15 +139,15 @@ export const cultureArticles: CultureArticle[] = [
     slug: 'kep-marche-crabe-poivre',
     title: 'Kep : quand le marché rencontre le poivre et la mer',
     eyebrow: 'Marchés',
-    intro: 'À Kep, produits de la mer, marché et poivre de Kampot racontent une cuisine qui naît d’abord de ce qui est frais et disponible.',
+    intro: 'À Kep, le marché, les produits de la mer et le poivre de Kampot donnent envie de cuisiner simplement, avec ce qui est frais et plein de goût.',
     seoDescription: 'Kep au Cambodge : marché, crabe, produits de la mer et poivre de Kampot, pour comprendre une cuisine fondée sur la fraîcheur, le terroir et les cuissons courtes.',
     readingTime: '5 min',
     sections: [
       {
         title: 'Le marché comme point de départ',
         paragraphs: [
-          'Dans une cuisine fortement liée aux produits frais, le marché n’est pas seulement un lieu d’achat : il décide souvent de ce que l’on va cuisiner. Poissons, crustacés, herbes, fruits et légumes imposent leur saison et leur qualité.',
-          'Cette logique encourage des cuissons courtes et des assaisonnements précis. Quand le produit est bon, il n’a pas besoin d’être noyé sous une sauce compliquée.'
+          'Quand on cuisine avec des produits frais, le marché donne souvent l’idée du repas. Poissons, crustacés, herbes, fruits et légumes changent selon la saison et les arrivages.',
+          'Cela donne envie de cuisiner simplement : une cuisson juste, quelques aromates et un assaisonnement bien dosé suffisent souvent quand le produit est bon.'
         ]
       },
       {
@@ -160,8 +160,8 @@ export const cultureArticles: CultureArticle[] = [
       {
         title: 'Ce que l’on peut apprendre de cette cuisine',
         paragraphs: [
-          'Acheter moins d’ingrédients mais les choisir mieux change la façon de cuisiner. On commence par le produit, puis on construit autour de lui l’acidité, le sel, les aromates et la chaleur.',
-          'C’est une bonne porte d’entrée dans la cuisine cambodgienne : apprendre à observer et goûter avant de chercher des recettes de plus en plus complexes.'
+          'Choisir de bons produits change tout. Ensuite, il suffit d’ajuster le sel, l’acidité, les aromates et la cuisson pour les mettre en valeur.',
+          'C’est une belle façon de découvrir la cuisine cambodgienne : commencer par regarder, sentir et goûter avant de vouloir compliquer les recettes.'
         ]
       }
     ],
@@ -186,8 +186,8 @@ export const cultureArticles: CultureArticle[] = [
       {
         title: 'Une saveur qui dépasse l’odeur',
         paragraphs: [
-          'À l’ouverture, le prahok peut sembler impressionnant. Mais son rôle culinaire apparaît surtout quand il est dosé dans un ensemble : il renforce la profondeur et donne une sensation de plat plus complet.',
-          'La cuisson arrondit certaines notes et permet à la fermentation de se fondre avec coco, aromates, légumes ou viande.'
+          'À l’ouverture, le prahok peut impressionner par son odeur. En petite quantité dans un plat, il apporte surtout du sel, de l’umami et une saveur fermentée qui donne beaucoup de caractère.',
+          'À la cuisson, son goût devient plus doux et se mêle mieux au coco, aux aromates, aux légumes ou à la viande.'
         ]
       },
       {
@@ -200,8 +200,8 @@ export const cultureArticles: CultureArticle[] = [
       {
         title: 'Avec quoi le découvrir',
         paragraphs: [
-          'Pour apprivoiser le prahok, les légumes crus ou croquants, les sauces à base de coco et les préparations mijotées sont de bons terrains d’apprentissage.',
-          'Le contraste entre fraîcheur végétale et fermentation puissante rend son intérêt beaucoup plus évident que lorsqu’on le goûte seul.'
+          'Pour découvrir le prahok, commencez avec des légumes croquants, une sauce au coco ou un plat mijoté : ce sont des associations faciles à apprécier.',
+          'La fraîcheur des légumes et des herbes équilibre très bien son goût fermenté, surtout quand on n’a pas l’habitude de le manger.'
         ]
       }
     ],
@@ -230,10 +230,10 @@ export const cultureArticles: CultureArticle[] = [
         ]
       },
       {
-        title: 'Contraster plutôt que tout répéter',
+        title: 'Associer des goûts et des textures différents',
         paragraphs: [
-          'Un repas devient plus intéressant quand les éléments ne racontent pas tous la même chose. Un plat chaud et riche peut être accompagné de crudités, d’herbes fraîches ou d’un condiment acide.',
-          'Cette alternance de chaud, frais, doux, salé et acidulé donne du rythme à la table et évite la sensation de lourdeur.'
+          'Un repas est plus agréable quand les plats se complètent. Un plat chaud et généreux peut être servi avec des crudités, des herbes fraîches ou un condiment acidulé.',
+          'Passer d’une bouchée chaude à quelque chose de frais, de doux à acidulé, rend le repas plus léger et donne envie de goûter à tout.'
         ]
       },
       {
