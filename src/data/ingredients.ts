@@ -113,7 +113,7 @@ export const ingredientGuides: IngredientGuide[] = [
     choose: ['Choisir un produit clairement étiqueté et adapté à l’usage prévu.', 'Vérifier la texture et la présence éventuelle d’assaisonnements déjà ajoutés.', 'Pour débuter, un produit homogène et facile à doser est plus simple à apprivoiser.'],
     keep: ['Conserver au réfrigérateur après ouverture.', 'Toujours utiliser un ustensile propre pour éviter les contaminations.', 'Fermer hermétiquement pour limiter les odeurs dans le réfrigérateur.'],
     pairings: ['Porc', 'Légumes croquants', 'Aubergine', 'Herbes fraîches', 'Lait de coco', 'Piment'],
-    mistakes: ['Ajouter du sel avant d’avoir goûté.', 'Le doser comme une sauce légère.', 'Réduire le prahok à son odeur : son intérêt est surtout la profondeur qu’il apporte au plat.'],
+    mistakes: ['Ajouter du sel avant d’avoir goûté.', 'Le doser comme une sauce légère.', 'S’arrêter à son odeur : bien utilisé, il apporte surtout du sel, de l’umami et beaucoup de caractère.'],
     seoKeywords: ['prahok', 'poisson fermenté cambodgien', 'condiment khmer', 'umami cambodgien', 'prahok cuisine'],
     image: '/images/cuisine/prahok-1600.webp',
     imageAlt: 'Prahok ktis cambodgien servi avec des légumes',
