@@ -15,7 +15,7 @@ export const glossaryEntries: GlossaryEntry[] = [
     short: 'Famille de pâtes fraîches d’aromates pilés. Citronnelle, galanga, curcuma, combava, ail et échalote peuvent s’y retrouver selon le plat.',
     href: '/ingredients/kroeung/',
     family: 'Base aromatique',
-    culinaryUse: 'Base des currys, marinades, soupes et de l’amok ; il se travaille avant la cuisson pour diffuser les huiles aromatiques.',
+    culinaryUse: 'On l’utilise dans les currys, marinades, soupes et amok. Il se prépare avant la cuisson pour bien libérer le parfum des aromates.',
     cue: 'La pâte doit sentir frais et citronné avant même d’être chauffée.'
   },
   {
@@ -24,8 +24,8 @@ export const glossaryEntries: GlossaryEntry[] = [
     short: 'Préparation cambodgienne de poisson fermenté, salée et très umami. Elle s’utilise comme assaisonnement, dans des sauces ou comme composante forte d’un plat.',
     href: '/ingredients/prahok/',
     family: 'Condiment',
-    culinaryUse: 'À doser comme une source de sel et d’umami dans une sauce, une soupe ou une préparation mijotée.',
-    cue: 'Commencer très petit : son intensité monte vite et sa salinité varie selon le produit.'
+    culinaryUse: 'Ajoutez-en peu à peu dans une sauce, une soupe ou un plat mijoté : il apporte à la fois du sel et beaucoup d’umami.',
+    cue: 'Commencez par une petite quantité : son goût est puissant et il peut être plus ou moins salé selon le produit.'
   },
   {
     slug: 'poivre-de-kampot',
@@ -42,7 +42,7 @@ export const glossaryEntries: GlossaryEntry[] = [
     short: 'Pulpe acidulée et fruitée utilisée pour apporter une acidité ronde aux soupes, sauces et préparations aigres-douces.',
     href: '/ingredients/tamarin/',
     family: 'Produit',
-    culinaryUse: 'Diluer la pulpe, filtrer puis ajouter progressivement aux sauces et soupes pour construire l’acidité.',
+    culinaryUse: 'Diluez la pulpe, filtrez-la puis ajoutez-la petit à petit dans les sauces et les soupes jusqu’à obtenir l’acidité qui vous plaît.',
     cue: 'L’acidité est plus ronde que celle du citron et laisse une légère note fruitée.'
   },
   {
@@ -75,23 +75,23 @@ export const glossaryEntries: GlossaryEntry[] = [
     short: 'Agrume très parfumé. Le zeste et les feuilles apportent une note verte, citronnée et très persistante.',
     family: 'Herbe & racine',
     culinaryUse: 'Prélever très peu de zeste sans la partie blanche ; les feuilles se cisèlent très finement ou infusent.',
-    cue: 'Une petite quantité suffit : son parfum vert et citronné doit rester en arrière-plan, pas dominer.'
+    cue: 'Une petite quantité suffit : on doit sentir son parfum citronné sans qu’il couvre les autres aromates.'
   },
   {
     slug: 'sucre-de-palme',
     term: 'Sucre de palme',
     short: 'Sucre aux notes caramélisées utilisé pour arrondir l’acidité, le piment et les saveurs salées sans donner une sensation simplement sucrée.',
     family: 'Condiment',
-    culinaryUse: 'À utiliser pour arrondir une sauce, équilibrer le tamarin ou calmer un condiment salé.',
-    cue: 'Chercher une douceur caramélisée qui fond dans l’ensemble plutôt qu’un goût franchement sucré.'
+    culinaryUse: 'Il adoucit une sauce trop vive, équilibre le tamarin et atténue un assaisonnement un peu trop salé.',
+    cue: 'Le plat doit paraître plus rond, sans donner l’impression d’avoir simplement ajouté du sucre.'
   },
   {
     slug: 'sauce-poisson',
     term: 'Sauce de poisson',
     short: 'Condiment liquide salé et fermenté utilisé pour assaisonner, renforcer l’umami et équilibrer une sauce ou une marinade.',
     family: 'Condiment',
-    culinaryUse: 'À ajouter par petites touches dans marinades, sauces et bases de cuisson comme source de sel et d’umami.',
-    cue: 'Après ajout, le plat doit paraître plus profond et plus savoureux, pas sentir uniquement la sauce de poisson.'
+    culinaryUse: 'Ajoutez-la par petites touches dans les marinades, les sauces et les plats mijotés : elle sale et renforce le goût.',
+    cue: 'Après l’ajout, le plat doit être plus savoureux sans goûter uniquement la sauce de poisson.'
   },
   {
     slug: 'lait-de-coco',
