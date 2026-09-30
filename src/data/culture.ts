@@ -35,7 +35,7 @@ export const cultureArticles: CultureArticle[] = [
       {
         title: 'Vert, noir, rouge, blanc : quatre façons de le découvrir',
         paragraphs: [
-          'Le stade de maturité et le traitement changent profondément le profil aromatique. Le vert frais est végétal et juteux ; le noir développe davantage de chaleur ; le rouge est plus mûr et fruité ; le blanc se montre plus direct.',
+          'La maturité et la façon dont le poivre est préparé changent nettement son goût. Le vert frais est végétal et juteux ; le noir est plus chaud ; le rouge plus mûr et fruité ; le blanc plus franc.',
           'En cuisine, chaque maturité apporte quelque chose de différent. Le plus simple est souvent le meilleur : choisir le poivre selon le plat et le moudre au dernier moment pour garder tout son parfum.'
         ]
       },
@@ -43,7 +43,7 @@ export const cultureArticles: CultureArticle[] = [
         title: 'Kampot, Kep et les produits de la mer',
         paragraphs: [
           'Dans le sud du Cambodge, le poivre accompagne naturellement les produits de la mer, notamment le crabe. À Kep et Kampot, cette association est devenue emblématique : peu d’ingrédients, mais des produits très parfumés et très frais.',
-          'À la maison, on peut retrouver cette logique avec un poisson, des crevettes ou un bœuf sauté : peu d’ingrédients, une cuisson juste, puis le poivre ajouté suffisamment tard pour rester expressif.'
+          'À la maison, on peut faire la même chose avec un poisson, des crevettes ou un bœuf sauté : peu d’ingrédients, une cuisson juste et le poivre ajouté assez tard pour garder tout son parfum.'
         ]
       }
     ],
@@ -68,7 +68,7 @@ export const cultureArticles: CultureArticle[] = [
       {
         title: 'Une même famille, plusieurs recettes',
         paragraphs: [
-          'Le terme kroeung désigne différentes pâtes d’herbes, de racines et d’épices utilisées comme fondation aromatique. Citronnelle, galanga, curcuma, combava, ail ou échalote peuvent entrer dans leur composition selon le plat.',
+          'Le terme kroeung désigne différentes pâtes d’herbes, de racines et d’épices qui servent de base parfumée à de nombreux plats. Citronnelle, galanga, curcuma, combava, ail ou échalote peuvent entrer dans leur composition selon la recette.',
           'La couleur et le parfum changent selon les ingrédients utilisés. Il n’existe donc pas une seule formule à apprendre par cœur : mieux vaut comprendre le rôle de chaque aromate et ajuster selon le plat.'
         ]
       },
@@ -115,7 +115,7 @@ export const cultureArticles: CultureArticle[] = [
         title: 'Pourquoi la vapeur change tout',
         paragraphs: [
           'Une chaleur douce et régulière aide les œufs et le coco à lier la préparation progressivement. Une cuisson trop forte resserre rapidement la texture et peut séparer les matières grasses.',
-          'La vapeur est donc moins un effet spectaculaire qu’un outil de précision : elle permet d’obtenir une cuisson régulière jusque dans les portions épaisses.'
+          'La vapeur permet surtout une cuisson douce et régulière, même lorsque la préparation est assez épaisse.'
         ]
       },
       {
@@ -219,7 +219,7 @@ export const cultureArticles: CultureArticle[] = [
     title: 'Comment se construit un repas cambodgien',
     eyebrow: 'À table',
     intro: 'Riz, plat principal, légumes, herbes, sauces et condiments : comprendre la table aide à cuisiner des recettes qui fonctionnent ensemble.',
-    seoDescription: 'Comment composer un repas cambodgien : rôle du riz, plats chauds, légumes, herbes, sauces et condiments pour construire une table équilibrée et gourmande.',
+    seoDescription: 'Comment composer un repas cambodgien : rôle du riz, plats chauds, légumes, herbes, sauces et condiments pour préparer une table équilibrée et gourmande.',
     readingTime: '5 min',
     sections: [
       {
