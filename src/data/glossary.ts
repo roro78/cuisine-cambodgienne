@@ -64,7 +64,7 @@ export const glossaryEntries: GlossaryEntry[] = [
   {
     slug: 'curcuma',
     term: 'Curcuma frais',
-    short: 'Rhizome terreux, chaud et légèrement amer qui apporte couleur et profondeur à certaines pâtes de kroeung.',
+    short: 'Rhizome terreux, chaud et légèrement amer qui apporte sa belle couleur jaune et une saveur plus chaude à certains kroeung.',
     family: 'Herbe & racine',
     culinaryUse: 'À piler dans certains kroeung pour apporter couleur, chaleur et une légère amertume.',
     cue: 'Le frais colore immédiatement les doigts et dégage une odeur terreuse plus vive que la poudre.'
