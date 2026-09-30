@@ -23,8 +23,10 @@ if (!header.includes('href="/glossaire/"') || !header.includes('href="/apprendre
 if (!learn.includes('Les ateliers') || !learn.includes('On n’apprend pas une cuisine en mémorisant des recettes.')) {
   failures.push('Learning page must remain workshop-led, not recipe-led');
 }
-if ((learn.match(/v16-workshop/g) ?? []).length < 6) {
-  failures.push('Workshop page must expose the V16 hands-on workshop structure');
+const workshopBlock = learn.match(/const workshops = \[([\s\S]*?)\];\n\nconst schema/)?.[1] ?? '';
+const workshopCount = (workshopBlock.match(/\bn:'\d{2}'/g) ?? []).length;
+if (workshopCount !== 6) {
+  failures.push(`Workshop page must expose exactly 6 V16 workshops, found ${workshopCount}`);
 }
 
 if (!culture.includes('Carnets du Cambodge') || !culture.includes('Des marchés du matin aux grandes tables.')) {
