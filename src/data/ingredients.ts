@@ -30,7 +30,7 @@ export const ingredientGuides: IngredientGuide[] = [
     deepDive: [
       'Pour préparer un kroeung, on commence par les ingrédients les plus fibreux — citronnelle et galanga — puis on ajoute curcuma, zeste de combava, ail et échalote. Cet ordre facilite le pilage et aide à obtenir une pâte fine.',
       'La texture compte autant que les ingrédients. Si la pâte reste trop grossière, elle sera fibreuse en bouche ; si on ajoute trop d’eau, les parfums seront moins présents. Au mortier, l’odeur devient de plus en plus intense à mesure que l’on pile.',
-      'Il existe plusieurs profils de kroeung. La version jaune met davantage en avant le curcuma ; d’autres préparations jouent sur les herbes, le piment ou les proportions de racines. Mieux vaut comprendre la logique que chercher une formule unique.'
+      'Il existe plusieurs sortes de kroeung. La version jaune met davantage en avant le curcuma ; d’autres utilisent plus d’herbes, de piment ou des proportions différentes de racines. Mieux vaut comprendre ce que chaque aromate apporte que chercher une formule unique.'
     ],
     profile: ['Citronné et végétal', 'Chaud et terreux', 'Très aromatique', 'Frais avant cuisson', 'Plus rond après cuisson'],
     uses: ['Amok', 'Soupes et currys', 'Marinades', 'Grillades', 'Sautés parfumés'],
