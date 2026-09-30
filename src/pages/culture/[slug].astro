@@ -81,7 +81,7 @@ const breadcrumbSchema = {
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://www.cuisine-du-cambodge.com/' },
-    { '@type': 'ListItem', position: 2, name: 'Culture', item: 'https://www.cuisine-du-cambodge.com/culture/' },
+    { '@type': 'ListItem', position: 2, name: 'Carnets', item: 'https://www.cuisine-du-cambodge.com/culture/' },
     { '@type': 'ListItem', position: 3, name: article.title, item: `https://www.cuisine-du-cambodge.com/culture/${article.slug}/` }
   ]
 };
@@ -124,8 +124,8 @@ const breadcrumbSchema = {
 
     {relatedContent.length > 0 && (
       <section class="culture-related" data-reveal="up">
-        <p class="eyebrow">Pour continuer</p>
-        <h2>Passer de l’histoire à la cuisine</h2>
+        <p class="eyebrow">Envie d’aller plus loin ?</p>
+        <h2>Retrouvez les recettes et les ingrédients liés à ce carnet</h2>
         <div class="culture-related-links">
           {relatedContent.map((item: any) => {
             const isRecipe = 'prepTime' in item;
@@ -142,7 +142,7 @@ const breadcrumbSchema = {
       </section>
     )}
 
-    <a class="text-link" href="/culture/">← Tous les articles</a>
+    <a class="text-link" href="/culture/">← Tous les carnets</a>
   </main>
   <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
