@@ -72,11 +72,17 @@ if (!storytelling.includes('if (cta) cta.tabIndex = -1') || !storytelling.includ
   failures.push('Table CTA tab order must follow its scroll reveal');
 }
 
-const imageReferences = [...home.matchAll(/src:\s*'([^']+)'/g)].map((match) => match[1]);
-const duplicates = imageReferences.filter((src,index) => imageReferences.indexOf(src) !== index);
-if (duplicates.length) {
-  failures.push(`V16 home image subjects must have unique primary roles; duplicate sources: ${[...new Set(duplicates)].join(', ')}`);
+const directImageRoles = [...home.matchAll(/src=\{images\.([A-Za-z0-9_]+)\.src\}/g)].map((match) => match[1]);
+const dataImageRoles = [...home.matchAll(/\bimage:\s*images\.([A-Za-z0-9_]+)/g)].map((match) => match[1]);
+const primaryImageRoles = [...directImageRoles, ...dataImageRoles];
+const duplicateRoles = primaryImageRoles.filter((role,index) => primaryImageRoles.indexOf(role) !== index);
+if (duplicateRoles.length) {
+  failures.push(`V16 home image subjects must have unique primary roles; repeated roles: ${[...new Set(duplicateRoles)].join(', ')}`);
 }
+const expectedPrimaryRoles = ['market','kampot','tamarind','prahok','kroeung','amok','lokLak'];
+expectedPrimaryRoles.forEach((role) => {
+  if (!primaryImageRoles.includes(role)) failures.push(`Missing V16 primary image role: ${role}`);
+});
 
 if (failures.length) {
   console.error('Motion contract failed:');
