@@ -210,8 +210,8 @@ const recipeSchema = {
       <article class="recipe-guided-method">
         <header>
           <p class="eyebrow">En cuisine</p>
-          <h2>Cuire, goûter, ajuster.</h2>
-          <p>Les étapes restent guidées, mais l’essentiel est dans les repères : ce qu’il faut voir, sentir et éviter pour comprendre la cuisson.</p>
+          <h2>Prenez votre temps, goûtez et ajustez.</h2>
+          <p>Suivez les étapes à votre rythme. À chaque moment important, on vous indique ce qu’il faut regarder, sentir ou goûter pour savoir si vous êtes sur la bonne voie.</p>
         </header>
 
         <div class="recipe-guided-steps">
@@ -239,14 +239,14 @@ const recipeSchema = {
         {keyPoints.length > 0 && (
           <section>
             <p class="eyebrow">Les points clés</p>
-            <h2>Ce qu’il faut retenir.</h2>
+            <h2>À garder en tête.</h2>
             <ul>{keyPoints.map((point) => <li>{point}</li>)}</ul>
           </section>
         )}
         {notes.length > 0 && (
           <section>
             <p class="eyebrow">Mémo</p>
-            <h2>Pour la prochaine fois.</h2>
+            <h2>À noter pour la prochaine fois.</h2>
             <ul>{notes.map((note) => <li>{note}</li>)}</ul>
           </section>
         )}
@@ -257,7 +257,7 @@ const recipeSchema = {
       <section class="recipe-v15-faq" aria-labelledby="recipe-faq-title">
         <header>
           <p class="eyebrow">Questions de cuisine</p>
-          <h2 id="recipe-faq-title">Les réponses qui évitent de rater la recette.</h2>
+          <h2 id="recipe-faq-title">Les questions qu’on se pose souvent en cuisinant.</h2>
         </header>
         <div>
           {faqs.map((item) => (
@@ -274,8 +274,8 @@ const recipeSchema = {
 
     {relatedIngredients.length > 0 && (
       <section class="recipe-related" data-reveal="up">
-        <p class="eyebrow">Pour comprendre le plat</p>
-        <h2>Les ingrédients à connaître</h2>
+        <p class="eyebrow">Pour aller un peu plus loin</p>
+        <h2>Les ingrédients utiles pour cette recette</h2>
         <div class="related-links">
           {relatedIngredients.map((item) => (
             <a href={`/ingredients/${item.slug}/`}>

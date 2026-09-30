@@ -114,8 +114,8 @@ const breadcrumbSchema = {
 
     <section class="ingredient-deep-dive" data-reveal="up">
       <div class="ingredient-deep-heading">
-        <p class="eyebrow">Comprendre avant de cuisiner</p>
-        <h2>Ce qu’il apporte vraiment dans l’assiette</h2>
+        <p class="eyebrow">Avant de cuisiner</p>
+        <h2>Son goût, son parfum et ce qu’il apporte au plat</h2>
       </div>
       <div class="ingredient-deep-copy">
         {ingredient.deepDive.map((paragraph: string) => <p>{paragraph}</p>)}
@@ -124,7 +124,7 @@ const breadcrumbSchema = {
 
     <section class="guide-body" data-reveal="up">
       <div class="guide-main">
-        <p class="eyebrow">Comprendre</p>
+        <p class="eyebrow">À quoi sert-il ?</p>
         <p class="guide-lead">{ingredient.role}</p>
       </div>
       <div class="guide-lists">
@@ -147,7 +147,7 @@ const breadcrumbSchema = {
       <header class="ingredient-practical-head">
         <p class="eyebrow">En pratique</p>
         <h2 id="ingredient-practical-title">Bien choisir, conserver et utiliser {ingredient.title}</h2>
-        <p>Les détails qui évitent d’acheter au hasard, de perdre les arômes ou de déséquilibrer le plat.</p>
+        <p>Quelques conseils simples pour bien le choisir, le conserver et l’utiliser sans masquer les autres saveurs.</p>
       </header>
 
       <div class="ingredient-practical-grid">
@@ -174,8 +174,8 @@ const breadcrumbSchema = {
 
     {relatedContent.length > 0 && (
       <section class="editorial-related" data-reveal="up">
-        <p class="eyebrow">Dans quels plats&nbsp;?</p>
-        <h2>Voir cet ingrédient en cuisine</h2>
+        <p class="eyebrow">Envie de le cuisiner ?</p>
+        <h2>Quelques recettes et carnets pour aller plus loin</h2>
         <div class="editorial-related-links">
           {relatedContent.map((item: any) => {
             const isRecipe = 'prepTime' in item;

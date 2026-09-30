@@ -39,9 +39,9 @@ const collectionSchema = {
   <SiteHeader />
   <main class="listing-page editorial-listing ingredients-listing">
     <header class="page-intro page-intro-split" data-reveal="up">
-      <p class="eyebrow">Les saveurs</p>
-      <h1>Ingrédients & bases</h1>
-      <p>Citronnelle fraîche, tamarin acidulé, poivre de Kampot, prahok, coco : ici, on découvre surtout ce que chaque ingrédient apporte dans la bouche et comment l’utiliser en cuisine.</p>
+      <p class="eyebrow">Dans le garde-manger</p>
+      <h1>Les ingrédients à connaître</h1>
+      <p>Citronnelle, tamarin, poivre de Kampot, prahok, lait de coco… découvrez leur goût, comment les choisir et la meilleure façon de les utiliser dans vos plats.</p>
       <div class="page-intro-visual" data-parallax="0.10"><img src={ingredientGuides[0].image} srcset={imageSrcSet(ingredientGuides[0].image, ingredientGuides[0].imageWidths)} sizes="(max-width: 900px) 100vw, 58vw" alt={ingredientGuides[0].imageAlt} width={ingredientGuides[0].imageWidth} height={ingredientGuides[0].imageHeight} fetchpriority="high" decoding="async" /></div>
     </header>
 
@@ -65,8 +65,8 @@ const collectionSchema = {
     <section class="ingredient-pantry" aria-labelledby="pantry-title" data-reveal="up">
       <header>
         <p class="eyebrow">Le garde-manger khmer</p>
-        <h2 id="pantry-title">Huit autres saveurs à reconnaître.</h2>
-        <p>Pas besoin d’une fiche longue pour commencer : voici les aromates et condiments que vous croiserez le plus souvent dans les recettes et les gestes de base.</p>
+        <h2 id="pantry-title">D’autres ingrédients que vous croiserez souvent.</h2>
+        <p>Pour commencer, voici quelques aromates et condiments que vous retrouverez régulièrement dans les recettes cambodgiennes.</p>
       </header>
       <div class="ingredient-pantry-grid">
         {pantryEntries.map((entry, index) => (

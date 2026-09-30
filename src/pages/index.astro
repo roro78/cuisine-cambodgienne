@@ -36,22 +36,22 @@ const images = {
 };
 
 const marketMoments = [
-  { time: '08:10', eyebrow: 'Kampot', title: 'Le parfum avant le piquant.', text: 'Le poivre frais se choisit comme un produit, pas comme une poudre à ajouter machinalement.', image: images.kampot, href: '/culture/poivre-de-kampot/' },
-  { time: '08:35', eyebrow: 'Acidité', title: 'Le tamarin donne de la profondeur.', text: 'Une acidité ronde, fruitée, qui construit une sauce sans la rendre agressive.', image: images.tamarind, href: '/glossaire/#tamarin' },
-  { time: '09:05', eyebrow: 'Fermentation', title: 'Le prahok travaille en arrière-plan.', text: 'Salé, fermenté, intense : bien dosé, il donne de la profondeur sans prendre toute la place.', image: images.prahok, href: '/culture/prahok-fermentation-umami/' }
+  { time: '08:10', eyebrow: 'Kampot', title: 'Le poivre de Kampot, fraîchement moulu.', text: 'Vert, noir, rouge ou blanc : il apporte du parfum, de la chaleur et parfois une belle note fruitée.', image: images.kampot, href: '/culture/poivre-de-kampot/' },
+  { time: '08:35', eyebrow: 'Acidité', title: 'Le tamarin apporte une acidité douce et fruitée.', text: 'On l’ajoute peu à peu dans une sauce ou une soupe, jusqu’à trouver le bon équilibre.', image: images.tamarind, href: '/glossaire/#tamarin' },
+  { time: '09:05', eyebrow: 'Fermentation', title: 'Le prahok, puissant mais précieux.', text: 'Une petite quantité suffit souvent à donner du relief et cette saveur fermentée si particulière.', image: images.prahok, href: '/culture/prahok-fermentation-umami/' }
 ];
 
 const glossaryWords = ['Kroeung', 'Prahok', 'Combava', 'Galanga', 'Tamarin', 'Amok'];
 
 const recipes = [
-  { title: 'Amok Trey', meta: 'Poisson · coco · vapeur', text: 'Une cuisson douce et parfumée, à reconnaître à la texture avant de regarder le minuteur.', href: '/recettes/amok-trey/', image: images.amok, alt: 'Amok Trey cambodgien' },
-  { title: 'Lok Lak', meta: 'Bœuf · citron vert · poivre', text: 'Une poêle très chaude, une saisie courte et un condiment vif.', href: '/recettes/lok-lak/', image: images.lokLak, alt: 'Lok lak cambodgien au bœuf' }
+  { title: 'Amok Trey', meta: 'Poisson · coco · vapeur', text: 'Un poisson tendre, une sauce parfumée au kroeung et au coco, cuite tout doucement.', href: '/recettes/amok-trey/', image: images.amok, alt: 'Amok Trey cambodgien' },
+  { title: 'Lok Lak', meta: 'Bœuf · citron vert · poivre', text: 'Du bœuf saisi à feu vif, du citron vert et beaucoup de poivre fraîchement moulu.', href: '/recettes/lok-lak/', image: images.lokLak, alt: 'Lok lak cambodgien au bœuf' }
 ];
 ---
 <BaseLayout
   image={images.market.src}
-  title="Cuisine du Cambodge — Le Cambodge par la table"
-  description="Recettes, ateliers, glossaire et carnets : découvrir la cuisine cambodgienne par ses marchés, ses gestes, ses saveurs et sa table."
+  title="Cuisine du Cambodge — Recettes, saveurs et histoires à partager"
+  description="Recettes cambodgiennes, gestes de cuisine, produits, marchés et histoires gourmandes pour découvrir le Cambodge à table."
 >
   <SiteHeader overlay />
 
@@ -64,13 +64,13 @@ const recipes = [
         <div class="v16-hero-wash" aria-hidden="true"></div>
         <div class="v16-hero-copy">
           <p class="v16-time">06:30 · Cambodge</p>
-          <p class="v16-kicker">Le Cambodge par la table</p>
+          <p class="v16-kicker">À table au Cambodge</p>
           <h1 id="v16-hero-title">
             <span data-v16-hero-line>Sentir.</span>
             <span data-v16-hero-line>Goûter.</span>
             <span data-v16-hero-line>Cuisiner.</span>
           </h1>
-          <p>Un voyage culinaire par les marchés, les gestes, les mots et les repas — avant de passer soi-même en cuisine.</p>
+          <p>Des marchés aux cuisines familiales, découvrez les parfums, les produits et les gestes qui rendent la cuisine cambodgienne si généreuse.</p>
         </div>
         <div class="v16-hero-orbit" aria-hidden="true">
           <span class="v16-orbit-chip chip-a">marchés</span>
@@ -86,8 +86,8 @@ const recipes = [
       <div class="v16-morning-time" aria-hidden="true">07:15</div>
       <div class="v16-morning-copy" data-reveal="up">
         <p class="v16-kicker">Le matin</p>
-        <h2 id="v16-morning-title">Le Cambodge se mange tôt.</h2>
-        <p>Avant même de parler de grands plats, il y a les bouillons, le riz, les nouilles, les grillades et les marchés qui s’installent. La cuisine commence par une ambiance, pas par une fiche technique.</p>
+        <h2 id="v16-morning-title">Le matin, les rues sentent déjà le bouillon et les grillades.</h2>
+        <p>Dès le matin, on trouve des bols de nouilles, du riz, des bouillons fumants et des viandes grillées. Une cuisine simple, chaude et parfumée qui accompagne le début de la journée.</p>
         <a href="/culture/">Entrer dans les carnets</a>
       </div>
       <div class="v16-morning-notes" aria-label="Repères du matin">
@@ -99,8 +99,8 @@ const recipes = [
       <div class="v16-sticky v16-market-stage">
         <header class="v16-market-head">
           <p class="v16-time">08:00 · Marché</p>
-          <h2 id="v16-market-title">Le produit donne le ton.</h2>
-          <p>Trois produits, trois façons de comprendre la cuisine cambodgienne sans répéter les mêmes assiettes.</p>
+          <h2 id="v16-market-title">Au marché, tout commence par les produits.</h2>
+          <p>Poivre de Kampot, tamarin, prahok : trois saveurs très différentes qui racontent chacune une facette de la cuisine cambodgienne.</p>
         </header>
         <div class="v16-market-window">
           <div class="v16-market-track" data-v16-market-track>
@@ -131,9 +131,9 @@ const recipes = [
         </figure>
         <div class="v16-gesture-copy">
           <p class="v16-time">11:00 · Le geste</p>
-          <p class="v16-kicker">Tout commence par la main</p>
-          <h2 id="v16-gesture-title">Piler change la texture. Et le parfum.</h2>
-          <p>Citronnelle, galanga, curcuma, combava : on ne les empile pas. On les travaille dans un ordre, jusqu’à ce qu’ils deviennent une seule base aromatique.</p>
+          <p class="v16-kicker">Au mortier</p>
+          <h2 id="v16-gesture-title">Les parfums se mêlent sous le pilon.</h2>
+          <p>Citronnelle, galanga, curcuma, combava : on les coupe finement, puis on les pile jusqu’à obtenir une pâte souple, fraîche et très parfumée.</p>
           <a href="/apprendre/">Voir les ateliers</a>
         </div>
         <div class="v16-gesture-steps" aria-hidden="true">
@@ -156,8 +156,8 @@ const recipes = [
         </div>
         <div class="v16-table-copy">
           <p class="v16-time">12:30 · À table</p>
-          <h2 id="v16-table-title">On ne cuisine pas un plat seul.</h2>
-          <p>Le riz calme. Les herbes réveillent. Une soupe apporte de la légèreté. Un condiment change la bouchée. C’est l’ensemble qui fait le repas.</p>
+          <h2 id="v16-table-title">À table, les plats se partagent.</h2>
+          <p>Du riz chaud, un plat parfumé, quelques herbes, une soupe ou des légumes frais : chacun pioche, mélange et compose ses bouchées au fil du repas.</p>
           <a href="/culture/construire-repas-cambodgien/">Comprendre la table</a>
         </div>
       </div>
@@ -167,8 +167,8 @@ const recipes = [
       <div class="v16-sticky v16-glossary-stage">
         <div class="v16-glossary-copy">
           <p class="v16-time">16:00 · Les mots</p>
-          <p class="v16-kicker">Comprendre avant de mémoriser</p>
-          <h2 id="v16-glossary-title">Un mot inconnu ne devrait jamais bloquer une recette.</h2>
+          <p class="v16-kicker">Quelques mots pour mieux cuisiner</p>
+          <h2 id="v16-glossary-title">Kroeung, prahok, galanga… on vous explique simplement.</h2>
           <a href="/glossaire/">Ouvrir le glossaire</a>
         </div>
         <div class="v16-glossary-words" aria-hidden="true">
@@ -180,9 +180,9 @@ const recipes = [
     <section class="v16-recipes" aria-labelledby="v16-recipes-title">
       <header data-reveal="up">
         <p class="v16-time">19:00 · À vous de cuisiner</p>
-        <p class="v16-kicker">Deux portes d’entrée</p>
-        <h2 id="v16-recipes-title">Maintenant, on passe en cuisine.</h2>
-        <p>Les recettes restent guidées et ajustables, mais l’objectif est d’abord de donner envie : comprendre le geste, puis cuisiner.</p>
+        <p class="v16-kicker">Envie de cuisiner ?</p>
+        <h2 id="v16-recipes-title">À votre tour de passer en cuisine.</h2>
+        <p>Choisissez un plat qui vous fait envie. Les quantités s’adaptent au nombre de personnes et chaque étape vous donne des repères simples pour réussir.</p>
       </header>
       <div class="v16-recipe-grid">
         {recipes.map((recipe) => (

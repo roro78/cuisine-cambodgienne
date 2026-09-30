@@ -7,10 +7,10 @@ import { imageSrcSet } from '../../utils/images';
 import '../../styles/v16-editorial.css';
 
 const moments = [
-  { time:'05:30', title:'Le matin se mange dehors', text:'Bouillons, nouilles, riz et grillades : commencer par les habitudes avant de commencer par les plats.', href:'/culture/construire-repas-cambodgien/' },
-  { time:'08:30', title:'Le marché décide souvent du repas', text:'Produits frais, saison, mer, herbes et fruits : la cuisine part de ce qui est disponible.', href:'/culture/kep-marche-crabe-poivre/' },
-  { time:'11:00', title:'Le mortier raconte le geste', text:'Comprendre le kroeung, c’est comprendre pourquoi la préparation compte autant que la liste des ingrédients.', href:'/culture/comprendre-le-kroeung/' },
-  { time:'12:30', title:'Une table est un équilibre', text:'Riz, plat chaud, fraîcheur, soupe et condiment : le repas se construit par contraste.', href:'/culture/construire-repas-cambodgien/' }
+  { time:'05:30', title:'Au petit matin, les gargotes sont déjà ouvertes', text:'Bouillons, nouilles, riz et grillades font partie des premières odeurs de la journée.', href:'/culture/construire-repas-cambodgien/' },
+  { time:'08:30', title:'Le marché inspire le repas', text:'Poissons, herbes, légumes, fruits : on cuisine d’abord avec ce qui est frais et disponible.', href:'/culture/kep-marche-crabe-poivre/' },
+  { time:'11:00', title:'Au mortier, les aromates prennent forme', text:'Le kroeung se prépare patiemment : on coupe, on pile, on sent, jusqu’à obtenir une pâte bien parfumée.', href:'/culture/comprendre-le-kroeung/' },
+  { time:'12:30', title:'À table, chacun compose sa bouchée', text:'Riz, plat chaud, légumes, herbes, soupe ou condiment se mangent ensemble et se complètent.', href:'/culture/construire-repas-cambodgien/' }
 ];
 
 const collectionSchema = {
@@ -36,15 +36,15 @@ const collectionSchema = {
   <main class="v16-editorial v16-journals">
     <header class="v16-page-hero v16-page-hero--journals">
       <p class="v16-page-kicker">Carnets du Cambodge</p>
-      <h1>Des marchés du matin aux grandes tables.</h1>
-      <p>Pas une encyclopédie froide : des histoires courtes pour comprendre pourquoi un produit, un geste ou une habitude change la façon de lire la cuisine cambodgienne.</p>
+      <h1>Des marchés animés aux repas partagés.</h1>
+      <p>Ces carnets racontent les marchés, les produits, les gestes et les habitudes qui donnent toute sa saveur à la cuisine cambodgienne.</p>
       <div class="v16-journal-stamp" aria-hidden="true">marchés · gestes · produits · table · transmission</div>
     </header>
 
     <section class="v16-day-notes" aria-labelledby="v16-day-title">
       <header>
-        <p class="v16-page-kicker">Une journée pour entrer dans la cuisine</p>
-        <h2 id="v16-day-title">Avant les recettes, il y a des rythmes.</h2>
+        <p class="v16-page-kicker">Une journée au rythme des saveurs</p>
+        <h2 id="v16-day-title">La cuisine se découvre aussi dans les habitudes de tous les jours.</h2>
       </header>
       <div>
         {moments.map((moment) => (
@@ -89,13 +89,13 @@ const collectionSchema = {
     </section>
 
     <section class="v16-journal-manifesto">
-      <p class="v16-page-kicker">Ce que les carnets cherchent</p>
-      <h2>Comprendre une cuisine par ce qui l’entoure.</h2>
+      <p class="v16-page-kicker">Ce qu’on aime raconter</p>
+      <h2>Une cuisine, ce sont aussi des lieux, des gestes et des souvenirs.</h2>
       <div>
-        <p>Le marché avant le panier de courses.</p>
-        <p>Le geste avant la technique.</p>
-        <p>La table avant le “plat principal”.</p>
-        <p>La transmission avant la version prétendument définitive.</p>
+        <p>Les marchés et les produits de saison.</p>
+        <p>Les gestes que l’on apprend en regardant faire.</p>
+        <p>Les repas que l’on partage autour du riz et de plusieurs plats.</p>
+        <p>Les recettes qui changent d’une famille à l’autre et continuent de se transmettre.</p>
       </div>
     </section>
   </main>

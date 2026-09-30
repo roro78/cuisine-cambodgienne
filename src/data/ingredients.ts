@@ -24,13 +24,13 @@ export const ingredientGuides: IngredientGuide[] = [
   {
     slug: 'kroeung',
     title: 'Kroeung',
-    intro: 'La base aromatique qui donne sa profondeur à de nombreux plats khmers.',
+    intro: 'Une pâte d’aromates fraîche et très parfumée, au cœur de nombreux plats khmers.',
     seoDescription: 'Kroeung cambodgien : comprendre cette pâte aromatique à base de citronnelle, galanga, curcuma et combava, comment la préparer, la conserver et l’utiliser.',
-    role: 'Le kroeung est une famille de pâtes fraîches d’aromates pilés. Il ne sert pas seulement à parfumer : il construit le fond du plat avant même que la cuisson commence.',
+    role: 'Le kroeung est une famille de pâtes fraîches d’aromates pilés. Il apporte dès le début de la cuisson les parfums de citronnelle, galanga, curcuma, combava et autres aromates.',
     deepDive: [
-      'Un kroeung se construit par couches. Les ingrédients les plus fibreux — citronnelle, galanga — se travaillent d’abord, puis viennent curcuma, zeste de combava, ail et échalote. Cette progression aide à obtenir une pâte fine sans noyer les aromates.',
-      'La texture compte autant que la liste des ingrédients. Une pâte trop grossière reste fibreuse en bouche ; une pâte trop diluée perd sa concentration. Au mortier, les huiles essentielles se libèrent progressivement et l’odeur devient plus ronde.',
-      'Il existe plusieurs profils de kroeung. La version jaune met davantage en avant le curcuma ; d’autres préparations jouent sur les herbes, le piment ou les proportions de racines. Mieux vaut comprendre la logique que chercher une formule unique.'
+      'Pour préparer un kroeung, on commence par les ingrédients les plus fibreux — citronnelle et galanga — puis on ajoute curcuma, zeste de combava, ail et échalote. Cet ordre facilite le pilage et aide à obtenir une pâte fine.',
+      'La texture compte autant que les ingrédients. Si la pâte reste trop grossière, elle sera fibreuse en bouche ; si on ajoute trop d’eau, les parfums seront moins présents. Au mortier, l’odeur devient de plus en plus intense à mesure que l’on pile.',
+      'Il existe plusieurs sortes de kroeung. La version jaune met davantage en avant le curcuma ; d’autres utilisent plus d’herbes, de piment ou des proportions différentes de racines. Mieux vaut comprendre ce que chaque aromate apporte que chercher une formule unique.'
     ],
     profile: ['Citronné et végétal', 'Chaud et terreux', 'Très aromatique', 'Frais avant cuisson', 'Plus rond après cuisson'],
     uses: ['Amok', 'Soupes et currys', 'Marinades', 'Grillades', 'Sautés parfumés'],
@@ -49,9 +49,9 @@ export const ingredientGuides: IngredientGuide[] = [
   {
     slug: 'poivre-de-kampot',
     title: 'Poivre de Kampot',
-    intro: 'Un produit de terroir cambodgien à utiliser comme un véritable ingrédient, pas seulement comme un assaisonnement.',
+    intro: 'Un poivre très parfumé, à moudre au dernier moment pour profiter pleinement de ses arômes.',
     seoDescription: 'Poivre de Kampot : profils vert, noir, rouge et blanc, conseils d’achat, conservation, usages avec le lok lak et les produits de la mer.',
-    role: 'Selon sa maturité et son traitement, le poivre de Kampot développe des profils très différents. Fraîcheur, chaleur et longueur aromatique peuvent devenir une composante centrale du plat.',
+    role: 'Selon sa maturité et son traitement, le poivre de Kampot peut être végétal, chaud, fruité ou plus délicat. Son parfum peut vraiment changer la personnalité d’un plat.',
     deepDive: [
       'Le poivre vert frais est végétal, vif et juteux. Le noir est plus chaud et structuré, le rouge plus mûr et fruité, le blanc plus direct. Ces profils permettent de choisir le poivre selon le plat plutôt que de l’utiliser automatiquement.',
       'Dans une recette comme le lok lak, le poivre fonctionne avec l’acidité du citron vert : la chaleur du poivre arrive d’abord, puis l’acidité rafraîchit la bouche. Sur les produits de la mer, quelques grains ou une mouture fraîche suffisent souvent.',
@@ -74,12 +74,12 @@ export const ingredientGuides: IngredientGuide[] = [
   {
     slug: 'tamarin',
     title: 'Tamarin',
-    intro: 'Une acidité ronde et fruitée qui permet de construire l’équilibre d’une sauce ou d’une soupe.',
+    intro: 'Une pulpe acidulée et fruitée, parfaite pour réveiller une sauce ou une soupe sans l’agresser.',
     seoDescription: 'Tamarin en cuisine cambodgienne : goût, préparation de la pulpe, dosage, conservation et associations pour sauces, soupes et plats aigres-doux.',
-    role: 'Le tamarin apporte une acidité moins tranchante que le citron. Il est utile quand on cherche profondeur et longueur plutôt qu’une simple note fraîche.',
+    role: 'Le tamarin apporte une acidité plus douce et fruitée que le citron. Il fonctionne particulièrement bien dans les soupes, les sauces et les préparations aigres-douces.',
     deepDive: [
       'La pulpe de tamarin se dilue généralement dans de l’eau tiède puis se filtre. On obtient un liquide brun acidulé que l’on ajoute progressivement, exactement comme on ajusterait du sel.',
-      'Son intérêt est l’équilibre : avec du sucre de palme, du sel ou une sauce fermentée, il crée une acidité ample qui reste présente sans donner l’impression de boire du jus de citron.',
+      'Avec du sucre de palme, du sel ou une sauce fermentée, le tamarin apporte une acidité présente mais plus douce que celle du citron.',
       'Dans les soupes et sauces, le tamarin gagne à être ajouté par étapes. Le goût évolue avec la réduction et les autres assaisonnements, il faut donc goûter plusieurs fois.'
     ],
     profile: ['Acidulé', 'Fruité', 'Légèrement sucré', 'Plus rond que le citron'],
@@ -99,13 +99,13 @@ export const ingredientGuides: IngredientGuide[] = [
   {
     slug: 'prahok',
     title: 'Prahok',
-    intro: 'Un condiment fermenté puissant, essentiel pour comprendre une partie de la cuisine khmère.',
+    intro: 'Un condiment de poisson fermenté au goût puissant, utilisé avec beaucoup de finesse dans la cuisine khmère.',
     seoDescription: 'Prahok cambodgien : comprendre ce poisson fermenté, son goût, son dosage, sa conservation et son rôle d’umami dans la cuisine khmère.',
-    role: 'Le prahok apporte sel, fermentation et profondeur. Son usage dépend fortement du plat et du dosage ; il gagne à être expliqué dans son contexte plutôt que résumé à son odeur.',
+    role: 'Le prahok apporte du sel, de l’umami et un goût fermenté très reconnaissable. Selon le plat, on en utilise une petite touche ou une quantité plus généreuse.',
     deepDive: [
       'Le prahok est une préparation de poisson fermenté dont l’intensité varie selon le produit et l’usage. En cuisine, on peut l’utiliser en petite quantité comme source d’umami ou lui donner une place beaucoup plus centrale.',
-      'Sa puissance aromatique change après cuisson. Dans une sauce ou un plat mijoté, les notes les plus agressives s’arrondissent et la profondeur salée se fond avec les autres ingrédients.',
-      'Le bon réflexe est de le considérer comme un assaisonnement complet : avant d’ajouter sauce de poisson ou sel, il faut goûter. Une très petite quantité peut suffire à modifier toute la perception d’un plat.'
+      'Son goût change à la cuisson. Dans une sauce ou un plat mijoté, les notes les plus fortes deviennent plus douces et se mélangent mieux avec les autres ingrédients.',
+      'Le bon réflexe est de goûter avant d’ajouter du sel ou de la sauce de poisson. Une petite quantité de prahok peut déjà suffire à assaisonner tout le plat.'
     ],
     profile: ['Salin', 'Fermenté', 'Très umami', 'Puissant cru', 'Plus rond après cuisson'],
     uses: ['Sauces et dips', 'Soupes', 'Plats mijotés', 'Assaisonnement', 'Préparations traditionnelles'],
@@ -113,7 +113,7 @@ export const ingredientGuides: IngredientGuide[] = [
     choose: ['Choisir un produit clairement étiqueté et adapté à l’usage prévu.', 'Vérifier la texture et la présence éventuelle d’assaisonnements déjà ajoutés.', 'Pour débuter, un produit homogène et facile à doser est plus simple à apprivoiser.'],
     keep: ['Conserver au réfrigérateur après ouverture.', 'Toujours utiliser un ustensile propre pour éviter les contaminations.', 'Fermer hermétiquement pour limiter les odeurs dans le réfrigérateur.'],
     pairings: ['Porc', 'Légumes croquants', 'Aubergine', 'Herbes fraîches', 'Lait de coco', 'Piment'],
-    mistakes: ['Ajouter du sel avant d’avoir goûté.', 'Le doser comme une sauce légère.', 'Réduire le prahok à son odeur : son intérêt est surtout la profondeur qu’il apporte au plat.'],
+    mistakes: ['Ajouter du sel avant d’avoir goûté.', 'Le doser comme une sauce légère.', 'S’arrêter à son odeur : bien utilisé, il apporte surtout du sel, de l’umami et beaucoup de caractère.'],
     seoKeywords: ['prahok', 'poisson fermenté cambodgien', 'condiment khmer', 'umami cambodgien', 'prahok cuisine'],
     image: '/images/cuisine/prahok-1600.webp',
     imageAlt: 'Prahok ktis cambodgien servi avec des légumes',
