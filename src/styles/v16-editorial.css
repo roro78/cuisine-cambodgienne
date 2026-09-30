@@ -143,7 +143,6 @@
 }
 .recipes-v16 .recipes-journey-copy h1{font-size:clamp(3rem,5vw,5.2rem);max-width:10ch}
 .recipes-v16 .recipes-journey-visual{grid-template-columns:1fr;min-height:58vh}
-.recipes-v16 .recipes-journey-visual figure:last-child{display:none}
 .recipes-v16 .recipes-journey-visual figure:first-child{transform:translateY(1rem) rotate(-1deg)}
 .recipes-v16 .recipe-v15-grid{gap:1.6rem}
 .recipes-v16 .recipe-v15-card{border-radius:1.2rem;background:#fffaf1;min-height:0}
@@ -193,6 +192,10 @@
   .recipe-v16 .recipe-v15-hero,.recipes-v16 .recipes-journey-hero{grid-template-columns:1fr;background:#f0e3d0}
   .recipes-v16 .recipes-journey-copy{color:#1e1a15}.recipes-v16 .recipes-journey-copy>p:last-of-type{color:#5f5347}
   .recipe-v16 .recipe-v15-kitchen{grid-template-columns:1fr}
+  .recipes-v16 .recipe-v15-card:nth-child(1),
+  .recipes-v16 .recipe-v15-card:nth-child(2),
+  .recipes-v16 .recipe-v15-card:nth-child(5),
+  .recipes-v16 .recipe-v15-card:nth-child(6){grid-column:auto}
 }
 @media(max-width:620px){
   .v16-page-hero{padding:6.5rem 1rem 3.5rem;min-height:72svh}.v16-page-hero h1{font-size:clamp(3rem,14vw,4.8rem)}
@@ -207,4 +210,5 @@
   .v16-glossary-tools{top:4.25rem;padding:.8rem 1rem;overflow:auto}.v16-glossary-tools>div{flex-wrap:nowrap}.v16-glossary-tools>p{white-space:nowrap}
   .v16-glossary-card{grid-template-columns:2rem 1fr}.v16-glossary-card h2{font-size:clamp(2.2rem,11vw,3.3rem)}
   .recipe-v16 .recipe-v15-hero-copy h1{font-size:clamp(2.9rem,13vw,4.3rem)}
+  .recipe-v16 .recipe-guided-step{grid-template-columns:2.8rem minmax(0,1fr);padding:1rem 0}
 }
