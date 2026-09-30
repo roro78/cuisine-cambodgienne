@@ -6,6 +6,11 @@ const culture = fs.readFileSync('src/pages/culture/index.astro','utf8');
 const about = fs.readFileSync('src/pages/a-propos.astro','utf8');
 const glossary = fs.readFileSync('src/pages/glossaire/index.astro','utf8');
 const recipes = fs.readFileSync('src/pages/recettes/[slug].astro','utf8');
+const home = fs.readFileSync('src/pages/index.astro','utf8');
+const cultureData = fs.readFileSync('src/data/culture.ts','utf8');
+const recipeData = fs.readFileSync('src/data/recipes.ts','utf8');
+const ingredientData = fs.readFileSync('src/data/ingredients.ts','utf8');
+const glossaryData = fs.readFileSync('src/data/glossary.ts','utf8');
 
 const failures = [];
 
@@ -20,7 +25,7 @@ if (!header.includes('href="/glossaire/"') || !header.includes('href="/apprendre
   failures.push('V16 navigation routes are incomplete');
 }
 
-if (!learn.includes('Les ateliers') || !learn.includes('On n’apprend pas une cuisine en mémorisant des recettes.')) {
+if (!learn.includes('Les ateliers') || !learn.includes('Apprendre les bons gestes, simplement.')) {
   failures.push('Learning page must remain workshop-led, not recipe-led');
 }
 const workshopBlock = learn.match(/const workshops = \[([\s\S]*?)\];\n\nconst schema/)?.[1] ?? '';
@@ -29,11 +34,11 @@ if (workshopCount !== 6) {
   failures.push(`Workshop page must expose exactly 6 V16 workshops, found ${workshopCount}`);
 }
 
-if (!culture.includes('Carnets du Cambodge') || !culture.includes('Des marchés du matin aux grandes tables.')) {
+if (!culture.includes('Carnets du Cambodge') || !culture.includes('Des marchés animés aux repas partagés.')) {
   failures.push('Culture page must keep the Carnets editorial identity');
 }
 
-if (!about.includes('Une version praticable, pas une version universelle.') || !about.includes('Ce que le site ne veut pas devenir.')) {
+if (!about.includes('Une recette claire, avec de la place pour les variantes.') || !about.includes('Ce qui nous tient à cœur')) {
   failures.push('About page must keep the V16 editorial method and boundaries');
 }
 
@@ -41,9 +46,28 @@ if (!glossary.includes('data-glossary-search') || !glossary.includes('data-gloss
   failures.push('Glossary must keep search, family filters and filterable entries');
 }
 
-if (!recipes.includes('recipe-v15 recipe-v16') || !recipes.includes('Cuire, goûter, ajuster.')) {
+if (!recipes.includes('recipe-v15 recipe-v16') || !recipes.includes('Prenez votre temps, goûtez et ajustez.')) {
   failures.push('Recipe detail must keep the V16 culinary editorial layer');
 }
+
+const toneCorpus = [home, learn, culture, about, glossary, recipes, cultureData, recipeData, ingredientData, glossaryData].join('\n');
+const forbiddenArtificialCopy = [
+  'Le Cambodge se mange tôt.',
+  'Le produit donne le ton.',
+  'On ne cuisine pas un plat seul.',
+  'le prahok travaille en arrière-plan',
+  'construire l’acidité',
+  'terrain d’apprentissage',
+  'comprendre cette architecture',
+  'Une version praticable, pas une version universelle.',
+  'Ce que le site ne veut pas devenir.',
+  'Cuire, goûter, ajuster.'
+];
+forbiddenArtificialCopy.forEach((phrase) => {
+  if (toneCorpus.toLowerCase().includes(phrase.toLowerCase())) {
+    failures.push(`Artificial editorial phrasing reintroduced: ${phrase}`);
+  }
+});
 
 if (failures.length) {
   console.error('Editorial contract failed:');
