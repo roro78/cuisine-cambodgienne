@@ -18,37 +18,28 @@ function rangeProgress(progress: number, start: number, end: number) {
 
 export function initStorytelling() {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const cleanup: Array<() => void> = [];
 
   const context = gsap.context(() => {
-    const hero = document.querySelector<HTMLElement>('[data-v14-hero]');
-    const dishes = document.querySelector<HTMLElement>('[data-v14-dishes]');
-    const flavors = document.querySelector<HTMLElement>('[data-v14-flavors]');
-    const market = document.querySelector<HTMLElement>('[data-v14-market]');
-    const tastes = document.querySelector<HTMLElement>('[data-v14-tastes]');
-    const homeCook = document.querySelector<HTMLElement>('[data-v14-home-cook]');
-    const table = document.querySelector<HTMLElement>('[data-v14-table]');
-
-    setupDesireTabs(reducedMotion, cleanup);
+    const hero = document.querySelector<HTMLElement>('[data-v16-hero]');
+    const market = document.querySelector<HTMLElement>('[data-v16-market]');
+    const gesture = document.querySelector<HTMLElement>('[data-v16-gesture]');
+    const table = document.querySelector<HTMLElement>('[data-v16-table]');
+    const glossary = document.querySelector<HTMLElement>('[data-v16-glossary]');
 
     if (reducedMotion) {
-      document.documentElement.classList.add('v14-reduced-motion');
-      gsap.set('[data-v14-hero-card], [data-v14-dish-card], [data-v14-flavor-object], [data-v14-taste-card], [data-v14-table-plate], [data-v14-ingredient]', {
+      document.documentElement.classList.add('v16-reduced-motion');
+      gsap.set('[data-v16-hero-line], [data-v16-market-track], [data-v16-gesture-chip], [data-v16-dish], [data-v16-glossary-word]', {
         clearProps: 'transform,opacity,visibility,filter'
       });
-      gsap.set('[data-v14-market-track]', { xPercent: 0 });
-      gsap.set('[data-v14-flavor-word]', { autoAlpha: 1, position: 'static' });
       ScrollTrigger.refresh();
       return;
     }
 
     if (hero) setupHero(hero);
-    if (dishes) setupDishes(dishes);
-    if (flavors) setupFlavors(flavors);
     if (market) setupMarket(market);
-    if (tastes) setupTastes(tastes);
-    if (homeCook) setupHomeCook(homeCook);
+    if (gesture) setupGesture(gesture);
     if (table) setupTable(table);
+    if (glossary) setupGlossary(glossary);
 
     ScrollTrigger.refresh();
   });
@@ -57,30 +48,21 @@ export function initStorytelling() {
   const onResize = () => ScrollTrigger.refresh();
   window.addEventListener('load', onLoad, { once: true });
   window.addEventListener('resize', onResize);
-  cleanup.push(() => window.removeEventListener('load', onLoad));
-  cleanup.push(() => window.removeEventListener('resize', onResize));
 
   return () => {
-    cleanup.forEach((fn) => fn());
-    document.documentElement.classList.remove('v14-reduced-motion');
+    window.removeEventListener('load', onLoad);
+    window.removeEventListener('resize', onResize);
+    document.documentElement.classList.remove('v16-reduced-motion');
     context.revert();
   };
 }
 
 function setupHero(section: HTMLElement) {
-  const stage = section.querySelector<HTMLElement>('.v14-hero-stage');
-  const title = section.querySelector<HTMLElement>('.v14-hero-copy h1');
-  const intro = section.querySelector<HTMLElement>('.v14-hero-copy > p:last-child');
-  const backdrop = section.querySelector<HTMLElement>('.v14-hero-backdrop img');
-  const cards = gsap.utils.toArray<HTMLElement>('[data-v14-hero-card]', section);
-  if (!stage || !title || cards.length === 0) return;
-
-  const plans = [
-    { x: -48, y: -30, r: -14, s: 1.14 },
-    { x: 52, y: -18, r: 12, s: .92 },
-    { x: -38, y: 36, r: 9, s: .88 },
-    { x: 44, y: 32, r: -11, s: 1.08 }
-  ];
+  const image = section.querySelector<HTMLElement>('.v16-hero-image img');
+  const copy = section.querySelector<HTMLElement>('.v16-hero-copy');
+  const lines = gsap.utils.toArray<HTMLElement>('[data-v16-hero-line]', section);
+  const chips = gsap.utils.toArray<HTMLElement>('.v16-orbit-chip', section);
+  const cue = section.querySelector<HTMLElement>('.v16-scroll-cue i');
 
   ScrollTrigger.create({
     trigger: section,
@@ -89,126 +71,51 @@ function setupHero(section: HTMLElement) {
     scrub: true,
     onUpdate: (self) => {
       const p = self.progress;
-      gsap.set(title, {
-        yPercent: -p * 18,
-        scale: 1 - p * .07,
-        autoAlpha: 1 - p * .72
-      });
-      if (intro) {
-        gsap.set(intro, {
-          y: -p * 26,
-          autoAlpha: 1 - p * .78
-        });
-      }
-      if (backdrop) {
-        gsap.set(backdrop, {
-          scale: 1.1 - p * .04,
-          yPercent: p * 2.4,
-          filter: `saturate(${.88 + p * .08}) brightness(${.72 - p * .08})`
+
+      if (image) {
+        gsap.set(image, {
+          scale: 1.08 + p * .08,
+          yPercent: p * 3.5,
+          filter: `saturate(${.78 + p * .1}) brightness(${.58 - p * .08})`
         });
       }
 
-      cards.forEach((card, index) => {
-        const plan = plans[index] ?? plans[0];
-        const depth = .72 + index * .08;
-        gsap.set(card, {
-          xPercent: plan.x * p,
-          yPercent: plan.y * p,
-          rotate: plan.r * p,
-          scale: 1 + (plan.s - 1) * p,
-          autoAlpha: 1 - rangeProgress(p, .72 + index * .025, .98),
-          filter: `blur(${Math.max(0, (p - .72) * depth * 7)}px)`
+      if (copy) {
+        gsap.set(copy, {
+          yPercent: -p * 9,
+          autoAlpha: 1 - rangeProgress(p, .68, .96)
+        });
+      }
+
+      lines.forEach((line, index) => {
+        const leave = rangeProgress(p, .16 + index * .1, .62 + index * .08);
+        gsap.set(line, {
+          xPercent: (index % 2 === 0 ? -1 : 1) * leave * (8 + index * 2),
+          yPercent: -leave * (7 + index * 3),
+          scale: 1 - leave * .055,
+          autoAlpha: 1 - leave * .72
         });
       });
-    }
-  });
-}
 
-function setupDishes(section: HTMLElement) {
-  const cards = gsap.utils.toArray<HTMLElement>('[data-v14-dish-card]', section);
-  const progress = section.querySelector<HTMLElement>('.v14-chapter-progress i');
-  if (!cards.length) return;
-
-  ScrollTrigger.create({
-    trigger: section,
-    start: 'top top',
-    end: 'bottom bottom',
-    scrub: true,
-    onUpdate: (self) => {
-      const travel = self.progress * (cards.length - 1);
-      cards.forEach((card, index) => {
-        const distance = index - travel;
-        const magnitude = Math.min(1.6, Math.abs(distance));
-        const alpha = clamp(1.05 - magnitude * .55);
-        gsap.set(card, {
-          xPercent: distance * 58,
-          yPercent: magnitude * 8,
-          scale: 1 - magnitude * .1,
-          rotate: distance * 2.2,
-          autoAlpha: alpha,
-          zIndex: 20 - Math.round(magnitude * 5)
-        });
-        const isActive = Math.abs(distance) < .48;
-        card.classList.toggle('is-active', isActive);
-        setCardInteractive(card, isActive);
-      });
-      if (progress) gsap.set(progress, { scaleX: self.progress });
-    }
-  });
-}
-
-function setupFlavors(section: HTMLElement) {
-  const words = gsap.utils.toArray<HTMLElement>('[data-v14-flavor-word]', section);
-  const objects = gsap.utils.toArray<HTMLElement>('[data-v14-flavor-object]', section);
-  if (!words.length || !objects.length) return;
-
-  const paths = [
-    { fromX: -46, fromY: 34, toX: 42, toY: -30, r: 18, scale: 1.22 },
-    { fromX: 50, fromY: -22, toX: -35, toY: 28, r: -14, scale: .92 },
-    { fromX: -18, fromY: -42, toX: 28, toY: 40, r: 10, scale: 1.08 },
-    { fromX: 44, fromY: 38, toX: -42, toY: -24, r: 15, scale: 1.16 },
-    { fromX: -36, fromY: 2, toX: 48, toY: 14, r: -18, scale: .9 }
-  ];
-
-  ScrollTrigger.create({
-    trigger: section,
-    start: 'top top',
-    end: 'bottom bottom',
-    scrub: true,
-    onUpdate: (self) => {
-      const p = self.progress;
-      const wordPosition = p * (words.length - 1);
-      words.forEach((word, index) => {
-        const distance = Math.abs(index - wordPosition);
-        gsap.set(word, {
-          autoAlpha: clamp(1 - distance * 1.35),
-          yPercent: (index - wordPosition) * 24,
-          scale: 1 - Math.min(1, distance) * .08
-        });
-        word.classList.toggle('is-active', distance < .5);
-      });
-
-      objects.forEach((object, index) => {
-        const path = paths[index] ?? paths[0];
-        const phase = clamp((p + index * .08) / 1.16);
-        const pulse = Math.sin((phase + index * .12) * Math.PI);
-        gsap.set(object, {
-          xPercent: gsap.utils.interpolate(path.fromX, path.toX, phase),
-          yPercent: gsap.utils.interpolate(path.fromY, path.toY, phase),
-          rotate: gsap.utils.interpolate(-path.r * .5, path.r, phase),
-          scale: 1 + (path.scale - 1) * pulse,
-          autoAlpha: .48 + pulse * .52,
-          filter: `blur(${Math.max(0, Math.abs(.5 - phase) - .33) * 5}px)`
+      chips.forEach((chip, index) => {
+        const direction = index % 2 === 0 ? 1 : -1;
+        gsap.set(chip, {
+          xPercent: direction * p * (18 + index * 5),
+          yPercent: (index < 2 ? -1 : 1) * p * (18 + index * 3),
+          rotate: direction * p * (3 + index),
+          autoAlpha: 1 - rangeProgress(p, .62 + index * .025, .94)
         });
       });
+
+      if (cue) gsap.set(cue, { scaleX: 1 - p });
     }
   });
 }
 
 function setupMarket(section: HTMLElement) {
-  const track = section.querySelector<HTMLElement>('[data-v14-market-track]');
-  const count = section.querySelector<HTMLElement>('[data-v14-market-count]');
-  const panels = gsap.utils.toArray<HTMLElement>('.v14-market-panel', section);
+  const track = section.querySelector<HTMLElement>('[data-v16-market-track]');
+  const panels = gsap.utils.toArray<HTMLElement>('[data-v16-market-panel]', section);
+  const count = section.querySelector<HTMLElement>('[data-v16-market-count]');
   if (!track || !panels.length) return;
 
   ScrollTrigger.create({
@@ -218,98 +125,44 @@ function setupMarket(section: HTMLElement) {
     scrub: true,
     onUpdate: (self) => {
       const p = self.progress;
-      gsap.set(track, { xPercent: -80 * p });
-      const active = Math.min(panels.length - 1, Math.floor(p * panels.length));
+      gsap.set(track, { xPercent: -(100 - 100 / panels.length) * p });
+
+      const active = Math.min(panels.length - 1, Math.round(p * (panels.length - 1)));
       if (count) count.textContent = String(active + 1).padStart(2, '0');
 
       panels.forEach((panel, index) => {
-        const local = clamp(p * panels.length - index, -.8, 1.8);
+        const panelProgress = p * (panels.length - 1);
+        const distance = index - panelProgress;
         const image = panel.querySelector<HTMLElement>('img');
-        const front = panel.querySelector<HTMLElement>('.v14-market-depth--front');
-        const back = panel.querySelector<HTMLElement>('.v14-market-depth--back');
-        if (image) gsap.set(image, { scale: 1.1 - clamp(local, 0, 1) * .06, xPercent: local * -2.5 });
-        if (front) gsap.set(front, { xPercent: local * -24 });
-        if (back) gsap.set(back, { xPercent: local * -9 });
+        const copy = panel.querySelector<HTMLElement>('.v16-market-panel-copy');
+
+        if (image) {
+          gsap.set(image, {
+            scale: 1.08 + Math.abs(distance) * .025,
+            xPercent: distance * -2.2,
+            filter: `saturate(${.82 - Math.min(1, Math.abs(distance)) * .15}) brightness(${.66 - Math.min(1, Math.abs(distance)) * .08})`
+          });
+        }
+        if (copy) {
+          gsap.set(copy, {
+            y: Math.abs(distance) * 24,
+            autoAlpha: clamp(1.08 - Math.abs(distance) * .62)
+          });
+        }
+
+        const interactive = Math.abs(distance) < .58;
+        panel.inert = !interactive;
+        panel.tabIndex = interactive ? 0 : -1;
       });
     }
   });
 }
 
-function setupTastes(section: HTMLElement) {
-  const cards = gsap.utils.toArray<HTMLElement>('[data-v14-taste-card]', section);
-  if (!cards.length) return;
-
-  ScrollTrigger.create({
-    trigger: section,
-    start: 'top top',
-    end: 'bottom bottom',
-    scrub: true,
-    onUpdate: (self) => {
-      const travel = self.progress * (cards.length - 1);
-      cards.forEach((card, index) => {
-        const distance = index - travel;
-        const abs = Math.min(1.5, Math.abs(distance));
-        gsap.set(card, {
-          yPercent: distance * 18,
-          xPercent: distance * -4,
-          scale: 1 - abs * .08,
-          rotate: distance * -1.8,
-          autoAlpha: clamp(1.08 - abs * .6),
-          zIndex: 30 - Math.round(abs * 8)
-        });
-        setCardInteractive(card, Math.abs(distance) < .48);
-      });
-    }
-  });
-}
-
-function setupHomeCook(section: HTMLElement) {
-  const media = section.querySelector<HTMLElement>('[data-v14-home-cook-media]');
-  const image = media?.querySelector<HTMLElement>('img');
-  const labels = gsap.utils.toArray<HTMLElement>('[data-v14-ingredient]', section);
-  if (!media || !image) return;
-
-  gsap.fromTo(image, { scale: 1.12, yPercent: -3 }, {
-    scale: 1,
-    yPercent: 3,
-    ease: 'none',
-    scrollTrigger: {
-      trigger: section,
-      start: 'top bottom',
-      end: 'bottom top',
-      scrub: 1
-    }
-  });
-
-  labels.forEach((label, index) => {
-    gsap.fromTo(label, {
-      autoAlpha: 0,
-      y: 24 + index * 7,
-      scale: .94
-    }, {
-      autoAlpha: 1,
-      y: 0,
-      scale: 1,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: section,
-        start: `top ${82 - index * 6}%`,
-        end: `center ${58 - index * 4}%`,
-        scrub: .7
-      }
-    });
-  });
-}
-
-function setupTable(section: HTMLElement) {
-  const surface = section.querySelector<HTMLElement>('[data-v14-table-surface]');
-  const plates = gsap.utils.toArray<HTMLElement>('[data-v14-table-plate]', section);
-  const copy = section.querySelector<HTMLElement>('.v14-table-copy');
-  const cta = copy?.querySelector<HTMLAnchorElement>('a');
-  if (!surface || !plates.length) return;
-  if (cta) cta.tabIndex = -1;
-
-  const thresholds = [0, .17, .35, .53];
+function setupGesture(section: HTMLElement) {
+  const image = section.querySelector<HTMLElement>('.v16-gesture-image img');
+  const copy = section.querySelector<HTMLElement>('.v16-gesture-copy');
+  const chips = gsap.utils.toArray<HTMLElement>('[data-v16-gesture-chip]', section);
+  if (!image) return;
 
   ScrollTrigger.create({
     trigger: section,
@@ -318,101 +171,117 @@ function setupTable(section: HTMLElement) {
     scrub: true,
     onUpdate: (self) => {
       const p = self.progress;
-      gsap.set(surface, {
-        scale: 1.32 - p * .24,
-        rotate: -2 + p * 2,
-        yPercent: 4 - p * 4
+      gsap.set(image, {
+        scale: 1.1 - p * .08,
+        xPercent: -p * 2.5,
+        yPercent: -2 + p * 4,
+        filter: `saturate(${.9 + p * .08}) contrast(${1 + p * .04})`
       });
 
-      plates.forEach((plate, index) => {
-        const phase = rangeProgress(p, thresholds[index], thresholds[index] + .2);
-        gsap.set(plate, {
+      if (copy) {
+        const reveal = rangeProgress(p, .08, .36);
+        gsap.set(copy, {
+          autoAlpha: .32 + reveal * .68,
+          y: (1 - reveal) * 28
+        });
+      }
+
+      chips.forEach((chip, index) => {
+        const reveal = rangeProgress(p, .12 + index * .12, .32 + index * .12);
+        const spread = (index % 2 === 0 ? -1 : 1) * (18 + index * 3);
+        gsap.set(chip, {
+          autoAlpha: reveal,
+          scale: .82 + reveal * .18,
+          xPercent: (1 - reveal) * spread,
+          y: (1 - reveal) * (30 + index * 6),
+          rotate: (1 - reveal) * (index % 2 === 0 ? -7 : 7)
+        });
+      });
+    }
+  });
+}
+
+function setupTable(section: HTMLElement) {
+  const orbit = section.querySelector<HTMLElement>('.v16-table-orbit');
+  const dishes = gsap.utils.toArray<HTMLElement>('[data-v16-dish]', section);
+  const copy = section.querySelector<HTMLElement>('.v16-table-copy');
+  const cta = copy?.querySelector<HTMLAnchorElement>('a');
+  if (!orbit || !dishes.length) return;
+  if (cta) cta.tabIndex = -1;
+
+  const starts = [0, .1, .22, .34, .46];
+
+  ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: true,
+    onUpdate: (self) => {
+      const p = self.progress;
+
+      gsap.set(orbit, {
+        scale: 1.32 - p * .24,
+        rotate: -3 + p * 3,
+        yPercent: 4 - p * 5
+      });
+
+      dishes.forEach((dish, index) => {
+        const phase = rangeProgress(p, starts[index], starts[index] + .2);
+        gsap.set(dish, {
           autoAlpha: phase,
-          scale: .72 + phase * .28,
-          y: (1 - phase) * (28 + index * 8),
-          rotate: (1 - phase) * (index % 2 === 0 ? -6 : 6)
+          scale: .64 + phase * .36,
+          y: (1 - phase) * (42 + index * 7),
+          rotate: (1 - phase) * (index % 2 === 0 ? -10 : 10)
         });
       });
 
       if (copy) {
-        const reveal = rangeProgress(p, .62, .9);
+        const reveal = rangeProgress(p, .58, .84);
         gsap.set(copy, {
           autoAlpha: reveal,
-          y: (1 - reveal) * 28
+          y: (1 - reveal) * 34,
+          scale: .96 + reveal * .04
         });
-        if (cta) cta.tabIndex = reveal >= .5 ? 0 : -1;
+        if (cta) cta.tabIndex = reveal > .55 ? 0 : -1;
       }
     }
   });
 }
 
-function setCardInteractive(card: HTMLElement, active: boolean) {
-  card.inert = !active;
-  if (card instanceof HTMLAnchorElement) {
-    card.tabIndex = active ? 0 : -1;
-  }
-  card.querySelectorAll<HTMLElement>('a, button, input, select, textarea, [tabindex]').forEach((control) => {
-    control.tabIndex = active ? 0 : -1;
-  });
-}
+function setupGlossary(section: HTMLElement) {
+  const words = gsap.utils.toArray<HTMLElement>('[data-v16-glossary-word]', section);
+  const copy = section.querySelector<HTMLElement>('.v16-glossary-copy');
+  if (!words.length) return;
 
-function setupDesireTabs(reducedMotion: boolean, cleanup: Array<() => void>) {
-  const section = document.querySelector<HTMLElement>('[data-v14-desire]');
-  if (!section) return;
+  ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: true,
+    onUpdate: (self) => {
+      const p = self.progress;
+      const position = p * (words.length - 1);
 
-  const buttons = gsap.utils.toArray<HTMLButtonElement>('[data-v14-desire-tab]', section);
-  const panels = gsap.utils.toArray<HTMLElement>('[data-v14-desire-panel]', section);
-  if (!buttons.length || !panels.length) return;
+      words.forEach((word, index) => {
+        const distance = index - position;
+        const abs = Math.abs(distance);
+        const alpha = clamp(1.05 - abs * 1.2);
+        gsap.set(word, {
+          autoAlpha: alpha,
+          yPercent: distance * 26,
+          xPercent: distance * -3,
+          scale: 1 - Math.min(1, abs) * .08,
+          filter: `blur(${Math.min(5, abs * 2.5)}px)`
+        });
+        word.classList.toggle('is-active', abs < .5);
+      });
 
-  const activate = (key: string, moveFocus = false) => {
-    buttons.forEach((button) => {
-      const active = button.dataset.v14DesireTab === key;
-      button.setAttribute('aria-selected', active ? 'true' : 'false');
-      button.tabIndex = active ? 0 : -1;
-      if (active && moveFocus) button.focus();
-    });
-
-    panels.forEach((panel) => {
-      const active = panel.dataset.v14DesirePanel === key;
-      panel.hidden = !active;
-      panel.classList.toggle('is-active', active);
-      if (active && !reducedMotion) {
-        const figure = panel.querySelector<HTMLElement>('figure');
-        const copy = panel.querySelector<HTMLElement>('div');
-        if (figure) gsap.fromTo(figure, { autoAlpha: 0, xPercent: 4, scale: 1.025 }, { autoAlpha: 1, xPercent: 0, scale: 1, duration: .55, ease: 'power2.out' });
-        if (copy) gsap.fromTo(copy, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: .5, ease: 'power2.out' });
+      if (copy) {
+        gsap.set(copy, {
+          yPercent: -p * 6,
+          autoAlpha: 1 - rangeProgress(p, .78, .98) * .75
+        });
       }
-    });
-  };
-
-  const moveTo = (index: number) => {
-    const target = buttons[(index + buttons.length) % buttons.length];
-    activate(target.dataset.v14DesireTab ?? '', true);
-  };
-
-  buttons.forEach((button, index) => {
-    button.tabIndex = button.getAttribute('aria-selected') === 'true' ? 0 : -1;
-
-    const onClick = () => activate(button.dataset.v14DesireTab ?? '');
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
-        event.preventDefault();
-        moveTo(index + 1);
-      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
-        event.preventDefault();
-        moveTo(index - 1);
-      } else if (event.key === 'Home') {
-        event.preventDefault();
-        moveTo(0);
-      } else if (event.key === 'End') {
-        event.preventDefault();
-        moveTo(buttons.length - 1);
-      }
-    };
-
-    button.addEventListener('click', onClick);
-    button.addEventListener('keydown', onKeyDown);
-    cleanup.push(() => button.removeEventListener('click', onClick));
-    cleanup.push(() => button.removeEventListener('keydown', onKeyDown));
+    }
   });
 }
