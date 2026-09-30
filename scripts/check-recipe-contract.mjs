@@ -5,6 +5,7 @@ const detail = fs.readFileSync('src/pages/recettes/[slug].astro','utf8');
 const listing = fs.readFileSync('src/pages/recettes/index.astro','utf8');
 const servings = fs.readFileSync('src/scripts/recipeServings.ts','utf8');
 const recipeCss = fs.readFileSync('src/styles/recipe-v15.css','utf8');
+const v16Css = fs.readFileSync('src/styles/v16-editorial.css','utf8');
 
 const failures = [];
 
@@ -28,6 +29,14 @@ if (!servings.includes("data.scalable !== 'false'") && !servings.includes("datas
 
 if (!listing.includes('Portions ajustables') || !listing.includes('Étapes guidées')) failures.push('Recipe listing must advertise guided/scalable recipe value');
 if (!listing.includes('data-recipe-filter="soupe"') || !listing.includes('data-recipe-filter="dessert"')) failures.push('Recipe catalog must expose broader discovery filters');
+
+const heroVisual = listing.match(/<div class="recipes-journey-visual"[\s\S]*?<\/div>/)?.[0] ?? '';
+const heroFigures = (heroVisual.match(/<figure>/g) ?? []).length;
+if (heroFigures !== 1) failures.push(`V16 recipe hero must render exactly one primary image, found ${heroFigures}`);
+if (heroVisual.includes('amok-1600.webp')) failures.push('V16 recipe hero must not preload the hidden/repeated Amok image');
+
+if (!/@media\(max-width:900px\)[\s\S]*?\.recipes-v16 \.recipe-v15-card:nth-child\(1\)[\s\S]*?grid-column:auto/.test(v16Css)) failures.push('V16 recipe cards must reset editorial column spans below 900px');
+if (!/@media\(max-width:620px\)[\s\S]*?\.recipe-v16 \.recipe-guided-step\{grid-template-columns:2\.8rem minmax\(0,1fr\);padding:1rem 0\}/.test(v16Css)) failures.push('V16 guided recipe steps must compact on mobile');
 
 if (!recipeCss.includes('top:var(--site-header-offset, 4.75rem)')) failures.push('Sticky recipe filters must stay below the fixed site header');
 if (!recipeCss.includes('top:calc(var(--site-header-offset, 4.75rem) + 1rem)')) failures.push('Sticky ingredients card must stay below the fixed site header');
