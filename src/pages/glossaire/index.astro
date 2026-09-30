@@ -24,14 +24,14 @@ const glossarySchema = {
 ---
 <BaseLayout
   title="Glossaire de la cuisine cambodgienne : ingrédients, gestes et plats"
-  description="Comprendre kroeung, prahok, combava, galanga, amok, tamarin et les mots essentiels de la cuisine cambodgienne avec des usages et repères sensoriels."
+  description="Kroeung, prahok, combava, galanga, tamarin : des explications simples pour reconnaître, choisir et utiliser les mots et ingrédients de la cuisine cambodgienne."
 >
   <SiteHeader />
   <main class="v16-editorial v16-glossary-page">
     <header class="v16-page-hero v16-page-hero--glossary">
       <p class="v16-page-kicker">Le glossaire</p>
-      <h1>Vous avez croisé un mot que vous ne connaissez pas ?</h1>
-      <p>Ingrédients, gestes, condiments et plats : chaque entrée explique ce que c’est, comment l’utiliser et quel repère sensoriel retenir.</p>
+      <h1>Un mot vous échappe ? On vous l’explique simplement.</h1>
+      <p>Ingrédients, condiments, plats et gestes : découvrez ce que chaque mot signifie, quel goût attendre et comment l’utiliser en cuisine.</p>
 
       <label class="v16-glossary-search">
         <span>Rechercher dans le glossaire</span>
@@ -67,7 +67,7 @@ const glossarySchema = {
               {entry.culinaryUse && <div><dt>En cuisine</dt><dd>{entry.culinaryUse}</dd></div>}
               {entry.cue && <div><dt>Repère</dt><dd>{entry.cue}</dd></div>}
             </dl>
-            {entry.href && <a href={entry.href}>Approfondir →</a>}
+            {entry.href && <a href={entry.href}>En savoir plus →</a>}
           </div>
         </article>
       ))}
