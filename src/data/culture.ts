@@ -179,7 +179,7 @@ export const cultureArticles: CultureArticle[] = [
     slug: 'prahok-fermentation-umami',
     title: 'Prahok : comprendre la fermentation et l’umami',
     eyebrow: 'Fermentation',
-    intro: 'Le prahok est souvent présenté uniquement comme un condiment très puissant. En cuisine, son intérêt est surtout la profondeur salée et fermentée qu’il apporte.',
+    intro: 'Le prahok est souvent présenté comme un condiment très puissant. Bien dosé, il apporte surtout du sel, de l’umami et ce goût fermenté si particulier.',
     seoDescription: 'Prahok cambodgien : fermentation, umami, dosage et usages culinaires pour comprendre ce condiment essentiel de la cuisine khmère au-delà de son odeur.',
     readingTime: '5 min',
     sections: [
