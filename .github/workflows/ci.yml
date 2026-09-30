@@ -42,5 +42,8 @@ jobs:
       - name: Recipe regression contract
         run: npm run test:recipes
 
+      - name: Editorial regression contract
+        run: npm run test:editorial
+
       - name: Production build
         run: npm run build
