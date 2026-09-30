@@ -26,10 +26,10 @@ const current = (prefix: string) => path.startsWith(prefix);
 
   <nav class="nav-links" aria-label="Rubriques">
     <a href="/recettes/" aria-current={current('/recettes/') ? 'page' : undefined}>Recettes</a>
-    <a href="/ingredients/" aria-current={current('/ingredients/') ? 'page' : undefined}>Ingrédients</a>
-    <a href="/culture/" aria-current={current('/culture/') ? 'page' : undefined}>Culture</a>
-    <a href="/apprendre/" aria-current={current('/apprendre/') ? 'page' : undefined}>Apprendre</a>
-    <a href="/a-propos/" aria-current={current('/a-propos/') ? 'page' : undefined}>À propos</a>
+    <a href="/glossaire/" aria-current={current('/glossaire/') ? 'page' : undefined}>Glossaire</a>
+    <a href="/apprendre/" aria-current={current('/apprendre/') ? 'page' : undefined}>Ateliers</a>
+    <a href="/culture/" aria-current={current('/culture/') ? 'page' : undefined}>Carnets</a>
+     <a href="/a-propos/" aria-current={current('/a-propos/') ? 'page' : undefined}>À propos</a>
   </nav>
 
   <details class="mobile-menu" data-mobile-menu>
@@ -42,9 +42,9 @@ const current = (prefix: string) => path.startsWith(prefix);
       <p class="mobile-menu-kicker">Cambodge · Cuisine khmère · Khmer culinary journal</p>
       <nav aria-label="Navigation mobile">
         <a href="/recettes/" aria-current={current('/recettes/') ? 'page' : undefined}><span>01</span>Recettes</a>
-        <a href="/ingredients/" aria-current={current('/ingredients/') ? 'page' : undefined}><span>02</span>Ingrédients</a>
-        <a href="/culture/" aria-current={current('/culture/') ? 'page' : undefined}><span>03</span>Culture</a>
-        <a href="/apprendre/" aria-current={current('/apprendre/') ? 'page' : undefined}><span>04</span>Apprendre</a>
+        <a href="/glossaire/" aria-current={current('/glossaire/') ? 'page' : undefined}><span>02</span>Glossaire</a>
+        <a href="/apprendre/" aria-current={current('/apprendre/') ? 'page' : undefined}><span>03</span>Ateliers</a>
+        <a href="/culture/" aria-current={current('/culture/') ? 'page' : undefined}><span>04</span>Carnets</a>
         <a href="/a-propos/" aria-current={current('/a-propos/') ? 'page' : undefined}><span>05</span>À propos</a>
       </nav>
     </div>
