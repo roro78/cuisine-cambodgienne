@@ -2,21 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import '../styles/home-v14.css';
+import '../styles/home-v16.css';
 
 const images = {
-  amok: {
-    src: '/images/cuisine/amok-2200.webp',
-    srcset: '/images/cuisine/amok-800.webp 800w, /images/cuisine/amok-1200.webp 1200w, /images/cuisine/amok-1600.webp 1600w, /images/cuisine/amok-2200.webp 2200w'
-  },
-  amokAlt: {
-    src: '/images/cuisine/amok-alt-1600.webp',
-    srcset: '/images/cuisine/amok-alt-800.webp 800w, /images/cuisine/amok-alt-1200.webp 1200w, /images/cuisine/amok-alt-1600.webp 1600w'
-  },
-  lokLak: {
-    src: '/images/cuisine/lok-lak-800.webp',
-    srcset: '/images/cuisine/lok-lak-480.webp 480w, /images/cuisine/lok-lak-800.webp 800w'
-  },
   market: {
     src: '/images/cuisine/kep-market-2200.webp',
     srcset: '/images/cuisine/kep-market-800.webp 800w, /images/cuisine/kep-market-1200.webp 1200w, /images/cuisine/kep-market-1600.webp 1600w, /images/cuisine/kep-market-2200.webp 2200w'
@@ -32,309 +20,183 @@ const images = {
   prahok: {
     src: '/images/cuisine/prahok-1600.webp',
     srcset: '/images/cuisine/prahok-800.webp 800w, /images/cuisine/prahok-1200.webp 1200w, /images/cuisine/prahok-1600.webp 1600w'
+  },
+  kroeung: {
+    src: '/images/cuisine/kroeung-2200.webp',
+    srcset: '/images/cuisine/kroeung-800.webp 800w, /images/cuisine/kroeung-1200.webp 1200w, /images/cuisine/kroeung-1600.webp 1600w, /images/cuisine/kroeung-2200.webp 2200w'
+  },
+  amok: {
+    src: '/images/cuisine/amok-alt-1600.webp',
+    srcset: '/images/cuisine/amok-alt-800.webp 800w, /images/cuisine/amok-alt-1200.webp 1200w, /images/cuisine/amok-alt-1600.webp 1600w'
+  },
+  lokLak: {
+    src: '/images/cuisine/lok-lak-800.webp',
+    srcset: '/images/cuisine/lok-lak-480.webp 480w, /images/cuisine/lok-lak-800.webp 800w'
   }
 };
 
-const heroCards = [
-  { className: 'hero-card--amok', title: 'Amok Trey', meta: 'Poisson · coco · vapeur', image: images.amok, alt: 'Amok cambodgien servi avec du riz' },
-  { className: 'hero-card--loklak', title: 'Lok Lak', meta: 'Bœuf · citron vert · poivre', image: images.lokLak, alt: 'Lok lak cambodgien au bœuf' },
-  { className: 'hero-card--market', title: 'Marchés', meta: 'Fruits · herbes · grillades', image: images.market, alt: 'Marché cambodgien' },
-  { className: 'hero-card--tamarind', title: 'Tamarin', meta: 'Acidulé · fruité · profond', image: images.tamarind, alt: 'Tamarin utilisé dans la cuisine cambodgienne' }
+const marketMoments = [
+  { time: '08:10', eyebrow: 'Kampot', title: 'Le parfum avant le piquant.', text: 'Le poivre frais se choisit comme un produit, pas comme une poudre à ajouter machinalement.', image: images.kampot, href: '/culture/poivre-de-kampot/' },
+  { time: '08:35', eyebrow: 'Acidité', title: 'Le tamarin donne de la profondeur.', text: 'Une acidité ronde, fruitée, qui construit une sauce sans la rendre agressive.', image: images.tamarind, href: '/glossaire/#tamarin' },
+  { time: '09:05', eyebrow: 'Fermentation', title: 'Le prahok travaille en arrière-plan.', text: 'Salé, fermenté, intense : bien dosé, il donne de la profondeur sans prendre toute la place.', image: images.prahok, href: '/culture/prahok-fermentation-umami/' }
 ];
 
-const dishes = [
-  {
-    number: '01',
-    title: 'Amok Trey',
-    text: 'Poisson tendre, coco soyeux et cuisson douce. Un plat emblématique à découvrir sans détour.',
-    href: '/recettes/amok-trey/',
-    cta: 'Voir la recette',
-    image: images.amokAlt,
-    alt: 'Amok Trey cambodgien'
-  },
-  {
-    number: '02',
-    title: 'Lok Lak',
-    text: 'Bœuf saisi très chaud, condiment citron vert-poivre et crudités fraîches. Rapide, net, généreux.',
-    href: '/recettes/lok-lak/',
-    cta: 'Voir la recette',
-    image: images.lokLak,
-    alt: 'Lok lak cambodgien'
-  },
-  {
-    number: '03',
-    title: 'Cuisine des marchés',
-    text: 'Brochettes, fruits, poissons, sauces, soupes et petits plats : une cuisine vivante qui se goûte en marchant.',
-    href: '/culture/',
-    cta: 'Découvrir la culture',
-    image: images.market,
-    alt: 'Étal de marché au Cambodge'
-  }
-];
+const glossaryWords = ['Kroeung', 'Prahok', 'Combava', 'Galanga', 'Tamarin', 'Amok'];
 
-const marketStops = [
-  { title: 'Grillades', text: 'Brochettes, viandes marinées et cuisson vive.', image: images.market, alt: 'Marché cambodgien et grillades' },
-  { title: 'Soupes', text: 'Bouillons parfumés, herbes fraîches et nouilles.', image: images.prahok, alt: 'Préparation culinaire cambodgienne' },
-  { title: 'Fruits', text: 'Tamarin, agrumes, fruits tropicaux et fraîcheur.', image: images.tamarind, alt: 'Tamarin cambodgien' },
-  { title: 'Poivre', text: 'Le poivre de Kampot, floral, chaud et très aromatique.', image: images.kampot, alt: 'Poivre de Kampot sur son plant' },
-  { title: 'Plats minute', text: 'Une poêle très chaude, quelques minutes, et on passe à table.', image: images.lokLak, alt: 'Lok lak cambodgien prêt à servir' }
-];
-
-const tasteCards = [
-  { number: '01', title: 'Marché de Kep', text: 'Poissons, fruits, herbes et paniers : le Cambodge commence aussi par ce que l’on voit et sent.', image: images.market, alt: 'Marché de Kep au Cambodge', href: '/culture/' },
-  { number: '02', title: 'Poivre de Kampot', text: 'Une escale plus terrienne : poivriers, chaleur et parfum floral.', image: images.kampot, alt: 'Poivre de Kampot sur son plant', href: '/ingredients/poivre-de-kampot/' },
-  { number: '03', title: 'À table', text: 'Plusieurs plats au centre, du riz, des sauces et le plaisir de goûter un peu de tout.', image: images.amok, alt: 'Plat cambodgien servi à table', href: '/culture/' }
-];
-
-const desireChoices = [
-  { key: 'viande', label: 'Viande', eyebrow: 'Envie de viande', title: 'Lok Lak', text: 'Bœuf saisi à feu vif, citron vert, poivre et crudités. Une recette courte et très accessible.', href: '/recettes/lok-lak/', cta: 'Cuisiner le Lok Lak', image: images.lokLak, alt: 'Lok lak cambodgien au bœuf' },
-  { key: 'poisson', label: 'Poisson', eyebrow: 'Envie de poisson', title: 'Amok Trey', text: 'Poisson, lait de coco et cuisson douce : une recette plus lente, mais très parfumée.', href: '/recettes/amok-trey/', cta: 'Cuisiner l’Amok', image: images.amok, alt: 'Amok Trey cambodgien' },
-  { key: 'rapide', label: 'Rapide', eyebrow: 'Peu de temps', title: 'Prêt en 30 minutes', text: 'Le Lok Lak se prépare rapidement : la réussite vient surtout d’une poêle très chaude et d’une cuisson courte.', href: '/recettes/lok-lak/', cta: 'Voir la recette rapide', image: images.lokLak, alt: 'Lok lak rapide à préparer' },
-  { key: 'vegetal', label: 'Végétal', eyebrow: 'Envie de végétal', title: 'Commencer par les saveurs', text: 'Tamarin, citron vert, herbes et aromates : explorez les ingrédients pour composer une assiette plus végétale.', href: '/ingredients/', cta: 'Explorer les ingrédients', image: images.tamarind, alt: 'Tamarin et ingrédients cambodgiens' }
-];
-
-const finalRecipes = [
-  { title: 'Lok Lak', time: '30 min', difficulty: 'Facile', text: 'Bœuf sauté, poivre et citron vert.', href: '/recettes/lok-lak/', image: images.lokLak, alt: 'Lok lak cambodgien' },
-  { title: 'Amok Trey', time: '55 min', difficulty: 'Intermédiaire', text: 'Poisson, coco et cuisson douce.', href: '/recettes/amok-trey/', image: images.amokAlt, alt: 'Amok Trey cambodgien' }
+const recipes = [
+  { title: 'Amok Trey', meta: 'Poisson · coco · vapeur', text: 'Une cuisson douce et parfumée, à reconnaître à la texture avant de regarder le minuteur.', href: '/recettes/amok-trey/', image: images.amok, alt: 'Amok Trey cambodgien' },
+  { title: 'Lok Lak', meta: 'Bœuf · citron vert · poivre', text: 'Une poêle très chaude, une saisie courte et un condiment vif.', href: '/recettes/lok-lak/', image: images.lokLak, alt: 'Lok lak cambodgien au bœuf' }
 ];
 ---
 <BaseLayout
-  image={images.amok.src}
-  title="Cuisine du Cambodge — Recettes, saveurs et cuisine khmère"
-  description="Découvrez les plats, les marchés, les saveurs et les recettes cambodgiennes : Amok, Lok Lak, poivre de Kampot, tamarin et cuisine à refaire chez soi."
+  image={images.market.src}
+  title="Cuisine du Cambodge — Le Cambodge par la table"
+  description="Recettes, ateliers, glossaire et carnets : découvrir la cuisine cambodgienne par ses marchés, ses gestes, ses saveurs et sa table."
 >
   <SiteHeader overlay />
 
-  <main class="v14-home">
-    <section class="v14-hero v14-scroll-section" data-v14-section data-v14-hero aria-labelledby="v14-hero-title">
-      <div class="v14-sticky v14-hero-stage">
-        <div class="v14-hero-backdrop" aria-hidden="true">
+  <main class="v16-home">
+    <section class="v16-hero v16-scroll-scene" data-v16-hero aria-labelledby="v16-hero-title">
+      <div class="v16-sticky v16-hero-stage">
+        <figure class="v16-hero-image" aria-hidden="true">
           <img src={images.market.src} srcset={images.market.srcset} sizes="100vw" alt="" width="3888" height="2592" fetchpriority="high" decoding="async" />
-        </div>
-        <div class="v14-hero-shade" aria-hidden="true"></div>
-        <div class="v14-hero-copy">
-          <p class="v14-kicker"><span aria-hidden="true">🇰🇭</span> Du Mékong aux marchés de Kep</p>
-          <h1 id="v14-hero-title">
-            <span>Découvrez</span>
-            <span>la cuisine</span>
-            <span>cambodgienne</span>
+        </figure>
+        <div class="v16-hero-wash" aria-hidden="true"></div>
+        <div class="v16-hero-copy">
+          <p class="v16-time">06:30 · Cambodge</p>
+          <p class="v16-kicker">Le Cambodge par la table</p>
+          <h1 id="v16-hero-title">
+            <span data-v16-hero-line>Sentir.</span>
+            <span data-v16-hero-line>Goûter.</span>
+            <span data-v16-hero-line>Cuisiner.</span>
           </h1>
-          <p>Un voyage par les marchés, les gestes, les parfums et les plats — puis des recettes guidées pour ramener un peu du Cambodge dans votre cuisine.</p>
+          <p>Un voyage culinaire par les marchés, les gestes, les mots et les repas — avant de passer soi-même en cuisine.</p>
         </div>
-
-        <div class="v14-hero-orbit" aria-hidden="true">
-          {heroCards.map((card) => (
-            <figure class:list={['v14-hero-card', card.className]} data-v14-hero-card>
-              <img src={card.image.src} srcset={card.image.srcset} sizes="(max-width: 720px) 44vw, 24vw" alt="" loading="eager" decoding="async" />
-              <figcaption><strong>{card.title}</strong><span>{card.meta}</span></figcaption>
-            </figure>
-          ))}
+        <div class="v16-hero-orbit" aria-hidden="true">
+          <span class="v16-orbit-chip chip-a">marchés</span>
+          <span class="v16-orbit-chip chip-b">herbes fraîches</span>
+          <span class="v16-orbit-chip chip-c">feu vif</span>
+          <span class="v16-orbit-chip chip-d">riz chaud</span>
         </div>
-
-        <div class="v14-scroll-cue" aria-hidden="true"><span>Défiler</span><i></i></div>
+        <div class="v16-scroll-cue" aria-hidden="true"><span>Faire défiler</span><i></i></div>
       </div>
     </section>
 
-    <section class="v14-dishes v14-scroll-section" data-v14-section data-v14-dishes aria-labelledby="v14-dishes-title">
-      <div class="v14-sticky v14-dishes-stage">
-        <header class="v14-section-head">
-          <p class="v14-kicker">01 — Pour commencer</p>
-          <h2 id="v14-dishes-title">Par où commencer ?</h2>
-          <p>Deux plats emblématiques et l’énergie des marchés pour entrer simplement dans la cuisine cambodgienne.</p>
+    <section class="v16-morning" data-v16-morning aria-labelledby="v16-morning-title">
+      <div class="v16-morning-time" aria-hidden="true">07:15</div>
+      <div class="v16-morning-copy" data-reveal="up">
+        <p class="v16-kicker">Le matin</p>
+        <h2 id="v16-morning-title">Le Cambodge se mange tôt.</h2>
+        <p>Avant même de parler de grands plats, il y a les bouillons, le riz, les nouilles, les grillades et les marchés qui s’installent. La cuisine commence par une ambiance, pas par une fiche technique.</p>
+        <a href="/culture/">Entrer dans les carnets</a>
+      </div>
+      <div class="v16-morning-notes" aria-label="Repères du matin">
+        <span>bouillon</span><span>riz</span><span>herbes</span><span>grillades</span>
+      </div>
+    </section>
+
+    <section class="v16-market v16-scroll-scene" data-v16-market aria-labelledby="v16-market-title">
+      <div class="v16-sticky v16-market-stage">
+        <header class="v16-market-head">
+          <p class="v16-time">08:00 · Marché</p>
+          <h2 id="v16-market-title">Le produit donne le ton.</h2>
+          <p>Trois produits, trois façons de comprendre la cuisine cambodgienne sans répéter les mêmes assiettes.</p>
         </header>
-        <div class="v14-dish-stack">
-          {dishes.map((dish, index) => (
-            <article class:list={['v14-dish-card', index === 0 && 'is-active']} data-v14-dish-card>
-              <figure><img src={dish.image.src} srcset={dish.image.srcset} sizes="(max-width: 720px) 88vw, 56vw" alt={dish.alt} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" /></figure>
-              <div>
-                <span>{dish.number}</span>
-                <h3>{dish.title}</h3>
-                <p>{dish.text}</p>
-                <a href={dish.href}>{dish.cta}</a>
-              </div>
-            </article>
-          ))}
-        </div>
-        <div class="v14-chapter-progress" aria-hidden="true"><i></i><span>03</span></div>
-      </div>
-    </section>
-
-    <section class="v14-flavors v14-scroll-section" data-v14-section data-v14-flavors aria-labelledby="v14-flavors-title">
-      <div class="v14-sticky v14-flavors-stage">
-        <header class="v14-section-head v14-section-head--light">
-          <p class="v14-kicker">02 — Ce qui reste en bouche</p>
-          <h2 id="v14-flavors-title">Les saveurs du Cambodge.</h2>
-          <p>Citronnelle, coco, citron vert, herbes, poivre, piment et tamarin : des contrastes plus que des complications.</p>
-        </header>
-
-        <div class="v14-flavor-words" aria-hidden="true">
-          <span class="is-active" data-v14-flavor-word>Frais</span>
-          <span data-v14-flavor-word>Acidulé</span>
-          <span data-v14-flavor-word>Parfumé</span>
-          <span data-v14-flavor-word>Épicé</span>
-        </div>
-
-        <div class="v14-flavor-objects" aria-hidden="true">
-          <figure class="v14-flavor-object flavor-object-1" data-v14-flavor-object><img src={images.tamarind.src} srcset={images.tamarind.srcset} sizes="32vw" alt="" loading="lazy" decoding="async" /><figcaption>Tamarin</figcaption></figure>
-          <figure class="v14-flavor-object flavor-object-2" data-v14-flavor-object><img src={images.kampot.src} srcset={images.kampot.srcset} sizes="30vw" alt="" loading="lazy" decoding="async" /><figcaption>Poivre</figcaption></figure>
-          <figure class="v14-flavor-object flavor-object-3" data-v14-flavor-object><img src={images.amokAlt.src} srcset={images.amokAlt.srcset} sizes="30vw" alt="" loading="lazy" decoding="async" /><figcaption>Coco</figcaption></figure>
-          <figure class="v14-flavor-object flavor-object-4" data-v14-flavor-object><img src={images.market.src} srcset={images.market.srcset} sizes="30vw" alt="" loading="lazy" decoding="async" /><figcaption>Herbes</figcaption></figure>
-          <figure class="v14-flavor-object flavor-object-5" data-v14-flavor-object><img src={images.lokLak.src} srcset={images.lokLak.srcset} sizes="28vw" alt="" loading="lazy" decoding="async" /><figcaption>Citron vert</figcaption></figure>
-        </div>
-      </div>
-    </section>
-
-    <section class="v14-market v14-scroll-section" data-v14-section data-v14-market aria-labelledby="v14-market-title">
-      <div class="v14-sticky v14-market-stage">
-        <div class="v14-market-heading">
-          <p class="v14-kicker">03 — Dans la rue</p>
-          <h2 id="v14-market-title">Street food & marchés.</h2>
-          <p>Brochettes, soupes, fruits, épices et plats minute : au Cambodge, les marchés se mangent autant qu’ils se visitent.</p>
-        </div>
-        <div class="v14-market-window">
-          <div class="v14-market-track" data-v14-market-track>
-            {marketStops.map((stop, index) => (
-              <article class="v14-market-panel">
+        <div class="v16-market-window">
+          <div class="v16-market-track" data-v16-market-track>
+            {marketMoments.map((item, index) => (
+              <a class="v16-market-panel" href={item.href} data-v16-market-panel>
                 <figure>
-                  <img src={stop.image.src} srcset={stop.image.srcset} sizes="100vw" alt={stop.alt} loading={index < 2 ? 'eager' : 'lazy'} decoding="async" />
+                  <img src={item.image.src} srcset={item.image.srcset} sizes="100vw" alt="" loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
                 </figure>
-                <div class="v14-market-depth v14-market-depth--back" aria-hidden="true"></div>
-                <div class="v14-market-depth v14-market-depth--front" aria-hidden="true"></div>
-                <div class="v14-market-copy">
-                  <span>0{index + 1}</span>
-                  <h3>{stop.title}</h3>
-                  <p>{stop.text}</p>
+                <div class="v16-market-panel-shade"></div>
+                <div class="v16-market-panel-copy">
+                  <span>{item.time}</span>
+                  <p>{item.eyebrow}</p>
+                  <h3>{item.title}</h3>
+                  <strong>{item.text}</strong>
                 </div>
-              </article>
+              </a>
             ))}
           </div>
         </div>
-        <div class="v14-market-index" aria-hidden="true"><span data-v14-market-count>01</span><i></i><span>05</span></div>
+        <div class="v16-market-progress" aria-hidden="true"><span data-v16-market-count>01</span><i></i><span>03</span></div>
       </div>
     </section>
 
-    <section class="v14-tastes v14-scroll-section" data-v14-section data-v14-tastes aria-labelledby="v14-tastes-title">
-      <div class="v14-sticky v14-tastes-stage">
-        <header class="v14-section-head">
-          <p class="v14-kicker">04 — Le voyage continue</p>
-          <h2 id="v14-tastes-title">Trois escales gourmandes.</h2>
-          <p>Kep, Kampot, puis la table : trois façons différentes d’entrer dans la cuisine cambodgienne.</p>
-        </header>
-        <div class="v14-taste-stack">
-          {tasteCards.map((card, index) => (
-            <a class="v14-taste-card" data-v14-taste-card href={card.href}>
-              <figure><img src={card.image.src} srcset={card.image.srcset} sizes="(max-width: 720px) 88vw, 58vw" alt={card.alt} loading="lazy" decoding="async" /></figure>
-              <div><span>{card.number}</span><h3>{card.title}</h3><p>{card.text}</p></div>
-            </a>
-          ))}
+    <section class="v16-gesture v16-scroll-scene" data-v16-gesture aria-labelledby="v16-gesture-title">
+      <div class="v16-sticky v16-gesture-stage">
+        <figure class="v16-gesture-image">
+          <img src={images.kroeung.src} srcset={images.kroeung.srcset} sizes="(max-width: 760px) 100vw, 54vw" alt="Kroeung cambodgien et aromates" loading="lazy" decoding="async" />
+        </figure>
+        <div class="v16-gesture-copy">
+          <p class="v16-time">11:00 · Le geste</p>
+          <p class="v16-kicker">Tout commence par la main</p>
+          <h2 id="v16-gesture-title">Piler change la texture. Et le parfum.</h2>
+          <p>Citronnelle, galanga, curcuma, combava : on ne les empile pas. On les travaille dans un ordre, jusqu’à ce qu’ils deviennent une seule base aromatique.</p>
+          <a href="/apprendre/">Voir les ateliers</a>
+        </div>
+        <div class="v16-gesture-steps" aria-hidden="true">
+          <span data-v16-gesture-chip>couper fin</span>
+          <span data-v16-gesture-chip>piler</span>
+          <span data-v16-gesture-chip>sentir</span>
+          <span data-v16-gesture-chip>ajuster</span>
         </div>
       </div>
     </section>
 
-    <section class="v14-home-cook" data-v14-section data-v14-home-cook aria-labelledby="v14-home-cook-title">
-      <div class="v14-home-cook-media" data-v14-home-cook-media>
-        <img src={images.lokLak.src} srcset={images.lokLak.srcset} sizes="(max-width: 720px) 100vw, 58vw" alt="Lok lak cambodgien au bœuf" loading="lazy" decoding="async" />
-        <div class="v14-ingredient-label ingredient-label-1" data-v14-ingredient>01 · Bœuf</div>
-        <div class="v14-ingredient-label ingredient-label-2" data-v14-ingredient>02 · Citron vert</div>
-        <div class="v14-ingredient-label ingredient-label-3" data-v14-ingredient>03 · Poivre</div>
-        <div class="v14-ingredient-label ingredient-label-4" data-v14-ingredient>04 · Crudités</div>
-      </div>
-      <div class="v14-home-cook-copy" data-reveal="up">
-        <p class="v14-kicker">05 — À la maison</p>
-        <h2 id="v14-home-cook-title">Facile à cuisiner chez soi.</h2>
-        <p>Pas besoin de vingt ingrédients ni d’une journée entière. Le Lok Lak repose surtout sur une bonne saisie, du citron vert et du poivre fraîchement moulu.</p>
-        <strong>Quelques ingrédients. Beaucoup de parfum.</strong>
-        <a href="/recettes/lok-lak/">Voir la recette facile</a>
-      </div>
-    </section>
-
-    <section class="v14-desire" data-v14-section data-v14-desire aria-labelledby="v14-desire-title">
-      <header class="v14-desire-head" data-reveal="up">
-        <p class="v14-kicker">06 — À vous de choisir</p>
-        <h2 id="v14-desire-title">Vous avez envie de quoi ?</h2>
-      </header>
-      <div class="v14-desire-layout">
-        <div class="v14-desire-tabs" role="tablist" aria-label="Choisir une envie">
-          {desireChoices.map((choice, index) => (
-            <button
-              type="button"
-              role="tab"
-              aria-selected={index === 0 ? 'true' : 'false'}
-              tabindex={index === 0 ? 0 : -1}
-              aria-controls={`v14-desire-panel-${choice.key}`}
-              id={`v14-desire-tab-${choice.key}`}
-              data-v14-desire-tab={choice.key}
-            >
-              <span>0{index + 1}</span>{choice.label}
-            </button>
-          ))}
+    <section class="v16-table v16-scroll-scene" data-v16-table aria-labelledby="v16-table-title">
+      <div class="v16-sticky v16-table-stage">
+        <div class="v16-table-orbit" aria-hidden="true">
+          <div class="v16-dish dish-rice" data-v16-dish><span>riz</span></div>
+          <div class="v16-dish dish-hot" data-v16-dish><span>plat chaud</span></div>
+          <div class="v16-dish dish-fresh" data-v16-dish><span>fraîcheur</span></div>
+          <div class="v16-dish dish-condiment" data-v16-dish><span>condiment</span></div>
+          <div class="v16-dish dish-soup" data-v16-dish><span>soupe</span></div>
         </div>
-        <div class="v14-desire-panels">
-          {desireChoices.map((choice, index) => (
-            <article
-              class:list={['v14-desire-panel', index === 0 && 'is-active']}
-              id={`v14-desire-panel-${choice.key}`}
-              role="tabpanel"
-              aria-labelledby={`v14-desire-tab-${choice.key}`}
-              hidden={index !== 0}
-              data-v14-desire-panel={choice.key}
-            >
-              <figure><img src={choice.image.src} srcset={choice.image.srcset} sizes="(max-width: 720px) 100vw, 56vw" alt={choice.alt} loading="lazy" decoding="async" /></figure>
-              <div>
-                <p class="eyebrow">{choice.eyebrow}</p>
-                <h3>{choice.title}</h3>
-                <p>{choice.text}</p>
-                <a href={choice.href}>{choice.cta}</a>
-              </div>
-            </article>
-          ))}
+        <div class="v16-table-copy">
+          <p class="v16-time">12:30 · À table</p>
+          <h2 id="v16-table-title">On ne cuisine pas un plat seul.</h2>
+          <p>Le riz calme. Les herbes réveillent. Une soupe apporte de la légèreté. Un condiment change la bouchée. C’est l’ensemble qui fait le repas.</p>
+          <a href="/culture/construire-repas-cambodgien/">Comprendre la table</a>
         </div>
       </div>
     </section>
 
-    <section class="v14-table v14-scroll-section" data-v14-section data-v14-table aria-labelledby="v14-table-title">
-      <div class="v14-sticky v14-table-stage">
-        <div class="v14-table-surface" data-v14-table-surface aria-hidden="true">
-          <figure class="v14-table-plate plate-1" data-v14-table-plate><img src={images.amok.src} srcset={images.amok.srcset} sizes="42vw" alt="" loading="lazy" decoding="async" /></figure>
-          <figure class="v14-table-plate plate-2" data-v14-table-plate><img src={images.lokLak.src} srcset={images.lokLak.srcset} sizes="34vw" alt="" loading="lazy" decoding="async" /></figure>
-          <figure class="v14-table-plate plate-3" data-v14-table-plate><img src={images.tamarind.src} srcset={images.tamarind.srcset} sizes="28vw" alt="" loading="lazy" decoding="async" /></figure>
-          <figure class="v14-table-plate plate-4" data-v14-table-plate><img src={images.kampot.src} srcset={images.kampot.srcset} sizes="28vw" alt="" loading="lazy" decoding="async" /></figure>
-          <span class="v14-table-bowl bowl-1"></span>
-          <span class="v14-table-bowl bowl-2"></span>
-          <span class="v14-table-bowl bowl-3"></span>
+    <section class="v16-glossary v16-scroll-scene" data-v16-glossary aria-labelledby="v16-glossary-title">
+      <div class="v16-sticky v16-glossary-stage">
+        <div class="v16-glossary-copy">
+          <p class="v16-time">16:00 · Les mots</p>
+          <p class="v16-kicker">Comprendre avant de mémoriser</p>
+          <h2 id="v16-glossary-title">Un mot inconnu ne devrait jamais bloquer une recette.</h2>
+          <a href="/glossaire/">Ouvrir le glossaire</a>
         </div>
-        <div class="v14-table-copy">
-          <p class="v14-kicker">07 — Le repas</p>
-          <h2 id="v14-table-title">À table au Cambodge.</h2>
-          <p>Plusieurs plats au centre. Du riz. Des sauces et des accompagnements. Et chacun se sert.</p>
-          <a href="/culture/">Découvrir les habitudes à table</a>
+        <div class="v16-glossary-words" aria-hidden="true">
+          {glossaryWords.map((word, index) => <span data-v16-glossary-word class:list={[index === 0 && 'is-active']}>{word}</span>)}
         </div>
       </div>
     </section>
 
-    <section class="v14-recipes" data-v14-section aria-labelledby="v14-recipes-title">
+    <section class="v16-recipes" aria-labelledby="v16-recipes-title">
       <header data-reveal="up">
-        <p class="v14-kicker">08 — Maintenant</p>
-        <h2 id="v14-recipes-title">Qu’est-ce qu’on cuisine aujourd’hui ?</h2>
-        <p>Dix recettes sont maintenant disponibles, avec portions ajustables et étapes guidées. Commencez par deux incontournables ou explorez tout le catalogue.</p>
+        <p class="v16-time">19:00 · À vous de cuisiner</p>
+        <p class="v16-kicker">Deux portes d’entrée</p>
+        <h2 id="v16-recipes-title">Maintenant, on passe en cuisine.</h2>
+        <p>Les recettes restent guidées et ajustables, mais l’objectif est d’abord de donner envie : comprendre le geste, puis cuisiner.</p>
       </header>
-      <div class="v14-recipe-grid">
-        {finalRecipes.map((recipe) => (
-          <a href={recipe.href} class="v14-recipe-card" data-reveal="up">
-            <figure><img src={recipe.image.src} srcset={recipe.image.srcset} sizes="(max-width: 720px) 100vw, 46vw" alt={recipe.alt} loading="lazy" decoding="async" /></figure>
-            <div>
-              <span>{recipe.time} · {recipe.difficulty}</span>
-              <h3>{recipe.title}</h3>
-              <p>{recipe.text}</p>
-              <strong>Voir la recette</strong>
-            </div>
+      <div class="v16-recipe-grid">
+        {recipes.map((recipe) => (
+          <a href={recipe.href} class="v16-recipe-card" data-reveal="up">
+            <figure><img src={recipe.image.src} srcset={recipe.image.srcset} sizes="(max-width: 760px) 100vw, 50vw" alt={recipe.alt} loading="lazy" decoding="async" /></figure>
+            <div><span>{recipe.meta}</span><h3>{recipe.title}</h3><p>{recipe.text}</p><strong>Cuisiner →</strong></div>
           </a>
         ))}
       </div>
-      <nav class="v14-recipes-links" aria-label="Explorer le site">
-        <a href="/recettes/">Voir toutes les recettes</a>
-        <a href="/ingredients/">Explorer les ingrédients</a>
-        <a href="/culture/">Découvrir la culture cambodgienne</a>
+      <nav class="v16-explore" aria-label="Explorer Cuisine du Cambodge">
+        <a href="/recettes/">Toutes les recettes</a>
+        <a href="/apprendre/">Les ateliers</a>
+        <a href="/culture/">Les carnets</a>
+        <a href="/glossaire/">Le glossaire</a>
       </nav>
     </section>
 
@@ -345,7 +207,6 @@ const finalRecipes = [
   </main>
 
   <SiteFooter />
-
   <script>
     import { initStorytelling } from '../scripts/storytelling';
     initStorytelling();

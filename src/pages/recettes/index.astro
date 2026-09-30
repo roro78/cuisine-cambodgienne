@@ -5,6 +5,7 @@ import SiteFooter from '../../components/SiteFooter.astro';
 import { recipes } from '../../data/recipes';
 import { imageSrcSet } from '../../utils/images';
 import '../../styles/recipe-v15.css';
+import '../../styles/v16-editorial.css';
 
 const minutes = (value: string) => Number(value.match(/\d+/)?.[0] ?? 0);
 const collectionSchema = {
@@ -42,12 +43,12 @@ const toneMap: Record<string,string> = {
 >
   <SiteHeader />
 
-  <main class="recipes-v15">
+  <main class="recipes-v15 recipes-v16">
     <section class="recipes-journey-hero">
       <div class="recipes-journey-copy" data-reveal="up">
         <p class="eyebrow">Cuisiner le Cambodge</p>
-        <h1>Des recettes qui vous accompagnent vraiment.</h1>
-        <p>Street food, plats familiaux, soupes, poisson, desserts : choisissez une envie, ajustez les portions et cuisinez avec des repères concrets plutôt qu’une simple liste d’étapes.</p>
+        <h1>Choisir un plat. Puis suivre le geste.</h1>
+        <p>Des recettes faites pour donner faim d’abord, puis guider vraiment : quantités ajustables, repères de texture et conseils utiles quand vient le moment de cuisiner.</p>
         <div class="recipes-journey-stamp" aria-label="Atouts des recettes">
           <span>{recipes.length} recettes</span>
           <span>Portions ajustables</span>
@@ -57,8 +58,7 @@ const toneMap: Record<string,string> = {
       </div>
 
       <div class="recipes-journey-visual" aria-hidden="true">
-        <figure><img src="/images/cuisine/kep-market-1600.webp" srcset={imageSrcSet('/images/cuisine/kep-market-1600.webp',[480,800,1200,1600])} sizes="35vw" alt="" width="1600" height="1067" decoding="async" /></figure>
-        <figure><img src="/images/cuisine/amok-1600.webp" srcset={imageSrcSet('/images/cuisine/amok-1600.webp',[480,800,1200,1600])} sizes="30vw" alt="" width="3888" height="2592" decoding="async" /></figure>
+        <figure><img src="/images/cuisine/kep-market-1600.webp" srcset={imageSrcSet('/images/cuisine/kep-market-1600.webp',[480,800,1200,1600])} sizes="(max-width: 900px) 100vw, 55vw" alt="" width="1600" height="1067" decoding="async" /></figure>
       </div>
     </section>
 

@@ -9,6 +9,7 @@ import GlossaryStrip from '../../components/GlossaryStrip.astro';
 import { getGlossaryEntries } from '../../data/glossary';
 import { imageSrcSet } from '../../utils/images';
 import '../../styles/recipe-v15.css';
+import '../../styles/v16-editorial.css';
 
 export function getStaticPaths() {
   return recipes.map((recipe: Recipe) => ({
@@ -87,7 +88,7 @@ const recipeSchema = {
 <BaseLayout title={`${recipe.title} — Recette cambodgienne | Cuisine du Cambodge`} description={recipe.description} image={recipe.image} imageAlt={recipe.imageAlt}>
   <SiteHeader />
 
-  <main class="recipe-v15">
+  <main class="recipe-v15 recipe-v16">
     <section class="recipe-v15-hero">
       <div class="recipe-v15-hero-copy" data-reveal="up">
         <p class="eyebrow">Recette cambodgienne · {recipe.category}</p>
@@ -208,9 +209,9 @@ const recipeSchema = {
 
       <article class="recipe-guided-method">
         <header>
-          <p class="eyebrow">Cuisine guidée</p>
-          <h2>Faites la recette étape par étape.</h2>
-          <p>Chaque étape vous dit quoi faire, quoi regarder et quelle erreur éviter. Cochez au fur et à mesure.</p>
+          <p class="eyebrow">En cuisine</p>
+          <h2>Cuire, goûter, ajuster.</h2>
+          <p>Les étapes restent guidées, mais l’essentiel est dans les repères : ce qu’il faut voir, sentir et éviter pour comprendre la cuisson.</p>
         </header>
 
         <div class="recipe-guided-steps">

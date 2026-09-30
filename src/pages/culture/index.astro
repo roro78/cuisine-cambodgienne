@@ -4,101 +4,99 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { cultureArticles } from '../../data/culture';
 import { imageSrcSet } from '../../utils/images';
-import CulinaryIcon from '../../components/CulinaryIcon.astro';
+import '../../styles/v16-editorial.css';
 
-const culturePaths = [
-  {
-    icon: 'prep' as const,
-    eyebrow: 'Gestes',
-    title: 'Commencer par le mortier',
-    text: 'Comprendre le kroeung, l’ordre des aromates et ce que le pilage change vraiment dans la texture.',
-    href: '/culture/comprendre-le-kroeung/'
-  },
-  {
-    icon: 'taste' as const,
-    eyebrow: 'Produits',
-    title: 'Goûter le territoire',
-    text: 'Du poivre de Kampot au marché de Kep : voir comment un produit local devient un repère culinaire.',
-    href: '/culture/poivre-de-kampot/'
-  },
-  {
-    icon: 'story' as const,
-    eyebrow: 'Fermentation',
-    title: 'Apprivoiser le prahok',
-    text: 'Comprendre la fermentation, l’umami et le dosage au lieu de réduire le prahok à son odeur.',
-    href: '/culture/prahok-fermentation-umami/'
-  },
-  {
-    icon: 'servings' as const,
-    eyebrow: 'À table',
-    title: 'Composer un repas',
-    text: 'Riz, plat chaud, légumes, herbes et condiment : apprendre comment les éléments se répondent.',
-    href: '/culture/construire-repas-cambodgien/'
-  }
+const moments = [
+  { time:'05:30', title:'Le matin se mange dehors', text:'Bouillons, nouilles, riz et grillades : commencer par les habitudes avant de commencer par les plats.', href:'/culture/construire-repas-cambodgien/' },
+  { time:'08:30', title:'Le marché décide souvent du repas', text:'Produits frais, saison, mer, herbes et fruits : la cuisine part de ce qui est disponible.', href:'/culture/kep-marche-crabe-poivre/' },
+  { time:'11:00', title:'Le mortier raconte le geste', text:'Comprendre le kroeung, c’est comprendre pourquoi la préparation compte autant que la liste des ingrédients.', href:'/culture/comprendre-le-kroeung/' },
+  { time:'12:30', title:'Une table est un équilibre', text:'Riz, plat chaud, fraîcheur, soupe et condiment : le repas se construit par contraste.', href:'/culture/construire-repas-cambodgien/' }
 ];
 
 const collectionSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'CollectionPage',
-  name: 'Culture culinaire khmère',
-  description: 'Territoires, gestes, ingrédients et transmission autour de la cuisine cambodgienne.',
-  url: 'https://www.cuisine-du-cambodge.com/culture/',
-  inLanguage: 'fr-FR',
-  mainEntity: {
-    '@type': 'ItemList',
-    itemListElement: cultureArticles.map((article, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: article.title,
-      url: `https://www.cuisine-du-cambodge.com/culture/${article.slug}/`
+  '@context':'https://schema.org',
+  '@type':'CollectionPage',
+  name:'Carnets culinaires du Cambodge',
+  description:'Marchés, gestes, produits, fermentation et table : des carnets pour comprendre la cuisine cambodgienne par ce qui se mange, se prépare et se partage.',
+  url:'https://www.cuisine-du-cambodge.com/culture/',
+  inLanguage:'fr-FR',
+  mainEntity:{
+    '@type':'ItemList',
+    itemListElement:cultureArticles.map((article,index)=>({
+      '@type':'ListItem',position:index+1,name:article.title,url:`https://www.cuisine-du-cambodge.com/culture/${article.slug}/`
     }))
   }
 };
 ---
-<BaseLayout title="Culture culinaire cambodgienne : gestes, marchés et mémoire" description="Poivre de Kampot, kroeung, amok, prahok, marchés et transmission : découvrir la culture culinaire cambodgienne à travers ses produits, ses gestes et son histoire.">
+<BaseLayout
+  title="Carnets du Cambodge : marchés, gestes et culture culinaire"
+  description="Des marchés du matin aux tables familiales : découvrir la cuisine cambodgienne par ses produits, ses gestes, ses fermentations et ses habitudes."
+>
   <SiteHeader />
-  <main class="listing-page editorial-listing culture-listing">
-    <header class="page-intro page-intro-split" data-reveal="up">
-      <p class="eyebrow">Comprendre</p>
-      <h1>Culture culinaire</h1>
-      <p>Pourquoi le poivre de Kampot a ce goût, comment le kroeung parfume une cuisine entière, ce que l’on mange et partage autour de la table : la culture culinaire racontée par ce qui se cuisine vraiment.</p>
-      <div class="page-intro-visual" data-parallax="0.10"><img src={cultureArticles[0].image} srcset={imageSrcSet(cultureArticles[0].image, cultureArticles[0].imageWidths)} sizes="(max-width: 900px) 100vw, 58vw" alt={cultureArticles[0].imageAlt} width={cultureArticles[0].imageWidth} height={cultureArticles[0].imageHeight} fetchpriority="high" decoding="async" /></div>
+  <main class="v16-editorial v16-journals">
+    <header class="v16-page-hero v16-page-hero--journals">
+      <p class="v16-page-kicker">Carnets du Cambodge</p>
+      <h1>Des marchés du matin aux grandes tables.</h1>
+      <p>Pas une encyclopédie froide : des histoires courtes pour comprendre pourquoi un produit, un geste ou une habitude change la façon de lire la cuisine cambodgienne.</p>
+      <div class="v16-journal-stamp" aria-hidden="true">marchés · gestes · produits · table · transmission</div>
     </header>
 
-    <section class="culture-paths" aria-labelledby="culture-paths-title">
-      <header data-reveal="up">
-        <p class="eyebrow">Par où commencer ?</p>
-        <h2 id="culture-paths-title">Quatre portes d’entrée dans la culture culinaire khmère.</h2>
-        <p>Un geste, un produit, une fermentation ou la table entière : choisissez ce qui vous donne envie de comprendre avant de cuisiner.</p>
+    <section class="v16-day-notes" aria-labelledby="v16-day-title">
+      <header>
+        <p class="v16-page-kicker">Une journée pour entrer dans la cuisine</p>
+        <h2 id="v16-day-title">Avant les recettes, il y a des rythmes.</h2>
       </header>
-      <div class="culture-path-grid">
-        {culturePaths.map((path, index) => (
-          <a href={path.href} data-reveal="up" data-reveal-delay={Math.min(index * .05, .15)}>
-            <CulinaryIcon name={path.icon} size={23} />
-            <p class="card-meta">{path.eyebrow}</p>
-            <h3>{path.title}</h3>
-            <p>{path.text}</p>
-            <span>Explorer →</span>
+      <div>
+        {moments.map((moment) => (
+          <a href={moment.href} class="v16-day-note">
+            <span>{moment.time}</span>
+            <h3>{moment.title}</h3>
+            <p>{moment.text}</p>
+            <strong>Lire →</strong>
           </a>
         ))}
       </div>
     </section>
 
-    <section class="culture-editorial" aria-label="Articles culturels">
-      {cultureArticles.map((article, index) => (
-        <a class:list={['culture-feature', { 'culture-feature--lead': index === 0, 'culture-feature--split': index > 0 }]} href={`/culture/${article.slug}/`} data-reveal="up">
-          <figure class="culture-feature-media" data-parallax="0.09">
-            <img src={article.image} srcset={imageSrcSet(article.image, article.imageWidths)} sizes={index === 0 ? '100vw' : '(max-width: 800px) 100vw, 50vw'} alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} loading="lazy" decoding="async" />
+    <section class="v16-journal-lead" aria-label="Carnet à la une">
+      <a href={'/culture/' + cultureArticles[3].slug + '/'} class="v16-journal-lead-card">
+        <figure>
+          <img src={cultureArticles[3].image} srcset={imageSrcSet(cultureArticles[3].image,cultureArticles[3].imageWidths)} sizes="(max-width:900px) 100vw, 58vw" alt={cultureArticles[3].imageAlt} width={cultureArticles[3].imageWidth} height={cultureArticles[3].imageHeight} loading="eager" decoding="async" />
+        </figure>
+        <div>
+          <p class="v16-mini-label">À la une · {cultureArticles[3].readingTime}</p>
+          <h2>{cultureArticles[3].title}</h2>
+          <p>{cultureArticles[3].intro}</p>
+          <strong>Lire le carnet →</strong>
+        </div>
+      </a>
+    </section>
+
+    <section class="v16-journal-grid" aria-label="Tous les carnets">
+      {cultureArticles.filter((_,index)=>index !== 3).map((article,index) => (
+        <a href={'/culture/' + article.slug + '/'} class:list={['v16-journal-card', index === 0 && 'v16-journal-card--wide']} data-reveal="up">
+          <figure>
+            <img src={article.image} srcset={imageSrcSet(article.image,article.imageWidths)} sizes="(max-width:760px) 100vw, 45vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} loading="lazy" decoding="async" />
           </figure>
-          <div class="culture-feature-copy">
-            <span class="culture-rule" aria-hidden="true"></span>
-            <p class="card-meta">{article.eyebrow} · {article.readingTime}</p>
+          <div>
+            <p class="v16-mini-label">{article.eyebrow} · {article.readingTime}</p>
             <h2>{article.title}</h2>
             <p>{article.intro}</p>
-            <span class="text-link">Lire l’histoire</span>
+            <strong>Lire →</strong>
           </div>
         </a>
       ))}
+    </section>
+
+    <section class="v16-journal-manifesto">
+      <p class="v16-page-kicker">Ce que les carnets cherchent</p>
+      <h2>Comprendre une cuisine par ce qui l’entoure.</h2>
+      <div>
+        <p>Le marché avant le panier de courses.</p>
+        <p>Le geste avant la technique.</p>
+        <p>La table avant le “plat principal”.</p>
+        <p>La transmission avant la version prétendument définitive.</p>
+      </div>
     </section>
   </main>
   <script type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
