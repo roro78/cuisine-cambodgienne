@@ -32,7 +32,7 @@ if (home.includes('data-v14-dishes') || home.includes('data-v14-flavors') || hom
   failures.push('Home V16 must not keep the repetitive V14 card chapters');
 }
 
-if (!home.includes('Le Cambodge se mange tôt.') || !home.includes('Le produit donne le ton.') || !home.includes('On ne cuisine pas un plat seul.')) {
+if (!home.includes('Le matin, les rues sentent déjà le bouillon et les grillades.') || !home.includes('Au marché, tout commence par les produits.') || !home.includes('À table, les plats se partagent.')) {
   failures.push('V16 culinary day narrative headings are incomplete');
 }
 
