@@ -30,7 +30,7 @@ if (!header.includes('href="/glossaire/"') || !header.includes('href="/apprendre
 if (!learn.includes('Les ateliers') || !learn.includes('Apprendre les bons gestes, simplement.')) {
   failures.push('Learning page must remain workshop-led, not recipe-led');
 }
-const workshopCount = (workshopData.match(/\bn: '\\d{2}'/g) ?? []).length;
+const workshopCount = (workshopData.match(/\bn: '\d{2}'/g) ?? []).length;
 if (workshopCount !== 6) {
   failures.push(`Workshop data must expose exactly 6 workshops, found ${workshopCount}`);
 }
