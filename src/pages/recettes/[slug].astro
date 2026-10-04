@@ -8,6 +8,7 @@ import { ingredientGuides } from '../../data/ingredients';
 import GlossaryStrip from '../../components/GlossaryStrip.astro';
 import { getGlossaryEntries } from '../../data/glossary';
 import { imageSrcSet } from '../../utils/images';
+import { getWorkshopsForRecipe } from '../../data/workshops';
 import '../../styles/recipe-v15.css';
 import '../../styles/v16-editorial.css';
 
@@ -26,6 +27,7 @@ const equipment = recipe.equipment ?? [];
 const faqs = recipe.faqs ?? [];
 const relatedIngredients = ingredientGuides.filter((item) => (recipe.relatedIngredients ?? []).includes(item.slug));
 const glossary = getGlossaryEntries(recipe.glossarySlugs ?? recipe.relatedIngredients ?? []);
+const relatedWorkshops = getWorkshopsForRecipe(recipe.slug);
 
 const groupedIngredients = recipe.ingredients.reduce<Record<string, RecipeIngredient[]>>((groups, ingredient) => {
   const key = ingredient.group ?? 'Ingrédients';
@@ -265,6 +267,22 @@ const recipeSchema = {
               <summary>{item.question}<span aria-hidden="true">+</span></summary>
               <p>{item.answer}</p>
             </details>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {relatedWorkshops.length > 0 && (
+      <section class="recipe-workshops" data-reveal="up">
+        <p class="eyebrow">Envie de comprendre le geste ?</p>
+        <h2>Apprenez la technique avant de la refaire ici.</h2>
+        <div class="recipe-workshop-links">
+          {relatedWorkshops.map((workshop) => (
+            <a href={`/apprendre/${workshop.slug}/`}>
+              <span>Atelier {workshop.n} · {workshop.duration}</span>
+              <strong>{workshop.title}</strong>
+              <em>{workshop.objective}</em>
+            </a>
           ))}
         </div>
       </section>
