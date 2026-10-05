@@ -2,6 +2,8 @@ import fs from 'node:fs';
 
 const header = fs.readFileSync('src/components/SiteHeader.astro','utf8');
 const learn = fs.readFileSync('src/pages/apprendre/index.astro','utf8');
+const workshopDetail = fs.readFileSync('src/pages/apprendre/[slug].astro','utf8');
+const workshopData = fs.readFileSync('src/data/workshops.ts','utf8');
 const culture = fs.readFileSync('src/pages/culture/index.astro','utf8');
 const about = fs.readFileSync('src/pages/a-propos.astro','utf8');
 const glossary = fs.readFileSync('src/pages/glossaire/index.astro','utf8');
@@ -28,10 +30,18 @@ if (!header.includes('href="/glossaire/"') || !header.includes('href="/apprendre
 if (!learn.includes('Les ateliers') || !learn.includes('Apprendre les bons gestes, simplement.')) {
   failures.push('Learning page must remain workshop-led, not recipe-led');
 }
-const workshopBlock = learn.match(/const workshops = \[([\s\S]*?)\];\n\nconst schema/)?.[1] ?? '';
-const workshopCount = (workshopBlock.match(/\bn:'\d{2}'/g) ?? []).length;
+const workshopCount = (workshopData.match(/\bn: '\d{2}'/g) ?? []).length;
 if (workshopCount !== 6) {
-  failures.push(`Workshop page must expose exactly 6 V16 workshops, found ${workshopCount}`);
+  failures.push(`Workshop data must expose exactly 6 workshops, found ${workshopCount}`);
+}
+if (!learn.includes('href={`/apprendre/${workshop.slug}/`}') || !learn.includes('Commencer l’atelier')) {
+  failures.push('Workshop cards must route to dedicated workshop detail pages');
+}
+if (!workshopDetail.includes("'@type': 'HowTo'") || !workshopDetail.includes('Vous avez réussi si…') || !workshopDetail.includes('Passer à la pratique')) {
+  failures.push('Workshop detail must keep HowTo semantics, success cues and recipe practice links');
+}
+if (!recipes.includes('getWorkshopsForRecipe') || !recipes.includes('recipe-workshops')) {
+  failures.push('Recipe detail must link back to relevant workshops');
 }
 
 if (!culture.includes('Carnets du Cambodge') || !culture.includes('Des marchés animés aux repas partagés.')) {
@@ -50,7 +60,7 @@ if (!recipes.includes('recipe-v15 recipe-v16') || !recipes.includes('Prenez votr
   failures.push('Recipe detail must keep the V16 culinary editorial layer');
 }
 
-const toneCorpus = [home, learn, culture, about, glossary, recipes, cultureData, recipeData, ingredientData, glossaryData].join('\n');
+const toneCorpus = [home, learn, workshopDetail, workshopData, culture, about, glossary, recipes, cultureData, recipeData, ingredientData, glossaryData].join('\n');
 const forbiddenArtificialCopy = [
   'Le Cambodge se mange tôt.',
   'Le produit donne le ton.',

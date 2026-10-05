@@ -212,3 +212,114 @@
   .recipe-v16 .recipe-v15-hero-copy h1{font-size:clamp(2.9rem,13vw,4.3rem)}
   .recipe-v16 .recipe-guided-step{grid-template-columns:2.8rem minmax(0,1fr);padding:1rem 0}
 }
+
+
+/* Workshop detail pages */
+.workshop-detail{background:#f5eddf;color:var(--v16-ink)}
+.workshop-detail-hero{
+  min-height:88svh;
+  display:grid;
+  grid-template-columns:minmax(0,1.2fr) minmax(16rem,.8fr);
+  gap:clamp(2rem,6vw,7rem);
+  align-items:end;
+  padding:clamp(8rem,14vh,10rem) var(--page-pad) clamp(4rem,8vh,7rem);
+  background:
+    radial-gradient(circle at 78% 24%,rgba(151,87,56,.16),transparent 24%),
+    linear-gradient(135deg,#f2e4d1,#e5d5bf);
+}
+.workshop-detail-back{display:inline-block;margin-bottom:2rem;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;text-decoration:none}
+.workshop-detail-hero .v16-page-kicker{display:flex;align-items:center;gap:.5rem}
+.workshop-detail-hero h1{max-width:12ch;margin:.7rem 0 1.2rem;font:400 clamp(3.6rem,7vw,7.3rem)/.87 var(--serif);letter-spacing:-.06em}
+.workshop-detail-intro{max-width:46rem;margin:0;font-size:clamp(1.05rem,1.5vw,1.25rem);line-height:1.7;color:#5f5246}
+.workshop-detail-facts{display:flex;flex-wrap:wrap;gap:.7rem;margin:2.2rem 0 0}
+.workshop-detail-facts div{min-width:8rem;padding:.8rem 1rem;border:1px solid var(--v16-line);border-radius:.8rem;background:rgba(255,255,255,.28)}
+.workshop-detail-facts dt{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#806d59}
+.workshop-detail-facts dd{margin:.3rem 0 0;font:400 1.25rem/1 var(--serif)}
+.workshop-detail-orbit{position:relative;justify-self:center;width:min(28vw,22rem);aspect-ratio:1;border:1px solid rgba(67,53,41,.18);border-radius:50%;display:grid;place-items:center}
+.workshop-detail-orbit:before,.workshop-detail-orbit:after{content:"";position:absolute;border:1px solid rgba(67,53,41,.13);border-radius:50%;inset:13%}.workshop-detail-orbit:after{inset:29%}
+.workshop-detail-orbit span{position:relative;z-index:1;font:400 clamp(4rem,8vw,8rem)/1 var(--serif);letter-spacing:-.06em}
+.workshop-detail-orbit b{position:absolute;bottom:12%;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;font-weight:500}
+.workshop-detail-orbit i{position:absolute;top:9%;right:18%;width:1.1rem;aspect-ratio:1;border-radius:50%;background:#9b5a3e}
+.workshop-progress{
+  position:sticky;top:4.5rem;z-index:25;
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  background:rgba(245,237,223,.95);backdrop-filter:blur(16px);
+  border-top:1px solid var(--v16-line);border-bottom:1px solid var(--v16-line)
+}
+.workshop-progress a{display:grid;grid-template-columns:2rem 1fr;gap:.5rem;align-items:center;padding:.85rem 1rem;border-right:1px solid var(--v16-line);text-decoration:none}
+.workshop-progress a:last-child{border-right:0}
+.workshop-progress span{font-size:.58rem;letter-spacing:.08em;color:#9a7758}
+.workshop-progress em{font-style:normal;font-size:.65rem;line-height:1.2;color:#75685b}
+.workshop-progress a[aria-current="step"]{background:#1e2b22;color:#f5ecdf}
+.workshop-progress a[aria-current="step"] span,.workshop-progress a[aria-current="step"] em{color:inherit}
+.workshop-detail-opening,.workshop-prepare{
+  display:grid;grid-template-columns:.9fr 1.1fr;gap:8vw;
+  padding:clamp(5rem,10vh,8rem) var(--page-pad)
+}
+.workshop-detail-opening h2,.workshop-prepare h2,.workshop-practice h2{
+  max-width:13ch;margin:.5rem 0 0;font:400 clamp(2.8rem,5vw,5rem)/.9 var(--serif);letter-spacing:-.05em
+}
+.workshop-outcomes,.workshop-prepare ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--v16-line)}
+.workshop-outcomes li,.workshop-prepare li{position:relative;padding:1.2rem 0 1.2rem 2.2rem;border-bottom:1px solid var(--v16-line);font-size:1.05rem;line-height:1.55}
+.workshop-outcomes li:before,.workshop-prepare li:before{content:"→";position:absolute;left:0;color:#9a6849}
+.workshop-prepare{background:#e9ddcc}
+.workshop-step-list{padding:1rem var(--page-pad) 7rem}
+.workshop-step{display:grid;grid-template-columns:5rem minmax(0,1fr);gap:clamp(1rem,4vw,4rem);padding:clamp(4rem,8vh,7rem) 0;border-top:1px solid var(--v16-line);scroll-margin-top:9rem}
+.workshop-step:last-child{border-bottom:1px solid var(--v16-line)}
+.workshop-step-index{padding-top:.45rem;font:400 1rem/1 var(--serif);color:#8e745b}
+.workshop-step-copy{max-width:70rem}
+.workshop-step-copy>h2{max-width:14ch;margin:.5rem 0 1rem;font:400 clamp(3rem,5.5vw,5.6rem)/.9 var(--serif);letter-spacing:-.055em}
+.workshop-step-action{max-width:48rem;font-size:clamp(1.05rem,1.5vw,1.22rem);line-height:1.7;color:#5e5247}
+.workshop-learning-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;margin-top:2.2rem}
+.workshop-learning-grid section{padding:1.2rem;border:1px solid var(--v16-line);border-radius:.9rem;background:#fbf5eb}
+.workshop-learning-grid span{display:block;margin-bottom:.5rem;font-size:.58rem;letter-spacing:.11em;text-transform:uppercase;color:#8d684c}
+.workshop-learning-grid p{margin:0;line-height:1.6;color:#63564a}
+.workshop-learning-grid .workshop-success{background:#1f2c23;color:#f6eddf;border-color:#1f2c23}
+.workshop-learning-grid .workshop-success span{color:#d8ad70}.workshop-learning-grid .workshop-success p{color:#f6eddf}
+.workshop-takeaway{padding:clamp(5rem,9vh,8rem) var(--page-pad);background:#1d2a21;color:#f5ecdf}
+.workshop-takeaway .v16-page-kicker{color:#d8ad70}
+.workshop-takeaway blockquote{max-width:19ch;margin:.8rem 0 0;font:400 clamp(2.8rem,5.5vw,5.7rem)/.95 var(--serif);letter-spacing:-.045em}
+.workshop-practice{padding:clamp(5rem,10vh,8rem) var(--page-pad);background:#f8f1e6}
+.workshop-practice>header{display:grid;grid-template-columns:.8fr 1.2fr;gap:1rem 6vw;margin-bottom:2.5rem}
+.workshop-practice>header .v16-page-kicker{grid-column:1}
+.workshop-practice>header h2{grid-column:1}.workshop-practice>header>p:last-child{grid-column:2;grid-row:2;align-self:end;max-width:36rem;line-height:1.65;color:#65594d}
+.workshop-practice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.workshop-practice-grid a{display:flex;min-height:16rem;flex-direction:column;padding:1.4rem;border:1px solid var(--v16-line);border-radius:1rem;background:#fffaf1;text-decoration:none}
+.workshop-practice-grid a>span{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#8b6c50}
+.workshop-practice-grid strong{margin:.6rem 0;font:400 clamp(2rem,3.4vw,3.3rem)/.95 var(--serif)}
+.workshop-practice-grid p{max-width:34rem;margin:0;line-height:1.55;color:#665a4d}
+.workshop-practice-grid em{margin-top:auto;padding-top:1rem;font-style:normal;font-size:.64rem;letter-spacing:.08em;text-transform:uppercase}
+.workshop-next{padding:clamp(5rem,10vh,8rem) var(--page-pad)}
+.workshop-next>a{display:grid;grid-template-columns:8rem 1fr auto;gap:1rem;align-items:center;padding:1.5rem 0;border-top:1px solid var(--v16-line);border-bottom:1px solid var(--v16-line);text-decoration:none}
+.workshop-next>a span,.workshop-next>a em{font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;font-style:normal}
+.workshop-next>a strong{font:400 clamp(2rem,3.6vw,3.6rem)/.95 var(--serif)}
+.recipe-workshops{padding:clamp(4rem,8vh,6.5rem) var(--page-pad);background:#efe3d1}
+.recipe-workshops>h2{max-width:15ch;margin:.5rem 0 2rem;font:400 clamp(2.7rem,4.5vw,4.7rem)/.92 var(--serif);letter-spacing:-.05em}
+.recipe-workshop-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.recipe-workshop-links a{display:flex;flex-direction:column;min-height:13rem;padding:1.3rem;border:1px solid var(--v16-line);border-radius:1rem;background:#fffaf1;text-decoration:none}
+.recipe-workshop-links span{font-size:.58rem;letter-spacing:.09em;text-transform:uppercase;color:#86694f}
+.recipe-workshop-links strong{margin:.65rem 0;font:400 clamp(1.8rem,3vw,3rem)/.95 var(--serif)}
+.recipe-workshop-links em{margin-top:auto;font-style:normal;line-height:1.5;color:#66594d}
+
+@media(max-width:900px){
+  .workshop-detail-hero{grid-template-columns:1fr;min-height:auto;padding-top:8rem}
+  .workshop-detail-orbit{width:min(60vw,20rem);justify-self:start}
+  .workshop-progress{top:4.25rem;display:flex;overflow:auto}
+  .workshop-progress a{min-width:13rem}
+  .workshop-detail-opening,.workshop-prepare,.workshop-practice>header{grid-template-columns:1fr}
+  .workshop-practice>header .v16-page-kicker,.workshop-practice>header h2,.workshop-practice>header>p:last-child{grid-column:1;grid-row:auto}
+  .workshop-practice-grid,.recipe-workshop-links{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  .workshop-detail-hero{padding:6.5rem 1rem 3.8rem}
+  .workshop-detail-hero h1{font-size:clamp(3rem,14vw,4.7rem)}
+  .workshop-detail-orbit{width:13rem}
+  .workshop-detail-opening,.workshop-prepare,.workshop-step-list,.workshop-takeaway,.workshop-practice,.workshop-next,.recipe-workshops{padding-left:1rem;padding-right:1rem}
+  .workshop-step{grid-template-columns:2.2rem minmax(0,1fr);gap:.8rem}
+  .workshop-step-copy>h2{font-size:clamp(2.5rem,12vw,4rem)}
+  .workshop-learning-grid{grid-template-columns:1fr}
+  .workshop-next>a{grid-template-columns:1fr}.workshop-next>a em{margin-top:.4rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .workshop-progress{scroll-behavior:auto}
+}

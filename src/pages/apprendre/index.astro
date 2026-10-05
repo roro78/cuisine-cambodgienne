@@ -3,82 +3,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import CulinaryIcon from '../../components/CulinaryIcon.astro';
+import { workshops } from '../../data/workshops';
 import '../../styles/v16-editorial.css';
-
-const workshops = [
-  {
-    n:'01', icon:'prep' as const, eyebrow:'Le mortier', title:'Bien piler les aromates au mortier',
-    duration:'45 min', level:'Débutant',
-    objective:'Voir comment le mortier transforme des aromates frais en une pâte fine et parfumée.',
-    experiments:[
-      'Sentir une tige de citronnelle entière, puis coupée très finement.',
-      'Comparer la résistance du galanga et du curcuma sous le pilon.',
-      'Piler par petites quantités et observer le moment où les parfums commencent à se fondre.'
-    ],
-    takeaway:'Vous saurez quand arrêter de piler : la pâte doit être souple, homogène et très parfumée.',
-    link:'/glossaire/#kroeung', linkLabel:'Comprendre le kroeung'
-  },
-  {
-    n:'02', icon:'taste' as const, eyebrow:'L’équilibre', title:'Trouver le bon équilibre en goûtant',
-    duration:'30 min', level:'Débutant',
-    objective:'Apprendre à reconnaître ce qui manque dans une sauce : un peu de sel, d’acidité, de douceur ou d’umami.',
-    experiments:[
-      'Préparer quatre petites bases identiques et ne modifier qu’un seul axe à la fois.',
-      'Ajouter le tamarin goutte à goutte pour sentir le passage de plat à vif.',
-      'Comparer une correction au sucre avec une correction au sel sans toucher au reste.'
-    ],
-    takeaway:'Vous apprendrez à corriger une sauce petit à petit, sans tout ajouter en même temps.',
-    link:'/glossaire/#tamarin', linkLabel:'Voir le tamarin'
-  },
-  {
-    n:'03', icon:'cook' as const, eyebrow:'Le feu', title:'Bien saisir la viande à la poêle',
-    duration:'35 min', level:'Débutant',
-    objective:'Comprendre pourquoi une poêle bien chaude donne une viande dorée et juteuse au lieu de la faire bouillir dans son jus.',
-    experiments:[
-      'Comparer une petite quantité et une poêle surchargée.',
-      'Observer le bruit, la vapeur et la coloration pendant les trente premières secondes.',
-      'Ajouter une sauce seulement après coloration et regarder la différence.'
-    ],
-    takeaway:'Vous saurez reconnaître une poêle assez chaude en observant la coloration, le bruit et la vapeur.',
-    link:'/recettes/lok-lak/', linkLabel:'Mettre le geste en pratique'
-  },
-  {
-    n:'04', icon:'taste' as const, eyebrow:'Les herbes', title:'Ajouter de la fraîcheur au bon moment',
-    duration:'25 min', level:'Débutant',
-    objective:'Voir comment les herbes, les agrumes et les crudités rendent un plat plus frais et plus vivant.',
-    experiments:[
-      'Goûter une même bouchée sans herbe, puis avec coriandre ou menthe.',
-      'Comparer zeste, jus et feuille aromatique : trois intensités très différentes.',
-      'Ajouter la fraîcheur à la fin pour préserver parfum et croquant.'
-    ],
-    takeaway:'Vous saurez quand ajouter les herbes et les agrumes pour garder tout leur parfum.',
-    link:'/glossaire/#combava', linkLabel:'Découvrir le combava'
-  },
-  {
-    n:'05', icon:'cook' as const, eyebrow:'Le bouillon', title:'Préparer un bouillon léger et savoureux',
-    duration:'50 min', level:'Intermédiaire',
-    objective:'Préparer un bouillon clair, parfumé et agréable à boire, sans le charger inutilement.',
-    experiments:[
-      'Goûter le bouillon avant et après réduction pour sentir la concentration.',
-      'Ajouter les éléments salés progressivement plutôt qu’en début de cuisson.',
-      'Finir avec herbes et agrumes hors du feu pour préserver les notes fraîches.'
-    ],
-    takeaway:'Vous saurez renforcer le goût d’un bouillon sans le rendre trop salé ni trop lourd.',
-    link:'/recettes/kuy-teav/', linkLabel:'Observer le geste dans un bol'
-  },
-  {
-    n:'06', icon:'servings' as const, eyebrow:'La table', title:'Composer un repas simple et généreux',
-    duration:'20 min', level:'Tous niveaux',
-    objective:'Associer riz, plat chaud, légumes, herbes et condiments pour préparer un repas équilibré à partager.',
-    experiments:[
-      'Partir du riz et ajouter un seul élément riche.',
-      'Ajouter ensuite une fraîcheur végétale ou acide.',
-      'Tester plusieurs bouchées en variant sauce, herbes et condiment.'
-    ],
-    takeaway:'Vous verrez qu’avec quelques préparations bien choisies, chacun peut composer des bouchées différentes à table.',
-    link:'/culture/construire-repas-cambodgien/', linkLabel:'Lire le carnet sur la table'
-  }
-];
 
 const schema = {
   '@context':'https://schema.org',
@@ -131,7 +57,7 @@ const schema = {
               <span>À retenir</span>
               <p>{workshop.takeaway}</p>
             </blockquote>
-            <a href={workshop.link}>{workshop.linkLabel} →</a>
+            <a href={`/apprendre/${workshop.slug}/`}>Commencer l’atelier →</a>
           </div>
           <div class:list={['v16-workshop-mark', 'mark-' + ((index % 4) + 1)]} aria-hidden="true"></div>
         </article>

@@ -1,0 +1,205 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import CulinaryIcon from '../../components/CulinaryIcon.astro';
+import GlossaryStrip from '../../components/GlossaryStrip.astro';
+import { workshops } from '../../data/workshops';
+import type { Workshop } from '../../data/workshops';
+import { recipes } from '../../data/recipes';
+import { getGlossaryEntries } from '../../data/glossary';
+import '../../styles/v16-editorial.css';
+
+export function getStaticPaths() {
+  return workshops.map((workshop: Workshop) => ({
+    params: { slug: workshop.slug },
+    props: { workshop }
+  }));
+}
+
+const { workshop } = Astro.props as { workshop: Workshop };
+const index = workshops.findIndex((item) => item.slug === workshop.slug);
+const nextWorkshop = workshops[(index + 1) % workshops.length];
+const relatedRecipes = recipes.filter((recipe) => workshop.relatedRecipes.includes(recipe.slug));
+const glossary = getGlossaryEntries(workshop.glossarySlugs ?? []);
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://www.cuisine-du-cambodge.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Ateliers', item: 'https://www.cuisine-du-cambodge.com/apprendre/' },
+    { '@type': 'ListItem', position: 3, name: workshop.title, item: `https://www.cuisine-du-cambodge.com/apprendre/${workshop.slug}/` }
+  ]
+};
+
+const howToSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: workshop.title,
+  description: workshop.objective,
+  totalTime: `PT${Number(workshop.duration.match(/\d+/)?.[0] ?? 0)}M`,
+  step: workshop.steps.map((step, stepIndex) => ({
+    '@type': 'HowToStep',
+    position: stepIndex + 1,
+    name: step.title,
+    text: step.action
+  })),
+  inLanguage: 'fr-FR',
+  url: `https://www.cuisine-du-cambodge.com/apprendre/${workshop.slug}/`
+};
+---
+<BaseLayout
+  title={`${workshop.title} — Atelier | Cuisine du Cambodge`}
+  description={workshop.objective}
+>
+  <SiteHeader />
+
+  <main class="v16-editorial workshop-detail">
+    <section class="workshop-detail-hero">
+      <div class="workshop-detail-hero-copy" data-reveal="up">
+        <a class="workshop-detail-back" href="/apprendre/">← Tous les ateliers</a>
+        <p class="v16-page-kicker"><CulinaryIcon name={workshop.icon} size={18} /> Atelier {workshop.n} · {workshop.eyebrow}</p>
+        <h1>{workshop.title}</h1>
+        <p class="workshop-detail-intro">{workshop.intro}</p>
+        <dl class="workshop-detail-facts">
+          <div><dt>Durée</dt><dd>{workshop.duration}</dd></div>
+          <div><dt>Niveau</dt><dd>{workshop.level}</dd></div>
+          <div><dt>Étapes</dt><dd>{workshop.steps.length}</dd></div>
+        </dl>
+      </div>
+      <div class="workshop-detail-orbit" aria-hidden="true">
+        <span>{workshop.n}</span>
+        <i></i>
+        <b>{workshop.eyebrow}</b>
+      </div>
+    </section>
+
+    <nav class="workshop-progress" aria-label="Progression de l’atelier" data-workshop-progress>
+      {workshop.steps.map((step, stepIndex) => (
+        <a href={`#etape-${stepIndex + 1}`} data-workshop-progress-link={stepIndex + 1}>
+          <span>{String(stepIndex + 1).padStart(2, '0')}</span>
+          <em>{step.title}</em>
+        </a>
+      ))}
+    </nav>
+
+    <section class="workshop-detail-opening">
+      <div>
+        <p class="v16-page-kicker">Ce que vous allez apprendre</p>
+        <h2>Un geste à comprendre, pas une recette à recopier.</h2>
+      </div>
+      <ul class="workshop-outcomes">
+        {workshop.outcomes.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class="workshop-prepare">
+      <div>
+        <p class="v16-page-kicker">Avant de commencer</p>
+        <h2>Préparez juste ce qu’il faut pour observer.</h2>
+      </div>
+      <ul>{workshop.prepare.map((item) => <li>{item}</li>)}</ul>
+    </section>
+
+    <section class="workshop-step-list" aria-label="Étapes de l’atelier">
+      {workshop.steps.map((step, stepIndex) => (
+        <article id={`etape-${stepIndex + 1}`} class="workshop-step" data-workshop-step={stepIndex + 1} data-reveal="up">
+          <div class="workshop-step-index">{String(stepIndex + 1).padStart(2, '0')}</div>
+          <div class="workshop-step-copy">
+            <p class="v16-mini-label">Étape {stepIndex + 1}</p>
+            <h2>{step.title}</h2>
+            <p class="workshop-step-action">{step.action}</p>
+
+            <div class="workshop-learning-grid">
+              <section>
+                <span>À observer</span>
+                <p>{step.observe}</p>
+              </section>
+              <section>
+                <span>Le bon repère</span>
+                <p>{step.cue}</p>
+              </section>
+              {step.mistake && (
+                <section>
+                  <span>À éviter</span>
+                  <p>{step.mistake}</p>
+                </section>
+              )}
+              <section class="workshop-success">
+                <span>Vous avez réussi si…</span>
+                <p>{step.success}</p>
+              </section>
+            </div>
+          </div>
+        </article>
+      ))}
+    </section>
+
+    <section class="workshop-takeaway" data-reveal="up">
+      <p class="v16-page-kicker">À retenir</p>
+      <blockquote>{workshop.takeaway}</blockquote>
+    </section>
+
+    {relatedRecipes.length > 0 && (
+      <section class="workshop-practice" data-reveal="up">
+        <header>
+          <p class="v16-page-kicker">Passer à la pratique</p>
+          <h2>Utilisez maintenant ce geste dans une vraie recette.</h2>
+          <p>L’atelier vous donne le repère. La recette vous donne les quantités et l’enchaînement complet.</p>
+        </header>
+        <div class="workshop-practice-grid">
+          {relatedRecipes.map((recipe) => (
+            <a href={`/recettes/${recipe.slug}/`}>
+              <span>Recette</span>
+              <strong>{recipe.title}</strong>
+              <p>{recipe.intro}</p>
+              <em>Préparer cette recette →</em>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <GlossaryStrip entries={glossary} />
+
+    <section class="workshop-next" data-reveal="up">
+      <p class="v16-page-kicker">Continuer</p>
+      <a href={`/apprendre/${nextWorkshop.slug}/`}>
+        <span>Atelier {nextWorkshop.n}</span>
+        <strong>{nextWorkshop.title}</strong>
+        <em>Atelier suivant →</em>
+      </a>
+    </section>
+  </main>
+
+  <script>
+    const progress = document.querySelector('[data-workshop-progress]');
+    const links = Array.from(document.querySelectorAll('[data-workshop-progress-link]'));
+    const steps = Array.from(document.querySelectorAll('[data-workshop-step]'));
+
+    if (progress && links.length && steps.length && 'IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (!visible) return;
+        const active = visible.target.getAttribute('data-workshop-step');
+        links.forEach((link) => {
+          if (link.getAttribute('data-workshop-progress-link') === active) {
+            link.setAttribute('aria-current', 'step');
+          } else {
+            link.removeAttribute('aria-current');
+          }
+        });
+      }, { rootMargin: '-30% 0px -55% 0px', threshold: [0, 0.25, 0.6] });
+
+      steps.forEach((step) => observer.observe(step));
+    }
+  </script>
+
+  <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <SiteFooter />
+</BaseLayout>
