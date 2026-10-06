@@ -1502,8 +1502,8 @@ main{position:relative;z-index:1}
 
 /* Header / brand */
 .site-nav[data-site-header]{
-  padding-top:1rem;
-  padding-bottom:1rem;
+  padding-top:.55rem;
+  padding-bottom:.55rem;
 }
 .site-nav[data-site-header]:not(.is-overlay-top):not(.is-menu-open){
   background:rgba(239,228,211,.88);
@@ -1515,41 +1515,53 @@ main{position:relative;z-index:1}
   background:rgba(239,228,211,.9);
   box-shadow:0 12px 38px rgba(44,31,18,.08);
 }
-.brand-lockup{
+.site-nav[data-site-header] .brand-lockup{
   display:flex;
   align-items:center;
-  gap:.7rem;
+  flex:0 0 auto;
+  width:max-content;
+  max-width:none;
+  padding:.12rem .3rem .12rem .08rem;
+  border-radius:.85rem;
   text-transform:none;
   letter-spacing:0;
+  transition:background .3s ease,box-shadow .3s ease;
 }
-.brand-flag{
-  display:grid;
-  place-items:center;
-  width:2rem;
-  height:2rem;
-  border-radius:999px;
-  background:rgba(255,255,255,.18);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);
-  font-size:1.02rem;
+.brand-logo{
+  display:block;
+  width:clamp(10.75rem,13.5vw,11.75rem);
+  height:auto;
+  object-fit:contain;
+  object-position:left center;
+  filter:drop-shadow(0 1px 0 rgba(255,255,255,.15));
 }
-.brand-copy{
-  display:grid;
-  gap:.18rem;
+.site-nav[data-site-header].is-overlay-top .brand-lockup,
+.site-nav[data-site-header].is-menu-open .brand-lockup{
+  background:linear-gradient(90deg,rgba(244,237,223,.97),rgba(244,237,223,.9));
+  box-shadow:0 .35rem 1.4rem rgba(0,0,0,.13),inset 0 0 0 1px rgba(197,154,75,.2);
 }
-.brand-copy strong{
-  font:600 .78rem/1 var(--sans);
-  letter-spacing:.11em;
-  text-transform:uppercase;
-}
-.brand-copy small{
-  font:500 .54rem/1.2 var(--sans);
-  letter-spacing:.08em;
-  text-transform:uppercase;
-  opacity:.62;
-}
-.site-nav[data-site-header].is-overlay-top .brand-copy small{opacity:.72}
 .site-nav[data-site-header] .nav-links{
   font-size:.68rem;
+}
+@media(max-width:720px){
+  .site-nav[data-site-header]{
+    min-height:4.25rem;
+    padding-top:.5rem;
+    padding-bottom:.5rem;
+  }
+  .site-nav[data-site-header] .brand-lockup{
+    max-width:calc(100vw - 7.25rem);
+    padding:.08rem .22rem .08rem .06rem;
+    border-radius:.7rem;
+  }
+  .brand-logo{
+    width:min(44vw,10rem);
+    height:auto;
+    max-width:100%;
+  }
+}
+@media(max-width:380px){
+  .brand-logo{width:min(43vw,9.25rem)}
 }
 .site-nav[data-site-header] .nav-links a:after{
   height:2px;
