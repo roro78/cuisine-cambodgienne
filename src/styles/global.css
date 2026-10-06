@@ -1045,6 +1045,7 @@ html.menu-open body{
   font:inherit!important;
   letter-spacing:0!important;
   text-transform:none!important;
+  text-decoration:none!important;
   opacity:0;
   transform:translateX(14px);
   transition:
