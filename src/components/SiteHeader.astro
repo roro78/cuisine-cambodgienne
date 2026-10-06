@@ -42,13 +42,36 @@ const current = (prefix: string) => path.startsWith(prefix);
     </summary>
     <div class="mobile-menu-panel">
       <div class="mobile-menu-ornament" aria-hidden="true"></div>
-      <p class="mobile-menu-kicker">Cambodge · Cuisine khmère · Khmer culinary journal</p>
+      <div class="mobile-menu-heading">
+        <p class="mobile-menu-kicker">Cuisine du Cambodge</p>
+        <p class="mobile-menu-title">Explorer</p>
+      </div>
       <nav aria-label="Navigation mobile">
-        <a href="/recettes/" aria-current={current('/recettes/') ? 'page' : undefined}><span>01</span>Recettes</a>
-        <a href="/glossaire/" aria-current={current('/glossaire/') ? 'page' : undefined}><span>02</span>Glossaire</a>
-        <a href="/apprendre/" aria-current={current('/apprendre/') ? 'page' : undefined}><span>03</span>Ateliers</a>
-        <a href="/culture/" aria-current={current('/culture/') ? 'page' : undefined}><span>04</span>Carnets</a>
-        <a href="/a-propos/" aria-current={current('/a-propos/') ? 'page' : undefined}><span>05</span>À propos</a>
+        <a href="/recettes/" aria-current={current('/recettes/') ? 'page' : undefined}>
+          <span class="mobile-menu-index">01</span>
+          <strong>Recettes</strong>
+          <small>Plats et techniques</small>
+        </a>
+        <a href="/glossaire/" aria-current={current('/glossaire/') ? 'page' : undefined}>
+          <span class="mobile-menu-index">02</span>
+          <strong>Glossaire</strong>
+          <small>Produits et mots khmers</small>
+        </a>
+        <a href="/apprendre/" aria-current={current('/apprendre/') ? 'page' : undefined}>
+          <span class="mobile-menu-index">03</span>
+          <strong>Ateliers</strong>
+          <small>Apprendre les gestes</small>
+        </a>
+        <a href="/culture/" aria-current={current('/culture/') ? 'page' : undefined}>
+          <span class="mobile-menu-index">04</span>
+          <strong>Carnets</strong>
+          <small>Culture et transmission</small>
+        </a>
+        <a href="/a-propos/" aria-current={current('/a-propos/') ? 'page' : undefined}>
+          <span class="mobile-menu-index">05</span>
+          <strong>À propos</strong>
+          <small>Le projet</small>
+        </a>
       </nav>
     </div>
   </details>
