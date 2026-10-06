@@ -1529,7 +1529,7 @@ main{position:relative;z-index:1}
 }
 .brand-logo{
   display:block;
-  width:clamp(10.75rem,13.5vw,11.75rem);
+  width:clamp(13.5rem,17vw,17rem);
   height:auto;
   object-fit:contain;
   object-position:left center;
@@ -1555,13 +1555,13 @@ main{position:relative;z-index:1}
     border-radius:.7rem;
   }
   .brand-logo{
-    width:min(44vw,10rem);
+    width:min(48vw,11rem);
     height:auto;
     max-width:100%;
   }
 }
 @media(max-width:380px){
-  .brand-logo{width:min(43vw,9.25rem)}
+  .brand-logo{width:min(46vw,10rem)}
 }
 .site-nav[data-site-header] .nav-links a:after{
   height:2px;
