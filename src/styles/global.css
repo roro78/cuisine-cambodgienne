@@ -1529,9 +1529,8 @@ main{position:relative;z-index:1}
 }
 .brand-logo{
   display:block;
-  width:auto;
-  height:3.85rem;
-  max-width:min(23vw,13rem);
+  width:clamp(10.75rem,13.5vw,11.75rem);
+  height:auto;
   object-fit:contain;
   object-position:left center;
   filter:drop-shadow(0 1px 0 rgba(255,255,255,.15));
@@ -1556,12 +1555,13 @@ main{position:relative;z-index:1}
     border-radius:.7rem;
   }
   .brand-logo{
-    height:3.05rem;
+    width:min(44vw,10rem);
+    height:auto;
     max-width:100%;
   }
 }
 @media(max-width:380px){
-  .brand-logo{height:2.7rem}
+  .brand-logo{width:min(43vw,9.25rem)}
 }
 .site-nav[data-site-header] .nav-links a:after{
   height:2px;
