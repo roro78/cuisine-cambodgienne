@@ -989,7 +989,8 @@ html.menu-open body{
   padding:2rem 1.4rem 1.5rem;
   background:#172017;
   color:#f7f2e8;
-  overflow:auto;
+  overflow-y:auto;
+  overflow-x:hidden;
   opacity:0;
   visibility:hidden;
   transform:translateX(100%);
@@ -1091,7 +1092,7 @@ html.menu-open body{
 .mobile-menu-ornament{
   position:absolute;
   right:-5rem;
-  bottom:-4rem;
+  bottom:0;
   width:14rem;
   aspect-ratio:1;
   border-radius:50%;
