@@ -17,6 +17,7 @@ export interface DinnerShoppingItem {
   display: string;
 }
 export declare const PILOT_SLUGS: readonly ['amok-trey', 'chek-ktis'];
+export declare const PILOT_SIDE_SLUG: 'prahok-ktis';
 export declare function formatPreviewQuantity(value: number): string;
 export declare function buildPilotShoppingList(
   selectedRecipes: readonly DinnerPreviewRecipe[],
@@ -24,5 +25,6 @@ export declare function buildPilotShoppingList(
 ): DinnerShoppingItem[];
 export declare function buildShoppingListText(
   items: readonly DinnerShoppingItem[],
-  guests: number
+  guests: number,
+  dishTitles?: readonly string[]
 ): string;
