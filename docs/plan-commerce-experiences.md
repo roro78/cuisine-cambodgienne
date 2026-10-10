@@ -44,6 +44,17 @@ Un aperçu interactif réel est désormais construit **sans cuisinier partenaire
 
 La page actuelle est **une démonstration gratuite fonctionnelle, pas un produit à 39 € déjà disponible**.
 
+## 0 quater. Planning indicatif et état de test (10 octobre 2026)
+
+- Le composant `src/components/DinnerTimeline.astro` est intégré à la page `/experiences/grand-diner-khmer/`.
+- Choix de l'heure de service entre 19 h et 21 h, par tranches de 30 minutes.
+- Calcul des heures de préparation et cuisson de l'Amok Trey depuis `prepTime` et `cookTime` du catalogue, avec marge organisationnelle de 15 min **signalée comme hypothèse**.
+- Temps du Chek Ktis affiché séparément : pas de promesse de service coordonné complet avant une recette d'essai validée.
+- Tableau de programme accessible au clavier, avec `<time datetime>` et annonce en lecture d'écran après sélection.
+- Aucun stockage, aucune réservation ni paiement, et aucun impact sur la page Ateliers gratuite.
+- `tests/dinner-timeline.test.mjs` et `npm run test:timeline` ajoutés à la CI de la PR.
+- **Vérification réalisée : 16 cas unitaires PASS sur copies fidèles et isolées des deux modules JS dans Node 22**, le 10 octobre 2026. Ce résultat n'est pas une exécution du build Astro GitHub ni une validation navigateur/OVH.
+
 ## 1. Décisions confirmées
 
 - Ne supprimer **aucune** recette, page culture, entrée de glossaire, atelier pédagogique ou route existante.
