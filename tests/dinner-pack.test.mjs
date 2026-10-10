@@ -69,6 +69,7 @@ test('downloadable summary is labelled as a free preview, with real public recip
   assert.match(text, /Aperçu gratuit/);
   assert.match(text, /dîner|DINER/i);
   assert.match(text, /Ne jamais goûter/);
+  assert.match(text, /Adaptez notamment les ramequins/);
   assert.doesNotMatch(text, /payer maintenant|stripe|réserver votre place/i);
 });
 
