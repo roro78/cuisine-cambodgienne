@@ -113,6 +113,17 @@ Le prototype non marchand comprend désormais un troisième module interactif.
 - **Restent ouverts avant merge :** build Astro réel, CI Github Actions complète, recette visuelle mobile/desktop, vérification de l'accessibilité clavier et réactivité des événements inter-composants dans un navigateur réel.
 - Toute fusion ou mise en production de la PR #24 reste conditionnée à la publication et au smoke test du **lot A Ateliers (PR #20)** sur OVH.
 
+## 0 nonies. Menu à choix et troisième plat réellement optionnel (10 octobre 2026)
+
+- La démonstration ne se limite plus à deux plats figés : elle propose en supplément un **Prahok Ktis à partager**, provenant uniquement de la recette gratuite publiée `prahok-ktis`.
+- Ce plat est désactivé par défaut : il ne s'agit ni d'une entrée obligatoire ni d'un dîner composé par un cuisinier externe.
+- Lorsqu'il est coché, le composant `DinnerPreview.astro` ajoute ses ingrédients pour 2/4/6 personnes ; le lait de coco commun à plusieurs recettes est correctement consolidé selon les unités, et les ingrédients sans quantité restent non chiffrés.
+- Le changement est propagé par `dinner:side` vers `DinnerPack.astro` : le fichier texte, les liens des recettes et la liste de courses sont cohérents avec le menu choisi.
+- Le planning principal de l'Amok n'absorbe **pas** les durées du Prahok Ktis : un avertissement visible dans le téléchargement explique que l'accompagnement doit être organisé séparément avant toute promesse de service coordonné.
+- Le mode `DinnerKitchenGuide.astro` propose désormais les étapes de la vraie recette du Prahok Ktis uniquement si ce plat est choisi. Son onglet est masqué par défaut, disparaît au retrait, et les progressions distinctes sont conservées tant que la page reste ouverte.
+- Trois tests supplémentaires et des contrôles de non-régression ont été ajoutés à `test:dinner`, `test:pack` et `test:kitchen`.
+- Ce parcours gratuit reste un **prototype fonctionnel**, pas une formation premium vendue. Il n'existe toujours ni réservation, ni collecte d'inscrits, ni paiement.
+
 ## 1. Décisions confirmées
 
 - Ne supprimer **aucune** recette, page culture, entrée de glossaire, atelier pédagogique ou route existante.
