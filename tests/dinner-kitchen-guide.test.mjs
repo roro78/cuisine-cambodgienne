@@ -104,3 +104,20 @@ test('adding the optional shared dish extends the guide without changing the two
   assert.throws(() => buildPilotKitchenGuide(source, true), RangeError);
   assert.throws(() => buildPilotKitchenGuide(catalogue, 'yes'), TypeError);
 });
+
+
+test('guidance never invites tasting Prahok before the pork is completely cooked', () => {
+  const sourceSide = {
+    slug: 'prahok-ktis', title: 'Prahok Ktis', intro: 'Plat à partager',
+    steps: [
+      { title: 'Faire revenir les aromates', text: 'Faire revenir doucement.' },
+      { title: 'Cuire le porc', text: 'Ajouter le porc haché et cuire.' },
+      { title: 'Ajouter le prahok progressivement', text: 'Ajoutez, goûtez et ajustez.' }
+    ]
+  };
+  const guided = buildPilotKitchenGuide([...source, sourceSide], true);
+  const step = guided[2].steps[2];
+  assert.match(step.text, /porc cuire complètement/);
+  assert.match(step.text, /Ne goûtez jamais le porc cru/);
+  assert.equal(sourceSide.steps[2].text, 'Ajoutez, goûtez et ajustez.');
+});
