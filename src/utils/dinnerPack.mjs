@@ -1,13 +1,19 @@
-import { PILOT_SLUGS, buildPilotShoppingList } from './dinnerPreview.mjs';
+import { PILOT_SLUGS, PILOT_SIDE_SLUG, buildPilotShoppingList } from './dinnerPreview.mjs';
 import { buildPilotServicePlan } from './dinnerTimeline.mjs';
 
 export const DINNER_PACK_NOTICE = 'Aperçu gratuit fondé sur deux recettes publiées, et non sur une expérience payante déjà disponible.';
 
-export function buildPilotDinnerPack(recipes, guests, serviceTime) {
+export function buildPilotDinnerPack(recipes, guests, serviceTime, includeSide = false) {
   if (!Array.isArray(recipes)) throw new TypeError('Invalid pilot recipe catalogue');
   const selected = PILOT_SLUGS.map((slug) => recipes.find((recipe) => recipe?.slug === slug));
   if (selected.some((recipe) => !recipe)) throw new RangeError('A pilot dish is missing');
   const [main, dessert] = selected;
+  if (typeof includeSide !== 'boolean') throw new TypeError('Invalid side-dish selection');
+  if (includeSide) {
+    const side = recipes.find((recipe) => recipe?.slug === PILOT_SIDE_SLUG);
+    if (!side) throw new RangeError('Optional accompaniment is missing');
+    selected.push(side);
+  }
 
   const items = buildPilotShoppingList(selected, guests);
   const timeline = buildPilotServicePlan(main, dessert, serviceTime);
@@ -16,6 +22,7 @@ export function buildPilotDinnerPack(recipes, guests, serviceTime) {
   return {
     guests,
     serviceTime,
+    includeSide,
     menu: selected.map(({ slug, title }) => ({ slug, title })),
     items,
     timeline,
@@ -46,6 +53,7 @@ export function buildPilotDinnerPackText(pack) {
     'PLANNING INDICATIF — AMOK TREY',
     ...times,
     '',
+    ...(pack.includeSide ? ['ACCOMPAGNEMENT FACULTATIF — PRAHOK KTIS', 'Les temps et la cuisson du prahok ktis ne sont pas intégrés au planning du plat. Consultez la recette dédiée.', ''] : []),
     'DESSERT — CHEK KTIS (A ORGANISER SEPAREMENT)',
     'Préparation : ' + pack.timeline.dessertPrepMinutes + ' min',
     'Cuisson : ' + pack.timeline.dessertCookMinutes + ' min',
