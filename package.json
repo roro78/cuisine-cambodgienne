@@ -16,7 +16,8 @@
     "test:kitchen": "node --test tests/dinner-kitchen-guide.test.mjs",
     "test:pack": "node --test tests/dinner-pack.test.mjs",
     "test:reception": "node --test tests/dinner-reception.test.mjs",
-    "test:built-experiences": "node scripts/check-experiences-build.mjs"
+    "test:built-experiences": "node scripts/check-experiences-build.mjs",
+    "test:browser-experiences": "node tests/experiences-browser-smoke.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -24,5 +25,7 @@
     "gsap": "^3.13.0",
     "typescript": "^5.9.2"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "playwright-core": "^1.56.1"
+  }
 }
