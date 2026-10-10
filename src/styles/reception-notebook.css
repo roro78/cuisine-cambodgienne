@@ -156,3 +156,11 @@
 
 /* Only this route imports the notebook stylesheet; keep site navigation out of the printed workbook. */
 @media print{.site-nav,.site-footer{display:none!important}}
+
+/* The printed guide must identify the exact menu and clock chosen by the reader. */
+.reception-configuration-summary{margin:-1rem 0 2rem;padding:1rem 1.25rem;border:1px solid #bdab94;line-height:1.75;color:#3b4237;background:rgba(255,248,237,.08);font-size:.91rem}
+.reception-configuration-summary strong{font-weight:700;color:#fff3dd}
+@media print{
+  .reception-configuration-summary{margin:.7rem 0 1rem!important;border:1px solid #888!important;background:white!important;padding:.6rem!important;color:#111!important;break-inside:avoid!important}
+  .reception-configuration-summary strong{color:#111!important}
+}
