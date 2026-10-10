@@ -226,3 +226,6 @@
 .dinner-optional-dish a{display:inline-block;margin:1rem 0 0 2.05rem;color:#f1d0a0;font-size:.76rem;line-height:1.5;border-bottom:1px solid #e0b789;padding-bottom:.15rem}
 .dinner-optional-dish a:hover{text-decoration:none;color:#fff}
 .dinner-optional-dish input:focus-visible{outline:3px solid #e3b27a;outline-offset:3px}
+
+/* Browser hidden state must override the flex rule when the optional dish is off. */
+.dinner-kitchen-navigation button[hidden]{display:none}
