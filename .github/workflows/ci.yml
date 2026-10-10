@@ -45,6 +45,9 @@ jobs:
       - name: Editorial regression contract
         run: npm run test:editorial
 
+      - name: Personal dinner roadmap calculations
+        run: npm run test:pack
+
       - name: Guided cooking preview model
         run: npm run test:kitchen
 
