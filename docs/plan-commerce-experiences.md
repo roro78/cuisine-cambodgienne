@@ -55,6 +55,16 @@ La page actuelle est **une démonstration gratuite fonctionnelle, pas un produit
 - `tests/dinner-timeline.test.mjs` et `npm run test:timeline` ajoutés à la CI de la PR.
 - **Vérification réalisée : 16 cas unitaires PASS sur copies fidèles et isolées des deux modules JS dans Node 22**, le 10 octobre 2026. Ce résultat n'est pas une exécution du build Astro GitHub ni une validation navigateur/OVH.
 
+## 0 quinquies. Mode cuisine guidé — aperçu (10 octobre 2026)
+
+- Nouvelle composante `src/components/DinnerKitchenGuide.astro` sur le Grand Dîner : choix du plat ou du dessert, une étape à la fois, navigation précédent/suivant et indication des repères sensoriels/erreurs à éviter issus des recettes gratuites.
+- Progression cochable par étape ; elle reste distincte pour chaque recette et est conservée pendant la consultation de la page **sans stockage persistant ni compte utilisateur**.
+- `src/utils/dinnerKitchenGuide.mjs` fabrique les étapes depuis `src/data/recipes.ts`, sans dupliquer artificiellement les recettes ni prétendre fournir la future prestation payante.
+- Point éditorial de sécurité identifié dans la fiche gratuite `amok-trey` : la formule actuelle pourrait encourager à goûter après avoir ajouté des œufs crus. Le guide utilise **temporairement une formulation corrigée** qui conseille de rectifier l'assaisonnement **avant** les œufs crus et le poisson cru, et de ne pas goûter après ces ajouts. La fiche recette publique mérite une **correction éditoriale dédiée et revue après la livraison du lot A** : ne pas modifier la base `main` ou perturber le déploiement imminent via cette PR.
+- `tests/dinner-kitchen-guide.test.mjs` ajouté, ainsi que `npm run test:kitchen` dans la CI.
+- Les trois utilitaires de démonstration + leurs tests ont été exécutés sur les fichiers récupérés depuis la branche GitHub dans un moteur JavaScript V8 isolé : **23 scénarios passés (8 courses, 8 planning, 7 mode cuisine)**. Le runner a reproduit les assertions Node nécessaires, mais **cela ne constitue pas une validation `npm test` native ni un build Astro**.
+- Les captures d'écran responsive, les contrôles clavier dans un navigateur réel et la CI GitHub restent des jalons avant merge.
+
 ## 1. Décisions confirmées
 
 - Ne supprimer **aucune** recette, page culture, entrée de glossaire, atelier pédagogique ou route existante.
