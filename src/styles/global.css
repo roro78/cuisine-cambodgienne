@@ -983,10 +983,10 @@ html.menu-open body{
   top:4.25rem;
   right:0;
   bottom:0;
-  width:min(88vw,24rem);
+  width:min(86vw,21rem);
   display:flex;
   flex-direction:column;
-  padding:2rem 1.4rem 1.5rem;
+  padding:1.25rem 1.1rem 1.4rem;
   background:#172017;
   color:#f7f2e8;
   overflow-y:auto;
@@ -1020,7 +1020,7 @@ html.menu-open body{
 }
 .mobile-menu-title{
   margin:0;
-  font:400 2rem/1 var(--serif);
+  font:400 1.7rem/1.1 var(--serif);
   letter-spacing:-.035em;
 }
 .mobile-menu-panel nav{
@@ -1040,7 +1040,7 @@ html.menu-open body{
   grid-template-rows:auto auto;
   gap:.15rem .65rem;
   align-items:center;
-  padding:.95rem 0;
+  padding:.8rem 0;
   border:0!important;
   border-bottom:1px solid rgba(255,255,255,.09)!important;
   font:inherit!important;
@@ -1057,7 +1057,7 @@ html.menu-open body{
 .mobile-menu-panel nav a strong{
   grid-column:2;
   grid-row:1;
-  font:400 1.35rem/1.05 var(--serif);
+  font:400 1.17rem/1.15 var(--serif);
   letter-spacing:-.025em;
 }
 .mobile-menu-panel nav a small{
@@ -1136,6 +1136,15 @@ html.menu-open body{
   }
 }
 
+
+/* Compact, usable focus targets without a full-screen-sized typographic menu. */
+.mobile-menu summary{min-height:2.75rem;padding:.55rem .15rem}
+.mobile-menu summary:focus-visible,
+.mobile-menu-panel nav a:focus-visible{outline:3px solid #e8c88d;outline-offset:3px}
+@media(max-width:380px){
+  .mobile-menu-panel{width:min(90vw,19.5rem);padding:1rem .95rem 1.2rem}
+  .mobile-menu-heading{padding-bottom:.8rem}
+}
 
 /* V7 — recipe filters and culinary glossary */
 .recipe-filter-bar{
