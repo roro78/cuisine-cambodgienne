@@ -82,3 +82,25 @@ test('invalid steps, incomplete source and malformed progress are rejected', () 
   assert.throws(() => buildPilotKitchenGuide([source[0], { ...source[1], steps: [] }]), RangeError);
   assert.throws(() => getGuideCompletedCount(dishes[0], []), TypeError);
 });
+
+
+test('adding the optional shared dish extends the guide without changing the two default dishes', () => {
+  const extra = {
+    slug: 'prahok-ktis',
+    title: 'Prahok Ktis',
+    intro: 'À partager avec des crudités',
+    steps: [
+      { title: 'Faire revenir les aromates', text: 'Faites chauffer doucement le kroeung.' },
+      { title: 'Cuire le porc', text: 'Faites cuire le porc complètement.' }
+    ]
+  };
+  const catalogue = [...source, extra];
+  const defaultGuide = buildPilotKitchenGuide(catalogue);
+  const withSide = buildPilotKitchenGuide(catalogue, true);
+  assert.deepEqual(defaultGuide.map((dish) => dish.slug), ['amok-trey', 'chek-ktis']);
+  assert.deepEqual(withSide.map((dish) => dish.slug), ['amok-trey', 'chek-ktis', 'prahok-ktis']);
+  assert.equal(withSide[2].steps.length, 2);
+  assert.equal(withSide[2].steps[1].title, 'Cuire le porc');
+  assert.throws(() => buildPilotKitchenGuide(source, true), RangeError);
+  assert.throws(() => buildPilotKitchenGuide(catalogue, 'yes'), TypeError);
+});
