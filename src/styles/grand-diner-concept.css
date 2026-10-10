@@ -229,3 +229,14 @@
 
 /* Browser hidden state must override the flex rule when the optional dish is off. */
 .dinner-kitchen-navigation button[hidden]{display:none}
+
+/* One coherent journey across four independently useful modules. */
+.dinner-journey-nav{display:flex;align-items:center;gap:clamp(.9rem,2.2vw,2rem);padding:1rem var(--page-pad);background:#f9f1e6;border-bottom:1px solid rgba(51,37,25,.17);overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+.dinner-journey-name{flex:none;color:#9a5c3e;font:700 .68rem/1.4 var(--sans);letter-spacing:.11em;text-transform:uppercase}
+.dinner-journey-nav a{display:inline-flex;align-items:center;gap:.48rem;flex:none;min-height:44px;color:#283b2d;font:700 .76rem/1.4 var(--sans);letter-spacing:.045em;border-bottom:1px solid transparent;white-space:nowrap;padding:.65rem .15rem}
+.dinner-journey-nav a span{color:#9d6748;font:400 1.2rem/1 var(--serif)}
+.dinner-journey-nav a:hover{border-bottom-color:#283b2d}
+.dinner-journey-nav a:focus-visible{outline:3px solid #af6b38;outline-offset:2px}
+.dinner-concept :is(#apercu,#planning,#cuisine-guidee,#ma-feuille-de-route){scroll-margin-top:5rem}
+@media(max-width:600px){.dinner-journey-nav{gap:1rem;padding-top:.6rem;padding-bottom:.6rem}.dinner-journey-name{font-size:.61rem}.dinner-journey-nav a{font-size:.72rem}}
+@media(prefers-reduced-motion:reduce){.dinner-journey-nav{scroll-behavior:auto}}
