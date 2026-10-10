@@ -66,6 +66,7 @@ requireCondition(kitchen.includes('data-kitchen-dishes={JSON.stringify(dishes)}'
 requireCondition(kitchen.includes('data-guide-progress') && kitchen.includes('aria-live="polite"'), 'Kitchen guide must expose visible and accessible progress');
 requireCondition(kitchen.includes('positions = new Map') && kitchen.includes('completed = new Map'), 'Kitchen steps should preserve state when switching dishes');
 requireCondition(kitchenModel.includes('AMOK_RAW_EGG_CAUTION') && kitchenModel.includes('Ne goûtez pas') && kitchen.includes('avant</strong>'), 'Raw-egg tasting safety override must be present');
+requireCondition(kitchenModel.includes('PRAHOK_RAW_PORK_CAUTION') && kitchenModel.includes('porc cuire complètement'), 'Optional pork dish must forbid tasting before fully cooked');
 requireCondition(kitchenModel.includes("PILOT_GUIDE_SIDE_SLUG = 'prahok-ktis'") && kitchen.includes('hidden={dish.slug === PILOT_GUIDE_SIDE_SLUG}'), 'Optional guided recipe must be opt-in and hidden by default');
 requireCondition(kitchen.includes("'dinner:side'") && detailStyle.includes('.dinner-kitchen-navigation button[hidden]{display:none}'), 'Opt-out must reliably hide the optional kitchen tab');
 requireCondition(timeline.includes('data-service-time') && timeline.includes('data-timing-recipes={JSON.stringify(timingData)}'), 'Planning must use public recipe durations');
