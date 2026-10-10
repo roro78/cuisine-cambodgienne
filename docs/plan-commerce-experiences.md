@@ -89,6 +89,18 @@ Le prototype non marchand comprend désormais un troisième module interactif.
 - Restent à vérifier avant tout merge : `npm run check`, `npm run build`, les tests complets dans Node/GitHub Actions, les interactions navigateur, les contrastes, le rendu mobile et le comportement sans JavaScript.
 - La PR #24 reste en brouillon. Aucun bouton de vente, réservation ou préinscription n'est autorisé sur ces prototypes.
 
+## 0 septies. Feuille de route locale et téléchargeable (10 octobre 2026)
+
+- Nouveau `src/components/DinnerPack.astro` sur `/experiences/grand-diner-khmer/` : la page présente une synthèse des 2 recettes du prototype, des convives, de l'heure du service, des jalons horaires et du nombre de produits à prévoir.
+- `src/utils/dinnerPack.mjs` combine uniquement les deux modules existants de calcul (`dinnerPreview.mjs`, `dinnerTimeline.mjs`) et le matériel listé dans les recettes gratuites.
+- Sélections synchronisées sans nouveau formulaire : les modules courses et planning émettent les événements `dinner:guests` et `dinner:time` ; la feuille de route les écoute.
+- Export facultatif en fichier `.txt` créé localement via `Blob` et URL temporaire, sans serveur, tracking, courriel ni cookies ; alternative de copie dans le presse-papiers.
+- Chaque téléchargement est clairement marqué comme **aperçu gratuit de deux recettes existantes**, pas comme un produit premium final.
+- Les quantités inconnues ne sont pas inventées ; une marge de préparation explicite est conservée ; le dessert reste non intégré au planning du plat.
+- Les contenus non exclusifs, recettes, fiches et liens restent accessibles gratuitement.
+- `tests/dinner-pack.test.mjs` (7 scénarios : données réelles, calculs, groupements, matériel, export, erreurs) et `npm run test:pack` sont intégrés à la CI.
+- **Validation effectuée :** 7 tests supplémentaires PASS sur les sources de branche exactes dans V8 isolé. Tests Node natifs, build Astro et navigateur/contrastes restent à effectuer avant merge.
+
 ## 1. Décisions confirmées
 
 - Ne supprimer **aucune** recette, page culture, entrée de glossaire, atelier pédagogique ou route existante.
