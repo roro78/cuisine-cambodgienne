@@ -1,9 +1,9 @@
 ---
 import { recipes } from '../data/recipes';
-import { PILOT_SLUGS } from '../utils/dinnerPreview.mjs';
+import { PILOT_SLUGS, PILOT_SIDE_SLUG } from '../utils/dinnerPreview.mjs';
 import { buildPilotDinnerPack } from '../utils/dinnerPack.mjs';
 
-const selected = PILOT_SLUGS.map((slug) => recipes.find((recipe) => recipe.slug === slug));
+const selected = [...PILOT_SLUGS, PILOT_SIDE_SLUG].map((slug) => recipes.find((recipe) => recipe.slug === slug));
 if (selected.some((recipe) => !recipe)) throw new Error('Missing dish for personal dinner roadmap');
 const packRecipes = selected.filter((recipe): recipe is NonNullable<typeof recipe> => Boolean(recipe))
   .map(({ slug, title, baseServings, ingredients, prepTime, cookTime, equipment }) => ({ slug, title, baseServings, ingredients, prepTime, cookTime, equipment }));
@@ -14,7 +14,7 @@ const pack = buildPilotDinnerPack(packRecipes, 2, '20:00');
     <p class="dinner-kicker">Votre pense-bête gourmand</p>
     <h2 id="dinner-takeaway-title">Tout réunir pour préparer la soirée.</h2>
     <p>Gardez une trace de votre liste de courses et du planning imaginé pour l’Amok. Le document reprend automatiquement le nombre de convives et l’heure de service choisis plus haut.</p>
-    <p class="dinner-takeaway-disclaimer">Cet aperçu concerne seulement deux recettes gratuites. Ce n’est pas le contenu complet d’une offre payante, ni un planning de cuisson garanti. Les quantités de matériel des fiches sont à adapter au nombre de convives.</p>
+    <p class="dinner-takeaway-disclaimer">Cet aperçu utilise deux recettes gratuites et, à votre choix, un accompagnement gratuit supplémentaire. Ce n’est pas le contenu complet d’une offre payante, ni un planning de cuisson garanti. Les quantités de matériel des fiches sont à adapter au nombre de convives.</p>
     <div class="dinner-takeaway-actions">
       <button type="button" data-pack-download>Télécharger mon pense-bête <span aria-hidden="true">↗</span></button>
       <button type="button" data-pack-copy>Copier le récapitulatif <span aria-hidden="true">↗</span></button>
@@ -31,7 +31,7 @@ const pack = buildPilotDinnerPack(packRecipes, 2, '20:00');
     </dl>
     <div class="dinner-takeaway-divider" aria-hidden="true"></div>
     <p class="dinner-takeaway-paper-label">Au menu</p>
-    <p>Amok Trey<br />Chek Ktis</p>
+    <p>Amok Trey<br />Chek Ktis<span data-pack-side-label hidden><br />Prahok Ktis (facultatif)</span></p>
     <div class="dinner-takeaway-divider" aria-hidden="true"></div>
     <p class="dinner-takeaway-paper-label">Votre programme</p>
     <ol data-pack-milestones>
@@ -50,18 +50,21 @@ const pack = buildPilotDinnerPack(packRecipes, 2, '20:00');
     const guestsLabel = root.querySelector<HTMLElement>('[data-pack-guests]');
     const timeLabel = root.querySelector<HTMLElement>('[data-pack-time]');
     const itemCount = root.querySelector<HTMLElement>('[data-pack-items-count]');
+    const sideLabel = root.querySelector<HTMLElement>('[data-pack-side-label]');
     const milestones = root.querySelector<HTMLOListElement>('[data-pack-milestones]');
     const feedback = root.querySelector<HTMLElement>('[data-pack-feedback]');
     const download = root.querySelector<HTMLButtonElement>('[data-pack-download]');
     const copy = root.querySelector<HTMLButtonElement>('[data-pack-copy]');
-    if (!data || !guestsLabel || !timeLabel || !itemCount || !milestones || !feedback || !download || !copy) return;
+    if (!data || !guestsLabel || !timeLabel || !itemCount || !sideLabel || !milestones || !feedback || !download || !copy) return;
 
     const recipeData = JSON.parse(data);
     let guests = 2;
     let time = '20:00';
+    let includeSide = false;
 
     const render = () => {
-      const pack = buildPilotDinnerPack(recipeData, guests, time);
+      const pack = buildPilotDinnerPack(recipeData, guests, time, includeSide);
+      sideLabel.hidden = !includeSide;
       guestsLabel.textContent = `${pack.guests} personnes`;
       timeLabel.textContent = pack.timeline.servingTime;
       itemCount.textContent = String(pack.items.length);
@@ -92,6 +95,12 @@ const pack = buildPilotDinnerPack(packRecipes, 2, '20:00');
       time = next;
       render();
       feedback.textContent = `Votre feuille de route est ajustée pour un service à ${time.replace(':', 'h')}.`;
+    });
+
+    document.addEventListener('dinner:side', (event) => {
+      includeSide = (event as CustomEvent<{ includeSide: boolean }>).detail?.includeSide === true;
+      render();
+      feedback.textContent = includeSide ? 'Le Prahok Ktis est ajouté à votre récapitulatif.' : 'Le Prahok Ktis a été retiré de votre récapitulatif.';
     });
 
     download.addEventListener('click', () => {
