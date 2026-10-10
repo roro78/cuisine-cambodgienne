@@ -22,10 +22,35 @@ export function initNavigation() {
 
   menu?.addEventListener('toggle', onToggle);
 
+  const desktopQuery = window.matchMedia('(min-width: 721px)');
+  const onViewportChange = () => {
+    // A menu opened on mobile must not lock the desktop page after rotation/resize.
+    if (desktopQuery.matches && menu?.open) menu.open = false;
+  };
+  desktopQuery.addEventListener('change', onViewportChange);
+
   const onKeydown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape' && menu?.open) {
+    if (!menu?.open) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
       menu.open = false;
       menu.querySelector<HTMLElement>('summary')?.focus();
+      return;
+    }
+
+    if (event.key === 'Tab' && !desktopQuery.matches) {
+      const focusables = Array.from(menu.querySelectorAll<HTMLElement>('summary, a[href]'));
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      // Keep the keyboard in the drawer until it is closed.
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
   };
   window.addEventListener('keydown', onKeydown);
@@ -39,6 +64,7 @@ export function initNavigation() {
   return () => {
     window.removeEventListener('scroll', updateHeader);
     window.removeEventListener('keydown', onKeydown);
+    desktopQuery.removeEventListener('change', onViewportChange);
     menu?.removeEventListener('toggle', onToggle);
     links.forEach((link) => link.removeEventListener('click', closeMenu));
     document.documentElement.classList.remove('menu-open');
