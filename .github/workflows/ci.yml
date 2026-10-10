@@ -45,6 +45,9 @@ jobs:
       - name: Editorial regression contract
         run: npm run test:editorial
 
+      - name: Dinner preview calculations
+        run: npm run test:dinner
+
       - name: Experiences prelaunch regression contract
         run: npm run test:experiences
 
