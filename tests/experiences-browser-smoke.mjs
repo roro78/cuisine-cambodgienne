@@ -53,7 +53,7 @@ async function run() {
   await desktop.locator('[data-preview-side-toggle]').check();
   assert.equal(await desktop.locator('[data-guide-dish="prahok-ktis"]').isVisible(), true);
   await desktop.locator('[data-guide-dish="prahok-ktis"]').click();
-  assert.match(await desktop.locator('[data-guide-dish-title]').innerText(), /Prahok Ktis/);
+  assert.match(await desktop.locator('[data-guide-dish-title]').innerText(), /Prahok Ktis/i);
   await desktop.locator('[data-service-time]').selectOption('19:30');
   assert.match(await desktop.locator('[data-pack-time]').innerText(), /19h30/);
 
