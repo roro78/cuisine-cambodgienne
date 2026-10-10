@@ -60,7 +60,7 @@ requireCondition(preview.includes('data-preview-key') && preview.includes('const
 requireCondition(calculator.includes('amok-trey') && calculator.includes('chek-ktis'), 'Preview recipes must be the established pilot menu');
 requireCondition(preview.includes("new CustomEvent('dinner:guests'") && timeline.includes("new CustomEvent('dinner:time'"), 'Recipe selectors must notify the roadmap');
 requireCondition(pack.includes("'dinner:guests'") && pack.includes("'dinner:time'") && pack.includes('data-dinner-pack-recipes={JSON.stringify(packRecipes)}'), 'Roadmap must sync with both validated controls');
-requireCondition(pack.includes('Blob([summary]') && pack.includes('URL.revokeObjectURL') && !/fetch\\s*\\(/.test(pack), 'Roadmap export must be local and clean up its temporary URL');
+requireCondition(pack.includes('Blob([summary]') && pack.includes('URL.revokeObjectURL') && !/fetch\s*\(/.test(pack), 'Roadmap export must be local and clean up its temporary URL');
 requireCondition(packModel.includes('buildPilotShoppingList') && packModel.includes('buildPilotServicePlan'), 'Roadmap must reuse the tested calculators');
 requireCondition(packModel.includes('Ne jamais goûter') && packModel.includes('Aperçu gratuit'), 'Downloaded roadmap must disclose food safety and prototype status');
 requireCondition(detail.includes('href="/apprendre/"'), 'Concept must link to free existing workshops');
