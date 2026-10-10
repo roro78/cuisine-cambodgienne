@@ -9,7 +9,7 @@ if (!main || !dessert) throw new Error('Pilot recipes missing for indicative sch
 const timingData = [{ title: main.title, prepTime: main.prepTime, cookTime: main.cookTime }, { title: dessert.title, prepTime: dessert.prepTime, cookTime: dessert.cookTime }];
 const plan = buildPilotServicePlan(timingData[0], timingData[1], '20:00');
 ---
-<section class="dinner-timeline" aria-labelledby="dinner-timeline-heading" data-dinner-timeline data-timing-recipes={JSON.stringify(timingData)}>
+<section class="dinner-timeline" id="planning" aria-labelledby="dinner-timeline-heading" data-dinner-timeline data-timing-recipes={JSON.stringify(timingData)}>
   <div class="dinner-timeline-heading">
     <div>
       <p class="dinner-kicker">Deuxième aperçu · Organisation</p>
