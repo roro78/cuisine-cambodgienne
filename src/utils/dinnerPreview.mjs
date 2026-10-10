@@ -4,6 +4,7 @@
  * Does not change existing recipe portions, checkout or content.
  */
 export const PILOT_SLUGS = Object.freeze(['amok-trey', 'chek-ktis']);
+export const PILOT_SIDE_SLUG = 'prahok-ktis';
 
 function normalisedKey(name, unit) {
   return name.trim().toLocaleLowerCase('fr-FR') + '\u0000' + (unit ?? '').trim().toLocaleLowerCase('fr-FR');
@@ -54,14 +55,14 @@ export function buildPilotShoppingList(selectedRecipes, guests) {
   }));
 }
 
-export function buildShoppingListText(items, guests) {
+export function buildShoppingListText(items, guests, dishTitles = ['Amok Trey', 'Chek Ktis']) {
   return [
     'Cuisine du Cambodge — Aperçu de liste de courses',
     'Pour ' + guests + ' personnes',
-    'Amok Trey + Chek Ktis · menu de démonstration',
+    dishTitles.join(' + ') + ' · menu de démonstration',
     '',
     ...items.map(({ display }) => '□ ' + display),
     '',
-    'Cette liste reprend deux recettes gratuites existantes. Le menu premium est en préparation.',
+    'Cette liste reprend ' + dishTitles.length + ' recettes gratuites existantes. Le menu premium est en préparation.',
   ].join('\n');
 }
