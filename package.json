@@ -9,7 +9,8 @@
     "test:motion": "node scripts/check-motion-contract.mjs",
     "test:editorial": "node scripts/check-editorial-contract.mjs",
     "preview": "astro preview",
-    "test:recipes": "node scripts/check-recipe-contract.mjs"
+    "test:recipes": "node scripts/check-recipe-contract.mjs",
+    "test:experiences": "node scripts/check-experiences-contract.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
