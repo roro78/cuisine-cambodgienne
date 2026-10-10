@@ -79,6 +79,9 @@ const plan = buildPilotServicePlan(timingData[0], timingData[1], '20:00');
       }));
       status.textContent = `Planning actualisé pour un service à ${plan.servingTime}.`;
     };
-    select.addEventListener('change', render);
+    select.addEventListener('change', () => {
+      render();
+      document.dispatchEvent(new CustomEvent('dinner:time', { detail: { time: select.value } }));
+    });
   });
 </script>
