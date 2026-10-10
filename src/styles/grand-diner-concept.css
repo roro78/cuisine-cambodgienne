@@ -240,3 +240,24 @@
 .dinner-concept :is(#apercu,#planning,#cuisine-guidee,#ma-feuille-de-route){scroll-margin-top:5rem}
 @media(max-width:600px){.dinner-journey-nav{gap:1rem;padding-top:.6rem;padding-bottom:.6rem}.dinner-journey-name{font-size:.61rem}.dinner-journey-nav a{font-size:.72rem}}
 @media(prefers-reduced-motion:reduce){.dinner-journey-nav{scroll-behavior:auto}}
+
+/* Fifth chapter: the editorial heart of the future premium product, preview only. */
+.dinner-carnet-entry{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(2rem,7vw,8rem);align-items:center;padding:clamp(5rem,10vw,10rem) var(--page-pad);background:#273b2f;color:#f5eddd}
+.dinner-carnet-copy>.dinner-kicker{color:#e5bd87}
+.dinner-carnet-copy h2{font:400 clamp(3rem,5.7vw,6.3rem)/1.03 var(--serif);letter-spacing:-.058em;margin:1.2rem 0 2.1rem;text-wrap:balance}
+.dinner-carnet-copy>p:not(.dinner-kicker){max-width:44rem;font-size:1.04rem;line-height:1.72;color:#e9dfd1}
+.dinner-carnet-copy>.dinner-carnet-note{font-size:.88rem!important;border-left:2px solid #e3b989;padding:.6rem 0 .6rem 1.2rem;color:#f3d0a5!important;margin:1.6rem 0}
+.dinner-carnet-link{display:inline-flex;align-items:center;justify-content:space-between;gap:2rem;background:#eee0c9;color:#263b2e;padding:1rem 1.2rem;font:700 .76rem/1.35 var(--sans);text-transform:uppercase;letter-spacing:.07em;min-height:48px;margin-top:1rem}
+.dinner-carnet-link:hover{background:#fff3e2}
+.dinner-carnet-poster{position:relative;min-height:clamp(27rem,48vw,42rem);padding:clamp(2rem,4vw,5rem);background:#eee1ce;color:#2b3d31;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 24px 60px rgba(8,21,13,.25)}
+.dinner-carnet-poster>p{font:700 .72rem/1.4 var(--sans);letter-spacing:.16em;text-transform:uppercase;margin:0}
+.dinner-carnet-poster-rule{width:3rem;height:2px;background:#ae6c49;display:block}
+.dinner-carnet-poster>strong{font:400 clamp(2.8rem,5.1vw,5.8rem)/1 var(--serif);letter-spacing:-.055em;max-width:15ch}
+.dinner-carnet-poster>strong em{font-weight:400;color:#a46944}
+.dinner-carnet-poster>span:not(.dinner-carnet-poster-rule){font:.78rem/1.95 var(--sans);text-transform:uppercase;letter-spacing:.14em}
+.dinner-carnet-poster>.dinner-carnet-poster-bottom{border-top:1px solid #b9a28b;padding-top:1rem;letter-spacing:.08em!important}
+.dinner-takeaway-actions .dinner-pack-carnet-link{display:inline-flex;align-items:center;justify-content:space-between;gap:1rem;min-height:46px;padding:1rem 1.15rem;border:1px solid #293a2e;color:#293a2e;text-transform:uppercase;font:700 .71rem/1.35 var(--sans);letter-spacing:.06em}
+.dinner-takeaway-actions .dinner-pack-carnet-link:hover{background:#293a2e;color:#fff7ea}
+.dinner-concept #carnet{scroll-margin-top:5rem}
+@media(max-width:950px){.dinner-carnet-entry{grid-template-columns:1fr}.dinner-carnet-copy{max-width:49rem}.dinner-carnet-poster{max-width:43rem;width:100%}}
+@media(max-width:600px){.dinner-carnet-poster{min-height:29rem}.dinner-carnet-link{width:100%;font-size:.72rem}.dinner-takeaway-actions .dinner-pack-carnet-link{width:100%}}
