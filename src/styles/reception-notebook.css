@@ -1,0 +1,131 @@
+/* Carnet de réception — editorial prelaunch, isolated from all existing pages. */
+.reception-notebook{--r-pine:#223a2b;--r-ink:#24221b;--r-paper:#f3eadd;--r-terracotta:#94563b;--r-gold:#edc695;font-family:var(--sans);color:var(--r-ink);background:var(--r-paper)}
+.reception-notebook *{box-sizing:border-box}
+.reception-notebook a:focus-visible,.reception-notebook button:focus-visible,.reception-notebook input:focus-visible,.reception-notebook select:focus-visible{outline:3px solid #d3924e;outline-offset:4px}
+.reception-notebook [hidden]{display:none!important}
+.reception-hero{isolation:isolate;min-height:77svh;position:relative;background:#1b3024;color:#fff5e7;display:flex;align-items:end}
+.reception-hero-image{position:absolute;inset:0;z-index:-2}
+.reception-hero-image img{width:100%;height:100%;object-fit:cover;display:block}
+.reception-hero:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(13,28,19,.96),rgba(20,33,23,.3) 93%),linear-gradient(0deg,rgba(10,22,15,.58),transparent)}
+.reception-hero-content{padding:clamp(3rem,7vw,7rem) var(--page-pad);max-width:77rem}
+.reception-back{font:700 .73rem/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;display:inline-block;color:#f5ddbb;margin-bottom:clamp(3rem,7vw,6rem)}
+.reception-eyebrow,.reception-mark{font:700 .7rem/1.4 var(--sans);letter-spacing:.15em;text-transform:uppercase;color:var(--r-terracotta)}
+.reception-hero .reception-eyebrow{color:var(--r-gold)}
+.reception-hero h1{font:400 clamp(3.6rem,8vw,8.8rem)/.96 var(--serif);letter-spacing:-.055em;margin:.9rem 0 1.6rem;text-wrap:balance}
+.reception-hero h1 em{font-weight:400;color:#f3cf9e}
+.reception-intro{font-size:clamp(1.1rem,1.5vw,1.35rem);line-height:1.67;max-width:43rem;color:#f1e8dc}
+.reception-status{border-left:2px solid #eac18a;padding:.6rem 0 .6rem 1.2rem;margin:2.2rem 0 0;max-width:43rem;font-size:.85rem;line-height:1.6;color:#f9dfbc}
+.reception-content{overflow:hidden}
+.reception-local-nav{display:flex;gap:clamp(.8rem,2vw,2.3rem);align-items:center;padding:1rem var(--page-pad);background:#f8f2e8;overflow-x:auto;scrollbar-width:thin;border-bottom:1px solid #dfd3c3}
+.reception-local-nav a{flex:none;padding:.8rem .5rem;min-height:44px;white-space:nowrap;font:700 .77rem/1.4 var(--sans);text-transform:uppercase;letter-spacing:.075em;color:#263c2e}
+.reception-local-nav a:hover{text-decoration:underline;text-underline-offset:.3rem}
+.reception-intention{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:clamp(2rem,6vw,8rem);padding:clamp(5rem,9vw,10rem) var(--page-pad);background:#f3eadd}
+.reception-mark{padding-top:1rem}
+.reception-intention>div{max-width:61rem}
+.reception-intention h2,.reception-section-head h2,.reception-conclusion h2{font:400 clamp(2.9rem,5.5vw,6.2rem)/1.04 var(--serif);letter-spacing:-.053em;margin:.5rem 0 1.5rem;text-wrap:balance}
+.reception-intention>div>p:not(.reception-eyebrow){max-width:48rem;font-size:1.09rem;line-height:1.82;color:#64574b}
+.reception-config,.reception-chapters{background:#e8dac5;padding:clamp(5rem,9vw,9rem) var(--page-pad)}
+.reception-section-head{max-width:65rem;margin-bottom:clamp(2.3rem,4vw,5rem)}
+.reception-section-head p:last-child{max-width:48rem;font-size:1.04rem;line-height:1.75;color:#62584c}
+.reception-config-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) minmax(0,1.5fr);gap:1rem;max-width:87rem}
+.reception-field{display:flex;flex-direction:column;gap:.8rem;font:700 .7rem/1.4 var(--sans);letter-spacing:.11em;text-transform:uppercase;color:#72513a}
+.reception-field select{padding:.85rem 1rem;min-height:52px;font:600 1.07rem/1.4 var(--sans);color:#263c2e;border:1px solid #a99b86;background:#fcf8ef;cursor:pointer;width:100%}
+.reception-add-on{display:flex;align-items:center;gap:.9rem;padding:1rem 1.3rem;border:1px solid #9b8a74;cursor:pointer}
+.reception-add-on input{accent-color:#36573c;flex:none;width:1.2rem;height:1.2rem}
+.reception-add-on span{display:grid;gap:.35rem}
+.reception-add-on strong{font-size:.9rem;line-height:1.4}
+.reception-add-on small{font-size:.77rem;line-height:1.5;color:#65574a}
+.reception-menu{margin-top:clamp(3rem,6vw,7rem);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(2rem,6vw,7rem);align-items:start}
+.reception-menu-copy h3{font:400 clamp(2.8rem,4.4vw,5.1rem)/1.05 var(--serif);letter-spacing:-.045em;margin:.8rem 0 1.5rem}
+.reception-menu-copy>p:last-child{max-width:37rem;font-size:1rem;line-height:1.7;color:#605345}
+.reception-menu ol{margin:0;padding:0;list-style:none;border-top:1px solid #9a8772}
+.reception-menu li{display:grid;gap:.4rem;padding:1.5rem 0;border-bottom:1px solid #9a8772}
+.reception-menu li span{font:700 .68rem/1.4 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:#8f593c}
+.reception-menu li strong{font:400 clamp(2rem,3vw,3.4rem)/1.1 var(--serif)}
+.reception-menu li a{font:700 .72rem/1.4 var(--sans);letter-spacing:.06em;text-transform:uppercase;justify-self:start;padding:.65rem 0;color:#29412e}
+.reception-runbook{background:var(--r-pine);color:#f8eedf;padding:clamp(5rem,9vw,9rem) var(--page-pad)}
+.reception-runbook .reception-eyebrow{color:#e9be8f}
+.reception-runbook .reception-section-head>p:last-child{color:#e6d8c7}
+.reception-runbook-layout{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:clamp(2rem,7vw,9rem)}
+.reception-milestones{list-style:none;padding:0;margin:0}
+.reception-milestones li{display:grid;grid-template-columns:6rem minmax(0,1fr);gap:1.25rem;padding:1.45rem 0;border-top:1px solid rgba(244,234,216,.36)}
+.reception-milestones li:last-child{border-bottom:1px solid rgba(244,234,216,.36)}
+.reception-milestones time{font:400 clamp(1.55rem,2.5vw,2.6rem)/1 var(--serif);color:#e9bc8f}
+.reception-milestones h3{font:400 clamp(1.45rem,2.3vw,2.35rem)/1.12 var(--serif);letter-spacing:-.03em;margin:0}
+.reception-milestones p{font-size:.9rem;line-height:1.65;color:#e5d8c6;margin:.55rem 0 0}
+.reception-side-time{padding:clamp(1.6rem,3.5vw,3.7rem);background:#354e3a;align-self:start}
+.reception-side-time h3{font:400 clamp(2.3rem,3.8vw,4rem)/1.07 var(--serif);margin:1.1rem 0 1.8rem}
+.reception-side-time>p:not(.reception-eyebrow){font-size:.96rem;line-height:1.73;color:#eee4d3}
+.reception-side-time strong{color:#f6ddb8}
+.reception-chapters{background:#f2e9dc}
+.reception-progress{max-width:70rem;margin:0 0 2.5rem;display:grid;gap:.75rem}
+.reception-progress span{font:700 .79rem/1.4 var(--sans);letter-spacing:.045em}
+.reception-progress progress{height:.5rem;width:100%;appearance:none;background:#d4c2aa}
+.reception-progress progress::-webkit-progress-bar{background:#d4c2aa}
+.reception-progress progress::-webkit-progress-value{background:#375c41}
+.reception-progress progress::-moz-progress-bar{background:#375c41}
+.reception-chapter-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(1rem,2.4vw,2.5rem);max-width:92rem}
+.reception-chapter{padding:clamp(1.5rem,3vw,3rem);border:1px solid #d4c5b3;background:#fff9ef;display:flex;flex-direction:column;min-width:0}
+.reception-chapter-top{display:flex;align-items:start;justify-content:space-between;gap:1rem}
+.reception-chapter-number{font:400 2.8rem/1 var(--serif);color:#975c41}
+.reception-chapter-top .reception-eyebrow{text-align:right}
+.reception-chapter h3{font:400 clamp(2.2rem,3.1vw,3.9rem)/1.05 var(--serif);letter-spacing:-.049em;margin:2.4rem 0 1.2rem}
+.reception-chapter-description{font-size:.96rem;line-height:1.75;color:#6a5b4b;margin:0 0 2rem}
+.reception-chapter-tasks{margin-top:auto;border-top:1px solid #d9c9b5;padding-top:1.3rem}
+.reception-chapter-tasks h4,.reception-chapter-lesson>span{font:700 .68rem/1.35 var(--sans);letter-spacing:.13em;text-transform:uppercase;color:#945b3c}
+.reception-chapter-tasks h4{margin:0 0 1rem}
+.reception-check{display:flex;align-items:start;gap:.8rem;padding:.68rem 0;cursor:pointer;font-size:.89rem;line-height:1.65}
+.reception-check input{flex:none;width:1.16rem;height:1.16rem;accent-color:#476d49;margin:.17rem 0 0}
+.reception-check input:checked+span{text-decoration:line-through;color:#897968}
+.reception-chapter-lesson{margin-top:1.7rem;padding:1.4rem;background:#eae0cf;border-left:3px solid #986040}
+.reception-chapter-lesson p{font-size:.93rem;line-height:1.7;margin:.6rem 0 0}
+.reception-conclusion{padding:clamp(5rem,10vw,10rem) var(--page-pad);background:#f8f1e7;display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(2rem,8vw,8rem);align-items:center}
+.reception-conclusion-main>p:not(.reception-eyebrow){font-size:1rem;line-height:1.75;color:#62564a}
+.reception-conclusion-main .reception-safety{background:#eae0d0;padding:1.1rem 1.3rem;border-left:3px solid #955b3e;color:#3b3126!important}
+.reception-conclusion-main .reception-validation{font-size:.89rem!important;color:#7b614d!important}
+.reception-actions{display:flex;flex-wrap:wrap;align-items:center;gap:1rem;margin-top:2rem}
+.reception-actions button,.reception-actions a{font:700 .75rem/1.45 var(--sans);letter-spacing:.065em;text-transform:uppercase;min-height:46px;padding:1rem 1.15rem;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.reception-actions button{background:#284330;color:#fffaef;border:1px solid #284330}
+.reception-actions a{border:1px solid #284330;color:#284330}
+.reception-feedback{font-size:.78rem!important;min-height:1.25rem}
+.reception-privacy{font-size:.78rem!important;color:#756658!important}
+.reception-closing-image{margin:0;align-self:stretch}
+.reception-closing-image img{width:100%;height:100%;max-height:42rem;object-fit:cover;display:block}
+.reception-closing-image figcaption{font-size:.76rem;line-height:1.4;color:#705949;margin-top:.75rem}
+.reception-notebook :is(#carnet-menu,#carnet-conducteur,#carnet-chapitres,#carnet-bilan){scroll-margin-top:4rem}
+@media(max-width:950px){.reception-intention{grid-template-columns:1fr;gap:1rem}.reception-config-grid{grid-template-columns:1fr 1fr}.reception-add-on{grid-column:1/-1}.reception-menu,.reception-runbook-layout,.reception-conclusion{grid-template-columns:1fr}.reception-side-time{max-width:50rem}.reception-conclusion-main{max-width:54rem}.reception-closing-image{max-height:30rem}}
+@media(max-width:650px){.reception-config-grid,.reception-chapter-grid{grid-template-columns:1fr}.reception-menu li{padding:1.2rem 0}.reception-milestones li{grid-template-columns:4.5rem minmax(0,1fr);gap:.65rem}.reception-milestones time{font-size:1.52rem}.reception-hero{min-height:72svh}.reception-chapter h3{margin-top:1.5rem}.reception-actions{flex-direction:column;align-items:stretch}.reception-actions a,.reception-actions button{width:100%}}
+@media print{
+  @page{size:A4;margin:15mm}
+  html,body{background:white!important;color:#111!important}
+  .reception-notebook{color:#111!important;background:white!important;font-family:Arial,sans-serif!important}
+  .reception-notebook :is(.reception-local-nav,.reception-back,.reception-actions,.reception-feedback,.reception-privacy){display:none!important}
+  .reception-hero{min-height:auto!important;color:#111!important;background:white!important;display:block!important}
+  .reception-hero:before,.reception-hero-image{display:none!important}
+  .reception-hero-content{padding:0 0 1rem!important}
+  .reception-notebook h1,.reception-notebook h2,.reception-notebook h3{font-family:Georgia,serif!important;color:#111!important}
+  .reception-hero .reception-eyebrow,.reception-status,.reception-intention,.reception-config,.reception-runbook,.reception-chapters,.reception-conclusion{background:white!important;color:#111!important}
+  .reception-notebook :is(.reception-eyebrow,.reception-mark,.reception-milestones time,.reception-chapter-number){color:#333!important}
+  .reception-notebook :is(.reception-intention,.reception-config,.reception-runbook,.reception-chapters,.reception-conclusion){padding:1rem 0!important;display:block!important}
+  .reception-intention h2,.reception-section-head h2,.reception-conclusion h2{font-size:25pt!important;line-height:1.15!important;margin:0 0 .65rem!important}
+  .reception-hero h1{font-size:36pt!important;margin:.4rem 0!important}
+  .reception-notebook p{color:#222!important}
+  .reception-section-head{margin-bottom:1rem!important}
+  .reception-config-grid{display:none!important}
+  .reception-menu,.reception-runbook-layout,.reception-chapter-grid{display:block!important}
+  .reception-menu-copy h3{font-size:22pt!important}
+  .reception-menu li{padding:.45rem 0!important}
+  .reception-menu li strong{font-size:15pt!important}
+  .reception-menu li a{font-size:9pt!important}
+  .reception-milestones li{display:grid!important;grid-template-columns:5rem 1fr!important;padding:.45rem 0!important}
+  .reception-milestones h3{font-size:15pt!important}
+  .reception-side-time{background:white!important;color:#111!important;padding:.6rem 0!important}
+  .reception-side-time h3{font-size:17pt!important;margin:0!important}
+  .reception-chapter{display:block!important;border:1px solid #999!important;background:white!important;break-inside:avoid!important;page-break-inside:avoid!important;padding:1rem!important;margin:.6rem 0!important}
+  .reception-chapter h3{font-size:19pt!important;margin:.6rem 0!important}
+  .reception-chapter-lesson{background:#f2f2f2!important}
+  .reception-check input{accent-color:#555!important}
+  .reception-closing-image{display:none!important}
+  .reception-progress progress{height:.25rem!important}
+  .reception-notebook :is(a,span,strong){color:inherit!important}
+}
