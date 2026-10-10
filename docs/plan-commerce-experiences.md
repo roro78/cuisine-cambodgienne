@@ -65,6 +65,30 @@ La page actuelle est **une démonstration gratuite fonctionnelle, pas un produit
 - Les trois utilitaires de démonstration + leurs tests ont été exécutés sur les fichiers récupérés depuis la branche GitHub dans un moteur JavaScript V8 isolé : **23 scénarios passés (8 courses, 8 planning, 7 mode cuisine)**. Le runner a reproduit les assertions Node nécessaires, mais **cela ne constitue pas une validation `npm test` native ni un build Astro**.
 - Les captures d'écran responsive, les contrôles clavier dans un navigateur réel et la CI GitHub restent des jalons avant merge.
 
+## 0 sexies. Mode cuisine guidé (10 octobre 2026)
+
+Le prototype non marchand comprend désormais un troisième module interactif.
+
+**Sources et fonctionnalités**
+
+- `src/components/DinnerKitchenGuide.astro` et `src/utils/dinnerKitchenGuide.mjs`, avec déclarations TypeScript.
+- Deux recettes gratuites comme seules sources : `amok-trey` et `chek-ktis`.
+- Navigation d'une étape à l'autre ; choix plat/dessert ; progression par recette et repères (cue, mistake, durée) lorsque renseignés dans les données existantes.
+- Suivi de progression **uniquement en mémoire dans l'onglet**, sans compte, cookies ou écriture en stockage local. L'état n'est pas conservé après rechargement.
+- Boutons accessibles au clavier, progression native `<progress>`, états `aria-pressed` et annonces de changement.
+- Texte de sécurité propre au mode cuisine : la fiche Amok actuelle pouvant laisser entendre qu'il faut goûter après ajout des œufs crus, le prototype impose un ajustement de l'assaisonnement avant l'ajout des œufs et du poisson crus. Ne pas encourager la dégustation d'une préparation crue.
+
+**Dépendance éditoriale à traiter plus tard**
+
+- Créer un correctif ciblé de la recette gratuite `src/data/recipes.ts` pour lever l'ambiguïté sur l'assaisonnement de l'Amok. Ne pas inclure cette retouche dans la PR commerciale avant la synchronisation OVH des ateliers ; préserver le lot A validé.
+
+**Tests et qualité**
+
+- `tests/dinner-kitchen-guide.test.mjs` : 7 tests source, progression et sécurité ; `npm run test:kitchen` intégré à la CI.
+- Exécution indépendante de **23 tests JS** des trois modules et du contrat de pré-lancement à partir du code récupéré de la branche GitHub dans un moteur V8 isolé : **PASS**.
+- Restent à vérifier avant tout merge : `npm run check`, `npm run build`, les tests complets dans Node/GitHub Actions, les interactions navigateur, les contrastes, le rendu mobile et le comportement sans JavaScript.
+- La PR #24 reste en brouillon. Aucun bouton de vente, réservation ou préinscription n'est autorisé sur ces prototypes.
+
 ## 1. Décisions confirmées
 
 - Ne supprimer **aucune** recette, page culture, entrée de glossaire, atelier pédagogique ou route existante.
