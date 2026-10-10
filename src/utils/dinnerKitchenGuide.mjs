@@ -3,14 +3,17 @@
  * It deliberately does not promise a paid class, a specialist or a finished premium product.
  */
 export const PILOT_GUIDE_SLUGS = Object.freeze(['amok-trey', 'chek-ktis']);
+export const PILOT_GUIDE_SIDE_SLUG = 'prahok-ktis';
 export const AMOK_RAW_EGG_CAUTION = 'Rectifiez le goût avec la sauce de poisson et le sucre AVANT d’incorporer les œufs crus. Ajoutez ensuite les œufs battus. Ne goûtez pas une préparation contenant des œufs ou du poisson crus.';
 
-export function buildPilotKitchenGuide(recipes) {
-  if (!Array.isArray(recipes) || recipes.length !== PILOT_GUIDE_SLUGS.length) {
+export function buildPilotKitchenGuide(recipes, includeSide = false) {
+  if (typeof includeSide !== 'boolean') throw new TypeError('Invalid optional side choice');
+  const chosenSlugs = includeSide ? [...PILOT_GUIDE_SLUGS, PILOT_GUIDE_SIDE_SLUG] : PILOT_GUIDE_SLUGS;
+  if (!Array.isArray(recipes) || recipes.length < chosenSlugs.length) {
     throw new RangeError('The kitchen guide must include both published preview dishes.');
   }
 
-  return PILOT_GUIDE_SLUGS.map((slug) => {
+  return chosenSlugs.map((slug) => {
     const recipe = recipes.find((item) => item?.slug === slug);
     if (!recipe || !Array.isArray(recipe.steps) || recipe.steps.length === 0) {
       throw new RangeError('Missing kitchen steps for ' + slug);
