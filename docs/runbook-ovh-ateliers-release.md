@@ -23,7 +23,7 @@
 6. Vérifier après déploiement :
    - `/apprendre/` : six ateliers gratuits visibles, liens vers détails ;
    - `/apprendre/piler-aromates-au-mortier/` : page dédiée affichée, sans 404 ;
-   - les **six** autres slugs à récupérer depuis `src/data/workshops.ts` (six en tout, pas sept) ;
+   - les **cinq** autres slugs à récupérer depuis `src/data/workshops.ts` (six ateliers au total) ;
    - `/recettes/` puis une recette reliée à un atelier et navigation retour ;
    - `/sitemap.xml` contient les six URLs d'ateliers ;
    - navigation et logo en desktop et mobile, aucune casse CSS.
