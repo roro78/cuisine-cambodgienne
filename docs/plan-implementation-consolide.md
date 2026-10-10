@@ -4,6 +4,22 @@
 
 **Statut actuel :** site éditorial et six ateliers publiés ; correctifs de sécurité Amok/Prahok (#25) publiés ; PR #24 « Expériences / Grand Dîner Khmer » ouverte, non fusionnée et **non publiée**. Dernière revue de la PR #24 résolue et CI réussie sur le commit 5db43ca (https://github.com/roro78/cuisine-cambodgienne/actions/runs/38081774271). Sa valeur démontrée est celle d’un **prototype gratuit**, pas d’une offre premium commercialisable.
 
+## 0 bis. Mise en œuvre de l’audit — PR ouvertes au 11 octobre 2026
+
+Après l’audit éditorial et technique du site, cinq lots indépendants ont été développés **à partir de `main`**, sans merge, déploiement ni modification de la production. Ne pas les confondre avec le socle expérimental de la PR #24.
+
+| Lot | PR | Travaux réellement proposés | État au dernier contrôle | Réception encore nécessaire |
+| --- | --- | --- | --- | --- |
+| **B1** | [#26](https://github.com/roro78/cuisine-cambodgienne/pull/26) | Corriger la formulation de À propos, neutraliser l’invitation générique à goûter dans les recettes et clarifier la FAQ Amok, avec contrats de sécurité | **CI PASS ; PR ouverte** | Relecture humaine culinaire et éditoriale avant merge |
+| **B2** | [#27](https://github.com/roro78/cuisine-cambodgienne/pull/27) | Durées de cuisson sans affichage « + 0 min » ; remplacer la carte du matin trompeuse par un lien explicite vers la recette Kuy Teav | **CI PASS ; PR ouverte** | Vérifier les libellés et la pertinence éditoriale |
+| **B3** | [#28](https://github.com/roro78/cuisine-cambodgienne/pull/28) | Raccourcir de façon mesurée les scènes GSAP très longues ; ajouter deux accès rapides clavier aux recettes et ateliers | **CI PASS ; PR en brouillon** | **Recette visuelle obligatoire** : scroll mobile/desktop, rythme, performance, mouvements réduits |
+| **B4** | [#29](https://github.com/roro78/cuisine-cambodgienne/pull/29) | Rendre le tiroir mobile plus compact, focus visible, navigation Tab/Escape et déverrouillage lors du redimensionnement desktop | **CI PASS ; PR en brouillon** | **Recette réelle** du menu et du logo à 360/390/430/768 px, clavier, zoom 200 % et lecteur d’écran |
+| **B5** | [#30](https://github.com/roro78/cuisine-cambodgienne/pull/30) | Remplacer le hero répétitif du listing Recettes par un visuel de plat existant ; inventaire reproductible des huit familles photo et besoins médias | **CI PASS ; PR en brouillon** | **Validation du cadrage** ; provenance/droits et production de prises de vues nouvelles avant tout enrichissement photographique |
+
+Ces cinq PR sont **indépendantes de la #24**, n’ajoutent aucune fonction payante et ne sont **pas en production**. Ne pas déclarer la phase « design premium » accomplie du seul fait que B3–B5 compilent.
+
+**Ordre recommandé de réception :** B1 puis B2 après revue ; B3/B4/B5 après contrôle visuel et accessibilité, chacun séparément. Les PR B6–B8 n’existent pas encore : elles dépendent d’un véritable enrichissement culinaire/éditorial, de nouveaux médias ou de résultats d’essais physiques. Si une PR du socle est fusionnée, actualiser les autres branches avant de les fusionner à leur tour et revérifier leur CI sur le nouveau HEAD.
+
 ## 1. Vision et décisions à préserver
 
 Le site doit donner envie de **découvrir, comprendre, cuisiner et transmettre** la cuisine cambodgienne dans un univers premium mais chaleureux. Le contenu doit être gourmand, humain, précis, pédagogique et culturellement respectueux : pas d’expressions mécaniques ou absurdes, pas de répétitions d’images, pas de gros titres qui écrasent les recettes. L’accueil doit raconter une histoire **au défilement**, avec de vraies transitions et une richesse visuelle comparable en intention à la référence grail-app.com, sans en reproduire le contenu ni sacrifier lisibilité, mobile ou performance.
