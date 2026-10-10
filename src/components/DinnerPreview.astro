@@ -93,6 +93,7 @@ const pilotIngredients = buildPilotShoppingList(previewData, 2);
       if (![2, 4, 6].includes(next) || next === guests) return;
       guests = next;
       render();
+      document.dispatchEvent(new CustomEvent('dinner:guests', { detail: { guests } }));
     }));
 
     copyButton.addEventListener('click', async () => {
