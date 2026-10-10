@@ -15,7 +15,8 @@
     "test:timeline": "node --test tests/dinner-timeline.test.mjs",
     "test:kitchen": "node --test tests/dinner-kitchen-guide.test.mjs",
     "test:pack": "node --test tests/dinner-pack.test.mjs",
-    "test:reception": "node --test tests/dinner-reception.test.mjs"
+    "test:reception": "node --test tests/dinner-reception.test.mjs",
+    "test:built-experiences": "node scripts/check-experiences-build.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
