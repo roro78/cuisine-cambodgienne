@@ -79,12 +79,12 @@ export const recipes: Recipe[] = [
     ],
     steps: [
       { title: 'Préparer la base', text: 'Mélangez le kroeung avec le lait de coco jusqu’à obtenir une préparation homogène.', cue: 'La base doit être lisse, très parfumée et sans gros morceaux fibreux.' },
-      { title: 'Assaisonner', text: 'Ajoutez sauce de poisson, sucre puis œufs battus. Goûtez avant d’ajouter le poisson.', mistake: 'Ajouter le poisson avant d’avoir corrigé l’assaisonnement rend les ajustements plus difficiles.' },
+      { title: 'Assaisonner', text: 'Ajoutez la sauce de poisson et le sucre, mélangez puis goûtez pour rectifier l’assaisonnement. Incorporez ensuite les œufs battus. Ne goûtez plus la préparation après l’ajout des œufs crus ni après celui du poisson cru.', mistake: 'Ne goûtez jamais la préparation après avoir ajouté les œufs ou le poisson crus.' },
       { title: 'Ajouter le poisson', text: 'Coupez le poisson en morceaux réguliers puis incorporez-le délicatement.', cue: 'Les morceaux doivent rester entiers et bien enrobés.' },
       { title: 'Cuire doucement', text: 'Répartissez dans des ramequins puis cuisez à la vapeur.', duration: '18–25 min', cue: 'Le centre doit être pris mais encore souple.', mistake: 'Une vapeur trop forte resserre la texture et dessèche le poisson.' },
       { title: 'Finir et servir', text: 'Ajoutez les herbes fraîches et un peu de lait de coco juste avant de servir.' }
     ],
-    keyPoints: ['Cuisson douce', 'Goûter la base avant le poisson', 'Arrêter dès que la texture est prise'],
+    keyPoints: ['Cuisson douce', 'Rectifier l’assaisonnement avant les œufs et le poisson crus', 'Vérifier une cuisson complète avant de servir'],
     substitutions: ['À défaut de sucre de palme, utilisez un peu de sucre roux.', 'Un basilic doux peut dépanner si le basilic asiatique est introuvable.'],
     equipment: ['Panier vapeur ou grande casserole avec grille', '4 ramequins'],
     faqs: [
@@ -368,7 +368,7 @@ export const recipes: Recipe[] = [
     title: 'Prahok Ktis',
     intro: 'Porc, lait de coco, kroeung et prahok : une préparation onctueuse et très parfumée à partager avec des légumes frais.',
     description: 'Une version accessible du prahok ktis, adoucie par le lait de coco et servie tiède avec beaucoup de crudités.',
-    context: 'Le prahok a beaucoup de caractère. Commencez par une petite quantité, goûtez, puis ajoutez-en seulement si vous en avez envie.',
+    context: 'Le prahok a beaucoup de caractère. Commencez par une petite quantité et ajustez l’assaisonnement seulement après cuisson complète de la préparation.',
     baseServings: 4,
     prepTime: '25 min',
     cookTime: '25 min',
@@ -385,8 +385,8 @@ export const recipes: Recipe[] = [
     ],
     steps: [
       { title: 'Faire revenir les aromates', text: 'Faites chauffer doucement le kroeung dans un peu de coco.' },
-      { title: 'Cuire le porc', text: 'Ajoutez le porc et émiettez-le finement.' },
-      { title: 'Ajouter le prahok progressivement', text: 'Ajoutez-en d’abord une partie, goûtez, puis ajustez.', mistake: 'Tout ajouter d’un coup peut rendre le plat excessivement salé et puissant.' },
+      { title: 'Cuire le porc', text: 'Ajoutez le porc haché, émiettez-le finement et poursuivez la cuisson jusqu’à ce qu’il soit complètement cuit.' },
+      { title: 'Ajouter le prahok progressivement', text: 'Ajoutez d’abord une partie du prahok et poursuivez la cuisson. Goûtez uniquement lorsque le porc et toute la préparation sont complètement cuits, puis ajustez.', mistake: 'Ne goûtez jamais une préparation contenant du porc cru ou insuffisamment cuit.' },
       { title: 'Ajouter le lait de coco', text: 'Versez le reste du lait de coco et laissez épaissir doucement.' },
       { title: 'Servir avec du croquant', text: 'Servez tiède avec beaucoup de crudités.' }
     ],
