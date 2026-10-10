@@ -1,0 +1,80 @@
+/* Grand Dîner Khmer — concept prelaunch. CSS namespaced to avoid changing /apprendre/ or the rest of the site. */
+.dinner-concept{--d-ink:#211d17;--d-sand:#f3eadb;--d-pine:#203429;--d-gold:#dfb37e;background:var(--d-sand);color:var(--d-ink);overflow:hidden}
+.dinner-concept *{box-sizing:border-box}
+.dinner-concept a:focus-visible,.dinner-concept button:focus-visible{outline:3px solid #c07737;outline-offset:4px}
+.dinner-hero{position:relative;min-height:75svh;isolation:isolate;color:#fff9ee;background:var(--d-pine);display:flex;align-items:end}
+.dinner-hero-photo{position:absolute;inset:0;z-index:-2}
+.dinner-hero-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+.dinner-hero:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(9,18,12,.92),rgba(20,26,16,.35) 85%),linear-gradient(0deg,rgba(8,15,9,.55),transparent)}
+.dinner-hero-inner{padding:clamp(2.8rem,7vw,7rem) var(--page-pad) clamp(3rem,8vw,7rem);width:min(100%,100rem)}
+.dinner-back{display:inline-block;margin-bottom:clamp(3rem,7vw,7rem);color:#f0dfc6;font-size:.75rem;letter-spacing:.09em;text-transform:uppercase}
+.dinner-overline,.dinner-kicker,.dinner-panel-overline{font:700 .68rem/1.45 var(--sans);letter-spacing:.15em;text-transform:uppercase}
+.dinner-overline{color:var(--d-gold)}
+.dinner-hero h1{margin:.8rem 0 1.35rem;font:400 clamp(3.5rem,8vw,8.5rem)/.93 var(--serif);letter-spacing:-.055em}
+.dinner-hero h1 em{font-weight:400;color:#e4bb86}
+.dinner-lead{max-width:43rem;font-size:clamp(1.1rem,1.45vw,1.3rem);line-height:1.65;color:#f9efe0}
+.dinner-disclosure{max-width:40rem;margin:1.6rem 0;color:#efd0a2;font-size:.88rem}
+.dinner-link{display:inline-flex;gap:2.5rem;border-bottom:1px solid #d9c6a7;padding:.8rem 0;margin-top:.4rem;font-size:.79rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.dinner-opening{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(15rem,1fr);column-gap:clamp(3rem,8vw,9rem);padding:clamp(5rem,9vw,9rem) var(--page-pad);align-items:end}
+.dinner-opening .dinner-kicker{grid-column:1/-1;margin:0 0 1.25rem;color:#985637}
+.dinner-opening h2,.dinner-steps h2,.dinner-demo h2,.dinner-editorial h2,.dinner-last h2{margin:0;font:400 clamp(2.7rem,5.2vw,6rem)/1.04 var(--serif);letter-spacing:-.052em;text-wrap:balance}
+.dinner-opening>p:last-child{margin:0;font-size:1.06rem;line-height:1.75;color:#62564b}
+.dinner-steps{padding:clamp(4rem,7vw,8rem) var(--page-pad);background:#e6dcca}
+.dinner-steps header .dinner-kicker{color:#955a3b}
+.dinner-steps h2{margin:.9rem 0 3.2rem}
+.dinner-step-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(1.2rem,2.4vw,3rem)}
+.dinner-step{border-top:1px solid rgba(50,39,27,.33);padding:1.3rem 0}
+.dinner-step-number{font:400 2.1rem/1 var(--serif);color:#93573d;margin-bottom:2.8rem}
+.dinner-step-moment{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#836349}
+.dinner-step h3{font:400 clamp(1.8rem,2.4vw,2.7rem)/1.07 var(--serif);letter-spacing:-.04em;margin:.5rem 0 1rem}
+.dinner-step-content>p:last-child{font-size:.93rem;line-height:1.72;color:#584d41}
+.dinner-demo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(2.5rem,8vw,9rem);padding:clamp(5rem,10vw,10rem) var(--page-pad);background:#20362a;color:#f5ecdd}
+.dinner-demo .dinner-kicker{color:#e0b888;margin:0 0 1.3rem}
+.dinner-demo-copy>p:not(.dinner-kicker){font-size:1.03rem;line-height:1.7;color:#e1dacb}
+.dinner-demo-picker{margin-top:clamp(2rem,5vw,4rem)}
+.dinner-demo-picker>p{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;margin:0 0 1.2rem}
+.dinner-guest-options{display:flex;flex-wrap:wrap;gap:.5rem}
+.dinner-guest-options button{cursor:pointer;background:transparent;color:#f5ead7;border:1px solid rgba(250,240,221,.6);padding:.78rem 1rem;font:600 .77rem/1.25 var(--sans);min-height:44px}
+.dinner-guest-options button[aria-pressed=true]{background:#e5bb84;color:#243328;border-color:#e5bb84}
+.dinner-guest-options button:hover:not([aria-pressed=true]){border-color:#fff}
+.dinner-demo-panel{background:#f2e7d6;color:#27231d;padding:clamp(1.5rem,4vw,3.4rem);align-self:center;box-shadow:0 26px 50px rgba(0,0,0,.12)}
+.dinner-panel-overline{color:#9b5b40}
+.dinner-panel-guests{font:400 clamp(2.3rem,4vw,4.1rem)/1.05 var(--serif);letter-spacing:-.045em;margin:1.8rem 0}
+.dinner-panel-divider{height:1px;background:rgba(36,34,27,.2)}
+.dinner-demo-panel h3{margin:2rem 0 1rem;font:400 1.75rem/1.05 var(--serif)}
+.dinner-demo-panel ol{list-style:none;display:grid;gap:1rem;padding:0;margin:0}
+.dinner-demo-panel li{display:grid;grid-template-columns:2rem 1fr;gap:.7rem;font-size:.92rem;line-height:1.6}
+.dinner-demo-panel li>span:first-child{font-size:.72rem;color:#945b41}
+.dinner-panel-note{margin:2.4rem 0 0;padding-top:1rem;border-top:1px solid rgba(36,34,27,.2);font-size:.77rem;line-height:1.5;color:#66594e}
+.dinner-editorial{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);min-height:36rem}
+.dinner-editorial-art{min-height:28rem;overflow:hidden}
+.dinner-editorial-art img{display:block;width:100%;height:100%;object-fit:cover}
+.dinner-editorial>div:last-child{padding:clamp(3rem,7vw,7rem) clamp(2rem,6vw,7rem);align-self:center}
+.dinner-editorial .dinner-kicker{color:#a45b3d;margin:0 0 1.3rem}
+.dinner-editorial h2{font-size:clamp(2.6rem,4.4vw,5rem)}
+.dinner-editorial>div:last-child>p:not(.dinner-kicker){font-size:1.05rem;line-height:1.75;color:#5d5044}
+.dinner-editorial-link{display:inline-flex;gap:1rem;border-bottom:1px solid currentColor;padding:.8rem 0;margin-top:1rem;font-size:.73rem;text-transform:uppercase;letter-spacing:.07em;font-weight:700}
+.dinner-last{padding:clamp(5rem,10vw,10rem) var(--page-pad);text-align:center;background:#e6daca}
+.dinner-last .dinner-kicker{color:#945339;margin:0 0 1.25rem}
+.dinner-last h2{max-width:16ch;margin:0 auto}
+.dinner-last>p:not(.dinner-kicker){max-width:43rem;margin:1.7rem auto;font-size:1.03rem;line-height:1.75;color:#5a5044}
+.dinner-final-link{display:inline-flex;justify-content:space-between;gap:1rem;align-items:center;background:#24372b;color:#fff!important;padding:1rem 1.3rem;margin-top:1rem;min-height:46px;text-transform:uppercase;font-size:.75rem;letter-spacing:.08em;font-weight:700}
+@media(max-width:950px){
+  .dinner-opening{grid-template-columns:1fr;gap:1.4rem}
+  .dinner-opening .dinner-kicker{grid-column:auto}
+  .dinner-step-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dinner-demo{grid-template-columns:1fr;gap:2.5rem}
+  .dinner-editorial{grid-template-columns:1fr}
+  .dinner-editorial-art{min-height:22rem;max-height:32rem}
+}
+@media(max-width:600px){
+  .dinner-hero{min-height:41rem}
+  .dinner-hero:before{background:linear-gradient(0deg,rgba(8,15,9,.92),rgba(8,15,9,.25))}
+  .dinner-hero h1{font-size:clamp(3rem,13vw,5.5rem)}
+  .dinner-back{margin-bottom:3.2rem}
+  .dinner-step-grid{grid-template-columns:1fr}
+  .dinner-step-number{margin-bottom:1.4rem}
+  .dinner-guest-options button{flex:1 1 30%}
+  .dinner-editorial>div:last-child{padding:3.5rem var(--page-pad)}
+}
+@media(prefers-reduced-motion:reduce){.dinner-concept *,.dinner-concept *:before,.dinner-concept *:after{scroll-behavior:auto;animation-duration:.001ms!important;transition-duration:.001ms!important}}
