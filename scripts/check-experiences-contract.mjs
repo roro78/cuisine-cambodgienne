@@ -20,6 +20,9 @@ const timelineCalculator = read('src/utils/dinnerTimeline.mjs');
 const calculator = read('src/utils/dinnerPreview.mjs');
 const sitemap = read('src/pages/sitemap.xml.ts');
 const workshops = read('src/data/workshops.ts');
+const releaseProtocol = read('docs/protocole-validation-grand-diner.md');
+const experiencesPlan = read('docs/plan-commerce-experiences.md');
+const publicRecipeCatalogue = read('src/data/recipes.ts');
 const failures = [];
 
 function requireCondition(condition, explanation) {
@@ -104,6 +107,21 @@ requireCondition(detail.includes('href="/apprendre/"'), 'Concept must link to fr
 requireCondition(detail.includes("Aucune vente ni réservation ouverte"), 'Concept cannot be mistaken for a released product');
 requireCondition(landingStyle.includes('.exp-page') && detailStyle.includes('.dinner-concept'), 'Commercial CSS must stay namespaced');
 requireCondition((workshops.match(/slug:/g) || []).length >= 6, 'Existing workshop catalog must remain present');
+requireCondition(
+  releaseProtocol.includes('PR #25') &&
+  experiencesPlan.includes('PR #25') &&
+  publicRecipeCatalogue.includes('Ne goûtez plus la préparation après l’ajout des œufs crus') &&
+  publicRecipeCatalogue.includes('Goûtez uniquement lorsque le porc et toute la préparation sont complètement cuits'),
+  'Food safety documentation must match the merged, published public Amok and Prahok recipes'
+);
+requireCondition(
+  !releaseProtocol.includes('La consigne source actuelle demande une correction éditoriale') &&
+  !experiencesPlan.includes('La fiche recette publique mérite une **correction éditoriale dédiée') &&
+  !experiencesPlan.includes('Créer un correctif ciblé de la recette gratuite') &&
+  releaseProtocol.includes('les six pages sont accessibles'),
+  'Release documents must not reintroduce obsolete PR #25 or workshop deployment blockers'
+);
+
 
 if (failures.length) {
   console.error('Experience prelaunch contract failed:\n' + failures.map((failure) => '- ' + failure).join('\n'));
