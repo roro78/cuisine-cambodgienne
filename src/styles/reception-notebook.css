@@ -151,3 +151,6 @@
   .reception-writing-lines{padding-top:.6rem!important;gap:1rem!important}
   .reception-writing-lines span{border-bottom:1px solid #777!important}
 }
+
+/* Only this route imports the notebook stylesheet; keep site navigation out of the printed workbook. */
+@media print{.site-nav,.site-footer{display:none!important}}
