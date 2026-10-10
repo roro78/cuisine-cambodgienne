@@ -74,6 +74,9 @@ const collections = [
             <h3>{item.title}</h3>
             <p>{item.description}</p>
             <p class="exp-card-detail">{item.detail}</p>
+            {item.number === '01' && (
+              <a class="exp-card-link" href="/experiences/grand-diner-khmer/">Explorer le concept <span aria-hidden="true">↗</span></a>
+            )}
           </article>
         ))}
       </div>
