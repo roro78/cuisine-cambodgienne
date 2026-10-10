@@ -27,7 +27,9 @@ export function buildPilotDinnerPack(recipes, guests, serviceTime, includeSide =
     items,
     timeline,
     equipment,
-    notice: DINNER_PACK_NOTICE,
+    notice: includeSide
+      ? 'Aperçu gratuit fondé sur trois recettes publiées, dont un accompagnement facultatif, et non sur une expérience payante déjà disponible.'
+      : DINNER_PACK_NOTICE,
   };
 }
 
