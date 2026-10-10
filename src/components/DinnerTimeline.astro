@@ -1,0 +1,83 @@
+---
+import { recipes } from '../data/recipes';
+import { PILOT_SLUGS } from '../utils/dinnerPreview.mjs';
+import { SERVICE_TIMES, buildPilotServicePlan } from '../utils/dinnerTimeline.mjs';
+
+const main = recipes.find((recipe) => recipe.slug === PILOT_SLUGS[0]);
+const dessert = recipes.find((recipe) => recipe.slug === PILOT_SLUGS[1]);
+if (!main || !dessert) throw new Error('Pilot recipes missing for indicative schedule');
+const timingData = [{ title: main.title, prepTime: main.prepTime, cookTime: main.cookTime }, { title: dessert.title, prepTime: dessert.prepTime, cookTime: dessert.cookTime }];
+const plan = buildPilotServicePlan(timingData[0], timingData[1], '20:00');
+---
+<section class="dinner-timeline" aria-labelledby="dinner-timeline-heading" data-dinner-timeline data-timing-recipes={JSON.stringify(timingData)}>
+  <div class="dinner-timeline-heading">
+    <div>
+      <p class="dinner-kicker">Deuxième aperçu · Organisation</p>
+      <h2 id="dinner-timeline-heading">Quel temps prévoir avant de passer à table ?</h2>
+    </div>
+    <div class="dinner-timeline-picker">
+      <label for="dinner-service-time">Je souhaite servir le plat à</label>
+      <select id="dinner-service-time" data-service-time>
+        {SERVICE_TIMES.map((time) => (
+          <option value={time} selected={time === '20:00'}>{time.replace(':', 'h')}</option>
+        ))}
+      </select>
+    </div>
+  </div>
+  <div class="dinner-timeline-layout">
+    <div class="dinner-timeline-list">
+      <p class="dinner-timeline-disclaimer">Proposition d'organisation calculée avec les durées publiées de l'Amok Trey. Une marge de 15 min est ajoutée pour les imprévus. Il ne s'agit pas d'un horaire de cuisson garanti.</p>
+      <ol data-timeline-steps aria-label="Planning indicatif">
+        {plan.steps.map((step) => (
+          <li>
+            <time>{step.time}</time>
+            <div><strong>{step.title}</strong><p>{step.description}</p></div>
+          </li>
+        ))}
+      </ol>
+    </div>
+    <aside class="dinner-timeline-dessert" aria-labelledby="dinner-dessert-title">
+      <p class="dinner-panel-overline">Et pour terminer en douceur ?</p>
+      <h3 id="dinner-dessert-title">{dessert.title}</h3>
+      <p>Un dessert aux bananes et au lait de coco. Les temps indiqués dans la recette sont :</p>
+      <dl>
+        <div><dt>Préparation</dt><dd>{plan.dessertPrepMinutes} min</dd></div>
+        <div><dt>Cuisson</dt><dd>{plan.dessertCookMinutes} min</dd></div>
+      </dl>
+      <p>Prévoyez ce temps à part, selon le moment où vous souhaitez servir le dessert. Le parcours complet de coordination du repas reste à développer et tester.</p>
+      <a href="/recettes/chek-ktis/">Voir la recette gratuite <span aria-hidden="true">↗</span></a>
+    </aside>
+  </div>
+  <p class="dinner-timeline-status" data-timeline-feedback role="status" aria-live="polite" aria-atomic="true"></p>
+</section>
+
+<script>
+  import { buildPilotServicePlan } from '../utils/dinnerTimeline.mjs';
+
+  document.querySelectorAll<HTMLElement>('[data-dinner-timeline]').forEach((root) => {
+    const data = root.dataset.timingRecipes;
+    const select = root.querySelector<HTMLSelectElement>('[data-service-time]');
+    const list = root.querySelector<HTMLOListElement>('[data-timeline-steps]');
+    const status = root.querySelector<HTMLElement>('[data-timeline-feedback]');
+    if (!data || !select || !list || !status) return;
+    const [main, dessert] = JSON.parse(data);
+    const render = () => {
+      const plan = buildPilotServicePlan(main, dessert, select.value);
+      list.replaceChildren(...plan.steps.map((step) => {
+        const item = document.createElement('li');
+        const time = document.createElement('time');
+        const content = document.createElement('div');
+        const title = document.createElement('strong');
+        const description = document.createElement('p');
+        time.textContent = step.time;
+        title.textContent = step.title;
+        description.textContent = step.description;
+        content.append(title, description);
+        item.append(time, content);
+        return item;
+      }));
+      status.textContent = `Planning actualisé pour un service à ${plan.servingTime}.`;
+    };
+    select.addEventListener('change', render);
+  });
+</script>
