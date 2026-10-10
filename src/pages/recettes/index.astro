@@ -109,7 +109,7 @@ const toneMap: Record<string,string> = {
           <div class="recipe-v15-card-copy">
             <div class="recipe-v15-card-meta">
               <span>{recipe.category}</span>
-              <span>{recipe.prepTime} + {recipe.cookTime}</span>
+              <span>{minutes(recipe.cookTime) > 0 ? `${recipe.prepTime} de préparation · ${recipe.cookTime} de cuisson` : `${recipe.prepTime} de préparation`}</span>
               <span>{recipe.difficulty}</span>
             </div>
             <h2>{recipe.title}</h2>
