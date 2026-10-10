@@ -97,6 +97,8 @@
 @media(max-width:650px){.reception-config-grid,.reception-chapter-grid{grid-template-columns:1fr}.reception-menu li{padding:1.2rem 0}.reception-milestones li{grid-template-columns:4.5rem minmax(0,1fr);gap:.65rem}.reception-milestones time{font-size:1.52rem}.reception-hero{min-height:72svh}.reception-chapter h3{margin-top:1.5rem}.reception-actions{flex-direction:column;align-items:stretch}.reception-actions a,.reception-actions button{width:100%}}
 @media print{
   @page{size:A4;margin:15mm}
+  /* Let the multi-page A4 workbook paginate beyond the screen clipping container. */
+  .reception-content{overflow:visible!important}
   html,body{background:white!important;color:#111!important}
   .reception-notebook{color:#111!important;background:white!important;font-family:Arial,sans-serif!important}
   .reception-notebook :is(.reception-local-nav,.reception-back,.reception-actions,.reception-feedback,.reception-privacy){display:none!important}
