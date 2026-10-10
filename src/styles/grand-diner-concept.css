@@ -184,3 +184,34 @@
 .dinner-kitchen-aside>a{display:inline-flex;justify-content:space-between;align-items:center;gap:1.5rem;border-bottom:1px solid #dcb589;padding:.8rem 0;margin-top:1rem;color:#f4d7a9;font:700 .71rem/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase}
 @media(max-width:900px){.dinner-kitchen-content{grid-template-columns:1fr}.dinner-kitchen-aside{max-width:100%}}
 @media(max-width:580px){.dinner-kitchen-navigation{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.dinner-kitchen-navigation button{min-width:0;font-size:1.25rem;padding:1rem}.dinner-kitchen-controls button{flex:1 1 auto}.dinner-kitchen-card{padding:1.6rem 1.2rem}.dinner-kitchen-progress{gap:.4rem}.dinner-kitchen-done{white-space:nowrap}}
+
+/* A genuinely useful takeaway: private, locally generated and printable as text. */
+.dinner-takeaway{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:clamp(2.2rem,7vw,8rem);padding:clamp(5rem,10vw,10rem) var(--page-pad);background:#e8dcca;color:#27221d}
+.dinner-takeaway-copy{align-self:center}
+.dinner-takeaway .dinner-kicker{color:#95593c;margin:0 0 1.4rem}
+.dinner-takeaway h2{font:400 clamp(2.8rem,5.2vw,5.8rem)/1.04 var(--serif);letter-spacing:-.055em;margin:0;text-wrap:balance}
+.dinner-takeaway-copy>p:not(.dinner-kicker){max-width:40rem;font-size:1.03rem;line-height:1.72;color:#564b40}
+.dinner-takeaway-copy .dinner-takeaway-disclaimer{border-left:2px solid #a56e45;padding-left:1rem;margin:1.8rem 0;font-size:.88rem;color:#715a45}
+.dinner-takeaway-actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:2rem}
+.dinner-takeaway-actions button{cursor:pointer;display:inline-flex;justify-content:space-between;gap:1rem;padding:1rem 1.15rem;min-height:46px;border:1px solid #293a2e;font:700 .71rem/1.35 var(--sans);letter-spacing:.06em;text-transform:uppercase}
+.dinner-takeaway-actions button:first-child{background:#293a2e;color:#fff7ea}
+.dinner-takeaway-actions button:last-child{background:transparent;color:#293a2e}
+.dinner-takeaway-actions button:hover{filter:brightness(.9)}
+.dinner-takeaway-actions button:focus-visible{outline:3px solid #bf7c3b;outline-offset:4px}
+.dinner-takeaway-copy [data-pack-feedback]{min-height:1.5rem;margin:.8rem 0 0;font-size:.82rem;color:#74583f}
+.dinner-takeaway-copy .dinner-takeaway-privacy{font-size:.78rem!important;margin:1.2rem 0 0;color:#6f5e4d!important}
+.dinner-takeaway-paper{background:#f9f3e7;border:1px solid rgba(47,38,28,.17);padding:clamp(1.6rem,3.5vw,3.5rem);box-shadow:0 22px 52px rgba(66,48,30,.1);align-self:center;min-width:0}
+.dinner-takeaway-paper .dinner-panel-overline{color:#995c3c;margin:0}
+.dinner-takeaway-paper h3{font:400 clamp(2.6rem,4vw,4.3rem)/1 var(--serif);letter-spacing:-.055em;margin:1.5rem 0 2rem}
+.dinner-takeaway-paper dl{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin:0}
+.dinner-takeaway-paper dt{font:700 .67rem/1.45 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:#845a3d}
+.dinner-takeaway-paper dd{font:400 clamp(1.45rem,2.2vw,2.2rem)/1.15 var(--serif);margin:.45rem 0 0}
+.dinner-takeaway-divider{height:1px;background:rgba(45,36,29,.2);margin:1.8rem 0}
+.dinner-takeaway-paper-label{font:700 .65rem/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#95593c}
+.dinner-takeaway-paper>p:not(.dinner-panel-overline):not(.dinner-takeaway-paper-label):not(.dinner-takeaway-preview-footer){font:400 1.6rem/1.4 var(--serif)}
+.dinner-takeaway-paper ol{padding:0;margin:0;list-style:none}
+.dinner-takeaway-paper li{display:grid;grid-template-columns:5rem minmax(0,1fr);gap:.8rem;align-items:baseline;padding:.62rem 0;font-size:.89rem;line-height:1.4}
+.dinner-takeaway-paper li time{font:400 1.4rem/1.1 var(--serif);color:#945c40}
+.dinner-takeaway-paper .dinner-takeaway-preview-footer{margin:1.9rem 0 0;padding-top:1rem;border-top:1px solid rgba(45,36,29,.2);font-size:.73rem;line-height:1.5;color:#766554}
+@media(max-width:940px){.dinner-takeaway{grid-template-columns:1fr}.dinner-takeaway-copy,.dinner-takeaway-paper{max-width:48rem}}
+@media(max-width:530px){.dinner-takeaway-actions{flex-direction:column}.dinner-takeaway-actions button{width:100%}.dinner-takeaway-paper dl{gap:.8rem}.dinner-takeaway-paper li{grid-template-columns:4.3rem minmax(0,1fr)}}
