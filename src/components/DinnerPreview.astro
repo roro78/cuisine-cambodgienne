@@ -40,7 +40,7 @@ const pilotIngredients = buildPilotShoppingList(previewData, 2);
     <p class="dinner-list-description">Les quantités sont reprises et ajustées depuis les recettes publiées sur le site. Les finitions sans quantité définie restent à doser à votre goût.</p>
     <ul data-preview-list>
       {pilotIngredients.map((item) => (
-        <li><label><input type="checkbox" data-preview-check /><span>{item.display}</span></label></li>
+        <li><label><input type="checkbox" data-preview-check data-preview-key={`${item.name}|${item.unit}`} /><span>{item.display}</span></label></li>
       ))}
     </ul>
     <div class="dinner-planner-actions">
@@ -71,13 +71,16 @@ const pilotIngredients = buildPilotShoppingList(previewData, 2);
       items = buildPilotShoppingList(selectedRecipes, guests);
       heading.textContent = `Pour ${guests} personnes`;
       buttons.forEach((button) => button.setAttribute('aria-pressed', String(Number(button.dataset.previewGuests) === guests)));
-      list.replaceChildren(...items.map(({ display }) => {
+      const selected = new Set(Array.from(list.querySelectorAll<HTMLInputElement>('[data-preview-check]:checked')).map((input) => input.dataset.previewKey));
+      list.replaceChildren(...items.map(({ display, name, unit }) => {
         const li = document.createElement('li');
         const label = document.createElement('label');
         const input = document.createElement('input');
         const span = document.createElement('span');
         input.type = 'checkbox';
         input.setAttribute('data-preview-check', '');
+        input.dataset.previewKey = `${name}|${unit}`;
+        input.checked = selected.has(input.dataset.previewKey);
         span.textContent = display;
         label.append(input, span);
         li.append(label);
