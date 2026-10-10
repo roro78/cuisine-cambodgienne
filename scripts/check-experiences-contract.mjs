@@ -21,6 +21,7 @@ const calculator = read('src/utils/dinnerPreview.mjs');
 const sitemap = read('src/pages/sitemap.xml.ts');
 const workshops = read('src/data/workshops.ts');
 const releaseProtocol = read('docs/protocole-validation-grand-diner.md');
+const ovhRunbook = read('docs/runbook-ovh-ateliers-release.md');
 const experiencesPlan = read('docs/plan-commerce-experiences.md');
 const publicRecipeCatalogue = read('src/data/recipes.ts');
 const failures = [];
@@ -121,6 +122,16 @@ requireCondition(
   releaseProtocol.includes('six pages sont accessibles'),
   'Release documents must not reintroduce obsolete PR #25 or workshop deployment blockers'
 );
+requireCondition(
+  ovhRunbook.includes('e59c104d4f356cf7f0077402430548fa4cd191f7') &&
+  ovhRunbook.includes('six fiches d\'ateliers') &&
+  ovhRunbook.includes('PR #25') &&
+  ovhRunbook.includes('non fusionnée et non publiée') &&
+  !ovhRunbook.includes('déploiement OVH à faire/confirmer') &&
+  !ovhRunbook.includes('La tête attendue, au dernier contrôle, est \`fe040096\`'),
+  'OVH runbook must reflect verified live Lot A, current static SHA and unpublished PR #24'
+);
+
 
 
 if (failures.length) {
