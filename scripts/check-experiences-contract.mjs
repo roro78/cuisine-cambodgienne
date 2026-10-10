@@ -5,6 +5,9 @@ const root = process.cwd();
 const read = (name) => fs.readFileSync(path.join(root, name), 'utf8');
 const landing = read('src/pages/experiences/index.astro');
 const detail = read('src/pages/experiences/grand-diner-khmer.astro');
+const reception = read('src/pages/experiences/grand-diner-khmer/carnet-de-reception.astro');
+const receptionStyle = read('src/styles/reception-notebook.css');
+const receptionModel = read('src/utils/dinnerReception.mjs');
 const landingStyle = read('src/styles/experiences-prelaunch.css');
 const detailStyle = read('src/styles/grand-diner-concept.css');
 const preview = read('src/components/DinnerPreview.astro');
@@ -23,7 +26,7 @@ function requireCondition(condition, explanation) {
   if (!condition) failures.push(explanation);
 }
 
-for (const [route, text] of [['/experiences/', landing], ['/experiences/grand-diner-khmer/', detail]]) {
+for (const [route, text] of [['/experiences/', landing], ['/experiences/grand-diner-khmer/', detail], ['/experiences/grand-diner-khmer/carnet-de-reception/', reception]]) {
   requireCondition(/\bnoindex\b/.test(text), `${route} must remain noindex during prelaunch`);
   requireCondition(text.includes('<SiteHeader />') && text.includes('<SiteFooter />'), `${route} must use existing site chrome`);
   requireCondition(!/<form\b/i.test(text), `${route} must not collect visitor details`);
@@ -35,6 +38,7 @@ for (const [route, text] of [['/experiences/', landing], ['/experiences/grand-di
 }
 
 requireCondition(!sitemap.includes("'/experiences/'"), 'Unlaunched experiences must not appear in XML sitemap');
+requireCondition(!sitemap.includes('carnet-de-reception'), 'Reception notebook must stay out of sitemap during prelaunch');
 requireCondition(!/<form\b/i.test(preview) && !/<form\b/i.test(timeline) && !/<form\b/i.test(kitchen) && !/<form\b/i.test(pack), 'Preview must not collect personal information');
 requireCondition(landing.includes("Partenaire recherché"), 'Partner search state must remain explicit');
 requireCondition(landing.includes("se poursuit indépendamment"), 'Digital offer must not be tied to a specialist');
@@ -44,6 +48,15 @@ requireCondition(detail.includes('import DinnerPreview') && detail.includes('<Di
 requireCondition(detail.includes('import DinnerTimeline') && detail.includes('<DinnerTimeline />'), 'Grand Dîner must show the real indicative planner');
 requireCondition(detail.includes('import DinnerKitchenGuide') && detail.includes('<DinnerKitchenGuide />'), 'Grand Dîner must include stepwise kitchen preview');
 requireCondition(detail.includes('import DinnerPack') && detail.includes('<DinnerPack />'), 'Grand Dîner must include the private downloadable roadmap');
+requireCondition(detail.includes('href="/experiences/grand-diner-khmer/carnet-de-reception/"'), 'Grand Dîner must link to the original reception notebook');
+requireCondition(pack.includes('data-pack-carnet') && pack.includes('new URLSearchParams({ convives: String(guests), service: time, partage: includeSide'), 'Personal dinner pack must carry validated choices into notebook');
+requireCondition(reception.includes('buildReceptionNotebook(recipeData)') && reception.includes('data-reception-notebook'), 'Notebook must derive timings from existing public recipes');
+requireCondition(reception.includes('data-reception-task') && reception.includes('getNotebookProgress') && reception.includes('data-reception-side-menu'), 'Notebook must offer progress and correctly hide optional dish');
+requireCondition(reception.includes('data-reception-print') && reception.includes('window.print()') && receptionStyle.includes('@media print'), 'Notebook must support browser printing without server-side capture');
+requireCondition(receptionStyle.includes('.reception-notebook') && receptionStyle.includes('[hidden]{display:none!important}'), 'Notebook styles must be scoped and respect inactive controls');
+requireCondition(receptionModel.includes('RECEPTION_VALIDATION') && receptionModel.includes('essai culinaire réel'), 'Do not claim unperformed culinary validation');
+requireCondition(receptionModel.includes('RECEPTION_SAFETY') && receptionModel.includes('Ne goûtez jamais'), 'Safety reminder must survive in reception narrative');
+
 requireCondition(detail.includes('aria-label="Accéder aux étapes de l’expérience"') && ['#apercu', '#planning', '#cuisine-guidee', '#ma-feuille-de-route'].every((anchor) => detail.includes('href="' + anchor + '"')), 'Four-stage journey navigation must remain keyboard-accessible');
 requireCondition(timeline.includes('id="planning"') && preview.includes('id="apercu"') && kitchen.includes('id="cuisine-guidee"') && pack.includes('id="ma-feuille-de-route"'), 'Journey navigation must target real component sections');
 requireCondition(kitchen.includes('data-kitchen-dishes={JSON.stringify(dishes)}') && kitchen.includes('data-guide-previous') && kitchen.includes('data-guide-next') && kitchen.includes('data-guide-complete'), 'Kitchen guide must expose actual step controls');
