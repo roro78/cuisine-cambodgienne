@@ -11,7 +11,8 @@
     "preview": "astro preview",
     "test:recipes": "node scripts/check-recipe-contract.mjs",
     "test:experiences": "node scripts/check-experiences-contract.mjs",
-    "test:dinner": "node --test tests/dinner-preview.test.mjs"
+    "test:dinner": "node --test tests/dinner-preview.test.mjs",
+    "test:timeline": "node --test tests/dinner-timeline.test.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
