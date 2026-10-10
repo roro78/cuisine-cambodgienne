@@ -53,6 +53,9 @@ requireCondition(pack.includes('data-pack-carnet') && pack.includes('new URLSear
 requireCondition(reception.includes('buildReceptionNotebook(recipeData)') && reception.includes('data-reception-notebook'), 'Notebook must derive timings from existing public recipes');
 requireCondition(reception.includes('data-reception-task') && reception.includes('getNotebookProgress') && reception.includes('data-reception-side-menu'), 'Notebook must offer progress and correctly hide optional dish');
 requireCondition(reception.includes('data-reception-print') && reception.includes('window.print()') && receptionStyle.includes('@media print'), 'Notebook must support browser printing without server-side capture');
+requireCondition(reception.includes('id="carnet-degustation"') && reception.includes('data-reception-side-tasting') && reception.includes('sideTasting.hidden = !side.checked'), 'Tasting worksheet must track the optional dish safely');
+requireCondition(reception.includes('reception-writing-lines') && receptionStyle.includes('@media print') && receptionStyle.includes('.reception-tasting-card'), 'Culinary rehearsal must include printable original feedback prompts');
+requireCondition(!/<textarea\\b|<form\\b/i.test(reception), 'Prelaunch tasting workbook must not collect personal notes online');
 requireCondition(receptionStyle.includes('.reception-notebook') && receptionStyle.includes('[hidden]{display:none!important}'), 'Notebook styles must be scoped and respect inactive controls');
 requireCondition(receptionModel.includes('RECEPTION_VALIDATION') && receptionModel.includes('essai culinaire réel'), 'Do not claim unperformed culinary validation');
 requireCondition(receptionModel.includes('RECEPTION_SAFETY') && receptionModel.includes('Ne goûtez jamais'), 'Safety reminder must survive in reception narrative');
