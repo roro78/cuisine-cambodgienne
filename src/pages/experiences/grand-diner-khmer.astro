@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
+import DinnerPreview from '../../components/DinnerPreview.astro';
 import '../../styles/grand-diner-concept.css';
 
 const preparation = [
@@ -29,7 +30,7 @@ const preparation = [
         <h1 id="dinner-title">Le Grand<br /><em>Dîner Khmer.</em></h1>
         <p class="dinner-lead">Le parfum de la citronnelle, la douceur du lait de coco, le plaisir de servir un dîner préparé avec soin. Nous imaginons une expérience pour vous accompagner, de la première idée jusqu’à la dernière bouchée.</p>
         <p class="dinner-disclosure">Concept en préparation · Aucune vente ni réservation ouverte</p>
-        <a class="dinner-link" href="#apercu">Découvrir le parcours <span aria-hidden="true">↗</span></a>
+        <a class="dinner-link" href="#apercu">Tester la liste de courses <span aria-hidden="true">↗</span></a>
       </div>
     </section>
 
@@ -58,34 +59,7 @@ const preparation = [
       </div>
     </section>
 
-    <section class="dinner-demo" id="apercu" aria-labelledby="dinner-demo-title">
-      <div class="dinner-demo-copy">
-        <p class="dinner-kicker">Un premier aperçu interactif</p>
-        <h2 id="dinner-demo-title">Un dîner qui s’adapte à votre table.</h2>
-        <p>Choisissez le nombre de convives pour découvrir comment le futur parcours pourrait personnaliser sa préparation. Il s’agit d’une démonstration de principe, pas encore d’une recette finalisée.</p>
-        <div class="dinner-demo-picker" data-dinner-picker aria-label="Nombre de convives">
-          <p id="dinner-picker-label">Combien serez-vous à table ?</p>
-          <div class="dinner-guest-options" role="group" aria-labelledby="dinner-picker-label">
-            <button type="button" data-dinner-guests="2" aria-pressed="true">2 personnes</button>
-            <button type="button" data-dinner-guests="4" aria-pressed="false">4 personnes</button>
-            <button type="button" data-dinner-guests="6" aria-pressed="false">6 personnes</button>
-          </div>
-        </div>
-      </div>
-      <div class="dinner-demo-panel" data-dinner-panel>
-        <p class="dinner-panel-overline">Aperçu · Organisation du dîner</p>
-        <p class="dinner-panel-guests" aria-live="polite" aria-atomic="true" data-dinner-guests-output>Pour 2 personnes</p>
-        <div class="dinner-panel-divider"></div>
-        <h3>Votre parcours envisagé</h3>
-        <ol>
-          <li><span>01</span><span>Une liste de courses ajustée à <strong data-dinner-noun>2 convives</strong>.</span></li>
-          <li><span>02</span><span>Un planning indiquant ce qui peut être préparé à l’avance.</span></li>
-          <li><span>03</span><span>Des gestes et repères de cuisson illustrés.</span></li>
-          <li><span>04</span><span>Des idées de dressage pour partager les plats.</span></li>
-        </ol>
-        <p class="dinner-panel-note">Démonstration non marchande. Menu, ingrédients et contenus en cours de conception.</p>
-      </div>
-    </section>
+    <DinnerPreview />
 
     <section class="dinner-editorial" aria-labelledby="dinner-editorial-title">
       <div class="dinner-editorial-art">
@@ -107,23 +81,5 @@ const preparation = [
     </section>
   </main>
   <SiteFooter />
-  <script>
-    const picker = document.querySelector<HTMLElement>('[data-dinner-picker]');
-    const panel = document.querySelector<HTMLElement>('[data-dinner-panel]');
-    if (picker && panel) {
-      const guestsOutput = panel.querySelector<HTMLElement>('[data-dinner-guests-output]');
-      const guestsNoun = panel.querySelector<HTMLElement>('[data-dinner-noun]');
-      for (const button of picker.querySelectorAll<HTMLButtonElement>('button[data-dinner-guests]')) {
-        button.addEventListener('click', () => {
-          const count = Number(button.dataset.dinnerGuests);
-          if (![2, 4, 6].includes(count)) return;
-          for (const choice of picker.querySelectorAll<HTMLButtonElement>('button[data-dinner-guests]')) {
-            choice.setAttribute('aria-pressed', String(choice === button));
-          }
-          if (guestsOutput) guestsOutput.textContent = `Pour ${count} personnes`;
-          if (guestsNoun) guestsNoun.textContent = `${count} convives`;
-        });
-      }
-    }
-  </script>
+
 </BaseLayout>
