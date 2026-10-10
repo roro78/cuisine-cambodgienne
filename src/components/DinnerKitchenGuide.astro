@@ -1,0 +1,167 @@
+---
+import { recipes } from '../data/recipes';
+import { PILOT_GUIDE_SLUGS, buildPilotKitchenGuide } from '../utils/dinnerKitchenGuide.mjs';
+
+const sourceRecipes = PILOT_GUIDE_SLUGS.map((slug) => recipes.find((recipe) => recipe.slug === slug));
+if (sourceRecipes.some((recipe) => !recipe)) throw new Error('Missing published recipe for kitchen mode');
+const dishes = buildPilotKitchenGuide(sourceRecipes.filter((recipe): recipe is NonNullable<typeof recipe> => Boolean(recipe)));
+const initialDish = dishes[0];
+const firstStep = initialDish.steps[0];
+---
+<section class="dinner-kitchen" id="cuisine-guidee" aria-labelledby="dinner-kitchen-title" data-kitchen-guide data-kitchen-dishes={JSON.stringify(dishes)}>
+  <div class="dinner-kitchen-heading">
+    <p class="dinner-kicker">Troisième aperçu · À votre rythme</p>
+    <h2 id="dinner-kitchen-title">Suivez les gestes.<br />Gardez les mains libres pour cuisiner.</h2>
+    <p>Un premier mode cuisine à essayer avec les recettes gratuites. Une étape à la fois, des repères à observer et les erreurs à éviter. Votre progression reste uniquement dans cette page, sans compte ni sauvegarde.</p>
+  </div>
+  <div class="dinner-kitchen-workspace">
+    <div class="dinner-kitchen-navigation" role="group" aria-label="Choisir une recette à suivre">
+      {dishes.map((dish, index) => (
+        <button type="button" data-guide-dish={dish.slug} aria-pressed={index === 0 ? 'true' : 'false'}>
+          <span>{index === 0 ? 'Le plat' : 'Le dessert'}</span>
+          {dish.title}
+        </button>
+      ))}
+    </div>
+    <div class="dinner-kitchen-content">
+      <div class="dinner-kitchen-stage">
+        <div class="dinner-kitchen-progress">
+          <span class="dinner-kitchen-count" data-guide-count>Étape 1 sur {initialDish.steps.length}</span>
+          <span class="dinner-kitchen-done" data-guide-done>0 étape terminée</span>
+          <progress aria-label="Étapes marquées comme terminées" data-guide-progress value="0" max={initialDish.steps.length}>0 %</progress>
+        </div>
+        <div class="dinner-kitchen-card">
+          <p class="dinner-kitchen-overline" data-guide-dish-title>{initialDish.title}</p>
+          <h3 data-guide-title>{firstStep.title}</h3>
+          <p data-guide-text>{firstStep.text}</p>
+          <div class="dinner-kitchen-cue" data-guide-cue-box hidden={!firstStep.cue}>
+            <strong>Le bon repère</strong>
+            <p data-guide-cue>{firstStep.cue ?? ''}</p>
+          </div>
+          <div class="dinner-kitchen-mistake" data-guide-mistake-box hidden={!firstStep.mistake}>
+            <strong>À éviter</strong>
+            <p data-guide-mistake>{firstStep.mistake ?? ''}</p>
+          </div>
+          <p class="dinner-kitchen-duration" data-guide-duration-box hidden={!firstStep.duration}>
+            Repère de durée : <span data-guide-duration>{firstStep.duration ?? ''}</span>
+          </p>
+          <div class="dinner-kitchen-controls">
+            <button type="button" data-guide-previous disabled>← Précédent</button>
+            <button type="button" data-guide-complete aria-pressed="false">Marquer comme fait <span aria-hidden="true">✓</span></button>
+            <button type="button" data-guide-next>Suivant →</button>
+          </div>
+          <p class="dinner-kitchen-feedback" data-guide-feedback role="status" aria-live="polite" aria-atomic="true"></p>
+        </div>
+      </div>
+      <aside class="dinner-kitchen-aside">
+        <p class="dinner-panel-overline">Un aperçu, pas une formation payante</p>
+        <h3>Le plaisir d’apprendre en cuisinant.</h3>
+        <p>Les étapes sont issues des fiches gratuites du site. Nous préparons une expérience plus complète, avec une organisation de repas, des démonstrations originales et des repères de dégustation.</p>
+        <p class="dinner-kitchen-safety">Pour l’Amok, goûtez et rectifiez l’assaisonnement <strong>avant</strong> d'ajouter les œufs crus ou le poisson cru. Ne goûtez jamais ces préparations crues et veillez à une cuisson complète.</p>
+        <a data-guide-recipe-link href={`/recettes/${initialDish.slug}/`}>Consulter la recette complète <span aria-hidden="true">↗</span></a>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { readGuideStep, getGuideCompletedCount } from '../utils/dinnerKitchenGuide.mjs';
+  import type { KitchenGuideDish } from '../utils/dinnerKitchenGuide.mjs';
+
+  document.querySelectorAll<HTMLElement>('[data-kitchen-guide]').forEach((root) => {
+    const data = root.dataset.kitchenDishes;
+    if (!data) return;
+    const dishes: KitchenGuideDish[] = JSON.parse(data);
+    if (dishes.length === 0) return;
+
+    const dishButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-guide-dish]'));
+    const title = root.querySelector<HTMLElement>('[data-guide-title]');
+    const text = root.querySelector<HTMLElement>('[data-guide-text]');
+    const dishTitle = root.querySelector<HTMLElement>('[data-guide-dish-title]');
+    const count = root.querySelector<HTMLElement>('[data-guide-count]');
+    const doneLabel = root.querySelector<HTMLElement>('[data-guide-done]');
+    const progress = root.querySelector<HTMLProgressElement>('[data-guide-progress]');
+    const cueBox = root.querySelector<HTMLElement>('[data-guide-cue-box]');
+    const cue = root.querySelector<HTMLElement>('[data-guide-cue]');
+    const mistakeBox = root.querySelector<HTMLElement>('[data-guide-mistake-box]');
+    const mistake = root.querySelector<HTMLElement>('[data-guide-mistake]');
+    const durationBox = root.querySelector<HTMLElement>('[data-guide-duration-box]');
+    const duration = root.querySelector<HTMLElement>('[data-guide-duration]');
+    const back = root.querySelector<HTMLButtonElement>('[data-guide-previous]');
+    const next = root.querySelector<HTMLButtonElement>('[data-guide-next]');
+    const complete = root.querySelector<HTMLButtonElement>('[data-guide-complete]');
+    const feedback = root.querySelector<HTMLElement>('[data-guide-feedback]');
+    const recipeLink = root.querySelector<HTMLAnchorElement>('[data-guide-recipe-link]');
+
+    if (!title || !text || !dishTitle || !count || !doneLabel || !progress || !cueBox || !cue ||
+        !mistakeBox || !mistake || !durationBox || !duration || !back || !next || !complete ||
+        !feedback || !recipeLink) return;
+
+    let activeSlug = dishes[0].slug;
+    const positions = new Map<string, number>(dishes.map((dish) => [dish.slug, 0]));
+    const completed = new Map<string, Set<string>>(dishes.map((dish) => [dish.slug, new Set()]));
+
+    const render = (announcement: string) => {
+      const index = positions.get(activeSlug) ?? 0;
+      const { dish, step, position, total } = readGuideStep(dishes, activeSlug, index);
+      const done = completed.get(activeSlug) ?? new Set<string>();
+      const doneCount = getGuideCompletedCount(dish, done);
+
+      dishButtons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.guideDish === activeSlug)));
+      title.textContent = step.title;
+      text.textContent = step.text;
+      dishTitle.textContent = dish.title;
+      count.textContent = `Étape ${position} sur ${total}`;
+      doneLabel.textContent = `${doneCount} étape${doneCount > 1 ? 's' : ''} terminée${doneCount > 1 ? 's' : ''}`;
+      progress.value = doneCount;
+      progress.max = total;
+      progress.textContent = `${doneCount} sur ${total}`;
+      cueBox.hidden = !step.cue;
+      cue.textContent = step.cue ?? '';
+      mistakeBox.hidden = !step.mistake;
+      mistake.textContent = step.mistake ?? '';
+      durationBox.hidden = !step.duration;
+      duration.textContent = step.duration ?? '';
+      back.disabled = index === 0;
+      next.disabled = index === total - 1;
+      complete.setAttribute('aria-pressed', String(done.has(step.id)));
+      complete.textContent = done.has(step.id) ? 'Étape faite ✓' : 'Marquer comme fait ✓';
+      recipeLink.href = `/recettes/${dish.slug}/`;
+      recipeLink.setAttribute('aria-label', `Consulter la recette complète ${dish.title}`);
+      feedback.textContent = announcement;
+    };
+
+    dishButtons.forEach((button) => button.addEventListener('click', () => {
+      const slug = button.dataset.guideDish;
+      if (!slug || !dishes.some((dish) => dish.slug === slug)) return;
+      activeSlug = slug;
+      render(`Recette ${dishes.find((dish) => dish.slug === slug)?.title} sélectionnée.`);
+    }));
+
+    back.addEventListener('click', () => {
+      const position = positions.get(activeSlug) ?? 0;
+      if (position === 0) return;
+      positions.set(activeSlug, position - 1);
+      render('Étape précédente affichée.');
+    });
+
+    next.addEventListener('click', () => {
+      const position = positions.get(activeSlug) ?? 0;
+      const dish = dishes.find((item) => item.slug === activeSlug);
+      if (!dish || position >= dish.steps.length - 1) return;
+      positions.set(activeSlug, position + 1);
+      render('Étape suivante affichée.');
+    });
+
+    complete.addEventListener('click', () => {
+      const position = positions.get(activeSlug) ?? 0;
+      const { step } = readGuideStep(dishes, activeSlug, position);
+      const done = completed.get(activeSlug);
+      if (!done) return;
+      const wasComplete = done.has(step.id);
+      if (wasComplete) done.delete(step.id);
+      else done.add(step.id);
+      render(wasComplete ? 'Étape marquée comme à faire.' : 'Étape marquée comme terminée.');
+    });
+  });
+</script>
