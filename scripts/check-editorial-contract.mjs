@@ -79,6 +79,10 @@ forbiddenArtificialCopy.forEach((phrase) => {
   }
 });
 
+if (!culture.includes("href:'/recettes/kuy-teav/', cta:'Voir la recette →'")) failures.push('Morning card must link explicitly to the relevant noodle recipe');
+if (culture.includes("title:'Au petit matin, les gargotes sont déjà ouvertes'")) failures.push('Morning culture card must not misleadingly link to generic meal article');
+if (!culture.includes('<strong>{moment.cta}</strong>')) failures.push('Editorial cards must accurately label linked destination');
+
 if (failures.length) {
   console.error('Editorial contract failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));
