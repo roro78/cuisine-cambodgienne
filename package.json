@@ -9,7 +9,15 @@
     "test:motion": "node scripts/check-motion-contract.mjs",
     "test:editorial": "node scripts/check-editorial-contract.mjs",
     "preview": "astro preview",
-    "test:recipes": "node scripts/check-recipe-contract.mjs"
+    "test:recipes": "node scripts/check-recipe-contract.mjs",
+    "test:experiences": "node scripts/check-experiences-contract.mjs",
+    "test:dinner": "node --test tests/dinner-preview.test.mjs",
+    "test:timeline": "node --test tests/dinner-timeline.test.mjs",
+    "test:kitchen": "node --test tests/dinner-kitchen-guide.test.mjs",
+    "test:pack": "node --test tests/dinner-pack.test.mjs",
+    "test:reception": "node --test tests/dinner-reception.test.mjs",
+    "test:built-experiences": "node scripts/check-experiences-build.mjs",
+    "test:browser-experiences": "node tests/experiences-browser-smoke.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -17,5 +25,7 @@
     "gsap": "^3.13.0",
     "typescript": "^5.9.2"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "playwright-core": "^1.56.1"
+  }
 }

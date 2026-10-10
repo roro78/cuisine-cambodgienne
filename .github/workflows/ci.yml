@@ -45,5 +45,35 @@ jobs:
       - name: Editorial regression contract
         run: npm run test:editorial
 
+      - name: Reception notebook editorial and schedule checks
+        run: npm run test:reception
+
+      - name: Personal dinner roadmap calculations
+        run: npm run test:pack
+
+      - name: Guided cooking preview model
+        run: npm run test:kitchen
+
+      - name: Dinner timeline calculations
+        run: npm run test:timeline
+
+      - name: Dinner preview calculations
+        run: npm run test:dinner
+
+      - name: Experiences prelaunch regression contract
+        run: npm run test:experiences
+
       - name: Production build
         run: npm run build
+
+      - name: Built pages and deployment boundaries
+        run: npm run test:built-experiences
+        
+      - name: Setup Chrome for responsive browser smoke
+        id: chrome
+        uses: browser-actions/setup-chrome@v2
+
+      - name: Browser journey and A4 print styles
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: npm run test:browser-experiences

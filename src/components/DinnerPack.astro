@@ -1,0 +1,137 @@
+---
+import { recipes } from '../data/recipes';
+import { PILOT_SLUGS, PILOT_SIDE_SLUG } from '../utils/dinnerPreview.mjs';
+import { buildPilotDinnerPack } from '../utils/dinnerPack.mjs';
+
+const selected = [...PILOT_SLUGS, PILOT_SIDE_SLUG].map((slug) => recipes.find((recipe) => recipe.slug === slug));
+if (selected.some((recipe) => !recipe)) throw new Error('Missing dish for personal dinner roadmap');
+const packRecipes = selected.filter((recipe): recipe is NonNullable<typeof recipe> => Boolean(recipe))
+  .map(({ slug, title, baseServings, ingredients, prepTime, cookTime, equipment }) => ({ slug, title, baseServings, ingredients, prepTime, cookTime, equipment }));
+const pack = buildPilotDinnerPack(packRecipes, 2, '20:00');
+---
+<section class="dinner-takeaway" id="ma-feuille-de-route" aria-labelledby="dinner-takeaway-title" data-dinner-pack data-dinner-pack-recipes={JSON.stringify(packRecipes)}>
+  <div class="dinner-takeaway-copy">
+    <p class="dinner-kicker">Votre pense-bête gourmand</p>
+    <h2 id="dinner-takeaway-title">Tout réunir pour préparer la soirée.</h2>
+    <p>Gardez une trace de votre liste de courses et du planning imaginé pour l’Amok. Le document reprend automatiquement le nombre de convives et l’heure de service choisis plus haut.</p>
+    <p class="dinner-takeaway-disclaimer">Cet aperçu utilise deux recettes gratuites et, à votre choix, un accompagnement gratuit supplémentaire. Ce n’est pas le contenu complet d’une offre payante, ni un planning de cuisson garanti. Les quantités de matériel des fiches sont à adapter au nombre de convives.</p>
+    <div class="dinner-takeaway-actions">
+      <button type="button" data-pack-download>Télécharger mon pense-bête <span aria-hidden="true">↗</span></button>
+      <button type="button" data-pack-copy>Copier le récapitulatif <span aria-hidden="true">↗</span></button>
+      <a class="dinner-pack-carnet-link" data-pack-carnet href="/experiences/grand-diner-khmer/carnet-de-reception/?convives=2&amp;service=20%3A00">Ouvrir mon carnet de réception <span aria-hidden="true">↗</span></a>
+    </div>
+    <p data-pack-feedback role="status" aria-live="polite" aria-atomic="true"></p>
+    <p class="dinner-takeaway-privacy">Fichier texte (.txt) enregistré sur votre appareil. Aucun compte, aucun envoi et aucune donnée personnelle collectée.</p>
+  </div>
+  <div class="dinner-takeaway-paper" aria-label="Aperçu de la feuille de route">
+    <p class="dinner-panel-overline">Cuisine du Cambodge · Aperçu gratuit</p>
+    <h3>Mon dîner khmer</h3>
+    <dl>
+      <div><dt>Convives</dt><dd data-pack-guests>{pack.guests} personnes</dd></div>
+      <div><dt>Plat servi à</dt><dd data-pack-time>{pack.timeline.servingTime}</dd></div>
+    </dl>
+    <div class="dinner-takeaway-divider" aria-hidden="true"></div>
+    <p class="dinner-takeaway-paper-label">Au menu</p>
+    <p>Amok Trey<br />Chek Ktis<span data-pack-side-label hidden><br />Prahok Ktis (facultatif)</span></p>
+    <div class="dinner-takeaway-divider" aria-hidden="true"></div>
+    <p class="dinner-takeaway-paper-label">Votre programme</p>
+    <ol data-pack-milestones>
+      {pack.timeline.steps.map((step) => (
+        <li><time datetime={step.time.replace('h', ':')}>{step.time}</time><span>{step.title}</span></li>
+      ))}
+    </ol>
+    <p class="dinner-takeaway-preview-footer"><span data-pack-items-count>{pack.items.length}</span> ingrédients à prévoir · planning indicatif</p>
+  </div>
+</section>
+<script>
+  import { buildPilotDinnerPack, buildPilotDinnerPackText } from '../utils/dinnerPack.mjs';
+
+  document.querySelectorAll<HTMLElement>('[data-dinner-pack]').forEach((root) => {
+    const data = root.dataset.dinnerPackRecipes;
+    const guestsLabel = root.querySelector<HTMLElement>('[data-pack-guests]');
+    const timeLabel = root.querySelector<HTMLElement>('[data-pack-time]');
+    const itemCount = root.querySelector<HTMLElement>('[data-pack-items-count]');
+    const sideLabel = root.querySelector<HTMLElement>('[data-pack-side-label]');
+    const milestones = root.querySelector<HTMLOListElement>('[data-pack-milestones]');
+    const feedback = root.querySelector<HTMLElement>('[data-pack-feedback]');
+    const download = root.querySelector<HTMLButtonElement>('[data-pack-download]');
+    const copy = root.querySelector<HTMLButtonElement>('[data-pack-copy]');
+    const carnet = root.querySelector<HTMLAnchorElement>('[data-pack-carnet]');
+    if (!data || !guestsLabel || !timeLabel || !itemCount || !sideLabel || !milestones || !feedback || !download || !copy || !carnet) return;
+
+    const recipeData = JSON.parse(data);
+    let guests = 2;
+    let time = '20:00';
+    let includeSide = false;
+
+    const render = () => {
+      const pack = buildPilotDinnerPack(recipeData, guests, time, includeSide);
+      sideLabel.hidden = !includeSide;
+      carnet.href = '/experiences/grand-diner-khmer/carnet-de-reception/?' + new URLSearchParams({ convives: String(guests), service: time, partage: includeSide ? '1' : '0' }).toString();
+      guestsLabel.textContent = `${pack.guests} personnes`;
+      timeLabel.textContent = pack.timeline.servingTime;
+      itemCount.textContent = String(pack.items.length);
+      milestones.replaceChildren(...pack.timeline.steps.map((step) => {
+        const li = document.createElement('li');
+        const clock = document.createElement('time');
+        const label = document.createElement('span');
+        clock.textContent = step.time;
+        clock.dateTime = step.time.replace('h', ':');
+        label.textContent = step.title;
+        li.append(clock, label);
+        return li;
+      }));
+      return pack;
+    };
+
+    document.addEventListener('dinner:guests', (event) => {
+      const next = (event as CustomEvent<{ guests: number }>).detail?.guests;
+      if (![2, 4, 6].includes(next)) return;
+      guests = next;
+      render();
+      feedback.textContent = `Votre feuille de route est ajustée pour ${guests} personnes.`;
+    });
+
+    document.addEventListener('dinner:time', (event) => {
+      const next = (event as CustomEvent<{ time: string }>).detail?.time;
+      if (!['19:00', '19:30', '20:00', '20:30', '21:00'].includes(next)) return;
+      time = next;
+      render();
+      feedback.textContent = `Votre feuille de route est ajustée pour un service à ${time.replace(':', 'h')}.`;
+    });
+
+    document.addEventListener('dinner:side', (event) => {
+      includeSide = (event as CustomEvent<{ includeSide: boolean }>).detail?.includeSide === true;
+      render();
+      feedback.textContent = includeSide ? 'Le Prahok Ktis est ajouté à votre récapitulatif.' : 'Le Prahok Ktis a été retiré de votre récapitulatif.';
+    });
+
+    download.addEventListener('click', () => {
+      const summary = buildPilotDinnerPackText(render());
+      const blob = new Blob([summary], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'cuisine-du-cambodge-mon-diner.txt';
+      link.hidden = true;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      feedback.textContent = 'Votre pense-bête a été préparé pour le téléchargement.';
+    });
+
+    copy.addEventListener('click', async () => {
+      if (!navigator.clipboard?.writeText) {
+        feedback.textContent = 'La copie n’est pas disponible sur ce navigateur. Vous pouvez télécharger le fichier texte.';
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(buildPilotDinnerPackText(render()));
+        feedback.textContent = 'Récapitulatif copié. Vous pouvez le coller dans vos notes.';
+      } catch {
+        feedback.textContent = 'La copie n’a pas fonctionné. Essayez le téléchargement.';
+      }
+    });
+  });
+</script>
