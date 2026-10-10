@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 
 const header = fs.readFileSync('src/components/SiteHeader.astro','utf8');
+const navigation = fs.readFileSync('src/scripts/navigation.ts','utf8');
+const globalStyles = fs.readFileSync('src/styles/global.css','utf8');
 const learn = fs.readFileSync('src/pages/apprendre/index.astro','utf8');
 const workshopDetail = fs.readFileSync('src/pages/apprendre/[slug].astro','utf8');
 const workshopData = fs.readFileSync('src/data/workshops.ts','utf8');
@@ -78,6 +80,19 @@ forbiddenArtificialCopy.forEach((phrase) => {
     failures.push(`Artificial editorial phrasing reintroduced: ${phrase}`);
   }
 });
+
+if (!navigation.includes("const desktopQuery = window.matchMedia('(min-width: 721px)')") ||
+    !navigation.includes("desktopQuery.addEventListener('change', onViewportChange)") ||
+    !navigation.includes("desktopQuery.removeEventListener('change', onViewportChange)")) {
+  failures.push('Open mobile drawer must close and unlock scrolling when viewport becomes desktop');
+}
+if (!navigation.includes("event.key === 'Tab'") || !navigation.includes("event.shiftKey && document.activeElement === first")) {
+  failures.push('Mobile drawer must contain keyboard focus while open');
+}
+if (!globalStyles.includes('.mobile-menu summary:focus-visible') ||
+    !globalStyles.includes('.mobile-menu-panel nav a:focus-visible')) {
+  failures.push('Mobile navigation must display visible focus indicators');
+}
 
 if (failures.length) {
   console.error('Editorial contract failed:');
