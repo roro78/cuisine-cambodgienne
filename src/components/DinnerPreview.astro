@@ -1,0 +1,108 @@
+---
+import { recipes } from '../data/recipes';
+import { PILOT_SLUGS, buildPilotShoppingList } from '../utils/dinnerPreview.mjs';
+
+const menu = PILOT_SLUGS.map((slug) => recipes.find((recipe) => recipe.slug === slug));
+if (menu.some((recipe) => !recipe)) throw new Error('Missing source recipe for pilot dinner preview');
+const pilotRecipes = menu.filter((recipe): recipe is NonNullable<typeof recipe> => Boolean(recipe));
+const previewData = pilotRecipes.map(({ title, baseServings, ingredients }) => ({ title, baseServings, ingredients }));
+const pilotIngredients = buildPilotShoppingList(previewData, 2);
+---
+<section class="dinner-planner" id="apercu" data-dinner-preview data-preview-recipes={JSON.stringify(previewData)} aria-labelledby="dinner-planner-title">
+  <div class="dinner-planner-intro">
+    <p class="dinner-kicker">Démonstration interactive · Recettes existantes</p>
+    <h2 id="dinner-planner-title">Imaginez votre dîner. Nous préparons la suite.</h2>
+    <p>Voici un premier outil construit avec deux recettes du site : l’Amok Trey et le Chek Ktis. Choisissez votre nombre de convives pour obtenir une liste de courses commune. Le menu complet de l’expérience payante n’est pas encore finalisé.</p>
+
+    <div class="dinner-planner-menu" aria-label="Recettes de cet aperçu">
+      {pilotRecipes.map((recipe, i) => (
+        <div class="dinner-planner-dish">
+          <span>{i === 0 ? 'Le plat' : 'Le dessert'}</span>
+          <h3>{recipe.title}</h3>
+          <p>{recipe.intro}</p>
+          <a href={`/recettes/${recipe.slug}/`}>Consulter la recette gratuite <span aria-hidden="true">↗</span></a>
+        </div>
+      ))}
+    </div>
+
+    <div class="dinner-demo-picker">
+      <p id="dinner-picker-label">Combien serez-vous à table ?</p>
+      <div class="dinner-guest-options" role="group" aria-labelledby="dinner-picker-label">
+        {[2, 4, 6].map((guests) => (
+          <button type="button" data-preview-guests={guests} aria-pressed={guests === 2 ? 'true' : 'false'}>{guests} personnes</button>
+        ))}
+      </div>
+    </div>
+  </div>
+  <div class="dinner-planner-card">
+    <p class="dinner-panel-overline">Votre liste de courses · Aperçu gratuit</p>
+    <h3 data-preview-heading>Pour 2 personnes</h3>
+    <p class="dinner-list-description">Les quantités sont reprises et ajustées depuis les recettes publiées sur le site. Les finitions sans quantité définie restent à doser à votre goût.</p>
+    <ul data-preview-list>
+      {pilotIngredients.map((item) => (
+        <li><label><input type="checkbox" data-preview-check /><span>{item.display}</span></label></li>
+      ))}
+    </ul>
+    <div class="dinner-planner-actions">
+      <button type="button" class="dinner-copy" data-preview-copy>Copier la liste <span aria-hidden="true">↗</span></button>
+      <p data-preview-feedback role="status" aria-live="polite" aria-atomic="true"></p>
+    </div>
+    <p class="dinner-panel-note">Cette démonstration ne donne pas accès à un produit vendu. Les recettes sources sont gratuites, et les détails d’une future offre premium restent à définir.</p>
+  </div>
+</section>
+
+<script>
+  import { buildPilotShoppingList, buildShoppingListText } from '../utils/dinnerPreview.mjs';
+
+  document.querySelectorAll<HTMLElement>('[data-dinner-preview]').forEach((root) => {
+    const recipeData = root.dataset.previewRecipes;
+    if (!recipeData) return;
+    const selectedRecipes = JSON.parse(recipeData);
+    const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-preview-guests]'));
+    const list = root.querySelector<HTMLUListElement>('[data-preview-list]');
+    const heading = root.querySelector<HTMLElement>('[data-preview-heading]');
+    const feedback = root.querySelector<HTMLElement>('[data-preview-feedback]');
+    const copyButton = root.querySelector<HTMLButtonElement>('[data-preview-copy]');
+    if (!list || !heading || !feedback || !copyButton) return;
+
+    let guests = 2;
+    let items = buildPilotShoppingList(selectedRecipes, guests);
+    const render = () => {
+      items = buildPilotShoppingList(selectedRecipes, guests);
+      heading.textContent = `Pour ${guests} personnes`;
+      buttons.forEach((button) => button.setAttribute('aria-pressed', String(Number(button.dataset.previewGuests) === guests)));
+      list.replaceChildren(...items.map(({ display }) => {
+        const li = document.createElement('li');
+        const label = document.createElement('label');
+        const input = document.createElement('input');
+        const span = document.createElement('span');
+        input.type = 'checkbox';
+        input.setAttribute('data-preview-check', '');
+        span.textContent = display;
+        label.append(input, span);
+        li.append(label);
+        return li;
+      }));
+      feedback.textContent = `Liste mise à jour pour ${guests} personnes.`;
+    };
+    buttons.forEach((button) => button.addEventListener('click', () => {
+      const next = Number(button.dataset.previewGuests);
+      if (![2, 4, 6].includes(next) || next === guests) return;
+      guests = next;
+      render();
+    }));
+
+    copyButton.addEventListener('click', async () => {
+      if (!navigator.clipboard?.writeText) {
+        feedback.textContent = 'La copie est indisponible sur ce navigateur. Vous pouvez sélectionner la liste.';
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(buildShoppingListText(items, guests));
+        feedback.textContent = 'Liste copiée. Vous pouvez la coller dans vos notes.';
+      } catch {
+        feedback.textContent = 'La copie a échoué. Vous pouvez sélectionner la liste.';
+      }
+    });
+  });
+</script>
