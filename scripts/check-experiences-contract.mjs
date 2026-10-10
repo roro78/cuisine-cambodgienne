@@ -9,6 +9,8 @@ const landingStyle = read('src/styles/experiences-prelaunch.css');
 const detailStyle = read('src/styles/grand-diner-concept.css');
 const preview = read('src/components/DinnerPreview.astro');
 const timeline = read('src/components/DinnerTimeline.astro');
+const kitchen = read('src/components/DinnerKitchenGuide.astro');
+const kitchenModel = read('src/utils/dinnerKitchenGuide.mjs');
 const timelineCalculator = read('src/utils/dinnerTimeline.mjs');
 const calculator = read('src/utils/dinnerPreview.mjs');
 const sitemap = read('src/pages/sitemap.xml.ts');
@@ -31,13 +33,18 @@ for (const [route, text] of [['/experiences/', landing], ['/experiences/grand-di
 }
 
 requireCondition(!sitemap.includes("'/experiences/'"), 'Unlaunched experiences must not appear in XML sitemap');
-requireCondition(!/<form\b/i.test(preview) && !/<form\b/i.test(timeline), 'Preview must not collect personal information');
+requireCondition(!/<form\b/i.test(preview) && !/<form\b/i.test(timeline) && !/<form\b/i.test(kitchen), 'Preview must not collect personal information');
 requireCondition(landing.includes("Partenaire recherché"), 'Partner search state must remain explicit');
 requireCondition(landing.includes("se poursuit indépendamment"), 'Digital offer must not be tied to a specialist');
 requireCondition(landing.includes('href="/experiences/grand-diner-khmer/"'), 'Landing must link to concept');
 requireCondition(landing.includes('href="/apprendre/"'), 'Free workshops must stay discoverable');
 requireCondition(detail.includes('import DinnerPreview') && detail.includes('<DinnerPreview />'), 'Grand Dîner must render the real preview component');
 requireCondition(detail.includes('import DinnerTimeline') && detail.includes('<DinnerTimeline />'), 'Grand Dîner must show the real indicative planner');
+requireCondition(detail.includes('import DinnerKitchenGuide') && detail.includes('<DinnerKitchenGuide />'), 'Grand Dîner must include stepwise kitchen preview');
+requireCondition(kitchen.includes('data-kitchen-dishes={JSON.stringify(dishes)}') && kitchen.includes('data-guide-previous') && kitchen.includes('data-guide-next') && kitchen.includes('data-guide-complete'), 'Kitchen guide must expose actual step controls');
+requireCondition(kitchen.includes('data-guide-progress') && kitchen.includes('aria-live="polite"'), 'Kitchen guide must expose visible and accessible progress');
+requireCondition(kitchen.includes('positions = new Map') && kitchen.includes('completed = new Map'), 'Kitchen steps should preserve state when switching dishes');
+requireCondition(kitchenModel.includes('AMOK_RAW_EGG_CAUTION') && kitchenModel.includes('Ne goûtez pas') && kitchen.includes('avant</strong>'), 'Raw-egg tasting safety override must be present');
 requireCondition(timeline.includes('data-service-time') && timeline.includes('data-timing-recipes={JSON.stringify(timingData)}'), 'Planning must use public recipe durations');
 requireCondition(timeline.includes('role="status"') && timeline.includes('aria-live="polite"'), 'Planning changes must be announced accessibly');
 requireCondition(timeline.includes('marge de 15 min') || timeline.includes('marge de 15 min'.toUpperCase()) || timeline.includes('marge de 15'), 'Planning margin must be disclosed');
