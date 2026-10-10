@@ -44,6 +44,8 @@ requireCondition(detail.includes('import DinnerPreview') && detail.includes('<Di
 requireCondition(detail.includes('import DinnerTimeline') && detail.includes('<DinnerTimeline />'), 'Grand Dîner must show the real indicative planner');
 requireCondition(detail.includes('import DinnerKitchenGuide') && detail.includes('<DinnerKitchenGuide />'), 'Grand Dîner must include stepwise kitchen preview');
 requireCondition(detail.includes('import DinnerPack') && detail.includes('<DinnerPack />'), 'Grand Dîner must include the private downloadable roadmap');
+requireCondition(detail.includes('aria-label="Accéder aux étapes de l’expérience"') && ['#apercu', '#planning', '#cuisine-guidee', '#ma-feuille-de-route'].every((anchor) => detail.includes('href="' + anchor + '"')), 'Four-stage journey navigation must remain keyboard-accessible');
+requireCondition(timeline.includes('id="planning"') && preview.includes('id="apercu"') && kitchen.includes('id="cuisine-guidee"') && pack.includes('id="ma-feuille-de-route"'), 'Journey navigation must target real component sections');
 requireCondition(kitchen.includes('data-kitchen-dishes={JSON.stringify(dishes)}') && kitchen.includes('data-guide-previous') && kitchen.includes('data-guide-next') && kitchen.includes('data-guide-complete'), 'Kitchen guide must expose actual step controls');
 requireCondition(kitchen.includes('data-guide-progress') && kitchen.includes('aria-live="polite"'), 'Kitchen guide must expose visible and accessible progress');
 requireCondition(kitchen.includes('positions = new Map') && kitchen.includes('completed = new Map'), 'Kitchen steps should preserve state when switching dishes');
