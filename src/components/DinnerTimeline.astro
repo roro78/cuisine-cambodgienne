@@ -30,7 +30,7 @@ const plan = buildPilotServicePlan(timingData[0], timingData[1], '20:00');
       <ol data-timeline-steps aria-label="Planning indicatif">
         {plan.steps.map((step) => (
           <li>
-            <time>{step.time}</time>
+            <time datetime={step.time.replace('h', ':')}>{step.time}</time>
             <div><strong>{step.title}</strong><p>{step.description}</p></div>
           </li>
         ))}
@@ -70,6 +70,7 @@ const plan = buildPilotServicePlan(timingData[0], timingData[1], '20:00');
         const title = document.createElement('strong');
         const description = document.createElement('p');
         time.textContent = step.time;
+        time.dateTime = step.time.replace('h', ':');
         title.textContent = step.title;
         description.textContent = step.description;
         content.append(title, description);
