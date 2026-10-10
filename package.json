@@ -13,7 +13,8 @@
     "test:experiences": "node scripts/check-experiences-contract.mjs",
     "test:dinner": "node --test tests/dinner-preview.test.mjs",
     "test:timeline": "node --test tests/dinner-timeline.test.mjs",
-    "test:kitchen": "node --test tests/dinner-kitchen-guide.test.mjs"
+    "test:kitchen": "node --test tests/dinner-kitchen-guide.test.mjs",
+    "test:pack": "node --test tests/dinner-pack.test.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
