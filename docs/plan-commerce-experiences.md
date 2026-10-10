@@ -1,5 +1,7 @@
 # Cuisine du Cambodge — Plan de développement commercial
 
+> **Référence de pilotage actuelle :** [Plan d’implémentation consolidé](./plan-implementation-consolide.md). Ce document conserve les décisions et la chronologie du cadrage commercial ; les statuts d’avancement, critères de réception et dépendances à jour se trouvent dans le plan consolidé. Ne pas conclure à un produit commercial prêt du seul fait que la PR #24 a une CI verte.
+
 **Statut :** cadrage validé sur le principe, produit et ventes non lancés.  
 **Date :** 2026-10-10  
 **Périmètre :** `/experiences/` et futurs parcours marchands, en conservant intégralement le site éditorial.
