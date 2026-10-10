@@ -9,9 +9,9 @@
 - La PR #20 (`feat: create dedicated workshop learning pages`) est **fusionnée sur main** depuis le 5 octobre 2026, commit `096ceccd9881d87dcbc27352648fa16ce13c1bd3`.
 - Au cadrage du 10 octobre 2026, le dernier `main` connu est `b1977a9b6937da0a5af1becd41fee0aca045fb41` ; il contient les correctifs du logo et de la navigation mobile en plus des ateliers.
 - **Le déploiement manuel sur OVH de ces ateliers détaillés reste à effectuer ou confirmer.** L'accès au seul listing `/apprendre/` ne suffit pas à valider les six pages de détail.
-- **Lot A : déployer/tester ce `main` (ou son successeur inspecté) sur OVH avant tout merge de la PR commerciale #24.**
+- **Lot A : synchroniser manuellement sur OVH la branche `ovh-production` déjà compilée**, puis tester les six ateliers avant tout merge de la PR commerciale #24. Dernière branche de publication vérifiée : `fe0400966df384222a3e8141deead2d761ac1bc4` (`deploy: b1977a9b...`).
 - **Lot B : merger et déployer séparément la PR #24** après revue et smoke tests de la version ateliers.
-- Voir `docs/runbook-ovh-ateliers-release.md` pour les contrôles précis. Aucun mécanisme OVH, chemin de prod ou identifiant n'est présumé.
+- Pipeline existant vérifié : `main → GitHub Actions (Astro build) → ovh-production → ~/www/cdc2017`. Voir `docs/runbook-ovh-ateliers-release.md` pour les commandes de synchronisation SSH non destructives et la recette post-déploiement.
 
 ## 0 bis. Prototype commercial désormais créé
 
