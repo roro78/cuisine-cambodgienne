@@ -68,3 +68,12 @@ jobs:
 
       - name: Built pages and deployment boundaries
         run: npm run test:built-experiences
+        
+      - name: Setup Chrome for responsive browser smoke
+        id: chrome
+        uses: browser-actions/setup-chrome@v2
+
+      - name: Browser journey and A4 print styles
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: npm run test:browser-experiences
