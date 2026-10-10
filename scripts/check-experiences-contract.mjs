@@ -58,6 +58,18 @@ requireCondition(reception.includes('reception-writing-lines') && receptionStyle
 requireCondition(!/<textarea\b|<form\b/i.test(reception), 'Prelaunch tasting workbook must not collect personal notes online');
 requireCondition(receptionStyle.includes('.reception-notebook') && receptionStyle.includes('[hidden]{display:none!important}'), 'Notebook styles must be scoped and respect inactive controls');
 requireCondition(receptionStyle.includes('.reception-content{overflow:visible!important}'), 'Printable multi-page notebook must not clip its pages');
+requireCondition(
+  ['data-reception-print-guests', 'data-reception-print-time', 'data-reception-print-menu'].every((attribute) => reception.includes(attribute)) &&
+  reception.includes('summaryGuests.textContent = notebook.guests') &&
+  reception.includes('summaryMenu.textContent = side.checked'),
+  'Printable reception book must identify the selected guests, service time and optional dish'
+);
+requireCondition(
+  receptionStyle.includes('.reception-configuration-summary') &&
+  receptionStyle.includes('.reception-configuration-summary strong{color:#111!important}'),
+  'Print configuration summary must remain legible in monochrome'
+);
+
 requireCondition(receptionModel.includes('RECEPTION_VALIDATION') && receptionModel.includes('essai culinaire réel'), 'Do not claim unperformed culinary validation');
 requireCondition(receptionModel.includes('RECEPTION_SAFETY') && receptionModel.includes('Ne goûtez jamais'), 'Safety reminder must survive in reception narrative');
 
