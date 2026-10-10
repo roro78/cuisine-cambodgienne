@@ -81,3 +81,12 @@ test('copyable list is labelled as demonstration, not a paid product', () => {
   assert.match(text, /recettes gratuites/);
   assert.match(text, /en préparation/);
 });
+
+
+test('copy text lists three free recipes only when the optional side is selected', () => {
+  const menu = ['Amok Trey', 'Chek Ktis', 'Prahok Ktis'];
+  const text = buildShoppingListText(buildPilotShoppingList(fixtures, 4), 4, menu);
+  assert.match(text, /Prahok Ktis/);
+  assert.match(text, /trois recettes|3 recettes/);
+  assert.match(buildShoppingListText([], 2), /deux recettes|2 recettes/);
+});
