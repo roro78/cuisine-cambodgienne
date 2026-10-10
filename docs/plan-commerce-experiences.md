@@ -124,6 +124,24 @@ Le prototype non marchand comprend désormais un troisième module interactif.
 - Trois tests supplémentaires et des contrôles de non-régression ont été ajoutés à `test:dinner`, `test:pack` et `test:kitchen`.
 - Ce parcours gratuit reste un **prototype fonctionnel**, pas une formation premium vendue. Il n'existe toujours ni réservation, ni collecte d'inscrits, ni paiement.
 
+## 0 decies. Grande étape — Carnet de réception complet (10 octobre 2026)
+
+**Développement effectivement réalisé, sans commercialisation :**
+
+- Nouvelle route statique `/experiences/grand-diner-khmer/carnet-de-reception/` en `noindex`, liée à la page existante du Grand Dîner et au pense-bête personnel.
+- Nouvelle création éditoriale originale : présentation du menu, conducteur de service de l'Amok calculé depuis les durées publiées, cinq chapitres pédagogiques à cocher (« Un menu qui respire », « Tout préparer avant la vapeur », « Respecter le rythme du plat », « Servir avec générosité », « Finir sur une note douce ») et un sixième chapitre facultatif Prahok Ktis.
+- Le lecteur peut choisir 2/4/6 convives, une heure de service entre 19 h et 21 h et l'accompagnement facultatif ; ces choix sont transmis depuis le Grand Dîner par paramètres d'URL non personnels et validés dans le navigateur. Le calcul est dérivé des utilitaires existants, sans nouvelle recette inventée.
+- Suivi local des gestes effectués et progression avec annonce accessible, sans compte ni données envoyées ; l'accompagnement ne se retrouve ni dans la progression ni dans le contenu si désactivé.
+- Nouvelle **fiche de dégustation originale** à imprimer et remplir au crayon : aromates, texture de l'Amok, contraste facultatif Prahok, douceur du Chek Ktis, améliorations pour un autre essai. Le formulaire n'enregistre aucune donnée en ligne.
+- Mise en page dédiée responsive et impression A4 avec masquage des menus du site, des éléments interactifs et des images décoratives.
+- Nouveau modèle `src/utils/dinnerReception.mjs` et déclarations TypeScript ; `tests/dinner-reception.test.mjs` couvre sources, chronologie indicative, scénario à trois plats, progressions, données invalides et rappel de sécurité.
+- Nouveau contrat de pré-lancement et étape `npm run test:reception` dans la CI existante.
+- **Référentiel d'essais réels** : `docs/protocole-validation-grand-diner.md` impose six configurations (2/4/6 convives, avec ou sans Prahok), des mesures culinaires et critères de validation avant tout discours commercial.
+
+**Limite substantielle :** il existe désormais un carnet numérique imprimable et un récit de dîner cohérent, mais **aucun essai culinaire physique n'a été effectué**. Le projet ne dispose pas de chef partenaire confirmé. Le calcul des horaires est une estimation et ne prouve pas un service coordonné. Les supports exclusifs, médias originaux finalisés et la vente restent à concevoir après validation.
+
+**Livraison** : respecter les deux lots. Publier et contrôler les ateliers #20 sur OVH d'abord ; PR #24 reste en brouillon, sans merge ni déploiement, jusqu'à CI finale, QA navigateur et décision de livraison distincte.
+
 ## 1. Décisions confirmées
 
 - Ne supprimer **aucune** recette, page culture, entrée de glossaire, atelier pédagogique ou route existante.
