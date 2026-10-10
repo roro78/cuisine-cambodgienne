@@ -1,0 +1,244 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SiteHeader from '../../../components/SiteHeader.astro';
+import SiteFooter from '../../../components/SiteFooter.astro';
+import { recipes } from '../../../data/recipes';
+import { PILOT_SLUGS, PILOT_SIDE_SLUG } from '../../../utils/dinnerPreview.mjs';
+import { SERVICE_TIMES } from '../../../utils/dinnerTimeline.mjs';
+import { RECEPTION_SIDE_NOTE, buildReceptionNotebook } from '../../../utils/dinnerReception.mjs';
+import '../../../styles/reception-notebook.css';
+
+const sources = [...PILOT_SLUGS, PILOT_SIDE_SLUG].map((slug) => recipes.find((item) => item.slug === slug));
+if (sources.some((item) => !item)) throw new Error('Reception notebook requires the three public recipe sources');
+const recipeData = sources
+  .filter((item): item is NonNullable<typeof item> => Boolean(item))
+  .map(({ slug, title, baseServings, ingredients, prepTime, cookTime, equipment }) => ({ slug, title, baseServings, ingredients, prepTime, cookTime, equipment }));
+const base = buildReceptionNotebook(recipeData);
+const chapters = buildReceptionNotebook(recipeData, { includeSide: true }).chapters;
+---
+<BaseLayout
+  title="Carnet de réception — Grand Dîner Khmer | Cuisine du Cambodge"
+  description="Un carnet de préparation gratuit pour essayer un dîner cambodgien à la maison : conducteur indicatif, repères de service et checklist. Projet en cours d’essais."
+  image="/images/cuisine/amok-alt-1600.webp"
+  noindex
+>
+  <SiteHeader />
+  <main class="reception-notebook" data-reception-notebook data-recipes={JSON.stringify(recipeData)}>
+    <header class="reception-hero">
+      <div class="reception-hero-image">
+        <img src="/images/cuisine/amok-alt-1600.webp" alt="" width="1600" height="1067" fetchpriority="high"/>
+      </div>
+      <div class="reception-hero-content">
+        <a href="/experiences/grand-diner-khmer/" class="reception-back">← Retour au Grand Dîner Khmer</a>
+        <p class="reception-eyebrow">Cuisine du Cambodge · Laboratoire de réception</p>
+        <h1>Recevoir.<br/><em>Avec le goût.</em></h1>
+        <p class="reception-intro">Un dîner se raconte aussi entre les recettes. L'odeur du kroeung, la vapeur qui s'apaise, les herbes posées au dernier moment. Voici notre premier carnet pour organiser ces moments et les éprouver chez soi.</p>
+        <p class="reception-status">{base.status}</p>
+      </div>
+    </header>
+
+    <div class="reception-content">
+      <nav class="reception-local-nav" aria-label="Sommaire du carnet">
+        <a href="#carnet-menu">Le menu</a>
+        <a href="#carnet-conducteur">Le conducteur</a>
+        <a href="#carnet-chapitres">Les gestes</a>
+        <a href="#carnet-bilan">Le bilan</a>
+      </nav>
+
+      <section class="reception-intention" aria-labelledby="reception-intention-title">
+        <span class="reception-mark">01 / La table</span>
+        <div>
+          <p class="reception-eyebrow">Un projet gourmand, à essayer</p>
+          <h2 id="reception-intention-title">Du parfum, du partage, du temps pour les autres.</h2>
+          <p>Notre proposition associe l'Amok Trey, poisson délicatement parfumé, au Chek Ktis, dessert tiède aux bananes et au coco. Le Prahok Ktis peut rejoindre la table pour ceux qui aiment les goûts francs et les crudités croquantes. Chaque plat renvoie à sa recette gratuite : ce carnet apporte le fil conducteur du repas, pas une nouvelle recette prétendument testée.</p>
+        </div>
+      </section>
+
+      <section class="reception-config" id="carnet-menu" aria-labelledby="reception-config-title">
+        <div class="reception-section-head">
+          <p class="reception-eyebrow">Composez votre essai</p>
+          <h2 id="reception-config-title">Votre table, vos choix.</h2>
+          <p>Ce carnet ne mémorise rien en ligne. Ajustez les paramètres : les repères et le nombre de gestes à suivre se mettent à jour sur cette page.</p>
+        </div>
+        <div class="reception-config-grid">
+          <label class="reception-field" for="reception-guests">Autour de la table
+            <select id="reception-guests" data-reception-guests>
+              <option value="2">2 personnes</option>
+              <option value="4">4 personnes</option>
+              <option value="6">6 personnes</option>
+            </select>
+          </label>
+          <label class="reception-field" for="reception-time">Servir l'Amok vers
+            <select id="reception-time" data-reception-time>
+              {SERVICE_TIMES.map((time) => <option value={time} selected={time === '20:00'}>{time.replace(':','h')}</option>)}
+            </select>
+          </label>
+          <label class="reception-add-on">
+            <input type="checkbox" data-reception-side />
+            <span><strong>Prévoir aussi le Prahok Ktis</strong><small>Un plat à partager, en préparation séparée. Contient notamment du porc et du prahok.</small></span>
+          </label>
+        </div>
+        <div class="reception-menu">
+          <div class="reception-menu-copy">
+            <p class="reception-eyebrow">La partition du repas</p>
+            <h3>Trois sensations.<br/>Un même fil.</h3>
+            <p>Les aromates d'abord. La douceur du coco ensuite. Puis une dernière bouchée tiède qui prolonge le repas. Les accords sont une proposition éditoriale à confirmer lors des essais.</p>
+          </div>
+          <ol>
+            <li><span>01 · Le plat</span><strong>Amok Trey</strong><a href="/recettes/amok-trey/">Voir la recette gratuite ↗</a></li>
+            <li data-reception-side-menu hidden><span>À partager · Facultatif</span><strong>Prahok Ktis</strong><a href="/recettes/prahok-ktis/">Voir la recette gratuite ↗</a></li>
+            <li><span>02 · La douceur</span><strong>Chek Ktis</strong><a href="/recettes/chek-ktis/">Voir la recette gratuite ↗</a></li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="reception-runbook" id="carnet-conducteur" aria-labelledby="reception-runbook-title">
+        <div class="reception-section-head">
+          <p class="reception-eyebrow">La mise en place</p>
+          <h2 id="reception-runbook-title">Un conducteur, pas un chronomètre.</h2>
+          <p>Les horaires proviennent uniquement des durées publiées de l'Amok Trey, avec une marge de 15 minutes. Ils donnent un ordre de grandeur, pas une garantie de cuisson ou de service.</p>
+        </div>
+        <div class="reception-runbook-layout">
+          <ol data-reception-timeline class="reception-milestones">
+            {base.pack.timeline.steps.map((step) => (
+              <li><time datetime={step.time.replace('h', ':')}>{step.time}</time><div><h3>{step.title}</h3><p>{step.description}</p></div></li>
+            ))}
+          </ol>
+          <div class="reception-side-time">
+            <p class="reception-eyebrow">Les autres préparations</p>
+            <h3>Le temps se partage.</h3>
+            <p>Chek Ktis : <strong>{base.dessertMinutes} minutes de préparation et cuisson selon la fiche</strong>. À programmer séparément selon l'heure choisie pour le dessert.</p>
+            <p data-reception-side-time hidden>{RECEPTION_SIDE_NOTE} Selon la fiche, comptez <strong data-reception-side-minutes>50</strong> minutes de préparation et de cuisson pour le Prahok Ktis.</p>
+            <p>Un premier essai permettra de vérifier l'enchaînement, le matériel disponible et les vrais temps de dressage.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="reception-chapters" id="carnet-chapitres" aria-labelledby="reception-chapters-title">
+        <div class="reception-section-head">
+          <p class="reception-eyebrow">Les gestes et les sensations</p>
+          <h2 id="reception-chapters-title">Le carnet du cuisinier.</h2>
+          <p>Ce ne sont pas des cours animés. Ce sont des repères éditoriaux conçus pour vous aider à préparer, observer et raconter le dîner. Cochez les gestes accomplis au fil de votre essai.</p>
+        </div>
+        <div class="reception-progress">
+          <span data-reception-progress-text aria-live="polite">{'0 geste sur ' + base.tasksCount + ' accompli'}</span>
+          <progress data-reception-progress value="0" max={base.tasksCount} aria-label="Progression dans le carnet">0 %</progress>
+        </div>
+        <div class="reception-chapter-grid">
+          {chapters.map((chapter) => (
+            <article class="reception-chapter" data-reception-chapter data-reception-chapter-id={chapter.id} hidden={chapter.id === 'partage'}>
+              <div class="reception-chapter-top">
+                <span class="reception-chapter-number">{chapter.number}</span>
+                <p class="reception-eyebrow">{chapter.eyebrow}</p>
+              </div>
+              <h3>{chapter.title}</h3>
+              <p class="reception-chapter-description">{chapter.description}</p>
+              <div class="reception-chapter-tasks">
+                <h4>À faire</h4>
+                {chapter.tasks.map((task) => (
+                  <label class="reception-check">
+                    <input type="checkbox" data-reception-task data-task-key={chapter.id + ':' + task.id}/>
+                    <span>{task.label}</span>
+                  </label>
+                ))}
+              </div>
+              <div class="reception-chapter-lesson"><span>Le repère gourmand</span><p>{chapter.lesson}</p></div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="reception-conclusion" id="carnet-bilan" aria-labelledby="reception-conclusion-title">
+        <div class="reception-conclusion-main">
+          <p class="reception-eyebrow">Après la dernière bouchée</p>
+          <h2 id="reception-conclusion-title">Un repas à affiner, ensemble.</h2>
+          <p>Ce carnet est un premier scénario pour apprendre en faisant. Notez ce qui a pris plus de temps, les parfums qui ont plu, la quantité de crudités nécessaire et les gestes que vous voudriez revoir.</p>
+          <p class="reception-safety">{base.safety}</p>
+          <p class="reception-validation">{base.validation}</p>
+          <div class="reception-actions">
+            <button type="button" data-reception-print>Imprimer ce carnet</button>
+            <a href="/experiences/grand-diner-khmer/">Retour à l'expérience ↗</a>
+          </div>
+          <p class="reception-feedback" data-reception-feedback role="status" aria-live="polite" aria-atomic="true"></p>
+          <p class="reception-privacy">Impression dans votre navigateur ; aucune sauvegarde en ligne ni commande activée.</p>
+        </div>
+        <figure class="reception-closing-image"><img src="/images/cuisine/kroeung-1200.webp" width="1200" height="800" loading="lazy" alt="Aromates frais destinés à la préparation d'un kroeung"/><figcaption>Le parfum commence bien avant le service.</figcaption></figure>
+      </section>
+    </div>
+  </main>
+  <SiteFooter />
+  <script>
+    import { buildReceptionNotebook, getNotebookProgress } from '../../../utils/dinnerReception.mjs';
+    import type { ReceptionNotebook } from '../../../utils/dinnerReception.mjs';
+
+    const root = document.querySelector<HTMLElement>('[data-reception-notebook]');
+    if (root?.dataset.recipes) {
+      const recipes = JSON.parse(root.dataset.recipes);
+      const guests = root.querySelector<HTMLSelectElement>('[data-reception-guests]');
+      const time = root.querySelector<HTMLSelectElement>('[data-reception-time]');
+      const side = root.querySelector<HTMLInputElement>('[data-reception-side]');
+      const sideMenu = root.querySelector<HTMLElement>('[data-reception-side-menu]');
+      const sideTime = root.querySelector<HTMLElement>('[data-reception-side-time]');
+      const sideMinutes = root.querySelector<HTMLElement>('[data-reception-side-minutes]');
+      const timeline = root.querySelector<HTMLOListElement>('[data-reception-timeline]');
+      const text = root.querySelector<HTMLElement>('[data-reception-progress-text]');
+      const progress = root.querySelector<HTMLProgressElement>('[data-reception-progress]');
+      const print = root.querySelector<HTMLButtonElement>('[data-reception-print]');
+      const feedback = root.querySelector<HTMLElement>('[data-reception-feedback]');
+      const cards = Array.from(root.querySelectorAll<HTMLElement>('[data-reception-chapter]'));
+      const tasks = Array.from(root.querySelectorAll<HTMLInputElement>('[data-reception-task]'));
+      if (guests && time && side && sideMenu && sideTime && sideMinutes && timeline && text && progress && print && feedback) {
+        const query = new URLSearchParams(window.location.search);
+        const initialGuests = Number(query.get('convives'));
+        if ([2, 4, 6].includes(initialGuests)) guests.value = String(initialGuests);
+        const initialTime = query.get('service');
+        if (initialTime && [...time.options].some((option) => option.value === initialTime)) time.value = initialTime;
+        side.checked = query.get('partage') === '1';
+        const completed = new Set<string>();
+
+        const render = () => {
+          const notebook: ReceptionNotebook = buildReceptionNotebook(recipes, {
+            guests: Number(guests.value),
+            serviceTime: time.value,
+            includeSide: side.checked
+          });
+          sideMenu.hidden = !side.checked;
+          sideTime.hidden = !side.checked;
+          sideMinutes.textContent = notebook.sideMinutes === null ? '' : String(notebook.sideMinutes);
+          cards.forEach((card) => { if (card.dataset.receptionChapterId === 'partage') card.hidden = !side.checked; });
+          timeline.replaceChildren(...notebook.pack.timeline.steps.map((step) => {
+            const li = document.createElement('li');
+            const clock = document.createElement('time');
+            const body = document.createElement('div');
+            const heading = document.createElement('h3');
+            const paragraph = document.createElement('p');
+            clock.dateTime = step.time.replace('h', ':');
+            clock.textContent = step.time;
+            heading.textContent = step.title;
+            paragraph.textContent = step.description;
+            body.append(heading, paragraph);
+            li.append(clock, body);
+            return li;
+          }));
+          const { done, total } = getNotebookProgress(notebook, completed);
+          progress.max = total;
+          progress.value = done;
+          progress.textContent = done + ' sur ' + total;
+          text.textContent = done + ' geste' + (done > 1 ? 's' : '') + ' sur ' + total + ' accompli' + (done > 1 ? 's' : '');
+        };
+        tasks.forEach((task) => task.addEventListener('change', () => {
+          const key = task.dataset.taskKey;
+          if (!key) return;
+          if (task.checked) completed.add(key);
+          else completed.delete(key);
+          render();
+        }));
+        guests.addEventListener('change', render);
+        time.addEventListener('change', render);
+        side.addEventListener('change', render);
+        print.addEventListener('click', () => { feedback.textContent = 'La boîte de dialogue d’impression va s’ouvrir.'; window.print(); });
+        render();
+      }
+    }
+  </script>
+</BaseLayout>
