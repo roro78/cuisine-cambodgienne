@@ -58,6 +58,9 @@ requireCondition(preview.includes('aria-pressed') && preview.includes('aria-live
 requireCondition(preview.includes('data-preview-copy') && calculator.includes('buildShoppingListText'), 'Copyable shopping list must be present');
 requireCondition(preview.includes('data-preview-key') && preview.includes('const selected = new Set'), 'Checked shopping ingredients must survive changes of serving size');
 requireCondition(calculator.includes('amok-trey') && calculator.includes('chek-ktis'), 'Preview recipes must be the established pilot menu');
+requireCondition(calculator.includes("PILOT_SIDE_SLUG = 'prahok-ktis'") && preview.includes('data-preview-side-toggle') && preview.includes('data-preview-side={JSON.stringify(optionalData)}'), 'Prahok side must be real opt-in recipe data');
+requireCondition(preview.includes("new CustomEvent('dinner:side'") && pack.includes("'dinner:side'") && pack.includes('data-pack-side-label'), 'Optional side must update the dinner pack and preview');
+requireCondition(packModel.includes('includeSide = false') && packModel.includes('Optional accompaniment is missing'), 'Extra dish must not be silently included without its recipe');
 requireCondition(preview.includes("new CustomEvent('dinner:guests'") && timeline.includes("new CustomEvent('dinner:time'"), 'Recipe selectors must notify the roadmap');
 requireCondition(pack.includes("'dinner:guests'") && pack.includes("'dinner:time'") && pack.includes('data-dinner-pack-recipes={JSON.stringify(packRecipes)}'), 'Roadmap must sync with both validated controls');
 requireCondition(pack.includes('Blob([summary]') && pack.includes('URL.revokeObjectURL') && !/fetch\s*\(/.test(pack), 'Roadmap export must be local and clean up its temporary URL');
