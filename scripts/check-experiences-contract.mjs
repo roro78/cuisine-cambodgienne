@@ -10,6 +10,8 @@ const detailStyle = read('src/styles/grand-diner-concept.css');
 const preview = read('src/components/DinnerPreview.astro');
 const timeline = read('src/components/DinnerTimeline.astro');
 const kitchen = read('src/components/DinnerKitchenGuide.astro');
+const pack = read('src/components/DinnerPack.astro');
+const packModel = read('src/utils/dinnerPack.mjs');
 const kitchenModel = read('src/utils/dinnerKitchenGuide.mjs');
 const timelineCalculator = read('src/utils/dinnerTimeline.mjs');
 const calculator = read('src/utils/dinnerPreview.mjs');
@@ -33,7 +35,7 @@ for (const [route, text] of [['/experiences/', landing], ['/experiences/grand-di
 }
 
 requireCondition(!sitemap.includes("'/experiences/'"), 'Unlaunched experiences must not appear in XML sitemap');
-requireCondition(!/<form\b/i.test(preview) && !/<form\b/i.test(timeline) && !/<form\b/i.test(kitchen), 'Preview must not collect personal information');
+requireCondition(!/<form\b/i.test(preview) && !/<form\b/i.test(timeline) && !/<form\b/i.test(kitchen) && !/<form\b/i.test(pack), 'Preview must not collect personal information');
 requireCondition(landing.includes("Partenaire recherché"), 'Partner search state must remain explicit');
 requireCondition(landing.includes("se poursuit indépendamment"), 'Digital offer must not be tied to a specialist');
 requireCondition(landing.includes('href="/experiences/grand-diner-khmer/"'), 'Landing must link to concept');
@@ -41,6 +43,7 @@ requireCondition(landing.includes('href="/apprendre/"'), 'Free workshops must st
 requireCondition(detail.includes('import DinnerPreview') && detail.includes('<DinnerPreview />'), 'Grand Dîner must render the real preview component');
 requireCondition(detail.includes('import DinnerTimeline') && detail.includes('<DinnerTimeline />'), 'Grand Dîner must show the real indicative planner');
 requireCondition(detail.includes('import DinnerKitchenGuide') && detail.includes('<DinnerKitchenGuide />'), 'Grand Dîner must include stepwise kitchen preview');
+requireCondition(detail.includes('import DinnerPack') && detail.includes('<DinnerPack />'), 'Grand Dîner must include the private downloadable roadmap');
 requireCondition(kitchen.includes('data-kitchen-dishes={JSON.stringify(dishes)}') && kitchen.includes('data-guide-previous') && kitchen.includes('data-guide-next') && kitchen.includes('data-guide-complete'), 'Kitchen guide must expose actual step controls');
 requireCondition(kitchen.includes('data-guide-progress') && kitchen.includes('aria-live="polite"'), 'Kitchen guide must expose visible and accessible progress');
 requireCondition(kitchen.includes('positions = new Map') && kitchen.includes('completed = new Map'), 'Kitchen steps should preserve state when switching dishes');
@@ -55,6 +58,11 @@ requireCondition(preview.includes('aria-pressed') && preview.includes('aria-live
 requireCondition(preview.includes('data-preview-copy') && calculator.includes('buildShoppingListText'), 'Copyable shopping list must be present');
 requireCondition(preview.includes('data-preview-key') && preview.includes('const selected = new Set'), 'Checked shopping ingredients must survive changes of serving size');
 requireCondition(calculator.includes('amok-trey') && calculator.includes('chek-ktis'), 'Preview recipes must be the established pilot menu');
+requireCondition(preview.includes("new CustomEvent('dinner:guests'") && timeline.includes("new CustomEvent('dinner:time'"), 'Recipe selectors must notify the roadmap');
+requireCondition(pack.includes("'dinner:guests'") && pack.includes("'dinner:time'") && pack.includes('data-dinner-pack-recipes={JSON.stringify(packRecipes)}'), 'Roadmap must sync with both validated controls');
+requireCondition(pack.includes('Blob([summary]') && pack.includes('URL.revokeObjectURL') && !/fetch\\s*\\(/.test(pack), 'Roadmap export must be local and clean up its temporary URL');
+requireCondition(packModel.includes('buildPilotShoppingList') && packModel.includes('buildPilotServicePlan'), 'Roadmap must reuse the tested calculators');
+requireCondition(packModel.includes('Ne jamais goûter') && packModel.includes('Aperçu gratuit'), 'Downloaded roadmap must disclose food safety and prototype status');
 requireCondition(detail.includes('href="/apprendre/"'), 'Concept must link to free existing workshops');
 requireCondition(detail.includes("Aucune vente ni réservation ouverte"), 'Concept cannot be mistaken for a released product');
 requireCondition(landingStyle.includes('.exp-page') && detailStyle.includes('.dinner-concept'), 'Commercial CSS must stay namespaced');
