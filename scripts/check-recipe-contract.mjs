@@ -56,6 +56,23 @@ requiredNewRecipes.forEach((slug) => {
   if (!slugs.includes(slug)) failures.push(`Missing V15 recipe: ${slug}`);
 });
 
+// Regressions in public food-safety copy must be caught even before the guided-dinner PR ships.
+const recipeSegment = (slug) => recipes.split("slug: '" + slug + "',")[1]?.split(/\n  \{\n    slug: '/)[0] ?? '';
+const amok = recipeSegment('amok-trey');
+const prahok = recipeSegment('prahok-ktis');
+if (!amok.includes('Ne goûtez plus la préparation après l’ajout des œufs crus ni après celui du poisson cru.')) {
+  failures.push('Amok must forbid tasting after adding raw eggs or raw fish');
+}
+if (!amok.includes('Rectifier l’assaisonnement avant les œufs et le poisson crus')) {
+  failures.push('Amok tasting must occur before raw eggs and fish are added');
+}
+if (!prahok.includes('Goûtez uniquement lorsque le porc et toute la préparation sont complètement cuits')) {
+  failures.push('Prahok Ktis must not suggest tasting undercooked minced pork');
+}
+if (!prahok.includes('Ne goûtez jamais une préparation contenant du porc cru ou insuffisamment cuit.')) {
+  failures.push('Prahok Ktis must warn against tasting raw pork');
+}
+
 if (failures.length) {
   console.error('Recipe contract failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));
