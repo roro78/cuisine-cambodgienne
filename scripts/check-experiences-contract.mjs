@@ -7,6 +7,8 @@ const landing = read('src/pages/experiences/index.astro');
 const detail = read('src/pages/experiences/grand-diner-khmer.astro');
 const landingStyle = read('src/styles/experiences-prelaunch.css');
 const detailStyle = read('src/styles/grand-diner-concept.css');
+const preview = read('src/components/DinnerPreview.astro');
+const calculator = read('src/utils/dinnerPreview.mjs');
 const sitemap = read('src/pages/sitemap.xml.ts');
 const workshops = read('src/data/workshops.ts');
 const failures = [];
@@ -27,12 +29,17 @@ for (const [route, text] of [['/experiences/', landing], ['/experiences/grand-di
 }
 
 requireCondition(!sitemap.includes("'/experiences/'"), 'Unlaunched experiences must not appear in XML sitemap');
+requireCondition(!/<form\\b/i.test(preview), 'Preview must not collect personal information');
 requireCondition(landing.includes("Partenaire recherché"), 'Partner search state must remain explicit');
 requireCondition(landing.includes("se poursuit indépendamment"), 'Digital offer must not be tied to a specialist');
 requireCondition(landing.includes('href="/experiences/grand-diner-khmer/"'), 'Landing must link to concept');
 requireCondition(landing.includes('href="/apprendre/"'), 'Free workshops must stay discoverable');
-requireCondition(detail.includes('data-dinner-guests="2"') && detail.includes('data-dinner-guests="4"') && detail.includes('data-dinner-guests="6"'), 'Demo needs all guest options');
-requireCondition(detail.includes("aria-pressed") && detail.includes('aria-live="polite"'), 'Interactive demo must expose accessible state');
+requireCondition(detail.includes('import DinnerPreview') && detail.includes('<DinnerPreview />'), 'Grand Dîner must render the real preview component');
+requireCondition(preview.includes('data-preview-guests={guests}') && preview.includes('[2, 4, 6]'), 'Preview must offer 2/4/6 guests');
+requireCondition(preview.includes('data-preview-recipes={JSON.stringify(previewData)}'), 'Preview must use existing catalogue data');
+requireCondition(preview.includes('aria-pressed') && preview.includes('aria-live="polite"'), 'Preview must expose accessible button state and announcements');
+requireCondition(preview.includes('data-preview-copy') && calculator.includes('buildShoppingListText'), 'Copyable shopping list must be present');
+requireCondition(calculator.includes('amok-trey') && calculator.includes('chek-ktis'), 'Preview recipes must be the established pilot menu');
 requireCondition(detail.includes('href="/apprendre/"'), 'Concept must link to free existing workshops');
 requireCondition(detail.includes("Aucune vente ni réservation ouverte"), 'Concept cannot be mistaken for a released product');
 requireCondition(landingStyle.includes('.exp-page') && detailStyle.includes('.dinner-concept'), 'Commercial CSS must stay namespaced');
