@@ -1,10 +1,10 @@
 ---
 import { recipes } from '../data/recipes';
-import { PILOT_GUIDE_SLUGS, buildPilotKitchenGuide } from '../utils/dinnerKitchenGuide.mjs';
+import { PILOT_GUIDE_SLUGS, PILOT_GUIDE_SIDE_SLUG, buildPilotKitchenGuide } from '../utils/dinnerKitchenGuide.mjs';
 
-const sourceRecipes = PILOT_GUIDE_SLUGS.map((slug) => recipes.find((recipe) => recipe.slug === slug));
+const sourceRecipes = [...PILOT_GUIDE_SLUGS, PILOT_GUIDE_SIDE_SLUG].map((slug) => recipes.find((recipe) => recipe.slug === slug));
 if (sourceRecipes.some((recipe) => !recipe)) throw new Error('Missing published recipe for kitchen mode');
-const dishes = buildPilotKitchenGuide(sourceRecipes.filter((recipe): recipe is NonNullable<typeof recipe> => Boolean(recipe)));
+const dishes = buildPilotKitchenGuide(sourceRecipes.filter((recipe): recipe is NonNullable<typeof recipe> => Boolean(recipe)), true);
 const initialDish = dishes[0];
 const firstStep = initialDish.steps[0];
 ---
@@ -17,8 +17,8 @@ const firstStep = initialDish.steps[0];
   <div class="dinner-kitchen-workspace">
     <div class="dinner-kitchen-navigation" role="group" aria-label="Choisir une recette à suivre">
       {dishes.map((dish, index) => (
-        <button type="button" data-guide-dish={dish.slug} aria-pressed={index === 0 ? 'true' : 'false'}>
-          <span>{index === 0 ? 'Le plat' : 'Le dessert'}</span>
+        <button type="button" data-guide-dish={dish.slug} aria-pressed={index === 0 ? 'true' : 'false'} hidden={dish.slug === PILOT_GUIDE_SIDE_SLUG}>
+          <span>{index === 0 ? 'Le plat' : index === 1 ? 'Le dessert' : 'À partager'}</span>
           {dish.title}
         </button>
       ))}
@@ -130,6 +130,16 @@ const firstStep = initialDish.steps[0];
       recipeLink.setAttribute('aria-label', `Consulter la recette complète ${dish.title}`);
       feedback.textContent = announcement;
     };
+
+    document.addEventListener('dinner:side', (event) => {
+      const enabled = (event as CustomEvent<{ includeSide: boolean }>).detail?.includeSide === true;
+      const sideButton = dishButtons.find((button) => button.dataset.guideDish === 'prahok-ktis');
+      if (sideButton) sideButton.hidden = !enabled;
+      if (!enabled && activeSlug === 'prahok-ktis') {
+        activeSlug = dishes[0].slug;
+        render('Accompagnement retiré : retour à la recette de l’Amok.');
+      }
+    });
 
     dishButtons.forEach((button) => button.addEventListener('click', () => {
       const slug = button.dataset.guideDish;
