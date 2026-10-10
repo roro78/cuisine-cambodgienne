@@ -73,6 +73,13 @@ if (!prahok.includes('Ne goûtez jamais une préparation contenant du porc cru o
   failures.push('Prahok Ktis must warn against tasting raw pork');
 }
 
+if (!detail.includes('Les étapes, les gestes et les bons repères.') || detail.includes('Prenez votre temps, goûtez et ajustez.')) {
+  failures.push('Guided method must not use a generic invitation to taste potentially raw food');
+}
+if (!amok.includes('poisson et les œufs sont complètement cuits avant de servir')) {
+  failures.push('Amok FAQ must require complete cooking before serving');
+}
+
 if (failures.length) {
   console.error('Recipe contract failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));
