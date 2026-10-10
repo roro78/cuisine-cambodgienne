@@ -66,3 +66,6 @@
   .exp-actions a{width:100%}
 }
 @media(prefers-reduced-motion:reduce){.exp-page *, .exp-page *::before, .exp-page *::after{scroll-behavior:auto}}
+
+.exp-card-link{display:inline-flex;align-self:flex-start;justify-content:space-between;gap:1.5rem;margin-top:.3rem;padding:.75rem 0;border-bottom:1px solid #8e543e;font-size:.75rem;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:#8e543e!important}
+.exp-card-link:hover{color:#523322!important}
