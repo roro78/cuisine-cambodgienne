@@ -57,6 +57,7 @@ requireCondition(reception.includes('id="carnet-degustation"') && reception.incl
 requireCondition(reception.includes('reception-writing-lines') && receptionStyle.includes('@media print') && receptionStyle.includes('.reception-tasting-card'), 'Culinary rehearsal must include printable original feedback prompts');
 requireCondition(!/<textarea\b|<form\b/i.test(reception), 'Prelaunch tasting workbook must not collect personal notes online');
 requireCondition(receptionStyle.includes('.reception-notebook') && receptionStyle.includes('[hidden]{display:none!important}'), 'Notebook styles must be scoped and respect inactive controls');
+requireCondition(receptionStyle.includes('.reception-content{overflow:visible!important}'), 'Printable multi-page notebook must not clip its pages');
 requireCondition(receptionModel.includes('RECEPTION_VALIDATION') && receptionModel.includes('essai culinaire réel'), 'Do not claim unperformed culinary validation');
 requireCondition(receptionModel.includes('RECEPTION_SAFETY') && receptionModel.includes('Ne goûtez jamais'), 'Safety reminder must survive in reception narrative');
 
