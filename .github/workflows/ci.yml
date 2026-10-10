@@ -45,6 +45,9 @@ jobs:
       - name: Editorial regression contract
         run: npm run test:editorial
 
+      - name: Reception notebook editorial and schedule checks
+        run: npm run test:reception
+
       - name: Personal dinner roadmap calculations
         run: npm run test:pack
 
