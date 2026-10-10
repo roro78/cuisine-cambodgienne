@@ -124,7 +124,7 @@ requireCondition(
 );
 requireCondition(
   ovhRunbook.includes('e59c104d4f356cf7f0077402430548fa4cd191f7') &&
-  ovhRunbook.includes('six fiches d\'ateliers') &&
+  ovhRunbook.includes('**six** fiches d\'ateliers') &&
   ovhRunbook.includes('PR #25') &&
   ovhRunbook.includes('non fusionnée et non publiée') &&
   !ovhRunbook.includes('déploiement OVH à faire/confirmer') &&
