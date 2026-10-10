@@ -31,7 +31,7 @@ for (const [route, text] of [['/experiences/', landing], ['/experiences/grand-di
 }
 
 requireCondition(!sitemap.includes("'/experiences/'"), 'Unlaunched experiences must not appear in XML sitemap');
-requireCondition(!/<form\b/i.test(preview) && !/<form\\b/i.test(timeline), 'Preview must not collect personal information');
+requireCondition(!/<form\b/i.test(preview) && !/<form\b/i.test(timeline), 'Preview must not collect personal information');
 requireCondition(landing.includes("Partenaire recherché"), 'Partner search state must remain explicit');
 requireCondition(landing.includes("se poursuit indépendamment"), 'Digital offer must not be tied to a specialist');
 requireCondition(landing.includes('href="/experiences/grand-diner-khmer/"'), 'Landing must link to concept');
