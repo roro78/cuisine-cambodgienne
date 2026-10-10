@@ -26,7 +26,7 @@ export function buildPilotKitchenGuide(recipes, includeSide = false) {
       steps: recipe.steps.map((step, index) => ({
         id: slug + '-step-' + (index + 1),
         title: step.title,
-        // Temporary safety copy. A separate editorial revision of the public recipe is needed.
+        // Reinforce the safe instructions already published in the Amok and Prahok recipes (PR #25).
         text: slug === 'amok-trey' && index === 1
           ? AMOK_RAW_EGG_CAUTION
           : slug === 'prahok-ktis' && /^Ajouter le prahok/i.test(step.title)
