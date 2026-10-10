@@ -1,36 +1,42 @@
-# Mise en production OVH — Ateliers pédagogiques (PR #20)
+# Mise en production OVH — Ateliers et Expériences
 
-**État au 10 octobre 2026 : validation GitHub acquise, déploiement OVH à faire/confirmer.**  
-**Dépendance obligatoire avant la mise en production du chantier commercial PR #24.**
+**État contrôlé le 10 octobre 2026 : lot A EN LIGNE ; lot B (PR #24) toujours en attente de décision, non fusionné.**
 
-## Faits vérifiés
+Ce guide décrit le déploiement manuel de la branche statique `ovh-production`. Il distingue les résultats **vérifiés sur le site public** du SHA exact du répertoire SSH OVH, qui doit encore être confirmé directement sur l'hébergement. Ne jamais considérer le succès de GitHub Actions comme une preuve suffisante du déploiement OVH.
 
-- PR #20 : https://github.com/roro78/cuisine-cambodgienne/pull/20 — fermée après fusion le 5 octobre 2026.
-- Commit de fusion des pages ateliers : `096ceccd9881d87dcbc27352648fa16ce13c1bd3`.
-- `main` au moment du cadrage : `b1977a9b6937da0a5af1becd41fee0aca045fb41`, fusion PR #23 (logo et menu mobile). `main` contient donc également les PR #21–23.
-- La page listing `/apprendre/` est accessible sur le site public. L'accessibilité des nouvelles pages de détail et leur code exact côté OVH n'ont pas été confirmés.
-- **Ne pas déduire du listing accessible que tous les ateliers détaillés sont déployés.**
+## 1. Lot A : acquis en production
 
-## Chaîne de publication confirmée
+- **PR #20 — six ateliers pédagogiques gratuits :** fusionnée dans `main`. Le listing `/apprendre/` et les **six** fiches d'ateliers ont été contrôlés en HTTP 200 sur le domaine public.
+- Les six routes vérifiées :
+  - `/apprendre/piler-aromates-au-mortier/`
+  - `/apprendre/equilibrer-une-sauce/`
+  - `/apprendre/saisir-viande-poele/`
+  - `/apprendre/fraicheur-herbes-agrumes/`
+  - `/apprendre/bouillon-leger-savoureux/`
+  - `/apprendre/composer-repas-cambodgien/`
+- **Sitemap :** les six routes sont présentes dans `/sitemap.xml`.
+- **Logo / navigation :** le nouveau PNG de marque et les éléments du menu mobile ont été constatés dans le HTML public ; cela ne remplace pas un contrôle visuel complet sur appareil.
+- **PR #25 — sécurité alimentaire :** fusionnée dans `main` au commit `9cacbaab14adadfdef63cfc9c55dbd94a77efa14` et visible sur les pages publiques `/recettes/amok-trey/` et `/recettes/prahok-ktis/`.
+- **Chaîne de build validée :** les workflows GitHub Actions CI et publication OVH relatifs à ce commit ont réussi.
+- **Dernier artefact GitHub contrôlé :** branche `ovh-production` au commit `e59c104d4f356cf7f0077402430548fa4cd191f7`, message `deploy: 9cacbaab14adadfdef63cfc9c55dbd94a77efa14`.
 
-Le dépôt contient le workflow `.github/workflows/deploy-ovh.yml` : sur un push `main`, GitHub Actions réalise le build statique `dist/`, puis publie les fichiers compilés sur la branche distincte **`ovh-production`**. La cible OVH utilisée précédemment est `~/www/cdc2017` sur le cluster SSH `ssh.cluster102.hosting.ovh.net`.
+**Le lot A n'est plus un prérequis bloquant à réaliser.** Ne pas republier par erreur l'ancien artefact `fe040096` : c'était l'état historique **avant** la PR #25. La présence du contenu attendu sur le site public ne démontre toutefois pas à elle seule que le HEAD local OVH vaut `e59c104` ; relever ce SHA via SSH lorsqu'un contrôle d'exploitation est nécessaire.
 
-**Dernière branche de publication vérifiée le 10 octobre 2026 :**
+## 2. Chaîne de publication utilisée
 
-- `ovh-production` HEAD = `fe0400966df384222a3e8141deead2d761ac1bc4`
-- Message : `deploy: b1977a9b6937da0a5af1becd41fee0aca045fb41`
-- Cette branche contient les six fichiers `apprendre/<slug>/index.html` et le header/menu à jour.
-- Le fait qu'ils soient sur GitHub **ne prouve pas** que le répertoire OVH a été synchronisé avec cette version.
+Le workflow `.github/workflows/deploy-ovh.yml` s'exécute **sur un push vers `main`** : installation des dépendances, contrôle Astro, génération de `dist/`, puis publication de ce contenu statique dans la branche distincte `ovh-production`.
 
-### Commandes de synchronisation utilisées pour cet hébergement
+La cible OVH précédemment utilisée est `~/www/cdc2017` sur `ssh.cluster102.hosting.ovh.net`.
 
-Depuis un terminal local autorisé (pas depuis une console inexistante) :
+### Commandes SSH de vérification et synchronisation, uniquement lors d'une publication autorisée
+
+Depuis un terminal disposant des accès OVH :
 
 ```bash
 ssh cuisinedh@ssh.cluster102.hosting.ovh.net -p 22
 ```
 
-Une fois connecté sur l'hébergement OVH :
+Sur OVH, **commencer en lecture seule** :
 
 ```bash
 cd ~/www/cdc2017
@@ -43,50 +49,32 @@ git fetch origin ovh-production
 git rev-parse origin/ovh-production
 ```
 
-**Seulement si** le répertoire est le bon, l'arbre Git est propre, la branche active est `ovh-production` et le remote correspond au dépôt connu :
+Ne continuer **que si** le dossier est bien la racine servie, l'arbre de travail est propre, la branche active est `ovh-production`, le `remote` correspond au dépôt attendu et le nouveau SHA distant a été inspecté. Pour la publication **déjà validée du lot A**, le SHA de référence historique est `e59c104` ; pour **toute nouvelle publication**, relever le HEAD actuel et les commits avant de tirer, sans utiliser aveuglément ce SHA comme cible.
+
+Après **autorisation explicite de déploiement** seulement :
 
 ```bash
 git pull --ff-only origin ovh-production
 git log -1 --oneline
 ```
 
-La tête attendue, au dernier contrôle, est `fe040096`. Si le SHA a changé depuis, inspecter la nouvelle publication avant de l'adopter. En cas de conflits ou d'un statut sale, **arrêter** ; ne jamais utiliser `--force`, `reset --hard` ou écraser les fichiers de production.
+En cas de conflits, de modifications locales ou de divergence : **arrêter**. Ne jamais utiliser `--force`, `reset --hard` ou écraser les fichiers de production. Le `git fetch` ne publie rien ; le `git pull` modifie effectivement le site et ne doit pas être déclenché pendant une simple revue.
 
-## Ordre impératif des livraisons
+## 3. Lot B : PR #24 — Grand Dîner Khmer
 
-### Lot A — Version existante des ateliers / menu / logo
+**État : PR ouverte, non fusionnée et non publiée.** Le lot A ayant été vérifié en ligne, il ne faut pas attendre un nouveau déploiement des ateliers pour poursuivre la revue du lot B.
 
-1. Avant toute opération, noter le **nouveau SHA réel de `main`** et faire un état de la cible OVH : répertoire servi, version en place, mécanisme de déploiement, éventuelles modifications locales non versionnées.
-2. S'assurer que le code de `main` à publier contient la PR #20 ; si `main` a évolué, inspecter les nouveaux commits avant publication.
-3. Contrôler que le build GitHub Actions ayant alimenté `ovh-production` correspond à la version à livrer (le workflow actuel vérifie Astro et génère `dist/`). Aucun build Node n'est nécessaire sur OVH pour cette chaîne.
-4. Vérifier l'état du répertoire OVH et la branche avant la synchronisation. S'arrêter si l'arbre n'est pas propre.
-5. Synchroniser via `git pull --ff-only origin ovh-production` après les vérifications préalables ci-dessus, puis confirmer le SHA déployé.
-6. Vérifier après déploiement :
-   - `/apprendre/` : six ateliers gratuits visibles, liens vers détails ;
-   - `/apprendre/piler-aromates-au-mortier/` : page dédiée affichée, sans 404 ;
-   - les **cinq** autres slugs à récupérer depuis `src/data/workshops.ts` (six ateliers au total) ;
-   - `/recettes/` puis une recette reliée à un atelier et navigation retour ;
-   - `/sitemap.xml` contient les six URLs d'ateliers ;
-   - navigation et logo en desktop et mobile, aucune casse CSS.
-7. Capturer les résultats (date, SHA, URL, HTTP, capture d'écran si possible) puis seulement déclarer le lot A LIVE.
-8. Si échec, restaurer le dernier artefact statique OVH **préalablement sauvegardé** selon la procédure d'hébergement effectivement disponible. Ne pas faire de `git reset --hard` aveugle sur un répertoire de prod.
+1. **Contrôler la review et la CI de la tête courante** de la PR #24 : Astro/TypeScript, recettes, contrat de pré-lancement, pages compilées, navigateur Chrome desktop/mobile, choix du menu et impression A4.
+2. Confirmer que les trois routes de démonstration restent `noindex` et hors sitemap : `/experiences/`, `/experiences/grand-diner-khmer/` et `/experiences/grand-diner-khmer/carnet-de-reception/`.
+3. Effectuer les dernières vérifications humaines utiles (lecture d'écran, impression physique, rendu visuel) et distinguer celles-ci des **essais culinaires réels** : ces derniers sont exigés avant toute **commercialisation**, pas pour une éventuelle démonstration gratuite explicitement annoncée comme non testée.
+4. **Merger uniquement sur instruction explicite**. Ce merge déclenchera le workflow de compilation/publication de l'artefact `ovh-production` ; il ne prouve pas à lui seul sa synchronisation sur le serveur OVH.
+5. **Déployer sur OVH uniquement sur instruction explicite**, avec les vérifications et commandes ci-dessus, puis contrôler les trois routes publiées, leurs liens, le `noindex` et l'absence de vente/réservation.
+6. Ne pas présenter le Grand Dîner Khmer comme un produit payé, un repas testé ou une prestation animée par un partenaire tant que ces éléments n'existent pas et n'ont pas été validés.
 
-### Lot B — Nouvelle page Expériences (PR #24)
+## 4. Traçabilité et informations restant à confirmer
 
-1. Laisser la PR #24 en brouillon tant que le lot A n'est pas reconnu LIVE.
-2. Terminer revue, vérifications Astro, contrat de pré-lancement, contrôle responsive et images.
-3. Réévaluer l'écart de la branche #24 avec le `main` réellement déployé.
-4. Merger sur demande explicite, seulement après le lot A.
-5. Déployer le nouveau `main` via la même voie que le lot A et tester `/experiences/` + `/experiences/grand-diner-khmer/`.
-6. Ne pas annoncer une ouverture commerciale : `noindex`, paiement et réservation désactivés.
+À chaque future publication, consigner : SHA de `main`, SHA compilé `ovh-production`, SHA réellement présent sur OVH, état de l'arbre Git, URLs/HTTP de recette et résultat du contrôle visuel. Préparer un retour arrière **uniquement avec une sauvegarde connue et une procédure d'hébergement vérifiée**.
 
-## Pourquoi deux lots ?
-
-Si PR #24 est mergée avant la livraison OVH du lot A, le prochain `main` inclura les ateliers, les correctifs du header **et** la nouvelle page Expériences. On perdra la possibilité d'isoler simplement l'origine d'une régression en production. Deux mises en production successives, vérifiées, rendent le diagnostic beaucoup plus sûr.
-
-## Points laissés volontairement inconnus
-
-- Version/commit exact actuellement servi par OVH : non prouvé.
-- Chemin cible et accès SSH utilisés précédemment : `~/www/cdc2017`, `cuisinedh@ssh.cluster102.hosting.ovh.net`. Il faut **vérifier sur l'hébergement** qu'ils sont toujours corrects avant d'écrire.
-- Existence d'une sauvegarde précédente et capacité de rollback : à vérifier.
-- Aucun envoi automatique en production exécuté dans cette PR.
+- **Confirmé :** pages ateliers et correctifs de recettes visibles en public ; workflows GitHub réussis ; dernière branche compilée du lot A `e59c104`.
+- **À confirmer depuis OVH :** HEAD exact du dossier SSH, éventuelles modifications locales et capacité de restauration.
+- **À ne pas faire dans cette PR #24 :** merge automatique, synchronisation SSH, activation de paiement ou de réservation.
