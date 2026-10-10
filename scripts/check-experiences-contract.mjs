@@ -8,6 +8,8 @@ const detail = read('src/pages/experiences/grand-diner-khmer.astro');
 const landingStyle = read('src/styles/experiences-prelaunch.css');
 const detailStyle = read('src/styles/grand-diner-concept.css');
 const preview = read('src/components/DinnerPreview.astro');
+const timeline = read('src/components/DinnerTimeline.astro');
+const timelineCalculator = read('src/utils/dinnerTimeline.mjs');
 const calculator = read('src/utils/dinnerPreview.mjs');
 const sitemap = read('src/pages/sitemap.xml.ts');
 const workshops = read('src/data/workshops.ts');
@@ -29,16 +31,22 @@ for (const [route, text] of [['/experiences/', landing], ['/experiences/grand-di
 }
 
 requireCondition(!sitemap.includes("'/experiences/'"), 'Unlaunched experiences must not appear in XML sitemap');
-requireCondition(!/<form\\b/i.test(preview), 'Preview must not collect personal information');
+requireCondition(!/<form\\b/i.test(preview) && !/<form\\b/i.test(timeline), 'Preview must not collect personal information');
 requireCondition(landing.includes("Partenaire recherché"), 'Partner search state must remain explicit');
 requireCondition(landing.includes("se poursuit indépendamment"), 'Digital offer must not be tied to a specialist');
 requireCondition(landing.includes('href="/experiences/grand-diner-khmer/"'), 'Landing must link to concept');
 requireCondition(landing.includes('href="/apprendre/"'), 'Free workshops must stay discoverable');
 requireCondition(detail.includes('import DinnerPreview') && detail.includes('<DinnerPreview />'), 'Grand Dîner must render the real preview component');
+requireCondition(detail.includes('import DinnerTimeline') && detail.includes('<DinnerTimeline />'), 'Grand Dîner must show the real indicative planner');
+requireCondition(timeline.includes('data-service-time') && timeline.includes('data-timing-recipes={JSON.stringify(timingData)}'), 'Planning must use public recipe durations');
+requireCondition(timeline.includes('role="status"') && timeline.includes('aria-live="polite"'), 'Planning changes must be announced accessibly');
+requireCondition(timeline.includes('marge de 15 min') || timeline.includes('marge de 15 min'.toUpperCase()) || timeline.includes('marge de 15'), 'Planning margin must be disclosed');
+requireCondition(timelineCalculator.includes('readRecipeDuration') && timelineCalculator.includes('PLANNING_MARGIN_MINUTES'), 'Timeline utility must declare its assumptions');
 requireCondition(preview.includes('data-preview-guests={guests}') && preview.includes('[2, 4, 6]'), 'Preview must offer 2/4/6 guests');
 requireCondition(preview.includes('data-preview-recipes={JSON.stringify(previewData)}'), 'Preview must use existing catalogue data');
 requireCondition(preview.includes('aria-pressed') && preview.includes('aria-live="polite"'), 'Preview must expose accessible button state and announcements');
 requireCondition(preview.includes('data-preview-copy') && calculator.includes('buildShoppingListText'), 'Copyable shopping list must be present');
+requireCondition(preview.includes('data-preview-key') && preview.includes('const selected = new Set'), 'Checked shopping ingredients must survive changes of serving size');
 requireCondition(calculator.includes('amok-trey') && calculator.includes('chek-ktis'), 'Preview recipes must be the established pilot menu');
 requireCondition(detail.includes('href="/apprendre/"'), 'Concept must link to free existing workshops');
 requireCondition(detail.includes("Aucune vente ni réservation ouverte"), 'Concept cannot be mistaken for a released product');
