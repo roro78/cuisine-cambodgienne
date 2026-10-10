@@ -101,6 +101,18 @@ Le prototype non marchand comprend désormais un troisième module interactif.
 - `tests/dinner-pack.test.mjs` (7 scénarios : données réelles, calculs, groupements, matériel, export, erreurs) et `npm run test:pack` sont intégrés à la CI.
 - **Validation effectuée :** 7 tests supplémentaires PASS sur les sources de branche exactes dans V8 isolé. Tests Node natifs, build Astro et navigateur/contrastes restent à effectuer avant merge.
 
+## 0 octies. Pense-bête téléchargeable — quatrième module (10 octobre 2026)
+
+- Nouveau `src/components/DinnerPack.astro` dans la page `/experiences/grand-diner-khmer/` ; module autonome et non marchand, avec résumé lisible (convives, heure de service, nombre d'ingrédients et jalons).
+- Contrôles sans duplication : `DinnerPreview` émet `dinner:guests`, `DinnerTimeline` émet `dinner:time` ; `DinnerPack` écoute ces événements et se recalcule instantanément.
+- `src/utils/dinnerPack.mjs` centralise les calculs en réutilisant exclusivement `buildPilotShoppingList` et `buildPilotServicePlan` déjà testés. Aucun nouveau contenu culinaire inventé.
+- Export `.txt` dans le navigateur via `Blob` et URL temporaire libérée, avec bouton « Copier » alternatif. Aucun serveur de téléchargement, inscription, suivi, API tierce ou newsletter.
+- Le texte téléchargé comprend les liens vers les **deux recettes gratuites**, une liste de courses par quantité, un planning de l'Amok **indicatif**, le temps de préparation du dessert **séparé** et le matériel signalé dans les recettes. Les quantités non disponibles ne sont pas inventées, et les ramequins/matériels de la recette de base doivent être adaptés aux convives.
+- Les avertissements de sécurité (ne pas goûter après introduction de composants crus) et le statut de démonstration gratuite figurent dans le fichier.
+- `tests/dinner-pack.test.mjs` (7 cas) et `npm run test:pack` ajoutés à la CI. Dans le moteur V8 isolé, exécution **30/30** tests des 4 utilitaires réussie sur les sources récupérées depuis GitHub. Contrat de pré-lancement exécuté sur les sources récupérées : **PASS**.
+- **Restent ouverts avant merge :** build Astro réel, CI Github Actions complète, recette visuelle mobile/desktop, vérification de l'accessibilité clavier et réactivité des événements inter-composants dans un navigateur réel.
+- Toute fusion ou mise en production de la PR #24 reste conditionnée à la publication et au smoke test du **lot A Ateliers (PR #20)** sur OVH.
+
 ## 1. Décisions confirmées
 
 - Ne supprimer **aucune** recette, page culture, entrée de glossaire, atelier pédagogique ou route existante.
