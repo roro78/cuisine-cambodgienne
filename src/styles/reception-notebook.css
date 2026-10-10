@@ -129,3 +129,25 @@
   .reception-progress progress{height:.25rem!important}
   .reception-notebook :is(a,span,strong){color:inherit!important}
 }
+
+/* Original evaluation sheet: deliberately for handwriting after a real kitchen trial. */
+.reception-tasting{background:#ecdfce;color:#27251d;padding:clamp(5rem,9vw,9rem) var(--page-pad)}
+.reception-tasting .reception-section-head{margin-bottom:clamp(2rem,4vw,4.5rem)}
+.reception-tasting-date{margin-top:1.3rem!important;font-weight:600;color:#594839!important;font-size:.9rem!important}
+.reception-tasting-date span{letter-spacing:.14em;margin-left:.45rem}
+.reception-tasting-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(1rem,2.4vw,2.5rem);max-width:92rem}
+.reception-tasting-card{border:1px solid #bda995;padding:clamp(1.6rem,3vw,3.2rem);background:#fff8ed;display:flex;flex-direction:column;min-width:0}
+.reception-tasting-card h3{font:400 clamp(2.15rem,3.4vw,3.9rem)/1.05 var(--serif);letter-spacing:-.047em;margin:1rem 0 1.35rem}
+.reception-tasting-card>p:not(.reception-eyebrow){font-size:.97rem;line-height:1.7;color:#665848}
+.reception-writing-lines{display:grid;gap:1.5rem;margin-top:auto;padding-top:2.5rem}
+.reception-writing-lines span{border-bottom:1px solid #c5b29b;display:block;min-height:1.1rem}
+.reception-notebook #carnet-degustation{scroll-margin-top:4rem}
+@media(max-width:650px){.reception-tasting-grid{grid-template-columns:1fr}.reception-tasting-card{min-height:21rem}}
+@media print{
+  .reception-tasting{padding:1rem 0!important;background:white!important;color:#111!important}
+  .reception-tasting-grid{display:block!important}
+  .reception-tasting-card{display:block!important;padding:1rem!important;background:white!important;border:1px solid #999!important;margin:.8rem 0!important;break-inside:avoid!important;page-break-inside:avoid!important}
+  .reception-tasting-card h3{font-size:18pt!important;margin:.6rem 0!important}
+  .reception-writing-lines{padding-top:.6rem!important;gap:1rem!important}
+  .reception-writing-lines span{border-bottom:1px solid #777!important}
+}
