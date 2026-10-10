@@ -43,20 +43,20 @@ Pour chaque essai, relever **séparément** les durées de préparation, cuisson
 - Décision : **À RETESTER / VALIDÉ APRÈS PREUVES** (une seule)
 - Personne ayant effectivement réalisé l'essai et preuves : ______________
 
-## 3. Points de sécurité / rédaction à corriger
+## 3. Consignes de sécurité déjà corrigées et précautions à confirmer
 
-- L'assaisonnement de l'Amok doit être goûté **avant** l'incorporation d'œufs et de poisson crus. La consigne source actuelle demande une correction éditoriale dans une PR séparée une fois le lot Ateliers publié sur OVH.
-- Ne jamais proposer de goûter une préparation contenant poisson ou œufs crus.
-- Pour le Prahok Ktis, vérifier la cuisson complète du porc **avant** toute dégustation/rectification de l'assaisonnement.
+- **Correction achevée :** la PR #25 a été fusionnée dans `main` (commit `9cacbaab`) puis déployée sur OVH. La recette publique Amok Trey impose désormais de rectifier l'assaisonnement **avant** l'incorporation d'œufs ou de poisson crus et interdit toute dégustation après leur ajout. Aucun nouveau correctif Amok n'est requis pour la PR #24.
+- **Correction achevée :** la recette Prahok Ktis précise désormais de ne goûter et rectifier l'assaisonnement qu'après cuisson complète du porc et de la préparation.
+- **À préserver pendant les essais :** ne jamais goûter une préparation contenant poisson ou œufs crus ni une préparation contenant du porc cru ou insuffisamment cuit.
 - Préserver la séparation des aliments crus et des ustensiles/produits prêts à servir.
 - Ne pas promettre de conservation ou de maintien au chaud, de température ni de durée non vérifiée.
 - Établir la liste réelle des allergènes, substitutions et précautions de conservation dans les documents commerciaux avant une mise en vente.
 
 ## 4. Qualité de l'expérience numérique
 
-Avant toute fusion / publication de la PR #24, vérifier :
-- CI Astro, TypeScript, contrats recettes/éditorial/animations, calculs des convives, planning et carnet.
-- Navigation clavier, lecture d'écran (annonces de progression), contraste sur petits mobiles, images et liens.
+Avant toute éventuelle publication de la PR #24, préserver les contrôles acquis :
+- **Déjà validés :** CI Astro, TypeScript, contrats recettes/éditorial/animations, calculs des convives, planning et carnet ; recette automatisée Chrome desktop/mobile (CI #38078284525).
+- **Vérification humaine complémentaire :** navigation clavier avec technologies d'assistance, contraste visuel, lecture d'écran, qualité des images et examen de la version imprimée réelle.
 - Arrivée dans le carnet avec les paramètres `convives`, `service`, `partage` ; contrôle des valeurs invalides et des choix par défaut.
 - Coches et progression : seulement les gestes du menu visible ; chapitre Prahok masqué s'il n'est pas sélectionné.
 - Impression A4 : toutes les instructions, la fiche de dégustation et les bonnes données ; absence de composants de navigation gênants.
@@ -65,8 +65,8 @@ Avant toute fusion / publication de la PR #24, vérifier :
 
 ## 5. Garde de livraison OVH
 
-**Lot A d'abord** : les six pages Ateliers de la PR #20 sont déjà fusionnées ; leur branche compilée `ovh-production` a été préparée. Attendre la synchronisation manuelle OVH et ses smoke tests.
+**Lot A — ACQUIS :** les six ateliers de la PR #20 sont fusionnés et leurs six pages sont accessibles sur le domaine public (HTTP 200 vérifié). La PR #25 de sécurité alimentaire est également fusionnée et ses consignes apparaissent sur les recettes publiques. Branche compilée OVH contrôlée : `e59c104`.
 
-**Lot B ensuite** : PR #24 reste en brouillon tant que le lot A n'est pas déclaré LIVE, que la QA navigateur n'est pas terminée et que les essais culinaires ne permettent pas de présenter le produit comme validé.
+**Lot B — À DÉCIDER :** la PR #24 est ouverte et prête à la revue, **non fusionnée et non publiée**. Les tests automatiques du navigateur et du build sont passés ; une validation de publication distincte est nécessaire. Les essais culinaires physiques restent indispensables **avant toute commercialisation**, mais ne doivent pas être confondus avec la publication éventuelle d'une démonstration gratuite clairement annoncée comme non testée.
 
 Les pages actuelles sont des **prototypes gratuits non marchands**. Elles ne doivent pas ouvrir de réservation ou de vente.
