@@ -84,6 +84,25 @@ expectedPrimaryRoles.forEach((role) => {
   if (!primaryImageRoles.includes(role)) failures.push(`Missing V16 primary image role: ${role}`);
 });
 
+const scrollHeights = [
+  [/\.v16-hero\{min-height:(\d+)svh/, 220, 'desktop hero'],
+  [/\.v16-market\{min-height:(\d+)svh/, 270, 'desktop market'],
+  [/  \.v16-hero\{min-height:(\d+)svh/, 195, 'mobile hero'],
+  [/  \.v16-market\{min-height:(\d+)svh/, 235, 'mobile market']
+];
+for (const [pattern, max, label] of scrollHeights) {
+  const match = css.match(pattern);
+  if (!match || Number(match[1]) > max) failures.push(`Storytelling ${label} scene should not have excessive scroll height`);
+}
+if (!home.includes('class="v16-hero-actions"') ||
+    !home.includes('href="/recettes/">Voir les recettes') ||
+    !home.includes('href="/apprendre/">Apprendre les gestes')) {
+  failures.push('Home hero must provide direct recipe and workshop navigation before long scroll');
+}
+if (!css.includes('.v16-hero-actions a:focus-visible')) {
+  failures.push('Direct hero links must show clear keyboard focus');
+}
+
 if (failures.length) {
   console.error('Motion contract failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));

@@ -13,7 +13,7 @@
   overflow:clip;
 }
 .v16-home a{color:inherit}
-.v16-scroll-scene{position:relative;min-height:230svh}
+.v16-scroll-scene{position:relative;min-height:195svh}
 .v16-sticky{position:sticky;top:0;height:100svh;overflow:hidden}
 .v16-kicker,.v16-time{
   margin:0;
@@ -25,7 +25,7 @@
 .v16-home h1,.v16-home h2,.v16-home h3{text-wrap:balance}
 
 /* Hero */
-.v16-hero{min-height:260svh;background:#101914}
+.v16-hero{min-height:215svh;background:#101914}
 .v16-hero-stage{display:grid;place-items:center;background:#111a15;color:#fff}
 .v16-hero-image,.v16-hero-image img,.v16-hero-wash{position:absolute;inset:0;width:100%;height:100%}
 .v16-hero-image{margin:0;overflow:hidden}
@@ -74,6 +74,14 @@
 .v16-scroll-cue{position:absolute;z-index:4;right:var(--page-pad);bottom:2rem;display:flex;gap:.7rem;align-items:center;color:#fff;font-size:.63rem;letter-spacing:.12em;text-transform:uppercase}
 .v16-scroll-cue i{display:block;width:4.8rem;height:1px;background:rgba(255,255,255,.45);transform-origin:left}
 
+/* An immediate alternative to the long editorial scroll, reachable by keyboard. */
+.v16-hero-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.55rem}
+.v16-hero-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:2.8rem;padding:.7rem 1.1rem;border:1px solid rgba(255,255,255,.7);border-radius:999px;background:rgba(10,20,14,.28);color:#fff;font-size:.77rem;font-weight:600;line-height:1.3;transition:background .2s ease}
+.v16-hero-actions a:first-child{background:#f5e8d5;border-color:#f5e8d5;color:#17271b}
+.v16-hero-actions a:hover{background:#f5e8d5;color:#17271b}
+.v16-hero-actions a:focus-visible{outline:3px solid #f3c87d;outline-offset:3px}
+@media(max-width:620px){.v16-hero-actions{gap:.55rem;margin-top:1rem}.v16-hero-actions a{font-size:.7rem;min-height:2.65rem;padding:.6rem .8rem}}
+
 /* Morning */
 .v16-morning{
   position:relative;
@@ -110,7 +118,7 @@
 }
 
 /* Market */
-.v16-market{min-height:330svh;background:#121c16;color:#fff}
+.v16-market{min-height:265svh;background:#121c16;color:#fff}
 .v16-market-stage{background:#121c16}
 .v16-market-head{
   position:absolute;z-index:5;top:8rem;left:var(--page-pad);max-width:40rem;pointer-events:none
@@ -133,7 +141,7 @@
 .v16-market-progress i:after{content:"";position:absolute;inset:0;background:#fff;transform:scaleX(.34);transform-origin:left}
 
 /* Gesture */
-.v16-gesture{min-height:250svh;background:var(--v16-paper)}
+.v16-gesture{min-height:205svh;background:var(--v16-paper)}
 .v16-gesture-stage{display:grid;grid-template-columns:1.08fr .92fr;align-items:center;padding:0 var(--page-pad);gap:clamp(2rem,6vw,7rem);background:var(--v16-paper)}
 .v16-gesture-image{
   position:relative;margin:0;height:min(70vh,48rem);overflow:hidden;border-radius:1.4rem;box-shadow:0 2rem 5rem rgba(48,36,21,.14)
@@ -150,7 +158,7 @@
 .v16-gesture-steps span:nth-child(1){left:7%;top:18%}.v16-gesture-steps span:nth-child(2){left:40%;top:14%}.v16-gesture-steps span:nth-child(3){right:8%;bottom:22%}.v16-gesture-steps span:nth-child(4){left:45%;bottom:12%}
 
 /* Table */
-.v16-table{min-height:270svh;background:#1b281f;color:#fff}
+.v16-table{min-height:215svh;background:#1b281f;color:#fff}
 .v16-table-stage{display:grid;place-items:center;background:
   radial-gradient(circle at center,rgba(180,139,81,.12),transparent 35%),
   #1b281f}
@@ -170,7 +178,7 @@
 .v16-table-copy p{max-width:37rem;margin:0 auto;line-height:1.65;color:#d8cec0}
 
 /* Glossary */
-.v16-glossary{min-height:240svh;background:#efe2cf}
+.v16-glossary{min-height:200svh;background:#efe2cf}
 .v16-glossary-stage{display:grid;grid-template-columns:.85fr 1.15fr;gap:6vw;align-items:center;padding:0 var(--page-pad);background:#efe2cf}
 .v16-glossary-copy{max-width:36rem}
 .v16-glossary-copy .v16-time{color:#866c4e}.v16-glossary-copy .v16-kicker{margin:.7rem 0;color:#8f4c37}
@@ -219,8 +227,8 @@
   .v16-recipe-card:nth-child(2){margin-top:0}
 }
 @media(max-width:620px){
-  .v16-scroll-scene{min-height:200svh}
-  .v16-hero{min-height:225svh}
+  .v16-scroll-scene{min-height:175svh}
+  .v16-hero{min-height:190svh}
   .v16-hero-copy{width:calc(100% - 2rem);padding-top:9vh}
   .v16-hero-copy h1{font-size:clamp(3.6rem,18vw,5.8rem)}
   .v16-hero-copy>p:last-of-type{max-width:21rem;font-size:.9rem}
@@ -230,7 +238,7 @@
   .v16-morning-time{font-size:4.4rem}
   .v16-morning-copy h2{font-size:clamp(2.7rem,12vw,4rem)}
   .v16-morning-notes{grid-template-columns:1fr 1fr}
-  .v16-market{min-height:285svh}
+  .v16-market{min-height:230svh}
   .v16-market-head{top:6.5rem;left:1rem;right:1rem}
   .v16-market-head h2{font-size:clamp(2.7rem,12vw,4.2rem)}
   .v16-market-panel-copy{left:1rem;right:1rem;bottom:4.5rem}
