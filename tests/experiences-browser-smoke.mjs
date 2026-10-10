@@ -7,6 +7,7 @@ const port = 4325;
 const base = 'http://127.0.0.1:' + port;
 const server = spawn('npm', ['run', 'preview', '--', '--host', '127.0.0.1', '--port', String(port)], {
   stdio: ['ignore', 'pipe', 'pipe'],
+  detached: process.platform !== 'win32',
   env: process.env
 });
 let logs = '';
@@ -37,10 +38,13 @@ async function run() {
     args: ['--no-sandbox', '--disable-dev-shm-usage']
   });
   const errors = [];
+  console.log('Browser smoke: preview running; loading desktop itinerary');
   const desktop = await browser.newPage({ viewport: { width: 1440, height: 900 }, acceptDownloads: true });
   observeErrors(desktop, 'desktop', errors);
+  desktop.setDefaultTimeout(12000);
+  desktop.setDefaultNavigationTimeout(20000);
 
-  const response = await desktop.goto(base + '/experiences/grand-diner-khmer/', { waitUntil: 'networkidle' });
+  const response = await desktop.goto(base + '/experiences/grand-diner-khmer/', { waitUntil: 'domcontentloaded' });
   assert.equal(response.status(), 200);
   assert.ok(await desktop.locator('[data-dinner-preview]').isVisible(), 'Shopping module must render');
   assert.ok(await desktop.locator('[data-kitchen-guide]').isVisible(), 'Kitchen module must render');
@@ -53,6 +57,7 @@ async function run() {
   await desktop.locator('[data-service-time]').selectOption('19:30');
   assert.match(await desktop.locator('[data-pack-time]').innerText(), /19h30/);
 
+  console.log('Browser smoke: desktop menu updated; testing download');
   const [download] = await Promise.all([
     desktop.waitForEvent('download'),
     desktop.locator('[data-pack-download]').click()
@@ -63,6 +68,7 @@ async function run() {
   assert.match(text, /Prahok Ktis/);
   assert.match(text, /Nombre de convives : 4/);
 
+  console.log('Browser smoke: download received; opening notebook');
   await desktop.locator('[data-pack-carnet]').click();
   await desktop.waitForURL('**/carnet-de-reception/**');
   assert.match(desktop.url(), /convives=4/);
@@ -92,8 +98,11 @@ async function run() {
   assert.equal(await desktop.locator('.reception-configuration-summary').isVisible(), true);
   await desktop.emulateMedia({ media: 'screen' });
 
+  console.log('Browser smoke: desktop notebook + print style passed; loading mobile');
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   observeErrors(mobile, 'mobile', errors);
+  mobile.setDefaultTimeout(12000);
+  mobile.setDefaultNavigationTimeout(20000);
   const mobileResponse = await mobile.goto(base + '/experiences/grand-diner-khmer/', { waitUntil: 'networkidle' });
   assert.equal(mobileResponse.status(), 200);
   assert.ok(await mobile.locator('.dinner-journey-nav').isVisible());
@@ -121,5 +130,10 @@ try {
   process.exitCode = 1;
 } finally {
   if (browser) await browser.close();
-  server.kill('SIGTERM');
+  if (server.pid && process.platform !== 'win32') {
+    try { process.kill(-server.pid, 'SIGTERM'); }
+    catch { server.kill('SIGTERM'); }
+  } else {
+    server.kill('SIGTERM');
+  }
 }
