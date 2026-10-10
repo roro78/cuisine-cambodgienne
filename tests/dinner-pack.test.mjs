@@ -98,6 +98,7 @@ test('optional prahok dish changes the shopping list without changing Amok timin
   assert.equal(plain.menu.length, 2);
   assert.equal(option.menu.length, 3);
   assert.equal(option.includeSide, true);
+  assert.match(option.notice, /trois recettes publiées/);
   assert.equal(plain.items.find(({ name }) => name === 'lait de coco').quantity, 650);
   assert.equal(option.items.find(({ name }) => name === 'lait de coco').quantity, 900);
   assert.deepEqual(option.timeline.steps, plain.timeline.steps);
