@@ -5,6 +5,7 @@
 export const PILOT_GUIDE_SLUGS = Object.freeze(['amok-trey', 'chek-ktis']);
 export const PILOT_GUIDE_SIDE_SLUG = 'prahok-ktis';
 export const AMOK_RAW_EGG_CAUTION = 'Rectifiez le goût avec la sauce de poisson et le sucre AVANT d’incorporer les œufs crus. Ajoutez ensuite les œufs battus. Ne goûtez pas une préparation contenant des œufs ou du poisson crus.';
+export const PRAHOK_RAW_PORK_CAUTION = 'Laissez le porc cuire complètement avant toute dégustation. Ajoutez le prahok progressivement, puis rectifiez l’assaisonnement uniquement lorsque toute la préparation est bien cuite. Ne goûtez jamais le porc cru ou insuffisamment cuit.';
 
 export function buildPilotKitchenGuide(recipes, includeSide = false) {
   if (typeof includeSide !== 'boolean') throw new TypeError('Invalid optional side choice');
@@ -26,7 +27,11 @@ export function buildPilotKitchenGuide(recipes, includeSide = false) {
         id: slug + '-step-' + (index + 1),
         title: step.title,
         // Temporary safety copy. A separate editorial revision of the public recipe is needed.
-        text: slug === 'amok-trey' && index === 1 ? AMOK_RAW_EGG_CAUTION : step.text,
+        text: slug === 'amok-trey' && index === 1
+          ? AMOK_RAW_EGG_CAUTION
+          : slug === 'prahok-ktis' && /^Ajouter le prahok/i.test(step.title)
+            ? PRAHOK_RAW_PORK_CAUTION
+            : step.text,
         cue: step.cue ?? null,
         mistake: step.mistake ?? null,
         duration: step.duration ?? null,
