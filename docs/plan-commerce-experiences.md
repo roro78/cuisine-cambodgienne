@@ -7,10 +7,10 @@
 ## 0. Dépendance de livraison OVH : ateliers déjà validés
 
 - La PR #20 (`feat: create dedicated workshop learning pages`) est **fusionnée sur main** depuis le 5 octobre 2026, commit `096ceccd9881d87dcbc27352648fa16ce13c1bd3`.
-- Au cadrage du 10 octobre 2026, le dernier `main` connu est `b1977a9b6937da0a5af1becd41fee0aca045fb41` ; il contient les correctifs du logo et de la navigation mobile en plus des ateliers.
-- **Le déploiement manuel sur OVH de ces ateliers détaillés reste à effectuer ou confirmer.** L'accès au seul listing `/apprendre/` ne suffit pas à valider les six pages de détail.
-- **Lot A : synchroniser manuellement sur OVH la branche `ovh-production` déjà compilée**, puis tester les six ateliers avant tout merge de la PR commerciale #24. Dernière branche de publication vérifiée : `fe0400966df384222a3e8141deead2d761ac1bc4` (`deploy: b1977a9b...`).
-- **Lot B : merger et déployer séparément la PR #24** après revue et smoke tests de la version ateliers.
+- La branche `main` est désormais au commit `9cacbaab` : les ateliers, le logo, la navigation mobile et la correction de sécurité alimentaire de la PR #25 y sont intégrés.
+- **Lot A déployé et contrôlé :** les six pages de détail des ateliers sont accessibles sur le site public en HTTP 200 ; elles apparaissent dans le sitemap.
+- **Branche OVH de référence :** `ovh-production` au commit `e59c104d4f356cf7f0077402430548fa4cd191f7` (`deploy: 9cacbaab...`), incluant la correction publiée Amok/Prahok.
+- **Lot B :** la PR #24 est techniquement vérifiée mais toujours ouverte, non fusionnée et non publiée ; un merge et tout éventuel déploiement devront être décidés séparément. Le pré-lancement gratuit restera sans paiement ni réservation.
 - Pipeline existant vérifié : `main → GitHub Actions (Astro build) → ovh-production → ~/www/cdc2017`. Voir `docs/runbook-ovh-ateliers-release.md` pour les commandes de synchronisation SSH non destructives et la recette post-déploiement.
 
 ## 0 bis. Prototype commercial désormais créé
@@ -53,17 +53,17 @@ La page actuelle est **une démonstration gratuite fonctionnelle, pas un produit
 - Tableau de programme accessible au clavier, avec `<time datetime>` et annonce en lecture d'écran après sélection.
 - Aucun stockage, aucune réservation ni paiement, et aucun impact sur la page Ateliers gratuite.
 - `tests/dinner-timeline.test.mjs` et `npm run test:timeline` ajoutés à la CI de la PR.
-- **Vérification réalisée : 16 cas unitaires PASS sur copies fidèles et isolées des deux modules JS dans Node 22**, le 10 octobre 2026. Ce résultat n'est pas une exécution du build Astro GitHub ni une validation navigateur/OVH.
+- **Validation actualisée :** tests unitaires, compilation Astro et parcours navigateur Chrome desktop/mobile validés par la CI #38078284525 ; les durées culinaires réelles ne sont pas encore validées.
 
 ## 0 quinquies. Mode cuisine guidé — aperçu (10 octobre 2026)
 
 - Nouvelle composante `src/components/DinnerKitchenGuide.astro` sur le Grand Dîner : choix du plat ou du dessert, une étape à la fois, navigation précédent/suivant et indication des repères sensoriels/erreurs à éviter issus des recettes gratuites.
 - Progression cochable par étape ; elle reste distincte pour chaque recette et est conservée pendant la consultation de la page **sans stockage persistant ni compte utilisateur**.
 - `src/utils/dinnerKitchenGuide.mjs` fabrique les étapes depuis `src/data/recipes.ts`, sans dupliquer artificiellement les recettes ni prétendre fournir la future prestation payante.
-- Point éditorial de sécurité identifié dans la fiche gratuite `amok-trey` : la formule actuelle pourrait encourager à goûter après avoir ajouté des œufs crus. Le guide utilise **temporairement une formulation corrigée** qui conseille de rectifier l'assaisonnement **avant** les œufs crus et le poisson cru, et de ne pas goûter après ces ajouts. La fiche recette publique mérite une **correction éditoriale dédiée et revue après la livraison du lot A** : ne pas modifier la base `main` ou perturber le déploiement imminent via cette PR.
+- **Sécurité corrigée dans la recette publique :** la PR #25 (fusionnée et déployée) impose désormais la rectification de l'Amok avant l'ajout des œufs et du poisson crus, et interdit de goûter après. Le mode cuisine guidée conserve par précaution un rappel explicite cohérent avec cette source corrigée.
 - `tests/dinner-kitchen-guide.test.mjs` ajouté, ainsi que `npm run test:kitchen` dans la CI.
-- Les trois utilitaires de démonstration + leurs tests ont été exécutés sur les fichiers récupérés depuis la branche GitHub dans un moteur JavaScript V8 isolé : **23 scénarios passés (8 courses, 8 planning, 7 mode cuisine)**. Le runner a reproduit les assertions Node nécessaires, mais **cela ne constitue pas une validation `npm test` native ni un build Astro**.
-- Les captures d'écran responsive, les contrôles clavier dans un navigateur réel et la CI GitHub restent des jalons avant merge.
+- **Validation actualisée :** les tests Node natifs, contrats et compilation Astro sont exécutés sur la branche dans la CI #38078284525 (SUCCESS).
+- **Contrôles restant humains :** audit visuel qualitatif, lecture d'écran et revue du rendu imprimé réel ; la CI et la recette automatisée Chrome desktop/mobile sont déjà passées.
 
 ## 0 sexies. Mode cuisine guidé (10 octobre 2026)
 
@@ -76,18 +76,18 @@ Le prototype non marchand comprend désormais un troisième module interactif.
 - Navigation d'une étape à l'autre ; choix plat/dessert ; progression par recette et repères (cue, mistake, durée) lorsque renseignés dans les données existantes.
 - Suivi de progression **uniquement en mémoire dans l'onglet**, sans compte, cookies ou écriture en stockage local. L'état n'est pas conservé après rechargement.
 - Boutons accessibles au clavier, progression native `<progress>`, états `aria-pressed` et annonces de changement.
-- Texte de sécurité propre au mode cuisine : la fiche Amok actuelle pouvant laisser entendre qu'il faut goûter après ajout des œufs crus, le prototype impose un ajustement de l'assaisonnement avant l'ajout des œufs et du poisson crus. Ne pas encourager la dégustation d'une préparation crue.
+- **Défense en profondeur :** le guide reprend la consigne corrigée dans la recette Amok publique : assaisonnement avant introduction des œufs et du poisson crus, sans dégustation de la préparation crue.
 
-**Dépendance éditoriale à traiter plus tard**
+**Correction éditoriale déjà réalisée (PR #25)**
 
-- Créer un correctif ciblé de la recette gratuite `src/data/recipes.ts` pour lever l'ambiguïté sur l'assaisonnement de l'Amok. Ne pas inclure cette retouche dans la PR commerciale avant la synchronisation OVH des ateliers ; préserver le lot A validé.
+- La correction ciblée de `src/data/recipes.ts` sur l'Amok et le Prahok Ktis a été fusionnée dans `main` puis déployée sur OVH. La PR #24 incorpore cette version corrigée sans modification supplémentaire des recettes publiques.
 
 **Tests et qualité**
 
 - `tests/dinner-kitchen-guide.test.mjs` : 7 tests source, progression et sécurité ; `npm run test:kitchen` intégré à la CI.
 - Exécution indépendante de **23 tests JS** des trois modules et du contrat de pré-lancement à partir du code récupéré de la branche GitHub dans un moteur V8 isolé : **PASS**.
-- Restent à vérifier avant tout merge : `npm run check`, `npm run build`, les tests complets dans Node/GitHub Actions, les interactions navigateur, les contrastes, le rendu mobile et le comportement sans JavaScript.
-- La PR #24 reste en brouillon. Aucun bouton de vente, réservation ou préinscription n'est autorisé sur ces prototypes.
+- Déjà validés : `npm run check`, `npm run build`, tests Node/CI et interactions Chrome sur mobile et desktop. Restent une revue humaine des contrastes, de l'accessibilité assistée et du rendu réellement imprimé.
+- La PR #24 est ouverte **Ready for review**, sans merge. Aucun bouton de vente, réservation ou préinscription n'est autorisé sur ces prototypes.
 
 ## 0 septies. Feuille de route locale et téléchargeable (10 octobre 2026)
 
@@ -99,7 +99,7 @@ Le prototype non marchand comprend désormais un troisième module interactif.
 - Les quantités inconnues ne sont pas inventées ; une marge de préparation explicite est conservée ; le dessert reste non intégré au planning du plat.
 - Les contenus non exclusifs, recettes, fiches et liens restent accessibles gratuitement.
 - `tests/dinner-pack.test.mjs` (7 scénarios : données réelles, calculs, groupements, matériel, export, erreurs) et `npm run test:pack` sont intégrés à la CI.
-- **Validation effectuée :** 7 tests supplémentaires PASS sur les sources de branche exactes dans V8 isolé. Tests Node natifs, build Astro et navigateur/contrastes restent à effectuer avant merge.
+- **Validation actualisée :** tests Node natifs, compilation Astro et parcours Chrome desktop/mobile PASS sur CI #38078284525 ; contrôle visuel humain des contrastes toujours recommandé.
 
 ## 0 octies. Pense-bête téléchargeable — quatrième module (10 octobre 2026)
 
@@ -110,8 +110,8 @@ Le prototype non marchand comprend désormais un troisième module interactif.
 - Le texte téléchargé comprend les liens vers les **deux recettes gratuites**, une liste de courses par quantité, un planning de l'Amok **indicatif**, le temps de préparation du dessert **séparé** et le matériel signalé dans les recettes. Les quantités non disponibles ne sont pas inventées, et les ramequins/matériels de la recette de base doivent être adaptés aux convives.
 - Les avertissements de sécurité (ne pas goûter après introduction de composants crus) et le statut de démonstration gratuite figurent dans le fichier.
 - `tests/dinner-pack.test.mjs` (7 cas) et `npm run test:pack` ajoutés à la CI. Dans le moteur V8 isolé, exécution **30/30** tests des 4 utilitaires réussie sur les sources récupérées depuis GitHub. Contrat de pré-lancement exécuté sur les sources récupérées : **PASS**.
-- **Restent ouverts avant merge :** build Astro réel, CI Github Actions complète, recette visuelle mobile/desktop, vérification de l'accessibilité clavier et réactivité des événements inter-composants dans un navigateur réel.
-- Toute fusion ou mise en production de la PR #24 reste conditionnée à la publication et au smoke test du **lot A Ateliers (PR #20)** sur OVH.
+- **Contrôles techniques terminés :** build Astro, CI GitHub Actions et tests automatisés Chrome desktop/mobile incluant les événements inter-composants. Revue humaine clavier/lecture d'écran et examen des détails visuels toujours souhaitables avant publication.
+- La condition préalable du **lot A Ateliers (PR #20)** est désormais satisfaite : six pages en production, HTTP 200 et sitemap contrôlé. La publication de la PR #24 reste une décision indépendante.
 
 ## 0 nonies. Menu à choix et troisième plat réellement optionnel (10 octobre 2026)
 
@@ -140,7 +140,7 @@ Le prototype non marchand comprend désormais un troisième module interactif.
 
 **Limite substantielle :** il existe désormais un carnet numérique imprimable et un récit de dîner cohérent, mais **aucun essai culinaire physique n'a été effectué**. Le projet ne dispose pas de chef partenaire confirmé. Le calcul des horaires est une estimation et ne prouve pas un service coordonné. Les supports exclusifs, médias originaux finalisés et la vente restent à concevoir après validation.
 
-**Livraison** : respecter les deux lots. Publier et contrôler les ateliers #20 sur OVH d'abord ; PR #24 reste en brouillon, sans merge ni déploiement, jusqu'à CI finale, QA navigateur et décision de livraison distincte.
+**Livraison** : le lot A (ateliers et correction de sécurité #25) est LIVE ; la PR #24 a réussi la CI et les tests Chrome et reste ouverte sans merge ni publication. Une décision explicite reste nécessaire pour le lot B. Les essais culinaires sont toujours indispensables avant commercialisation.
 
 ## 1. Décisions confirmées
 
