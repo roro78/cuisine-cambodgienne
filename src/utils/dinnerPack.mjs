@@ -52,6 +52,7 @@ export function buildPilotDinnerPackText(pack) {
     '',
     'MATERIEL INDIQUE DANS LES RECETTES',
     ...(pack.equipment.length ? pack.equipment.map((item) => '- ' + item) : ['- Consulter les fiches recettes']),
+    'Les quantités de matériel proviennent des fiches de base. Adaptez notamment les ramequins au nombre de convives.',
     '',
     'IMPORTANT : les temps sont indicatifs et ne garantissent pas une heure exacte de service.',
     'Pour l’Amok, rectifier l’assaisonnement avant l’ajout des œufs et du poisson crus. Ne jamais goûter une préparation contenant ces ingrédients crus.',
