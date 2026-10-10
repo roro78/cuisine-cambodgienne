@@ -1,0 +1,106 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import '../../styles/experiences-prelaunch.css';
+
+const collections = [
+  {
+    number: '01',
+    category: 'Expérience numérique',
+    status: 'En conception',
+    title: 'Le Grand Dîner Khmer',
+    description: 'Un dîner cambodgien à préparer chez soi, avec un parcours guidé, des gestes à découvrir et des saveurs à partager.',
+    detail: 'Le contenu et les démonstrations sont en préparation. Aucun accès payant n’est proposé aujourd’hui.'
+  },
+  {
+    number: '02',
+    category: 'Rencontres culinaires',
+    status: 'Partenaire recherché',
+    title: 'Les ateliers de la table khmère',
+    description: 'À terme, des séances pour apprendre les gestes, travailler les aromates et cuisiner ensemble.',
+    detail: 'Nous recherchons un cuisinier partenaire ou un intervenant spécialisé. Aucune date ni réservation n’est ouverte.'
+  },
+  {
+    number: '03',
+    category: 'À offrir, à cuisiner',
+    status: 'À l’étude',
+    title: 'Les coffrets de saveurs khmères',
+    description: 'Une sélection d’ingrédients et d’idées pour faire découvrir les parfums du Cambodge à la maison.',
+    detail: 'Le choix des produits, les fournisseurs et les modalités de livraison restent à définir.'
+  }
+];
+---
+<BaseLayout
+  title="Expériences culinaires | Cuisine du Cambodge"
+  description="De nouvelles expériences pour cuisiner, découvrir et partager les saveurs khmères. Notre collection est actuellement en préparation."
+  image="/images/cuisine/amok-alt-1600.webp"
+  noindex
+>
+  <SiteHeader />
+  <main class="exp-page">
+    <section class="exp-hero" aria-labelledby="exp-hero-title">
+      <div class="exp-hero-image">
+        <img src="/images/cuisine/amok-alt-1600.webp" alt="Amok de poisson cambodgien, parfumé au lait de coco et aux aromates" width="1600" height="1067" fetchpriority="high" />
+      </div>
+      <div class="exp-hero-shade" aria-hidden="true"></div>
+      <div class="exp-hero-content">
+        <p class="exp-eyebrow">Cuisine du Cambodge · Collection à venir</p>
+        <h1 id="exp-hero-title">Le goût du Cambodge.<br /><em>À vivre et à partager.</em></h1>
+        <p class="exp-hero-description">Nous imaginons de nouvelles façons de découvrir la cuisine khmère : un dîner guidé à préparer chez soi, des ateliers à partager et des coffrets gourmands.</p>
+        <p class="exp-status"><span aria-hidden="true"></span> Nos expériences sont en préparation. Les ventes ne sont pas encore ouvertes.</p>
+        <a class="exp-hero-link" href="#collections">Découvrir les projets <span aria-hidden="true">↘</span></a>
+      </div>
+    </section>
+
+    <section class="exp-intro" aria-labelledby="exp-intro-title">
+      <p class="exp-eyebrow">Bientôt à votre table</p>
+      <h2 id="exp-intro-title">Des parfums à découvrir.<br />Des gestes à transmettre.</h2>
+      <p>Le plaisir commence bien avant la première bouchée : choisir les aromates, faire chauffer les épices, goûter une sauce et dresser la table. Nous préparons une collection d’expériences pour prolonger ce plaisir.</p>
+    </section>
+
+    <section class="exp-collections" id="collections" aria-labelledby="exp-collections-title">
+      <div class="exp-section-heading">
+        <p class="exp-eyebrow">Trois envies, un même voyage</p>
+        <h2 id="exp-collections-title">Les expériences en préparation</h2>
+      </div>
+      <div class="exp-collection-grid">
+        {collections.map((item) => (
+          <article class="exp-collection">
+            <div class="exp-card-meta">
+              <span>{item.number} / {item.category}</span>
+              <span class="exp-card-status">{item.status}</span>
+            </div>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <p class="exp-card-detail">{item.detail}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="exp-partners" aria-labelledby="exp-partners-title">
+      <div class="exp-partners-image">
+        <img src="/images/cuisine/kroeung-1200.webp" alt="Aromates préparés pour un kroeung cambodgien" width="1200" height="800" loading="lazy" decoding="async" />
+      </div>
+      <div class="exp-partners-copy">
+        <p class="exp-eyebrow">Un projet à construire ensemble</p>
+        <h2 id="exp-partners-title">Nous recherchons un talent pour de futurs ateliers.</h2>
+        <p>Vous êtes cuisinier, cuisinière ou intervenant spécialisé dans la cuisine cambodgienne ? Nous souhaitons rencontrer des personnes capables de partager les gestes, les produits et la gourmandise de cette cuisine.</p>
+        <p>Cette recherche concerne uniquement nos futurs ateliers : le développement de l’expérience numérique se poursuit indépendamment.</p>
+        <p class="exp-partners-note">Les modalités de collaboration et le canal de candidature seront précisés prochainement.</p>
+      </div>
+    </section>
+
+    <section class="exp-discover" aria-labelledby="exp-discover-title">
+      <p class="exp-eyebrow">En attendant la suite</p>
+      <h2 id="exp-discover-title">Et si vous commenciez par cuisiner ?</h2>
+      <p>Les recettes, les ingrédients et les ateliers pédagogiques gratuits restent accessibles sur le site. Ils sont là pour vous donner envie d'essayer, dès aujourd'hui.</p>
+      <div class="exp-actions">
+        <a class="exp-action-primary" href="/recettes/">Explorer les recettes <span aria-hidden="true">↗</span></a>
+        <a class="exp-action-secondary" href="/apprendre/">Apprendre les gestes <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
