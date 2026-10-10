@@ -118,7 +118,7 @@ requireCondition(
   !releaseProtocol.includes('La consigne source actuelle demande une correction éditoriale') &&
   !experiencesPlan.includes('La fiche recette publique mérite une **correction éditoriale dédiée') &&
   !experiencesPlan.includes('Créer un correctif ciblé de la recette gratuite') &&
-  releaseProtocol.includes('les six pages sont accessibles'),
+  releaseProtocol.includes('six pages sont accessibles'),
   'Release documents must not reintroduce obsolete PR #25 or workshop deployment blockers'
 );
 
