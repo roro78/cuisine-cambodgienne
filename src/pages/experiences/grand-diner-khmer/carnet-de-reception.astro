@@ -99,6 +99,9 @@ const chapters = buildReceptionNotebook(recipeData, { includeSide: true }).chapt
           <h2 id="reception-runbook-title">Un conducteur, pas un chronomètre.</h2>
           <p>Les horaires proviennent uniquement des durées publiées de l'Amok Trey, avec une marge de 15 minutes. Ils donnent un ordre de grandeur, pas une garantie de cuisson ou de service.</p>
         </div>
+        <p class="reception-configuration-summary" data-reception-config-summary aria-live="polite" aria-atomic="true">
+          Votre essai : <strong data-reception-print-guests>2 personnes</strong> · Amok servi vers <strong data-reception-print-time>20h00</strong> · <strong data-reception-print-menu>Amok Trey et Chek Ktis</strong>
+        </p>
         <div class="reception-runbook-layout">
           <ol data-reception-timeline class="reception-milestones">
             {base.pack.timeline.steps.map((step) => (
@@ -223,6 +226,9 @@ const chapters = buildReceptionNotebook(recipeData, { includeSide: true }).chapt
       const sideTime = root.querySelector<HTMLElement>('[data-reception-side-time]');
       const sideTasting = root.querySelector<HTMLElement>('[data-reception-side-tasting]');
       const sideMinutes = root.querySelector<HTMLElement>('[data-reception-side-minutes]');
+      const summaryGuests = root.querySelector<HTMLElement>('[data-reception-print-guests]');
+      const summaryTime = root.querySelector<HTMLElement>('[data-reception-print-time]');
+      const summaryMenu = root.querySelector<HTMLElement>('[data-reception-print-menu]');
       const timeline = root.querySelector<HTMLOListElement>('[data-reception-timeline]');
       const text = root.querySelector<HTMLElement>('[data-reception-progress-text]');
       const progress = root.querySelector<HTMLProgressElement>('[data-reception-progress]');
@@ -230,7 +236,7 @@ const chapters = buildReceptionNotebook(recipeData, { includeSide: true }).chapt
       const feedback = root.querySelector<HTMLElement>('[data-reception-feedback]');
       const cards = Array.from(root.querySelectorAll<HTMLElement>('[data-reception-chapter]'));
       const tasks = Array.from(root.querySelectorAll<HTMLInputElement>('[data-reception-task]'));
-      if (guests && time && side && sideMenu && sideTime && sideTasting && sideMinutes && timeline && text && progress && print && feedback) {
+      if (guests && time && side && sideMenu && sideTime && sideTasting && sideMinutes && summaryGuests && summaryTime && summaryMenu && timeline && text && progress && print && feedback) {
         const query = new URLSearchParams(window.location.search);
         const initialGuests = Number(query.get('convives'));
         if ([2, 4, 6].includes(initialGuests)) guests.value = String(initialGuests);
@@ -245,6 +251,11 @@ const chapters = buildReceptionNotebook(recipeData, { includeSide: true }).chapt
             serviceTime: time.value,
             includeSide: side.checked
           });
+          summaryGuests.textContent = notebook.guests + ' personnes';
+          summaryTime.textContent = notebook.serviceTime.replace(':', 'h');
+          summaryMenu.textContent = side.checked
+            ? 'Amok Trey, Prahok Ktis et Chek Ktis'
+            : 'Amok Trey et Chek Ktis';
           sideMenu.hidden = !side.checked;
           sideTime.hidden = !side.checked;
           sideTasting.hidden = !side.checked;
