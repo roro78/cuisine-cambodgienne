@@ -80,3 +80,31 @@ test('rejects missing recipes, invalid guest counts and times', () => {
   assert.throws(() => buildPilotDinnerPack(recipes, 2, '18:00'), RangeError);
   assert.throws(() => buildPilotDinnerPackText(null), TypeError);
 });
+
+
+test('optional prahok dish changes the shopping list without changing Amok timing', () => {
+  const extra = {
+    slug: 'prahok-ktis', title: 'Prahok Ktis', baseServings: 4,
+    prepTime: '25 min', cookTime: '25 min',
+    ingredients: [
+      { quantity: 250, unit: 'ml', name: 'lait de coco' },
+      { quantity: 400, unit: 'g', name: 'porc haché' }
+    ],
+    equipment: ['Poêle']
+  };
+  const catalogue = [...recipes, extra];
+  const plain = buildPilotDinnerPack(catalogue, 4, '20:00');
+  const option = buildPilotDinnerPack(catalogue, 4, '20:00', true);
+  assert.equal(plain.menu.length, 2);
+  assert.equal(option.menu.length, 3);
+  assert.equal(option.includeSide, true);
+  assert.equal(plain.items.find(({ name }) => name === 'lait de coco').quantity, 650);
+  assert.equal(option.items.find(({ name }) => name === 'lait de coco').quantity, 900);
+  assert.deepEqual(option.timeline.steps, plain.timeline.steps);
+  assert.deepEqual(option.equipment, ['Panier vapeur', 'Casserole', 'Poêle']);
+  const text = buildPilotDinnerPackText(option);
+  assert.match(text, /Prahok Ktis/);
+  assert.match(text, /ne sont pas intégrés au planning/);
+  assert.throws(() => buildPilotDinnerPack(recipes, 4, '20:00', true), RangeError);
+  assert.throws(() => buildPilotDinnerPack(catalogue, 4, '20:00', 'true'), TypeError);
+});
