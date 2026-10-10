@@ -136,3 +136,51 @@
 .dinner-timeline-status{margin:1rem 0 0;min-height:1.4rem;font-size:.78rem;color:#715d4a}
 @media(max-width:850px){.dinner-timeline-heading{align-items:start;flex-direction:column}.dinner-timeline-layout{grid-template-columns:1fr}.dinner-timeline-dessert{max-width:44rem}}
 @media(max-width:480px){.dinner-timeline-list li{grid-template-columns:4.6rem minmax(0,1fr);gap:.8rem}.dinner-timeline-list li time{font-size:1.5rem}.dinner-timeline-dessert dl{gap:.6rem}}
+
+/* Kitchen mode: entirely independent from editorial workshops and recipe UI. */
+.dinner-kitchen{padding:clamp(5rem,9vw,9rem) var(--page-pad);background:#f5ede1;color:#28231c}
+.dinner-kitchen-heading{max-width:70rem;margin:0 auto clamp(3rem,6vw,6rem);text-align:center}
+.dinner-kitchen .dinner-kicker{margin:0 0 1.2rem;color:#9a5a3d}
+.dinner-kitchen-heading h2{margin:0;font:400 clamp(2.8rem,5.6vw,6rem)/1.04 var(--serif);letter-spacing:-.052em;text-wrap:balance}
+.dinner-kitchen-heading>p:last-child{max-width:49rem;margin:1.7rem auto 0;font-size:1.06rem;line-height:1.75;color:#64564a}
+.dinner-kitchen-workspace{max-width:92rem;margin:0 auto}
+.dinner-kitchen-navigation{display:flex;gap:.65rem;flex-wrap:wrap;margin-bottom:1.1rem}
+.dinner-kitchen-navigation button{display:flex;flex-direction:column;align-items:start;gap:.35rem;min-width:12.5rem;padding:1.15rem 1.35rem;background:transparent;border:1px solid #897e70;color:#302b23;cursor:pointer;font:400 1.48rem/1.15 var(--serif);letter-spacing:-.02em;text-align:left}
+.dinner-kitchen-navigation button span{font:700 .64rem/1.4 var(--sans);letter-spacing:.13em;text-transform:uppercase;color:#996244}
+.dinner-kitchen-navigation button[aria-pressed=true]{background:#283d30;color:#fff3df;border-color:#283d30}
+.dinner-kitchen-navigation button[aria-pressed=true] span{color:#e0bc89}
+.dinner-kitchen-navigation button:hover:not([aria-pressed=true]){border-color:#303f2f}
+.dinner-kitchen-content{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(18rem,.7fr);align-items:start;gap:clamp(1.2rem,3vw,3rem)}
+.dinner-kitchen-stage{min-width:0}
+.dinner-kitchen-progress{display:grid;grid-template-columns:1fr auto;align-items:center;gap:.4rem 1rem;margin:0 0 1.5rem}
+.dinner-kitchen-count{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#504536}
+.dinner-kitchen-done{font-size:.75rem;color:#756856}
+.dinner-kitchen-progress progress{grid-column:1/-1;width:100%;height:.35rem;appearance:none;border:0;border-radius:0;overflow:hidden;background:#d2c5b5}
+.dinner-kitchen-progress progress::-webkit-progress-bar{background:#d2c5b5}
+.dinner-kitchen-progress progress::-webkit-progress-value{background:#58755c}
+.dinner-kitchen-progress progress::-moz-progress-bar{background:#58755c}
+.dinner-kitchen-card{padding:clamp(1.8rem,4vw,4.8rem);background:#e9ddcb}
+.dinner-kitchen-overline{font:.7rem/1.4 var(--sans);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#a06041;margin:0 0 1.6rem}
+.dinner-kitchen-card h3{font:400 clamp(2.4rem,4.2vw,4.7rem)/1.05 var(--serif);letter-spacing:-.05em;margin:0 0 1.5rem;text-wrap:balance}
+.dinner-kitchen-card>p[data-guide-text]{font-size:1.09rem;line-height:1.72;max-width:50rem;margin:0 0 1.8rem}
+.dinner-kitchen-cue,.dinner-kitchen-mistake{padding:1rem 1.2rem 1.05rem;margin-top:.8rem;border-left:3px solid #597558;background:#f1e9de}
+.dinner-kitchen-mistake{border-color:#b0724e}
+.dinner-kitchen-cue[hidden],.dinner-kitchen-mistake[hidden],.dinner-kitchen-duration[hidden]{display:none}
+.dinner-kitchen-cue strong,.dinner-kitchen-mistake strong{display:block;font:700 .7rem/1.4 var(--sans);letter-spacing:.1em;text-transform:uppercase}
+.dinner-kitchen-cue>p,.dinner-kitchen-mistake>p{line-height:1.6;font-size:.95rem;margin:.65rem 0 0}
+.dinner-kitchen-duration{font-size:.8rem;color:#73563f;margin:1.1rem 0}
+.dinner-kitchen-controls{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:2.3rem;padding-top:1.4rem;border-top:1px solid rgba(39,31,22,.2)}
+.dinner-kitchen-controls button{font:700 .72rem/1.4 var(--sans);letter-spacing:.05em;text-transform:uppercase;cursor:pointer;padding:.95rem 1.05rem;min-height:46px;border:1px solid #354737;background:transparent;color:#283c2b}
+.dinner-kitchen-controls button[data-guide-complete]{background:#283c2b;color:#fff9ee}
+.dinner-kitchen-controls button[data-guide-complete][aria-pressed=true]{background:#567657;border-color:#567657}
+.dinner-kitchen-controls button:disabled{opacity:.44;cursor:not-allowed}
+.dinner-kitchen-controls button:not(:disabled):hover{filter:brightness(.92)}
+.dinner-kitchen-feedback{font-size:.77rem;line-height:1.5;color:#6a5342;min-height:1.3rem;margin:1.25rem 0 0}
+.dinner-kitchen-aside{background:#283c2f;color:#f5ecdc;padding:clamp(1.6rem,3.6vw,3.5rem)}
+.dinner-kitchen-aside .dinner-panel-overline{color:#dcb589;margin:0}
+.dinner-kitchen-aside h3{font:400 clamp(2rem,3vw,3.1rem)/1.07 var(--serif);letter-spacing:-.035em;margin:1.5rem 0}
+.dinner-kitchen-aside>p:not(.dinner-panel-overline){font-size:.96rem;line-height:1.7;color:#e6dac8}
+.dinner-kitchen-aside .dinner-kitchen-safety{padding-top:1.25rem;margin-top:1.5rem;border-top:1px solid rgba(255,255,255,.28);color:#f5dbb5!important}
+.dinner-kitchen-aside>a{display:inline-flex;justify-content:space-between;align-items:center;gap:1.5rem;border-bottom:1px solid #dcb589;padding:.8rem 0;margin-top:1rem;color:#f4d7a9;font:700 .71rem/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase}
+@media(max-width:900px){.dinner-kitchen-content{grid-template-columns:1fr}.dinner-kitchen-aside{max-width:100%}}
+@media(max-width:580px){.dinner-kitchen-navigation{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.dinner-kitchen-navigation button{min-width:0;font-size:1.25rem;padding:1rem}.dinner-kitchen-controls button{flex:1 1 auto}.dinner-kitchen-card{padding:1.6rem 1.2rem}.dinner-kitchen-progress{gap:.4rem}.dinner-kitchen-done{white-space:nowrap}}
