@@ -42,6 +42,7 @@ const chapters = buildReceptionNotebook(recipeData, { includeSide: true }).chapt
         <a href="#carnet-menu">Le menu</a>
         <a href="#carnet-conducteur">Le conducteur</a>
         <a href="#carnet-chapitres">Les gestes</a>
+        <a href="#carnet-degustation">La dégustation</a>
         <a href="#carnet-bilan">Le bilan</a>
       </nav>
 
@@ -148,6 +149,47 @@ const chapters = buildReceptionNotebook(recipeData, { includeSide: true }).chapt
         </div>
       </section>
 
+      <section class="reception-tasting" id="carnet-degustation" aria-labelledby="reception-tasting-title">
+        <div class="reception-section-head">
+          <p class="reception-eyebrow">La fiche de l'essai culinaire</p>
+          <h2 id="reception-tasting-title">Ce que le goût nous apprend.</h2>
+          <p>Une fiche à imprimer et remplir au crayon après avoir cuisiné. Pas de note automatique, pas de verdict inventé : seule une dégustation réelle permet d'améliorer un menu.</p>
+          <p class="reception-tasting-date">Date de l'essai : <span aria-hidden="true">__________________________</span></p>
+        </div>
+        <div class="reception-tasting-grid">
+          <article class="reception-tasting-card">
+            <p class="reception-eyebrow">01 · Les aromates</p>
+            <h3>Qu'est-ce qui arrive en premier ?</h3>
+            <p>Citronnelle, kroeung, douceur du coco : quelles notes distinguez-vous une fois l'Amok complètement cuit ?</p>
+            <div class="reception-writing-lines" aria-label="Espace pour noter ses impressions après dégustation"><span></span><span></span><span></span></div>
+          </article>
+          <article class="reception-tasting-card">
+            <p class="reception-eyebrow">02 · La texture</p>
+            <h3>Le geste était-il juste ?</h3>
+            <p>La préparation s'est-elle tenue tout en restant souple ? Qu'avez-vous observé sur le poisson et la cuisson vapeur ?</p>
+            <div class="reception-writing-lines" aria-label="Espace pour noter ses observations de cuisson"><span></span><span></span><span></span></div>
+          </article>
+          <article class="reception-tasting-card" data-reception-side-tasting hidden>
+            <p class="reception-eyebrow">Facultatif · Le contraste</p>
+            <h3>Le partage a-t-il trouvé son équilibre ?</h3>
+            <p>Après cuisson complète du porc, le Prahok Ktis semblait-il trop puissant, trop doux ou équilibré avec les crudités fraîches ?</p>
+            <div class="reception-writing-lines" aria-label="Espace pour noter ses observations sur le Prahok Ktis"><span></span><span></span><span></span></div>
+          </article>
+          <article class="reception-tasting-card">
+            <p class="reception-eyebrow">03 · La douceur</p>
+            <h3>Une dernière bouchée à retenir.</h3>
+            <p>Les bananes du Chek Ktis avaient-elles gardé leur forme ? La texture du lait de coco était-elle agréable au moment de servir ?</p>
+            <div class="reception-writing-lines" aria-label="Espace pour noter ses impressions sur le dessert"><span></span><span></span><span></span></div>
+          </article>
+          <article class="reception-tasting-card">
+            <p class="reception-eyebrow">04 · Le prochain essai</p>
+            <h3>Ce que je changerais.</h3>
+            <p>Horaires, portions, matériel, présentation à table : quelle amélioration serait la plus utile au prochain dîner ?</p>
+            <div class="reception-writing-lines" aria-label="Espace pour noter les améliorations du prochain essai"><span></span><span></span><span></span></div>
+          </article>
+        </div>
+      </section>
+
       <section class="reception-conclusion" id="carnet-bilan" aria-labelledby="reception-conclusion-title">
         <div class="reception-conclusion-main">
           <p class="reception-eyebrow">Après la dernière bouchée</p>
@@ -179,6 +221,7 @@ const chapters = buildReceptionNotebook(recipeData, { includeSide: true }).chapt
       const side = root.querySelector<HTMLInputElement>('[data-reception-side]');
       const sideMenu = root.querySelector<HTMLElement>('[data-reception-side-menu]');
       const sideTime = root.querySelector<HTMLElement>('[data-reception-side-time]');
+      const sideTasting = root.querySelector<HTMLElement>('[data-reception-side-tasting]');
       const sideMinutes = root.querySelector<HTMLElement>('[data-reception-side-minutes]');
       const timeline = root.querySelector<HTMLOListElement>('[data-reception-timeline]');
       const text = root.querySelector<HTMLElement>('[data-reception-progress-text]');
@@ -187,7 +230,7 @@ const chapters = buildReceptionNotebook(recipeData, { includeSide: true }).chapt
       const feedback = root.querySelector<HTMLElement>('[data-reception-feedback]');
       const cards = Array.from(root.querySelectorAll<HTMLElement>('[data-reception-chapter]'));
       const tasks = Array.from(root.querySelectorAll<HTMLInputElement>('[data-reception-task]'));
-      if (guests && time && side && sideMenu && sideTime && sideMinutes && timeline && text && progress && print && feedback) {
+      if (guests && time && side && sideMenu && sideTime && sideTasting && sideMinutes && timeline && text && progress && print && feedback) {
         const query = new URLSearchParams(window.location.search);
         const initialGuests = Number(query.get('convives'));
         if ([2, 4, 6].includes(initialGuests)) guests.value = String(initialGuests);
@@ -204,6 +247,7 @@ const chapters = buildReceptionNotebook(recipeData, { includeSide: true }).chapt
           });
           sideMenu.hidden = !side.checked;
           sideTime.hidden = !side.checked;
+          sideTasting.hidden = !side.checked;
           sideMinutes.textContent = notebook.sideMinutes === null ? '' : String(notebook.sideMinutes);
           cards.forEach((card) => { if (card.dataset.receptionChapterId === 'partage') card.hidden = !side.checked; });
           timeline.replaceChildren(...notebook.pack.timeline.steps.map((step) => {
