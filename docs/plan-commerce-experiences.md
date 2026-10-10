@@ -21,6 +21,29 @@
 - Nouveau contrat `npm run test:experiences` intégré à la CI sur la branche commerciale.
 - Le menu final, les quantités réelles, les vidéos et la mise en vente resteront des chantiers spécifiques.
 
+## 0 ter. Avancement du prototype numérique — PR #24
+
+Un aperçu interactif réel est désormais construit **sans cuisinier partenaire** :
+
+- Composant `src/components/DinnerPreview.astro` sur la page `/experiences/grand-diner-khmer/`.
+- Les deux **recettes gratuites existantes** servant de démonstration sont `amok-trey` et `chek-ktis`, récupérées directement de `src/data/recipes.ts`. Il ne s'agit **pas** d'affirmer que le menu complet à trois préparations est finalisé.
+- Calcul des ingrédients pour 2, 4 et 6 convives à partir de `baseServings`; ingrédients identiques et même unité regroupés sans estimer les quantités non indiquées.
+- Checklist des courses et copie de la liste en texte, sans compte utilisateur, sans formulaire, sans stockage tiers.
+- Navigation vers les deux recettes gratuites ; informations sur la nature provisoire du produit visibles.
+- Tests `tests/dinner-preview.test.mjs` (unitaires) + `scripts/check-experiences-contract.mjs` (non-régression) intégrés au workflow CI.
+- Les tests de calcul ont été reproduits et exécutés dans un environnement Node local isolé (8 cas validés le 10/10/2026). La compilation et l'intégration navigateur de la branche restent soumises à la CI complète et aux contrôles visuels.
+
+**Différenciation future du produit payant** (pas encore implémentée) :
+
+1. Menu complet testé, choix d'entrée, accord des saveurs, quantités validées et substitutions fiables.
+2. Calendrier de préparation du dîner et coordination des cuissons validés en pratique.
+3. Tutoriels pédagogiques produits ou illustrés, avec le droit d'utilisation des images/vidéos sécurisé.
+4. Parcours pas à pas, mode cuisine mobile et fiche de dressage cohérents avec ce menu.
+5. Livraison numérique et espace client sécurisé, uniquement lorsque le produit est complet.
+6. Tunnel de vente, CGV/TVA/rétractation et paiement après validation produit et juridique.
+
+La page actuelle est **une démonstration gratuite fonctionnelle, pas un produit à 39 € déjà disponible**.
+
 ## 1. Décisions confirmées
 
 - Ne supprimer **aucune** recette, page culture, entrée de glossaire, atelier pédagogique ou route existante.
