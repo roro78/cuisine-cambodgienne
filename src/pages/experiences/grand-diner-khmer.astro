@@ -1,0 +1,129 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import '../../styles/grand-diner-concept.css';
+
+const preparation = [
+  { n: '01', moment: 'Avant le dîner', title: 'Choisir son menu', description: 'Découvrir les plats, repérer les ingrédients et adapter son programme au nombre de convives.' },
+  { n: '02', moment: 'La veille ou le matin', title: 'S’organiser tranquillement', description: 'Préparer la liste de courses et identifier ce qu’il sera possible de faire en avance.' },
+  { n: '03', moment: 'En cuisine', title: 'Suivre les gestes', description: 'Comprendre les étapes, les textures et les bons repères pour cuisiner sans se presser.' },
+  { n: '04', moment: 'À table', title: 'Partager les saveurs', description: 'Dresser les plats, proposer les accompagnements et savourer ensemble.' }
+];
+---
+<BaseLayout
+  title="Le Grand Dîner Khmer — Projet d’expérience numérique | Cuisine du Cambodge"
+  description="Découvrez le projet du Grand Dîner Khmer : une future expérience numérique pour organiser un dîner cambodgien chez soi. Concept en préparation, sans réservation."
+  image="/images/cuisine/amok-alt-1600.webp"
+  noindex
+>
+  <SiteHeader />
+  <main class="dinner-concept">
+    <section class="dinner-hero" aria-labelledby="dinner-title">
+      <div class="dinner-hero-photo" aria-hidden="true">
+        <img src="/images/cuisine/amok-alt-1600.webp" alt="" width="1600" height="1067" fetchpriority="high" />
+      </div>
+      <div class="dinner-hero-inner">
+        <a class="dinner-back" href="/experiences/">← Toutes les expériences</a>
+        <p class="dinner-overline">Cuisine du Cambodge · Une collection à venir</p>
+        <h1 id="dinner-title">Le Grand<br /><em>Dîner Khmer.</em></h1>
+        <p class="dinner-lead">Le parfum de la citronnelle, la douceur du lait de coco, le plaisir de servir un dîner préparé avec soin. Nous imaginons une expérience pour vous accompagner, de la première idée jusqu’à la dernière bouchée.</p>
+        <p class="dinner-disclosure">Concept en préparation · Aucune vente ni réservation ouverte</p>
+        <a class="dinner-link" href="#apercu">Découvrir le parcours <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+
+    <section class="dinner-opening" aria-labelledby="dinner-opening-title">
+      <p class="dinner-kicker">Une autre façon de cuisiner</p>
+      <h2 id="dinner-opening-title">Recevoir sans passer toute la soirée derrière les fourneaux.</h2>
+      <p>Quand on découvre une cuisine, le plus difficile n’est pas toujours la recette : c’est de choisir les bons produits, d’organiser les cuissons et de tout servir au bon moment. C’est ce que nous voulons rendre plus simple, dans une future expérience numérique pensée comme un compagnon de cuisine.</p>
+    </section>
+
+    <section class="dinner-steps" aria-labelledby="dinner-steps-title">
+      <header>
+        <p class="dinner-kicker">Le déroulé imaginé</p>
+        <h2 id="dinner-steps-title">Du marché à la table.</h2>
+      </header>
+      <div class="dinner-step-grid">
+        {preparation.map((step) => (
+          <article class="dinner-step">
+            <div class="dinner-step-number">{step.n}</div>
+            <div class="dinner-step-content">
+              <p class="dinner-step-moment">{step.moment}</p>
+              <h3>{step.title}</h3>
+              <p>{step.description}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="dinner-demo" id="apercu" aria-labelledby="dinner-demo-title">
+      <div class="dinner-demo-copy">
+        <p class="dinner-kicker">Un premier aperçu interactif</p>
+        <h2 id="dinner-demo-title">Un dîner qui s’adapte à votre table.</h2>
+        <p>Choisissez le nombre de convives pour découvrir comment le futur parcours pourrait personnaliser sa préparation. Il s’agit d’une démonstration de principe, pas encore d’une recette finalisée.</p>
+        <div class="dinner-demo-picker" data-dinner-picker aria-label="Nombre de convives">
+          <p id="dinner-picker-label">Combien serez-vous à table ?</p>
+          <div class="dinner-guest-options" role="group" aria-labelledby="dinner-picker-label">
+            <button type="button" data-dinner-guests="2" aria-pressed="true">2 personnes</button>
+            <button type="button" data-dinner-guests="4" aria-pressed="false">4 personnes</button>
+            <button type="button" data-dinner-guests="6" aria-pressed="false">6 personnes</button>
+          </div>
+        </div>
+      </div>
+      <div class="dinner-demo-panel" data-dinner-panel>
+        <p class="dinner-panel-overline">Aperçu · Organisation du dîner</p>
+        <p class="dinner-panel-guests" aria-live="polite" aria-atomic="true" data-dinner-guests-output>Pour 2 personnes</p>
+        <div class="dinner-panel-divider"></div>
+        <h3>Votre parcours envisagé</h3>
+        <ol>
+          <li><span>01</span><span>Une liste de courses ajustée à <strong data-dinner-noun>2 convives</strong>.</span></li>
+          <li><span>02</span><span>Un planning indiquant ce qui peut être préparé à l’avance.</span></li>
+          <li><span>03</span><span>Des gestes et repères de cuisson illustrés.</span></li>
+          <li><span>04</span><span>Des idées de dressage pour partager les plats.</span></li>
+        </ol>
+        <p class="dinner-panel-note">Démonstration non marchande. Menu, ingrédients et contenus en cours de conception.</p>
+      </div>
+    </section>
+
+    <section class="dinner-editorial" aria-labelledby="dinner-editorial-title">
+      <div class="dinner-editorial-art">
+        <img src="/images/cuisine/kroeung-1200.webp" alt="Aromates et épices réunis pour préparer une pâte de kroeung" width="1200" height="800" loading="lazy" decoding="async" />
+      </div>
+      <div>
+        <p class="dinner-kicker">Ce qui compte dans l’assiette</p>
+        <h2 id="dinner-editorial-title">Les bons gestes. Les bons parfums. Et le plaisir de goûter.</h2>
+        <p>Les variantes sont nombreuses d’une cuisine familiale à l’autre. Notre ambition est de transmettre des repères utiles et gourmands, sans présenter une manière unique de cuisiner comme la seule authentique.</p>
+        <a class="dinner-editorial-link" href="/apprendre/">Explorer les ateliers pédagogiques gratuits <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+
+    <section class="dinner-last" aria-labelledby="dinner-last-title">
+      <p class="dinner-kicker">La suite se prépare</p>
+      <h2 id="dinner-last-title">L’expérience n’est pas encore disponible.</h2>
+      <p>Nous développons actuellement le parcours, les contenus et la façon de vous accompagner en cuisine. Aucune commande ni préinscription payante n’est ouverte. En attendant, vous pouvez découvrir nos recettes gratuites.</p>
+      <a class="dinner-final-link" href="/recettes/">Découvrir les recettes <span aria-hidden="true">↗</span></a>
+    </section>
+  </main>
+  <SiteFooter />
+  <script>
+    const picker = document.querySelector<HTMLElement>('[data-dinner-picker]');
+    const panel = document.querySelector<HTMLElement>('[data-dinner-panel]');
+    if (picker && panel) {
+      const guestsOutput = panel.querySelector<HTMLElement>('[data-dinner-guests-output]');
+      const guestsNoun = panel.querySelector<HTMLElement>('[data-dinner-noun]');
+      for (const button of picker.querySelectorAll<HTMLButtonElement>('button[data-dinner-guests]')) {
+        button.addEventListener('click', () => {
+          const count = Number(button.dataset.dinnerGuests);
+          if (![2, 4, 6].includes(count)) return;
+          for (const choice of picker.querySelectorAll<HTMLButtonElement>('button[data-dinner-guests]')) {
+            choice.setAttribute('aria-pressed', String(choice === button));
+          }
+          if (guestsOutput) guestsOutput.textContent = `Pour ${count} personnes`;
+          if (guestsNoun) guestsNoun.textContent = `${count} convives`;
+        });
+      }
+    }
+  </script>
+</BaseLayout>
