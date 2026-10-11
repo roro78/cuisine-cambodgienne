@@ -88,7 +88,7 @@ if (!navigation.includes("const desktopQuery = window.matchMedia('(min-width: 72
 }
 if (!navigation.includes("event.key === 'Tab'") ||
     !navigation.includes("event.shiftKey && document.activeElement === first") ||
-    !navigation.includes("links[0] ?? dialog") ||
+    !navigation.includes("focusables[0] ?? dialog") ||
     !navigation.includes("dialog?.contains(document.activeElement)")) {
   failures.push('Mobile modal must focus inside the dialog and contain keyboard navigation');
 }
@@ -110,6 +110,18 @@ if (!globalStyles.includes('.mobile-menu summary:focus-visible') ||
 if (!navigation.includes('if (closedForDesktop) brandLink?.focus()') ||
     !navigation.includes('(desktopQuery.matches ? brandLink : summary)?.focus()')) {
   failures.push('Closing mobile drawer on desktop resize must return focus to visible desktop navigation');
+}
+
+if (!header.includes('class="mobile-menu-close" type="button" aria-label="Fermer le menu"') ||
+    !navigation.includes("const focusables = [closeButton, ...links]") ||
+    !navigation.includes("closeButton?.addEventListener('click', closeMenu)") ||
+    !navigation.includes("closeButton?.removeEventListener('click', closeMenu)")) {
+  failures.push('Modal mobile drawer must have an accessible in-dialog close button in the focus cycle');
+}
+if (!globalStyles.includes('.mobile-menu summary:focus-visible{outline:3px solid #49351f') ||
+    !globalStyles.includes('.site-nav[data-site-header].is-overlay-top .mobile-menu summary:focus-visible') ||
+    !globalStyles.includes('.mobile-menu-close:focus-visible')) {
+  failures.push('Mobile light-header summary focus ring must contrast; dark drawer controls need visible focus');
 }
 
 if (failures.length) {
