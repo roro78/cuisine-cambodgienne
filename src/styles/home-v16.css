@@ -318,7 +318,7 @@
 
 /* Compact mobile viewports: reserve separate vertical space for the market
    heading and the current ingredient caption. Neither should cover the other. */
-@media(max-width:620px) and (max-height:740px){
+@media(max-height:740px) and (max-width:620px){
   .v16-market-head{top:5.25rem;max-width:none}
   .v16-market-head h2{font-size:clamp(1.8rem,8vw,2.35rem);line-height:1.02}
   .v16-market-head>p:last-child{max-width:28rem;font-size:.78rem;line-height:1.4}
