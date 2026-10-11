@@ -61,6 +61,7 @@ function setupHero(section: HTMLElement) {
   const image = section.querySelector<HTMLElement>('.v16-hero-image img');
   const copy = section.querySelector<HTMLElement>('.v16-hero-copy');
   const lines = gsap.utils.toArray<HTMLElement>('[data-v16-hero-line]', section);
+  const shortcuts = gsap.utils.toArray<HTMLAnchorElement>('.v16-hero-actions a', section);
   const chips = gsap.utils.toArray<HTMLElement>('.v16-orbit-chip', section);
   const cue = section.querySelector<HTMLElement>('.v16-scroll-cue i');
 
@@ -71,6 +72,12 @@ function setupHero(section: HTMLElement) {
     scrub: true,
     onUpdate: (self) => {
       const p = self.progress;
+
+      // The hero copy fades near the end of the scene. Prevent keyboard focus
+      // from landing on new links once they are practically invisible.
+      shortcuts.forEach((link) => {
+        link.tabIndex = p < .78 ? 0 : -1;
+      });
 
       if (image) {
         gsap.set(image, {
