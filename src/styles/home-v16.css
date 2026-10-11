@@ -292,3 +292,26 @@
   .v16-hero-actions a{min-height:2.4rem;padding:.35rem .65rem}
 }
 
+/* 400% zoom / tiny landscape: the hero must grow with its content.
+   A 100svh clipped sticky scene would hide actions and make them unreachable. */
+@media(max-width:440px) and (max-height:420px){
+  .v16-hero{min-height:0}
+  .v16-hero-stage{
+    position:relative;top:auto;height:auto;min-height:0;
+    overflow:visible;display:block;
+    padding:5.5rem .9rem 1.5rem;
+  }
+  .v16-hero-copy{
+    width:100%;padding:0;
+    transform:none!important;opacity:1!important;visibility:visible!important;
+  }
+  .v16-hero-copy h1{font-size:clamp(1.5rem,6vw,2rem);line-height:1}
+  .v16-hero-copy h1 span{
+    transform:none!important;opacity:1!important;visibility:visible!important;
+  }
+  .v16-hero-copy>p:last-of-type{font-size:.82rem;line-height:1.4;max-width:100%}
+  .v16-hero-actions{position:relative;z-index:6;display:flex;flex-wrap:wrap}
+  .v16-hero-actions a{white-space:normal;min-height:2.75rem}
+  .v16-hero-image img{transform:none!important}
+  .v16-scroll-cue{display:none}
+}
