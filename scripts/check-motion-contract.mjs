@@ -103,6 +103,9 @@ if (!css.includes('.v16-hero-actions a:focus-visible')) {
   failures.push('Direct hero links must show clear keyboard focus');
 }
 
+if (css.lastIndexOf('@media(max-height:700px)') < css.lastIndexOf('@media(max-width:620px)')) {
+  failures.push('Short-height hero rules must come after narrow-width rules in the CSS cascade');
+}
 if (!css.includes('@media(max-height:700px)') || !css.includes('@media(max-height:420px)') ||
     !css.includes('.v16-hero-orbit{display:none}')) {
   failures.push('Short-height hero must reflow text, buttons and decorative chips safely');
