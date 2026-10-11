@@ -131,10 +131,15 @@ if (!css.includes(extremeZoom) ||
   failures.push('400% zoom hero must grow and scroll naturally instead of clipping focused actions');
 }
 if (!storytelling.includes("const compactHero = window.matchMedia('(max-width: 440px) and (max-height: 420px)')") ||
-    !storytelling.includes('onRefresh: () => {') ||
-    !storytelling.includes('if (compactHero.matches) shortcuts.forEach') ||
+    !storytelling.includes('const applyHeroProgress = (p: number) => {') ||
+    !storytelling.includes('onRefresh: (self) => applyHeroProgress(self.progress)') ||
+    !storytelling.includes('onUpdate: (self) => applyHeroProgress(self.progress)') ||
     !storytelling.includes('if (compactHero.matches) {')) {
-  failures.push('400% zoom hero should keep keyboard-accessible CTA on resize and GSAP refresh');
+  failures.push('400% zoom hero must reapply GSAP state and accessible CTA on entering AND leaving compact layout, even without scroll progress changes');
+}
+if (!storytelling.includes('gsap.set(copy, {') || !storytelling.includes('gsap.set(image, {') ||
+    !storytelling.includes('link.tabIndex = p < .78 ? 0 : -1;')) {
+  failures.push('Hero refresh must reapply image, text and keyboard tab state together');
 }
 
 if (failures.length) {
