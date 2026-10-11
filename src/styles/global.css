@@ -1139,8 +1139,21 @@ html.menu-open body{
 
 /* Compact, usable focus targets without a full-screen-sized typographic menu. */
 .mobile-menu summary{min-height:2.75rem;padding:.55rem .15rem}
-.mobile-menu summary:focus-visible,
-.mobile-menu-panel nav a:focus-visible{outline:3px solid #e8c88d;outline-offset:3px}
+.mobile-menu summary:focus-visible{outline:3px solid #49351f;outline-offset:3px}
+.site-nav[data-site-header].is-overlay-top .mobile-menu summary:focus-visible{outline-color:#f4d693}
+.mobile-menu-panel nav a:focus-visible,
+.mobile-menu-close:focus-visible{outline:3px solid #f4d693;outline-offset:3px}
+.mobile-menu-close{
+  position:absolute;z-index:5;top:1rem;right:1rem;
+  display:flex;align-items:center;justify-content:center;gap:.4rem;
+  min-width:5rem;min-height:2.75rem;padding:.45rem .7rem;
+  border:1px solid rgba(247,242,232,.6);border-radius:999px;
+  color:#fff8ec;background:#25382b;cursor:pointer;
+  font:600 .66rem/1 var(--sans);letter-spacing:.04em;
+}
+.mobile-menu-close span{font:400 1.35rem/1 var(--sans)}
+.mobile-menu-heading{padding-right:5rem}
+@media(max-width:380px){.mobile-menu-close{top:.65rem;right:.65rem}}
 @media(max-width:380px){
   .mobile-menu-panel{width:min(90vw,19.5rem);padding:1rem .95rem 1.2rem}
   .mobile-menu-heading{padding-bottom:.8rem}
