@@ -143,7 +143,7 @@ if (!storytelling.includes('gsap.set(copy, {') || !storytelling.includes('gsap.s
 }
 
 
-if (!css.includes('@media(max-width:620px) and (max-height:740px)') ||
+if (!css.includes('@media(max-height:740px) and (max-width:620px)') ||
     !css.includes('.v16-market-head h2{font-size:clamp(1.8rem,8vw,2.35rem)') ||
     !css.includes('.v16-market-panel-copy h3{font-size:clamp(1.95rem,8.8vw,2.8rem)') ||
     !css.includes('.v16-market-panel-copy strong{font-size:.82rem;line-height:1.45}')) {
