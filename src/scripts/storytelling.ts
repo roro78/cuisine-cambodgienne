@@ -90,8 +90,7 @@ function setupHero(section: HTMLElement) {
       if (image) {
         gsap.set(image, {
           scale: 1.08 + p * .08,
-          yPercent: p * 3.5,
-          filter: `saturate(${.78 + p * .1}) brightness(${.58 - p * .08})`
+          yPercent: p * 3.5
         });
       }
 
@@ -141,13 +140,10 @@ function setupMarket(section: HTMLElement) {
   const count = section.querySelector<HTMLElement>('[data-v16-market-count]');
   if (!track || !panels.length) return;
 
-  ScrollTrigger.create({
-    trigger: section,
-    start: 'top top',
-    end: 'bottom bottom',
-    scrub: true,
-    onUpdate: (self) => {
-      const p = self.progress;
+  // Apply the same state on initial render, scroll and layout refresh.
+  // Without refresh handling, restored scroll positions and rotation can
+  // leave off-screen market cards tabbable or the slider out of sync.
+  const updateMarketProgress = (p: number) => {
       gsap.set(track, { xPercent: -(100 - 100 / panels.length) * p });
 
       const active = Math.min(panels.length - 1, Math.round(p * (panels.length - 1)));
@@ -162,8 +158,7 @@ function setupMarket(section: HTMLElement) {
         if (image) {
           gsap.set(image, {
             scale: 1.08 + Math.abs(distance) * .025,
-            xPercent: distance * -2.2,
-            filter: `saturate(${.82 - Math.min(1, Math.abs(distance)) * .15}) brightness(${.66 - Math.min(1, Math.abs(distance)) * .08})`
+            xPercent: distance * -2.2
           });
         }
         if (copy) {
@@ -177,7 +172,16 @@ function setupMarket(section: HTMLElement) {
         panel.inert = !interactive;
         panel.tabIndex = interactive ? 0 : -1;
       });
-    }
+  };
+
+  updateMarketProgress(0);
+  ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: true,
+    onRefresh: (self) => updateMarketProgress(self.progress),
+    onUpdate: (self) => updateMarketProgress(self.progress)
   });
 }
 
@@ -197,8 +201,7 @@ function setupGesture(section: HTMLElement) {
       gsap.set(image, {
         scale: 1.1 - p * .08,
         xPercent: -p * 2.5,
-        yPercent: -2 + p * 4,
-        filter: `saturate(${.9 + p * .08}) contrast(${1 + p * .04})`
+        yPercent: -2 + p * 4
       });
 
       if (copy) {
@@ -293,8 +296,7 @@ function setupGlossary(section: HTMLElement) {
           autoAlpha: alpha,
           yPercent: distance * 26,
           xPercent: distance * -3,
-          scale: 1 - Math.min(1, abs) * .08,
-          filter: `blur(${Math.min(5, abs * 2.5)}px)`
+          scale: 1 - Math.min(1, abs) * .08
         });
         word.classList.toggle('is-active', abs < .5);
       });
