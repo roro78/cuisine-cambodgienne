@@ -107,6 +107,11 @@ if (!globalStyles.includes('.mobile-menu summary:focus-visible') ||
   failures.push('Mobile navigation must display visible focus indicators');
 }
 
+if (!navigation.includes('if (closedForDesktop) brandLink?.focus()') ||
+    !navigation.includes('(desktopQuery.matches ? brandLink : summary)?.focus()')) {
+  failures.push('Closing mobile drawer on desktop resize must return focus to visible desktop navigation');
+}
+
 if (failures.length) {
   console.error('Editorial contract failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));
