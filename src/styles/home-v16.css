@@ -82,6 +82,23 @@
 .v16-hero-actions a:focus-visible{outline:3px solid #f3c87d;outline-offset:3px}
 @media(max-width:620px){.v16-hero-actions{gap:.55rem;margin-top:1rem}.v16-hero-actions a{font-size:.7rem;min-height:2.65rem;padding:.6rem .8rem}}
 
+/* Short landscape displays and browser zoom: keep BOTH hero actions in view. */
+@media(max-height:700px){
+  .v16-hero-copy{padding-top:clamp(2rem,9vh,3.5rem)}
+  .v16-hero-copy h1{font-size:clamp(2.25rem,min(7vw,11vh),3.5rem);line-height:.86}
+  .v16-hero-copy>p:last-of-type{margin-top:.65rem;max-width:40rem;font-size:.84rem;line-height:1.35}
+  .v16-hero-actions{gap:.4rem;margin-top:.6rem}
+  .v16-hero-actions a{min-height:2.6rem;padding:.48rem .8rem;font-size:.7rem}
+  .v16-hero-orbit{display:none}
+}
+@media(max-height:420px){
+  .v16-hero-copy{padding-top:1.5rem}
+  .v16-hero-copy h1{font-size:clamp(2rem,9vh,2.65rem)}
+  .v16-hero-copy>p:last-of-type{font-size:.74rem;line-height:1.25;margin-top:.4rem}
+  .v16-hero-actions{margin-top:.35rem}
+  .v16-hero-actions a{min-height:2.4rem;padding:.35rem .65rem}
+}
+
 /* Morning */
 .v16-morning{
   position:relative;
