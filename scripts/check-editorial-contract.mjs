@@ -58,8 +58,16 @@ if (!glossary.includes('data-glossary-search') || !glossary.includes('data-gloss
   failures.push('Glossary must keep search, family filters and filterable entries');
 }
 
-if (!recipes.includes('recipe-v15 recipe-v16') || !recipes.includes('Prenez votre temps, goûtez et ajustez.')) {
+if (!recipes.includes('recipe-v15 recipe-v16') || !recipes.includes('Les étapes, les gestes et les bons repères.')) {
   failures.push('Recipe detail must keep the V16 culinary editorial layer');
+}
+
+if (about.includes('Et si le goût ou la texture seront différents') || !about.includes('nous proposons un remplacement et expliquons ce qu’il change')) {
+  failures.push('About ingredient substitutions must use natural, accurate French');
+}
+if (recipes.includes('Prenez votre temps, goûtez et ajustez.') ||
+    !recipes.includes('Ne goûtez les préparations que lorsque leur composition le permet.')) {
+  failures.push('Guided recipe headings cannot invite tasting raw ingredients');
 }
 
 const toneCorpus = [home, learn, workshopDetail, workshopData, culture, about, glossary, recipes, cultureData, recipeData, ingredientData, glossaryData].join('\n');
@@ -80,6 +88,10 @@ forbiddenArtificialCopy.forEach((phrase) => {
     failures.push(`Artificial editorial phrasing reintroduced: ${phrase}`);
   }
 });
+
+if (!culture.includes("href:'/recettes/kuy-teav/', cta:'Voir la recette →'")) failures.push('Morning card must link explicitly to the relevant noodle recipe');
+if (culture.includes("title:'Au petit matin, les gargotes sont déjà ouvertes'")) failures.push('Morning culture card must not misleadingly link to generic meal article');
+if (!culture.includes('<strong>{moment.cta}</strong>')) failures.push('Editorial cards must accurately label linked destination');
 
 if (!navigation.includes("const desktopQuery = window.matchMedia('(min-width: 721px)')") ||
     !navigation.includes("desktopQuery.addEventListener('change', onViewportChange)") ||
