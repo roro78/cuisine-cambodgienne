@@ -4,6 +4,17 @@ export function initNavigation() {
   if (!header) return () => {};
 
   const overlay = header.dataset.overlay === 'true';
+  const summary = menu?.querySelector<HTMLElement>('summary');
+  const dialog = menu?.querySelector<HTMLElement>('.mobile-menu-panel');
+  const links = menu ? Array.from(menu.querySelectorAll<HTMLAnchorElement>('.mobile-menu-panel a[href]')) : [];
+  const desktopQuery = window.matchMedia('(min-width: 721px)');
+
+  // A fixed, scroll-locking drawer must also isolate the underlying page for
+  // keyboard and screen-reader users. Restore any pre-existing inert state.
+  const background = Array.from(document.querySelectorAll<HTMLElement>(
+    'main, footer, .site-nav .brand-lockup, .site-nav .nav-links'
+  ));
+  const previousInert = new Map(background.map((el) => [el, el.inert]));
 
   const updateHeader = () => {
     const scrolled = window.scrollY > 24;
@@ -11,40 +22,50 @@ export function initNavigation() {
     header.classList.toggle('is-overlay-top', overlay && !scrolled);
   };
 
-  updateHeader();
-  window.addEventListener('scroll', updateHeader, { passive: true });
+  const restoreBackground = () => {
+    for (const el of background) el.inert = previousInert.get(el) ?? false;
+  };
 
   const onToggle = () => {
-    const open = Boolean(menu?.open);
+    const open = Boolean(menu?.open) && !desktopQuery.matches;
+    if (desktopQuery.matches && menu?.open) menu.open = false;
     document.documentElement.classList.toggle('menu-open', open);
     header.classList.toggle('is-menu-open', open);
+    for (const el of background) el.inert = open ? true : (previousInert.get(el) ?? false);
+
+    if (open) {
+      // Place focus inside the modal drawer instead of trapping it on a
+      // disclosure summary that sits outside role=dialog.
+      (links[0] ?? dialog)?.focus();
+    } else if (dialog?.contains(document.activeElement)) {
+      summary?.focus();
+    }
   };
 
-  menu?.addEventListener('toggle', onToggle);
-
-  const desktopQuery = window.matchMedia('(min-width: 721px)');
   const onViewportChange = () => {
-    // A menu opened on mobile must not lock the desktop page after rotation/resize.
+    // Releasing the drawer on desktop also releases the background scroll lock.
     if (desktopQuery.matches && menu?.open) menu.open = false;
+    onToggle();
   };
-  desktopQuery.addEventListener('change', onViewportChange);
 
   const onKeydown = (event: KeyboardEvent) => {
-    if (!menu?.open) return;
+    if (!menu?.open || desktopQuery.matches) return;
     if (event.key === 'Escape') {
       event.preventDefault();
       menu.open = false;
-      menu.querySelector<HTMLElement>('summary')?.focus();
+      summary?.focus();
       return;
     }
 
-    if (event.key === 'Tab' && !desktopQuery.matches) {
-      const focusables = Array.from(menu.querySelectorAll<HTMLElement>('summary, a[href]'));
-      if (!focusables.length) return;
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      // Keep the keyboard in the drawer until it is closed.
-      if (event.shiftKey && document.activeElement === first) {
+    if (event.key === 'Tab' && links.length) {
+      const first = links[0];
+      const last = links[links.length - 1];
+      // Keep keyboard focus inside the declared modal dialog. If focus
+      // somehow moved outside, return to its first interactive element.
+      if (!dialog?.contains(document.activeElement)) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+      } else if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
         last.focus();
       } else if (!event.shiftKey && document.activeElement === last) {
@@ -53,20 +74,36 @@ export function initNavigation() {
       }
     }
   };
-  window.addEventListener('keydown', onKeydown);
 
-  const links = menu ? Array.from(menu.querySelectorAll<HTMLAnchorElement>('a')) : [];
+  const onOutsidePointer = (event: PointerEvent) => {
+    if (!menu?.open) return;
+    // The darkened backdrop is a ::before pseudo-element owned by <details>.
+    // It reports the details node itself as the click target in browsers.
+    if (event.target === menu || !menu.contains(event.target as Node)) menu.open = false;
+  };
+
   const closeMenu = () => {
     if (menu?.open) menu.open = false;
   };
+
+  updateHeader();
+  window.addEventListener('scroll', updateHeader, { passive: true });
+  menu?.addEventListener('toggle', onToggle);
+  desktopQuery.addEventListener('change', onViewportChange);
+  window.addEventListener('keydown', onKeydown);
+  document.addEventListener('pointerdown', onOutsidePointer);
   links.forEach((link) => link.addEventListener('click', closeMenu));
+  onViewportChange();
 
   return () => {
     window.removeEventListener('scroll', updateHeader);
     window.removeEventListener('keydown', onKeydown);
     desktopQuery.removeEventListener('change', onViewportChange);
+    document.removeEventListener('pointerdown', onOutsidePointer);
     menu?.removeEventListener('toggle', onToggle);
     links.forEach((link) => link.removeEventListener('click', closeMenu));
+    restoreBackground();
     document.documentElement.classList.remove('menu-open');
+    header.classList.remove('is-menu-open');
   };
 }
