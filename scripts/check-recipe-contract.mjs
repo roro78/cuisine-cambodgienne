@@ -80,6 +80,9 @@ if (!amok.includes('poisson et les œufs sont complètement cuits avant de servi
   failures.push('Amok FAQ must require complete cooking before serving');
 }
 
+if (listing.includes('{recipe.prepTime} + {recipe.cookTime}')) failures.push('Catalog must not display 0 min for uncooked preparations');
+if (!listing.includes('minutes(recipe.cookTime) > 0') || !listing.includes('de préparation')) failures.push('Catalog must distinguish preparation from cooking without inventing times');
+
 if (failures.length) {
   console.error('Recipe contract failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));

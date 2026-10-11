@@ -7,10 +7,10 @@ import { imageSrcSet } from '../../utils/images';
 import '../../styles/v16-editorial.css';
 
 const moments = [
-  { time:'05:30', title:'Au petit matin, les gargotes sont déjà ouvertes', text:'Bouillons, nouilles, riz et grillades font partie des premières odeurs de la journée.', href:'/culture/construire-repas-cambodgien/' },
-  { time:'08:30', title:'Le marché inspire le repas', text:'Poissons, herbes, légumes, fruits : on cuisine d’abord avec ce qui est frais et disponible.', href:'/culture/kep-marche-crabe-poivre/' },
-  { time:'11:00', title:'Au mortier, les aromates prennent forme', text:'Le kroeung se prépare patiemment : on coupe, on pile, on sent, jusqu’à obtenir une pâte bien parfumée.', href:'/culture/comprendre-le-kroeung/' },
-  { time:'12:30', title:'À table, chacun compose sa bouchée', text:'Riz, plat chaud, légumes, herbes, soupe ou condiment se mangent ensemble et se complètent.', href:'/culture/construire-repas-cambodgien/' }
+  { time:'05:30', title:'Un bol de kuy teav pour commencer la journée', text:'Nouilles, bouillon parfumé et herbes fraîches : découvrez comment préparer ce bol chez vous.', href:'/recettes/kuy-teav/', cta:'Voir la recette →' },
+  { time:'08:30', title:'Le marché inspire le repas', text:'Poissons, herbes, légumes, fruits : on cuisine d’abord avec ce qui est frais et disponible.', href:'/culture/kep-marche-crabe-poivre/', cta:'Lire le carnet →' },
+  { time:'11:00', title:'Au mortier, les aromates prennent forme', text:'Le kroeung se prépare patiemment : on coupe, on pile, on sent, jusqu’à obtenir une pâte bien parfumée.', href:'/culture/comprendre-le-kroeung/', cta:'Lire le carnet →' },
+  { time:'12:30', title:'À table, chacun compose sa bouchée', text:'Riz, plat chaud, légumes, herbes, soupe ou condiment se mangent ensemble et se complètent.', href:'/culture/construire-repas-cambodgien/', cta:'Lire le carnet →' }
 ];
 
 const collectionSchema = {
@@ -52,7 +52,7 @@ const collectionSchema = {
             <span>{moment.time}</span>
             <h3>{moment.title}</h3>
             <p>{moment.text}</p>
-            <strong>Lire →</strong>
+            <strong>{moment.cta}</strong>
           </a>
         ))}
       </div>
