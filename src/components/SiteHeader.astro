@@ -36,15 +36,16 @@ const current = (prefix: string) => path.startsWith(prefix);
   </nav>
 
   <details class="mobile-menu" data-mobile-menu>
-    <summary aria-label="Ouvrir le menu">
+    <summary aria-label="Menu de navigation">
       <span>Menu</span>
       <i aria-hidden="true"></i>
     </summary>
-    <div class="mobile-menu-panel">
+    <div class="mobile-menu-panel" role="dialog" aria-modal="true" aria-labelledby="mobile-menu-title">
+      <button class="mobile-menu-close" type="button" aria-label="Fermer le menu">Fermer <span aria-hidden="true">×</span></button>
       <div class="mobile-menu-ornament" aria-hidden="true"></div>
       <div class="mobile-menu-heading">
         <p class="mobile-menu-kicker">Cuisine du Cambodge</p>
-        <p class="mobile-menu-title">Explorer</p>
+        <p class="mobile-menu-title" id="mobile-menu-title">Explorer</p>
       </div>
       <nav aria-label="Navigation mobile">
         <a href="/recettes/" aria-current={current('/recettes/') ? 'page' : undefined}>

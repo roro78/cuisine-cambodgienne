@@ -61,16 +61,31 @@ function setupHero(section: HTMLElement) {
   const image = section.querySelector<HTMLElement>('.v16-hero-image img');
   const copy = section.querySelector<HTMLElement>('.v16-hero-copy');
   const lines = gsap.utils.toArray<HTMLElement>('[data-v16-hero-line]', section);
+  const shortcuts = gsap.utils.toArray<HTMLAnchorElement>('.v16-hero-actions a', section);
+  const visibleHeaderLink = document.querySelector<HTMLAnchorElement>('[data-site-header] .brand-lockup');
+  const compactHero = window.matchMedia('(max-width: 440px) and (max-height: 420px)');
   const chips = gsap.utils.toArray<HTMLElement>('.v16-orbit-chip', section);
   const cue = section.querySelector<HTMLElement>('.v16-scroll-cue i');
 
-  ScrollTrigger.create({
-    trigger: section,
-    start: 'top top',
-    end: 'bottom bottom',
-    scrub: true,
-    onUpdate: (self) => {
-      const p = self.progress;
+  // Keep the hero's animated state in one reusable function. ScrollTrigger may
+  // refresh after zoom/rotation without emitting onUpdate when progress is unchanged.
+  // Reapply ALL GSAP values on refresh, including when leaving compact layout.
+  const applyHeroProgress = (p: number) => {
+      // At extreme zoom the hero is a normal, scrollable content block.
+      // Never hide its actions or animate its copy outside the content flow.
+      if (compactHero.matches) {
+        shortcuts.forEach((link) => { link.tabIndex = 0; });
+        return;
+      }
+
+      // A link already focused stays focused even after tabIndex = -1.
+      // Move focus to a stable, visible header control before the hero fades.
+      if (p >= .78 && shortcuts.some((link) => document.activeElement === link)) {
+        visibleHeaderLink?.focus({ preventScroll: true });
+      }
+      shortcuts.forEach((link) => {
+        link.tabIndex = p < .78 ? 0 : -1;
+      });
 
       if (image) {
         gsap.set(image, {
@@ -108,7 +123,15 @@ function setupHero(section: HTMLElement) {
       });
 
       if (cue) gsap.set(cue, { scaleX: 1 - p });
-    }
+  };
+
+  ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: true,
+    onRefresh: (self) => applyHeroProgress(self.progress),
+    onUpdate: (self) => applyHeroProgress(self.progress)
   });
 }
 

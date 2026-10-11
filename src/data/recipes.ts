@@ -88,7 +88,7 @@ export const recipes: Recipe[] = [
     substitutions: ['À défaut de sucre de palme, utilisez un peu de sucre roux.', 'Un basilic doux peut dépanner si le basilic asiatique est introuvable.'],
     equipment: ['Panier vapeur ou grande casserole avec grille', '4 ramequins'],
     faqs: [
-      { question: 'Pourquoi mon amok devient-il sec ?', answer: 'La cuisson est probablement trop forte ou trop longue. Arrêtez dès que le centre est juste pris.' },
+      { question: 'Pourquoi mon amok devient-il sec ?', answer: 'La cuisson est probablement trop forte ou trop longue. Privilégiez une vapeur douce, mais vérifiez que le poisson et les œufs sont complètement cuits avant de servir. Si nécessaire, poursuivez la cuisson.' },
       { question: 'Peut-on préparer la base à l’avance ?', answer: 'Oui. La base aromatique peut être préparée quelques heures à l’avance et gardée au frais.' }
     ],
     relatedIngredients: ['kroeung'],

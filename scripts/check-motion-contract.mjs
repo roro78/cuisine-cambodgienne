@@ -84,6 +84,64 @@ expectedPrimaryRoles.forEach((role) => {
   if (!primaryImageRoles.includes(role)) failures.push(`Missing V16 primary image role: ${role}`);
 });
 
+const scrollHeights = [
+  [/\.v16-hero\{min-height:(\d+)svh/, 220, 'desktop hero'],
+  [/\.v16-market\{min-height:(\d+)svh/, 270, 'desktop market'],
+  [/  \.v16-hero\{min-height:(\d+)svh/, 195, 'mobile hero'],
+  [/  \.v16-market\{min-height:(\d+)svh/, 235, 'mobile market']
+];
+for (const [pattern, max, label] of scrollHeights) {
+  const match = css.match(pattern);
+  if (!match || Number(match[1]) > max) failures.push(`Storytelling ${label} scene should not have excessive scroll height`);
+}
+if (!home.includes('class="v16-hero-actions"') ||
+    !home.includes('href="/recettes/">Voir les recettes') ||
+    !home.includes('href="/apprendre/">Apprendre les gestes')) {
+  failures.push('Home hero must provide direct recipe and workshop navigation before long scroll');
+}
+if (!css.includes('.v16-hero-actions a:focus-visible')) {
+  failures.push('Direct hero links must show clear keyboard focus');
+}
+
+if (css.lastIndexOf('@media(max-height:700px)') < css.lastIndexOf('@media(max-width:620px)')) {
+  failures.push('Short-height hero rules must come after narrow-width rules in the CSS cascade');
+}
+if (!css.includes('@media(max-height:700px)') || !css.includes('@media(max-height:420px)') ||
+    !css.includes('.v16-hero-orbit{display:none}')) {
+  failures.push('Short-height hero must reflow text, buttons and decorative chips safely');
+}
+if (!storytelling.includes("shortcuts.forEach((link) => {") ||
+    !storytelling.includes("link.tabIndex = p < .78 ? 0 : -1")) {
+  failures.push('Fading quick links must leave keyboard tab order before they disappear');
+}
+
+if (!storytelling.includes("shortcuts.some((link) => document.activeElement === link)") ||
+    !storytelling.includes("visibleHeaderLink?.focus({ preventScroll: true })") ||
+    !storytelling.includes("if (p >= .78 && shortcuts.some")) {
+  failures.push('Focused hero CTA must move to a visible header target before fading on scroll or resize');
+}
+
+const extremeZoom = '@media(max-width:440px) and (max-height:420px)';
+const extremeCss = css.slice(css.lastIndexOf(extremeZoom));
+if (!css.includes(extremeZoom) ||
+    !extremeCss.includes('.v16-hero{min-height:0}') ||
+    !extremeCss.includes('position:relative;top:auto;height:auto;min-height:0;') ||
+    !extremeCss.includes('overflow:visible;display:block;') ||
+    !extremeCss.includes('transform:none!important;opacity:1!important;visibility:visible!important;')) {
+  failures.push('400% zoom hero must grow and scroll naturally instead of clipping focused actions');
+}
+if (!storytelling.includes("const compactHero = window.matchMedia('(max-width: 440px) and (max-height: 420px)')") ||
+    !storytelling.includes('const applyHeroProgress = (p: number) => {') ||
+    !storytelling.includes('onRefresh: (self) => applyHeroProgress(self.progress)') ||
+    !storytelling.includes('onUpdate: (self) => applyHeroProgress(self.progress)') ||
+    !storytelling.includes('if (compactHero.matches) {')) {
+  failures.push('400% zoom hero must reapply GSAP state and accessible CTA on entering AND leaving compact layout, even without scroll progress changes');
+}
+if (!storytelling.includes('gsap.set(copy, {') || !storytelling.includes('gsap.set(image, {') ||
+    !storytelling.includes('link.tabIndex = p < .78 ? 0 : -1;')) {
+  failures.push('Hero refresh must reapply image, text and keyboard tab state together');
+}
+
 if (failures.length) {
   console.error('Motion contract failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));

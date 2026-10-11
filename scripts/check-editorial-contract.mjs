@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 
 const header = fs.readFileSync('src/components/SiteHeader.astro','utf8');
+const navigation = fs.readFileSync('src/scripts/navigation.ts','utf8');
+const globalStyles = fs.readFileSync('src/styles/global.css','utf8');
 const learn = fs.readFileSync('src/pages/apprendre/index.astro','utf8');
 const workshopDetail = fs.readFileSync('src/pages/apprendre/[slug].astro','utf8');
 const workshopData = fs.readFileSync('src/data/workshops.ts','utf8');
@@ -56,8 +58,16 @@ if (!glossary.includes('data-glossary-search') || !glossary.includes('data-gloss
   failures.push('Glossary must keep search, family filters and filterable entries');
 }
 
-if (!recipes.includes('recipe-v15 recipe-v16') || !recipes.includes('Prenez votre temps, goûtez et ajustez.')) {
+if (!recipes.includes('recipe-v15 recipe-v16') || !recipes.includes('Les étapes, les gestes et les bons repères.')) {
   failures.push('Recipe detail must keep the V16 culinary editorial layer');
+}
+
+if (about.includes('Et si le goût ou la texture seront différents') || !about.includes('nous proposons un remplacement et expliquons ce qu’il change')) {
+  failures.push('About ingredient substitutions must use natural, accurate French');
+}
+if (recipes.includes('Prenez votre temps, goûtez et ajustez.') ||
+    !recipes.includes('Ne goûtez les préparations que lorsque leur composition le permet.')) {
+  failures.push('Guided recipe headings cannot invite tasting raw ingredients');
 }
 
 const toneCorpus = [home, learn, workshopDetail, workshopData, culture, about, glossary, recipes, cultureData, recipeData, ingredientData, glossaryData].join('\n');
@@ -78,6 +88,53 @@ forbiddenArtificialCopy.forEach((phrase) => {
     failures.push(`Artificial editorial phrasing reintroduced: ${phrase}`);
   }
 });
+
+if (!culture.includes("href:'/recettes/kuy-teav/', cta:'Voir la recette →'")) failures.push('Morning card must link explicitly to the relevant noodle recipe');
+if (culture.includes("title:'Au petit matin, les gargotes sont déjà ouvertes'")) failures.push('Morning culture card must not misleadingly link to generic meal article');
+if (!culture.includes('<strong>{moment.cta}</strong>')) failures.push('Editorial cards must accurately label linked destination');
+
+if (!navigation.includes("const desktopQuery = window.matchMedia('(min-width: 721px)')") ||
+    !navigation.includes("desktopQuery.addEventListener('change', onViewportChange)") ||
+    !navigation.includes("desktopQuery.removeEventListener('change', onViewportChange)")) {
+  failures.push('Open mobile drawer must close and unlock scrolling when viewport becomes desktop');
+}
+if (!navigation.includes("event.key === 'Tab'") ||
+    !navigation.includes("event.shiftKey && document.activeElement === first") ||
+    !navigation.includes("focusables[0] ?? dialog") ||
+    !navigation.includes("dialog?.contains(document.activeElement)")) {
+  failures.push('Mobile modal must focus inside the dialog and contain keyboard navigation');
+}
+if (!header.includes('role="dialog" aria-modal="true" aria-labelledby="mobile-menu-title"') ||
+    !header.includes('aria-label="Menu de navigation"')) {
+  failures.push('Mobile drawer must declare the dialog role and consistent accessible name');
+}
+if (!navigation.includes('el.inert = open ? true') ||
+    !navigation.includes('restoreBackground()') ||
+    !navigation.includes("document.addEventListener('pointerdown', onOutsidePointer)") ||
+    !navigation.includes("document.removeEventListener('pointerdown', onOutsidePointer)")) {
+  failures.push('Mobile modal must isolate background and support backdrop dismissal with cleanup');
+}
+if (!globalStyles.includes('.mobile-menu summary:focus-visible') ||
+    !globalStyles.includes('.mobile-menu-panel nav a:focus-visible')) {
+  failures.push('Mobile navigation must display visible focus indicators');
+}
+
+if (!navigation.includes('if (closedForDesktop) brandLink?.focus()') ||
+    !navigation.includes('(desktopQuery.matches ? brandLink : summary)?.focus()')) {
+  failures.push('Closing mobile drawer on desktop resize must return focus to visible desktop navigation');
+}
+
+if (!header.includes('class="mobile-menu-close" type="button" aria-label="Fermer le menu"') ||
+    !navigation.includes("const focusables = [closeButton, ...links]") ||
+    !navigation.includes("closeButton?.addEventListener('click', closeMenu)") ||
+    !navigation.includes("closeButton?.removeEventListener('click', closeMenu)")) {
+  failures.push('Modal mobile drawer must have an accessible in-dialog close button in the focus cycle');
+}
+if (!globalStyles.includes('.mobile-menu summary:focus-visible{outline:3px solid #49351f') ||
+    !globalStyles.includes('.site-nav[data-site-header].is-overlay-top .mobile-menu summary:focus-visible') ||
+    !globalStyles.includes('.mobile-menu-close:focus-visible')) {
+  failures.push('Mobile light-header summary focus ring must contrast; dark drawer controls need visible focus');
+}
 
 if (failures.length) {
   console.error('Editorial contract failed:');
