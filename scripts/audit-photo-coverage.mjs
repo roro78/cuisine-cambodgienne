@@ -83,6 +83,12 @@ function webpSize(src) {
   throw new Error('Unsupported WebP format: ' + format + ' in ' + src);
 }
 
+console.log('## Dimensions réelles des visuels 1600w');
+for (const file of files.filter((name) => /-1600\.webp$/.test(name))) {
+  const [width, height] = webpSize('/images/cuisine/' + file);
+  console.log(`- ${file}: ${width} × ${height}`);
+}
+
 const recipeListing = fs.readFileSync('src/pages/recettes/index.astro', 'utf8');
 const hero = recipeListing.match(/<figure><img src="(\/images\/cuisine\/[^"]+\.webp)"[^>]*width="(\d+)" height="(\d+)"/);
 if (!hero) {
