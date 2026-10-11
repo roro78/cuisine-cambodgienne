@@ -10,9 +10,9 @@ Le script `node scripts/audit-photo-coverage.mjs` produit un inventaire reproduc
 
 ## Première correction de contenu de cette PR
 
-Le visuel d'ouverture de la page `/recettes/` utilisait encore la grande photo du marché de Kep, déjà dominante dans l'accueil. Il est remplacé par `prahok-1600.webp`, une photographie **culinaire au format paysage** (1600 × 1067) adaptée à la zone. Le portrait `amok-alt-1600.webp` a été écarté après revue, et la photo `amok-1600.webp` reste volontairement exclue du hero afin de respecter le garde-fou existant contre sa répétition.
+Le visuel d'ouverture de la page `/recettes/` utilisait encore la grande photo du marché de Kep, déjà dominante dans l'accueil. Il est remplacé par `kroeung-1600.webp`, un visuel **d’aromates en format paysage réel** (1600 × 1067), pertinent pour introduire les gestes de cuisine. L’audit binaire a révélé que `amok-alt-1600.webp` (1600 × 3556) et `prahok-1600.webp` (1600 × 2133) sont des portraits : ils ne conviennent pas à cette grande bannière sans recadrage massif. La photographie `amok-1600.webp` (paysage) reste exclue ici afin de préserver le garde-fou contre sa répétition.
 
-**Limite :** cette image de Prahok est aussi utilisée dans le catalogue. Le changement évite de répéter le marché de Kep à l'ouverture, mais ne crée aucune prise de vue supplémentaire. Une nouvelle photographie paysage sera préférable lors du vrai travail de direction artistique.
+**Limite :** cette photographie de kroeung existe aussi dans le catalogue et les pages pédagogiques. Le changement évite de répéter le marché de Kep à l'ouverture, mais ne crée aucune prise de vue supplémentaire. Une nouvelle photographie paysage sera préférable lors du vrai travail de direction artistique.
 
 ## Images manquantes à créer ou documenter avant une refonte premium
 
