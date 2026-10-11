@@ -86,8 +86,21 @@ if (!navigation.includes("const desktopQuery = window.matchMedia('(min-width: 72
     !navigation.includes("desktopQuery.removeEventListener('change', onViewportChange)")) {
   failures.push('Open mobile drawer must close and unlock scrolling when viewport becomes desktop');
 }
-if (!navigation.includes("event.key === 'Tab'") || !navigation.includes("event.shiftKey && document.activeElement === first")) {
-  failures.push('Mobile drawer must contain keyboard focus while open');
+if (!navigation.includes("event.key === 'Tab'") ||
+    !navigation.includes("event.shiftKey && document.activeElement === first") ||
+    !navigation.includes("links[0] ?? dialog") ||
+    !navigation.includes("dialog?.contains(document.activeElement)")) {
+  failures.push('Mobile modal must focus inside the dialog and contain keyboard navigation');
+}
+if (!header.includes('role="dialog" aria-modal="true" aria-labelledby="mobile-menu-title"') ||
+    !header.includes('aria-label="Menu de navigation"')) {
+  failures.push('Mobile drawer must declare the dialog role and consistent accessible name');
+}
+if (!navigation.includes('el.inert = open ? true') ||
+    !navigation.includes('restoreBackground()') ||
+    !navigation.includes("document.addEventListener('pointerdown', onOutsidePointer)") ||
+    !navigation.includes("document.removeEventListener('pointerdown', onOutsidePointer)")) {
+  failures.push('Mobile modal must isolate background and support backdrop dismissal with cleanup');
 }
 if (!globalStyles.includes('.mobile-menu summary:focus-visible') ||
     !globalStyles.includes('.mobile-menu-panel nav a:focus-visible')) {
