@@ -89,6 +89,32 @@ for (const file of files.filter((name) => /-1600\.webp$/.test(name))) {
   console.log(`- ${file}: ${width} × ${height}`);
 }
 
+// Data-backed images have width/height in content schemas; validate those
+// attributes against the actual WebP dimensions (original resolution can differ
+// so compare aspect ratio, not exact width).
+for (const source of ['src/data/recipes.ts', 'src/data/culture.ts', 'src/data/ingredients.ts']) {
+  const content = fs.readFileSync(source, 'utf8');
+  const imageRefs = [...content.matchAll(/image:\s*['"](\/images\/cuisine\/[\w-]+\.webp)['"]/g)];
+  const dataImages = [...content.matchAll(/image:\s*['"](\/images\/cuisine\/[\w-]+\.webp)['"][\s\S]{0,330}?imageWidth:\s*(\d+),\s*imageHeight:\s*(\d+)/g)];
+  if (dataImages.length !== imageRefs.length) {
+    missing.push(source + ': expected explicit width and height for every content image (' + dataImages.length + '/' + imageRefs.length + ')');
+  }
+  for (const match of dataImages) {
+    try {
+      const [actualW, actualH] = webpSize(match[1]);
+      const actualRatio = actualW / actualH;
+      const declaredRatio = Number(match[2]) / Number(match[3]);
+      if (!Number.isFinite(declaredRatio) || declaredRatio <= 0 ||
+          Math.abs(actualRatio - declaredRatio) / actualRatio > 0.03) {
+        missing.push(source + ': ' + match[1] + ' is ' + actualW + 'x' + actualH +
+          ', declared as ' + match[2] + 'x' + match[3]);
+      }
+    } catch (error) {
+      missing.push(source + ': ' + String(error));
+    }
+  }
+}
+
 const recipeListing = fs.readFileSync('src/pages/recettes/index.astro', 'utf8');
 const hero = recipeListing.match(/<figure><img src="(\/images\/cuisine\/[^"]+\.webp)"[^>]*width="(\d+)" height="(\d+)"/);
 if (!hero) {
