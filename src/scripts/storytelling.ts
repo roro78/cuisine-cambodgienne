@@ -63,6 +63,7 @@ function setupHero(section: HTMLElement) {
   const lines = gsap.utils.toArray<HTMLElement>('[data-v16-hero-line]', section);
   const shortcuts = gsap.utils.toArray<HTMLAnchorElement>('.v16-hero-actions a', section);
   const visibleHeaderLink = document.querySelector<HTMLAnchorElement>('[data-site-header] .brand-lockup');
+  const compactHero = window.matchMedia('(max-width: 440px) and (max-height: 420px)');
   const chips = gsap.utils.toArray<HTMLElement>('.v16-orbit-chip', section);
   const cue = section.querySelector<HTMLElement>('.v16-scroll-cue i');
 
@@ -73,6 +74,13 @@ function setupHero(section: HTMLElement) {
     scrub: true,
     onUpdate: (self) => {
       const p = self.progress;
+
+      // At extreme zoom the hero is a normal, scrollable content block.
+      // Never hide its actions or animate its copy outside the content flow.
+      if (compactHero.matches) {
+        shortcuts.forEach((link) => { link.tabIndex = 0; });
+        return;
+      }
 
       // A link already focused stays focused even after tabIndex = -1.
       // Move focus to a stable, visible header control before the hero fades.
