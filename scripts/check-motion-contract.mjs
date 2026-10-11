@@ -121,6 +121,22 @@ if (!storytelling.includes("shortcuts.some((link) => document.activeElement === 
   failures.push('Focused hero CTA must move to a visible header target before fading on scroll or resize');
 }
 
+const extremeZoom = '@media(max-width:440px) and (max-height:420px)';
+const extremeCss = css.slice(css.lastIndexOf(extremeZoom));
+if (!css.includes(extremeZoom) ||
+    !extremeCss.includes('.v16-hero{min-height:0}') ||
+    !extremeCss.includes('position:relative;top:auto;height:auto;min-height:0;') ||
+    !extremeCss.includes('overflow:visible;display:block;') ||
+    !extremeCss.includes('transform:none!important;opacity:1!important;visibility:visible!important;')) {
+  failures.push('400% zoom hero must grow and scroll naturally instead of clipping focused actions');
+}
+if (!storytelling.includes("const compactHero = window.matchMedia('(max-width: 440px) and (max-height: 420px)')") ||
+    !storytelling.includes('onRefresh: () => {') ||
+    !storytelling.includes('if (compactHero.matches) shortcuts.forEach') ||
+    !storytelling.includes('if (compactHero.matches) {')) {
+  failures.push('400% zoom hero should keep keyboard-accessible CTA on resize and GSAP refresh');
+}
+
 if (failures.length) {
   console.error('Motion contract failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));
