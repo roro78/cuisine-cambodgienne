@@ -153,6 +153,22 @@ if (!globalStyles.includes('.mobile-menu summary:focus-visible{outline:3px solid
   failures.push('Mobile light-header summary focus ring must contrast; dark drawer controls need visible focus');
 }
 
+if (!/\.mobile-menu-panel nav a\{\s*color:#f7f2e8;/.test(globalStyles)) {
+  failures.push('Mobile menu links must use explicit light text, overriding the old dark inherited navigation color');
+}
+if (!globalStyles.includes('color:rgba(247,242,232,.8);')) {
+  failures.push('Mobile menu secondary labels must maintain readable contrast on the dark panel');
+}
+if (/\.mobile-menu\[open\] \.mobile-menu-panel nav a:nth-child\(/.test(globalStyles)) {
+  failures.push('Mobile menu items must no longer appear in delayed, staggered animations');
+}
+if (!globalStyles.includes('@starting-style{') || !globalStyles.includes('transform:translate3d(100%,0,0);')) {
+  failures.push('Mobile drawer must define a composited, unified entry transition');
+}
+if (globalStyles.includes('backdrop-filter:blur(2px);')) {
+  failures.push('Mobile drawer backdrop must not incur expensive blur repaint during opening');
+}
+
 if (failures.length) {
   console.error('Editorial contract failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));
