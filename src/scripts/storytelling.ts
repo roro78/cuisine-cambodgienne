@@ -67,18 +67,10 @@ function setupHero(section: HTMLElement) {
   const chips = gsap.utils.toArray<HTMLElement>('.v16-orbit-chip', section);
   const cue = section.querySelector<HTMLElement>('.v16-scroll-cue i');
 
-  ScrollTrigger.create({
-    trigger: section,
-    start: 'top top',
-    end: 'bottom bottom',
-    scrub: true,
-    onRefresh: () => {
-      // Zoom and rotation can change the breakpoint without changing scroll progress.
-      if (compactHero.matches) shortcuts.forEach((link) => { link.tabIndex = 0; });
-    },
-    onUpdate: (self) => {
-      const p = self.progress;
-
+  // Keep the hero's animated state in one reusable function. ScrollTrigger may
+  // refresh after zoom/rotation without emitting onUpdate when progress is unchanged.
+  // Reapply ALL GSAP values on refresh, including when leaving compact layout.
+  const applyHeroProgress = (p: number) => {
       // At extreme zoom the hero is a normal, scrollable content block.
       // Never hide its actions or animate its copy outside the content flow.
       if (compactHero.matches) {
@@ -131,7 +123,15 @@ function setupHero(section: HTMLElement) {
       });
 
       if (cue) gsap.set(cue, { scaleX: 1 - p });
-    }
+  };
+
+  ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: true,
+    onRefresh: (self) => applyHeroProgress(self.progress),
+    onUpdate: (self) => applyHeroProgress(self.progress)
   });
 }
 
