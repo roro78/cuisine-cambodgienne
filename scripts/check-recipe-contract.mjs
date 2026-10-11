@@ -73,6 +73,13 @@ if (!prahok.includes('Ne goûtez jamais une préparation contenant du porc cru o
   failures.push('Prahok Ktis must warn against tasting raw pork');
 }
 
+if (!detail.includes('Les étapes, les gestes et les bons repères.') || detail.includes('Prenez votre temps, goûtez et ajustez.')) {
+  failures.push('Guided method must not use a generic invitation to taste potentially raw food');
+}
+if (!amok.includes('poisson et les œufs sont complètement cuits avant de servir')) {
+  failures.push('Amok FAQ must require complete cooking before serving');
+}
+
 if (listing.includes('{recipe.prepTime} + {recipe.cookTime}')) failures.push('Catalog must not display 0 min for uncooked preparations');
 if (!listing.includes('minutes(recipe.cookTime) > 0') || !listing.includes('de préparation')) failures.push('Catalog must distinguish preparation from cooking without inventing times');
 
