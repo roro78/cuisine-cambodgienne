@@ -20,6 +20,8 @@ Ces cinq PR sont **indépendantes de la #24** et n’ajoutent aucune fonction pa
 
 **Réception restante :** relecture B1/B2 ; contrôle visuel et accessibilité B3/B4/B5 sur 390/768/1440 px, clavier, zoom 200 %, lecteurs d’écran et mouvements réduits. Le test interactif mobile du 12 octobre n’a pas abouti et n’est **pas validé**. Les enrichissements culinaires et médias exigent des lots séparés et une validation réelle.
 
+**Annexes :** les trois documents historiques du Grand Dîner cités ci-dessous ne sont pas encore sur `main` ; leurs liens pointent volontairement vers un commit immuable de la PR #24, sans fusion implicite de son code.
+
 ### Contrôle de reprise — 12 octobre 2026
 
 - Côté GitHub : `main` à `38f6c8bf` ; `ovh-production` à `fd31ed2b`, message `deploy: 38f6c8bf` ; les deux workflows CI et publication de branche sont `success`.
@@ -116,7 +118,7 @@ Livrables :
 
 ### Phase 3 — Essais culinaires réels et médias originaux (priorité P0 avant toute vente)
 
-Six scénarios obligatoires, documentés dans docs/protocole-validation-grand-diner.md : **2, 4, 6 convives, chacun sans puis avec Prahok**. Pour chacun : quantités mesurées, matériel, temps de préparation/cuisson/dressage, bonne cuisson et conservation, équilibre gustatif, difficulté et substitutions, preuves photo/notes, correctifs puis nouveau test si nécessaire.
+Six scénarios obligatoires, documentés dans [docs/protocole-validation-grand-diner.md](https://github.com/roro78/cuisine-cambodgienne/blob/68a3e55000f7bba0e39de70d8c84226246443bc4/docs/protocole-validation-grand-diner.md) : **2, 4, 6 convives, chacun sans puis avec Prahok**. Pour chacun : quantités mesurées, matériel, temps de préparation/cuisson/dressage, bonne cuisson et conservation, équilibre gustatif, difficulté et substitutions, preuves photo/notes, correctifs puis nouveau test si nécessaire.
 
 En parallèle, créer les médias originaux utiles : photographies de gestes, étapes clés, portraits humains quand pertinents, vidéos/démonstrations sous-titrées, autorisations des personnes et droits de diffusion. Ne pas prétendre disposer d’un chef partenaire.
 
@@ -189,6 +191,6 @@ La validation technique de #24 est acquise sur son HEAD contrôlé ; **la récep
 
 - PR #24, périmètre du prototype : https://github.com/roro78/cuisine-cambodgienne/pull/24
 - CI contrôlée pour le HEAD 5db43ca : https://github.com/roro78/cuisine-cambodgienne/actions/runs/38081774271
-- Protocole de validation physique : docs/protocole-validation-grand-diner.md
-- Plan commercial historique et décisions : docs/plan-commerce-experiences.md
-- Runbook de déploiement : docs/runbook-ovh-ateliers-release.md
+- Protocole de validation physique : [docs/protocole-validation-grand-diner.md](https://github.com/roro78/cuisine-cambodgienne/blob/68a3e55000f7bba0e39de70d8c84226246443bc4/docs/protocole-validation-grand-diner.md)
+- Plan commercial historique et décisions : [docs/plan-commerce-experiences.md](https://github.com/roro78/cuisine-cambodgienne/blob/68a3e55000f7bba0e39de70d8c84226246443bc4/docs/plan-commerce-experiences.md)
+- Runbook de déploiement : [docs/runbook-ovh-ateliers-release.md](https://github.com/roro78/cuisine-cambodgienne/blob/68a3e55000f7bba0e39de70d8c84226246443bc4/docs/runbook-ovh-ateliers-release.md)
