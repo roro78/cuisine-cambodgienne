@@ -399,7 +399,7 @@ export const recipes: Recipe[] = [
     image: '/images/cuisine/prahok-1600.webp',
     imageAlt: 'Préparation cambodgienne à base de prahok',
     imageWidth: 1600,
-    imageHeight: 1067,
+    imageHeight: 2133,
     imageWidths: [480, 800, 1200, 1600],
     visualTone: 'coconut'
   },

@@ -168,7 +168,7 @@ export const cultureArticles: CultureArticle[] = [
     image: '/images/cuisine/kep-market-1600.webp',
     imageAlt: 'Marché de Kep au Cambodge avec produits frais',
     imageWidth: 1600,
-    imageHeight: 1067,
+    imageHeight: 1334,
     imageWidths: [480, 800, 1200, 1600],
     sources: [
       { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: tourismGuide },
