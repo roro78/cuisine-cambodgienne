@@ -68,7 +68,7 @@ const recipeSchema = {
   description: recipe.description,
   recipeYield: getServingsLabel(recipe),
   prepTime: `PT${totalMinutes(recipe.prepTime)}M`,
-  cookTime: `PT${totalMinutes(recipe.cookTime)}M`,
+  ...(totalMinutes(recipe.cookTime) > 0 ? { cookTime: `PT${totalMinutes(recipe.cookTime)}M` } : {}),
   totalTime: `PT${totalMinutes(recipe.prepTime) + totalMinutes(recipe.cookTime)}M`,
   recipeIngredient: recipe.ingredients.map(ingredientText),
   recipeInstructions: recipe.steps.map((step, index) => ({
@@ -100,9 +100,9 @@ const recipeSchema = {
         <p class="recipe-context">{recipe.context}</p>
 
         <dl class="recipe-v15-facts" aria-label="Informations de la recette">
-          <div><dt>Pour</dt><dd>{getServingsLabel(recipe)}</dd></div>
+          <div><dt>Pour</dt><dd>{recipe.servingsLabel ? getServingsLabel(recipe) : <span data-serving-summary aria-live="polite" aria-atomic="true">{getServingsLabel(recipe)}</span>}</dd></div>
           <div><dt>Préparation</dt><dd>{recipe.prepTime}</dd></div>
-          <div><dt>Cuisson</dt><dd>{recipe.cookTime}</dd></div>
+          {totalMinutes(recipe.cookTime) > 0 && <div><dt>Cuisson</dt><dd>{recipe.cookTime}</dd></div>}
           <div><dt>Niveau</dt><dd>{recipe.difficulty}</dd></div>
         </dl>
       </div>
