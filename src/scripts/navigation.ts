@@ -5,6 +5,7 @@ export function initNavigation() {
 
   const overlay = header.dataset.overlay === 'true';
   const summary = menu?.querySelector<HTMLElement>('summary');
+  const brandLink = header.querySelector<HTMLElement>('.brand-lockup');
   const dialog = menu?.querySelector<HTMLElement>('.mobile-menu-panel');
   const links = menu ? Array.from(menu.querySelectorAll<HTMLAnchorElement>('.mobile-menu-panel a[href]')) : [];
   const desktopQuery = window.matchMedia('(min-width: 721px)');
@@ -38,14 +39,17 @@ export function initNavigation() {
       // disclosure summary that sits outside role=dialog.
       (links[0] ?? dialog)?.focus();
     } else if (dialog?.contains(document.activeElement)) {
-      summary?.focus();
+      // The mobile summary is display:none on desktop: never focus it there.
+      (desktopQuery.matches ? brandLink : summary)?.focus();
     }
   };
 
   const onViewportChange = () => {
-    // Releasing the drawer on desktop also releases the background scroll lock.
-    if (desktopQuery.matches && menu?.open) menu.open = false;
+    const closedForDesktop = Boolean(desktopQuery.matches && menu?.open);
+    if (closedForDesktop && menu) menu.open = false;
+    // Restore inert states before attempting to focus a visible desktop link.
     onToggle();
+    if (closedForDesktop) brandLink?.focus();
   };
 
   const onKeydown = (event: KeyboardEvent) => {
