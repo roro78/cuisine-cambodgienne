@@ -9,7 +9,7 @@ export function initNavigation() {
   const dialog = menu?.querySelector<HTMLElement>('.mobile-menu-panel');
   const closeButton = dialog?.querySelector<HTMLButtonElement>('.mobile-menu-close');
   const links = menu ? Array.from(menu.querySelectorAll<HTMLAnchorElement>('.mobile-menu-panel a[href]')) : [];
-  const focusables = [closeButton, ...links].filter((item): item is HTMLElement => Boolean(item));
+  const focusables = [closeButton, ...links].filter((item): item is HTMLButtonElement | HTMLAnchorElement => item != null);
   const desktopQuery = window.matchMedia('(min-width: 721px)');
 
   // A fixed, scroll-locking drawer must also isolate the underlying page for
