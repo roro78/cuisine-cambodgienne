@@ -72,6 +72,10 @@ function setupHero(section: HTMLElement) {
     start: 'top top',
     end: 'bottom bottom',
     scrub: true,
+    onRefresh: () => {
+      // Zoom and rotation can change the breakpoint without changing scroll progress.
+      if (compactHero.matches) shortcuts.forEach((link) => { link.tabIndex = 0; });
+    },
     onUpdate: (self) => {
       const p = self.progress;
 
