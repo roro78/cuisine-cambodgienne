@@ -67,6 +67,14 @@ if (!/@media\(prefers-reduced-motion:reduce\)[\s\S]*?\.v16-scroll-scene\{min-hei
 if (!storytelling.includes('panel.inert = !interactive') || !storytelling.includes('panel.tabIndex = interactive ? 0 : -1')) {
   failures.push('Off-screen market panels must be removed from the tab order');
 }
+if (!storytelling.includes('updateMarketProgress(0)') ||
+    !storytelling.includes('onRefresh: (self) => updateMarketProgress(self.progress)') ||
+    !storytelling.includes('onUpdate: (self) => updateMarketProgress(self.progress)')) {
+  failures.push('Market scene must restore its track, cards and focus state on load, resize and scroll');
+}
+if (/\bfilter:\s*`(?:saturate|blur)/.test(storytelling)) {
+  failures.push('Cinematic scroll must not recompute expensive image/word CSS filters on each scroll update');
+}
 
 if (!storytelling.includes('if (cta) cta.tabIndex = -1') || !storytelling.includes('cta.tabIndex = reveal > .55 ? 0 : -1')) {
   failures.push('Table CTA tab order must follow its scroll reveal');
