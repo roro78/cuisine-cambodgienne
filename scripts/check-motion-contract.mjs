@@ -115,6 +115,12 @@ if (!storytelling.includes("shortcuts.forEach((link) => {") ||
   failures.push('Fading quick links must leave keyboard tab order before they disappear');
 }
 
+if (!storytelling.includes("shortcuts.some((link) => document.activeElement === link)") ||
+    !storytelling.includes("visibleHeaderLink?.focus({ preventScroll: true })") ||
+    !storytelling.includes("if (p >= .78 && shortcuts.some")) {
+  failures.push('Focused hero CTA must move to a visible header target before fading on scroll or resize');
+}
+
 if (failures.length) {
   console.error('Motion contract failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));
