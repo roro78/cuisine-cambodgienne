@@ -60,10 +60,11 @@ if (!recipes.includes('recipe-v15 recipe-v16') || !recipes.includes('Les étapes
   failures.push('Recipe detail must keep the V16 culinary editorial layer');
 }
 
-if (about.includes('Et si le goût ou la texture seront différents') || !about.includes('Quand un remplacement modifie le goût ou la texture')) {
+if (about.includes('Et si le goût ou la texture seront différents') || !about.includes('nous proposons un remplacement et expliquons ce qu’il change')) {
   failures.push('About ingredient substitutions must use natural, accurate French');
 }
-if (recipes.includes('Prenez votre temps, goûtez et ajustez.')) {
+if (recipes.includes('Prenez votre temps, goûtez et ajustez.') ||
+    !recipes.includes('Ne goûtez les préparations que lorsque leur composition le permet.')) {
   failures.push('Guided recipe headings cannot invite tasting raw ingredients');
 }
 
