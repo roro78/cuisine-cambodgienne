@@ -103,6 +103,15 @@ if (!css.includes('.v16-hero-actions a:focus-visible')) {
   failures.push('Direct hero links must show clear keyboard focus');
 }
 
+if (!css.includes('@media(max-height:700px)') || !css.includes('@media(max-height:420px)') ||
+    !css.includes('.v16-hero-orbit{display:none}')) {
+  failures.push('Short-height hero must reflow text, buttons and decorative chips safely');
+}
+if (!storytelling.includes("shortcuts.forEach((link) => {") ||
+    !storytelling.includes("link.tabIndex = p < .78 ? 0 : -1")) {
+  failures.push('Fading quick links must leave keyboard tab order before they disappear');
+}
+
 if (failures.length) {
   console.error('Motion contract failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));
