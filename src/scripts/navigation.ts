@@ -7,7 +7,9 @@ export function initNavigation() {
   const summary = menu?.querySelector<HTMLElement>('summary');
   const brandLink = header.querySelector<HTMLElement>('.brand-lockup');
   const dialog = menu?.querySelector<HTMLElement>('.mobile-menu-panel');
+  const closeButton = dialog?.querySelector<HTMLButtonElement>('.mobile-menu-close');
   const links = menu ? Array.from(menu.querySelectorAll<HTMLAnchorElement>('.mobile-menu-panel a[href]')) : [];
+  const focusables = [closeButton, ...links].filter((item): item is HTMLElement => Boolean(item));
   const desktopQuery = window.matchMedia('(min-width: 721px)');
 
   // A fixed, scroll-locking drawer must also isolate the underlying page for
@@ -37,7 +39,7 @@ export function initNavigation() {
     if (open) {
       // Place focus inside the modal drawer instead of trapping it on a
       // disclosure summary that sits outside role=dialog.
-      (links[0] ?? dialog)?.focus();
+      (focusables[0] ?? dialog)?.focus();
     } else if (dialog?.contains(document.activeElement)) {
       // The mobile summary is display:none on desktop: never focus it there.
       (desktopQuery.matches ? brandLink : summary)?.focus();
@@ -61,9 +63,9 @@ export function initNavigation() {
       return;
     }
 
-    if (event.key === 'Tab' && links.length) {
-      const first = links[0];
-      const last = links[links.length - 1];
+    if (event.key === 'Tab' && focusables.length) {
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
       // Keep keyboard focus inside the declared modal dialog. If focus
       // somehow moved outside, return to its first interactive element.
       if (!dialog?.contains(document.activeElement)) {
@@ -96,6 +98,7 @@ export function initNavigation() {
   desktopQuery.addEventListener('change', onViewportChange);
   window.addEventListener('keydown', onKeydown);
   document.addEventListener('pointerdown', onOutsidePointer);
+  closeButton?.addEventListener('click', closeMenu);
   links.forEach((link) => link.addEventListener('click', closeMenu));
   onViewportChange();
 
@@ -105,6 +108,7 @@ export function initNavigation() {
     desktopQuery.removeEventListener('change', onViewportChange);
     document.removeEventListener('pointerdown', onOutsidePointer);
     menu?.removeEventListener('toggle', onToggle);
+    closeButton?.removeEventListener('click', closeMenu);
     links.forEach((link) => link.removeEventListener('click', closeMenu));
     restoreBackground();
     document.documentElement.classList.remove('menu-open');
