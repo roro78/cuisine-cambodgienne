@@ -27,7 +27,7 @@ export function initRecipeFilters() {
       button.setAttribute('aria-pressed', active ? 'true' : 'false');
     });
 
-    if (status) status.textContent = `${visible} recette${visible > 1 ? 's' : ''}`;
+    if (status) status.textContent = visible === 0 ? 'Aucune recette trouvée' : `${visible} recette${visible === 1 ? '' : 's'}`;
   };
 
   const handlers = buttons.map((button) => {
