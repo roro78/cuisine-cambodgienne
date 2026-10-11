@@ -6,13 +6,13 @@
 
 Le dossier `public/images/cuisine/` comporte **huit familles de photographies distinctes** : `amok`, `amok-alt`, `kampot`, `kep-market`, `kroeung`, `lok-lak`, `prahok` et `tamarind`. Les fichiers `-480`, `-800`, `-1200`, `-1600` et `-2200` sont des **variantes de résolution**, pas de nouveaux sujets. Plusieurs pages utilisent les mêmes familles, ce qui explique le sentiment de répétition.
 
-Le script `node scripts/audit-photo-coverage.mjs` produit un inventaire reproductible des fichiers référencés par les principales pages/données et signale les images manquantes. Il ne publie rien, ne récupère aucun fichier externe et n'invente ni crédits ni licences.
+Le script `node scripts/audit-photo-coverage.mjs` produit un inventaire reproductible des fichiers référencés par les principales pages/données, vérifie également les variantes de largeur produites par `imageSrcSet()` et compare les dimensions intrinsèques du hero avec le ratio déclaré en HTML. Il ne publie rien, ne récupère aucun fichier externe et n'invente ni crédits ni licences.
 
 ## Première correction de contenu de cette PR
 
-Le visuel d'ouverture de la page `/recettes/` utilisait encore la grande photo du marché de Kep, déjà dominante dans l'accueil. Il est remplacé par `amok-alt-1600.webp`, une photographie culinaire déjà disponible en résolutions responsives et directement pertinente pour la découverte des recettes.
+Le visuel d'ouverture de la page `/recettes/` utilisait encore la grande photo du marché de Kep, déjà dominante dans l'accueil. Il est remplacé par `amok-1600.webp`, une photographie **au format paysage** adaptée à cette zone. Le portrait `amok-alt-1600.webp` a été écarté après revue de son cadrage et de ses dimensions réelles.
 
-**Limite :** le remplacement reste une amélioration sémantique ciblée ; il ne constitue pas une diversification réelle de la photothèque.
+**Limite :** cette image d'Amok est aussi utilisée dans le catalogue. Le changement évite de répéter le marché de Kep à l'ouverture, mais ne crée aucune prise de vue supplémentaire. Une nouvelle photographie paysage sera préférable lors du vrai travail de direction artistique.
 
 ## Images manquantes à créer ou documenter avant une refonte premium
 
