@@ -93,13 +93,20 @@ if (!listing.includes('minutes(recipe.cookTime) > 0') || !listing.includes('de p
 
 
 const recipeBlocks = recipes.split(/\n  \{\n    slug: '/).slice(1);
-const withTips = recipeBlocks.filter((block) => /\n    beforeYouStart: '[^\n]+'/.test(block) && /\n    servingTip: '[^\n]+'/.test(block));
-if (!recipes.includes('beforeYouStart?: string') || !recipes.includes('servingTip?: string') ||
+const withTips = recipeBlocks.filter((block) =>
+  /\n    beforeYouStart: '[^\n]+'/.test(block) &&
+  /\n    prepHeading: '[^\n]+'/.test(block) &&
+  /\n    servingTip: '[^\n]+'/.test(block) &&
+  /\n    servingHeading: '[^\n]+'/.test(block)
+);
+if (!recipes.includes('beforeYouStart?: string') || !recipes.includes('prepHeading?: string') ||
+    !recipes.includes('servingTip?: string') || !recipes.includes('servingHeading?: string') ||
     withTips.length !== slugs.length) {
   failures.push('All structured recipes must include distinct practical preparation and serving notes');
 }
 if (!detail.includes('class="recipe-v15-kitchen-intro"') ||
-    !detail.includes('recipe.beforeYouStart') || !detail.includes('recipe.servingTip') ||
+    !detail.includes('recipe.beforeYouStart') || !detail.includes('recipe.prepHeading') ||
+    !detail.includes('recipe.servingTip') || !detail.includes('recipe.servingHeading') ||
     !recipeCss.includes('.recipe-kitchen-note') ||
     !recipeCss.includes('.recipe-v15-kitchen-intro{grid-template-columns:1fr}')) {
   failures.push('Practical notes must render as accessible, responsive content before cooking controls');
