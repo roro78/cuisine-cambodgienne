@@ -83,3 +83,17 @@ jobs:
         env:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
         run: npm run test:browser-experiences
+
+      - name: V17 preview browser visual gate
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/v17-preview-browser-smoke.mjs
+
+      - name: Save V17 preview screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v17-preview-screenshots
+          path: artifacts/v17-preview-*.png
+          if-no-files-found: ignore
+          retention-days: 7
