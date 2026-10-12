@@ -136,7 +136,7 @@ requireCondition(
   !ovhRunbook.includes('Ce merge déclenchera le workflow') &&
   deployWorkflow.includes('workflow_dispatch:') &&
   deployWorkflow.includes('expected_source_sha:') &&
-  !/on:\\s*\\n\\s*push:/.test(deployWorkflow),
+  !/on:\s*\n\s*push:/.test(deployWorkflow),
   'OVH runbook must document manual SHA-pinned release, historic lot A, and unpublished #44'
 );
 
