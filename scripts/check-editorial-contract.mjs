@@ -58,6 +58,43 @@ if (!about.includes('Une recette claire, avec de la place pour les variantes.') 
   failures.push('About page must keep the V16 editorial method and boundaries');
 }
 
+
+if (culture.includes('cultureArticles[3]') || !culture.includes("article.slug === featuredSlug") ||
+    !culture.includes("article.slug !== featuredSlug") || !culture.includes("const featuredSlug = 'kep-marche-crabe-poivre'")) {
+  failures.push('Culture featured carnet must be selected by stable slug and excluded from the card grid');
+}
+if (culture.includes("time:'05:30'") || culture.includes("time:'08:30'") ||
+    !culture.includes('moment.moment') || !culture.includes('Quatre moments pour découvrir')) {
+  failures.push('Culture day narrative must not impose fixed daily clock times');
+}
+const practicalCultureLinks = [
+  '/culture/comprendre-le-kroeung/',
+  '/apprendre/piler-aromates-au-mortier/',
+  '/recettes/amok-trey/'
+];
+practicalCultureLinks.forEach((href) => {
+  if (!culture.includes(href)) failures.push('Missing Culture learning path: ' + href);
+});
+if (!cultureData.includes("slug: 'comprendre-le-kroeung'") ||
+    !workshopData.includes("slug: 'piler-aromates-au-mortier'") ||
+    !recipeData.includes("slug: 'amok-trey'")) {
+  failures.push('Culture learning path must lead to published journal, workshop and recipe slugs');
+}
+if (!fs.existsSync('src/pages/credits-photos.astro')) {
+  failures.push('About photo credits CTA must point to a real page');
+}
+if (!culture.includes('aria-label="Parcours pour découvrir le kroeung"') ||
+    !glossaryStyles.includes('.v16-journal-path-grid a:focus-visible') ||
+    !glossaryStyles.includes('.v16-journal-path-grid{grid-template-columns:1fr}')) {
+  failures.push('Culture learning path must remain keyboard-accessible and responsive');
+}
+if (!about.includes('class="v16-about-transparency"') ||
+    !about.includes('href="/credits-photos/"') ||
+    !about.includes('href="/culture/"') ||
+    !glossaryStyles.includes('.v16-about-transparency a:focus-visible')) {
+  failures.push('About must provide accessible sources and photo credits links');
+}
+
 if (!glossary.includes('data-glossary-search') || !glossary.includes('data-glossary-family') || !glossary.includes('data-glossary-card')) {
   failures.push('Glossary must keep search, family filters and filterable entries');
 }

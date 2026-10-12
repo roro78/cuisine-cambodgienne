@@ -109,6 +109,38 @@
 .v16-journal-manifesto h2{max-width:12ch;margin:.5rem 0 2rem;font:400 clamp(3rem,5vw,5.3rem)/.9 var(--serif);letter-spacing:-.05em}
 .v16-journal-manifesto>div{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem 3rem;max-width:58rem}.v16-journal-manifesto>div p{margin:0;padding:1rem 0;border-top:1px solid var(--v16-line);font:400 1.5rem/1.2 var(--serif)}
 
+
+/* A practical bridge from cultural stories to hands-on learning. */
+.v16-journal-path{padding:clamp(4rem,8vh,7rem) var(--page-pad);background:#203127;color:#f7eee2}
+.v16-journal-path .v16-page-kicker{color:#dfba7c}
+.v16-journal-path>header{display:grid;grid-template-columns:1fr 1fr;gap:.8rem 5vw;align-items:end;margin-bottom:2.2rem}
+.v16-journal-path>header .v16-page-kicker{grid-column:1/-1}
+.v16-journal-path h2{max-width:16ch;margin:.2rem 0;font:400 clamp(2.6rem,4.8vw,4.8rem)/.98 var(--serif);letter-spacing:-.04em}
+.v16-journal-path>header>p:last-child{max-width:34rem;margin:0 0 .3rem;line-height:1.65;color:#e2d7c8}
+.v16-journal-path-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.v16-journal-path-grid a{display:flex;flex-direction:column;min-height:18rem;padding:clamp(1.2rem,2vw,2rem);border:1px solid rgba(255,255,255,.22);border-radius:.9rem;text-decoration:none;transition:background .2s ease}
+.v16-journal-path-grid a:hover{background:rgba(255,255,255,.07)}
+.v16-journal-path-grid a:focus-visible{outline:3px solid #e4bb7f;outline-offset:3px}
+.v16-journal-path-grid span{font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:#dbb77d}
+.v16-journal-path-grid h3{margin:1.5rem 0 .7rem;font:400 clamp(1.8rem,2.5vw,2.7rem)/1 var(--serif)}
+.v16-journal-path-grid p{margin:0 0 1.2rem;line-height:1.6;color:#e0d6c8}
+.v16-journal-path-grid strong{margin-top:auto;font-size:.65rem;letter-spacing:.09em;text-transform:uppercase}
+.v16-about-transparency{display:grid;grid-template-columns:1fr 1fr;gap:2rem 7vw;padding:clamp(4rem,8vh,7rem) var(--page-pad);background:#ebddc9}
+.v16-about-transparency h2{max-width:18ch;margin:.6rem 0 0;font:400 clamp(2.5rem,4.2vw,4.3rem)/.98 var(--serif);letter-spacing:-.04em}
+.v16-about-transparency>div:last-child{align-self:end}
+.v16-about-transparency>div:last-child p{max-width:33rem;line-height:1.7;color:#645648}
+.v16-about-transparency a{display:inline-block;margin:.5rem 1rem .5rem 0;padding:.5rem 0;border-bottom:1px solid currentColor;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase}
+.v16-about-transparency a:focus-visible{outline:3px solid #795a37;outline-offset:4px}
+@media(max-width:900px){
+  .v16-journal-path>header,.v16-about-transparency{grid-template-columns:1fr}
+  .v16-journal-path-grid{grid-template-columns:1fr}
+  .v16-journal-path-grid a{min-height:0}
+}
+@media(max-width:620px){
+  .v16-journal-path,.v16-about-transparency{padding-left:1rem;padding-right:1rem}
+  .v16-journal-path-grid h3{margin-top:1rem}
+}
+
 /* About */
 .v16-about-opening{max-width:72rem;padding:clamp(5rem,9vh,8rem) var(--page-pad)}
 .v16-about-opening h2{max-width:15ch;margin:.5rem 0 1.4rem;font:400 clamp(3rem,5vw,5rem)/.9 var(--serif);letter-spacing:-.05em}.v16-about-opening>p:last-child{max-width:45rem;line-height:1.7;color:#63574b}
