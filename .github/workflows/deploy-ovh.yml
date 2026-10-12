@@ -1,8 +1,13 @@
 name: Publish OVH static branch
 
+# Publication volontaire uniquement : aucun push main ne publie tout seul.
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      expected_source_sha:
+        description: "SHA complet (40 caracteres) du main valide pour production"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -13,13 +18,26 @@ concurrency:
 
 jobs:
   publish:
-    name: Build and publish static site
+    name: Validate and publish approved static site
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     steps:
-      - name: Checkout source
+      - name: Validate release commit pin
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_source_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF" == "refs/heads/main" ]] || { echo "Main only"; exit 1; }
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "A complete 40-character SHA is required"; exit 1; }
+          [[ "$GITHUB_SHA" == "$EXPECTED_SHA" ]] || { echo "main changed since approval"; exit 1; }
+
+      - name: Checkout the pinned source
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -29,11 +47,52 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Validate
-        run: npm run check
+      - name: Run all mandatory site contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run check
+          npm run test:motion
+          npm run test:recipes
+          npm run test:editorial
+          node scripts/audit-photo-coverage.mjs
 
-      - name: Build static site
+      - name: Run Grand Diner regressions when included
+        shell: bash
+        run: |
+          set -euo pipefail
+          if node -e "process.exit(require('./package.json').scripts['test:experiences'] ? 0 : 1)"; then
+            npm run test:reception
+            npm run test:pack
+            npm run test:kitchen
+            npm run test:timeline
+            npm run test:dinner
+            npm run test:experiences
+          else
+            echo "Grand Diner not included in this release."
+          fi
+
+      - name: Build approved static site
         run: npm run build
+
+      - name: Check generated experience routes when included
+        shell: bash
+        run: |
+          set -euo pipefail
+          if node -e "process.exit(require('./package.json').scripts['test:built-experiences'] ? 0 : 1)"; then
+            npm run test:built-experiences
+          fi
+
+      - name: Setup Chrome for Grand Diner browser checks
+        id: chrome
+        if: hashFiles('tests/experiences-browser-smoke.mjs') != ''
+        uses: browser-actions/setup-chrome@v2
+
+      - name: Run Grand Diner browser and print checks
+        if: hashFiles('tests/experiences-browser-smoke.mjs') != ''
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: npm run test:browser-experiences
 
       - name: Publish dist to ovh-production
         shell: bash
@@ -59,7 +118,7 @@ jobs:
           git add -A
 
           if git diff --cached --quiet; then
-            echo "No deployment changes."
+            echo "No changes to publish."
             exit 0
           fi
 
