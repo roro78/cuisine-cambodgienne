@@ -127,6 +127,23 @@ const recipeSchema = {
       )}
     </section>
 
+    <section class="recipe-v15-kitchen-intro" aria-label="Préparer et servir la recette">
+      {recipe.beforeYouStart && (
+        <div class="recipe-kitchen-note">
+          <p class="eyebrow">Avant de commencer</p>
+          <h2>Tout préparer pour cuisiner sereinement</h2>
+          <p>{recipe.beforeYouStart}</p>
+        </div>
+      )}
+      {recipe.servingTip && (
+        <div class="recipe-kitchen-note">
+          <p class="eyebrow">À table</p>
+          <h2>Le plaisir de servir</h2>
+          <p>{recipe.servingTip}</p>
+        </div>
+      )}
+    </section>
+
     <section class="recipe-v15-kitchen">
       <aside class="recipe-v15-sidebar">
         <div
