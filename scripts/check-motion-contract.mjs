@@ -142,6 +142,19 @@ if (!storytelling.includes('gsap.set(copy, {') || !storytelling.includes('gsap.s
   failures.push('Hero refresh must reapply image, text and keyboard tab state together');
 }
 
+
+if (!css.includes('@media(max-height:740px) and (max-width:620px)') ||
+    !css.includes('.v16-market-head h2{font-size:clamp(1.8rem,8vw,2.35rem)') ||
+    !css.includes('.v16-market-panel-copy h3{font-size:clamp(1.95rem,8.8vw,2.8rem)') ||
+    !css.includes('.v16-market-panel-copy strong{font-size:.82rem;line-height:1.45}')) {
+  failures.push('Short mobile market scene must compact heading and caption without clipping them');
+}
+if (!css.includes('@media(hover:none) and (pointer:coarse)') ||
+    !css.includes('.v16-orbit-chip{backdrop-filter:none;-webkit-backdrop-filter:none;') ||
+    !css.includes('.v16-dish{backdrop-filter:none;-webkit-backdrop-filter:none}')) {
+  failures.push('Touch devices must not use expensive backdrop blur on animated hero chips and table dishes');
+}
+
 if (failures.length) {
   console.error('Motion contract failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));

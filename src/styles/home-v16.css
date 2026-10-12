@@ -315,3 +315,21 @@
   .v16-hero-image img{transform:none!important}
   .v16-scroll-cue{display:none}
 }
+
+/* Compact mobile viewports: reserve separate vertical space for the market
+   heading and the current ingredient caption. Neither should cover the other. */
+@media(max-height:740px) and (max-width:620px){
+  .v16-market-head{top:5.25rem;max-width:none}
+  .v16-market-head h2{font-size:clamp(1.8rem,8vw,2.35rem);line-height:1.02}
+  .v16-market-head>p:last-child{max-width:28rem;font-size:.78rem;line-height:1.4}
+  .v16-market-panel-copy{bottom:3.5rem}
+  .v16-market-panel-copy h3{font-size:clamp(1.95rem,8.8vw,2.8rem);line-height:1.02}
+  .v16-market-panel-copy strong{font-size:.82rem;line-height:1.45}
+  .v16-market-progress{bottom:1rem}
+}
+
+/* Avoid costly backdrop blur layers inside animated scenes on touch devices. */
+@media(hover:none) and (pointer:coarse){
+  .v16-orbit-chip{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(14,23,17,.8)}
+  .v16-dish{backdrop-filter:none;-webkit-backdrop-filter:none}
+}
