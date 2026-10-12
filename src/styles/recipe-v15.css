@@ -466,3 +466,25 @@
   .recipe-v15 .recipe-related{padding-top:3rem;padding-bottom:1.5rem}
   .recipe-v15 .recipe-back{padding-top:1rem;padding-bottom:3rem}
 }
+
+/* Practical editorial notes belong between the hero and the cooking controls.
+   Keep the content in normal flow on mobile and at browser zoom. */
+.recipe-v15-kitchen-intro{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:clamp(1rem,2.5vw,2.5rem);
+  padding:clamp(2rem,5vw,4rem) var(--page-pad);
+  background:#e9ddca;
+  border-bottom:1px solid var(--recipe-line);
+}
+.recipe-kitchen-note{min-width:0;padding:clamp(1rem,2vw,1.6rem);border-left:2px solid #a77548}
+.recipe-kitchen-note .eyebrow{color:#7d573c}
+.recipe-kitchen-note h2{max-width:24ch;margin:.55rem 0 .8rem;font:400 clamp(1.7rem,2.7vw,2.7rem)/1.05 var(--serif);letter-spacing:-.03em}
+.recipe-kitchen-note p:last-child{max-width:44rem;margin:0;line-height:1.65;color:#574b3f}
+@media(max-width:760px){
+  .recipe-v15-kitchen-intro{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  .recipe-v15-kitchen-intro{padding:2rem 1rem;gap:1rem}
+  .recipe-kitchen-note{padding:.8rem 1rem}
+}

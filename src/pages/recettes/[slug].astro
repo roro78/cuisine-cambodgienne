@@ -68,7 +68,7 @@ const recipeSchema = {
   description: recipe.description,
   recipeYield: getServingsLabel(recipe),
   prepTime: `PT${totalMinutes(recipe.prepTime)}M`,
-  cookTime: `PT${totalMinutes(recipe.cookTime)}M`,
+  ...(totalMinutes(recipe.cookTime) > 0 ? { cookTime: `PT${totalMinutes(recipe.cookTime)}M` } : {}),
   totalTime: `PT${totalMinutes(recipe.prepTime) + totalMinutes(recipe.cookTime)}M`,
   recipeIngredient: recipe.ingredients.map(ingredientText),
   recipeInstructions: recipe.steps.map((step, index) => ({
@@ -100,11 +100,16 @@ const recipeSchema = {
         <p class="recipe-context">{recipe.context}</p>
 
         <dl class="recipe-v15-facts" aria-label="Informations de la recette">
-          <div><dt>Pour</dt><dd>{getServingsLabel(recipe)}</dd></div>
+          <div><dt>Pour</dt><dd>{recipe.servingsLabel ? getServingsLabel(recipe) : <span data-serving-summary aria-live="polite" aria-atomic="true">{getServingsLabel(recipe)}</span>}</dd></div>
           <div><dt>Préparation</dt><dd>{recipe.prepTime}</dd></div>
-          <div><dt>Cuisson</dt><dd>{recipe.cookTime}</dd></div>
+          {totalMinutes(recipe.cookTime) > 0 && <div><dt>Cuisson</dt><dd>{recipe.cookTime}</dd></div>}
           <div><dt>Niveau</dt><dd>{recipe.difficulty}</dd></div>
         </dl>
+
+        <nav class="recipe-quick-links" aria-label="Accès rapide à la recette">
+          <a href="#ingredients">Voir les ingrédients <span aria-hidden="true">↓</span></a>
+          <a href="#etapes">Suivre les étapes <span aria-hidden="true">↓</span></a>
+        </nav>
       </div>
 
       {recipe.image ? (
@@ -127,8 +132,25 @@ const recipeSchema = {
       )}
     </section>
 
+    <section class="recipe-v15-kitchen-intro" aria-label="Préparer et servir la recette">
+      {recipe.beforeYouStart && (
+        <div class="recipe-kitchen-note">
+          <p class="eyebrow">Avant de commencer</p>
+          <h2>{recipe.prepHeading}</h2>
+          <p>{recipe.beforeYouStart}</p>
+        </div>
+      )}
+      {recipe.servingTip && (
+        <div class="recipe-kitchen-note">
+          <p class="eyebrow">À table</p>
+          <h2>{recipe.servingHeading}</h2>
+          <p>{recipe.servingTip}</p>
+        </div>
+      )}
+    </section>
+
     <section class="recipe-v15-kitchen">
-      <aside class="recipe-v15-sidebar">
+      <aside class="recipe-v15-sidebar" id="ingredients">
         <div
           class="recipe-servings-card"
           data-recipe-servings-root
@@ -209,7 +231,7 @@ const recipeSchema = {
         </div>
       </aside>
 
-      <article class="recipe-guided-method">
+      <article class="recipe-guided-method" id="etapes">
         <header>
           <p class="eyebrow">En cuisine</p>
           <h2>Les étapes, les gestes et les bons repères.</h2>

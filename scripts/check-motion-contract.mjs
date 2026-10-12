@@ -67,6 +67,14 @@ if (!/@media\(prefers-reduced-motion:reduce\)[\s\S]*?\.v16-scroll-scene\{min-hei
 if (!storytelling.includes('panel.inert = !interactive') || !storytelling.includes('panel.tabIndex = interactive ? 0 : -1')) {
   failures.push('Off-screen market panels must be removed from the tab order');
 }
+if (!storytelling.includes('updateMarketProgress(0)') ||
+    !storytelling.includes('onRefresh: (self) => updateMarketProgress(self.progress)') ||
+    !storytelling.includes('onUpdate: (self) => updateMarketProgress(self.progress)')) {
+  failures.push('Market scene must restore its track, cards and focus state on load, resize and scroll');
+}
+if (/\bfilter:\s*`(?:saturate|blur)/.test(storytelling)) {
+  failures.push('Cinematic scroll must not recompute expensive image/word CSS filters on each scroll update');
+}
 
 if (!storytelling.includes('if (cta) cta.tabIndex = -1') || !storytelling.includes('cta.tabIndex = reveal > .55 ? 0 : -1')) {
   failures.push('Table CTA tab order must follow its scroll reveal');
@@ -140,6 +148,19 @@ if (!storytelling.includes("const compactHero = window.matchMedia('(max-width: 4
 if (!storytelling.includes('gsap.set(copy, {') || !storytelling.includes('gsap.set(image, {') ||
     !storytelling.includes('link.tabIndex = p < .78 ? 0 : -1;')) {
   failures.push('Hero refresh must reapply image, text and keyboard tab state together');
+}
+
+
+if (!css.includes('@media(max-height:740px) and (max-width:620px)') ||
+    !css.includes('.v16-market-head h2{font-size:clamp(1.8rem,8vw,2.35rem)') ||
+    !css.includes('.v16-market-panel-copy h3{font-size:clamp(1.95rem,8.8vw,2.8rem)') ||
+    !css.includes('.v16-market-panel-copy strong{font-size:.82rem;line-height:1.45}')) {
+  failures.push('Short mobile market scene must compact heading and caption without clipping them');
+}
+if (!css.includes('@media(hover:none) and (pointer:coarse)') ||
+    !css.includes('.v16-orbit-chip{backdrop-filter:none;-webkit-backdrop-filter:none;') ||
+    !css.includes('.v16-dish{backdrop-filter:none;-webkit-backdrop-filter:none}')) {
+  failures.push('Touch devices must not use expensive backdrop blur on animated hero chips and table dishes');
 }
 
 if (failures.length) {

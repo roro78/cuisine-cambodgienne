@@ -18,6 +18,14 @@ if (!recipes.includes('cue?: string') || !recipes.includes('mistake?: string')) 
 
 if (!detail.includes('data-recipe-servings-root')) failures.push('Recipe detail must render servings controls');
 if (!detail.includes('data-ingredient-quantity')) failures.push('Recipe detail must expose scalable ingredient quantities');
+if (!detail.includes('data-serving-summary aria-live="polite"') ||
+    !servings.includes("summary.textContent = `${current} personne${current > 1 ? 's' : ''}`")) {
+  failures.push('Recipe hero servings must stay in sync with the adjustable ingredient quantities');
+}
+if (!detail.includes('totalMinutes(recipe.cookTime) > 0 && <div><dt>Cuisson</dt>') ||
+    !detail.includes('...(totalMinutes(recipe.cookTime) > 0 ? { cookTime:')) {
+  failures.push('Uncooked recipe detail must not show an invented zero-minute cooking step in the facts or schema');
+}
 if (!detail.includes('data-ingredient-check')) failures.push('Recipe detail must expose ingredient checklist controls');
 if (!detail.includes('data-guided-step')) failures.push('Recipe detail must render guided steps');
 if (!detail.includes('Le bon repère') || !detail.includes('À éviter')) failures.push('Recipe detail must teach cues and common mistakes');
@@ -82,6 +90,50 @@ if (!amok.includes('poisson et les œufs sont complètement cuits avant de servi
 
 if (listing.includes('{recipe.prepTime} + {recipe.cookTime}')) failures.push('Catalog must not display 0 min for uncooked preparations');
 if (!listing.includes('minutes(recipe.cookTime) > 0') || !listing.includes('de préparation')) failures.push('Catalog must distinguish preparation from cooking without inventing times');
+
+
+const recipeBlocks = recipes.split(/\r?\n  \{\r?\n    slug: '/).slice(1);
+const withTips = recipeBlocks.filter((block) =>
+  /\r?\n    beforeYouStart: '[^\r\n]+'/.test(block) &&
+  /\r?\n    prepHeading: '[^\r\n]+'/.test(block) &&
+  /\r?\n    servingTip: '[^\r\n]+'/.test(block) &&
+  /\r?\n    servingHeading: '[^\r\n]+'/.test(block)
+);
+if (!recipes.includes('beforeYouStart?: string') || !recipes.includes('prepHeading?: string') ||
+    !recipes.includes('servingTip?: string') || !recipes.includes('servingHeading?: string') ||
+    withTips.length !== slugs.length) {
+  failures.push('All structured recipes must include distinct practical preparation and serving notes');
+}
+if (!detail.includes('class="recipe-v15-kitchen-intro"') ||
+    !detail.includes('recipe.beforeYouStart') || !detail.includes('recipe.prepHeading') ||
+    !detail.includes('recipe.servingTip') || !detail.includes('recipe.servingHeading') ||
+    !recipeCss.includes('.recipe-kitchen-note') ||
+    !recipeCss.includes('.recipe-v15-kitchen-intro{grid-template-columns:1fr}')) {
+  failures.push('Practical notes must render as accessible, responsive content before cooking controls');
+}
+const samlor = recipeSegment('samlor-machu');
+if (!samlor.includes('Quand le poisson ou le poulet et les légumes sont cuits, ajoutez le tamarin') ||
+    !samlor.includes('Le poisson ou le poulet doit être complètement cuit avant de goûter')) {
+  failures.push('Samlor Machu must not prompt tasting a broth containing raw fish or poultry');
+}
+
+if (!detail.includes('aria-label="Accès rapide à la recette"') ||
+    !detail.includes('href="#ingredients"') || !detail.includes('href="#etapes"') ||
+    !detail.includes('class="recipe-v15-sidebar" id="ingredients"') ||
+    !detail.includes('class="recipe-guided-method" id="etapes"')) {
+  failures.push('Recipe hero quick links must lead to real ingredients and method anchors');
+}
+if (!v16Css.includes('.recipe-v16 .recipe-quick-links a:focus-visible') ||
+    !v16Css.includes('scroll-margin-top:calc(var(--site-header-offset,4.75rem) + 1rem)')) {
+  failures.push('Recipe quick links must be keyboard-visible with anchors clear of the fixed header');
+}
+if (!v16Css.includes('@media(max-width:900px)') ||
+    !v16Css.includes('.recipe-v16 .recipe-v15-hero{min-height:0;gap:1.4rem}') ||
+    !v16Css.includes('.recipe-v16 .recipe-v15-cover{aspect-ratio:4/3;max-height:42svh}') ||
+    !v16Css.includes('@media(max-width:440px) and (max-height:420px)')) {
+  failures.push('Mobile recipe hero must avoid an excessive full-viewport height without clipping at zoom');
+}
+
 
 if (failures.length) {
   console.error('Recipe contract failed:');
