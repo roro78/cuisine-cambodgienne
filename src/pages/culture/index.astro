@@ -7,10 +7,38 @@ import { imageSrcSet } from '../../utils/images';
 import '../../styles/v16-editorial.css';
 
 const moments = [
-  { time:'05:30', title:'Un bol de kuy teav pour commencer la journée', text:'Nouilles, bouillon parfumé et herbes fraîches : découvrez comment préparer ce bol chez vous.', href:'/recettes/kuy-teav/', cta:'Voir la recette →' },
-  { time:'08:30', title:'Le marché inspire le repas', text:'Poissons, herbes, légumes, fruits : on cuisine d’abord avec ce qui est frais et disponible.', href:'/culture/kep-marche-crabe-poivre/', cta:'Lire le carnet →' },
-  { time:'11:00', title:'Au mortier, les aromates prennent forme', text:'Le kroeung se prépare patiemment : on coupe, on pile, on sent, jusqu’à obtenir une pâte bien parfumée.', href:'/culture/comprendre-le-kroeung/', cta:'Lire le carnet →' },
-  { time:'12:30', title:'À table, chacun compose sa bouchée', text:'Riz, plat chaud, légumes, herbes, soupe ou condiment se mangent ensemble et se complètent.', href:'/culture/construire-repas-cambodgien/', cta:'Lire le carnet →' }
+  { moment:'Au réveil', title:'Un bol de kuy teav pour commencer la journée', text:'Nouilles, bouillon parfumé et herbes fraîches : découvrez comment préparer ce bol chez vous.', href:'/recettes/kuy-teav/', cta:'Voir la recette →' },
+  { moment:'Au marché', title:'Le marché inspire le repas', text:'Poissons, herbes, légumes, fruits : on cuisine d’abord avec ce qui est frais et disponible.', href:'/culture/kep-marche-crabe-poivre/', cta:'Lire le carnet →' },
+  { moment:'Au mortier', title:'Au mortier, les aromates prennent forme', text:'Le kroeung se prépare patiemment : on coupe, on pile, on sent, jusqu’à obtenir une pâte bien parfumée.', href:'/culture/comprendre-le-kroeung/', cta:'Lire le carnet →' },
+  { moment:'À table', title:'À table, chacun compose sa bouchée', text:'Riz, plat chaud, légumes, herbes, soupe ou condiment se mangent ensemble et se complètent.', href:'/culture/construire-repas-cambodgien/', cta:'Lire le carnet →' }
+];
+
+// Select the featured journal by its stable slug, not its position in the catalogue.
+const featuredSlug = 'kep-marche-crabe-poivre';
+const featuredArticle = cultureArticles.find((article) => article.slug === featuredSlug);
+
+const culinaryPath = [
+  {
+    step: '01 · Lire',
+    title: 'Comprendre le kroeung',
+    text: 'Citronnelle, galanga, curcuma : découvrez ce que chaque aromate apporte à la pâte.',
+    href: '/culture/comprendre-le-kroeung/',
+    action: 'Découvrir le carnet'
+  },
+  {
+    step: '02 · Essayer',
+    title: 'Prendre le pilon en main',
+    text: 'Au mortier, observez la texture et le parfum qui changent au fil du geste.',
+    href: '/apprendre/piler-aromates-au-mortier/',
+    action: 'Suivre l’atelier'
+  },
+  {
+    step: '03 · Cuisiner',
+    title: 'Passer à l’amok de poisson',
+    text: 'Retrouvez ces parfums dans une recette guidée, avec les quantités et les repères de cuisson.',
+    href: '/recettes/amok-trey/',
+    action: 'Préparer l’amok'
+  }
 ];
 
 const collectionSchema = {
@@ -43,13 +71,13 @@ const collectionSchema = {
 
     <section class="v16-day-notes" aria-labelledby="v16-day-title">
       <header>
-        <p class="v16-page-kicker">Une journée au rythme des saveurs</p>
-        <h2 id="v16-day-title">La cuisine se découvre aussi dans les habitudes de tous les jours.</h2>
+        <p class="v16-page-kicker">Du marché à la table</p>
+        <h2 id="v16-day-title">Quatre moments pour découvrir les parfums et les gestes.</h2>
       </header>
       <div>
         {moments.map((moment) => (
           <a href={moment.href} class="v16-day-note">
-            <span>{moment.time}</span>
+            <span>{moment.moment}</span>
             <h3>{moment.title}</h3>
             <p>{moment.text}</p>
             <strong>{moment.cta}</strong>
@@ -58,22 +86,22 @@ const collectionSchema = {
       </div>
     </section>
 
-    <section class="v16-journal-lead" aria-label="Carnet à la une">
-      <a href={'/culture/' + cultureArticles[3].slug + '/'} class="v16-journal-lead-card">
+    {featuredArticle && <section class="v16-journal-lead" aria-label="Carnet à la une">
+      <a href={'/culture/' + featuredArticle.slug + '/'} class="v16-journal-lead-card">
         <figure>
-          <img src={cultureArticles[3].image} srcset={imageSrcSet(cultureArticles[3].image,cultureArticles[3].imageWidths)} sizes="(max-width:900px) 100vw, 58vw" alt={cultureArticles[3].imageAlt} width={cultureArticles[3].imageWidth} height={cultureArticles[3].imageHeight} loading="eager" decoding="async" />
+          <img src={featuredArticle.image} srcset={imageSrcSet(featuredArticle.image,featuredArticle.imageWidths)} sizes="(max-width:900px) 100vw, 58vw" alt={featuredArticle.imageAlt} width={featuredArticle.imageWidth} height={featuredArticle.imageHeight} loading="eager" decoding="async" />
         </figure>
         <div>
-          <p class="v16-mini-label">À la une · {cultureArticles[3].readingTime}</p>
-          <h2>{cultureArticles[3].title}</h2>
-          <p>{cultureArticles[3].intro}</p>
+          <p class="v16-mini-label">À la une · {featuredArticle.readingTime}</p>
+          <h2>{featuredArticle.title}</h2>
+          <p>{featuredArticle.intro}</p>
           <strong>Lire le carnet →</strong>
         </div>
       </a>
-    </section>
+    </section>}
 
     <section class="v16-journal-grid" aria-label="Tous les carnets">
-      {cultureArticles.filter((_,index)=>index !== 3).map((article,index) => (
+      {cultureArticles.filter((article) => article.slug !== featuredSlug).map((article,index) => (
         <a href={'/culture/' + article.slug + '/'} class:list={['v16-journal-card', index === 0 && 'v16-journal-card--wide']} data-reveal="up">
           <figure>
             <img src={article.image} srcset={imageSrcSet(article.image,article.imageWidths)} sizes="(max-width:760px) 100vw, 45vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} loading="lazy" decoding="async" />
@@ -86,6 +114,24 @@ const collectionSchema = {
           </div>
         </a>
       ))}
+    </section>
+
+    <section class="v16-journal-path" aria-labelledby="v16-journal-path-title">
+      <header>
+        <p class="v16-page-kicker">Du carnet à votre cuisine</p>
+        <h2 id="v16-journal-path-title">Lire le geste. L’essayer. Puis se régaler.</h2>
+        <p>Un mot découvert dans un carnet devient plus facile à retenir quand on sent les aromates et qu’on les utilise dans un plat.</p>
+      </header>
+      <nav aria-label="Parcours pour découvrir le kroeung" class="v16-journal-path-grid">
+        {culinaryPath.map((item) => (
+          <a href={item.href}>
+            <span>{item.step}</span>
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+            <strong>{item.action} →</strong>
+          </a>
+        ))}
+      </nav>
     </section>
 
     <section class="v16-journal-manifesto">
