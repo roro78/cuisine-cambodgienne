@@ -1,0 +1,263 @@
+/* Grand Dîner Khmer — concept prelaunch. CSS namespaced to avoid changing /apprendre/ or the rest of the site. */
+.dinner-concept{--d-ink:#211d17;--d-sand:#f3eadb;--d-pine:#203429;--d-gold:#dfb37e;background:var(--d-sand);color:var(--d-ink);overflow:hidden}
+.dinner-concept *{box-sizing:border-box}
+.dinner-concept a:focus-visible,.dinner-concept button:focus-visible{outline:3px solid #c07737;outline-offset:4px}
+.dinner-hero{position:relative;min-height:75svh;isolation:isolate;color:#fff9ee;background:var(--d-pine);display:flex;align-items:end}
+.dinner-hero-photo{position:absolute;inset:0;z-index:-2}
+.dinner-hero-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+.dinner-hero:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(9,18,12,.92),rgba(20,26,16,.35) 85%),linear-gradient(0deg,rgba(8,15,9,.55),transparent)}
+.dinner-hero-inner{padding:clamp(2.8rem,7vw,7rem) var(--page-pad) clamp(3rem,8vw,7rem);width:min(100%,100rem)}
+.dinner-back{display:inline-block;margin-bottom:clamp(3rem,7vw,7rem);color:#f0dfc6;font-size:.75rem;letter-spacing:.09em;text-transform:uppercase}
+.dinner-overline,.dinner-kicker,.dinner-panel-overline{font:700 .68rem/1.45 var(--sans);letter-spacing:.15em;text-transform:uppercase}
+.dinner-overline{color:var(--d-gold)}
+.dinner-hero h1{margin:.8rem 0 1.35rem;font:400 clamp(3.5rem,8vw,8.5rem)/.93 var(--serif);letter-spacing:-.055em}
+.dinner-hero h1 em{font-weight:400;color:#e4bb86}
+.dinner-lead{max-width:43rem;font-size:clamp(1.1rem,1.45vw,1.3rem);line-height:1.65;color:#f9efe0}
+.dinner-disclosure{max-width:40rem;margin:1.6rem 0;color:#efd0a2;font-size:.88rem}
+.dinner-link{display:inline-flex;gap:2.5rem;border-bottom:1px solid #d9c6a7;padding:.8rem 0;margin-top:.4rem;font-size:.79rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.dinner-opening{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(15rem,1fr);column-gap:clamp(3rem,8vw,9rem);padding:clamp(5rem,9vw,9rem) var(--page-pad);align-items:end}
+.dinner-opening .dinner-kicker{grid-column:1/-1;margin:0 0 1.25rem;color:#985637}
+.dinner-opening h2,.dinner-steps h2,.dinner-demo h2,.dinner-editorial h2,.dinner-last h2{margin:0;font:400 clamp(2.7rem,5.2vw,6rem)/1.04 var(--serif);letter-spacing:-.052em;text-wrap:balance}
+.dinner-opening>p:last-child{margin:0;font-size:1.06rem;line-height:1.75;color:#62564b}
+.dinner-steps{padding:clamp(4rem,7vw,8rem) var(--page-pad);background:#e6dcca}
+.dinner-steps header .dinner-kicker{color:#955a3b}
+.dinner-steps h2{margin:.9rem 0 3.2rem}
+.dinner-step-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(1.2rem,2.4vw,3rem)}
+.dinner-step{border-top:1px solid rgba(50,39,27,.33);padding:1.3rem 0}
+.dinner-step-number{font:400 2.1rem/1 var(--serif);color:#93573d;margin-bottom:2.8rem}
+.dinner-step-moment{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#836349}
+.dinner-step h3{font:400 clamp(1.8rem,2.4vw,2.7rem)/1.07 var(--serif);letter-spacing:-.04em;margin:.5rem 0 1rem}
+.dinner-step-content>p:last-child{font-size:.93rem;line-height:1.72;color:#584d41}
+.dinner-demo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(2.5rem,8vw,9rem);padding:clamp(5rem,10vw,10rem) var(--page-pad);background:#20362a;color:#f5ecdd}
+.dinner-demo .dinner-kicker{color:#e0b888;margin:0 0 1.3rem}
+.dinner-demo-copy>p:not(.dinner-kicker){font-size:1.03rem;line-height:1.7;color:#e1dacb}
+.dinner-demo-picker{margin-top:clamp(2rem,5vw,4rem)}
+.dinner-demo-picker>p{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;margin:0 0 1.2rem}
+.dinner-guest-options{display:flex;flex-wrap:wrap;gap:.5rem}
+.dinner-guest-options button{cursor:pointer;background:transparent;color:#f5ead7;border:1px solid rgba(250,240,221,.6);padding:.78rem 1rem;font:600 .77rem/1.25 var(--sans);min-height:44px}
+.dinner-guest-options button[aria-pressed=true]{background:#e5bb84;color:#243328;border-color:#e5bb84}
+.dinner-guest-options button:hover:not([aria-pressed=true]){border-color:#fff}
+.dinner-demo-panel{background:#f2e7d6;color:#27231d;padding:clamp(1.5rem,4vw,3.4rem);align-self:center;box-shadow:0 26px 50px rgba(0,0,0,.12)}
+.dinner-panel-overline{color:#9b5b40}
+.dinner-panel-guests{font:400 clamp(2.3rem,4vw,4.1rem)/1.05 var(--serif);letter-spacing:-.045em;margin:1.8rem 0}
+.dinner-panel-divider{height:1px;background:rgba(36,34,27,.2)}
+.dinner-demo-panel h3{margin:2rem 0 1rem;font:400 1.75rem/1.05 var(--serif)}
+.dinner-demo-panel ol{list-style:none;display:grid;gap:1rem;padding:0;margin:0}
+.dinner-demo-panel li{display:grid;grid-template-columns:2rem 1fr;gap:.7rem;font-size:.92rem;line-height:1.6}
+.dinner-demo-panel li>span:first-child{font-size:.72rem;color:#945b41}
+.dinner-panel-note{margin:2.4rem 0 0;padding-top:1rem;border-top:1px solid rgba(36,34,27,.2);font-size:.77rem;line-height:1.5;color:#66594e}
+.dinner-editorial{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);min-height:36rem}
+.dinner-editorial-art{min-height:28rem;overflow:hidden}
+.dinner-editorial-art img{display:block;width:100%;height:100%;object-fit:cover}
+.dinner-editorial>div:last-child{padding:clamp(3rem,7vw,7rem) clamp(2rem,6vw,7rem);align-self:center}
+.dinner-editorial .dinner-kicker{color:#a45b3d;margin:0 0 1.3rem}
+.dinner-editorial h2{font-size:clamp(2.6rem,4.4vw,5rem)}
+.dinner-editorial>div:last-child>p:not(.dinner-kicker){font-size:1.05rem;line-height:1.75;color:#5d5044}
+.dinner-editorial-link{display:inline-flex;gap:1rem;border-bottom:1px solid currentColor;padding:.8rem 0;margin-top:1rem;font-size:.73rem;text-transform:uppercase;letter-spacing:.07em;font-weight:700}
+.dinner-last{padding:clamp(5rem,10vw,10rem) var(--page-pad);text-align:center;background:#e6daca}
+.dinner-last .dinner-kicker{color:#945339;margin:0 0 1.25rem}
+.dinner-last h2{max-width:16ch;margin:0 auto}
+.dinner-last>p:not(.dinner-kicker){max-width:43rem;margin:1.7rem auto;font-size:1.03rem;line-height:1.75;color:#5a5044}
+.dinner-final-link{display:inline-flex;justify-content:space-between;gap:1rem;align-items:center;background:#24372b;color:#fff!important;padding:1rem 1.3rem;margin-top:1rem;min-height:46px;text-transform:uppercase;font-size:.75rem;letter-spacing:.08em;font-weight:700}
+@media(max-width:950px){
+  .dinner-opening{grid-template-columns:1fr;gap:1.4rem}
+  .dinner-opening .dinner-kicker{grid-column:auto}
+  .dinner-step-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dinner-demo{grid-template-columns:1fr;gap:2.5rem}
+  .dinner-editorial{grid-template-columns:1fr}
+  .dinner-editorial-art{min-height:22rem;max-height:32rem}
+}
+@media(max-width:600px){
+  .dinner-hero{min-height:41rem}
+  .dinner-hero:before{background:linear-gradient(0deg,rgba(8,15,9,.92),rgba(8,15,9,.25))}
+  .dinner-hero h1{font-size:clamp(3rem,13vw,5.5rem)}
+  .dinner-back{margin-bottom:3.2rem}
+  .dinner-step-grid{grid-template-columns:1fr}
+  .dinner-step-number{margin-bottom:1.4rem}
+  .dinner-guest-options button{flex:1 1 30%}
+  .dinner-editorial>div:last-child{padding:3.5rem var(--page-pad)}
+}
+@media(prefers-reduced-motion:reduce){.dinner-concept *,.dinner-concept *:before,.dinner-concept *:after{scroll-behavior:auto;animation-duration:.001ms!important;transition-duration:.001ms!important}}
+
+/* Recipe-backed preview: two published recipes, never a promise of an available paid product. */
+.dinner-planner{display:grid;grid-template-columns:minmax(0,1.06fr) minmax(0,.94fr);gap:clamp(2rem,6vw,8rem);padding:clamp(5rem,9vw,9rem) var(--page-pad);background:#20362a;color:#f5ecdd}
+.dinner-planner-intro .dinner-kicker{margin:0 0 1.2rem;color:#e2b788}
+.dinner-planner-intro>h2{margin:0;font:400 clamp(2.65rem,5.1vw,5.7rem)/1.04 var(--serif);letter-spacing:-.05em;text-wrap:balance}
+.dinner-planner-intro>p:not(.dinner-kicker){max-width:38rem;font-size:1.04rem;line-height:1.7;color:#e1d9c9}
+.dinner-planner-menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem;margin-top:clamp(2.3rem,4vw,4rem)}
+.dinner-planner-dish{border-top:1px solid rgba(249,239,223,.4);padding:1.2rem 0}
+.dinner-planner-dish>span{font-size:.65rem;text-transform:uppercase;letter-spacing:.13em;color:#e8c394}
+.dinner-planner-dish h3{font:400 clamp(1.7rem,2.25vw,2.5rem)/1.1 var(--serif);margin:.65rem 0;letter-spacing:-.04em}
+.dinner-planner-dish p{font-size:.9rem;line-height:1.6;color:#eee3d3}
+.dinner-planner-dish a{display:inline-flex;gap:.5rem;font-size:.72rem;line-height:1.6;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e6c99c;padding-bottom:.3rem;color:#edd2ac}
+.dinner-planner .dinner-demo-picker{margin-top:2.5rem}
+.dinner-planner-card{align-self:center;padding:clamp(1.5rem,3vw,3.2rem);background:#f1e6d5;color:#241f19;box-shadow:0 25px 52px rgba(0,0,0,.16)}
+.dinner-planner-card .dinner-panel-overline{color:#9b5839}
+.dinner-planner-card h3{font:400 clamp(2.25rem,3.5vw,4rem)/1 var(--serif);letter-spacing:-.045em;margin:1.3rem 0}
+.dinner-list-description{font-size:.86rem;line-height:1.6;color:#625347;margin-bottom:1.4rem}
+.dinner-planner-card ul{list-style:none;display:grid;grid-template-columns:1fr;gap:0;margin:0;padding:0;border-top:1px solid rgba(46,36,26,.2);max-height:28rem;overflow-y:auto}
+.dinner-planner-card li{border-bottom:1px solid rgba(46,36,26,.15)}
+.dinner-planner-card li label{display:flex;align-items:start;gap:.85rem;padding:.67rem .25rem;cursor:pointer;font-size:.89rem;line-height:1.55}
+.dinner-planner-card li input{accent-color:#36513c;width:1.1rem;height:1.1rem;margin:.16rem 0 0;flex:none}
+.dinner-planner-card li input:checked+span{text-decoration:line-through;color:#7d766b}
+.dinner-planner-actions{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-top:1.4rem}
+.dinner-copy{background:#26382c;border:1px solid #26382c;color:#fff8eb;padding:.85rem 1rem;cursor:pointer;min-height:44px;font:700 .75rem/1.3 var(--sans);letter-spacing:.06em;text-transform:uppercase}
+.dinner-copy span{padding-left:.7rem}
+.dinner-planner-actions>p{font-size:.75rem;color:#735640;max-width:17rem;line-height:1.5}
+.dinner-planner-card .dinner-panel-note{margin:1.3rem 0 0;padding-top:1rem;border-top:1px solid rgba(46,36,26,.2)}
+@media(max-width:950px){.dinner-planner{grid-template-columns:1fr}.dinner-planner-intro>h2{max-width:16ch}.dinner-planner-card{max-width:46rem}}
+@media(max-width:600px){.dinner-planner-menu{grid-template-columns:1fr;gap:.45rem}.dinner-planner-card ul{max-height:none}.dinner-planner-actions{align-items:start;flex-direction:column}}
+
+/* Indicative scheduling: visible estimates, never a promised kitchen service time. */
+.dinner-timeline{padding:clamp(5rem,9vw,9rem) var(--page-pad);background:#e9decd;color:#29241d}
+.dinner-timeline-heading{display:flex;justify-content:space-between;align-items:end;gap:2rem 3rem;margin-bottom:clamp(2rem,5vw,5rem)}
+.dinner-timeline-heading>div:first-child{max-width:55rem}
+.dinner-timeline .dinner-kicker{color:#9e5b3e;margin:0 0 1.3rem}
+.dinner-timeline h2{margin:0;font:400 clamp(2.5rem,5vw,5.3rem)/1.06 var(--serif);letter-spacing:-.052em;text-wrap:balance}
+.dinner-timeline-picker{display:grid;gap:.65rem;flex:none}
+.dinner-timeline-picker label{font:700 .7rem/1.4 var(--sans);text-transform:uppercase;letter-spacing:.08em;color:#6b5745}
+.dinner-timeline-picker select{width:100%;min-width:10rem;min-height:48px;padding:.75rem 2.5rem .75rem 1rem;color:#26382c;background:#faf5eb;border:1px solid rgba(30,40,30,.35);font:600 1rem/1.3 var(--sans);cursor:pointer}
+.dinner-timeline-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:clamp(2.5rem,7vw,8rem)}
+.dinner-timeline-disclaimer{max-width:41rem;font-size:.91rem;line-height:1.6;color:#715d4a;margin:0 0 1.5rem}
+.dinner-timeline-list ol{list-style:none;padding:0;margin:0;display:grid}
+.dinner-timeline-list li{display:grid;grid-template-columns:6rem minmax(0,1fr);gap:.5rem 1.2rem;padding:1.4rem 0;border-top:1px solid rgba(37,36,30,.2)}
+.dinner-timeline-list li:last-child{border-bottom:1px solid rgba(37,36,30,.2)}
+.dinner-timeline-list li time{font:400 clamp(1.5rem,2.4vw,2.4rem)/1 var(--serif);color:#9a583c}
+.dinner-timeline-list li strong{display:block;font:400 clamp(1.35rem,2.1vw,2.1rem)/1.15 var(--serif);letter-spacing:-.03em}
+.dinner-timeline-list li p{font-size:.91rem;line-height:1.7;color:#625548;margin:.65rem 0 0}
+.dinner-timeline-dessert{align-self:start;padding:clamp(1.8rem,3.7vw,4rem);background:#26382c;color:#faf1e5}
+.dinner-timeline-dessert .dinner-panel-overline{color:#dfb684;margin:0}
+.dinner-timeline-dessert h3{font:400 clamp(2.4rem,4vw,4rem)/1.08 var(--serif);letter-spacing:-.05em;margin:1.6rem 0}
+.dinner-timeline-dessert>p:not(.dinner-panel-overline){font-size:.94rem;line-height:1.68;color:#e5ddce}
+.dinner-timeline-dessert dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:2rem 0;padding:1.5rem 0;border-block:1px solid rgba(255,255,255,.25)}
+.dinner-timeline-dessert dt{font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;color:#e4bd89}
+.dinner-timeline-dessert dd{margin:.5rem 0 0;font:400 1.8rem/1.15 var(--serif)}
+.dinner-timeline-dessert a{display:inline-block;margin-top:1rem;padding-bottom:.5rem;border-bottom:1px solid #e2bb8d;color:#f3ddba;font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.dinner-timeline-status{margin:1rem 0 0;min-height:1.4rem;font-size:.78rem;color:#715d4a}
+@media(max-width:850px){.dinner-timeline-heading{align-items:start;flex-direction:column}.dinner-timeline-layout{grid-template-columns:1fr}.dinner-timeline-dessert{max-width:44rem}}
+@media(max-width:480px){.dinner-timeline-list li{grid-template-columns:4.6rem minmax(0,1fr);gap:.8rem}.dinner-timeline-list li time{font-size:1.5rem}.dinner-timeline-dessert dl{gap:.6rem}}
+
+/* Kitchen mode: entirely independent from editorial workshops and recipe UI. */
+.dinner-kitchen{padding:clamp(5rem,9vw,9rem) var(--page-pad);background:#f5ede1;color:#28231c}
+.dinner-kitchen-heading{max-width:70rem;margin:0 auto clamp(3rem,6vw,6rem);text-align:center}
+.dinner-kitchen .dinner-kicker{margin:0 0 1.2rem;color:#9a5a3d}
+.dinner-kitchen-heading h2{margin:0;font:400 clamp(2.8rem,5.6vw,6rem)/1.04 var(--serif);letter-spacing:-.052em;text-wrap:balance}
+.dinner-kitchen-heading>p:last-child{max-width:49rem;margin:1.7rem auto 0;font-size:1.06rem;line-height:1.75;color:#64564a}
+.dinner-kitchen-workspace{max-width:92rem;margin:0 auto}
+.dinner-kitchen-navigation{display:flex;gap:.65rem;flex-wrap:wrap;margin-bottom:1.1rem}
+.dinner-kitchen-navigation button{display:flex;flex-direction:column;align-items:start;gap:.35rem;min-width:12.5rem;padding:1.15rem 1.35rem;background:transparent;border:1px solid #897e70;color:#302b23;cursor:pointer;font:400 1.48rem/1.15 var(--serif);letter-spacing:-.02em;text-align:left}
+.dinner-kitchen-navigation button span{font:700 .64rem/1.4 var(--sans);letter-spacing:.13em;text-transform:uppercase;color:#996244}
+.dinner-kitchen-navigation button[aria-pressed=true]{background:#283d30;color:#fff3df;border-color:#283d30}
+.dinner-kitchen-navigation button[aria-pressed=true] span{color:#e0bc89}
+.dinner-kitchen-navigation button:hover:not([aria-pressed=true]){border-color:#303f2f}
+.dinner-kitchen-content{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(18rem,.7fr);align-items:start;gap:clamp(1.2rem,3vw,3rem)}
+.dinner-kitchen-stage{min-width:0}
+.dinner-kitchen-progress{display:grid;grid-template-columns:1fr auto;align-items:center;gap:.4rem 1rem;margin:0 0 1.5rem}
+.dinner-kitchen-count{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#504536}
+.dinner-kitchen-done{font-size:.75rem;color:#756856}
+.dinner-kitchen-progress progress{grid-column:1/-1;width:100%;height:.35rem;appearance:none;border:0;border-radius:0;overflow:hidden;background:#d2c5b5}
+.dinner-kitchen-progress progress::-webkit-progress-bar{background:#d2c5b5}
+.dinner-kitchen-progress progress::-webkit-progress-value{background:#58755c}
+.dinner-kitchen-progress progress::-moz-progress-bar{background:#58755c}
+.dinner-kitchen-card{padding:clamp(1.8rem,4vw,4.8rem);background:#e9ddcb}
+.dinner-kitchen-overline{font:.7rem/1.4 var(--sans);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#a06041;margin:0 0 1.6rem}
+.dinner-kitchen-card h3{font:400 clamp(2.4rem,4.2vw,4.7rem)/1.05 var(--serif);letter-spacing:-.05em;margin:0 0 1.5rem;text-wrap:balance}
+.dinner-kitchen-card>p[data-guide-text]{font-size:1.09rem;line-height:1.72;max-width:50rem;margin:0 0 1.8rem}
+.dinner-kitchen-cue,.dinner-kitchen-mistake{padding:1rem 1.2rem 1.05rem;margin-top:.8rem;border-left:3px solid #597558;background:#f1e9de}
+.dinner-kitchen-mistake{border-color:#b0724e}
+.dinner-kitchen-cue[hidden],.dinner-kitchen-mistake[hidden],.dinner-kitchen-duration[hidden]{display:none}
+.dinner-kitchen-cue strong,.dinner-kitchen-mistake strong{display:block;font:700 .7rem/1.4 var(--sans);letter-spacing:.1em;text-transform:uppercase}
+.dinner-kitchen-cue>p,.dinner-kitchen-mistake>p{line-height:1.6;font-size:.95rem;margin:.65rem 0 0}
+.dinner-kitchen-duration{font-size:.8rem;color:#73563f;margin:1.1rem 0}
+.dinner-kitchen-controls{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:2.3rem;padding-top:1.4rem;border-top:1px solid rgba(39,31,22,.2)}
+.dinner-kitchen-controls button{font:700 .72rem/1.4 var(--sans);letter-spacing:.05em;text-transform:uppercase;cursor:pointer;padding:.95rem 1.05rem;min-height:46px;border:1px solid #354737;background:transparent;color:#283c2b}
+.dinner-kitchen-controls button[data-guide-complete]{background:#283c2b;color:#fff9ee}
+.dinner-kitchen-controls button[data-guide-complete][aria-pressed=true]{background:#567657;border-color:#567657}
+.dinner-kitchen-controls button:disabled{opacity:.44;cursor:not-allowed}
+.dinner-kitchen-controls button:not(:disabled):hover{filter:brightness(.92)}
+.dinner-kitchen-feedback{font-size:.77rem;line-height:1.5;color:#6a5342;min-height:1.3rem;margin:1.25rem 0 0}
+.dinner-kitchen-aside{background:#283c2f;color:#f5ecdc;padding:clamp(1.6rem,3.6vw,3.5rem)}
+.dinner-kitchen-aside .dinner-panel-overline{color:#dcb589;margin:0}
+.dinner-kitchen-aside h3{font:400 clamp(2rem,3vw,3.1rem)/1.07 var(--serif);letter-spacing:-.035em;margin:1.5rem 0}
+.dinner-kitchen-aside>p:not(.dinner-panel-overline){font-size:.96rem;line-height:1.7;color:#e6dac8}
+.dinner-kitchen-aside .dinner-kitchen-safety{padding-top:1.25rem;margin-top:1.5rem;border-top:1px solid rgba(255,255,255,.28);color:#f5dbb5!important}
+.dinner-kitchen-aside>a{display:inline-flex;justify-content:space-between;align-items:center;gap:1.5rem;border-bottom:1px solid #dcb589;padding:.8rem 0;margin-top:1rem;color:#f4d7a9;font:700 .71rem/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase}
+@media(max-width:900px){.dinner-kitchen-content{grid-template-columns:1fr}.dinner-kitchen-aside{max-width:100%}}
+@media(max-width:580px){.dinner-kitchen-navigation{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.dinner-kitchen-navigation button{min-width:0;font-size:1.25rem;padding:1rem}.dinner-kitchen-controls button{flex:1 1 auto}.dinner-kitchen-card{padding:1.6rem 1.2rem}.dinner-kitchen-progress{gap:.4rem}.dinner-kitchen-done{white-space:nowrap}}
+
+/* A genuinely useful takeaway: private, locally generated and printable as text. */
+.dinner-takeaway{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:clamp(2.2rem,7vw,8rem);padding:clamp(5rem,10vw,10rem) var(--page-pad);background:#e8dcca;color:#27221d}
+.dinner-takeaway-copy{align-self:center}
+.dinner-takeaway .dinner-kicker{color:#95593c;margin:0 0 1.4rem}
+.dinner-takeaway h2{font:400 clamp(2.8rem,5.2vw,5.8rem)/1.04 var(--serif);letter-spacing:-.055em;margin:0;text-wrap:balance}
+.dinner-takeaway-copy>p:not(.dinner-kicker){max-width:40rem;font-size:1.03rem;line-height:1.72;color:#564b40}
+.dinner-takeaway-copy .dinner-takeaway-disclaimer{border-left:2px solid #a56e45;padding-left:1rem;margin:1.8rem 0;font-size:.88rem;color:#715a45}
+.dinner-takeaway-actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:2rem}
+.dinner-takeaway-actions button{cursor:pointer;display:inline-flex;justify-content:space-between;gap:1rem;padding:1rem 1.15rem;min-height:46px;border:1px solid #293a2e;font:700 .71rem/1.35 var(--sans);letter-spacing:.06em;text-transform:uppercase}
+.dinner-takeaway-actions button:first-child{background:#293a2e;color:#fff7ea}
+.dinner-takeaway-actions button:last-child{background:transparent;color:#293a2e}
+.dinner-takeaway-actions button:hover{filter:brightness(.9)}
+.dinner-takeaway-actions button:focus-visible{outline:3px solid #bf7c3b;outline-offset:4px}
+.dinner-takeaway-copy [data-pack-feedback]{min-height:1.5rem;margin:.8rem 0 0;font-size:.82rem;color:#74583f}
+.dinner-takeaway-copy .dinner-takeaway-privacy{font-size:.78rem!important;margin:1.2rem 0 0;color:#6f5e4d!important}
+.dinner-takeaway-paper{background:#f9f3e7;border:1px solid rgba(47,38,28,.17);padding:clamp(1.6rem,3.5vw,3.5rem);box-shadow:0 22px 52px rgba(66,48,30,.1);align-self:center;min-width:0}
+.dinner-takeaway-paper .dinner-panel-overline{color:#995c3c;margin:0}
+.dinner-takeaway-paper h3{font:400 clamp(2.6rem,4vw,4.3rem)/1 var(--serif);letter-spacing:-.055em;margin:1.5rem 0 2rem}
+.dinner-takeaway-paper dl{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin:0}
+.dinner-takeaway-paper dt{font:700 .67rem/1.45 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:#845a3d}
+.dinner-takeaway-paper dd{font:400 clamp(1.45rem,2.2vw,2.2rem)/1.15 var(--serif);margin:.45rem 0 0}
+.dinner-takeaway-divider{height:1px;background:rgba(45,36,29,.2);margin:1.8rem 0}
+.dinner-takeaway-paper-label{font:700 .65rem/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#95593c}
+.dinner-takeaway-paper>p:not(.dinner-panel-overline):not(.dinner-takeaway-paper-label):not(.dinner-takeaway-preview-footer){font:400 1.6rem/1.4 var(--serif)}
+.dinner-takeaway-paper ol{padding:0;margin:0;list-style:none}
+.dinner-takeaway-paper li{display:grid;grid-template-columns:5rem minmax(0,1fr);gap:.8rem;align-items:baseline;padding:.62rem 0;font-size:.89rem;line-height:1.4}
+.dinner-takeaway-paper li time{font:400 1.4rem/1.1 var(--serif);color:#945c40}
+.dinner-takeaway-paper .dinner-takeaway-preview-footer{margin:1.9rem 0 0;padding-top:1rem;border-top:1px solid rgba(45,36,29,.2);font-size:.73rem;line-height:1.5;color:#766554}
+@media(max-width:940px){.dinner-takeaway{grid-template-columns:1fr}.dinner-takeaway-copy,.dinner-takeaway-paper{max-width:48rem}}
+@media(max-width:530px){.dinner-takeaway-actions{flex-direction:column}.dinner-takeaway-actions button{width:100%}.dinner-takeaway-paper dl{gap:.8rem}.dinner-takeaway-paper li{grid-template-columns:4.3rem minmax(0,1fr)}}
+
+/* Optional published side dish: opt-in only, never silently alters the preview menu. */
+.dinner-optional-dish{padding:1.4rem 1.45rem;margin-top:2.4rem;border:1px solid rgba(241,222,193,.48);background:rgba(11,26,19,.2)}
+.dinner-optional-dish label{display:flex;align-items:start;gap:.9rem;cursor:pointer;color:#fff3e3}
+.dinner-optional-dish input{accent-color:#e4b783;flex:none;width:1.18rem;height:1.18rem;margin:.16rem 0 0}
+.dinner-optional-dish label span{display:grid;gap:.5rem}
+.dinner-optional-dish label strong{font-size:.95rem;line-height:1.45}
+.dinner-optional-dish label small{font-size:.84rem;line-height:1.6;color:#e4d4be}
+.dinner-optional-dish a{display:inline-block;margin:1rem 0 0 2.05rem;color:#f1d0a0;font-size:.76rem;line-height:1.5;border-bottom:1px solid #e0b789;padding-bottom:.15rem}
+.dinner-optional-dish a:hover{text-decoration:none;color:#fff}
+.dinner-optional-dish input:focus-visible{outline:3px solid #e3b27a;outline-offset:3px}
+
+/* Browser hidden state must override the flex rule when the optional dish is off. */
+.dinner-kitchen-navigation button[hidden]{display:none}
+
+/* One coherent journey across four independently useful modules. */
+.dinner-journey-nav{display:flex;align-items:center;gap:clamp(.9rem,2.2vw,2rem);padding:1rem var(--page-pad);background:#f9f1e6;border-bottom:1px solid rgba(51,37,25,.17);overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+.dinner-journey-name{flex:none;color:#9a5c3e;font:700 .68rem/1.4 var(--sans);letter-spacing:.11em;text-transform:uppercase}
+.dinner-journey-nav a{display:inline-flex;align-items:center;gap:.48rem;flex:none;min-height:44px;color:#283b2d;font:700 .76rem/1.4 var(--sans);letter-spacing:.045em;border-bottom:1px solid transparent;white-space:nowrap;padding:.65rem .15rem}
+.dinner-journey-nav a span{color:#9d6748;font:400 1.2rem/1 var(--serif)}
+.dinner-journey-nav a:hover{border-bottom-color:#283b2d}
+.dinner-journey-nav a:focus-visible{outline:3px solid #af6b38;outline-offset:2px}
+.dinner-concept :is(#apercu,#planning,#cuisine-guidee,#ma-feuille-de-route){scroll-margin-top:5rem}
+@media(max-width:600px){.dinner-journey-nav{gap:1rem;padding-top:.6rem;padding-bottom:.6rem}.dinner-journey-name{font-size:.61rem}.dinner-journey-nav a{font-size:.72rem}}
+@media(prefers-reduced-motion:reduce){.dinner-journey-nav{scroll-behavior:auto}}
+
+/* Fifth chapter: the editorial heart of the future premium product, preview only. */
+.dinner-carnet-entry{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(2rem,7vw,8rem);align-items:center;padding:clamp(5rem,10vw,10rem) var(--page-pad);background:#273b2f;color:#f5eddd}
+.dinner-carnet-copy>.dinner-kicker{color:#e5bd87}
+.dinner-carnet-copy h2{font:400 clamp(3rem,5.7vw,6.3rem)/1.03 var(--serif);letter-spacing:-.058em;margin:1.2rem 0 2.1rem;text-wrap:balance}
+.dinner-carnet-copy>p:not(.dinner-kicker){max-width:44rem;font-size:1.04rem;line-height:1.72;color:#e9dfd1}
+.dinner-carnet-copy>.dinner-carnet-note{font-size:.88rem!important;border-left:2px solid #e3b989;padding:.6rem 0 .6rem 1.2rem;color:#f3d0a5!important;margin:1.6rem 0}
+.dinner-carnet-link{display:inline-flex;align-items:center;justify-content:space-between;gap:2rem;background:#eee0c9;color:#263b2e;padding:1rem 1.2rem;font:700 .76rem/1.35 var(--sans);text-transform:uppercase;letter-spacing:.07em;min-height:48px;margin-top:1rem}
+.dinner-carnet-link:hover{background:#fff3e2}
+.dinner-carnet-poster{position:relative;min-height:clamp(27rem,48vw,42rem);padding:clamp(2rem,4vw,5rem);background:#eee1ce;color:#2b3d31;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 24px 60px rgba(8,21,13,.25)}
+.dinner-carnet-poster>p{font:700 .72rem/1.4 var(--sans);letter-spacing:.16em;text-transform:uppercase;margin:0}
+.dinner-carnet-poster-rule{width:3rem;height:2px;background:#ae6c49;display:block}
+.dinner-carnet-poster>strong{font:400 clamp(2.8rem,5.1vw,5.8rem)/1 var(--serif);letter-spacing:-.055em;max-width:15ch}
+.dinner-carnet-poster>strong em{font-weight:400;color:#a46944}
+.dinner-carnet-poster>span:not(.dinner-carnet-poster-rule){font:.78rem/1.95 var(--sans);text-transform:uppercase;letter-spacing:.14em}
+.dinner-carnet-poster>.dinner-carnet-poster-bottom{border-top:1px solid #b9a28b;padding-top:1rem;letter-spacing:.08em!important}
+.dinner-takeaway-actions .dinner-pack-carnet-link{display:inline-flex;align-items:center;justify-content:space-between;gap:1rem;min-height:46px;padding:1rem 1.15rem;border:1px solid #293a2e;color:#293a2e;text-transform:uppercase;font:700 .71rem/1.35 var(--sans);letter-spacing:.06em}
+.dinner-takeaway-actions .dinner-pack-carnet-link:hover{background:#293a2e;color:#fff7ea}
+.dinner-concept #carnet{scroll-margin-top:5rem}
+@media(max-width:950px){.dinner-carnet-entry{grid-template-columns:1fr}.dinner-carnet-copy{max-width:49rem}.dinner-carnet-poster{max-width:43rem;width:100%}}
+@media(max-width:600px){.dinner-carnet-poster{min-height:29rem}.dinner-carnet-link{width:100%;font-size:.72rem}.dinner-takeaway-actions .dinner-pack-carnet-link{width:100%}}
