@@ -39,6 +39,9 @@ jobs:
       - name: Motion regression contract
         run: npm run test:motion
 
+      - name: V17 isolated preview contract
+        run: node scripts/check-v17-preview.mjs
+
       - name: Recipe regression contract
         run: npm run test:recipes
 

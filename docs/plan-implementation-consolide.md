@@ -207,3 +207,24 @@ La validation technique de #24 est acquise sur son HEAD contrôlé ; **la récep
 - Protocole de validation physique : [docs/protocole-validation-grand-diner.md](https://github.com/roro78/cuisine-cambodgienne/blob/68a3e55000f7bba0e39de70d8c84226246443bc4/docs/protocole-validation-grand-diner.md)
 - Plan commercial historique et décisions : [docs/plan-commerce-experiences.md](https://github.com/roro78/cuisine-cambodgienne/blob/68a3e55000f7bba0e39de70d8c84226246443bc4/docs/plan-commerce-experiences.md)
 - Runbook de déploiement : [docs/runbook-ovh-ateliers-release.md](https://github.com/roro78/cuisine-cambodgienne/blob/68a3e55000f7bba0e39de70d8c84226246443bc4/docs/runbook-ovh-ateliers-release.md)
+
+
+## Annexe de pilotage — V17 : expérience premium (13 octobre 2026)
+
+**Statut : EN COURS — prototype créatif isolé, pas une nouvelle version publiée.** Le dernier contrôle direct donne `main=2b7387bae6ef88e815befe44227bafc777e8fca2` et `ovh-production=7bfa0d3f13a0f75be11b1639cbcc5087fafc7b0f`. Ces commits restent la base de V16. Le workflow de publication OVH est manuel et n'est pas déclenché par ce chantier.
+
+| Lot | Objet | État | Gate avant avancement |
+| --- | --- | --- | --- |
+| V17-00 | Audit visuel/code et inventaire des médias | PARTIEL (écrans et parcours incomplets) | Captures et recette réelle des vues restantes |
+| V17-01 | Direction artistique et prototype `/v17-preview/` | EN COURS (branche de développement) | CI, validation du cadrage et choix artistique |
+| V17-02 | Refonte contrôlée du héros de l'accueil réel | NON COMMENCÉ | Réception V17-01 |
+| V17-03 | Acquisition de prises de vues vérifiées | À SOURCER | Licences, authenticité et crédits |
+| V17-04 | Transition des six scènes d'accueil | NON COMMENCÉ | V17-02 + médias V17-03 |
+| V17-05 | Recettes et typographie | NON COMMENCÉ | Direction et médias validés |
+| V17-06 | Ateliers pédagogiques visuels | NON COMMENCÉ | Médias de gestes vérifiés |
+| V17-07 | Culture et À propos | NON COMMENCÉ | Ligne éditoriale vérifiée |
+| V17-08 | Finition, performance, SEO, accessibilité | NON COMMENCÉ | Précédents lots + mesures initiales |
+
+**Référence artistique détaillée :** [`docs/v17-direction-artistique.md`](./v17-direction-artistique.md). La PR historique #24 est actuellement **fermée sans fusion** (contrôlé dans GitHub), contrairement aux anciens tableaux de suivi. Les pages d'expérience déjà présentes sur `main` restent hors périmètre V17-01.
+
+**Interdictions maintenues :** aucune modification de `main` ni de `ovh-production` ; aucune publication OVH, aucune activation commerciale, aucune présentation d'image synthétique comme photographie documentaire.

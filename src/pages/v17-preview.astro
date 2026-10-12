@@ -1,0 +1,118 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import '../styles/home-v17-preview.css';
+
+const images = {
+  amok: '/images/cuisine/amok-alt-1600.webp',
+  market: '/images/cuisine/kep-market-1600.webp',
+  pepper: '/images/cuisine/kampot-1600.webp',
+  kroeung: '/images/cuisine/kroeung-1600.webp',
+  lokLak: '/images/cuisine/lok-lak-800.webp'
+};
+---
+<BaseLayout
+  title="V17 — Prototype de direction artistique | Cuisine du Cambodge"
+  description="Prototype non publié de la direction artistique V17 : les parfums, les produits, les gestes et les plats à partager."
+  image={images.amok}
+  imageAlt="Amok de poisson cambodgien"
+  noindex
+>
+  <SiteHeader />
+  <main class="v17-preview" id="contenu">
+    <p class="v17-prototype-banner">Étude artistique V17 · prototype à valider · aucun changement sur l'accueil public</p>
+
+    <section class="v17-hero" aria-labelledby="v17-hero-title" data-v17-hero>
+      <div class="v17-hero-copy">
+        <p class="v17-eyebrow">01 / 06 · Le premier parfum</p>
+        <h1 id="v17-hero-title">Les parfums <em>du Cambodge</em> à votre table.</h1>
+        <p class="v17-hero-lead">Du parfum des aromates aux plats à partager, découvrez des recettes, des gestes et des histoires à cuisiner chez vous.</p>
+        <nav class="v17-actions" aria-label="Explorer la cuisine cambodgienne">
+          <a class="v17-action-primary" href="/recettes/">Voir les recettes <span aria-hidden="true">↗</span></a>
+          <a class="v17-action-secondary" href="/apprendre/">Apprendre les gestes <span aria-hidden="true">↗</span></a>
+        </nav>
+        <p class="v17-chapter-note">Une cuisine à découvrir, un geste après l'autre.</p>
+      </div>
+      <figure class="v17-hero-photo">
+        <img
+          src={images.amok}
+          srcset="/images/cuisine/amok-alt-800.webp 800w, /images/cuisine/amok-alt-1200.webp 1200w, /images/cuisine/amok-alt-1600.webp 1600w"
+          sizes="(max-width: 760px) 100vw, 44vw"
+          alt="Amok de poisson cambodgien"
+          width="1600" height="3556"
+          decoding="async" fetchpriority="high"
+        />
+        <figcaption><span>À goûter</span><strong>Amok Trey</strong><small>Poisson · kroeung · lait de coco</small></figcaption>
+      </figure>
+      <div class="v17-hero-serial" aria-hidden="true"><span>01</span><i></i><span>06</span></div>
+    </section>
+
+    <section class="v17-intro" aria-labelledby="v17-intro-title">
+      <p class="v17-eyebrow" data-v17-reveal>Une histoire de produits et de gestes</p>
+      <h2 id="v17-intro-title" data-v17-reveal>Avant le plat, <em>il y a les parfums.</em></h2>
+      <p data-v17-reveal>La citronnelle que l'on coupe, le poivre fraîchement moulu, les herbes que l'on ajoute au dernier moment. Ce sont ces petits gestes qui donnent envie de passer en cuisine.</p>
+    </section>
+
+    <section class="v17-market" aria-labelledby="v17-market-title">
+      <div class="v17-market-copy" data-v17-reveal>
+        <p class="v17-eyebrow">02 / 06 · Au marché</p>
+        <h2 id="v17-market-title">Tout commence <em>par les produits.</em></h2>
+        <p>À Kep, au marché, sur les étals : poissons, herbes, légumes, épices. On regarde, on sent, puis on imagine le prochain repas.</p>
+        <a class="v17-text-link" href="/culture/kep-marche-crabe-poivre/">Découvrir le carnet de Kep <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="v17-market-gallery">
+        <figure class="v17-market-large" data-v17-reveal>
+          <img src={images.market} srcset="/images/cuisine/kep-market-800.webp 800w, /images/cuisine/kep-market-1200.webp 1200w, /images/cuisine/kep-market-1600.webp 1600w" sizes="(max-width: 760px) 100vw, 48vw" alt="Marché de Kep au Cambodge" width="1600" height="1067" loading="lazy" decoding="async" />
+          <figcaption>Au marché de Kep</figcaption>
+        </figure>
+        <figure class="v17-market-small" data-v17-reveal>
+          <img src={images.pepper} srcset="/images/cuisine/kampot-800.webp 800w, /images/cuisine/kampot-1200.webp 1200w, /images/cuisine/kampot-1600.webp 1600w" sizes="(max-width: 760px) 44vw, 21vw" alt="Grains de poivre de Kampot" width="1600" height="1067" loading="lazy" decoding="async" />
+          <figcaption>Le poivre de Kampot</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="v17-gesture" aria-labelledby="v17-gesture-title">
+      <div class="v17-gesture-photo" data-v17-reveal>
+        <img src={images.kroeung} srcset="/images/cuisine/kroeung-800.webp 800w, /images/cuisine/kroeung-1200.webp 1200w, /images/cuisine/kroeung-1600.webp 1600w" sizes="(max-width: 760px) 100vw, 52vw" alt="Kroeung cambodgien et aromates" width="1600" height="1067" loading="lazy" decoding="async" />
+        <span aria-hidden="true">03 / 06</span>
+      </div>
+      <div class="v17-gesture-copy" data-v17-reveal>
+        <p class="v17-eyebrow">03 / 06 · Le geste</p>
+        <h2 id="v17-gesture-title">Couper. Piler. <em>Sentir.</em></h2>
+        <p>Le kroeung prend forme peu à peu. Citronnelle, galanga, curcuma : apprendre à observer la texture et reconnaître le parfum de la pâte.</p>
+        <a class="v17-text-link" href="/apprendre/piler-aromates-au-mortier/">S'entraîner au mortier <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+
+    <section class="v17-table" aria-labelledby="v17-table-title">
+      <div class="v17-table-copy" data-v17-reveal>
+        <p class="v17-eyebrow">04–05 / 06 · Du feu à la table</p>
+        <h2 id="v17-table-title">Le plaisir de <em>passer à table.</em></h2>
+        <p>Un plat chaud, du riz, des herbes fraîches et un condiment poivré : choisissez ce qui vous fait envie, puis composez votre repas à partager.</p>
+        <a class="v17-text-link" href="/culture/construire-repas-cambodgien/">Comprendre le repas <span aria-hidden="true">↗</span></a>
+      </div>
+      <figure class="v17-table-photo" data-v17-reveal>
+        <img src={images.lokLak} srcset="/images/cuisine/lok-lak-480.webp 480w, /images/cuisine/lok-lak-800.webp 800w" sizes="(max-width: 760px) 100vw, 44vw" alt="Lok Lak cambodgien au bœuf" loading="lazy" decoding="async" />
+        <figcaption>Un plat à découvrir : le Lok Lak</figcaption>
+      </figure>
+    </section>
+
+    <section class="v17-finale" aria-labelledby="v17-finale-title" data-v17-reveal>
+      <p class="v17-eyebrow">06 / 06 · À vous de cuisiner</p>
+      <h2 id="v17-finale-title">La suite se passe <em>dans votre cuisine.</em></h2>
+      <p>Choisissez un plat, ajustez les portions et suivez les étapes à votre rythme.</p>
+      <a class="v17-action-primary" href="/recettes/">Choisir une recette <span aria-hidden="true">↗</span></a>
+    </section>
+
+    <aside class="v17-preview-legal">
+      <p>Prototype de mise en scène, non destiné à la publication directe. Photographies existantes de V16, avec auteurs et licences indiqués dans les <a href="/credits-photos/">crédits photographiques</a>. Il ne s'agit pas de prises de vues réalisées pour V17.</p>
+    </aside>
+  </main>
+  <SiteFooter />
+  <script>
+    import { initV17PreviewMotion } from '../scripts/v17PreviewMotion';
+    initV17PreviewMotion();
+  </script>
+</BaseLayout>
