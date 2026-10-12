@@ -117,6 +117,24 @@ if (!samlor.includes('Quand le poisson ou le poulet et les légumes sont cuits, 
   failures.push('Samlor Machu must not prompt tasting a broth containing raw fish or poultry');
 }
 
+if (!detail.includes('aria-label="Accès rapide à la recette"') ||
+    !detail.includes('href="#ingredients"') || !detail.includes('href="#etapes"') ||
+    !detail.includes('class="recipe-v15-sidebar" id="ingredients"') ||
+    !detail.includes('class="recipe-guided-method" id="etapes"')) {
+  failures.push('Recipe hero quick links must lead to real ingredients and method anchors');
+}
+if (!v16Css.includes('.recipe-v16 .recipe-quick-links a:focus-visible') ||
+    !v16Css.includes('scroll-margin-top:calc(var(--site-header-offset,4.75rem) + 1rem)')) {
+  failures.push('Recipe quick links must be keyboard-visible with anchors clear of the fixed header');
+}
+if (!v16Css.includes('@media(max-width:900px)') ||
+    !v16Css.includes('.recipe-v16 .recipe-v15-hero{min-height:0;gap:1.4rem}') ||
+    !v16Css.includes('.recipe-v16 .recipe-v15-cover{aspect-ratio:4/3;max-height:42svh}') ||
+    !v16Css.includes('@media(max-width:440px) and (max-height:420px)')) {
+  failures.push('Mobile recipe hero must avoid an excessive full-viewport height without clipping at zoom');
+}
+
+
 if (failures.length) {
   console.error('Recipe contract failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));
