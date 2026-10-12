@@ -105,6 +105,11 @@ const recipeSchema = {
           {totalMinutes(recipe.cookTime) > 0 && <div><dt>Cuisson</dt><dd>{recipe.cookTime}</dd></div>}
           <div><dt>Niveau</dt><dd>{recipe.difficulty}</dd></div>
         </dl>
+
+        <nav class="recipe-quick-links" aria-label="Accès rapide à la recette">
+          <a href="#ingredients">Voir les ingrédients <span aria-hidden="true">↓</span></a>
+          <a href="#etapes">Suivre les étapes <span aria-hidden="true">↓</span></a>
+        </nav>
       </div>
 
       {recipe.image ? (
@@ -128,7 +133,7 @@ const recipeSchema = {
     </section>
 
     <section class="recipe-v15-kitchen">
-      <aside class="recipe-v15-sidebar">
+      <aside class="recipe-v15-sidebar" id="ingredients">
         <div
           class="recipe-servings-card"
           data-recipe-servings-root
@@ -209,7 +214,7 @@ const recipeSchema = {
         </div>
       </aside>
 
-      <article class="recipe-guided-method">
+      <article class="recipe-guided-method" id="etapes">
         <header>
           <p class="eyebrow">En cuisine</p>
           <h2>Les étapes, les gestes et les bons repères.</h2>
