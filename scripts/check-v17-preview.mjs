@@ -27,7 +27,7 @@ const photos = [...page.matchAll(/src=\{images\.([A-Za-z]+)\}/g)].map((x) => x[1
 assert.equal(photos.length, 4, 'Quatre photos documentees dont une nouvellement sourcee');
 assert.equal(new Set(photos).size, photos.length, 'Ne pas reutiliser la meme photo sur le prototype');
 assert.match(page, /v17-amok-rice-960\.jpg 960w, \/images\/cuisine\/v17-amok-rice-1920\.jpg 1920w/);
-assert.match(page, /sharonang \(Wikimedia Commons, CC0 1\.0\)/);
+assert.match(page, /Amok — sharonang, CC0 1\.0/);
 assert.match(page, /https:\/\/commons\.wikimedia\.org\/wiki\/File:Fish_Amok_with_Rice\.jpg/);
 for (const width of [960, 1920]) {
   assert.ok(fs.existsSync(`public/images/cuisine/v17-amok-rice-${width}.jpg`), `Missing responsive V17 amok photo (${width}px)`);

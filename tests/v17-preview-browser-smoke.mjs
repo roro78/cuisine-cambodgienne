@@ -95,7 +95,7 @@ async function inspectViewport(width, height, screenshotPath, options = {}) {
     await page.waitForFunction(() => {
       const market = document.querySelector('.v17-market-large img');
       return market?.complete && market.naturalWidth > 0;
-    }, { timeout: 10000 });
+    }, null, { timeout: 10000 });
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
     await page.waitForTimeout(160);
     if (screenshotPath) {
