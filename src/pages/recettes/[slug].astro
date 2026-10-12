@@ -131,14 +131,14 @@ const recipeSchema = {
       {recipe.beforeYouStart && (
         <div class="recipe-kitchen-note">
           <p class="eyebrow">Avant de commencer</p>
-          <h2>Tout préparer pour cuisiner sereinement</h2>
+          <h2>{recipe.prepHeading}</h2>
           <p>{recipe.beforeYouStart}</p>
         </div>
       )}
       {recipe.servingTip && (
         <div class="recipe-kitchen-note">
           <p class="eyebrow">À table</p>
-          <h2>Le plaisir de servir</h2>
+          <h2>{recipe.servingHeading}</h2>
           <p>{recipe.servingTip}</p>
         </div>
       )}
