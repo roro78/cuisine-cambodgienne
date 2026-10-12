@@ -24,7 +24,7 @@ assert.match(motion, /prefers-reduced-motion: no-preference/);
 assert.match(motion, /media\.revert\(\)/);
 
 const photos = [...page.matchAll(/src=\{images\.([A-Za-z]+)\}/g)].map((x) => x[1]);
-assert.equal(photos.length, 5, 'Cinq images originales doivent etre exposees');
+assert.equal(photos.length, 4, 'Quatre photos documentees doivent etre exposees sans duplication');
 assert.equal(new Set(photos).size, photos.length, 'Ne pas reutiliser la meme photo V16 sur le prototype');
 for (const [, path] of page.matchAll(/'(\/images\/cuisine\/[^']+)'/g)) {
   assert.ok(fs.existsSync('public' + path), 'Image manquante : ' + path);

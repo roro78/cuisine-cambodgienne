@@ -5,18 +5,17 @@ import SiteFooter from '../components/SiteFooter.astro';
 import '../styles/home-v17-preview.css';
 
 const images = {
-  amok: '/images/cuisine/amok-alt-1600.webp',
+  prahok: '/images/cuisine/prahok-1600.webp',
   market: '/images/cuisine/kep-market-1600.webp',
   pepper: '/images/cuisine/kampot-1600.webp',
-  kroeung: '/images/cuisine/kroeung-1600.webp',
-  lokLak: '/images/cuisine/lok-lak-800.webp'
+  amok: '/images/cuisine/amok-1600.webp'
 };
 ---
 <BaseLayout
   title="V17 — Prototype de direction artistique | Cuisine du Cambodge"
   description="Prototype non publié de la direction artistique V17 : les parfums, les produits, les gestes et les plats à partager."
-  image={images.amok}
-  imageAlt="Amok de poisson cambodgien"
+  image={images.prahok}
+  imageAlt="Prahok Ktis avec légumes frais"
   noindex
 >
   <SiteHeader />
@@ -36,14 +35,14 @@ const images = {
       </div>
       <figure class="v17-hero-photo">
         <img
-          src={images.amok}
-          srcset="/images/cuisine/amok-alt-800.webp 800w, /images/cuisine/amok-alt-1200.webp 1200w, /images/cuisine/amok-alt-1600.webp 1600w"
+          src={images.prahok}
+          srcset="/images/cuisine/prahok-800.webp 800w, /images/cuisine/prahok-1200.webp 1200w, /images/cuisine/prahok-1600.webp 1600w"
           sizes="(max-width: 760px) 100vw, 44vw"
-          alt="Amok de poisson cambodgien"
-          width="1600" height="3556"
+          alt="Prahok Ktis, préparation cambodgienne entourée de légumes frais"
+          width="1600" height="2133"
           decoding="async" fetchpriority="high"
         />
-        <figcaption><span>À goûter</span><strong>Amok Trey</strong><small>Poisson · kroeung · lait de coco</small></figcaption>
+        <figcaption><span>À découvrir</span><strong>Prahok Ktis</strong><small>Prahok · coco · légumes frais</small></figcaption>
       </figure>
       <div class="v17-hero-serial" aria-hidden="true"><span>01</span><i></i><span>06</span></div>
     </section>
@@ -74,9 +73,15 @@ const images = {
     </section>
 
     <section class="v17-gesture" aria-labelledby="v17-gesture-title">
-      <div class="v17-gesture-photo" data-v17-reveal>
-        <img src={images.kroeung} srcset="/images/cuisine/kroeung-800.webp 800w, /images/cuisine/kroeung-1200.webp 1200w, /images/cuisine/kroeung-1600.webp 1600w" sizes="(max-width: 760px) 100vw, 52vw" alt="Kroeung cambodgien et aromates" width="1600" height="1067" loading="lazy" decoding="async" />
-        <span aria-hidden="true">03 / 06</span>
+      <div class="v17-gesture-study" data-v17-reveal aria-label="Repères illustrés de l'atelier du mortier">
+        <p class="v17-gesture-study-kicker">Au mortier · 03 / 06</p>
+        <p class="v17-gesture-study-title">Observer la matière.</p>
+        <ol>
+          <li><span>01</span><div><strong>Couper fin</strong><small>Des morceaux réguliers.</small></div></li>
+          <li><span>02</span><div><strong>Piler</strong><small>Faire travailler les aromates ensemble.</small></div></li>
+          <li><span>03</span><div><strong>Observer</strong><small>Rechercher une pâte homogène.</small></div></li>
+        </ol>
+        <p class="v17-gesture-study-note">Étude graphique provisoire · séquence photographique du geste à réaliser.</p>
       </div>
       <div class="v17-gesture-copy" data-v17-reveal>
         <p class="v17-eyebrow">03 / 06 · Le geste</p>
@@ -94,8 +99,8 @@ const images = {
         <a class="v17-text-link" href="/culture/construire-repas-cambodgien/">Comprendre le repas <span aria-hidden="true">↗</span></a>
       </div>
       <figure class="v17-table-photo" data-v17-reveal>
-        <img src={images.lokLak} srcset="/images/cuisine/lok-lak-480.webp 480w, /images/cuisine/lok-lak-800.webp 800w" sizes="(max-width: 760px) 100vw, 44vw" alt="Lok Lak cambodgien au bœuf" loading="lazy" decoding="async" />
-        <figcaption>Un plat à découvrir : le Lok Lak</figcaption>
+        <img src={images.amok} srcset="/images/cuisine/amok-800.webp 800w, /images/cuisine/amok-1200.webp 1200w, /images/cuisine/amok-1600.webp 1600w" sizes="(max-width: 760px) 100vw, 44vw" alt="Amok de poisson et riz servis dans des feuilles" width="1600" height="1067" loading="lazy" decoding="async" />
+        <figcaption>Amok Trey et riz, à partager</figcaption>
       </figure>
     </section>
 
@@ -107,7 +112,7 @@ const images = {
     </section>
 
     <aside class="v17-preview-legal">
-      <p>Prototype de mise en scène, non destiné à la publication directe. Photographies existantes de V16, avec auteurs et licences indiqués dans les <a href="/credits-photos/">crédits photographiques</a>. Il ne s'agit pas de prises de vues réalisées pour V17.</p>
+      <p>Prototype de mise en scène, non destiné à la publication directe. Quatre photographies existantes de V16, avec auteurs et licences indiqués dans les <a href="/credits-photos/">crédits photographiques</a>. Il ne s'agit pas de prises de vues réalisées pour V17.</p>
     </aside>
   </main>
   <SiteFooter />

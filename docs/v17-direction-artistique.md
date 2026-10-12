@@ -29,7 +29,7 @@ Le premier écran doit montrer un **plat** plutôt qu'un arrière-plan de march�
 
 ## Ce qui est implémenté dans cette PR
 
-La route **`/v17-preview/`** contient une démonstration responsive autonome : une vraie composition photo/texte de héros et quatre sections de transition. Elle utilise exclusivement **cinq photographies déjà présentes dans V16** et créditées sur `/credits-photos/`. Ce prototype ne prouve pas qu'il existe de nouvelles prises de vues, ni que les six transitions finales ont été produites.
+La route **`/v17-preview/`** contient une démonstration responsive autonome : une composition photo/texte de héros, une étude graphique honnête du geste non photographié et quatre sections de transition. Elle utilise exclusivement **quatre photographies déjà présentes dans V16** et créditées sur `/credits-photos/`. Ce prototype ne prouve pas qu'il existe de nouvelles prises de vues, ni que les six transitions finales ont été produites.
 
 - Route non indexée (`noindex`), non ajoutée au sitemap ou à la navigation.
 - Nouveau CSS exclusivement préfixé `.v17-preview`, sans modifier l'accueil public.
@@ -46,7 +46,7 @@ Examiner notamment : logo/header, cadrage Amok (la source est un portrait), cont
 
 ### Réception initiale des captures simulées (13 octobre 2026)
 
-Une prévisualisation HTML/CSS **locale, non équivalente à un build Astro**, a été capturée à 1440×900 et 390×844. Le visuel principal V16 `amok-alt` possède une composition avec une nappe rouge et une prise de vue assez frontale : qualité **insuffisante pour le visuel premium final**. Le premier rendu mobile plaçait les accès recettes hors écran ; l'image a été raccourcie de `55svh` à `40svh` pour rapprocher les actions. Il faudra encore vérifier sur un **vrai build Astro + navigateur**.
+Une prévisualisation HTML/CSS **locale, non équivalente à un build Astro**, a été capturée à 1440×900 et 390×844. L'essai avec le visuel V16 `amok-alt` a révélé une nappe rouge et une prise de vue trop frontale. Le prototype passe à une photographie existante de Prahok Ktis, plus lisible dans ce cadrage, **sans considérer celle-ci comme photographie premium définitive**. La photo `kroeung` du dépôt représente un plat cuisiné, pas un pilon au mortier : elle est remplacée ici par une étude graphique explicite pour ne pas illustrer faussement un geste. Le premier rendu mobile plaçait les accès recettes hors écran ; l'image a été raccourcie de `55svh` à `40svh` pour rapprocher les actions. Il faudra encore vérifier sur un **vrai build Astro + navigateur**.
 
 **Gate média P0 :** remplacer cette photographie principale par une prise de vue originale ou une image tierce réellement autorisée et vérifiée. Aucun photomontage ou visuel synthétique ne doit être présenté comme documentaire.
 

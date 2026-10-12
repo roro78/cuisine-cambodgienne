@@ -72,8 +72,15 @@
 .v17-market-small{position:relative;aspect-ratio:3/4;margin-bottom:-2rem;overflow:hidden;border-radius:.55rem;box-shadow:0 1.5rem 3.5rem rgba(39,29,19,.18)}
 .v17-market-gallery figcaption{position:absolute;bottom:0;left:0;right:0;padding:2rem .8rem .8rem;background:linear-gradient(transparent,rgba(0,0,0,.6));color:white;font-size:.75rem}
 .v17-gesture{display:grid;grid-template-columns:1.12fr .88fr;align-items:center;gap:clamp(2rem,7vw,8rem);padding:clamp(6rem,9vw,10rem) clamp(1.25rem,6vw,7rem);background:#f7f0e5}
-.v17-gesture-photo{position:relative;height:clamp(24rem,55vw,42rem);overflow:hidden;border-radius:.6rem}
-.v17-gesture-photo span{position:absolute;left:1.25rem;top:1.25rem;display:grid;place-items:center;width:3rem;height:3rem;border-radius:50%;background:#fff7e7;color:#382c20;font-size:.75rem}
+.v17-gesture-study{display:flex;flex-direction:column;justify-content:center;min-height:clamp(24rem,55vw,42rem);padding:clamp(1.6rem,4vw,4rem);background:radial-gradient(circle at 85% 8%,rgba(244,220,173,.18),transparent 35%),#93523e;color:#fff5e9;border-radius:.6rem}
+.v17-gesture-study-kicker{margin:0;font-size:.68rem;text-transform:uppercase;letter-spacing:.16em;color:#f3d2ae}
+.v17-gesture-study-title{max-width:12ch;margin:1rem 0 2rem;font:400 clamp(2.4rem,4vw,4.3rem)/.96 var(--v17-serif);letter-spacing:-.04em}
+.v17-gesture-study ol{list-style:none;margin:0;padding:0}
+.v17-gesture-study li{display:flex;align-items:baseline;gap:1rem;padding:1rem 0;border-top:1px solid rgba(255,255,255,.35)}
+.v17-gesture-study li>span{font-size:.7rem;color:#ffe1b9}
+.v17-gesture-study li strong{display:block;font:400 clamp(1.25rem,2vw,1.7rem)/1.15 var(--v17-serif)}
+.v17-gesture-study li small{display:block;margin-top:.25rem;font-size:.8rem;line-height:1.4;color:#ffead6}
+.v17-gesture-study-note{margin:1.5rem 0 0;max-width:32rem;font-size:.7rem;line-height:1.5;color:#ffe2d1}
 .v17-gesture-copy .v17-eyebrow{color:#924e38}
 .v17-table{display:grid;grid-template-columns:.95fr 1.05fr;gap:clamp(2rem,7vw,8rem);align-items:center;padding:clamp(6rem,9vw,10rem) clamp(1.25rem,6vw,7rem);background:#23372c;color:#fbf2e6}
 .v17-table-copy .v17-eyebrow{color:#dfb47e}
@@ -114,7 +121,7 @@
   .v17-market-gallery{width:100%;gap:.75rem}
   .v17-market-large{aspect-ratio:4/5}
   .v17-market-small{margin-bottom:-1.2rem}
-  .v17-gesture-photo{width:100%;height:clamp(19rem,74vw,34rem)}
+  .v17-gesture-study{width:100%;min-height:0}
   .v17-gesture-copy{order:-1}
   .v17-table-photo{width:100%}
   .v17-market h2,.v17-gesture h2,.v17-table h2{font-size:clamp(2.9rem,11vw,4.5rem)}
