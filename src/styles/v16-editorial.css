@@ -324,3 +324,42 @@
 @media(prefers-reduced-motion:reduce){
   .workshop-progress{scroll-behavior:auto}
 }
+
+
+/* Recipe quick access: keep cooking actions reachable even after a rich hero. */
+.recipe-v16 .recipe-quick-links{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.5rem}
+.recipe-v16 .recipe-quick-links a{
+  display:inline-flex;align-items:center;justify-content:space-between;gap:1rem;
+  min-height:2.75rem;padding:.7rem 1rem;border:1px solid #284233;border-radius:999px;
+  background:#203428;color:#fff;text-decoration:none;font-size:.75rem;font-weight:650;line-height:1.35
+}
+.recipe-v16 .recipe-quick-links a+a{background:transparent;color:#24392c}
+.recipe-v16 .recipe-quick-links a:hover{background:#31523d;color:#fff}
+.recipe-v16 .recipe-quick-links a:focus-visible{outline:3px solid #b16b3b;outline-offset:3px}
+.recipe-v16 .recipe-v15-sidebar,
+.recipe-v16 .recipe-guided-method{scroll-margin-top:calc(var(--site-header-offset,4.75rem) + 1rem)}
+@media(max-width:900px){
+  /* Reset the 88svh cinematic floor; on narrow layouts the copy and food image
+     should occupy only the height they actually need. */
+  .recipe-v16 .recipe-v15-hero{min-height:0;gap:1.4rem}
+  .recipe-v16 .recipe-v15-hero-copy{padding-bottom:0}
+  .recipe-v16 .recipe-v15-cover{
+    min-height:0;height:auto;aspect-ratio:16/10;max-height:48svh
+  }
+  .recipe-v16 .recipe-v15-cover img{height:100%;width:100%;object-fit:cover}
+  .recipe-v16 .recipe-v15-cover-fallback{min-height:0}
+}
+@media(max-width:620px){
+  .recipe-v16 .recipe-v15-hero{gap:1.2rem;padding-bottom:1.5rem}
+  .recipe-v16 .recipe-v15-hero-copy h1{font-size:clamp(2.5rem,11vw,3.5rem);line-height:1}
+  .recipe-v16 .recipe-v15-facts{gap:.45rem;margin-top:1.2rem}
+  .recipe-v16 .recipe-v15-facts div{padding:.7rem}
+  .recipe-v16 .recipe-v15-cover{aspect-ratio:4/3;max-height:42svh}
+  .recipe-v16 .recipe-quick-links{gap:.5rem;margin-top:1rem}
+  .recipe-v16 .recipe-quick-links a{flex:1 1 9rem;min-height:2.75rem;padding:.65rem .8rem}
+}
+@media(max-width:440px) and (max-height:420px){
+  /* Extreme zoom / landscape: never trap the content inside a viewport-sized crop. */
+  .recipe-v16 .recipe-v15-cover{max-height:none;aspect-ratio:auto}
+  .recipe-v16 .recipe-v15-cover img{height:auto}
+}
