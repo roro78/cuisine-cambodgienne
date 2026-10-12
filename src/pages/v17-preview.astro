@@ -5,7 +5,7 @@ import SiteFooter from '../components/SiteFooter.astro';
 import '../styles/home-v17-preview.css';
 
 const images = {
-  prahok: '/images/cuisine/prahok-1600.webp',
+  hero: '/images/cuisine/v17-amok-rice-1920.jpg',
   market: '/images/cuisine/kep-market-1600.webp',
   pepper: '/images/cuisine/kampot-1600.webp',
   amok: '/images/cuisine/amok-1600.webp'
@@ -14,8 +14,8 @@ const images = {
 <BaseLayout
   title="V17 — Prototype de direction artistique | Cuisine du Cambodge"
   description="Prototype non publié de la direction artistique V17 : les parfums, les produits, les gestes et les plats à partager."
-  image={images.prahok}
-  imageAlt="Prahok Ktis avec légumes frais"
+  image={images.hero}
+  imageAlt="Amok Trey et riz servis dans des feuilles de bananier"
   noindex
 >
   <SiteHeader />
@@ -35,14 +35,14 @@ const images = {
       </div>
       <figure class="v17-hero-photo">
         <img
-          src={images.prahok}
-          srcset="/images/cuisine/prahok-800.webp 800w, /images/cuisine/prahok-1200.webp 1200w, /images/cuisine/prahok-1600.webp 1600w"
+          src={images.hero}
+          srcset="/images/cuisine/v17-amok-rice-960.jpg 960w, /images/cuisine/v17-amok-rice-1920.jpg 1920w"
           sizes="(max-width: 760px) 100vw, 44vw"
-          alt="Prahok Ktis, préparation cambodgienne entourée de légumes frais"
-          width="1600" height="2133"
+          alt="Amok Trey et riz présentés dans des feuilles de bananier"
+          width="3456" height="2304"
           decoding="async" fetchpriority="high"
         />
-        <figcaption><span>À découvrir</span><strong>Prahok Ktis</strong><small>Prahok · coco · légumes frais</small></figcaption>
+        <figcaption><span>À découvrir</span><strong>Amok Trey</strong><small>Poisson · feuilles de bananier · riz</small></figcaption>
       </figure>
       <div class="v17-hero-serial" aria-hidden="true"><span>01</span><i></i><span>06</span></div>
     </section>
@@ -112,7 +112,7 @@ const images = {
     </section>
 
     <aside class="v17-preview-legal">
-      <p>Prototype de mise en scène, non destiné à la publication directe. Quatre photographies existantes de V16, avec auteurs et licences indiqués dans les <a href="/credits-photos/">crédits photographiques</a>. Il ne s'agit pas de prises de vues réalisées pour V17.</p>
+      <p>Prototype de mise en scène, non destiné à la publication directe. Trois photographies issues de V16, avec crédits sur <a href="/credits-photos/">la page dédiée</a>, et une nouvelle photographie d’Amok par <a href="https://commons.wikimedia.org/wiki/File:Fish_Amok_with_Rice.jpg" target="_blank" rel="noopener noreferrer">sharonang (Wikimedia Commons, CC0 1.0)</a>. Les images ne documentent pas des essais réalisés pour V17.</p>
     </aside>
   </main>
   <SiteFooter />

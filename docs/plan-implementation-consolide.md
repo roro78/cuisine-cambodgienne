@@ -218,7 +218,7 @@ La validation technique de #24 est acquise sur son HEAD contrôlé ; **la récep
 | V17-00 | Audit visuel/code et inventaire des médias | PARTIEL (écrans et parcours incomplets) | Captures et recette réelle des vues restantes |
 | V17-01 | Direction artistique et prototype `/v17-preview/` | EN COURS (branche de développement) | CI, validation du cadrage et choix artistique |
 | V17-02 | Refonte contrôlée du héros de l'accueil réel | NON COMMENCÉ | Réception V17-01 |
-| V17-03 | Acquisition de prises de vues vérifiées | À SOURCER | Licences, authenticité et crédits |
+| V17-03 | Acquisition de prises de vues vérifiées | PARTIEL — 1 photographie Amok CC0 sourcée dans prototype, 3 familles V16 | Compléter les gestes, les produits et la table ; droits et cadrages |
 | V17-04 | Transition des six scènes d'accueil | NON COMMENCÉ | V17-02 + médias V17-03 |
 | V17-05 | Recettes et typographie | NON COMMENCÉ | Direction et médias validés |
 | V17-06 | Ateliers pédagogiques visuels | NON COMMENCÉ | Médias de gestes vérifiés |

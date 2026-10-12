@@ -29,7 +29,7 @@ Le premier écran doit montrer un **plat** plutôt qu'un arrière-plan de march�
 
 ## Ce qui est implémenté dans cette PR
 
-La route **`/v17-preview/`** contient une démonstration responsive autonome : une composition photo/texte de héros, une étude graphique honnête du geste non photographié et quatre sections de transition. Elle utilise exclusivement **quatre photographies déjà présentes dans V16** et créditées sur `/credits-photos/`. Ce prototype ne prouve pas qu'il existe de nouvelles prises de vues, ni que les six transitions finales ont été produites.
+La route **`/v17-preview/`** contient une démonstration responsive autonome : une composition photo/texte de héros, une étude graphique honnête du geste non photographié et quatre sections de transition. Elle utilise **trois photographies déjà présentes dans V16**, avec crédits sur `/credits-photos/`, et **une nouvelle photographie CC0 de l'Amok** avec lien direct à la source Wikimedia Commons sur la page prototype. Ce prototype ne prouve pas qu'il existe de nouvelles prises de vues, ni que les six transitions finales ont été produites.
 
 - Route non indexée (`noindex`), non ajoutée au sitemap ou à la navigation.
 - Nouveau CSS exclusivement préfixé `.v17-preview`, sans modifier l'accueil public.
@@ -42,13 +42,13 @@ La route **`/v17-preview/`** contient une démonstration responsive autonome : u
 
 Le contrôle automatisé `node scripts/check-v17-preview.mjs` est ajouté à la CI des branches de développement. Avant toute fusion, réaliser une **recette visuelle réelle** à 320, 360, 390, 768 et 1440 px, zoom 200 %, clavier (Tab, Entrée, Escape), mouvement réduit, réseau lent et Safari mobile.
 
-Examiner notamment : logo/header, cadrage Amok (la source est un portrait), contraste de légende sur photo, temps de chargement, clics, absence de scroll horizontal et de CLS.
+Examiner notamment : logo/header, cadrage de la nouvelle photo Amok (source paysage), contraste de légende sur photo, temps de chargement, clics, absence de scroll horizontal et de CLS.
 
 ### Réception initiale des captures simulées (13 octobre 2026)
 
-Une prévisualisation HTML/CSS **locale, non équivalente à un build Astro**, a été capturée à 1440×900 et 390×844. L'essai avec le visuel V16 `amok-alt` a révélé une nappe rouge et une prise de vue trop frontale. Le prototype passe à une photographie existante de Prahok Ktis, plus lisible dans ce cadrage, **sans considérer celle-ci comme photographie premium définitive**. La photo `kroeung` du dépôt représente un plat cuisiné, pas un pilon au mortier : elle est remplacée ici par une étude graphique explicite pour ne pas illustrer faussement un geste. Le premier rendu mobile plaçait les accès recettes hors écran ; l'image a été raccourcie de `55svh` à `40svh` pour rapprocher les actions. Il faudra encore vérifier sur un **vrai build Astro + navigateur**.
+Une prévisualisation HTML/CSS **locale, non équivalente à un build Astro**, a été capturée à 1440×900 et 390×844. L'essai avec le visuel V16 `amok-alt` a révélé une nappe rouge et une prise de vue trop frontale. Le prototype a d'abord essayé une photographie existante de Prahok Ktis, puis **a intégré un nouveau cliché documentaire d'Amok Trey avec riz, sous CC0**, sélectionné dans Wikimedia Commons. Sa qualité finale et son cadrage restent soumis à réception visuelle. La photo `kroeung` du dépôt représente un plat cuisiné, pas un pilon au mortier : elle est remplacée ici par une étude graphique explicite pour ne pas illustrer faussement un geste. Le premier rendu mobile plaçait les accès recettes hors écran ; l'image a été raccourcie de `55svh` à `40svh` pour rapprocher les actions. Il faudra encore vérifier sur un **vrai build Astro + navigateur**.
 
-**Gate média P0 :** remplacer cette photographie principale par une prise de vue originale ou une image tierce réellement autorisée et vérifiée. Aucun photomontage ou visuel synthétique ne doit être présenté comme documentaire.
+**Gate média P0 :** une première photographie d'Amok est ajoutée avec provenance et licence vérifiées ; les autres scènes restent à enrichir avec des prises de vue cohérentes, originales ou réellement autorisées. Aucun photomontage ou visuel synthétique ne doit être présenté comme documentaire.
 
 ### Photothèque encore manquante
 
@@ -61,3 +61,7 @@ Au moins huit à douze prises de vues distinctes restent souhaitables : mortier 
 3. Recette navigateur et Lighthouse des variantes desktop/mobile.
 4. Reprise ciblée dans `src/pages/index.astro`, uniquement après accord et non-régression.
 5. PR de promotion distincte, **jamais de merge ou déploiement automatique**.
+
+## Nouvelle sélection média — Amok et riz (13 octobre 2026)
+
+Photographie de **sharonang**, intitulée « Fish Amok with Rice », prise à Siem Reap le 6 septembre 2015. La page Wikimedia Commons indique **CC0 1.0** (vérification de la source Pixabay confirmée par un réviseur Commons le 15 juillet 2025). La page prototype intègre une attribution volontaire vers la source ; elle ne prétend pas montrer notre propre préparation. Variantes JPEG responsives 960 × 640 et 1920 × 1280. Détails et URL de licence : [inventaire de sourcing V17](./v17-sourcing-medias.md).
