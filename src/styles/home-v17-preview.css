@@ -75,11 +75,16 @@
 .v17-gesture-study{display:flex;flex-direction:column;justify-content:center;min-height:clamp(24rem,55vw,42rem);padding:clamp(1.6rem,4vw,4rem);background:radial-gradient(circle at 85% 8%,rgba(244,220,173,.18),transparent 35%),#93523e;color:#fff5e9;border-radius:.6rem}
 .v17-gesture-study-kicker{margin:0;font-size:.68rem;text-transform:uppercase;letter-spacing:.16em;color:#f3d2ae}
 .v17-gesture-study-title{max-width:12ch;margin:1rem 0 2rem;font:400 clamp(2.4rem,4vw,4.3rem)/.96 var(--v17-serif);letter-spacing:-.04em}
+.v17-gesture-study-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.66fr);gap:clamp(1rem,2.5vw,2.4rem);align-items:center}
 .v17-gesture-study ol{list-style:none;margin:0;padding:0}
 .v17-gesture-study li{display:flex;align-items:baseline;gap:1rem;padding:1rem 0;border-top:1px solid rgba(255,255,255,.35)}
 .v17-gesture-study li>span{font-size:.7rem;color:#ffe1b9}
 .v17-gesture-study li strong{display:block;font:400 clamp(1.25rem,2vw,1.7rem)/1.15 var(--v17-serif)}
 .v17-gesture-study li small{display:block;margin-top:.25rem;font-size:.8rem;line-height:1.4;color:#ffead6}
+.v17-gesture-paste{align-self:center;min-width:0;background:#fff3df;padding:.55rem;border-radius:.55rem;transform:rotate(2deg);box-shadow:0 1rem 2.5rem rgba(27,15,10,.2)}
+.v17-gesture-paste img{height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:.2rem}
+.v17-gesture-paste figcaption{padding:.55rem .25rem .15rem;font:400 .82rem/1.4 var(--v17-serif);color:#493124}
+@media(min-width:761px) and (max-width:1100px){.v17-gesture-study-body{grid-template-columns:1fr}.v17-gesture-paste{max-width:14rem;margin:1rem auto 0}.v17-gesture-study{min-height:0}}
 .v17-gesture-study-note{margin:1.5rem 0 0;max-width:32rem;font-size:.7rem;line-height:1.5;color:#ffe2d1}
 .v17-gesture-copy .v17-eyebrow{color:#924e38}
 .v17-table{display:grid;grid-template-columns:.95fr 1.05fr;gap:clamp(2rem,7vw,8rem);align-items:center;padding:clamp(6rem,9vw,10rem) clamp(1.25rem,6vw,7rem);background:#23372c;color:#fbf2e6}
@@ -122,6 +127,9 @@
   .v17-market-large{aspect-ratio:4/5}
   .v17-market-small{margin-bottom:-1.2rem}
   .v17-gesture-study{width:100%;min-height:0}
+  .v17-gesture-study-body{grid-template-columns:1fr}
+  .v17-gesture-paste{width:min(80%,22rem);justify-self:center;margin-top:1.2rem}
+  .v17-gesture-study-title{margin-bottom:1.3rem}
   .v17-gesture-copy{order:-1}
   .v17-table-photo{width:100%}
   .v17-market h2,.v17-gesture h2,.v17-table h2{font-size:clamp(2.9rem,11vw,4.5rem)}
@@ -137,4 +145,5 @@
 @media(prefers-reduced-motion:reduce){
   .v17-preview *, .v17-preview *:before,.v17-preview *:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}
   .v17-hero-photo img{transform:none!important;will-change:auto}
+  .v17-gesture-paste{transform:none!important}
 }

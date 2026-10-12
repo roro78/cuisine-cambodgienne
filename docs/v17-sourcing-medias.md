@@ -58,3 +58,20 @@ Ces manques bloquent la revendication « expérience photographique premium comp
 | Usage du prototype | Galerie « Au marché », avec légende géographique et crédit dans l'aside final |
 
 Cette nouvelle photographie remplace une vue de sacs de poivre, améliore les couleurs du récit et ne correspond pas à la photographie du marché de Kep. 
+
+## Photographie intégrée : texture finale de kroeung rouge
+
+| Champ | Vérification |
+| --- | --- |
+| Titre original | [Red Kroeung Paste.jpg](https://commons.wikimedia.org/wiki/File:Red_Kroeung_Paste.jpg) |
+| Auteur déclaré | **Trilinguist** |
+| Date déclarée | **19 avril 2008** |
+| Sujet déclaré | Pâte de kroeung rouge **après mélange des ingrédients** |
+| Licence | [Creative Commons Attribution-ShareAlike 3.0 Unported](https://creativecommons.org/licenses/by-sa/3.0/) |
+| Taille d'origine | 800 × 600 px, 137 684 octets |
+| Fichier dans la branche | `public/images/cuisine/v17-kroeung-final.jpg` |
+| Modifications | Copie de l'original ; mise à l'échelle d'affichage et inclinaison de la carte par CSS. Pas d'édition du contenu de la photo. |
+| Crédit visible sur le prototype | Lien source Commons, auteur, licence et lien de licence. |
+| Restriction éditoriale | Ne pas présenter cette image comme une étape intermédiaire, une photographie du mortier en usage ou une recette réalisée par le site. |
+
+Une **séquence photographique continue** des gestes (coupe, pilonnage, texture intermédiaire) reste manquante ; les photographies génériques de mortiers provenant d'autres cuisines ont été écartées pour éviter une démonstration trompeuse.

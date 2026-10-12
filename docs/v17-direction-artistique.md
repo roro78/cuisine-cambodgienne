@@ -69,3 +69,9 @@ Photographie de **sharonang**, intitulée « Fish Amok with Rice », prise à Si
 ## Nouveau média de marché (13 octobre 2026)
 
 La photo générique du marché de Kep, montrant principalement des grains de poivre emballés, est remplacée **dans le prototype seulement** par un étal de fruits photographié entre Phnom Penh et Siem Reap par **McKay Savage** (31 décembre 2008, Wikimedia Commons / Flickr, CC BY 2.0). Deux versions responsives sont servies, et le cliché est crédité avec licence. Le carnet de Kep reste un **lien vers un autre marché**, il n'est pas présenté comme le lieu photographié. Voir `docs/v17-sourcing-medias.md`.
+
+## V17-01 — Résultat photographique de la pâte (13 octobre 2026)
+
+La carte pédagogique du mortier comprend désormais **une seule photographie de référence du résultat fini** : `Red Kroeung Paste.jpg`, **Trilinguist**, 19 avril 2008, **CC BY-SA 3.0** ([source Commons](https://commons.wikimedia.org/wiki/File:Red_Kroeung_Paste.jpg), [licence](https://creativecommons.org/licenses/by-sa/3.0/)). La photographie originale est de 800 × 600 px ; aucune suite photographique de gestes n'est prétendue. L'image est créditée sur la page prototype et n'est pas présentée comme une expérience menée dans notre cuisine. Cette intégration n'est **pas** la fermeture du gate « reportage gestuel ».
+
+Pour les transitions, les révélations conservent désormais une opacité de départ **0,82** au lieu de masquer entièrement les sections pendant le scroll. C'est un garde-fou pour le focus clavier et la lisibilité des liens quand GSAP s'initialise. Trois repères du geste s'animent progressivement, sans immobiliser le défilement, et le mode `prefers-reduced-motion` reste sans animation.

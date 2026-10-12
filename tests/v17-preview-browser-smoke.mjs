@@ -54,6 +54,8 @@ async function inspectViewport(width, height, screenshotPath, options = {}) {
     assert.equal(await page.locator('.v17-actions a').first().getAttribute('href'), '/recettes/');
     assert.equal(await page.locator('.v17-actions a').last().getAttribute('href'), '/apprendre/');
     assert.equal(await page.locator('.v17-gesture-study').count(), 1, 'Pedagogical study must exist');
+    assert.equal(await page.locator('.v17-gesture-paste img').getAttribute('alt'), "Kroeung rouge après broyage : exemple photographié d'une pâte obtenue");
+    assert.equal(await page.locator('.v17-gesture-study ol li').count(), 3);
     assert.ok(await page.locator('.v17-preview-legal a[href="/credits-photos/"]').count());
     await page.waitForFunction(() => {
       const image = document.querySelector('.v17-hero-photo img');
@@ -94,7 +96,9 @@ async function inspectViewport(width, height, screenshotPath, options = {}) {
     assert.ok(await page.locator('.v17-gesture-study').isVisible(), 'Scene appears after scrolling');
     await page.waitForFunction(() => {
       const market = document.querySelector('.v17-market-large img');
-      return market?.complete && market.naturalWidth > 0;
+      const paste = document.querySelector('.v17-gesture-paste img');
+      return market?.complete && market.naturalWidth > 0 &&
+             paste?.complete && paste.naturalWidth > 0;
     }, null, { timeout: 10000 });
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
     await page.waitForTimeout(160);
@@ -117,6 +121,8 @@ try {
   });
   await inspectViewport(1440, 900, 'artifacts/v17-preview-1440.png');
   await inspectViewport(390, 844, 'artifacts/v17-preview-390.png');
+  await inspectViewport(360, 800, null);
+  await inspectViewport(768, 1024, null);
   await inspectViewport(320, 640, null);
   await inspectViewport(390, 844, null, { reduced: true });
   assert.deepEqual(errors, [], 'No runtime JavaScript errors');

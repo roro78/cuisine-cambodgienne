@@ -17,9 +17,9 @@ export function initV17PreviewMotion() {
     const reveals = gsap.utils.toArray<HTMLElement>('[data-v17-reveal]', page);
     reveals.forEach((element) => {
       gsap.fromTo(element,
-        { y: 20, autoAlpha: 0 },
+        { y: 16, opacity: .82 },
         {
-          y: 0, autoAlpha: 1, duration: .85, ease: 'power2.out',
+          y: 0, opacity: 1, duration: .8, ease: 'power2.out',
           scrollTrigger: {
             trigger: element, start: 'top 92%',
             once: true
@@ -27,6 +27,15 @@ export function initV17PreviewMotion() {
         }
       );
     });
+
+    const gestureStudy = page.querySelector<HTMLElement>('.v17-gesture-study');
+    if (gestureStudy) {
+      gsap.fromTo(gestureStudy.querySelectorAll('li'),
+        { x: -8, opacity: .85 },
+        { x: 0, opacity: 1, duration: .7, stagger: .16, ease: 'power2.out',
+          scrollTrigger: { trigger: gestureStudy, start: 'top 80%', once: true } }
+      );
+    }
 
     if (window.matchMedia('(min-width: 761px)').matches) {
       const heroImage = page.querySelector<HTMLImageElement>('.v17-hero-photo img');

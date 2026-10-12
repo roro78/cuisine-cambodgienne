@@ -8,6 +8,7 @@ const images = {
   hero: '/images/cuisine/v17-amok-rice-1920.jpg',
   fruitMarket: '/images/cuisine/v17-fruit-market-1920.jpg',
   pepper: '/images/cuisine/kampot-1600.webp',
+  finishedKroeung: '/images/cuisine/v17-kroeung-final.jpg',
   amok: '/images/cuisine/amok-1600.webp'
 };
 ---
@@ -73,15 +74,21 @@ const images = {
     </section>
 
     <section class="v17-gesture" aria-labelledby="v17-gesture-title">
-      <div class="v17-gesture-study" data-v17-reveal aria-label="Repères illustrés de l'atelier du mortier">
+      <div class="v17-gesture-study" data-v17-reveal aria-label="Repères pédagogiques pour la préparation du kroeung">
         <p class="v17-gesture-study-kicker">Au mortier · 03 / 06</p>
         <p class="v17-gesture-study-title">Observer la matière.</p>
-        <ol>
-          <li><span>01</span><div><strong>Couper fin</strong><small>Des morceaux réguliers.</small></div></li>
-          <li><span>02</span><div><strong>Piler</strong><small>Faire travailler les aromates ensemble.</small></div></li>
-          <li><span>03</span><div><strong>Observer</strong><small>Rechercher une pâte homogène.</small></div></li>
-        </ol>
-        <p class="v17-gesture-study-note">Étude graphique provisoire · séquence photographique du geste à réaliser.</p>
+        <div class="v17-gesture-study-body">
+          <ol aria-label="Trois repères pour apprendre">
+            <li><span>01</span><div><strong>Couper fin</strong><small>Des morceaux réguliers.</small></div></li>
+            <li><span>02</span><div><strong>Piler</strong><small>Faire travailler les aromates ensemble.</small></div></li>
+            <li><span>03</span><div><strong>Observer</strong><small>Rechercher une pâte homogène.</small></div></li>
+          </ol>
+          <figure class="v17-gesture-paste">
+            <img src={images.finishedKroeung} width="800" height="600" alt="Kroeung rouge après broyage : exemple photographié d'une pâte obtenue" loading="lazy" decoding="async" />
+            <figcaption>Texture finale : un exemple de kroeung rouge.</figcaption>
+          </figure>
+        </div>
+        <p class="v17-gesture-study-note">La photo montre une pâte terminée, pas les étapes de notre atelier. La séquence de gestes reste à photographier.</p>
       </div>
       <div class="v17-gesture-copy" data-v17-reveal>
         <p class="v17-eyebrow">03 / 06 · Le geste</p>
@@ -112,7 +119,7 @@ const images = {
     </section>
 
     <aside class="v17-preview-legal">
-      <p>Prototype de mise en scène, non destiné à la publication directe. Deux photographies issues de V16, créditées sur <a href="/credits-photos/">la page dédiée</a>, et deux photographies issues de Wikimedia Commons : <a href="https://commons.wikimedia.org/wiki/File:Fish_Amok_with_Rice.jpg" target="_blank" rel="noopener noreferrer">Amok — sharonang, CC0 1.0</a> ; <a href="https://commons.wikimedia.org/wiki/File:Cambodia_08_-_038_-_fruit_at_the_market_(3198828515).jpg" target="_blank" rel="noopener noreferrer">fruits du marché — McKay Savage, CC BY 2.0</a> (<a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener noreferrer">licence</a>). Photographies redimensionnées, recadrage CSS. Elles ne documentent pas des essais réalisés pour V17.</p>
+      <p>Prototype de mise en scène, non destiné à la publication directe. Deux photographies issues de V16, créditées sur <a href="/credits-photos/">la page dédiée</a>, et trois photographies issues de Wikimedia Commons : <a href="https://commons.wikimedia.org/wiki/File:Fish_Amok_with_Rice.jpg" target="_blank" rel="noopener noreferrer">Amok — sharonang, CC0 1.0</a> ; <a href="https://commons.wikimedia.org/wiki/File:Cambodia_08_-_038_-_fruit_at_the_market_(3198828515).jpg" target="_blank" rel="noopener noreferrer">fruits du marché — McKay Savage, CC BY 2.0</a> (<a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener noreferrer">licence</a>) ; <a href="https://commons.wikimedia.org/wiki/File:Red_Kroeung_Paste.jpg" target="_blank" rel="noopener noreferrer">pâte de kroeung rouge — Trilinguist, CC BY-SA 3.0</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer">licence</a>). Photographies redimensionnées, recadrage CSS. Elles ne documentent pas des essais réalisés pour V17.</p>
     </aside>
   </main>
   <SiteFooter />
