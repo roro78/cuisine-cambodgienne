@@ -2,7 +2,20 @@
 
 **Référence de pilotage — 12 octobre 2026.** Ce document rapproche les ambitions éditoriales, l’expérience « Grand Dîner Khmer », les futures activités commerciales et le code réellement présent. Il distingue **développement technique**, **validation visuelle**, **validation culinaire** et **commercialisation** : une CI verte ne vaut jamais réception du produit final.
 
-**Statut actuel au 12 octobre 2026 :** site éditorial et six ateliers publiés ; corrections de sécurité Amok/Prahok (#25) publiées ; lots B1–B5 (#26–#30) fusionnés sur `main`, certains marqueurs vérifiés en public ; PR #24 « Expériences / Grand Dîner Khmer » ouverte, non fusionnée, **non publiée** et signalée en conflit avec `main`. Dernière revue de la PR #24 résolue et CI réussie sur le commit 5db43ca (https://github.com/roro78/cuisine-cambodgienne/actions/runs/38081774271). Sa valeur démontrée est celle d’un **prototype gratuit**, pas d’une offre premium commercialisable.
+**Historique du socle au 12 octobre 2026 (complété par le point de livraison ci-dessous) :** site éditorial et six ateliers publiés ; corrections de sécurité Amok/Prahok (#25) publiées ; lots B1–B5 (#26–#30) fusionnés sur `main`, certains marqueurs vérifiés en public ; PR #24 « Expériences / Grand Dîner Khmer » ouverte, non fusionnée, **non publiée** et signalée en conflit avec `main`. Dernière revue de la PR #24 résolue et CI réussie sur le commit 5db43ca (https://github.com/roro78/cuisine-cambodgienne/actions/runs/38081774271). Sa valeur démontrée est celle d’un **prototype gratuit**, pas d’une offre premium commercialisable.
+
+## Point de livraison — 12 octobre 2026 (mise à jour)
+
+Le tableau historique ci-dessous décrit les travaux du 11 octobre ; **le statut opérationnel actuel** est celui-ci :
+
+- `main` contient les PR #26 à #30, mais **la synchronisation exacte sur le dossier OVH reste à confirmer en SSH**.
+- La branche `fix/preprod-phase1-20261012` regroupe les PR #32 à #35, #36, #37 et l'intégration corrigée #39 (qui reprend la #38).
+- Le déclencheur de publication est remplacé, en préproduction, par une **action GitHub manuelle verrouillée au SHA** ; elle ne sera opérationnelle sur `main` qu'après fusion de la release validée.
+- La PR #5 est un ancien texte d'accueil en conflit avec V16 : **ne pas la fusionner telle quelle**.
+- La PR #24 contient un prototype du Grand Dîner ; elle doit être **réconciliée avec le socle actuel**, testée séparément, et présentée sans paiement ni prétention d'essais culinaires aboutis.
+- Les revues techniques et CI ne remplacent pas les **tests visuels, la sécurité alimentaire et le contrôle du rendu OVH**.
+
+**Statut de mise en production :** préparation en cours. Aucun succès GitHub ne vaut validation du répertoire public OVH.
 
 ## 0 bis. Mise en œuvre de l’audit — PR fusionnées le 11 octobre 2026
 
