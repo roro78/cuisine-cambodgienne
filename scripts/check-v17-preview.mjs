@@ -30,8 +30,12 @@ assert.match(page, /v17-amok-rice-960\.jpg 960w, \/images\/cuisine\/v17-amok-ric
 assert.match(page, /sharonang \(Wikimedia Commons, CC0 1\.0\)/);
 assert.match(page, /https:\/\/commons\.wikimedia\.org\/wiki\/File:Fish_Amok_with_Rice\.jpg/);
 for (const width of [960, 1920]) {
-  assert.ok(fs.existsSync(`public/images/cuisine/v17-amok-rice-${width}.jpg`), `Missing responsive V17 photo (${width}px)`);
+  assert.ok(fs.existsSync(`public/images/cuisine/v17-amok-rice-${width}.jpg`), `Missing responsive V17 amok photo (${width}px)`);
+  assert.ok(fs.existsSync(`public/images/cuisine/v17-fruit-market-${width}.jpg`), `Missing responsive V17 market photo (${width}px)`);
 }
+assert.match(page, /v17-fruit-market-960\.jpg 960w, \/images\/cuisine\/v17-fruit-market-1920\.jpg 1920w/);
+assert.match(page, /McKay Savage, CC BY 2\.0/);
+assert.doesNotMatch(page, /Au marché de Kep/);
 for (const [, path] of page.matchAll(/'(\/images\/cuisine\/[^']+)'/g)) {
   assert.ok(fs.existsSync('public' + path), 'Image manquante : ' + path);
 }

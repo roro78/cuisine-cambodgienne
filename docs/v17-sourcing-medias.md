@@ -40,3 +40,21 @@ Ces manques bloquent la revendication « expérience photographique premium comp
 - Crédit et licence explicitement visibles/consultables sur la page prototype, lien externe `rel=noopener noreferrer`.
 - Vérifications desktop et mobile, affichage sans recadrage trompeur, absence de surpoids ou de CLS.
 - Aucune copie de ces fichiers sur `main` ou `ovh-production` sans approbation et contrôle éditorial.
+
+## Photographie intégrée : étal de fruits tropicaux (marché)
+
+| Champ | Vérification |
+| --- | --- |
+| Fichier original | [Cambodia '08 - 038 - fruit at the market](https://commons.wikimedia.org/wiki/File:Cambodia_08_-_038_-_fruit_at_the_market_(3198828515).jpg) |
+| Photographe | **McKay Savage** |
+| Date déclarée | 31 décembre 2008 |
+| Lieu déclaré | Marché proche d'un arrêt de bus **entre Phnom Penh et Siem Reap**, Cambodge ; le lieu ne doit **pas** être décrit comme Kep. |
+| Source | [Photographie Flickr 3198828515](https://www.flickr.com/photos/mckaysavage/3198828515/) |
+| Licence | [Creative Commons Attribution 2.0 Generic](https://creativecommons.org/licenses/by/2.0/) |
+| Revue de licence | Transfert Flickr/Commons et contrôle de licence indiqué au **31 décembre 2012** sur la fiche Commons |
+| Original | 3 264 × 2 448 pixels, JPEG |
+| Variantes | `v17-fruit-market-960.jpg` (960 × 720) et `v17-fruit-market-1920.jpg` (1920 × 1440) |
+| Transformation | Redimensionnement publié par Wikimedia et recadrage CSS d'affichage ; aucune modification du sens documentaire ni image générée |
+| Usage du prototype | Galerie « Au marché », avec légende géographique et crédit dans l'aside final |
+
+Cette nouvelle photographie remplace une vue de sacs de poivre, améliore les couleurs du récit et ne correspond pas à la photographie du marché de Kep. 

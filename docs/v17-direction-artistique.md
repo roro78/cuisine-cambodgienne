@@ -29,7 +29,7 @@ Le premier écran doit montrer un **plat** plutôt qu'un arrière-plan de march�
 
 ## Ce qui est implémenté dans cette PR
 
-La route **`/v17-preview/`** contient une démonstration responsive autonome : une composition photo/texte de héros, une étude graphique honnête du geste non photographié et quatre sections de transition. Elle utilise **trois photographies déjà présentes dans V16**, avec crédits sur `/credits-photos/`, et **une nouvelle photographie CC0 de l'Amok** avec lien direct à la source Wikimedia Commons sur la page prototype. Ce prototype ne prouve pas qu'il existe de nouvelles prises de vues, ni que les six transitions finales ont été produites.
+La route **`/v17-preview/`** contient une démonstration responsive autonome : une composition photo/texte de héros, une étude graphique honnête du geste non photographié et quatre sections de transition. Elle utilise **deux photographies déjà présentes dans V16**, avec crédits sur `/credits-photos/`, et **deux nouvelles photographies** (Amok CC0 et fruits de marché CC BY 2.0) avec lien direct à la source Wikimedia Commons sur la page prototype. Ce prototype ne prouve pas qu'il existe de nouvelles prises de vues, ni que les six transitions finales ont été produites.
 
 - Route non indexée (`noindex`), non ajoutée au sitemap ou à la navigation.
 - Nouveau CSS exclusivement préfixé `.v17-preview`, sans modifier l'accueil public.
@@ -65,3 +65,7 @@ Au moins huit à douze prises de vues distinctes restent souhaitables : mortier 
 ## Nouvelle sélection média — Amok et riz (13 octobre 2026)
 
 Photographie de **sharonang**, intitulée « Fish Amok with Rice », prise à Siem Reap le 6 septembre 2015. La page Wikimedia Commons indique **CC0 1.0** (vérification de la source Pixabay confirmée par un réviseur Commons le 15 juillet 2025). La page prototype intègre une attribution volontaire vers la source ; elle ne prétend pas montrer notre propre préparation. Variantes JPEG responsives 960 × 640 et 1920 × 1280. Détails et URL de licence : [inventaire de sourcing V17](./v17-sourcing-medias.md).
+
+## Nouveau média de marché (13 octobre 2026)
+
+La photo générique du marché de Kep, montrant principalement des grains de poivre emballés, est remplacée **dans le prototype seulement** par un étal de fruits photographié entre Phnom Penh et Siem Reap par **McKay Savage** (31 décembre 2008, Wikimedia Commons / Flickr, CC BY 2.0). Deux versions responsives sont servies, et le cliché est crédité avec licence. Le carnet de Kep reste un **lien vers un autre marché**, il n'est pas présenté comme le lieu photographié. Voir `docs/v17-sourcing-medias.md`.

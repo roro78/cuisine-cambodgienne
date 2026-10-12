@@ -92,6 +92,10 @@ async function inspectViewport(width, height, screenshotPath, options = {}) {
     }
     await page.waitForTimeout(850);
     assert.ok(await page.locator('.v17-gesture-study').isVisible(), 'Scene appears after scrolling');
+    await page.waitForFunction(() => {
+      const market = document.querySelector('.v17-market-large img');
+      return market?.complete && market.naturalWidth > 0;
+    }, { timeout: 10000 });
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
     await page.waitForTimeout(160);
     if (screenshotPath) {

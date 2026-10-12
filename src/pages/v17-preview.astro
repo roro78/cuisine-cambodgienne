@@ -6,7 +6,7 @@ import '../styles/home-v17-preview.css';
 
 const images = {
   hero: '/images/cuisine/v17-amok-rice-1920.jpg',
-  market: '/images/cuisine/kep-market-1600.webp',
+  fruitMarket: '/images/cuisine/v17-fruit-market-1920.jpg',
   pepper: '/images/cuisine/kampot-1600.webp',
   amok: '/images/cuisine/amok-1600.webp'
 };
@@ -57,13 +57,13 @@ const images = {
       <div class="v17-market-copy" data-v17-reveal>
         <p class="v17-eyebrow">02 / 06 · Au marché</p>
         <h2 id="v17-market-title">Tout commence <em>par les produits.</em></h2>
-        <p>À Kep, au marché, sur les étals : poissons, herbes, légumes, épices. On regarde, on sent, puis on imagine le prochain repas.</p>
-        <a class="v17-text-link" href="/culture/kep-marche-crabe-poivre/">Découvrir le carnet de Kep <span aria-hidden="true">↗</span></a>
+        <p>Sur les marchés cambodgiens, fruits, herbes et légumes attirent d’abord le regard. On s’attarde sur les couleurs, on découvre de nouveaux produits et l’on imagine ce qu’on pourrait cuisiner.</p>
+        <a class="v17-text-link" href="/culture/kep-marche-crabe-poivre/">Lire le carnet de Kep <span aria-hidden="true">↗</span></a>
       </div>
       <div class="v17-market-gallery">
         <figure class="v17-market-large" data-v17-reveal>
-          <img src={images.market} srcset="/images/cuisine/kep-market-800.webp 800w, /images/cuisine/kep-market-1200.webp 1200w, /images/cuisine/kep-market-1600.webp 1600w" sizes="(max-width: 760px) 100vw, 48vw" alt="Marché de Kep au Cambodge" width="1600" height="1067" loading="lazy" decoding="async" />
-          <figcaption>Au marché de Kep</figcaption>
+          <img src={images.fruitMarket} srcset="/images/cuisine/v17-fruit-market-960.jpg 960w, /images/cuisine/v17-fruit-market-1920.jpg 1920w" sizes="(max-width: 760px) 100vw, 48vw" alt="Fruits tropicaux présentés sur un étal de marché au Cambodge" width="3264" height="2448" loading="lazy" decoding="async" />
+          <figcaption>Fruits au marché, entre Phnom Penh et Siem Reap</figcaption>
         </figure>
         <figure class="v17-market-small" data-v17-reveal>
           <img src={images.pepper} srcset="/images/cuisine/kampot-800.webp 800w, /images/cuisine/kampot-1200.webp 1200w, /images/cuisine/kampot-1600.webp 1600w" sizes="(max-width: 760px) 44vw, 21vw" alt="Grains de poivre de Kampot" width="1600" height="1067" loading="lazy" decoding="async" />
@@ -112,7 +112,7 @@ const images = {
     </section>
 
     <aside class="v17-preview-legal">
-      <p>Prototype de mise en scène, non destiné à la publication directe. Trois photographies issues de V16, avec crédits sur <a href="/credits-photos/">la page dédiée</a>, et une nouvelle photographie d’Amok par <a href="https://commons.wikimedia.org/wiki/File:Fish_Amok_with_Rice.jpg" target="_blank" rel="noopener noreferrer">sharonang (Wikimedia Commons, CC0 1.0)</a>. Les images ne documentent pas des essais réalisés pour V17.</p>
+      <p>Prototype de mise en scène, non destiné à la publication directe. Deux photographies issues de V16, créditées sur <a href="/credits-photos/">la page dédiée</a>, et deux photographies issues de Wikimedia Commons : <a href="https://commons.wikimedia.org/wiki/File:Fish_Amok_with_Rice.jpg" target="_blank" rel="noopener noreferrer">Amok — sharonang, CC0 1.0</a> ; <a href="https://commons.wikimedia.org/wiki/File:Cambodia_08_-_038_-_fruit_at_the_market_(3198828515).jpg" target="_blank" rel="noopener noreferrer">fruits du marché — McKay Savage, CC BY 2.0</a> (<a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener noreferrer">licence</a>). Photographies redimensionnées, recadrage CSS. Elles ne documentent pas des essais réalisés pour V17.</p>
     </aside>
   </main>
   <SiteFooter />
