@@ -91,6 +91,25 @@ if (!amok.includes('poisson et les œufs sont complètement cuits avant de servi
 if (listing.includes('{recipe.prepTime} + {recipe.cookTime}')) failures.push('Catalog must not display 0 min for uncooked preparations');
 if (!listing.includes('minutes(recipe.cookTime) > 0') || !listing.includes('de préparation')) failures.push('Catalog must distinguish preparation from cooking without inventing times');
 
+
+const recipeBlocks = recipes.split(/\n  \{\n    slug: '/).slice(1);
+const withTips = recipeBlocks.filter((block) => /\n    beforeYouStart: '[^\n]+'/.test(block) && /\n    servingTip: '[^\n]+'/.test(block));
+if (!recipes.includes('beforeYouStart?: string') || !recipes.includes('servingTip?: string') ||
+    withTips.length !== slugs.length) {
+  failures.push('All structured recipes must include distinct practical preparation and serving notes');
+}
+if (!detail.includes('class="recipe-v15-kitchen-intro"') ||
+    !detail.includes('recipe.beforeYouStart') || !detail.includes('recipe.servingTip') ||
+    !recipeCss.includes('.recipe-kitchen-note') ||
+    !recipeCss.includes('.recipe-v15-kitchen-intro{grid-template-columns:1fr}')) {
+  failures.push('Practical notes must render as accessible, responsive content before cooking controls');
+}
+const samlor = recipeSegment('samlor-machu');
+if (!samlor.includes('Quand le poisson ou le poulet et les légumes sont cuits, ajoutez le tamarin') ||
+    !samlor.includes('Le poisson ou le poulet doit être complètement cuit avant de goûter')) {
+  failures.push('Samlor Machu must not prompt tasting a broth containing raw fish or poultry');
+}
+
 if (failures.length) {
   console.error('Recipe contract failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));
