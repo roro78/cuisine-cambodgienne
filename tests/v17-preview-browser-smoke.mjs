@@ -53,7 +53,7 @@ async function inspectViewport(width, height, screenshotPath, options = {}) {
     assert.equal(await page.locator('.v17-actions a').count(), 2);
     assert.equal(await page.locator('.v17-actions a').first().getAttribute('href'), '/recettes/');
     assert.equal(await page.locator('.v17-actions a').last().getAttribute('href'), '/apprendre/');
-    assert.ok(await page.locator('.v17-gesture-study').isVisible());
+    assert.equal(await page.locator('.v17-gesture-study').count(), 1, 'Pedagogical study must exist');
     assert.ok(await page.locator('.v17-preview-legal a[href="/credits-photos/"]').count());
     await page.waitForFunction(() => {
       const image = document.querySelector('.v17-hero-photo img');
@@ -82,6 +82,18 @@ async function inspectViewport(width, height, screenshotPath, options = {}) {
       await page.keyboard.press('Escape');
       assert.equal(await menu.evaluate((el) => el.open), false, 'Escape closes mobile menu');
     }
+    // GSAP reveals sections as they enter the viewport. Do not assert they are
+    // visible at scrollY=0 before their ScrollTrigger has run.
+    for (const selector of ['.v17-intro', '.v17-market', '.v17-gesture-study', '.v17-table', '.v17-finale']) {
+      await page.locator(selector).first().evaluate((element) =>
+        element.scrollIntoView({ block: 'center', behavior: 'instant' })
+      );
+      await page.waitForTimeout(170);
+    }
+    await page.waitForTimeout(850);
+    assert.ok(await page.locator('.v17-gesture-study').isVisible(), 'Scene appears after scrolling');
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await page.waitForTimeout(160);
     if (screenshotPath) {
       await fs.mkdir('artifacts', { recursive: true });
       await page.screenshot({ path: screenshotPath, fullPage: true, animations: 'disabled' });
