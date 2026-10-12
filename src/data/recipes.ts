@@ -27,6 +27,10 @@ export interface Recipe {
   intro: string;
   description: string;
   context: string;
+  beforeYouStart?: string;
+  prepHeading?: string;
+  servingTip?: string;
+  servingHeading?: string;
   baseServings: number;
   servingsLabel?: string;
   prepTime: string;
@@ -61,6 +65,10 @@ export const recipes: Recipe[] = [
     intro: 'Un poisson tendre, du lait de coco et un kroeung très parfumé, cuits doucement à la vapeur.',
     description: 'Une recette d’amok de poisson accessible, crémeuse et parfumée, avec des repères simples pour réussir la cuisson vapeur.',
     context: 'L’amok varie selon les familles. Ici, on cherche surtout une texture souple et crémeuse, avec un poisson qui reste tendre et bien parfumé.',
+    beforeYouStart: 'Préparez les ramequins et le panier vapeur avant de mélanger la base. Rectifiez l’assaisonnement tant que la préparation ne contient ni œufs ni poisson crus.',
+    prepHeading: 'Préparer la vapeur avant le mélange',
+    servingTip: 'Servez chaud avec du riz jasmin et les herbes fraîches ajoutées au dernier moment. Vérifiez que le poisson et les œufs sont complètement cuits.',
+    servingHeading: 'Du riz chaud et un amok bien parfumé',
     baseServings: 4,
     prepTime: '30 min',
     cookTime: '25 min',
@@ -107,6 +115,10 @@ export const recipes: Recipe[] = [
     intro: 'Du bœuf saisi à feu vif, du poivre fraîchement moulu et un condiment au citron vert.',
     description: 'Un lok lak rapide et gourmand, avec du bœuf bien doré et un condiment vif au citron vert et au poivre.',
     context: 'C’est une bonne recette pour débuter : peu d’ingrédients, une poêle très chaude et quelques repères faciles à observer.',
+    beforeYouStart: 'Lavez les crudités et préparez le condiment citron-poivre avant de chauffer la poêle : la viande devra être servie dès qu’elle est cuite.',
+    prepHeading: 'Tout préparer avant la première saisie',
+    servingTip: 'Apportez le bœuf bien chaud, avec les crudités fraîches et le condiment à part pour que chacun dose l’acidité.',
+    servingHeading: 'Le citron et le poivre à côté du bœuf',
     baseServings: 4,
     prepTime: '20 min',
     cookTime: '10 min',
@@ -127,7 +139,7 @@ export const recipes: Recipe[] = [
       { title: 'Tout préparer avant la poêle', text: 'Coupez le bœuf en cubes, mélangez la marinade et préparez les crudités.', cue: 'Quand la poêle chauffe, tout doit déjà être à portée de main.' },
       { title: 'Préparer le condiment', text: 'Mélangez jus de citron vert et poivre fraîchement moulu.', cue: 'Il doit être franchement acidulé et poivré.' },
       { title: 'Saisir le bœuf', text: 'Faites chauffer la poêle très fort puis saisissez le bœuf en deux fournées.', duration: '2–3 min par fournée', cue: 'La viande colore rapidement sans baigner dans son jus.', mistake: 'Surcharger la poêle fait chuter la température et la viande bouillit.' },
-      { title: 'Glacer rapidement', text: 'Ajoutez la marinade en fin de cuisson et mélangez quelques secondes.' },
+      { title: 'Glacer rapidement', text: 'Ajoutez la marinade en fin de cuisson et mélangez quelques secondes.', cue: 'La sauce enrobe le bœuf sans former une grande quantité de jus dans la poêle.' },
       { title: 'Servir immédiatement', text: 'Servez avec crudités et condiment citron-poivre.' }
     ],
     keyPoints: ['Poêle très chaude', 'Deux petites fournées', 'Sauce seulement en fin de cuisson'],
@@ -153,6 +165,10 @@ export const recipes: Recipe[] = [
     intro: 'Une pâte aromatique de citronnelle, galanga, curcuma et combava.',
     description: 'Une pâte fraîche de citronnelle, galanga, curcuma et combava, préparée au mortier pour libérer tout le parfum des aromates.',
     context: 'Il existe plusieurs sortes de kroeung. Cette version, bien jaune grâce au curcuma, est idéale pour apprendre le geste du mortier.',
+    beforeYouStart: 'Préparez tous les aromates en petits morceaux et gardez une spatule à portée de main pour ramener la pâte au centre du mortier.',
+    prepHeading: 'Au mortier, tout commence par la coupe',
+    servingTip: 'Cette pâte sert à parfumer d’autres préparations, notamment l’amok. Ce n’est pas un plat à servir seul.',
+    servingHeading: 'Une pâte pour parfumer la suite',
     baseServings: 1,
     servingsLabel: 'petit pot',
     prepTime: '25 min',
@@ -172,7 +188,7 @@ export const recipes: Recipe[] = [
       { title: 'Émincer très finement', text: 'Coupez citronnelle, galanga, curcuma, ail et échalotes aussi finement que possible.', cue: 'Plus la coupe est fine, moins le mortier devra lutter contre les fibres.' },
       { title: 'Commencer par les fibres', text: 'Pilez d’abord citronnelle et galanga.', duration: '5–8 min' },
       { title: 'Ajouter le reste', text: 'Ajoutez curcuma, combava, ail puis échalotes progressivement.', cue: 'La pâte devient humide, compacte et très parfumée.' },
-      { title: 'Finir la texture', text: 'Continuez jusqu’à ne presque plus sentir de gros morceaux sous le pilon.' }
+      { title: 'Finir la texture', text: 'Continuez jusqu’à ne presque plus sentir de gros morceaux sous le pilon.', cue: 'La pâte se tient et les longues fibres deviennent difficiles à distinguer.' }
     ],
     keyPoints: ['Couper fin avant de piler', 'Commencer par les ingrédients les plus fibreux'],
     substitutions: ['Un petit mixeur peut dépanner : mixez par impulsions sans ajouter beaucoup d’eau.'],
@@ -196,6 +212,10 @@ export const recipes: Recipe[] = [
     intro: 'Du porc bien caramélisé, du riz chaud et des pickles croquants : un petit-déjeuner cambodgien simple et généreux.',
     description: 'Une version facile à faire à la maison, avec une marinade douce-salée et du porc bien doré sur les bords.',
     context: 'Le plaisir vient du contraste entre le porc chaud et caramélisé, le riz moelleux et les légumes frais et acidulés.',
+    beforeYouStart: 'Profitez du temps de marinade pour lancer le riz et préparer les légumes croquants : tout pourra arriver chaud à table.',
+    prepHeading: 'Le riz cuit pendant la marinade',
+    servingTip: 'Disposez les fines tranches de porc sur le riz fumant, avec les pickles bien frais à côté pour apporter du contraste.',
+    servingHeading: 'Du porc caramélisé et des pickles frais',
     baseServings: 4,
     prepTime: '25 min',
     cookTime: '20 min',
@@ -212,7 +232,7 @@ export const recipes: Recipe[] = [
       { name: 'Concombre et carotte en pickles', group: 'Service', scalable: false }
     ],
     steps: [
-      { title: 'Mariner le porc', text: 'Mélangez les ingrédients de marinade puis enrobez les tranches de porc.', duration: '15 min minimum' },
+      { title: 'Mariner le porc', text: 'Mélangez les ingrédients de marinade puis enrobez les tranches de porc.', duration: '15 min minimum', cue: 'Les tranches sont enrobées d’une fine couche de marinade.' },
       { title: 'Cuire le riz', text: 'Rincez puis cuisez le riz pendant que le porc marine.' },
       { title: 'Caraméliser', text: 'Grillez ou poêlez le porc à feu vif jusqu’à obtenir des bords bien colorés.', cue: 'Les bords doivent légèrement caraméliser.', mistake: 'Une poêle tiède donne un porc pâle et humide.' },
       { title: 'Assembler', text: 'Servez porc, riz et pickles ensemble.' }
@@ -230,6 +250,10 @@ export const recipes: Recipe[] = [
     intro: 'Un grand bol de bouillon chaud, de nouilles de riz, de porc et d’herbes fraîches à ajouter au dernier moment.',
     description: 'Une version accessible du kuy teav, avec un bouillon léger, des nouilles de riz et beaucoup de garnitures fraîches.',
     context: 'Le bol se termine à table : chacun ajoute les herbes, le citron vert et les condiments selon ses envies.',
+    beforeYouStart: 'Préparez les herbes, le citron vert et les bols pendant que le bouillon frémit. Gardez les nouilles à part jusqu’au dernier moment.',
+    prepHeading: 'Garder les herbes à part',
+    servingTip: 'Versez le bouillon très chaud sur les nouilles et le porc entièrement cuit, puis laissez chacun ajouter herbes et citron vert.',
+    servingHeading: 'Un bol que chacun termine à son goût',
     baseServings: 4,
     prepTime: '30 min',
     cookTime: '45 min',
@@ -247,7 +271,7 @@ export const recipes: Recipe[] = [
     ],
     steps: [
       { title: 'Assaisonner le bouillon', text: 'Faites frémir le bouillon avec sauce de poisson et sucre.', cue: 'Le bouillon doit être savoureux mais rester clair et léger.' },
-      { title: 'Cuire la garniture', text: 'Faites cuire le porc séparément ou directement dans un peu de bouillon.' },
+      { title: 'Cuire la garniture', text: 'Faites cuire le porc séparément ou directement dans un peu de bouillon.', cue: 'Le porc doit être entièrement cuit avant d’être réparti dans les bols.' },
       { title: 'Cuire les nouilles', text: 'Préparez les nouilles selon leur épaisseur puis égouttez-les soigneusement.', mistake: 'Les laisser attendre dans l’eau chaude les rend molles.' },
       { title: 'Monter les bols', text: 'Répartissez nouilles et porc, puis versez le bouillon brûlant.' },
       { title: 'Finir à table', text: 'Ajoutez herbes, pousses de soja et citron vert au dernier moment.' }
@@ -265,6 +289,10 @@ export const recipes: Recipe[] = [
     intro: 'Des nouilles de riz souples, une sauce chaude au poisson et au kroeung, et une belle poignée d’herbes fraîches.',
     description: 'Une version accessible du num banh chok, avec une sauce parfumée au kroeung et beaucoup d’herbes et de crudités au moment de servir.',
     context: 'Le plaisir vient du contraste entre nouilles souples, sauce chaude et garnitures très fraîches.',
+    beforeYouStart: 'Lavez et égouttez les herbes et les légumes avant de préparer la sauce ; ces garnitures resteront fraîches jusqu’au service.',
+    prepHeading: 'La fraîcheur se prépare d’abord',
+    servingTip: 'Versez la sauce chaude au poisson bien cuit sur les nouilles, puis terminez avec les herbes et les crudités pour garder leur croquant.',
+    servingHeading: 'La sauce chaude, les herbes à la fin',
     baseServings: 4,
     prepTime: '35 min',
     cookTime: '35 min',
@@ -280,7 +308,7 @@ export const recipes: Recipe[] = [
       { name: 'Concombre, haricots verts fins, herbes fraîches', group: 'Garniture', scalable: false }
     ],
     steps: [
-      { title: 'Cuire le poisson', text: 'Pochez doucement le poisson puis émiettez-le.' },
+      { title: 'Cuire le poisson', text: 'Pochez doucement le poisson puis émiettez-le.', cue: 'Le poisson est complètement cuit et se défait facilement en morceaux.' },
       { title: 'Préparer la sauce', text: 'Faites revenir doucement le kroeung, ajoutez le lait de coco puis le poisson émietté.' },
       { title: 'Ajuster', text: 'Assaisonnez avec la sauce de poisson et un peu d’eau si nécessaire.', cue: 'La sauce doit napper sans être trop épaisse.' },
       { title: 'Préparer les nouilles', text: 'Cuisez puis rincez brièvement les nouilles pour arrêter la cuisson.' },
@@ -299,6 +327,10 @@ export const recipes: Recipe[] = [
     intro: 'Une petite baguette croustillante, une garniture généreuse, des pickles et beaucoup d’herbes fraîches.',
     description: 'Un sandwich cambodgien frais et croustillant, garni de viande, de pickles et de coriandre.',
     context: 'Pour qu’il soit vraiment bon, il faut garder le pain croustillant, les pickles bien égouttés et les herbes fraîches jusqu’au dernier moment.',
+    beforeYouStart: 'Égouttez soigneusement les pickles, préparez la coriandre et la sauce, puis réchauffez les baguettes juste avant de garnir.',
+    prepHeading: 'Des pickles bien égouttés',
+    servingTip: 'Servez aussitôt après le montage : la croûte reste croustillante et les légumes conservent leur fraîcheur.',
+    servingHeading: 'Un sandwich à croquer sans attendre',
     baseServings: 4,
     prepTime: '20 min',
     cookTime: '10 min',
@@ -317,7 +349,7 @@ export const recipes: Recipe[] = [
     steps: [
       { title: 'Réchauffer le pain', text: 'Passez les baguettes quelques minutes au four pour retrouver une croûte nette.' },
       { title: 'Préparer la garniture', text: 'Réchauffez la viande et mélangez la sauce.' },
-      { title: 'Monter sans détremper', text: 'Tartinez légèrement, ajoutez la viande puis les pickles bien égouttés.', mistake: 'Des pickles trop humides ramollissent le pain.' },
+      { title: 'Monter sans détremper', text: 'Tartinez légèrement, ajoutez la viande puis les pickles bien égouttés.', cue: 'La mie reste légère et la croûte craquante.', mistake: 'Des pickles trop humides ramollissent le pain.' },
       { title: 'Finir aux herbes', text: 'Ajoutez coriandre et piment juste avant de servir.' }
     ],
     keyPoints: ['Pain chaud', 'Pickles bien égouttés', 'Herbes au dernier moment'],
@@ -333,6 +365,10 @@ export const recipes: Recipe[] = [
     intro: 'Une soupe légère, acidulée et parfumée, agréable à servir avec du riz et des herbes fraîches.',
     description: 'Une soupe cambodgienne acidulée, facile à ajuster en goûtant le bouillon au fur et à mesure.',
     context: 'Ajoutez le tamarin petit à petit et goûtez entre chaque ajout : la soupe doit rester fraîche et agréable, jamais agressive.',
+    beforeYouStart: 'Diluez le tamarin dans un petit bol et gardez un peu de bouillon nature pour corriger l’acidité si nécessaire.',
+    prepHeading: 'Le tamarin à portée de main',
+    servingTip: 'Servez la soupe bien chaude avec du riz. Attendez que le poisson ou le poulet soit entièrement cuit avant de goûter pour ajuster le bouillon.',
+    servingHeading: 'Une soupe acidulée avec du riz',
     baseServings: 4,
     prepTime: '20 min',
     cookTime: '30 min',
@@ -350,8 +386,8 @@ export const recipes: Recipe[] = [
     ],
     steps: [
       { title: 'Faire frémir le bouillon', text: 'Portez le bouillon à petit frémissement.' },
-      { title: 'Cuire la garniture', text: 'Ajoutez viande ou poisson puis les légumes selon leur temps de cuisson.' },
-      { title: 'Ajouter le tamarin petit à petit', text: 'Ajoutez le tamarin en plusieurs fois en goûtant entre chaque ajout.', cue: 'La soupe doit être acidulée et fraîche, sans devenir trop forte.' },
+      { title: 'Cuire la garniture', text: 'Ajoutez viande ou poisson puis les légumes selon leur temps de cuisson.', cue: 'Le poisson ou le poulet doit être complètement cuit avant de goûter et de corriger le bouillon.' },
+      { title: 'Ajouter le tamarin petit à petit', text: 'Quand le poisson ou le poulet et les légumes sont cuits, ajoutez le tamarin en plusieurs fois et goûtez le bouillon entre chaque ajout.', cue: 'La soupe doit être acidulée et fraîche, sans devenir trop forte.' },
       { title: 'Équilibrer', text: 'Ajoutez sauce de poisson et sucre pour arrondir sans masquer l’acidité.' },
       { title: 'Finir aux herbes', text: 'Coupez le feu puis ajoutez les herbes fraîches.' }
     ],
@@ -369,6 +405,10 @@ export const recipes: Recipe[] = [
     intro: 'Porc, lait de coco, kroeung et prahok : une préparation onctueuse et très parfumée à partager avec des légumes frais.',
     description: 'Une version accessible du prahok ktis, adoucie par le lait de coco et servie tiède avec beaucoup de crudités.',
     context: 'Le prahok a beaucoup de caractère. Commencez par une petite quantité et ajustez l’assaisonnement seulement après cuisson complète de la préparation.',
+    beforeYouStart: 'Lavez et découpez les crudités avant de démarrer la cuisson ; elles apporteront le croquant qui équilibre cette préparation riche.',
+    prepHeading: 'Préparer les crudités en premier',
+    servingTip: 'Servez tiède dans un bol entouré de crudités. Ne goûtez et ne rectifiez l’assaisonnement qu’après cuisson complète du porc.',
+    servingHeading: 'Un peu de crémeux, beaucoup de croquant',
     baseServings: 4,
     prepTime: '25 min',
     cookTime: '25 min',
@@ -387,7 +427,7 @@ export const recipes: Recipe[] = [
       { title: 'Faire revenir les aromates', text: 'Faites chauffer doucement le kroeung dans un peu de coco.' },
       { title: 'Cuire le porc', text: 'Ajoutez le porc haché, émiettez-le finement et poursuivez la cuisson jusqu’à ce qu’il soit complètement cuit.' },
       { title: 'Ajouter le prahok progressivement', text: 'Ajoutez d’abord une partie du prahok et poursuivez la cuisson. Goûtez uniquement lorsque le porc et toute la préparation sont complètement cuits, puis ajustez.', mistake: 'Ne goûtez jamais une préparation contenant du porc cru ou insuffisamment cuit.' },
-      { title: 'Ajouter le lait de coco', text: 'Versez le reste du lait de coco et laissez épaissir doucement.' },
+      { title: 'Ajouter le lait de coco', text: 'Versez le reste du lait de coco et laissez épaissir doucement.', cue: 'La préparation reste crémeuse et assez épaisse pour être prise avec un morceau de légume.' },
       { title: 'Servir avec du croquant', text: 'Servez tiède avec beaucoup de crudités.' }
     ],
     keyPoints: ['Prahok ajouté progressivement', 'Toujours servir avec une grande part de légumes frais'],
@@ -409,6 +449,10 @@ export const recipes: Recipe[] = [
     intro: 'Bananes, lait de coco et une pointe de sel : un dessert très simple à servir tiède.',
     description: 'Un dessert cambodgien accessible à base de bananes et de lait de coco.',
     context: 'Avec peu d’ingrédients, tout se joue sur la cuisson : un coco crémeux, des bananes encore entières et juste assez de sucre.',
+    beforeYouStart: 'Choisissez des bananes encore fermes et préparez le lait de coco, le sucre et la casserole avant de couper les fruits.',
+    prepHeading: 'Choisir des bananes encore fermes',
+    servingTip: 'Servez tiède en petits bols, avec un peu de sésame grillé si vous aimez : les bananes doivent encore tenir en morceaux.',
+    servingHeading: 'Le lait de coco, à savourer tiède',
     baseServings: 4,
     prepTime: '10 min',
     cookTime: '15 min',
@@ -423,7 +467,7 @@ export const recipes: Recipe[] = [
       { name: 'Graines de sésame grillées, facultatif', group: 'Finition', scalable: false }
     ],
     steps: [
-      { title: 'Chauffer le coco', text: 'Faites chauffer doucement lait de coco, sucre et sel sans faire bouillir fortement.' },
+      { title: 'Chauffer le coco', text: 'Faites chauffer doucement lait de coco, sucre et sel sans faire bouillir fortement.', cue: 'De petites bulles apparaissent au bord de la casserole sans gros bouillons.' },
       { title: 'Ajouter les bananes', text: 'Coupez les bananes en gros morceaux puis ajoutez-les.' },
       { title: 'Cuire doucement', text: 'Laissez frémir quelques minutes.', duration: '8–10 min', cue: 'Les bananes doivent être tendres mais garder leur forme.', mistake: 'Une cuisson trop longue transforme les bananes en purée.' },
       { title: 'Servir tiède', text: 'Servez avec un peu de sésame grillé si vous aimez.' }
