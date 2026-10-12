@@ -92,12 +92,12 @@ if (listing.includes('{recipe.prepTime} + {recipe.cookTime}')) failures.push('Ca
 if (!listing.includes('minutes(recipe.cookTime) > 0') || !listing.includes('de préparation')) failures.push('Catalog must distinguish preparation from cooking without inventing times');
 
 
-const recipeBlocks = recipes.split(/\n  \{\n    slug: '/).slice(1);
+const recipeBlocks = recipes.split(/\r?\n  \{\r?\n    slug: '/).slice(1);
 const withTips = recipeBlocks.filter((block) =>
-  /\n    beforeYouStart: '[^\n]+'/.test(block) &&
-  /\n    prepHeading: '[^\n]+'/.test(block) &&
-  /\n    servingTip: '[^\n]+'/.test(block) &&
-  /\n    servingHeading: '[^\n]+'/.test(block)
+  /\r?\n    beforeYouStart: '[^\r\n]+'/.test(block) &&
+  /\r?\n    prepHeading: '[^\r\n]+'/.test(block) &&
+  /\r?\n    servingTip: '[^\r\n]+'/.test(block) &&
+  /\r?\n    servingHeading: '[^\r\n]+'/.test(block)
 );
 if (!recipes.includes('beforeYouStart?: string') || !recipes.includes('prepHeading?: string') ||
     !recipes.includes('servingTip?: string') || !recipes.includes('servingHeading?: string') ||
