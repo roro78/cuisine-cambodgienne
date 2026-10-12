@@ -1,0 +1,62 @@
+name: Restore previous OVH static release
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_current_static_sha:
+        description: "SHA courant complet de ovh-production"
+        required: true
+        type: string
+      previous_static_sha:
+        description: "SHA connu et valide de ovh-production a restaurer"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ovh-production
+  cancel-in-progress: false
+
+jobs:
+  restore:
+    name: Restore a previous static tree by fast-forward commit
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore static files without rewriting branch history
+        shell: bash
+        env:
+          EXPECTED_CURRENT: ${{ inputs.expected_current_static_sha }}
+          RESTORE_TARGET: ${{ inputs.previous_static_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_CURRENT" =~ ^[0-9a-f]{40}$ ]] || { echo "Invalid current SHA"; exit 1; }
+          [[ "$RESTORE_TARGET" =~ ^[0-9a-f]{40}$ ]] || { echo "Invalid restore SHA"; exit 1; }
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git clean -fdx
+          git fetch origin ovh-production
+          git switch -C ovh-production origin/ovh-production
+          [[ "$(git rev-parse HEAD)" == "$EXPECTED_CURRENT" ]] || { echo "Static branch changed; abort"; exit 1; }
+          git cat-file -e "${RESTORE_TARGET}^{commit}" || { echo "Restore commit missing"; exit 1; }
+          git merge-base --is-ancestor "$RESTORE_TARGET" HEAD || { echo "Restore SHA is not a previous static release"; exit 1; }
+
+          git rm -rf . >/dev/null 2>&1 || true
+          git checkout "$RESTORE_TARGET" -- .
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "Already matches selected static release."
+            exit 0
+          fi
+
+          git commit -m "rollback: restore static release ${RESTORE_TARGET}"
+          git push origin ovh-production
