@@ -22,6 +22,7 @@ const sitemap = read('src/pages/sitemap.xml.ts');
 const workshops = read('src/data/workshops.ts');
 const releaseProtocol = read('docs/protocole-validation-grand-diner.md');
 const ovhRunbook = read('docs/runbook-ovh-ateliers-release.md');
+const deployWorkflow = read('.github/workflows/deploy-ovh.yml');
 const experiencesPlan = read('docs/plan-commerce-experiences.md');
 const publicRecipeCatalogue = read('src/data/recipes.ts');
 const failures = [];
@@ -126,10 +127,17 @@ requireCondition(
   ovhRunbook.includes('e59c104d4f356cf7f0077402430548fa4cd191f7') &&
   ovhRunbook.includes('**six** fiches d\'ateliers') &&
   ovhRunbook.includes('PR #25') &&
-  ovhRunbook.includes('non fusionnée et non publiée') &&
-  !ovhRunbook.includes('déploiement OVH à faire/confirmer') &&
-  !ovhRunbook.includes('La tête attendue, au dernier contrôle, est \`fe040096\`'),
-  'OVH runbook must reflect verified live Lot A, current static SHA and unpublished PR #24'
+  ovhRunbook.includes('PR #42') &&
+  ovhRunbook.includes('PR #44') &&
+  ovhRunbook.includes('workflow_dispatch') &&
+  ovhRunbook.includes('expected_source_sha') &&
+  ovhRunbook.includes('gh workflow run deploy-ovh.yml') &&
+  !ovhRunbook.includes("s'exécute **sur un push vers \`main\`**") &&
+  !ovhRunbook.includes('Ce merge déclenchera le workflow') &&
+  deployWorkflow.includes('workflow_dispatch:') &&
+  deployWorkflow.includes('expected_source_sha:') &&
+  !/on:\\s*\\n\\s*push:/.test(deployWorkflow),
+  'OVH runbook must document manual SHA-pinned release, historic lot A, and unpublished #44'
 );
 
 
