@@ -75,6 +75,14 @@ const practicalCultureLinks = [
 practicalCultureLinks.forEach((href) => {
   if (!culture.includes(href)) failures.push('Missing Culture learning path: ' + href);
 });
+if (!cultureData.includes("slug: 'comprendre-le-kroeung'") ||
+    !workshopData.includes("slug: 'piler-aromates-au-mortier'") ||
+    !recipeData.includes("slug: 'amok-trey'")) {
+  failures.push('Culture learning path must lead to published journal, workshop and recipe slugs');
+}
+if (!fs.existsSync('src/pages/credits-photos.astro')) {
+  failures.push('About photo credits CTA must point to a real page');
+}
 if (!culture.includes('aria-label="Parcours pour découvrir le kroeung"') ||
     !glossaryStyles.includes('.v16-journal-path-grid a:focus-visible') ||
     !glossaryStyles.includes('.v16-journal-path-grid{grid-template-columns:1fr}')) {
