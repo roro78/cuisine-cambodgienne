@@ -44,6 +44,12 @@ Le contrôle automatisé `node scripts/check-v17-preview.mjs` est ajouté à la 
 
 Examiner notamment : logo/header, cadrage Amok (la source est un portrait), contraste de légende sur photo, temps de chargement, clics, absence de scroll horizontal et de CLS.
 
+### Réception initiale des captures simulées (13 octobre 2026)
+
+Une prévisualisation HTML/CSS **locale, non équivalente à un build Astro**, a été capturée à 1440×900 et 390×844. Le visuel principal V16 `amok-alt` possède une composition avec une nappe rouge et une prise de vue assez frontale : qualité **insuffisante pour le visuel premium final**. Le premier rendu mobile plaçait les accès recettes hors écran ; l'image a été raccourcie de `55svh` à `40svh` pour rapprocher les actions. Il faudra encore vérifier sur un **vrai build Astro + navigateur**.
+
+**Gate média P0 :** remplacer cette photographie principale par une prise de vue originale ou une image tierce réellement autorisée et vérifiée. Aucun photomontage ou visuel synthétique ne doit être présenté comme documentaire.
+
 ### Photothèque encore manquante
 
 Au moins huit à douze prises de vues distinctes restent souhaitables : mortier en plusieurs états, vraie mise en place de l'Amok, feu, table dressée, nouilles/bouillon du matin, finitions Lok Lak, ingrédients frais, portraits de gestes avec consentement. Les images nouvelles nécessitent source, auteur, droits, légende et vérification factuelle. **Aucune image générée ne doit être présentée comme une photographie documentaire ou une recette testée.**
