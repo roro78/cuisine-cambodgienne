@@ -9,6 +9,10 @@ const workshopData = fs.readFileSync('src/data/workshops.ts','utf8');
 const culture = fs.readFileSync('src/pages/culture/index.astro','utf8');
 const about = fs.readFileSync('src/pages/a-propos.astro','utf8');
 const glossary = fs.readFileSync('src/pages/glossaire/index.astro','utf8');
+const glossaryStyles = fs.readFileSync('src/styles/v16-editorial.css','utf8');
+const recipeListing = fs.readFileSync('src/pages/recettes/index.astro','utf8');
+const recipeFilters = fs.readFileSync('src/scripts/recipeFilters.ts','utf8');
+const layout = fs.readFileSync('src/layouts/BaseLayout.astro','utf8');
 const recipes = fs.readFileSync('src/pages/recettes/[slug].astro','utf8');
 const home = fs.readFileSync('src/pages/index.astro','utf8');
 const cultureData = fs.readFileSync('src/data/culture.ts','utf8');
@@ -56,6 +60,19 @@ if (!about.includes('Une recette claire, avec de la place pour les variantes.') 
 
 if (!glossary.includes('data-glossary-search') || !glossary.includes('data-glossary-family') || !glossary.includes('data-glossary-card')) {
   failures.push('Glossary must keep search, family filters and filterable entries');
+}
+if (!glossaryStyles.includes('.v16-glossary-card[hidden]{display:none}')) {
+  failures.push('Glossary filters must actually hide cards despite the author-level display:grid style');
+}
+if (!glossary.includes("visible === 0 ? 'Aucun terme trouvé'")) {
+  failures.push('Glossary must announce an empty search result correctly');
+}
+if (recipeListing.includes("import { initRecipeFilters }") ||
+    !layout.includes("import('../scripts/recipeFilters')")) {
+  failures.push('Recipe filters should be initialized exactly once by the global layout');
+}
+if (!recipeFilters.includes("visible === 0 ? 'Aucune recette trouvée'")) {
+  failures.push('Recipe filters must announce empty filter results correctly');
 }
 
 if (!recipes.includes('recipe-v15 recipe-v16') || !recipes.includes('Les étapes, les gestes et les bons repères.')) {
@@ -134,6 +151,22 @@ if (!globalStyles.includes('.mobile-menu summary:focus-visible{outline:3px solid
     !globalStyles.includes('.site-nav[data-site-header].is-overlay-top .mobile-menu summary:focus-visible') ||
     !globalStyles.includes('.mobile-menu-close:focus-visible')) {
   failures.push('Mobile light-header summary focus ring must contrast; dark drawer controls need visible focus');
+}
+
+if (!/\.mobile-menu-panel nav a\{\s*color:#f7f2e8;/.test(globalStyles)) {
+  failures.push('Mobile menu links must use explicit light text, overriding the old dark inherited navigation color');
+}
+if (!globalStyles.includes('color:rgba(247,242,232,.8);')) {
+  failures.push('Mobile menu secondary labels must maintain readable contrast on the dark panel');
+}
+if (/\.mobile-menu\[open\] \.mobile-menu-panel nav a:nth-child\(/.test(globalStyles)) {
+  failures.push('Mobile menu items must no longer appear in delayed, staggered animations');
+}
+if (!globalStyles.includes('@starting-style{') || !globalStyles.includes('transform:translate3d(100%,0,0);')) {
+  failures.push('Mobile drawer must define a composited, unified entry transition');
+}
+if (globalStyles.includes('backdrop-filter:blur(2px);')) {
+  failures.push('Mobile drawer backdrop must not incur expensive blur repaint during opening');
 }
 
 if (failures.length) {

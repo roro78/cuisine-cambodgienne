@@ -95,7 +95,7 @@ const glossarySchema = {
         card.hidden = !show;
         if (show) visible += 1;
       });
-      if (status) status.textContent = visible + ' terme' + (visible > 1 ? 's' : '');
+      if (status) status.textContent = visible === 0 ? 'Aucun terme trouvé' : `${visible} terme${visible === 1 ? '' : 's'}`;
     };
 
     search?.addEventListener('input', render);
