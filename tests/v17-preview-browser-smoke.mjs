@@ -56,6 +56,7 @@ async function inspectViewport(width, height, screenshotPath, options = {}) {
     assert.equal(await page.locator('.v17-gesture-study').count(), 1, 'Pedagogical study must exist');
     assert.equal(await page.locator('.v17-gesture-paste img').getAttribute('alt'), "Kroeung rouge après broyage : exemple photographié d'une pâte obtenue");
     assert.equal(await page.locator('.v17-gesture-study ol li').count(), 3);
+    assert.match(await page.locator('.v17-table-photo figcaption').innerText(), /Phnom Penh/);
     assert.ok(await page.locator('.v17-preview-legal a[href="/credits-photos/"]').count());
     await page.waitForFunction(() => {
       const image = document.querySelector('.v17-hero-photo img');
@@ -97,8 +98,10 @@ async function inspectViewport(width, height, screenshotPath, options = {}) {
     await page.waitForFunction(() => {
       const market = document.querySelector('.v17-market-large img');
       const paste = document.querySelector('.v17-gesture-paste img');
+      const table = document.querySelector('.v17-table-photo img');
       return market?.complete && market.naturalWidth > 0 &&
-             paste?.complete && paste.naturalWidth > 0;
+             paste?.complete && paste.naturalWidth > 0 &&
+             table?.complete && table.naturalWidth > 0;
     }, null, { timeout: 10000 });
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
     await page.waitForTimeout(160);

@@ -36,6 +36,11 @@ for (const width of [960, 1920]) {
 assert.match(page, /v17-fruit-market-960\.jpg 960w, \/images\/cuisine\/v17-fruit-market-1920\.jpg 1920w/);
 assert.match(page, /McKay Savage, CC BY 2\.0/);
 assert.match(page, /Trilinguist, CC BY-SA 3\.0/);
+assert.match(page, /Jason Eppink, CC BY 2\.0/);
+assert.match(page, /v17-khmer-table-640\.webp 640w, \/images\/cuisine\/v17-khmer-table-1280\.webp 1280w/);
+for (const width of [640, 1280]) {
+  assert.ok(fs.existsSync(`public/images/cuisine/v17-khmer-table-${width}.webp`), `Missing responsive Khmer table photo (${width}px)`);
+}
 assert.match(page, /https:\/\/commons\.wikimedia\.org\/wiki\/File:Red_Kroeung_Paste\.jpg/);
 assert.ok(fs.existsSync('public/images/cuisine/v17-kroeung-final.jpg'), 'Missing documented final kroeung photograph');
 assert.match(page, /La photo montre une pâte terminée, pas les étapes de notre atelier/);

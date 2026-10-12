@@ -75,3 +75,19 @@ Cette nouvelle photographie remplace une vue de sacs de poivre, améliore les co
 | Restriction éditoriale | Ne pas présenter cette image comme une étape intermédiaire, une photographie du mortier en usage ou une recette réalisée par le site. |
 
 Une **séquence photographique continue** des gestes (coupe, pilonnage, texture intermédiaire) reste manquante ; les photographies génériques de mortiers provenant d'autres cuisines ont été écartées pour éviter une démonstration trompeuse.
+
+## Photographie intégrée : assortiment khmer servi à Phnom Penh
+
+| Champ | Vérification |
+| --- | --- |
+| Fichier d'origine | [Khmer Borane - amazing sampler (8532779364).jpg](https://commons.wikimedia.org/wiki/File:Khmer_Borane_-_amazing_sampler_(8532779364).jpg) |
+| Photographe déclaré | **Jason Eppink** |
+| Lieu et date indiqués par la source | **Phnom Penh, Cambodge — 12 janvier 2013** |
+| Licence | [Creative Commons Attribution 2.0 Generic](https://creativecommons.org/licenses/by/2.0/) |
+| Original Wikimedia | 2 448 × 3 264 px, JPEG |
+| Fichiers locaux | `v17-khmer-table-640.webp` (640 × 853) et `v17-khmer-table-1280.webp` (1280 × 1707) |
+| Traitement | Redimensionnement et recompression WebP qualité 0,76 par canvas Chromium ; cadrage `object-fit:cover` pour le prototype. Aucun élément culinaire ajouté ou supprimé artificiellement. |
+| Crédit visible | Auteur, source Commons et lien vers la licence CC BY 2.0 dans les crédits du prototype. |
+| Usage | Unique photographie de la scène « Du feu à la table » ; le prototype ne prétend pas que le repas a été dressé par l'équipe. |
+
+Cette photo remplace `amok-1600.webp` dans la séquence afin de ne pas réutiliser une photographie V16 déjà montrée ailleurs. Attention : le sujet reste un **assortiment servi au restaurant**, pas un reportage sur un repas familial.

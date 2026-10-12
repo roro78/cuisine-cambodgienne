@@ -91,7 +91,8 @@
 .v17-table-copy .v17-eyebrow{color:#dfb47e}
 .v17-table h2 em{color:#e5c294}
 .v17-table-copy>p:not(.v17-eyebrow){color:#e0d6c8}
-.v17-table-photo{position:relative;aspect-ratio:4/3;overflow:hidden;border-radius:.75rem}
+.v17-table-photo{position:relative;aspect-ratio:4/5;max-height:46rem;overflow:hidden;border-radius:.75rem}
+.v17-table-photo img{object-position:center 48%}
 .v17-table-photo figcaption{position:absolute;bottom:0;right:0;left:0;padding:2.2rem 1rem 1rem;background:linear-gradient(transparent,rgba(0,0,0,.62));font-size:.74rem}
 .v17-finale{display:flex;flex-direction:column;align-items:center;padding:clamp(6rem,10vw,10rem) 1.25rem;text-align:center;background:#f5ead9}
 .v17-finale .v17-eyebrow{color:#90523b}
