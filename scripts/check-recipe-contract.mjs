@@ -18,6 +18,14 @@ if (!recipes.includes('cue?: string') || !recipes.includes('mistake?: string')) 
 
 if (!detail.includes('data-recipe-servings-root')) failures.push('Recipe detail must render servings controls');
 if (!detail.includes('data-ingredient-quantity')) failures.push('Recipe detail must expose scalable ingredient quantities');
+if (!detail.includes('data-serving-summary aria-live="polite"') ||
+    !servings.includes("summary.textContent = `${current} personne${current > 1 ? 's' : ''}`")) {
+  failures.push('Recipe hero servings must stay in sync with the adjustable ingredient quantities');
+}
+if (!detail.includes('totalMinutes(recipe.cookTime) > 0 && <div><dt>Cuisson</dt>') ||
+    !detail.includes('...(totalMinutes(recipe.cookTime) > 0 ? { cookTime:')) {
+  failures.push('Uncooked recipe detail must not show an invented zero-minute cooking step in the facts or schema');
+}
 if (!detail.includes('data-ingredient-check')) failures.push('Recipe detail must expose ingredient checklist controls');
 if (!detail.includes('data-guided-step')) failures.push('Recipe detail must render guided steps');
 if (!detail.includes('Le bon repère') || !detail.includes('À éviter')) failures.push('Recipe detail must teach cues and common mistakes');
