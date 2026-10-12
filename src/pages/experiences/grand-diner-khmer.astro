@@ -1,0 +1,118 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import DinnerPreview from '../../components/DinnerPreview.astro';
+import DinnerTimeline from '../../components/DinnerTimeline.astro';
+import DinnerKitchenGuide from '../../components/DinnerKitchenGuide.astro';
+import DinnerPack from '../../components/DinnerPack.astro';
+import '../../styles/grand-diner-concept.css';
+
+const preparation = [
+  { n: '01', moment: 'Avant le dîner', title: 'Choisir son menu', description: 'Découvrir les plats, repérer les ingrédients et adapter son programme au nombre de convives.' },
+  { n: '02', moment: 'La veille ou le matin', title: 'S’organiser tranquillement', description: 'Préparer la liste de courses et identifier ce qu’il sera possible de faire en avance.' },
+  { n: '03', moment: 'En cuisine', title: 'Suivre les gestes', description: 'Comprendre les étapes, les textures et les bons repères pour cuisiner sans se presser.' },
+  { n: '04', moment: 'À table', title: 'Partager les saveurs', description: 'Dresser les plats, proposer les accompagnements et savourer ensemble.' }
+];
+---
+<BaseLayout
+  title="Le Grand Dîner Khmer — Projet d’expérience numérique | Cuisine du Cambodge"
+  description="Découvrez le projet du Grand Dîner Khmer : une future expérience numérique pour organiser un dîner cambodgien chez soi. Concept en préparation, sans réservation."
+  image="/images/cuisine/amok-alt-1600.webp"
+  noindex
+>
+  <SiteHeader />
+  <main class="dinner-concept">
+    <section class="dinner-hero" aria-labelledby="dinner-title">
+      <div class="dinner-hero-photo" aria-hidden="true">
+        <img src="/images/cuisine/amok-alt-1600.webp" alt="" width="1600" height="1067" fetchpriority="high" />
+      </div>
+      <div class="dinner-hero-inner">
+        <a class="dinner-back" href="/experiences/">← Toutes les expériences</a>
+        <p class="dinner-overline">Cuisine du Cambodge · Une collection à venir</p>
+        <h1 id="dinner-title">Le Grand<br /><em>Dîner Khmer.</em></h1>
+        <p class="dinner-lead">Le parfum de la citronnelle, la douceur du lait de coco, le plaisir de servir un dîner préparé avec soin. Nous imaginons une expérience pour vous accompagner, de la première idée jusqu’à la dernière bouchée.</p>
+        <p class="dinner-disclosure">Concept en préparation · Aucune vente ni réservation ouverte</p>
+        <a class="dinner-link" href="#apercu">Tester la liste de courses <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+
+    <nav class="dinner-journey-nav" aria-label="Accéder aux étapes de l’expérience">
+      <span class="dinner-journey-name">Votre parcours</span>
+      <a href="#apercu"><span>01</span> Courses</a>
+      <a href="#planning"><span>02</span> Planning</a>
+      <a href="#cuisine-guidee"><span>03</span> En cuisine</a>
+      <a href="#ma-feuille-de-route"><span>04</span> Pense-bête</a>
+      <a href="#carnet"><span>05</span> Carnet de réception</a>
+    </nav>
+
+    <section class="dinner-opening" aria-labelledby="dinner-opening-title">
+      <p class="dinner-kicker">Une autre façon de cuisiner</p>
+      <h2 id="dinner-opening-title">Recevoir sans passer toute la soirée derrière les fourneaux.</h2>
+      <p>Quand on découvre une cuisine, le plus difficile n’est pas toujours la recette : c’est de choisir les bons produits, d’organiser les cuissons et de tout servir au bon moment. C’est ce que nous voulons rendre plus simple, dans une future expérience numérique pensée comme un compagnon de cuisine.</p>
+    </section>
+
+    <section class="dinner-steps" aria-labelledby="dinner-steps-title">
+      <header>
+        <p class="dinner-kicker">Le déroulé imaginé</p>
+        <h2 id="dinner-steps-title">Du marché à la table.</h2>
+      </header>
+      <div class="dinner-step-grid">
+        {preparation.map((step) => (
+          <article class="dinner-step">
+            <div class="dinner-step-number">{step.n}</div>
+            <div class="dinner-step-content">
+              <p class="dinner-step-moment">{step.moment}</p>
+              <h3>{step.title}</h3>
+              <p>{step.description}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <DinnerPreview />
+    <DinnerTimeline />
+    <DinnerKitchenGuide />
+    <DinnerPack />
+
+    <section class="dinner-carnet-entry" id="carnet" aria-labelledby="dinner-carnet-title">
+      <div class="dinner-carnet-copy">
+        <p class="dinner-kicker">Le grand chapitre · Une première création éditoriale</p>
+        <h2 id="dinner-carnet-title">L'art de recevoir, entre les recettes.</h2>
+        <p>Et si le plaisir d'un dîner commençait bien avant le premier plat ? Nous avons préparé un carnet de réception pour imaginer une table cohérente, organiser le service de l'Amok et apprendre à reconnaître les bons gestes.</p>
+        <p>Retrouvez un conducteur de service, cinq chapitres originaux, des gestes à cocher, un bilan de dégustation et une mise en page imprimable. Le Prahok Ktis ajoute un chapitre facultatif si vous l'avez choisi.</p>
+        <p class="dinner-carnet-note">Carnet d'essai gratuit, en cours de validation culinaire. Il ne s'agit pas d'une formation animée ni d'un produit payant disponible.</p>
+        <a href="/experiences/grand-diner-khmer/carnet-de-reception/" class="dinner-carnet-link">Découvrir le carnet de réception <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="dinner-carnet-poster" aria-hidden="true">
+        <p>Cuisine du Cambodge</p>
+        <span class="dinner-carnet-poster-rule"></span>
+        <strong>Le carnet<br/><em>du Grand Dîner.</em></strong>
+        <span>01 · Recevoir<br/>02 · Préparer<br/>03 · Partager<br/>04 · Déguster</span>
+        <span class="dinner-carnet-poster-bottom">Une expérience à imaginer chez soi.</span>
+      </div>
+    </section>
+
+    <section class="dinner-editorial" aria-labelledby="dinner-editorial-title">
+      <div class="dinner-editorial-art">
+        <img src="/images/cuisine/kroeung-1200.webp" alt="Aromates et épices réunis pour préparer une pâte de kroeung" width="1200" height="800" loading="lazy" decoding="async" />
+      </div>
+      <div>
+        <p class="dinner-kicker">Ce qui compte dans l’assiette</p>
+        <h2 id="dinner-editorial-title">Les bons gestes. Les bons parfums. Et le plaisir de goûter.</h2>
+        <p>Les variantes sont nombreuses d’une cuisine familiale à l’autre. Notre ambition est de transmettre des repères utiles et gourmands, sans présenter une manière unique de cuisiner comme la seule authentique.</p>
+        <a class="dinner-editorial-link" href="/apprendre/">Explorer les ateliers pédagogiques gratuits <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+
+    <section class="dinner-last" aria-labelledby="dinner-last-title">
+      <p class="dinner-kicker">La suite se prépare</p>
+      <h2 id="dinner-last-title">L’expérience n’est pas encore disponible.</h2>
+      <p>Nous développons actuellement le parcours, les contenus et la façon de vous accompagner en cuisine. Aucune commande ni préinscription payante n’est ouverte. En attendant, vous pouvez découvrir nos recettes gratuites.</p>
+      <a class="dinner-final-link" href="/recettes/">Découvrir les recettes <span aria-hidden="true">↗</span></a>
+    </section>
+  </main>
+  <SiteFooter />
+
+</BaseLayout>
