@@ -29,7 +29,7 @@ Le premier écran doit montrer un **plat** plutôt qu'un arrière-plan de march�
 
 ## Ce qui est implémenté dans cette PR
 
-La route **`/v17-preview/`** contient une démonstration responsive autonome : une composition photo/texte de héros, une étude graphique honnête du geste non photographié et quatre sections de transition. Elle utilise **deux photographies déjà présentes dans V16**, avec crédits sur `/credits-photos/`, et **deux nouvelles photographies** (Amok CC0 et fruits de marché CC BY 2.0) avec lien direct à la source Wikimedia Commons sur la page prototype. Ce prototype ne prouve pas qu'il existe de nouvelles prises de vues, ni que les six transitions finales ont été produites.
+La route **`/v17-preview/`** contient une démonstration responsive autonome : une composition photo/texte de héros, une étude graphique honnête du geste non photographié et quatre sections de transition. Elle utilise **deux photographies déjà présentes dans V16**, avec crédits sur `/credits-photos/`, et **trois nouvelles photographies** (Amok CC0, fruits de marché CC BY 2.0, texture finale de kroeung CC BY-SA 3.0) avec lien direct à la source Wikimedia Commons sur la page prototype. Ce prototype ne prouve pas qu'il existe de nouvelles prises de vues, ni que les six transitions finales ont été produites.
 
 - Route non indexée (`noindex`), non ajoutée au sitemap ou à la navigation.
 - Nouveau CSS exclusivement préfixé `.v17-preview`, sans modifier l'accueil public.

@@ -24,7 +24,7 @@ assert.match(motion, /prefers-reduced-motion: no-preference/);
 assert.match(motion, /media\.revert\(\)/);
 
 const photos = [...page.matchAll(/src=\{images\.([A-Za-z]+)\}/g)].map((x) => x[1]);
-assert.equal(photos.length, 4, 'Quatre photos documentees dont une nouvellement sourcee');
+assert.equal(photos.length, 5, 'Cinq photos documentees sur le prototype V17');
 assert.equal(new Set(photos).size, photos.length, 'Ne pas reutiliser la meme photo sur le prototype');
 assert.match(page, /v17-amok-rice-960\.jpg 960w, \/images\/cuisine\/v17-amok-rice-1920\.jpg 1920w/);
 assert.match(page, /Amok — sharonang, CC0 1\.0/);
