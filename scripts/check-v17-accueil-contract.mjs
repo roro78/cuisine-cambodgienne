@@ -25,6 +25,10 @@ for(const media of [
  'v17-banana-leaves.svg','v17-plumeria.svg','v17-lemongrass.svg','v17-lime.svg'
 ]) assert.ok(fs.existsSync('public/images/brand/'+media),'Missing original botanical decoration '+media);
 assert.ok(fs.existsSync('public/images/cuisine/v17-kroeung-final.jpg'));
+assert.ok(fs.existsSync('public/images/brand/v17-spice-bowls.svg'),'Missing original pepper/turmeric illustration');
+assert.match(page,/v17r-finale-stamp/,'Missing Angkor finale illustration');
+assert.match(page,/v17r-hero-sidebar/,'Missing storyboard side annotation');
+assert.match(page,/v17r-spice-bowls/,'Missing spice bowl visual');
 assert.match(page,/v17r-gestures-kroeung/);
 assert.match(page,/<details><summary>Sources photographiques/);
 assert.match(page,/class="v17r-wave/);
