@@ -584,3 +584,92 @@
 @media(prefers-reduced-motion:reduce){
   .v17r-calligraphy,.v17r-spice-bowls,.v17r-finale-stamp{animation:none!important}
 }
+
+
+/* V17 D5–D6 — monumental scenes / native-scroll staging.
+   Fixed heights are forbidden: min-height respects real content, zoom and
+   accessible font sizes. The photo compositions are distinct by design. */
+.v17r-market{grid-template-columns:minmax(0,1.85fr) minmax(19rem,.88fr)}
+.v17r-market-visual{isolation:isolate}
+.v17r-market-visual::after{
+  content:"";position:absolute;z-index:1;right:0;top:0;bottom:0;width:22%;
+  background:linear-gradient(90deg,transparent,#143929);
+  pointer-events:none
+}
+.v17r-market-visual img{height:100%;min-height:100%;object-fit:cover;object-position:50% 43%;filter:saturate(1.17) contrast(1.04)}
+.v17r-market-copy{z-index:3;max-width:32rem;justify-self:stretch;align-self:center;padding:clamp(2rem,4.3vw,5rem) clamp(1.5rem,3.5vw,4rem)}
+.v17r-palette .v17r-pill{margin-top:1.15rem}
+.v17r-palette-media{z-index:0}
+.v17r-palette h2,.v17r-palette-intro{z-index:3}
+.v17r-gestures-visual{isolation:isolate;overflow:visible}
+.v17r-gestures-main{position:relative;z-index:0;overflow:hidden;align-self:stretch;justify-self:stretch;width:100%;height:100%;min-height:clamp(20rem,34vw,37rem);
+  border-radius:41% 59% 53% 47% / 12% 15% 12% 13%;background:#8b5b2a}
+.v17r-gestures-main img{width:100%;height:100%;min-height:inherit;object-fit:cover;object-position:center 42%;filter:saturate(1.06) contrast(1.03)}
+.v17r-gestures-main figcaption{position:absolute;bottom:0;left:0;right:0;padding:2.5rem 1rem .85rem;
+  background:linear-gradient(transparent,rgba(30,18,10,.74));color:#fff;font-size:.76rem;font-weight:700}
+.v17r-gestures-kroeung{position:absolute;z-index:2;top:auto;left:auto;bottom:5%;right:-5%;width:34%;height:33%;
+  border-radius:47% 53% 50% 50% / 47% 48% 52% 53%;border:5px solid #fff5e3;transform:rotate(7deg);
+  filter:drop-shadow(0 .45rem .6rem #22150d55)}
+.v17r-gestures-kroeung img{width:100%;height:100%;object-fit:cover}
+.v17r-gestures-flower{z-index:3}
+.v17r-gestures .v17r-image-warning{position:relative;z-index:4;left:auto;right:auto;bottom:auto;
+  grid-column:1/-1;max-width:30rem;margin:1rem auto 0;text-align:center;font-size:.7rem;line-height:1.45}
+.v17r-table{overflow:hidden}
+.v17r-table::before{z-index:2;background:radial-gradient(ellipse at center,rgba(21,10,6,.68),rgba(21,10,6,.27) 65%,rgba(21,10,6,.18))}
+.v17r-table-media{z-index:0;inset:0;display:block}
+.v17r-table-media .v17r-table-amok{position:absolute;inset:0 26% 0 0;width:auto;height:100%;overflow:hidden}
+.v17r-table-media .v17r-table-amok img{width:100%;height:100%;object-fit:cover;object-position:50% 49%;filter:saturate(1.11) brightness(1.09)}
+.v17r-table-media .v17r-table-detail{position:absolute;z-index:1;inset:0 0 0 auto;width:34%;height:100%;overflow:hidden}
+.v17r-table-media .v17r-table-detail img{width:100%;height:100%;object-fit:cover;object-position:54% 48%;filter:saturate(1.1) brightness(1.07)}
+.v17r-table-copy,.v17r-table-clarity,.v17r-table-handnote{z-index:3}
+.v17r-table h2{font-size:clamp(3.5rem,6.4vw,7.5rem)}
+.v17r-dessert{isolation:isolate}
+.v17r-dessert-art .v17r-dessert-main{width:76%;height:85%}
+.v17r-dessert-art .v17r-dessert-second{width:34%;height:71%}
+.v17r-dessert-main img,.v17r-dessert-second img{filter:saturate(1.1) contrast(1.04)}
+.v17r-finale::before{background:linear-gradient(180deg,rgba(141,48,36,.28) 0%,rgba(89,33,37,.37) 51%,rgba(5,14,14,.78) 100%)}
+.v17r-finale-landscape img{object-position:center 51%;filter:saturate(1.22) contrast(1.07)}
+.v17r-finale-stamp{z-index:4}
+.v17r-hero-media{overflow:visible}
+.v17r-hero-dish{box-shadow:0 2rem 2.8rem -1.5rem rgba(33,35,12,.36)}
+
+@media(min-width:1200px){
+  .v17r-hero{min-height:max(45rem,calc(100svh - 5.5rem))}
+  .v17r-hero-media{min-height:clamp(30rem,52vw,53rem)}
+  .v17r-market{min-height:max(42rem,98svh)}
+  .v17r-palette{min-height:max(44rem,96svh)}
+  .v17r-gestures{min-height:max(41rem,93svh);grid-template-columns:minmax(0,1.24fr) minmax(0,.77fr) minmax(11rem,.49fr)}
+  .v17r-table{min-height:max(40rem,99svh)}
+  .v17r-dessert{min-height:max(39rem,89svh)}
+  .v17r-finale{min-height:max(43rem,96svh)}
+}
+@media(min-width:761px) and (max-width:1199px){
+  .v17r-hero{min-height:80svh}
+  .v17r-market,.v17r-palette,.v17r-table,.v17r-finale{min-height:84svh}
+  .v17r-gestures,.v17r-dessert{min-height:80svh}
+  .v17r-gestures-main{min-height:27rem}
+}
+@media(max-width:760px){
+  .v17r-hero{min-height:0}
+  .v17r-market{min-height:0}
+  .v17r-market-visual{aspect-ratio:1.28}
+  .v17r-market-visual::after{top:auto;left:0;right:0;bottom:0;height:30%;width:100%;background:linear-gradient(transparent,#143929)}
+  .v17r-market-copy{padding:clamp(3rem,6vw,4rem) 1.25rem clamp(4rem,7vw,5rem)}
+  .v17r-palette{padding-block:clamp(5rem,9vw,7rem)}
+  .v17r-gestures-visual{width:100%;max-width:none;min-height:0;display:block}
+  .v17r-gestures-main{position:relative;min-height:clamp(22rem,97vw,32rem);height:clamp(22rem,97vw,32rem);width:100%;border-radius:34% 66% 40% 60% / 12% 15% 9% 11%}
+  .v17r-gestures-main img{height:100%;min-height:0;object-position:center}
+  .v17r-gestures-kroeung{left:auto;right:-2%;top:auto;bottom:7%;width:31%;height:32%;border-width:3px}
+  .v17r-gestures .v17r-image-warning{position:relative;display:block;left:auto;right:auto;bottom:auto;margin:1rem 0 0;font-size:.71rem}
+  .v17r-gestures-flower{left:-1%;bottom:5%}
+  .v17r-table{min-height:clamp(35rem,90svh,52rem);padding-block:clamp(6rem,12vw,8rem)}
+  .v17r-table::before{background:linear-gradient(180deg,rgba(19,13,9,.40),rgba(19,13,9,.65) 56%,rgba(19,13,9,.40))}
+  .v17r-table-media .v17r-table-amok{inset:0;width:100%;height:100%}
+  .v17r-table-media .v17r-table-detail{display:none}
+  .v17r-table h2{font-size:clamp(3rem,9vw,5.6rem)}
+  .v17r-dessert-art{min-height:clamp(19rem,65vw,29rem)}
+  .v17r-dessert-art .v17r-dessert-main{width:75%;height:88%}
+  .v17r-dessert-art .v17r-dessert-second{width:31%;height:78%}
+  .v17r-finale{min-height:clamp(36rem,82svh,52rem)}
+  .v17r-finale-landscape img{object-position:center}
+}
