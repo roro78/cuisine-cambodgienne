@@ -270,10 +270,23 @@ async function checkGeneratedRecipe(slug,filename,width,height){
     }));
     assert.ok(dimension.html-dimension.client<=2,'Recipe horizontal overflow: '+slug+' '+width+'px '+JSON.stringify(dimension));
     await fs.mkdir('artifacts',{recursive:true});
-    await page.locator('.recipe-v15-hero').screenshot({
-      path:'artifacts/v17-recipe-'+slug+'-'+width+'.png',
-      animations:'disabled'
-    });
+    // At the top of the real page, the sticky header must not artificially
+    // obscure the heading in the screenshot. Full page for mobile is also
+    // useful to spot defects below the fold in guided recipe steps.
+    await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
+    await page.waitForTimeout(220);
+    if(width<=430){
+      await page.screenshot({
+        path:'artifacts/v17-recipe-'+slug+'-'+width+'.png',
+        fullPage:true,
+        animations:'disabled'
+      });
+    }else{
+      await page.locator('.recipe-v15-hero').screenshot({
+        path:'artifacts/v17-recipe-'+slug+'-'+width+'.png',
+        animations:'disabled'
+      });
+    }
     console.log('V17 generated recipe '+slug+' '+width+'px PASS');
   }finally{await page.close()}
 }
