@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 const page=fs.readFileSync('src/pages/v17-accueil-preview.astro','utf8');
 const css=fs.readFileSync('src/styles/v17-accueil-rebuild.css','utf8');
+const generatedCss=fs.readFileSync('src/styles/v17-generated-media.css','utf8');
 const home=fs.readFileSync('src/pages/index.astro','utf8');
 const sitemap=fs.readFileSync('src/pages/sitemap.xml.ts','utf8');
 const header=fs.readFileSync('src/components/SiteHeader.astro','utf8');
@@ -12,7 +13,7 @@ assert.match(page, /<SiteFooter\s*\/>/);
 assert.equal((page.match(/<h1\b/g)||[]).length,1);
 assert.equal((page.match(/<h2\b/g)||[]).length,6);
 for(const selector of ['v17r-hero','v17r-market','v17r-palette','v17r-gestures','v17r-table','v17r-dessert','v17r-finale']){
-  assert.match(page,new RegExp('class="'+selector+'"'));
+  assert.match(page,new RegExp('class="'+selector+'(?:\\s|\")'));
 }
 const requiredLinks=['/recettes/','/ingredients/','/glossaire/','/apprendre/','/culture/construire-repas-cambodgien/','/recettes/chek-ktis/','/apprendre/piler-aromates-au-mortier/','/credits-photos/'];
 for(const href of requiredLinks)assert.ok(page.includes('href="'+href+'"'),'Missing genuine CTA '+href);
@@ -30,13 +31,13 @@ for (const img of [
 ]) assert.ok(fs.existsSync('public/images/cuisine/'+img),'Missing verified V17 photograph '+img);
 assert.match(page,/Radosław Botev/);
 assert.match(page,/Filipp Romanovski/);
-assert.match(page,/Jason Eppink/);
+assert.match(page,/Illustration culinaire générée par IA/);
 assert.match(page,/Eric Hossinger/);
 assert.match(page,/v17r-gestures-main/);
 assert.doesNotMatch(page,/v17r-table-detail/,'No detached bowl inset in the immersive table scene');
 assert.ok(fs.existsSync('public/images/cuisine/v17-num-plae-ai-641.jpg'),'Num Plae Ai approved real photograph missing');
-assert.match(page,/Num Plae Ai · riz gluant et coco/,'The dessert must be accurately captioned');
-assert.match(page,/Hyzuko, CC BY-SA 4\.0/,'The dessert photo attribution is required');
+assert.match(page,/illustration culinaire IA/,'The dessert scene must be honestly labelled as generated');
+assert.match(page,/v17-desserts-khmers-generes\.webp/,'Missing generated editorial dessert source');
 assert.doesNotMatch(page,/v17-khmer-sweets-1400|v17-amok-coconut-1800|v17-num-krouch-1400/,'Rejected image still appears on page');
 
 for(const media of [
@@ -61,7 +62,7 @@ assert.match(script,/scrub: \.75/);
 assert.doesNotMatch(script,/pin:\s*true|ScrollSmoother|window\.scrollTo/);
 
 
-assert.match(page,/Photographie authentique d.un assortiment de spécialités khmères/);
+assert.match(page,/composition éditoriale d.un repas inspiré de la cuisine cambodgienne/);
 assert.doesNotMatch(page,/montage éditorial, pas une même tablée/);
 assert.doesNotMatch(page, /\/v17-preview\/|home-v17-preview\.css|home-v17-air\.css/);
 assert.doesNotMatch(home,/v17-accueil-preview|v17-accueil-rebuild/,'V16 home untouched');
@@ -69,9 +70,19 @@ assert.doesNotMatch(sitemap,/v17-accueil-preview/,'Preview must not be in sitema
 assert.match(css, /@media\(max-width:760px\)/);
 assert.match(css, /@media\(prefers-reduced-motion:reduce\)/);
 assert.match(css, /\.v17r-wrap/);
-assert.match(css, /Hero food photograph must be monumental|clip-path:polygon\(5% 5%,100% 0/,
-  'The hero needs a monumental non-elliptical photographic frame');
-assert.match(css, /\.v17r-dessert-art \.v17r-dessert-main\{[\s\S]*?width:93%/,
-  'The dessert scene needs one dominant photographic tableau');
+assert.match(generatedCss, /\.v17r-hero--generated \.v17r-hero-dish/,
+  'The generated hero must have its own monumental photographic composition');
+assert.match(generatedCss, /\.v17r-dessert-art--generated \.v17r-dessert-generated/,
+  'The dessert scene must display one complete AI-generated editorial tableau');
+for(const name of [
+  'v17-hero-amok-genere.webp',
+  'v17-tablee-khmere-generee.webp',
+  'v17-desserts-khmers-generes.webp',
+  'v17-lok-lak-genere.webp',
+  'v17-nom-banh-chok-genere.webp'
+]) assert.ok(fs.existsSync('public/images/cuisine/'+name), 'Missing generated image '+name);
+assert.match(page, /images\/cuisine\/v17-hero-amok-genere\.webp/);
+assert.match(page, /images\/cuisine\/v17-tablee-khmere-generee\.webp/);
+assert.match(page, /images\/cuisine\/v17-desserts-khmers-generes\.webp/);
 assert.doesNotMatch(css,/ScrollSmoother|scroll-snap-type|position:\s*fixed/);
 console.log('V17 accueil D2: PASS — 7 scenes, real links, previews isolated, assets declared');
