@@ -34,6 +34,11 @@ assert.match(page,/Bahnfrend/);
 assert.match(page,/Eric Hossinger/);
 assert.match(page,/v17r-gestures-main/);
 assert.match(page,/v17r-table-detail/);
+assert.ok(fs.existsSync('public/images/cuisine/v17-num-plae-ai-641.jpg'),'Num Plae Ai approved real photograph missing');
+assert.match(page,/Num Plae Ai · riz gluant et coco/,'The dessert must be accurately captioned');
+assert.match(page,/Hyzuko, CC BY-SA 4\.0/,'The dessert photo attribution is required');
+assert.doesNotMatch(page,/v17-khmer-sweets-1400|v17-amok-coconut-1800|v17-num-krouch-1400/,'Rejected image still appears on page');
+
 for(const media of [
  'v17-banana-leaves.svg','v17-plumeria.svg','v17-lemongrass.svg','v17-lime.svg'
 ]) assert.ok(fs.existsSync('public/images/brand/'+media),'Missing original botanical decoration '+media);
