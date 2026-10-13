@@ -117,3 +117,12 @@ La copie transmise est une **référence de composition**. L'actuel assemblage d
 **Statut D1 médias :** import et licence des quatre nouvelles sources documentés = **PASS TECHNIQUE**. Équivalence photographique exacte à la planche composite = **NON VALIDÉE**. En particulier, l'Amok héro et les desserts ne sont pas ceux visibles sur la maquette ; ne pas prétendre les avoir retrouvés.
 
 **Contrôle avant éventuelle publication :** attribution visible et liens sources, conformité de l'ensemble des dérivés aux licences, autorisations éventuelles de personnes identifiables, versions d'image correctes, revue art direction comparée à la maquette validée. Aucune production V16 modifiée.
+
+
+### 13 octobre 2026 — D5.4 : dessert photographié sur feuille de bananier
+
+- **Nouveau visuel retenu et intégré réellement dans la PR #47 :** `public/images/cuisine/v17-num-plae-ai-641.jpg`, photo de Num Plae Ai (boules de riz gluant garnies de coco, servies dans une feuille de bananier), **Hyzuko, CC BY-SA 4.0**, [Wikimedia Commons — fiche d'origine](https://commons.wikimedia.org/wiki/File:Num_Plae_Ai.jpg). L'authenticité cambodgienne est établie par la notice Commons ; la photographie n'est pas l'image exacte du dessert généré dans la maquette.
+- **Composition :** Num Plae Ai en image principale, photo Num Kom conservée à droite en contrepoint avec libellés explicites. Le CTA « Découvrir le Chek Ktis » mène toujours vers une vraie recette publiée ; la photo principale ne prétend pas montrer le Chek Ktis.
+- **Photo rejetées / nettoyage exécuté :** `v17-amok-coconut-1800.jpg`, `v17-khmer-sweets-1400.jpg`, `v17-num-krouch-1400.jpg` supprimées de la branche car non choisies. Le script `scripts/import-v17-licensed-media.mjs` et le workflow `v17-import-media.yml` supprimés après l'import validé pour éliminer les exécutions automatiques répétées. L'ancien JPEG Chek Ktis demeure comme archive dans le dossier V17, sans être l'image principale actuelle.
+- **Licences :** crédit Hyzuko et lien source présents dans les détails « Sources photographiques » de la preview ; une vérification finale des modalités BY-SA et des autres crédits est requise AVANT mise en production.
+- **État photographique :** **DESSERTS AMÉLIORÉS, PAS IDENTIQUES À LA MAQUETTE**. L'Amok héro reste une photographie documentaire originale recadrée, non le montage composite du storyboard.
