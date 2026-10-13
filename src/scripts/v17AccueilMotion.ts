@@ -17,7 +17,6 @@ export function initV17AccueilMotion() {
     selector: string,
     from: gsap.TweenVars,
     to: gsap.TweenVars,
-    scrub: number = .75,
   ) => {
     const node = root.querySelector<HTMLElement>(selector);
     if (!node) return;
@@ -61,13 +60,13 @@ export function initV17AccueilMotion() {
 
   mm.add('(max-width: 760px) and (prefers-reduced-motion: no-preference)', () => {
     // Mobile: movements < 14px in practice, never hide content or block gestures.
-    sceneMotion('.v17r-hero-dish img', { scale: 1.035 }, { scale: 1.005 }, .5);
-    sceneMotion('.v17r-market-visual img', { scale: 1.045, yPercent: -1 }, { scale: 1.01, yPercent: 1 }, .5);
-    sceneMotion('.v17r-palette-a', { xPercent: -5 }, { xPercent: 0 }, .5);
-    sceneMotion('.v17r-palette-b', { xPercent: 5 }, { xPercent: 0 }, .5);
-    sceneMotion('.v17r-gestures-main img', { scale: 1.035 }, { scale: 1.005 }, .5);
-    sceneMotion('.v17r-table-amok img', { scale: 1.035 }, { scale: 1.005 }, .5);
-    sceneMotion('.v17r-finale-landscape img', { scale: 1.04 }, { scale: 1.005 }, .5);
+    sceneMotion('.v17r-hero-dish img', { scale: 1.035 }, { scale: 1.005 });
+    sceneMotion('.v17r-market-visual img', { scale: 1.045, yPercent: -1 }, { scale: 1.01, yPercent: 1 });
+    sceneMotion('.v17r-palette-a', { xPercent: -5 }, { xPercent: 0 });
+    sceneMotion('.v17r-palette-b', { xPercent: 5 }, { xPercent: 0 });
+    sceneMotion('.v17r-gestures-main img', { scale: 1.035 }, { scale: 1.005 });
+    sceneMotion('.v17r-table-amok img', { scale: 1.035 }, { scale: 1.005 });
+    sceneMotion('.v17r-finale-landscape img', { scale: 1.04 }, { scale: 1.005 });
   });
 
   return () => mm.revert();
