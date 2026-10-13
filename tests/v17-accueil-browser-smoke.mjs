@@ -77,6 +77,13 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       await page.keyboard.press('Tab');
       assert.equal(await page.locator('.v17r-skip').evaluate(el=>el===document.activeElement),
         true,'Keyboard must reach the skip-to-content link first');
+      const skipStyle=await page.locator('.v17r-skip').evaluate(el=>{
+        const style=getComputedStyle(el);
+        return {background:style.backgroundColor,color:style.color,top:el.getBoundingClientRect().top};
+      });
+      assert.notEqual(skipStyle.background,'rgba(0, 0, 0, 0)',
+        'Focused skip link needs an opaque contrasting background: '+JSON.stringify(skipStyle));
+      assert.ok(skipStyle.top>=-1,'Focused skip link should be on screen: '+JSON.stringify(skipStyle));
       await page.keyboard.press('Enter');
       assert.equal(await page.evaluate(()=>location.hash),'#v17r-main',
         'Skip link should navigate directly to main content');
