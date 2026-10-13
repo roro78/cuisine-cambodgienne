@@ -24,6 +24,30 @@ export function initV17PreviewMotion() {
     }
   });
 
+  mm.add('(prefers-reduced-motion: no-preference)', () => {
+
+    // V17.5: the chapters use different reading directions.
+    // Centered market/pantry, gesture stages, overlay table, right-aligned desserts,
+    // and centered finale remain completely readable without JS or motion.
+    const titleDirections: Record<string,{x:number;y:number}> = {
+      market:{x:0,y:24},
+      pantry:{x:0,y:16},
+      gesture:{x:-22,y:0},
+      table:{x:0,y:20},
+      sweets:{x:24,y:0},
+      finale:{x:0,y:20}
+    };
+    for (const title of gsap.utils.toArray<HTMLElement>('[data-v17-title]',page)) {
+      const name=title.dataset.v17Title ?? '';
+      const from=titleDirections[name] ?? {x:0,y:14};
+      gsap.fromTo(title,{...from,opacity:.84},{
+        x:0,y:0,opacity:1,duration:.75,ease:'power2.out',
+        scrollTrigger:{trigger:title,start:'top 91%',once:true}
+      });
+    }
+
+  });
+
   mm.add('(prefers-reduced-motion: no-preference) and (min-width: 761px)', () => {
     const hero = page.querySelector<HTMLElement>('.v17-hero');
     const stage = page.querySelector<HTMLElement>('.v17-hero-stage');

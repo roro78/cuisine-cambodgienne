@@ -9,8 +9,8 @@ const sitemap = fs.readFileSync('src/pages/sitemap.xml.ts','utf8');
 
 assert.match(page, /<BaseLayout[\s\S]*?noindex/);
 assert.match(page, /<h1 id="v17-hero-title"/);
-assert.match(page, /DU GOÛT\./);
-assert.match(page, /DU <span class="v17-hero-accent">CAMBODGE/);
+assert.match(page, /LE CAMBODGE/);
+assert.match(page, /DANS VOTRE <em class="v17-hero-accent">ASSIETTE/);
 assert.match(page, /<SiteHeader\s*\/>/, 'Reuse accessible V16 mobile navigation');
 assert.match(page, /v17-hero-stage/);
 assert.equal((page.match(/<section class="v17-(hero|market|pantry|gesture|table|sweets|finale)"/g)||[]).length,7);
@@ -110,5 +110,10 @@ for (const selector of ['.v17-hero-photo', '.v17-market-large', '.v17-market-sma
 }
 assert.match(motion, /clipPath: 'inset\(0% 24% 0% 0%\)'/);
 assert.match(motion, /clipPath: 'inset\(0% 0% 0% 0%\)'/);
+for (const scene of ['market','pantry','gesture','table','sweets','finale']) {
+  assert.match(page,new RegExp('data-v17-title="'+scene+'"'),'V17.5 scene title must carry unique choreography');
+}
+assert.equal((page.match(/class="v17-connector /g)||[]).length,2);
+assert.match(motion,/titleDirections/);
 
 console.log('V17.4 non-square photo composition contract: PASS');

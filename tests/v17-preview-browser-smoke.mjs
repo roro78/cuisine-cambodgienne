@@ -44,6 +44,8 @@ async function inspect(width,height,screenshotPath,options={}) {
     assert.equal(await page.locator('h1').count(),1);
     assert.ok(await page.locator('.v17-hero-stage').isVisible());
     assert.equal(await page.locator('[data-v17-scene]').count(),6);
+    assert.equal(await page.locator('[data-v17-title]').count(),6);
+    assert.equal(await page.locator('.v17-connector').count(),2);
     assert.equal(await page.locator('[data-v17-ingredient]').count(),3);
     assert.equal(await page.locator('[data-v17-sweet]').count(),2);
     assert.equal(await page.locator('.v17-sweets-bottom a').getAttribute('href'),'/recettes/chek-ktis/');
