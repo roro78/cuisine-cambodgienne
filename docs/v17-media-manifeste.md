@@ -41,7 +41,7 @@ Ces références doivent être revues sur Commons lors du sourcing final ; les l
 | S3 — Gestes | Vraie prise de vue main + mortier + pâte kroeung/texture à différents moments | **BLOQUÉ MÉDIA** : aucune photo réelle du mortier dans main | carte illustrative de technique sans prétendre montrer l'acte photographié |
 | S4 — Repas | Table cambodgienne authentique, plusieurs plats, image paysage | **BLOQUÉ MÉDIA** | photo légendée selon sujet réellement représenté, ou visuel de repérage non publié |
 | S5 — Desserts | Chek Ktis réel + Num Kom + détail coco | **CANDIDATS SOURCÉS** dans la PR #45, non intégrés dans main | mention « images d'étude » jusqu'à vérification licences et crédits |
-| S6 — Finale | Angkor photographié ou illustré légitimement avec droits/lieu exact | **BLOQUÉ MÉDIA** | illustration de silhouettes khmères originale et signalée comme illustrative, jamais « photo d'Angkor » inventée |
+| S6 — Finale | Angkor Wat au coucher du soleil, photo vérifiée et créditée | **PHOTO RÉELLE ACQUISE** : Radek Kucharski, CC BY 2.0, 1600×900 | Contrôler la fidélité artistique et conserver son crédit lors du passage production |
 
 ## Livrables média à clôturer pour passer D1 intégralement
 
@@ -55,3 +55,15 @@ Ces références doivent être revues sur Commons lors du sourcing final ; les l
 - [ ] Planche d'assets **réels** jugée assez proche de la maquette pour lancer les scènes photo.
 
 **Gate :** D1 = PARTIAL (inventaire terminée, acquisition et dépôt maître non terminés). Cela permet de développer le squelette D2 avec placeholders identifiés, pas de déclarer l'intégration artistique finale conforme.
+
+## Complément du 13 octobre 2026 — Nouvelle ressource finale D3
+
+- `public/images/cuisine/v17-angkor-sunset-1600.jpg` (1600 × 900, JPEG, 571 521 octets) : [Angkor Wat Reflection (46810498612).jpg](https://commons.wikimedia.org/wiki/File:Angkor_Wat_Reflection_(46810498612).jpg).
+- Auteur : **Radek Kucharski**, photographie **3 décembre 2015 à 17 h 16**, Angkor Wat au coucher du soleil.
+- Licence : [Creative Commons Attribution 2.0 Generic](https://creativecommons.org/licenses/by/2.0/) ; source Commons revue et lien attribution sur la maquette publique.
+- Transformation : version redimensionnée par l'API Commons, **recadrage responsive en CSS** pour la finale (pas de faux ciel ou silhouettes ajoutés).
+- Usage : section finale de la route noindex `/v17-accueil-preview/`, **ne pas déployer avant revue générale**.
+
+Les photos d'Amok, d'étal de fruits, de table khmère, Chek Ktis, Num Kom, galanga et piment ont également été reprises depuis les blobs médias sourcés de la PR #45 **sans aucun code ni style de cet ancien prototype**. Leur enregistrement des auteurs et licences est présent dans la prévisualisation, mais la validation finale des obligations de réutilisation et de dérivation reste un gate de publication.
+
+Le média **mortier réel pendant le geste** manque toujours ; ne pas le remplacer par une photo non crédible de cuisine étrangère sous une légende cambodgienne.
