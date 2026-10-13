@@ -61,7 +61,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     const links=['/recettes/','/ingredients/','/glossaire/','/apprendre/','/recettes/chek-ktis/','/apprendre/piler-aromates-au-mortier/'];
     for(const href of links)assert.ok(await page.locator('a[href="'+href+'"]').count()>0,'Missing '+href);
     const angkorImage=page.locator('.v17r-finale-landscape img');
-    assert.match(await angkorImage.getAttribute('src'),/v17-angkor-sunset-1600\\.jpg$/);
+    assert.equal(await angkorImage.getAttribute('src'),'/images/cuisine/v17-angkor-sunset-1600.jpg');
     assert.match(await angkorImage.getAttribute('alt'),/Angkor Wat.*soleil couchant/);
     assert.equal(await page.locator('.v17r-finale-credit a[href*="Angkor_Wat_Reflection"]').count(),1,
       'Golden-hour photograph must keep the correct source attribution');
