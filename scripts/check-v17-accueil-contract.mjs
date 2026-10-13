@@ -26,13 +26,14 @@ assert.match(page,/photo d.illustration|photo illustrative|photographie illustra
 for (const img of [
   'v17-market-live-1800.jpg',
   'v17-mortar-hands-1600.jpg',
-  'v17-angkor-dusk-1800.jpg',
+  'v17-angkor-sunset-1600.jpg',
   'v17-table-meal-1600.jpg',
 ]) assert.ok(fs.existsSync('public/images/cuisine/'+img),'Missing verified V17 photograph '+img);
 assert.match(page,/Radosław Botev/);
 assert.match(page,/Filipp Romanovski/);
 assert.match(page,/Illustration culinaire générée par IA/);
-assert.match(page,/Eric Hossinger/);
+assert.match(page,/Radek Kucharski/);
+assert.match(page,/Angkor_Wat_Reflection_\(46810498612\)\.jpg/);
 assert.match(page,/v17r-gestures-main/);
 assert.doesNotMatch(page,/v17r-table-detail/,'No detached bowl inset in the immersive table scene');
 assert.ok(fs.existsSync('public/images/cuisine/v17-num-plae-ai-641.jpg'),'Num Plae Ai approved real photograph missing');
