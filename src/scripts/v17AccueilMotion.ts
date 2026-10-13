@@ -36,7 +36,7 @@ export function initV17AccueilMotion() {
 
   mm.add('(min-width: 761px) and (prefers-reduced-motion: no-preference)', () => {
     // 1. Hero: quiet depth, never displacing the headline or CTA.
-    sceneMotion('.v17r-hero-dish img', { scale: 1.34, yPercent: 2 }, { scale: 1.26, yPercent: -1 });
+    sceneMotion('.v17r-hero-dish img', { scale: 1.72, yPercent: 2 }, { scale: 1.62, yPercent: -1 });
     sceneMotion('.v17r-hero-flower-dish', { yPercent: 12 }, { yPercent: -8 });
     // 2. Market: photographic parallax, no artificial scroll velocity.
     sceneMotion('.v17r-market-visual img', { scale: 1.075, yPercent: -2 }, { scale: 1.015, yPercent: 2 });
@@ -60,7 +60,7 @@ export function initV17AccueilMotion() {
 
   mm.add('(max-width: 760px) and (prefers-reduced-motion: no-preference)', () => {
     // Mobile: movements < 14px in practice, never hide content or block gestures.
-    sceneMotion('.v17r-hero-dish img', { scale: 1.20 }, { scale: 1.15 });
+    sceneMotion('.v17r-hero-dish img', { scale: 1.41 }, { scale: 1.36 });
     sceneMotion('.v17r-market-visual img', { scale: 1.045, yPercent: -1 }, { scale: 1.01, yPercent: 1 });
     sceneMotion('.v17r-palette-a', { xPercent: -5 }, { xPercent: 0 });
     sceneMotion('.v17r-palette-b', { xPercent: 5 }, { xPercent: 0 });
