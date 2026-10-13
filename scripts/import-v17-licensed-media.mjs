@@ -9,6 +9,18 @@ import { createHash } from 'node:crypto';
 
 const assets = [
   {
+    path: 'public/images/cuisine/v17-amok-coconut-1800.jpg',
+    commonsTitle: 'File:Tasty fish amok in a coconut (15941045359).jpg',
+    width: 1800,
+    credit: 'yashima — CC BY-SA 2.0; photographed in Siem Reap, 2014',
+  },
+  {
+    path: 'public/images/cuisine/v17-khmer-sweets-1400.jpg',
+    commonsTitle: 'File:Cambodian sweets.jpg',
+    width: 1400,
+    credit: 'Wikimedia Commons; check API authorship/license before publishing',
+  },
+  {
     path: 'public/images/cuisine/v17-market-live-1800.jpg',
     commonsTitle: 'File:Market in Phnom Penh.jpg',
     width: 1800,
