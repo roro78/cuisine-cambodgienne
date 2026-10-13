@@ -818,3 +818,10 @@
 @media(max-width:760px){
   .v17r-hero-dish img{object-position:81% 50%;transform:scale(1.41);transform-origin:78% 50%}
 }
+
+
+/* Browser regression 768 px: leave enough inset for postcard rotation.
+   Moving its frame, not weakening the containment assertion. */
+@media(min-width:761px) and (max-width:1199px){
+  .v17r-market-postcard{left:clamp(1.5rem,5%,3.5rem)}
+}
