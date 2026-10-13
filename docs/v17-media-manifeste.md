@@ -51,7 +51,7 @@ Ces références doivent être revues sur Commons lors du sourcing final ; les l
 - [x] Bibliographie des candidats historiques #45 séparée du code rejeté.
 - [ ] Original PNG stocké dans le dépôt GitHub avec sa vraie empreinte (transfert binaire requis ; **ne pas substituer un JPG optimisé** en prétendant que c’est l’original).
 - [ ] Droits/qualité des candidats Commons revus et attestations enregistrées (date/source/licence/transformations/alt).
-- [ ] Images fortes pour mortier, vraie table partagée et finale Angkor acquises légalement.
+- [ ] Images fortes pour un vrai geste au mortier et une table partagée acquises légalement. La photo d'Angkor (Radek Kucharski, CC BY 2.0) est intégrée à la preview ; fidélité de son cadrage et respect final des conditions de licence encore à recevoir.
 - [ ] Planche d'assets **réels** jugée assez proche de la maquette pour lancer les scènes photo.
 
 **Gate :** D1 = PARTIAL (inventaire terminée, acquisition et dépôt maître non terminés). Cela permet de développer le squelette D2 avec placeholders identifiés, pas de déclarer l'intégration artistique finale conforme.
@@ -67,3 +67,11 @@ Ces références doivent être revues sur Commons lors du sourcing final ; les l
 Les photos d'Amok, d'étal de fruits, de table khmère, Chek Ktis, Num Kom, galanga et piment ont également été reprises depuis les blobs médias sourcés de la PR #45 **sans aucun code ni style de cet ancien prototype**. Leur enregistrement des auteurs et licences est présent dans la prévisualisation, mais la validation finale des obligations de réutilisation et de dérivation reste un gate de publication.
 
 Le média **mortier réel pendant le geste** manque toujours ; ne pas le remplacer par une photo non crédible de cuisine étrangère sous une légende cambodgienne.
+
+
+### Reprise du 13 octobre 2026 — état des preuves
+
+- Source maîtresse PNG : **introuvable dans les fichiers accessibles de la nouvelle session**, empreinte connue mais copie originale à fournir pour un contrôle visuel et archivage GitHub ; ne pas créer de substitut ni de maquette reconstruite.
+- Photos de la preview : contrôles de chargement et de présence couverts par les recettes CI connues ; l'adéquation documentaire et les conditions de dérivation restent une **revue manuelle ouverte**.
+- Mortier réel : **NON ACQUIS** ; conserver le repère illustratif honnête jusqu'à l'obtention d'un média fiable.
+- Captures desktop/mobile de la CI du commit `1a56f628` effectivement récupérées, mais **ne prouvent pas l'équivalence avec l'original validé**.
