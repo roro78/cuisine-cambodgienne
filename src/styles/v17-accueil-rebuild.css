@@ -493,3 +493,94 @@
 @media(max-width:760px){
   .v17r-hero-copy .v17r-hero-caption{margin-top:1rem;text-align:left;font-size:.72rem}
 }
+
+
+/* V17 D5.2 — mise en scène de la maquette validée.
+   Réparer la narration visuelle au lieu d'empiler de nouveaux effets :
+   héros à trois plans, ingrédients latéraux, geste, douceur et sceau final.
+   Les annotations sont purement décoratives, jamais requises pour comprendre. */
+.v17r-calligraphy{
+  position:absolute;z-index:3;pointer-events:none;
+  font-family:"Segoe Print","Bradley Hand","Comic Sans MS",cursive;
+  color:#263225;font-size:clamp(.82rem,1.15vw,1.1rem);
+  font-style:italic;font-weight:650;line-height:1.32;
+}
+.v17r-hero-sidebar{left:3%;top:31%;max-width:9rem;transform:rotate(-9deg)}
+.v17r-hero-aromatics{right:-4%;top:39%;transform:rotate(-6deg);font-size:clamp(.78rem,.98vw,1rem);line-height:1.4;text-shadow:0 1px 1px #fff9ec}
+.v17r-palette-spice-label{right:10%;top:4%;text-align:center;transform:rotate(-9deg)}
+.v17r-spice-bowls{position:absolute;right:-2%;bottom:0;width:clamp(18rem,34vw,35rem);height:auto;z-index:1;filter:drop-shadow(0 .4rem .4rem #2c211a18)}
+.v17r-gestures-handnote{left:-1%;bottom:12%;transform:rotate(-12deg);color:#563b22;text-shadow:0 1px 2px #fff1db}
+.v17r-table-handnote{z-index:3;left:clamp(1rem,4vw,4rem);bottom:22%;transform:rotate(-12deg);color:#fff5d8;text-align:left;font-size:clamp(.9rem,1.45vw,1.3rem);text-shadow:0 2px 6px #17110e}
+.v17r-dessert-banana{position:absolute;z-index:1;right:-9%;bottom:-22%;width:clamp(8rem,19vw,19rem);height:auto;transform:rotate(28deg);opacity:.92;pointer-events:none}
+.v17r-dessert-handnote{right:33%;top:-10%;color:#3b2b25;transform:rotate(-10deg)}
+.v17r-finale-stamp{position:absolute;z-index:2;right:clamp(2rem,5.5vw,7rem);top:50%;transform:translateY(-50%) rotate(10deg);
+ width:clamp(8rem,17vw,17rem);aspect-ratio:1;color:#e7b755;opacity:.87;pointer-events:none}
+.v17r-finale-stamp svg{width:100%;height:100%}
+.v17r-hero-art,.v17r-hero-media{overflow:visible}
+.v17r-hero-art{overflow:hidden}
+.v17r-market-copy::before{
+  content:"";position:absolute;z-index:-1;pointer-events:none;inset:-10% -1rem 0 5%;
+  background:url('/images/brand/v17-banana-leaves.svg') no-repeat right center/auto 110%;
+  opacity:.085;filter:grayscale(1) brightness(2.5);
+}
+.v17r-palette{isolation:isolate;background:
+ radial-gradient(circle at 4% 85%,rgba(239,175,80,.10),transparent 32%),
+ radial-gradient(circle at 95% 8%,rgba(102,125,53,.1),transparent 34%),
+ #fff9ec}
+.v17r-palette::before{border:0}
+.v17r-dessert{overflow:hidden}
+.v17r-finale::before{background:
+ linear-gradient(180deg,rgba(240,115,55,.36) 0%,rgba(168,67,46,.31) 43%,rgba(11,18,19,.66) 100%);
+}
+.v17r-finale-landscape img{filter:saturate(1.25) contrast(1.06)}
+@media(min-width:1200px){
+  /* Trois plans du hero, comme sur la planche : annotation / éditorial / plat. */
+  .v17r-hero{display:grid;grid-template-columns:minmax(8rem,.13fr) minmax(28rem,.43fr) minmax(32rem,.57fr);
+    padding-left:clamp(1rem,2.3vw,3rem);padding-right:clamp(1rem,3vw,4rem);column-gap:0;
+    min-height:clamp(34rem,45vw,42rem)}
+  .v17r-hero-copy{grid-column:2;padding:0 1.5rem 1rem 0}
+  .v17r-hero-media{grid-column:3;margin-left:0}
+  .v17r-hero h1{font-size:clamp(4rem,5.15vw,7.35rem)}
+  .v17r-hero-sidebar{left:2%;top:33%;max-width:10rem}
+  .v17r-hero-green-corner{left:-7%;top:-32%;width:clamp(11rem,18vw,20rem)}
+  .v17r-hero-bloom-left{left:1%;bottom:8%;width:clamp(5rem,8vw,9rem)}
+  .v17r-hero-dish{width:100%;max-width:60rem;aspect-ratio:1.7}
+  .v17r-hero-dish img{transform:scale(1.1);transform-origin:72% 52%;object-position:67% center}
+  .v17r-hero-lime{right:-3%;bottom:-3%}
+  .v17r-market{min-height:clamp(28rem,32vw,37rem)}
+  .v17r-market-visual img{object-position:50% 50%}
+  .v17r-palette{min-height:clamp(36rem,40vw,42rem)}
+  .v17r-palette-a{left:11%;top:57%;width:clamp(12rem,19vw,20rem)}
+  .v17r-palette-b{right:1%;top:11%;width:clamp(10rem,16vw,17rem)}
+  .v17r-palette-media .v17r-lemongrass{left:-9%;top:6%;width:clamp(20rem,31vw,33rem)}
+  .v17r-palette-media .v17r-palette-lime{right:25%;bottom:14%;width:clamp(6rem,10vw,10rem)}
+  .v17r-spice-bowls{right:-4%;bottom:-8%;width:clamp(20rem,35vw,35rem)}
+  .v17r-palette-spice-label{right:5%;top:3%}
+  .v17r-gestures{grid-template-columns:minmax(0,1.22fr) minmax(0,.78fr) minmax(12rem,.52fr);min-height:clamp(31rem,36vw,39rem)}
+  .v17r-gestures-kroeung{width:102%;height:85%;top:3%}
+  .v17r-dessert{min-height:clamp(27rem,33vw,39rem)}
+  .v17r-dessert-art{transform:scale(1.08);transform-origin:50% 52%}
+}
+@media(min-width:761px) and (max-width:1199px){
+  .v17r-hero-sidebar,.v17r-hero-aromatics{display:none}
+  .v17r-palette-spice-label{display:none}
+  .v17r-spice-bowls{right:-8%;bottom:-8%;width:33vw;opacity:.88}
+  .v17r-finale-stamp{right:1.5rem;width:11vw}
+}
+@media(max-width:760px){
+  /* Les motifs encadrent sans remplacer la narration ; aucune occultation. */
+  .v17r-hero-sidebar,.v17r-hero-aromatics,.v17r-palette-spice-label,
+  .v17r-gestures-handnote,.v17r-table-handnote,.v17r-dessert-handnote{display:none}
+  .v17r-palette-media{align-items:center}
+  .v17r-spice-bowls{position:relative;right:auto;bottom:auto;grid-column:1/-1;
+    width:min(100%,20rem);justify-self:end;margin:-1.5rem -1rem -2.5rem 0}
+  .v17r-dessert-banana{right:-14%;bottom:-12%;width:35%;opacity:.6}
+  .v17r-finale-stamp{top:auto;bottom:1.8rem;right:1.1rem;transform:rotate(7deg);width:5.5rem;opacity:.55}
+}
+@media(max-width:390px){
+  .v17r-finale-stamp{display:none}
+  .v17r-spice-bowls{margin-bottom:-1.5rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .v17r-calligraphy,.v17r-spice-bowls,.v17r-finale-stamp{animation:none!important}
+}
