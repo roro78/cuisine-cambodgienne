@@ -219,7 +219,7 @@ La validation technique de #24 est acquise sur son HEAD contrôlé ; **la récep
 | V17-01 | Direction artistique et prototype `/v17-preview/` | EN COURS (branche de développement) | CI, validation du cadrage et choix artistique |
 | V17-02 | Refonte contrôlée du héros de l'accueil réel | NON COMMENCÉ | Réception V17-01 |
 | V17-03 | Acquisition de prises de vues vérifiées | PARTIEL — 4 nouvelles photographies documentées (Amok, marché, kroeung final, assortiment de table), 1 famille V16 | Compléter les gestes, les produits et la table ; droits et cadrages |
-| V17-04 | Transition des six scènes d'accueil | NON COMMENCÉ | V17-02 + médias V17-03 |
+| V17-04 | Transition des six scènes d'accueil | PROTOTYPE PARTIEL — deux liaisons marché/geste/table réalisées uniquement sur /v17-preview/ | Promotion vers accueil réel après V17-02 + médias V17-03 |
 | V17-05 | Recettes et typographie | NON COMMENCÉ | Direction et médias validés |
 | V17-06 | Ateliers pédagogiques visuels | NON COMMENCÉ | Médias de gestes vérifiés |
 | V17-07 | Culture et À propos | NON COMMENCÉ | Ligne éditoriale vérifiée |

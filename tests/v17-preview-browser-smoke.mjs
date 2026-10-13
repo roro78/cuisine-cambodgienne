@@ -54,6 +54,8 @@ async function inspectViewport(width, height, screenshotPath, options = {}) {
     assert.equal(await page.locator('.v17-actions a').first().getAttribute('href'), '/recettes/');
     assert.equal(await page.locator('.v17-actions a').last().getAttribute('href'), '/apprendre/');
     assert.equal(await page.locator('.v17-gesture-study').count(), 1, 'Pedagogical study must exist');
+    assert.equal(await page.locator('[data-v17-bridge]').count(), 2, 'Market→gesture and gesture→table interludes');
+    assert.equal(await page.locator('[data-v17-parallax]').count(), 2, 'Parallax limited to two existing photos');
     assert.equal(await page.locator('.v17-gesture-paste img').getAttribute('alt'), "Kroeung rouge après broyage : exemple photographié d'une pâte obtenue");
     assert.equal(await page.locator('.v17-gesture-study ol li').count(), 3);
     assert.match(await page.locator('.v17-table-photo figcaption').innerText(), /Phnom Penh/);
@@ -76,7 +78,11 @@ async function inspectViewport(width, height, screenshotPath, options = {}) {
       const transform = await page.locator('.v17-hero-photo img').evaluate((img) =>
         getComputedStyle(img).transform
       );
-      assert.equal(transform, 'none', 'Reduced motion must disable parallax');
+      assert.equal(transform, 'none', 'Reduced motion must disable hero parallax');
+      const imageTransforms = await page.locator('[data-v17-parallax]').evaluateAll((images) =>
+        images.map((img) => getComputedStyle(img).transform)
+      );
+      assert.ok(imageTransforms.every((value) => value === 'none'), 'Reduced motion must disable all photo parallax');
     }
     if (width === 390) {
       const menu = page.locator('[data-mobile-menu]');
@@ -87,7 +93,7 @@ async function inspectViewport(width, height, screenshotPath, options = {}) {
     }
     // GSAP reveals sections as they enter the viewport. Do not assert they are
     // visible at scrollY=0 before their ScrollTrigger has run.
-    for (const selector of ['.v17-intro', '.v17-market', '.v17-gesture-study', '.v17-table', '.v17-finale']) {
+    for (const selector of ['.v17-intro', '.v17-market', '.v17-bridge-market', '.v17-gesture-study', '.v17-bridge-table', '.v17-table', '.v17-finale']) {
       await page.locator(selector).first().evaluate((element) =>
         element.scrollIntoView({ block: 'center', behavior: 'instant' })
       );
@@ -95,6 +101,12 @@ async function inspectViewport(width, height, screenshotPath, options = {}) {
     }
     await page.waitForTimeout(850);
     assert.ok(await page.locator('.v17-gesture-study').isVisible(), 'Scene appears after scrolling');
+    assert.ok(await page.locator('.v17-bridge-market h2').isVisible(), 'First transition title stays accessible');
+    assert.ok(await page.locator('.v17-bridge-table h2').isVisible(), 'Second transition title stays accessible');
+    const bridgeLines = await page.locator('.v17-bridge-trace').evaluateAll((lines) =>
+      lines.map((el) => ({ width: el.getBoundingClientRect().width, height: el.getBoundingClientRect().height }))
+    );
+    assert.ok(bridgeLines.every((l) => l.width > 120 && l.height >= 2), 'Transition traces rendered');
     await page.waitForFunction(() => {
       const market = document.querySelector('.v17-market-large img');
       const paste = document.querySelector('.v17-gesture-paste img');

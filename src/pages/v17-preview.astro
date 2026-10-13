@@ -63,13 +63,22 @@ const images = {
       </div>
       <div class="v17-market-gallery">
         <figure class="v17-market-large" data-v17-reveal>
-          <img src={images.fruitMarket} srcset="/images/cuisine/v17-fruit-market-960.jpg 960w, /images/cuisine/v17-fruit-market-1920.jpg 1920w" sizes="(max-width: 760px) 100vw, 48vw" alt="Fruits tropicaux présentés sur un étal de marché au Cambodge" width="3264" height="2448" loading="lazy" decoding="async" />
+          <img data-v17-parallax src={images.fruitMarket} srcset="/images/cuisine/v17-fruit-market-960.jpg 960w, /images/cuisine/v17-fruit-market-1920.jpg 1920w" sizes="(max-width: 760px) 100vw, 48vw" alt="Fruits tropicaux présentés sur un étal de marché au Cambodge" width="3264" height="2448" loading="lazy" decoding="async" />
           <figcaption>Fruits au marché, entre Phnom Penh et Siem Reap</figcaption>
         </figure>
         <figure class="v17-market-small" data-v17-reveal>
           <img src={images.pepper} srcset="/images/cuisine/kampot-800.webp 800w, /images/cuisine/kampot-1200.webp 1200w, /images/cuisine/kampot-1600.webp 1600w" sizes="(max-width: 760px) 44vw, 21vw" alt="Grains de poivre de Kampot" width="1600" height="1067" loading="lazy" decoding="async" />
           <figcaption>Le poivre de Kampot</figcaption>
         </figure>
+      </div>
+    </section>
+
+    <section class="v17-bridge v17-bridge-market" aria-labelledby="v17-bridge-market-title" data-v17-bridge>
+      <div class="v17-bridge-inner">
+        <p class="v17-bridge-kicker">Du produit au geste · Interlude I</p>
+        <h2 id="v17-bridge-market-title">Choisir les aromates.<br /><em>Apprendre à les travailler.</em></h2>
+        <p class="v17-bridge-description">Une fois les ingrédients réunis, tout se joue dans la coupe, la texture et le temps passé au mortier.</p>
+        <span class="v17-bridge-trace" aria-hidden="true"></span>
       </div>
     </section>
 
@@ -98,6 +107,15 @@ const images = {
       </div>
     </section>
 
+    <section class="v17-bridge v17-bridge-table" aria-labelledby="v17-bridge-table-title" data-v17-bridge>
+      <div class="v17-bridge-inner">
+        <p class="v17-bridge-kicker">Du geste au repas · Interlude II</p>
+        <h2 id="v17-bridge-table-title">La préparation prend forme.<br /><em>À chacun son plat.</em></h2>
+        <p class="v17-bridge-description">Une pâte aromatique n'est qu'un début : ce sont les recettes et les accompagnements qui composent le repas.</p>
+        <span class="v17-bridge-trace" aria-hidden="true"></span>
+      </div>
+    </section>
+
     <section class="v17-table" aria-labelledby="v17-table-title">
       <div class="v17-table-copy" data-v17-reveal>
         <p class="v17-eyebrow">04–05 / 06 · Du feu à la table</p>
@@ -106,7 +124,7 @@ const images = {
         <a class="v17-text-link" href="/culture/construire-repas-cambodgien/">Comprendre le repas <span aria-hidden="true">↗</span></a>
       </div>
       <figure class="v17-table-photo" data-v17-reveal>
-        <img src={images.table} srcset="/images/cuisine/v17-khmer-table-640.webp 640w, /images/cuisine/v17-khmer-table-1280.webp 1280w" sizes="(max-width: 760px) 100vw, 44vw" alt="Assortiment de spécialités khmères présenté sur un plateau avec un bol de riz" width="2448" height="3264" loading="lazy" decoding="async" />
+        <img data-v17-parallax src={images.table} srcset="/images/cuisine/v17-khmer-table-640.webp 640w, /images/cuisine/v17-khmer-table-1280.webp 1280w" sizes="(max-width: 760px) 100vw, 44vw" alt="Assortiment de spécialités khmères présenté sur un plateau avec un bol de riz" width="2448" height="3264" loading="lazy" decoding="async" />
         <figcaption>Assortiment cambodgien photographié à Phnom Penh</figcaption>
       </figure>
     </section>

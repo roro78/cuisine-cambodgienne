@@ -45,6 +45,11 @@ assert.match(page, /https:\/\/commons\.wikimedia\.org\/wiki\/File:Red_Kroeung_Pa
 assert.ok(fs.existsSync('public/images/cuisine/v17-kroeung-final.jpg'), 'Missing documented final kroeung photograph');
 assert.match(page, /La photo montre une pâte terminée, pas les étapes de notre atelier/);
 assert.doesNotMatch(motion, /autoAlpha: 0/);
+assert.equal((page.match(/data-v17-bridge/g) || []).length, 2, 'Two narrative transitions required');
+assert.equal((page.match(/data-v17-parallax/g) || []).length, 2, 'Parallax only on market and table photographs');
+assert.match(motion, /\(min-width: 761px\)/);
+assert.doesNotMatch(motion, /\bpin:\s*true\b|\bscrollTo\s*\(/);
+assert.match(css, /--v17-bridge-progress,1/);
 assert.doesNotMatch(page, /Au marché de Kep/);
 for (const [, path] of page.matchAll(/'(\/images\/cuisine\/[^']+)'/g)) {
   assert.ok(fs.existsSync('public' + path), 'Image manquante : ' + path);

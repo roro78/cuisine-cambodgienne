@@ -79,3 +79,11 @@ Pour les transitions, les révélations conservent désormais une opacité de d�
 ## V17-01 — Diversification de la scène de table (13 octobre 2026)
 
 La scène « À table » ne réutilise plus l'Amok V16. Elle montre un assortiment cambodgien photographié à **Phnom Penh** par **Jason Eppink** (12 janvier 2013), publié sous licence **CC BY 2.0**. La version responsive est encodée en WebP (640 et 1280 px) sans recours à un service payant. La vue est recadrée en format vertical cohérent avec son image source ; le crédit et les informations de licence sont présents en bas du prototype et détaillés dans `docs/v17-sourcing-medias.md`. L'objectif « authentique table familiale avec plusieurs plats » reste ouvert, puisque l'image provient d'un assortiment au restaurant.
+
+## V17-01 — Deux transitions narratives liées au scroll (13 octobre 2026)
+
+Le prototype ajoute désormais **deux interludes écrits** : entre le marché et le mortier (« Choisir les aromates. Apprendre à les travailler. ») puis entre le mortier et la table (« La préparation prend forme. À chacun son plat. »). Ils ne sont pas des chapitres supplémentaires : ils rendent explicite la continuité produits → geste → repas.
+
+À partir de **761 px** et seulement sans réduction du mouvement, GSAP anime **la progression d'un trait décoratif** synchronisé au passage de chaque interlude et un très léger parallaxe des deux photographies existantes (marché et table). Pas de scène épinglée (`pin`), pas de lissage/contrôle forcé du défilement, pas de média supplémentaire. Sur mobile et en mode `prefers-reduced-motion`, les traits sont immédiatement complets et les images statiques. L'expérience demeure lisible sans JavaScript.
+
+Cette étape est un **prototype technique de transition**, et non la réalisation complète du storyboard à six scènes : ni cinématique de cuisson ni prises de vues de préparation successives ne sont simulées.
