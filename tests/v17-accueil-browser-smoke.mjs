@@ -85,6 +85,22 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     });
     assert.ok(heroLines.scrollWidth-heroLines.clientWidth<=2,
       'Headline must not be clipped on small screens: '+JSON.stringify(heroLines));
+    // Geometric contract derived from the accepted hero composition:
+    // the headline stays on the left, clear of the main food photograph.
+    if(width===1440){
+      const heroFidelity=await page.evaluate(()=>{
+        const title=document.querySelector('#v17r-hero-title');
+        const image=document.querySelector('.v17r-hero-dish');
+        const first=title?.firstChild;
+        if(!first||!image)return null;
+        const line=document.createRange();
+        line.selectNodeContents(first);
+        return {firstLineRight:line.getBoundingClientRect().right,
+          photoLeft:image.getBoundingClientRect().left};
+      });
+      assert.ok(heroFidelity && heroFidelity.firstLineRight<=heroFidelity.photoLeft,
+        'Hero heading must not touch the food photograph: '+JSON.stringify(heroFidelity));
+    }
     if(width===1440 && !noJs && !reduced){
       const anim=await page.evaluate(async()=>{
         const scene=document.querySelector('.v17r-palette');
