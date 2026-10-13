@@ -91,19 +91,20 @@
   background:#fffdf7;color:#191919;
 }
 .v17-shell .v17-pantry-heading{
-  display:flex;flex-direction:column-reverse;align-items:center;gap:2.1rem;
+  display:flex;flex-direction:column;align-items:center;gap:2.1rem;
   max-width:75rem;margin:clamp(3.5rem,7vw,7rem) auto 0;text-align:center;
 }
 .v17-shell .v17-pantry-heading h2{
-  margin:0;font-size:clamp(4.2rem,8.3vw,9rem);line-height:.92;text-align:center;
+  order:0;margin:0;font-size:clamp(4.2rem,8.3vw,9rem);line-height:.92;text-align:center;
 }
-.v17-shell .v17-pantry-heading>p{max-width:29rem;margin:0;font-size:clamp(1rem,1.2vw,1.2rem);line-height:1.75}
+.v17-shell .v17-pantry-heading>p{order:1;max-width:29rem;margin:0;font-size:clamp(1rem,1.2vw,1.2rem);line-height:1.75}
 .v17-shell .v17-pantry-stage{
   max-width:75rem;height:clamp(27rem,39vw,35rem);margin:clamp(3rem,7vw,7rem) auto 0;
 }
 .v17-shell .v17-pantry-orbit{opacity:.2}
 .v17-shell .v17-pantry-center{font-size:clamp(1.1rem,1.7vw,1.8rem);top:70%}
 .v17-shell .v17-pantry-galangal{top:30%;left:3%;width:30%}
+.v17-shell .v17-pantry-actor figcaption{background:transparent;padding:.25rem .2rem;border-radius:0}
 .v17-shell .v17-pantry-citronnelle{top:0;left:37%}
 .v17-shell .v17-pantry-chili{top:26%;right:4%;width:24%}
 .v17-shell .v17-pantry-footer{
@@ -128,7 +129,7 @@
   margin:0;padding:0;border:0;box-shadow:none;transform:none;
 }
 .v17-shell .v17-gesture-paste img{
-  width:100%;aspect-ratio:2.05;object-fit:cover;
+  width:100%;height:auto;min-height:0;aspect-ratio:2.05;object-fit:cover;
   border-radius:6rem 1.5rem 1.5rem 6rem;
 }
 .v17-shell .v17-gesture-paste figcaption{max-width:32rem;padding:1.2rem 0 0;font-size:.78rem;line-height:1.6}
@@ -136,8 +137,8 @@
 .v17-shell .v17-gesture-study{
   width:100%;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;
 }
-.v17-shell .v17-gesture-study ol{margin:1.8rem 0 2.2rem}
-.v17-shell .v17-gesture-study li{padding:1.4rem 0;gap:1rem;border-color:rgba(25,25,25,.2)}
+.v17-shell .v17-gesture-study ol{display:block;grid-template-columns:none;margin:1.8rem 0 2.2rem}
+.v17-shell .v17-gesture-study li{grid-template-columns:3rem 1fr;padding:1.4rem 0;gap:1rem;border:0;border-bottom:1px solid rgba(25,25,25,.2);border-radius:0;background:transparent}
 .v17-shell .v17-gesture-study li strong{font-size:clamp(1.25rem,1.7vw,1.75rem)}
 .v17-shell .v17-gesture-study li small{line-height:1.55}
 /* 05 — Single dominant image; title and copy are on the RIGHT, lots of
@@ -148,20 +149,21 @@
   align-items:center;padding:clamp(5rem,9vw,10rem) clamp(1.5rem,7vw,9rem);
   background:#ea633e;color:#181818;
 }
-.v17-shell .v17-table .v17-scene-top{grid-column:1/-1}
+.v17-shell .v17-table .v17-scene-top{position:static;top:auto;left:auto;right:auto;grid-column:1/-1;color:#181818}
 .v17-shell .v17-table h2{
   grid-column:2;grid-row:2;align-self:end;max-width:10ch;
-  margin:0 0 3rem;font-size:clamp(3.5rem,7vw,7.2rem);line-height:.94;text-align:right;
+  position:relative;inset:auto;top:auto;z-index:2;pointer-events:auto;
+  margin:0 0 3rem;font-size:clamp(3.5rem,7vw,7.2rem);line-height:.94;text-align:right;color:#181818;text-shadow:none;
 }
 .v17-shell .v17-table-photo,
 .v17-shell .v17-preview .v17-table-photo{
-  grid-column:1;grid-row:2/4;
-  justify-self:start;width:min(100%,40rem);max-width:none;aspect-ratio:.7;
+  grid-column:1;grid-row:2;align-self:center;
+  justify-self:start;width:min(100%,40rem);max-width:none;aspect-ratio:.7;height:auto;min-height:0;
   margin:clamp(3rem,5vw,5rem) 0 0;border:0;box-shadow:none;transform:none;
 }
 .v17-shell .v17-table-bottom{
   grid-column:2;grid-row:3;align-self:start;display:flex;flex-direction:column;align-items:flex-end;
-  gap:1.5rem;text-align:right;
+  gap:1.5rem;text-align:right;background:transparent;color:#181818;width:auto;padding:0;
 }
 .v17-shell .v17-table-bottom p{max-width:25rem;margin:0;font-size:clamp(1rem,1.15vw,1.2rem);line-height:1.65}
 .v17-shell .v17-table-stamp{display:none}
@@ -171,19 +173,19 @@
   min-height:0;padding:clamp(9rem,13vw,14rem) clamp(1.5rem,7vw,9rem) clamp(8rem,12vw,13rem);
   background:#fff8f2;color:#191919;
 }
-.v17-shell .v17-sweets-heading{max-width:75rem;margin:clamp(4rem,8vw,8rem) auto 0;text-align:center}
-.v17-shell .v17-sweets-heading>p{font-size:.84rem;font-weight:850;letter-spacing:.14em;text-transform:uppercase}
+.v17-shell .v17-sweets-heading{min-height:0;max-width:75rem;margin:clamp(4rem,8vw,8rem) auto 0;text-align:center}
+.v17-shell .v17-sweets-heading>p{position:static;left:auto;top:auto;margin:0;font-family:var(--v17-font);font-style:normal;font-size:.84rem;font-weight:850;letter-spacing:.14em;text-transform:uppercase}
 .v17-shell .v17-sweets h2{
   max-width:16ch;margin:1.2rem auto 0;font-size:clamp(4.4rem,8vw,8.5rem);line-height:.94;text-align:center;
 }
-.v17-shell .v17-sweets-coconut{width:clamp(4rem,7vw,7rem);right:0;top:-3rem;opacity:.75;transform:rotate(-8deg)}
+.v17-shell .v17-sweets-coconut{width:clamp(4rem,7vw,7rem);left:auto;right:0;top:-3rem;opacity:.75;transform:rotate(-8deg)}
 .v17-shell .v17-sweets-gallery{
   max-width:85rem;display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,.16fr) minmax(0,.6fr);
   align-items:center;gap:clamp(1.5rem,3vw,4rem);margin:clamp(4rem,7vw,7rem) auto;
 }
 .v17-shell .v17-sweets-feature img{aspect-ratio:2.1}
 .v17-shell .v17-sweets-secondary img{aspect-ratio:.54}
-.v17-shell .v17-sweets-interlude{font-size:1.8rem;opacity:.55}
+.v17-shell .v17-sweets-interlude{font-family:var(--v17-font);font-style:normal;font-size:1.8rem;opacity:.55}
 .v17-shell .v17-sweets-interlude strong{display:none}
 .v17-shell .v17-sweets-bottom{max-width:85rem;margin:0 auto;padding-top:1.5rem}
 .v17-shell .v17-sweets-bottom p{max-width:30rem;font-size:1.04rem;line-height:1.75}
@@ -261,7 +263,7 @@
   .v17-shell .v17-market-bottom{display:flex;flex-direction:column;align-items:flex-start;gap:.85rem}
   .v17-shell .v17-market-bottom>span{width:auto}
   .v17-shell .v17-pantry{padding:7rem 1.3rem 8rem;min-height:0}
-  .v17-shell .v17-pantry-heading{display:flex;flex-direction:column-reverse;margin:2rem auto 0;gap:1.7rem}
+  .v17-shell .v17-pantry-heading{display:flex;flex-direction:column;margin:2rem auto 0;gap:1.7rem}
   .v17-shell .v17-pantry-heading h2{font-size:clamp(3.2rem,11vw,5rem);text-align:center}
   .v17-shell .v17-pantry-heading p{max-width:21rem;text-align:center;font-size:.94rem;line-height:1.65}
   .v17-shell .v17-pantry-stage{margin:2rem 0 0;height:auto}
@@ -283,7 +285,7 @@
   }
   .v17-shell .v17-preview .v17-table-photo{
     width:min(85%,29rem);max-width:none;align-self:center;
-    aspect-ratio:.7;margin:0 auto 4rem;
+    aspect-ratio:.7;height:auto;min-height:0;margin:0 auto 4rem;
   }
   .v17-shell .v17-table-bottom{align-items:flex-end;text-align:right;gap:1.5rem}
   .v17-shell .v17-table-bottom p{max-width:22rem}
@@ -314,3 +316,9 @@
 @media (prefers-reduced-motion:reduce){
   .v17-shell .v17-preview *{scroll-behavior:auto}
 }
+
+/* Legacy V17.5 used explicit image heights: force documentary images
+   to keep their intentional non-square proportions at all breakpoints. */
+.v17-shell .v17-preview .v17-gesture-paste img{height:auto;min-height:0;aspect-ratio:2.05;object-fit:cover}
+.v17-shell .v17-preview .v17-table-photo{height:auto;min-height:0;align-self:center}
+@media(max-width:760px){.v17-shell .v17-preview .v17-table-photo{height:auto;min-height:0}}
