@@ -83,3 +83,21 @@ Le média **mortier réel pendant le geste** manque toujours ; ne pas le remplac
 - La planche composite montre des compositions culinaires idéalisées ; elle n'atteste pas les droits ni la provenance d'une image documentaire individuelle. **Ne pas extraire** directement ses morceaux en prétendant disposer des photographies réelles (marché, mortier, tablée, desserts).
 - Reprise de comparaison : photographie héro Amok réelle mais cadrage différent, marché réel d'étal fixe, palette trop peu fournie, mortier actuellement illustré, tablée réelle moins lumineuse, desserts réels mais différents des arrangements générés, Angkor réel en ambiance diurne différente de la planche.
 - **Aucun nouvel asset non sourcé introduit** dans le lot CSS `fac99b4` → `be7764f`. Les droits des fichiers Commons déjà présents devront être revalidés avant publication. La recherche d'une photographie du pilage khmer documenté demeure prioritaire.
+
+
+### Sourcing complémentaire après refus artistique explicite — 13 octobre 2026
+
+La copie transmise est une **référence de composition**. L'actuel assemblage de photos sur la PR #47 n'est toujours pas reçu. Les images ci-dessous sont uniquement des **pistes vérifiées sur leurs fiches Wikimedia Commons**, pas des médias intégrés ni des substitutions artistiques acceptées.
+
+| Scène | Candidat réel | Auteur / statut déclaré sur Commons | Réception |
+| --- | --- | --- | --- |
+| Marché plus vivant | [Market in Cambodia.jpg](https://commons.wikimedia.org/wiki/File:Market_in_Cambodia.jpg), légumes à Phnom Penh | Justin Watt, œuvre placée dans le domaine public | **Candidat**, cadrage/dynamique artistique à comparer à la maquette |
+| Marché avec présence humaine | [Market Woman in Kep Cambodia.JPG](https://commons.wikimedia.org/wiki/File:Market_Woman_in_Kep_Cambodia.JPG), femme au marché de Kep | Adam Jones, CC BY 3.0, attribution demandée explicitement | **Candidat**, contexte et licence à enregistrer dans les crédits |
+| Gestes / cuisine | [Traditional Khmer kitchen.jpg](https://commons.wikimedia.org/wiki/File:Traditional_Khmer_kitchen.jpg) | Turaids, photographie d'une cuisine khmère traditionnelle à Siem Reap, 2021 | **Contexte uniquement**, ne montre PAS un geste réel de pilage : insuffisant pour valider la scène |
+| Mortier générique | [Mortar & Pestle.jpg](https://commons.wikimedia.org/wiki/File:Mortar_%26_Pestle.jpg) | Saankav, mortier indien, photographie réelle | **REJETÉ comme photo de geste cambodgien**, ne pas légender comme kroeung |
+| Finale atmosphère crépusculaire | [Angkor wat sunrise.jpg](https://commons.wikimedia.org/wiki/File:Angkor_wat_sunrise.jpg) | Cambodiancab, photographie lever de soleil 2017 | **Candidat**, angle/valeurs et licence à réexaminer |
+| Déjà acquis en preview | [Angkor Wat Reflection.jpg](https://commons.wikimedia.org/wiki/File:Angkor_Wat_Reflection_(46810498612).jpg) | Radek Kucharski, CC BY 2.0 | **Acquis juridiquement sous réserve de respect des conditions**, mais rendu actuel plus bleu que la référence |
+
+**Illustration ajoutée** : `public/images/brand/v17-spice-bowls.svg` (poivre et curcuma), dessin original réalisé dans la PR #47 ; il ne doit pas être décrit comme photographie ou aliment réel photographié.
+
+**Gate média = NON SATISFAIT.** Tant que des photographies réelles assez proches de la scène de marché, du pilage de kroeung et de la tablée n'ont pas été sélectionnées, inspectées et obtenues en résolution de production, il est interdit de déclarer D3–D5 fidèles. En particulier, une photo d'un autre pays ne devient pas documentaire cambodgien par le seul changement de sa légende.
