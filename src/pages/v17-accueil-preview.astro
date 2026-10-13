@@ -8,12 +8,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import '../styles/v17-accueil-rebuild.css';
-const hero = '/images/cuisine/v17-amok-rice-1920.jpg';
+const hero = '/images/cuisine/v17-hero-amok-genere.webp';
 const market = '/images/cuisine/v17-market-live-1800.jpg';
 const kampot = '/images/cuisine/kampot-1600.webp';
-const table = '/images/cuisine/v17-khmer-table-1280.webp';
-const dessertPlaeAi = '/images/cuisine/v17-num-plae-ai-641.jpg';
-const dessertKom = '/images/cuisine/v17-num-kom-900.jpg';
+const table = '/images/cuisine/v17-tablee-khmere-generee.webp';
+const dessertGenerated = '/images/cuisine/v17-desserts-khmers-generes.webp';
 const galangal = '/images/cuisine/v17-galangal-1000.jpg';
 const chili = '/images/cuisine/v17-chili-450.png';
 ---
@@ -21,14 +20,14 @@ const chili = '/images/cuisine/v17-chili-450.png';
   title="V17 — Prévisualisation du nouvel accueil | Cuisine du Cambodge"
   description="Prévisualisation non publiée de la page d'accueil : recettes, ingrédients, gestes, repas et desserts cambodgiens."
   image={hero}
-  imageAlt="Amok cambodgien"
+  imageAlt="Illustration éditoriale générée d’un Amok de poisson"
   noindex
 >
   <a class="v17r-skip" href="#v17r-main">Aller au contenu</a>
   <div class="v17r-wrap" data-v17r-preview>
     <SiteHeader />
     <main class="v17r" id="v17r-main">
-      <section class="v17r-hero" aria-labelledby="v17r-hero-title">
+      <section class="v17r-hero v17r-hero--generated" aria-labelledby="v17r-hero-title">
         <div class="v17r-hero-art" aria-hidden="true">
           <svg class="v17r-temple-illustration" viewBox="0 0 900 430" xmlns="http://www.w3.org/2000/svg" fill="none">
             <g fill="#b58c50" opacity=".38"><path d="M50 430V311h105v-61h35v-69h25v-38h26v38h26v69h37v61h78V252h25v-43h25v-52h23v-40h25v40h22v52h27v43h95v58h59V248h32v-48h28v-50h23v50h28v48h32v63h89v119H50Z"/><path d="M427 157l15-74 17-40 17 40 18 74z"/></g>
@@ -46,7 +45,7 @@ const chili = '/images/cuisine/v17-chili-450.png';
         </div>
         <div class="v17r-hero-media">
           <figure class="v17r-hero-dish">
-            <img src={hero} srcset="/images/cuisine/v17-amok-rice-960.jpg 960w, /images/cuisine/v17-amok-rice-1920.jpg 1920w" sizes="(max-width: 760px) 90vw, 50vw" width="1920" height="1280" fetchpriority="high" decoding="async" alt="Amok de poisson cambodgien, photographie réelle" />
+            <img src={hero} sizes="(max-width: 760px) 96vw, 54vw" width="1448" height="1086" fetchpriority="high" decoding="async" alt="Illustration générée d’un Amok Trey au poisson, à la noix de coco, aux aromates et aux piments, dans des feuilles de bananier" />
             <figcaption>Amok Trey <span>Poisson, coco et aromates</span></figcaption>
           </figure>
           <span class="v17r-label" aria-hidden="true">DES SAVEURS<br/>VRAIES ✳</span>
@@ -131,9 +130,9 @@ const chili = '/images/cuisine/v17-chili-450.png';
       </section>
       <div class="v17r-wave v17r-wave-cream" aria-hidden="true"><svg viewBox="0 0 1440 95" preserveAspectRatio="none"><path d="M0 12C135 89 327 7 495 45S839 65 1010 26 1241 79 1440 38v57H0Z" fill="#69361e"/></svg></div>
 
-      <section class="v17r-table" aria-labelledby="v17r-table-title">
+      <section class="v17r-table v17r-table--generated" aria-labelledby="v17r-table-title">
         <div class="v17r-table-media">
-          <figure class="v17r-table-amok"><img src={table} width="1280" height="1707" loading="lazy" decoding="async" alt="Assortiment photographié de spécialités khmères, avec plats salés, riz et aromates" /></figure>
+          <figure class="v17r-table-amok"><img src={table} width="1600" height="900" loading="lazy" decoding="async" alt="Illustration éditoriale générée d’une table conviviale d’inspiration cambodgienne, avec différents plats, currys, nouilles, riz et aromates" /></figure>
         </div>
         <div class="v17r-table-copy">
           <img class="v17r-botanic v17r-table-flower" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
@@ -144,7 +143,7 @@ const chili = '/images/cuisine/v17-chili-450.png';
           <a class="v17r-table-sub" href="/culture/construire-repas-cambodgien/">Comprendre le repas cambodgien →</a>
         </div>
         <span class="v17r-calligraphy v17r-table-handnote" aria-hidden="true">Frais<br/>Coloré<br/>Généreux</span>
-        <p class="v17r-table-clarity">Photographie authentique d'un assortiment de spécialités khmères — présentation documentaire, non réalisée par notre équipe.</p>
+        <p class="v17r-table-clarity">Illustration culinaire générée par IA : composition éditoriale d’un repas inspiré de la cuisine cambodgienne.</p>
       </section>
 
       <section class="v17r-dessert" aria-labelledby="v17r-dessert-title">
@@ -154,13 +153,11 @@ const chili = '/images/cuisine/v17-chili-450.png';
           <p>Num Plae Ai, Num Kom, Chek Ktis… Riz gluant, coco et douceurs à partager pour prolonger le voyage.</p>
           <a class="v17r-pill" href="/recettes/chek-ktis/">Découvrir le Chek Ktis <span aria-hidden="true">↗</span></a>
         </div>
-        <div class="v17r-dessert-art">
-          <img class="v17r-botanic v17r-dessert-flower" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
-          <img class="v17r-botanic v17r-dessert-lime" src="/images/brand/v17-lime.svg" alt="" width="420" height="360" />
-          <img class="v17r-dessert-banana" src="/images/brand/v17-banana-leaves.svg" alt="" aria-hidden="true" width="560" height="690" loading="lazy" decoding="async" />
-          <span class="v17r-calligraphy v17r-dessert-handnote" aria-hidden="true">Num Plae Ai<br/>et coco frais</span>
-          <figure class="v17r-dessert-main"><img src={dessertPlaeAi} width="641" height="641" loading="lazy" decoding="async" alt="Num Plae Ai, petites boules de riz gluant garnies de noix de coco râpée dans une feuille de bananier" /><figcaption>Num Plae Ai · riz gluant et coco</figcaption></figure>
-          <figure class="v17r-dessert-second"><img src={dessertKom} width="900" height="1094" loading="lazy" decoding="async" alt="Num Kom, gâteaux de riz gluant cambodgiens enveloppés de feuilles de bananier" /><figcaption>Num Kom · riz gluant</figcaption></figure>
+        <div class="v17r-dessert-art v17r-dessert-art--generated">
+          <figure class="v17r-dessert-generated">
+            <img src={dessertGenerated} width="1448" height="1086" loading="lazy" decoding="async" alt="Illustration générée de douceurs d’inspiration khmère : riz gluant au lait de coco, mangue, fruits et gâteaux enveloppés de feuilles de bananier" />
+            <figcaption>Riz gluant, mangue, coco et feuilles de bananier · illustration culinaire IA</figcaption>
+          </figure>
         </div>
       </section>
 
@@ -191,7 +188,7 @@ const chili = '/images/cuisine/v17-chili-450.png';
 
       <aside class="v17r-preview-notice" aria-label="Statut et sources du prototype">
         <details><summary>Sources photographiques et état de la prévisualisation</summary>
-        <p><strong>Prévisualisation technique V17 — non publiée.</strong> Ce parcours reprend la structure et les liens de la maquette validée. Le pilage est illustré par une photographie de mains au mortier, sans allégation de provenance cambodgienne ; le kroeung est représenté par une photo distincte. La finale emploie un cliché réel d'Angkor au crépuscule. Les photos des plats, ingrédients et desserts proviennent de Wikimedia Commons ; aucune recette n'est présentée comme réalisée par l'équipe. <a href="/credits-photos/">Crédits des photographies existantes</a>. Nouvelles sources :
+        <p><strong>Prévisualisation technique V17 — non publiée.</strong> Ce parcours reprend la structure et les liens de la maquette validée. Le pilage est illustré par une photographie de mains au mortier, sans allégation de provenance cambodgienne ; le kroeung est représenté par une photo distincte. La finale emploie un cliché réel d'Angkor au crépuscule. Les illustrations du hero Amok, de la tablée et des desserts sont générées par IA et ne sont pas des photographies documentaires. Les autres photographies d’ingrédients, de marché et de gestes restent créditées selon leurs sources ; aucune recette n’est présentée comme réalisée par l’équipe. <a href="/credits-photos/">Crédits des photographies existantes</a>. Nouvelles sources :
         <a href="https://commons.wikimedia.org/wiki/File:Num_Plae_Ai.jpg" target="_blank" rel="noopener noreferrer">Num Plae Ai — Hyzuko, CC BY-SA 4.0, photographie cadrée pour le site</a> ;
         <a href="https://commons.wikimedia.org/wiki/File:Market_in_Phnom_Penh.jpg" target="_blank" rel="noopener noreferrer">marché — Radosław Botev / Fundacja Nomos, CC BY 3.0 PL, redimensionné</a> ;
         <a href="https://www.pexels.com/photo/woman-hands-holding-mortar-21937648/" target="_blank" rel="noopener noreferrer">mortier — Filipp Romanovski, Pexels License, illustration générique</a> ;
