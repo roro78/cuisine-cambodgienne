@@ -903,8 +903,8 @@
   .v17r-hero-dish{
     clip-path:none;
     border-radius:0 0 0 4.5rem;
-    -webkit-mask-image:radial-gradient(ellipse 92% 94% at 62% 49%,#000 63%,rgba(0,0,0,.98) 78%,transparent 100%);
-    mask-image:radial-gradient(ellipse 92% 94% at 62% 49%,#000 63%,rgba(0,0,0,.98) 78%,transparent 100%);
+    -webkit-mask-image:radial-gradient(ellipse 78% 76% at 66% 62%,#000 46%,rgba(0,0,0,.93) 65%,transparent 97%);
+    mask-image:radial-gradient(ellipse 78% 76% at 66% 62%,#000 46%,rgba(0,0,0,.93) 65%,transparent 97%);
     box-shadow:none;
   }
   .v17r-table{min-height:max(42rem,100svh)}
@@ -915,16 +915,16 @@
 @media(min-width:761px) and (max-width:1199px){
   .v17r-hero-dish{
     clip-path:none;border-radius:0 0 0 2rem;
-    -webkit-mask-image:linear-gradient(90deg,transparent,#000 13%,#000 98%);
-    mask-image:linear-gradient(90deg,transparent,#000 13%,#000 98%);
+    -webkit-mask-image:radial-gradient(ellipse 83% 76% at 67% 61%,#000 48%,rgba(0,0,0,.9) 67%,transparent 98%);
+    mask-image:radial-gradient(ellipse 83% 76% at 67% 61%,#000 48%,rgba(0,0,0,.9) 67%,transparent 98%);
   }
   .v17r-table-media .v17r-table-amok img{object-position:50% 45%}
 }
 @media(max-width:760px){
   .v17r-hero-dish{
     clip-path:none;border-radius:0 0 1.4rem 2.5rem;
-    -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 98%);
-    mask-image:linear-gradient(90deg,transparent,#000 7%,#000 98%);
+    -webkit-mask-image:radial-gradient(ellipse 80% 75% at 57% 61%,#000 49%,rgba(0,0,0,.93) 69%,transparent 98%);
+    mask-image:radial-gradient(ellipse 80% 75% at 57% 61%,#000 49%,rgba(0,0,0,.93) 69%,transparent 98%);
   }
   .v17r-table-media .v17r-table-amok img{object-position:50% 46%;filter:saturate(1.15) contrast(1.02)}
   .v17r-table::before{background:linear-gradient(180deg,rgba(16,22,13,.34),rgba(13,20,12,.68) 47%,rgba(14,22,14,.48))}
