@@ -36,6 +36,22 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     for(const chapter of chapters)assert.equal(await page.locator('.v17r-'+chapter).count(),1);
     const links=['/recettes/','/ingredients/','/glossaire/','/apprendre/','/recettes/chek-ktis/','/apprendre/piler-aromates-au-mortier/'];
     for(const href of links)assert.ok(await page.locator('a[href="'+href+'"]').count()>0,'Missing '+href);
+    const photoContrast=await page.evaluate(()=>{
+      const scene=document.querySelector('.v17r-table');
+      const media=document.querySelector('.v17r-table-media');
+      const shade=getComputedStyle(scene,'::before');
+      const heroText=scene.querySelector('h2');
+      return {
+        photoZ:Number(getComputedStyle(media).zIndex),
+        shadeZ:Number(shade.zIndex),
+        titleZ:Number(getComputedStyle(scene.querySelector('.v17r-table-copy')).zIndex),
+        titleOverflow:heroText.scrollWidth-heroText.clientWidth
+      };
+    });
+    assert.ok(photoContrast.photoZ>=0 && photoContrast.shadeZ>photoContrast.photoZ &&
+      photoContrast.titleZ>photoContrast.shadeZ,
+      'Photo under a readable overlay, not behind the scene background: '+JSON.stringify(photoContrast));
+    assert.ok(photoContrast.titleOverflow<=2,'Table title must fit even on small screens: '+JSON.stringify(photoContrast));
     const dimension=await page.evaluate(()=>({
       html:document.documentElement.scrollWidth,client:document.documentElement.clientWidth,
       w:innerWidth
