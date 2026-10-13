@@ -158,8 +158,29 @@ try {
   await inspectViewport(768, 1024, null);
   await inspectViewport(320, 640, null);
   await inspectViewport(390, 844, null, { reduced: true });
+  // A static Astro export must remain usable if GSAP/JavaScript never starts.
+  const noJs = await browser.newPage({
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+    javaScriptEnabled: false
+  });
+  try {
+    const response = await noJs.goto(base + '/v17-preview/', { waitUntil: 'domcontentloaded' });
+    assert.equal(response?.status(), 200, 'Static prototype returns 200 without JavaScript');
+    assert.ok(await noJs.locator('.v17-bridge-market h2').isVisible());
+    assert.ok(await noJs.locator('.v17-bridge-table h2').isVisible());
+    assert.equal(await noJs.locator('.v17-actions a').first().getAttribute('href'), '/recettes/');
+    assert.equal(await noJs.locator('.v17-actions a').last().getAttribute('href'), '/apprendre/');
+    const opacity = await noJs.locator('.v17-market-copy').evaluate((el) =>
+      getComputedStyle(el).opacity
+    );
+    assert.equal(opacity, '1', 'No-JS narrative content must be fully readable');
+  } finally {
+    await noJs.close();
+  }
   assert.deepEqual(errors, [], 'No runtime JavaScript errors');
-  console.log('V17 preview browser QA: PASS — noindex, responsiveness, photography, navigation, reduced motion');
+  console.log('V17 preview browser QA: PASS — scroll progression, no-JS, accessibility, responsive and reduced motion');
 } catch (error) {
   console.error('V17 preview browser QA: FAIL — ' + (error?.stack || error));
   process.exitCode = 1;

@@ -71,7 +71,7 @@
 .v17-market-large img{object-position:55% center}
 .v17-market-small{position:relative;aspect-ratio:3/4;margin-bottom:-2rem;overflow:hidden;border-radius:.55rem;box-shadow:0 1.5rem 3.5rem rgba(39,29,19,.18)}
 .v17-market-gallery figcaption{position:absolute;bottom:0;left:0;right:0;padding:2rem .8rem .8rem;background:linear-gradient(transparent,rgba(0,0,0,.6));color:white;font-size:.75rem}
-.v17-bridge{position:relative;isolation:isolate;display:grid;align-items:center;padding:clamp(3.7rem,8vw,8rem) clamp(1.25rem,6vw,7rem);min-height:clamp(20rem,52svh,35rem);overflow:hidden}
+.v17-bridge{position:relative;isolation:isolate;display:grid;align-items:center;padding:clamp(3.7rem,8vw,8rem) clamp(1.25rem,6vw,7rem);min-height:clamp(16rem,38svh,28rem);overflow:hidden}
 .v17-bridge-market{background:#80503f;color:#fff6eb}
 .v17-bridge-table{background:#253a2e;color:#fff6eb}
 .v17-bridge::before{position:absolute;inset:auto -7rem -24rem auto;width:min(65vw,50rem);aspect-ratio:1;border:1px solid rgba(255,245,222,.18);border-radius:50%;content:"";pointer-events:none}
@@ -135,7 +135,7 @@
   .v17-hero:before{display:none}
   .v17-intro{padding:5rem 1.25rem}
   .v17-intro h2{font-size:clamp(2.9rem,10vw,4.6rem)}
-  .v17-bridge{min-height:0;padding:4.5rem 1.25rem}
+  .v17-bridge{min-height:0;padding:3.2rem 1.25rem}
   .v17-bridge h2{font-size:clamp(2.7rem,9.7vw,4.5rem)}
   .v17-bridge::before{inset:auto -11rem -9rem auto;width:22rem}
   .v17-bridge-trace{margin-top:2rem}

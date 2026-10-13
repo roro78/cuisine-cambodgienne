@@ -87,3 +87,7 @@ Le prototype ajoute désormais **deux interludes écrits** : entre le marché et
 À partir de **761 px** et seulement sans réduction du mouvement, GSAP anime **la progression d'un trait décoratif** synchronisé au passage de chaque interlude et un très léger parallaxe des deux photographies existantes (marché et table). Pas de scène épinglée (`pin`), pas de lissage/contrôle forcé du défilement, pas de média supplémentaire. Sur mobile et en mode `prefers-reduced-motion`, les traits sont immédiatement complets et les images statiques. L'expérience demeure lisible sans JavaScript.
 
 Cette étape est un **prototype technique de transition**, et non la réalisation complète du storyboard à six scènes : ni cinématique de cuisson ni prises de vues de préparation successives ne sont simulées.
+
+### Ajustement après captures navigateur — rythme mobile
+
+La capture intégrale du prototype a révélé que les deux interludes ajoutaient de la hauteur à une page déjà longue. Leur hauteur minimum desktop a été réduite de **52 à 38 svh** (dans les limites CSS prévues) et leur padding mobile de **4,5 à 3,2 rem**. Un contrôle navigateur **sans JavaScript** est ajouté : titres, accès recettes/ateliers et contenus sont lisibles sans GSAP.
