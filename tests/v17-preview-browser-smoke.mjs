@@ -65,9 +65,9 @@ async function inspect(width,height,screenshotPath,options={}) {
       gesture:getComputedStyle(document.querySelector('.v17-gesture')).backgroundColor,
       table:getComputedStyle(document.querySelector('.v17-table')).backgroundColor
     }));
-    assert.equal(colors.hero,'rgb(255, 253, 247)');
-    assert.equal(colors.market,'rgb(217, 241, 109)');
-    assert.equal(colors.table,'rgb(255, 99, 57)');
+    assert.equal(colors.hero,'rgb(253, 249, 237)');
+    assert.equal(colors.market,'rgb(23, 59, 47)');
+    assert.equal(colors.table,'rgb(234, 99, 62)');
 
     const geometry=await page.evaluate(()=>({
       scroll:document.documentElement.scrollWidth,client:document.documentElement.clientWidth,
