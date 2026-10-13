@@ -128,6 +128,15 @@ async function inspect(width,height,screenshotPath,options={}) {
     assert.ok(ratios.every(r=>r.w>0&&r.h>0&&Math.abs(r.ratio-1)>=.23),
       'V17.4 forbids near-square editorial photos: '+JSON.stringify(ratios));
     if(width===390) {
+      const dessertOverlay = await page.evaluate(() => {
+        const icon = document.querySelector('.v17-sweets-coconut').getBoundingClientRect();
+        const title = document.querySelector('.v17-sweets h2').getBoundingClientRect();
+        return { iconBottom: icon.bottom, titleTop: title.top };
+      });
+      assert.ok(dessertOverlay.iconBottom <= dessertOverlay.titleTop - 2,
+        'Dessert coconut decoration must not overlap headline: '+JSON.stringify(dessertOverlay));
+    }
+    if(width===390) {
       const spacing=await page.evaluate(()=>{
         const photo=document.querySelector('.v17-table-photo').getBoundingClientRect();
         const text=document.querySelector('.v17-table-bottom p').getBoundingClientRect();

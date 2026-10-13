@@ -277,7 +277,7 @@
   .v17-sweets-heading{margin:2rem 0 0}
   .v17-sweets h2{font-size:clamp(4rem,13vw,6rem)}
   .v17-sweets-heading>p{font-size:1rem}
-  .v17-sweets-coconut{width:5.6rem;right:0;top:4.2rem}
+  .v17-sweets-coconut{width:5.6rem;right:0;top:-4rem}
   .v17-sweets-gallery{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin:2.7rem 0}
   .v17-sweets-feature{grid-column:1 / -1}
   .v17-sweets-secondary{grid-column:2;grid-row:2}
