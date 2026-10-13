@@ -1,0 +1,165 @@
+/*
+ * V17 — Intégration des illustrations éditoriales générées.
+ * Ce fichier ne concerne que la preview : aucun effet sur l'accueil V16.
+ * Les images sont optimisées WebP et ne sont pas des photos documentaires.
+ */
+.v17r-hero--generated .v17r-hero-dish {
+  width: min(100%, 52rem);
+  aspect-ratio: 4 / 3;
+  transform: none;
+  border-radius: 0;
+  clip-path: none;
+  box-shadow: none;
+  background: #fff8e9;
+  -webkit-mask-image: radial-gradient(ellipse 96% 93% at 53% 53%, #000 72%, transparent 100%);
+  mask-image: radial-gradient(ellipse 96% 93% at 53% 53%, #000 72%, transparent 100%);
+}
+.v17r-hero--generated .v17r-hero-dish img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.02);
+  transform-origin: center;
+  filter: saturate(1.05);
+}
+.v17r-hero--generated .v17r-hero-dish figcaption {
+  position: absolute;
+  right: 11%;
+  bottom: 8%;
+  left: auto;
+  padding: .5rem .8rem;
+  border-radius: 1rem;
+  background: rgba(255, 249, 236, .93);
+  color: #1e3928;
+  font-size: clamp(.85rem, 1.25vw, 1.12rem);
+  box-shadow: 0 .3rem .8rem #19261c22;
+}
+.v17r-hero--generated .v17r-hero-dish figcaption span {
+  font-size: .72rem;
+  margin-top: .2rem;
+}
+.v17r-hero--generated .v17r-hero-flower-dish,
+.v17r-hero--generated .v17r-hero-lime {
+  display: none;
+}
+.v17r-table--generated .v17r-table-amok img {
+  object-position: center;
+  filter: saturate(1.12) contrast(1.03);
+}
+.v17r-table--generated .v17r-table-clarity {
+  max-width: 44rem;
+  line-height: 1.35;
+}
+.v17r-dessert-art--generated {
+  display: block;
+  position: relative;
+  width: 100%;
+  min-height: 0;
+  overflow: visible;
+  isolation: isolate;
+}
+.v17r-dessert-art--generated .v17r-dessert-generated {
+  display: block;
+  position: relative;
+  inset: auto;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  border: 0;
+  box-shadow: none;
+  overflow: hidden;
+  transform: none;
+  border-radius: 1.1rem;
+  -webkit-mask-image: radial-gradient(ellipse 93% 90% at 50% 49%, #000 79%, transparent 100%);
+  mask-image: radial-gradient(ellipse 93% 90% at 50% 49%, #000 79%, transparent 100%);
+}
+.v17r-dessert-art--generated .v17r-dessert-generated img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center;
+  max-width: none;
+  filter: saturate(1.06);
+}
+.v17r-dessert-art--generated .v17r-dessert-generated figcaption {
+  position: absolute;
+  z-index: 2;
+  left: 9%;
+  right: auto;
+  bottom: 9%;
+  width: max-content;
+  max-width: 80%;
+  margin: 0;
+  padding: .45rem .7rem;
+  font-size: .68rem;
+  line-height: 1.4;
+  font-weight: 700;
+  color: #263c2c;
+  border-radius: 99px;
+  background: rgba(255, 250, 239, .94);
+  transform: none;
+}
+@media(min-width: 1200px) {
+  .v17r-hero--generated .v17r-hero-dish {
+    aspect-ratio: 1.4;
+  }
+  .v17r-hero--generated .v17r-hero-dish img {
+    object-position: 55% 53%;
+  }
+  .v17r-dessert-art--generated {
+    min-height: clamp(26rem, 36vw, 43rem);
+  }
+}
+@media(min-width: 761px) and (max-width: 1199px) {
+  .v17r-hero--generated .v17r-hero-dish { aspect-ratio: 4 / 3; }
+  .v17r-dessert-art--generated { min-height: 0; }
+}
+@media(max-width: 760px) {
+  .v17r-hero--generated .v17r-hero-dish {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 0;
+    -webkit-mask-image: radial-gradient(ellipse 98% 92% at 53% 52%, #000 73%, transparent 100%);
+    mask-image: radial-gradient(ellipse 98% 92% at 53% 52%, #000 73%, transparent 100%);
+  }
+  .v17r-hero--generated .v17r-hero-dish img {
+    transform: scale(1.015);
+    object-position: center;
+  }
+  .v17r-hero--generated .v17r-hero-dish figcaption {
+    bottom: 6%;
+    right: 10%;
+    font-size: .78rem;
+  }
+  .v17r-dessert-art--generated {
+    display: block;
+    min-height: 0;
+  }
+  .v17r-dessert-art--generated .v17r-dessert-generated {
+    height: auto;
+    width: 100%;
+    transform: none;
+    clip-path: none;
+  }
+  .v17r-dessert-art--generated .v17r-dessert-generated img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+  .v17r-dessert-art--generated .v17r-dessert-generated figcaption {
+    left: 10%;
+    bottom: 8%;
+    font-size: .62rem;
+  }
+}
+@media(prefers-reduced-motion: reduce) {
+  .v17r-hero--generated .v17r-hero-dish img,
+  .v17r-dessert-art--generated .v17r-dessert-generated img {
+    transition: none !important;
+    animation: none !important;
+  }
+}
