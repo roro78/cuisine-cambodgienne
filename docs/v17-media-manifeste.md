@@ -135,3 +135,21 @@ La copie transmise est une **r?f?rence de composition**. L'actuel assemblage de 
 | [Tasty fish amok in a coconut](https://commons.wikimedia.org/wiki/File:Tasty_fish_amok_in_a_coconut_(15941045359).jpg) | yashima, CC BY-SA 2.0 | **Refus?** : pr?sentation r?elle mais composition moins proche de la direction artistique attendue |
 
 Aucun de ces deux candidats refus?s n'a ?t? ajout? ? `public/`. Le commit V17 `3db9dff4` modifie seulement la composition CSS, la motion et les assertions de r?gression ; les auteurs, licences et fichiers m?dias publi?s ne changent pas. **Gate m?dia / r?ception artistique : toujours PARTIEL**, et validation humaine requise avant toute publication.
+
+## 13 octobre 2026 — intégration EFFECTIVE des cinq illustrations IA V17
+
+**Les visuels ne sont plus des candidats en attente d'upload.** Les cinq fichiers binaires WebP, issus des images générées dans la conversation, ont été contrôlés par SHA Git puis committés dans [la PR #47](https://github.com/roro78/cuisine-cambodgienne/pull/47) au commit [`0abb8b9`](https://github.com/roro78/cuisine-cambodgienne/commit/0abb8b962b00b8fbe520666299fa3e1f54894c20). L'intégration Astro/recettes/CSS/GSAP/tests est effective sur le HEAD `b8b7e635043a23ccb65140404c93fb71cf39b2f5` ; [CI #38465721313 SUCCESS](https://github.com/roro78/cuisine-cambodgienne/actions/runs/38465721313), 7 captures pleine page, 6 zooms et 2 vidéos de scroll.
+
+| Usage intégré | Fichier réellement présent | Dimensions | Taille | Provenance |
+| --- | --- | --- | --- | --- |
+| Hero Amok V17 | `public/images/cuisine/v17-hero-amok-genere.webp` | 1448×1086 | 220 258 octets | Illustration culinaire créée par IA |
+| « À table » V17 | `public/images/cuisine/v17-tablee-khmere-generee.webp` | 1600×900 | 343 680 octets | Tableau culinaire créé par IA |
+| « Les douceurs » V17 | `public/images/cuisine/v17-desserts-khmers-generes.webp` | 1448×1086 | 259 478 octets | Illustration gourmande créée par IA |
+| Recette Lok Lak (fiche + catalogue) | `public/images/cuisine/v17-lok-lak-genere.webp` | 1448×1086 | 308 926 octets | Illustration culinaire créée par IA |
+| Recette Num Banh Chok (fiche + catalogue) | `public/images/cuisine/v17-nom-banh-chok-genere.webp` | 1448×1086 | 239 312 octets | Illustration culinaire créée par IA |
+
+**Éditorial / honnêteté** : les cinq médias sont clairement identifiés comme des **illustrations générées par IA**, jamais comme photographies documentaires prises au Cambodge ni comme preuve d'une préparation réalisée par l'équipe. Les vrais clichés du marché, des aromates, du mortier et d'Angkor conservent leurs propres crédits. Les recettes et le glossaire n'ont pas été réécrits.
+
+**Rendu contrôlé** : [CI #38465721313](https://github.com/roro78/cuisine-cambodgienne/actions/runs/38465721313), artifact `v17-accueil-d7-browser-evidence` ID `11848322729`. Les captures desktop 1440 et mobile 390 montrent les trois images V17 insérées ; la fiche Num Banh Chok possède désormais une illustration alors qu'elle n'en avait pas. Le travail sur la PR #47 est **PASS technique / visuels intégrés et vus / réception artistique finale à faire**.
+
+**Gate avant publication** : comparer les 7 scènes au storyboard maître, vérifier l'absence de bords artificiels du hero et la lisibilité mobile, contrôler Safari/a11y/performance (LCP, CLS) et le chemin effectif de `/v17-accueil-preview/` vers la vraie home si approuvé. Ne pas merger/déployer automatiquement et ne pas modifier V16.
