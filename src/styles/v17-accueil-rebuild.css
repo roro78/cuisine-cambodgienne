@@ -508,7 +508,7 @@
 .v17r-hero-sidebar{left:3%;top:31%;max-width:9rem;transform:rotate(-9deg)}
 .v17r-hero-aromatics{right:-4%;top:39%;transform:rotate(-6deg);font-size:clamp(.78rem,.98vw,1rem);line-height:1.4;text-shadow:0 1px 1px #fff9ec}
 .v17r-palette-spice-label{right:10%;top:4%;text-align:center;transform:rotate(-9deg)}
-.v17r-spice-bowls{position:absolute;right:-2%;bottom:0;width:clamp(18rem,34vw,35rem);height:auto;z-index:1;filter:drop-shadow(0 .4rem .4rem #2c211a18)}
+.v17r-palette-media img.v17r-spice-bowls{position:absolute;right:-2%;bottom:0;width:clamp(18rem,34vw,35rem);height:auto;max-width:none;object-fit:contain;z-index:1;filter:drop-shadow(0 .4rem .4rem #2c211a18)}
 .v17r-gestures-handnote{left:-1%;bottom:12%;transform:rotate(-12deg);color:#563b22;text-shadow:0 1px 2px #fff1db}
 .v17r-table-handnote{z-index:3;left:clamp(1rem,4vw,4rem);bottom:22%;transform:rotate(-12deg);color:#fff5d8;text-align:left;font-size:clamp(.9rem,1.45vw,1.3rem);text-shadow:0 2px 6px #17110e}
 .v17r-dessert-banana{position:absolute;z-index:1;right:-9%;bottom:-22%;width:clamp(8rem,19vw,19rem);height:auto;transform:rotate(28deg);opacity:.92;pointer-events:none}
@@ -554,7 +554,7 @@
   .v17r-palette-b{right:1%;top:11%;width:clamp(10rem,16vw,17rem)}
   .v17r-palette-media .v17r-lemongrass{left:-9%;top:6%;width:clamp(20rem,31vw,33rem)}
   .v17r-palette-media .v17r-palette-lime{right:25%;bottom:14%;width:clamp(6rem,10vw,10rem)}
-  .v17r-spice-bowls{right:-4%;bottom:-8%;width:clamp(20rem,35vw,35rem)}
+  .v17r-palette-media img.v17r-spice-bowls{right:-4%;bottom:-8%;width:clamp(20rem,35vw,35rem)}
   .v17r-palette-spice-label{right:5%;top:3%}
   .v17r-gestures{grid-template-columns:minmax(0,1.22fr) minmax(0,.78fr) minmax(12rem,.52fr);min-height:clamp(31rem,36vw,39rem)}
   .v17r-gestures-kroeung{width:102%;height:85%;top:3%}
@@ -564,7 +564,7 @@
 @media(min-width:761px) and (max-width:1199px){
   .v17r-hero-sidebar,.v17r-hero-aromatics{display:none}
   .v17r-palette-spice-label{display:none}
-  .v17r-spice-bowls{right:-8%;bottom:-8%;width:33vw;opacity:.88}
+  .v17r-palette-media img.v17r-spice-bowls{right:-8%;bottom:-8%;width:33vw;opacity:.88}
   .v17r-finale-stamp{right:1.5rem;width:11vw}
 }
 @media(max-width:760px){
@@ -572,14 +572,14 @@
   .v17r-hero-sidebar,.v17r-hero-aromatics,.v17r-palette-spice-label,
   .v17r-gestures-handnote,.v17r-table-handnote,.v17r-dessert-handnote{display:none}
   .v17r-palette-media{align-items:center}
-  .v17r-spice-bowls{position:relative;right:auto;bottom:auto;grid-column:1/-1;
+  .v17r-palette-media img.v17r-spice-bowls{position:relative;right:auto;bottom:auto;grid-column:1/-1;
     width:min(100%,20rem);justify-self:end;margin:-1.5rem -1rem -2.5rem 0}
   .v17r-dessert-banana{right:-14%;bottom:-12%;width:35%;opacity:.6}
   .v17r-finale-stamp{top:auto;bottom:1.8rem;right:1.1rem;transform:rotate(7deg);width:5.5rem;opacity:.55}
 }
 @media(max-width:390px){
   .v17r-finale-stamp{display:none}
-  .v17r-spice-bowls{margin-bottom:-1.5rem}
+  .v17r-palette-media img.v17r-spice-bowls{margin-bottom:-1.5rem}
 }
 @media(prefers-reduced-motion:reduce){
   .v17r-calligraphy,.v17r-spice-bowls,.v17r-finale-stamp{animation:none!important}
