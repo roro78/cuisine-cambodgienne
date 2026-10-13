@@ -425,7 +425,7 @@
     padding-inline:clamp(2rem,4.25vw,5rem);
   }
   .v17r-hero-copy{z-index:5}
-  .v17r-hero h1{font-size:clamp(4.9rem,6.55vw,8.2rem)}
+  .v17r-hero h1{font-size:clamp(4.75rem,5.95vw,8.2rem)}
   .v17r-hero-media{min-width:0;margin-left:-5%;overflow:visible}
   .v17r-hero-dish{width:calc(100% + clamp(1.5rem,4vw,5rem));max-width:58rem;aspect-ratio:1.55}
   .v17r-hero-green-corner{left:-6%;width:clamp(15rem,25vw,25rem)}
