@@ -101,3 +101,19 @@ La copie transmise est une **référence de composition**. L'actuel assemblage d
 **Illustration ajoutée** : `public/images/brand/v17-spice-bowls.svg` (poivre et curcuma), dessin original réalisé dans la PR #47 ; il ne doit pas être décrit comme photographie ou aliment réel photographié.
 
 **Gate média = NON SATISFAIT.** Tant que des photographies réelles assez proches de la scène de marché, du pilage de kroeung et de la tablée n'ont pas été sélectionnées, inspectées et obtenues en résolution de production, il est interdit de déclarer D3–D5 fidèles. En particulier, une photo d'un autre pays ne devient pas documentaire cambodgien par le seul changement de sa légende.
+
+
+## Import effectif des quatre nouveaux JPEG — 13 octobre 2026
+
+**Source de preuve :** [import GitHub Actions #38424609626](https://github.com/roro78/cuisine-cambodgienne/actions/runs/38424609626), SUCCESS, commit `2fa0cdb3d92827646c856b79a9295049f9d8dc71` sur `feat/v17-accueil-reconstruction`, jamais sur `main`. Script reproductible : `scripts/import-v17-licensed-media.mjs`. JPEG validés par signature, seuil de taille, et téléchargement effectif ; aucune dépendance externe au navigateur pour l'affichage.
+
+| Scène | Asset réellement ajouté au dépôt | Auteur / source / licence | Réalité documentaire et limites |
+| --- | --- | --- | --- |
+| Marché | `v17-market-live-1800.jpg` (1 234 542 octets) | [Market in Phnom Penh.jpg](https://commons.wikimedia.org/wiki/File:Market_in_Phnom_Penh.jpg), Radosław Botev / Fundacja Nomos, [CC BY 3.0 PL](https://creativecommons.org/licenses/by/3.0/pl/deed.en), version réduite | Marché authentiquement photographié à Phnom Penh ; pas une scène flottante, ni le même cadrage que la maquette générée |
+| Gestes | `v17-mortar-hands-1600.jpg` (399 151 octets) | [Woman Hands Holding Mortar](https://www.pexels.com/photo/woman-hands-holding-mortar-21937648/), Filipp Romanovski, [licence Pexels](https://www.pexels.com/license/), format JPEG optimisé | Mains utilisant réellement un mortier ; **photographie générique**, origine cambodgienne et fabrication de kroeung NON affirmées |
+| Repas | `v17-table-meal-1600.jpg` (441 452 octets) | [Khmer Family Restaurant, 2018 (03)](https://commons.wikimedia.org/wiki/File:Khmer_Family_Restaurant,_2018_(03).jpg), Bahnfrend, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), version réduite | Repas réel photographié à Siem Reap ; combiné éditorialement avec l'assortiment de Phnom Penh. Ce montage n'est PAS une photographie d'une tablée unique. Respecter les conditions BY-SA applicables aux adaptations. |
+| Finale | `v17-angkor-dusk-1800.jpg` (568 746 octets) | [Angkor Wat at dusk, Siem Reap, Cambodia](https://commons.wikimedia.org/wiki/File:Angkor_Wat_at_dusk,_Siem_Reap,_Cambodia.jpg), Eric Hossinger, [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/), version réduite | Angkor authentique au crépuscule ; couleurs et placement de la maquette non garantis. |
+
+**Statut D1 médias :** import et licence des quatre nouvelles sources documentés = **PASS TECHNIQUE**. Équivalence photographique exacte à la planche composite = **NON VALIDÉE**. En particulier, l'Amok héro et les desserts ne sont pas ceux visibles sur la maquette ; ne pas prétendre les avoir retrouvés.
+
+**Contrôle avant éventuelle publication :** attribution visible et liens sources, conformité de l'ensemble des dérivés aux licences, autorisations éventuelles de personnes identifiables, versions d'image correctes, revue art direction comparée à la maquette validée. Aucune production V16 modifiée.
