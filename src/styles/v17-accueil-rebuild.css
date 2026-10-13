@@ -161,7 +161,7 @@
   .v17r-finale-credit{font-size:.55rem}
 }
 @media(max-width:350px){
-  .v17r-hero h1{font-size:10.2vw}
+  .v17r-hero h1{font-size:9vw}
   .v17r-palette h2{font-size:9vw}
   .v17r-gestures h2{font-size:14.5vw}
   .v17r-table h2{font-size:11vw}
@@ -281,7 +281,7 @@
 }
 @media(max-width:760px){
  .v17r-hero{min-height:0;padding-top:2.7rem}
- .v17r-hero h1{white-space:normal;max-width:100%;font-size:clamp(2.15rem,9.7vw,4.55rem);line-height:.94}
+ .v17r-hero h1{white-space:normal;max-width:100%;font-size:clamp(1.95rem,8.7vw,4.3rem);letter-spacing:-.09em;line-height:.94}
  .v17r-temple-illustration{width:90%;right:-14%;top:3%;opacity:.36}
  .v17r-hero-green-corner{left:-13%;top:-4%;width:clamp(6rem,30vw,11rem);transform:rotate(24deg)}
  .v17r-hero-bloom-left{left:-3%;bottom:30%;width:4.2rem}

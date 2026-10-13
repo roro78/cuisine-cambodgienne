@@ -74,7 +74,8 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       'All botanical SVG and genuine texture layers must load: '+JSON.stringify(decorativeAssets));
     const heroLines=await page.evaluate(()=>{
       const el=document.querySelector('#v17r-hero-title');
-      return {width:el.getBoundingClientRect().width,
+      return {viewport:innerWidth,font:getComputedStyle(el).fontSize,
+        width:el.getBoundingClientRect().width,
         scrollWidth:el.scrollWidth,clientWidth:el.clientWidth};
     });
     assert.ok(heroLines.scrollWidth-heroLines.clientWidth<=2,
