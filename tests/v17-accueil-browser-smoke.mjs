@@ -258,7 +258,7 @@ async function checkGeneratedRecipe(slug,filename,width,height){
     const src=await cover.getAttribute('src');
     assert.equal(src,'/images/cuisine/'+filename);
     assert.match(await cover.getAttribute('alt'),/Illustration culinaire générée/);
-    const recipeHero=page.locator('.recipe-v17-generated-media .recipe-v15-hero');
+    const recipeHero=page.locator('.recipe-v16[data-generated-artwork="true"] .recipe-v15-hero');
     assert.equal(await recipeHero.count(),1,'Generated recipe must have a scoped style variant');
     const background=await recipeHero.evaluate(el=>getComputedStyle(el).backgroundImage);
     if(width>=901)assert.match(background,/linear-gradient\(90deg/i,
