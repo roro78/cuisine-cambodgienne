@@ -61,6 +61,13 @@ async function getCommonsUrl(title, width) {
 }
 
 async function download(entry) {
+  // Preserve reviewed, already versioned assets. Avoid silently changing the
+  // visual baseline when a remote thumbnail is recompressed or updated.
+  const exists = await fs.stat(entry.path).then(stat => stat.size > 30_000).catch(() => false);
+  if (exists) {
+    console.log('Reviewed asset retained: ' + entry.path);
+    return;
+  }
   const endpoint = entry.commonsTitle ? await getCommonsUrl(entry.commonsTitle, entry.width) : entry.url;
   const response = await fetch(endpoint, { headers: { 'User-Agent': 'CuisineDuCambodge-V17AssetReview/1.0 (image license attributed on homepage)' }, signal: AbortSignal.timeout(45000) });
   if (!response.ok) throw new Error(entry.path + ': HTTP ' + response.status);
