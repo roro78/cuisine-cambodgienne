@@ -106,3 +106,19 @@ Retour utilisateur : la direction **Fresh & Bold** est appréciée, mais les pho
 L'utilisateur ne veut **ni cadres Polaroïd ni rectangles/carrés répétitifs**. La V17.4 impose désormais une géométrie différenciée : Amok en ovale horizontal organique (environ 1,5:1), marché principal en panorama 2,1:1, poivre en contrepoint vertical mince (environ 0,48:1), texture du kroeung en bande immersive 2:1, photographie de table en forme haute organique 0,7:1, Chek Ktis en panorama 2,1:1 et Num Kom en silhouette verticale mince (0,54:1). Sur mobile, la composition garde ses contrastes panorama/portrait sans revenir au carré.
 
 Une légère révélation latérale par `clip-path` accompagne désormais le défilement du marché et du dessert panoramique uniquement sur grand écran sans réduction des animations ; les autres effets de convergence des ingrédients et des gestes restent en place. Aucun scroll forcé, aucune scène épinglée. Contrôles ajoutés : interdiction des ratios photographiques proches de 1:1 dans le contrat source, **mesure des proportions réelles dans Chromium** sur les cinq formats déjà testés, vérification du reduced-motion/sans JS. La V16 et sa production restent intactes.
+
+## V17.6 — Changement de rythme et respiration (13 octobre 2026)
+
+Retour de réception artistique : les maquettes précédentes étaient **trop chargées** et répétaient le schéma titre + image avec des sections de hauteur très proche. La V17.6 abandonne la logique de bandeaux équivalents :
+
+- **Héros — ouverture forte et aérée :** titre large, Amok central, plus d'autocollants ni de ruban animé.
+- **Marché — séquence courte et panoramique :** photographie dominante, titre sur la droite, légendes réduites ; suppression de la bulle redondante.
+- **Ingrédients — pause blanche centrale :** un mot clé, trois aromates libres, beaucoup d'espace négatif.
+- **Gestes — atelier structuré :** titre aligné à gauche, photographie de texture latérale, liste des gestes comme une progression et non une carte.
+- **À table — moment long et généreux :** silhouette photographique haute à gauche, titre et phrase à droite.
+- **Desserts — respiration claire :** titre au centre, deux photos à échelles contrastées, aucun sticker type magazine.
+- **Final — sortie sobre :** un grand titre centré et deux liens éditoriaux, plutôt que deux panneaux publicitaires remplis.
+
+Les sections utilisent des **hauteurs dépendant de leur contenu**, espacements différenciés, et ne seront pas uniformisées artificiellement par des valeurs de hauteur identiques. Le mobile est recomposé en véritables séquences compactes avec des titres parfois centrés, parfois alignés à droite, parfois à gauche. L'animation n'est plus l'élément déterminant : l'expérience doit déjà tenir visuellement en CSS et sans JavaScript.
+
+Note : le contenu documentaire et les sources photographiques restent ceux des phases précédentes. La PR reste draft : ce prototype nécessite une réception artistique, pas seulement un PASS technique.

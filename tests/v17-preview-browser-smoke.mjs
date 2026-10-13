@@ -75,6 +75,23 @@ async function inspect(width,height,screenshotPath,options={}) {
       viewport:window.innerWidth
     }));
     assert.ok(geometry.scroll-geometry.client<=2,'No horizontal overflow '+width+': '+JSON.stringify(geometry));
+    // V17.6: visually differentiated composition and chapter rhythm.
+    const rhythm=await page.evaluate(()=>{
+      const names=['market','pantry','gesture','table','sweets','finale'];
+      return names.map(name=>{
+        const section=document.querySelector('[data-v17-scene="'+name+'"]');
+        const title=section.querySelector('h2');
+        const rect=section.getBoundingClientRect();
+        return {name,height:Math.round(rect.height),align:getComputedStyle(title).textAlign};
+      });
+    });
+    const alignments=new Set(rhythm.map(s=>s.align));
+    assert.ok(alignments.has('left')&&alignments.has('right')&&alignments.has('center'),
+      'Headlines require varied alignments, not a repeated left column: '+JSON.stringify(rhythm));
+    const heights=rhythm.map(s=>s.height);
+    assert.ok(Math.max(...heights)-Math.min(...heights)>150,
+      'Chapters cannot all have the same height: '+JSON.stringify(rhythm));
+
 
     await page.waitForFunction(()=>{
       const image=document.querySelector('.v17-hero-photo img');
