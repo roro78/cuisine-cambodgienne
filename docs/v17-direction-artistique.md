@@ -1,3 +1,5 @@
+> **ARCHIVE — DIRECTION REJETÉE LE 13 OCTOBRE 2026.** Cette première proposition serif/ivoire/vert sombre a été refusée pour son rendu daté. **Ne pas la poursuivre ni la fusionner.** Direction actuellement retenue : [V17 Fresh & Bold](./v17-fresh-bold-direction.md). Les informations techniques et licences ci-dessous sont conservées uniquement pour l'historique.
+
 # V17-01 — Direction artistique et prototype isolé
 
 **Référence :** site V16 (commit `2b7387bae6ef88e815befe44227bafc777e8fca2`), dépôt `roro78/cuisine-cambodgienne`, audit public du 13 octobre 2026.

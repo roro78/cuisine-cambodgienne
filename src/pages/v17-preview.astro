@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
-import SiteFooter from '../components/SiteFooter.astro';
 import '../styles/home-v17-preview.css';
 
 const images = {
@@ -9,138 +8,170 @@ const images = {
   fruitMarket: '/images/cuisine/v17-fruit-market-1920.jpg',
   pepper: '/images/cuisine/kampot-1600.webp',
   finishedKroeung: '/images/cuisine/v17-kroeung-final.jpg',
-  table: '/images/cuisine/v17-khmer-table-1280.webp'
+  table: '/images/cuisine/v17-khmer-table-1280.webp',
+  lokLak: '/images/cuisine/lok-lak-800.webp'
 };
 ---
 <BaseLayout
-  title="V17 — Prototype de direction artistique | Cuisine du Cambodge"
-  description="Prototype non publié de la direction artistique V17 : les parfums, les produits, les gestes et les plats à partager."
+  title="V17 — Fresh & Bold | Cuisine du Cambodge"
+  description="Prototype créatif V17 : la cuisine cambodgienne en couleurs, en gestes et en recettes. Étude non publiée."
   image={images.hero}
-  imageAlt="Amok Trey et riz servis dans des feuilles de bananier"
+  imageAlt="Amok de poisson cambodgien et riz présentés dans des feuilles de bananier"
   noindex
 >
-  <SiteHeader />
-  <main class="v17-preview" id="contenu">
-    <p class="v17-prototype-banner">Étude artistique V17 · prototype à valider · aucun changement sur l'accueil public</p>
+  <div class="v17-shell">
+    <a class="v17-skip-link" href="#contenu">Aller au contenu</a>
+    <SiteHeader />
+    <main class="v17-preview" id="contenu">
+      <section class="v17-hero" aria-labelledby="v17-hero-title" data-v17-hero>
+        <div class="v17-hero-topline">
+          <span class="v17-mini-label">CUISINE CAMBODGIENNE · À FAIRE CHEZ SOI</span>
+          <span class="v17-mini-edition">SAVEURS KH MÈRES / N° 01</span>
+        </div>
+        <h1 id="v17-hero-title" class="v17-hero-title">
+          <span>DU GOÛT.</span>
+          <span>DU <span class="v17-hero-accent">CAMBODGE.</span></span>
+        </h1>
+        <div class="v17-hero-stage">
+          <div class="v17-hero-disc" aria-hidden="true"></div>
+          <figure class="v17-hero-photo">
+            <img src={images.hero}
+              srcset="/images/cuisine/v17-amok-rice-960.jpg 960w, /images/cuisine/v17-amok-rice-1920.jpg 1920w"
+              sizes="(max-width: 760px) 90vw, 38vw"
+              alt="Amok de poisson et riz servis dans des feuilles de bananier"
+              width="3456" height="2304" decoding="async" fetchpriority="high" />
+            <figcaption>AMOK TREY <span>Poisson · lait de coco · riz</span></figcaption>
+          </figure>
+          <svg class="v17-illustration v17-illustration-chili" viewBox="0 0 170 180" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" data-v17-float>
+            <path d="M82 42C80 24 91 15 103 14" stroke="#174B34" stroke-width="11" stroke-linecap="round"/>
+            <path d="M79 44C51 33 30 52 29 87C28 130 60 156 116 165C94 141 82 116 88 89C94 67 93 51 79 44Z" fill="#FF5C37" stroke="#161616" stroke-width="4"/>
+            <path d="M56 57C43 74 44 97 51 110" stroke="#FFB3A0" stroke-width="8" stroke-linecap="round"/>
+          </svg>
+          <svg class="v17-illustration v17-illustration-leaf" viewBox="0 0 190 190" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" data-v17-float>
+            <path d="M29 156C35 76 93 27 170 22C150 107 102 163 29 156Z" fill="#BDE964" stroke="#161616" stroke-width="4"/>
+            <path d="M31 157C70 108 105 76 169 23" stroke="#174B34" stroke-width="5" stroke-linecap="round"/>
+            <path d="M74 111L62 60M102 86L110 40M88 119L144 112" stroke="#174B34" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <div class="v17-sticker v17-sticker-top" aria-hidden="true" data-v17-float>ÇA SENT<br/>BON ! <span>✳</span></div>
+          <div class="v17-sticker v17-sticker-bottom" aria-hidden="true" data-v17-float>FRAIS.<br/>VRAI.<br/>À CROQUER.</div>
+        </div>
+        <div class="v17-hero-bottom">
+          <p>Les plats, les produits et les gestes qui donnent envie de cuisiner le Cambodge.</p>
+          <nav class="v17-actions" aria-label="Explorer la cuisine cambodgienne">
+            <a class="v17-action-primary" href="/recettes/">Explorer les recettes <span aria-hidden="true">↗</span></a>
+            <a class="v17-action-secondary" href="/apprendre/">Apprendre les gestes <span aria-hidden="true">↗</span></a>
+          </nav>
+          <span class="v17-scroll-hint" aria-hidden="true">DÉFILER ↓</span>
+        </div>
+      </section>
 
-    <section class="v17-hero" aria-labelledby="v17-hero-title" data-v17-hero>
-      <div class="v17-hero-copy">
-        <p class="v17-eyebrow">01 / 06 · Le premier parfum</p>
-        <h1 id="v17-hero-title">Les parfums <em>du Cambodge</em> à votre table.</h1>
-        <p class="v17-hero-lead">Du parfum des aromates aux plats à partager, découvrez des recettes, des gestes et des histoires à cuisiner chez vous.</p>
-        <nav class="v17-actions" aria-label="Explorer la cuisine cambodgienne">
-          <a class="v17-action-primary" href="/recettes/">Voir les recettes <span aria-hidden="true">↗</span></a>
-          <a class="v17-action-secondary" href="/apprendre/">Apprendre les gestes <span aria-hidden="true">↗</span></a>
-        </nav>
-        <p class="v17-chapter-note">Une cuisine à découvrir, un geste après l'autre.</p>
+      <div class="v17-marquee" aria-hidden="true">
+        <div class="v17-marquee-track"><span>DU PIQUANT ✳ DE LA FRAÎCHEUR ✳ DES PARFUMS ✳ DU GOÛT ✳</span><span>DU PIQUANT ✳ DE LA FRAÎCHEUR ✳ DES PARFUMS ✳ DU GOÛT ✳</span></div>
       </div>
-      <figure class="v17-hero-photo">
-        <img
-          src={images.hero}
-          srcset="/images/cuisine/v17-amok-rice-960.jpg 960w, /images/cuisine/v17-amok-rice-1920.jpg 1920w"
-          sizes="(max-width: 760px) 100vw, 44vw"
-          alt="Amok Trey et riz présentés dans des feuilles de bananier"
-          width="3456" height="2304"
-          decoding="async" fetchpriority="high"
-        />
-        <figcaption><span>À découvrir</span><strong>Amok Trey</strong><small>Poisson · feuilles de bananier · riz</small></figcaption>
-      </figure>
-      <div class="v17-hero-serial" aria-hidden="true"><span>01</span><i></i><span>06</span></div>
-    </section>
 
-    <section class="v17-intro" aria-labelledby="v17-intro-title">
-      <p class="v17-eyebrow" data-v17-reveal>Une histoire de produits et de gestes</p>
-      <h2 id="v17-intro-title" data-v17-reveal>Avant le plat, <em>il y a les parfums.</em></h2>
-      <p data-v17-reveal>La citronnelle que l'on coupe, le poivre fraîchement moulu, les herbes que l'on ajoute au dernier moment. Ce sont ces petits gestes qui donnent envie de passer en cuisine.</p>
-    </section>
+      <section class="v17-market" aria-labelledby="v17-market-title" data-v17-scene="market">
+        <div class="v17-scene-top"><span>01 / LES INGRÉDIENTS</span><span>À REGARDER · À SENTIR · À CONNAÎTRE</span></div>
+        <div class="v17-market-head">
+          <h2 id="v17-market-title">TOUT PART<br/>DES <span>BONS</span><br/>PRODUITS.</h2>
+          <p>Citronnelle, poivre, herbes fraîches… Avant de cuisiner, on découvre ce qui parfume les plats.</p>
+        </div>
+        <div class="v17-market-collage">
+          <figure class="v17-market-large" data-v17-reveal>
+            <img data-v17-parallax src={images.fruitMarket}
+              srcset="/images/cuisine/v17-fruit-market-960.jpg 960w, /images/cuisine/v17-fruit-market-1920.jpg 1920w"
+              sizes="(max-width: 760px) 88vw, 53vw" alt="Fruits tropicaux sur un étal de marché cambodgien"
+              width="3264" height="2448" loading="lazy" decoding="async"/>
+            <figcaption>Un marché entre Phnom Penh et Siem Reap.</figcaption>
+          </figure>
+          <figure class="v17-market-small" data-v17-reveal>
+            <img src={images.pepper}
+              srcset="/images/cuisine/kampot-800.webp 800w, /images/cuisine/kampot-1200.webp 1200w, /images/cuisine/kampot-1600.webp 1600w"
+              sizes="(max-width: 760px) 42vw, 21vw" alt="Grains de poivre de Kampot"
+              width="1600" height="1067" loading="lazy" decoding="async"/>
+            <figcaption>LE POIVRE DE KAMPOT</figcaption>
+          </figure>
+          <div class="v17-market-bubble" aria-hidden="true">UN MONDE<br/>DE SAVEURS <strong>↗</strong></div>
+        </div>
+        <div class="v17-market-bottom">
+          <span>LES PRODUITS ONT LEUR HISTOIRE.</span>
+          <a class="v17-text-link" href="/glossaire/">Découvrir le glossaire <span aria-hidden="true">↗</span></a>
+          <a class="v17-text-link" href="/culture/kep-marche-crabe-poivre/">Lire le carnet de Kep <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
 
-    <section class="v17-market" aria-labelledby="v17-market-title">
-      <div class="v17-market-copy" data-v17-reveal>
-        <p class="v17-eyebrow">02 / 06 · Au marché</p>
-        <h2 id="v17-market-title">Tout commence <em>par les produits.</em></h2>
-        <p>Sur les marchés cambodgiens, fruits, herbes et légumes attirent d’abord le regard. On s’attarde sur les couleurs, on découvre de nouveaux produits et l’on imagine ce qu’on pourrait cuisiner.</p>
-        <a class="v17-text-link" href="/culture/kep-marche-crabe-poivre/">Lire le carnet de Kep <span aria-hidden="true">↗</span></a>
-      </div>
-      <div class="v17-market-gallery">
-        <figure class="v17-market-large" data-v17-reveal>
-          <img data-v17-parallax src={images.fruitMarket} srcset="/images/cuisine/v17-fruit-market-960.jpg 960w, /images/cuisine/v17-fruit-market-1920.jpg 1920w" sizes="(max-width: 760px) 100vw, 48vw" alt="Fruits tropicaux présentés sur un étal de marché au Cambodge" width="3264" height="2448" loading="lazy" decoding="async" />
-          <figcaption>Fruits au marché, entre Phnom Penh et Siem Reap</figcaption>
-        </figure>
-        <figure class="v17-market-small" data-v17-reveal>
-          <img src={images.pepper} srcset="/images/cuisine/kampot-800.webp 800w, /images/cuisine/kampot-1200.webp 1200w, /images/cuisine/kampot-1600.webp 1600w" sizes="(max-width: 760px) 44vw, 21vw" alt="Grains de poivre de Kampot" width="1600" height="1067" loading="lazy" decoding="async" />
-          <figcaption>Le poivre de Kampot</figcaption>
-        </figure>
-      </div>
-    </section>
-
-    <section class="v17-bridge v17-bridge-market" aria-labelledby="v17-bridge-market-title" data-v17-bridge>
-      <div class="v17-bridge-inner">
-        <p class="v17-bridge-kicker">Du produit au geste · Interlude I</p>
-        <h2 id="v17-bridge-market-title">Choisir les aromates.<br /><em>Apprendre à les travailler.</em></h2>
-        <p class="v17-bridge-description">Une fois les ingrédients réunis, tout se joue dans la coupe, la texture et le temps passé au mortier.</p>
-        <span class="v17-bridge-trace" aria-hidden="true"></span>
-      </div>
-    </section>
-
-    <section class="v17-gesture" aria-labelledby="v17-gesture-title">
-      <div class="v17-gesture-study" data-v17-reveal aria-label="Repères pédagogiques pour la préparation du kroeung">
-        <p class="v17-gesture-study-kicker">Au mortier · 03 / 06</p>
-        <p class="v17-gesture-study-title">Observer la matière.</p>
-        <div class="v17-gesture-study-body">
-          <ol aria-label="Trois repères pour apprendre">
-            <li><span>01</span><div><strong>Couper fin</strong><small>Des morceaux réguliers.</small></div></li>
-            <li><span>02</span><div><strong>Piler</strong><small>Faire travailler les aromates ensemble.</small></div></li>
-            <li><span>03</span><div><strong>Observer</strong><small>Rechercher une pâte homogène.</small></div></li>
-          </ol>
-          <figure class="v17-gesture-paste">
-            <img src={images.finishedKroeung} width="800" height="600" alt="Kroeung rouge après broyage : exemple photographié d'une pâte obtenue" loading="lazy" decoding="async" />
-            <figcaption>Texture finale : un exemple de kroeung rouge.</figcaption>
+      <section class="v17-gesture" aria-labelledby="v17-gesture-title" data-v17-scene="gesture">
+        <div class="v17-scene-top"><span>02 / LES GESTES</span><span>PRENDRE LE TEMPS DE FAIRE</span></div>
+        <h2 id="v17-gesture-title">COUPER.<br/><span>PILER.</span><br/>SENTIR.</h2>
+        <div class="v17-gesture-layout">
+          <div class="v17-gesture-study" data-v17-reveal>
+            <p class="v17-gesture-kicker">AU MORTIER · LE KROEUNG</p>
+            <ol aria-label="Trois repères pour apprendre">
+              <li><span>01</span><div><strong>Couper fin</strong><small>Pour préparer les aromates.</small></div></li>
+              <li><span>02</span><div><strong>Piler</strong><small>Pour travailler les ingrédients ensemble.</small></div></li>
+              <li><span>03</span><div><strong>Observer</strong><small>Pour comprendre la texture de la pâte.</small></div></li>
+            </ol>
+            <a class="v17-action-primary" href="/apprendre/piler-aromates-au-mortier/">Essayer l'atelier <span aria-hidden="true">↗</span></a>
+          </div>
+          <figure class="v17-gesture-paste" data-v17-reveal>
+            <span class="v17-gesture-label">ET VOILÀ<br/>LA TEXTURE !</span>
+            <img src={images.finishedKroeung} width="800" height="600"
+              alt="Kroeung rouge après broyage : exemple photographié d'une pâte obtenue" loading="lazy" decoding="async"/>
+            <figcaption>Exemple de pâte de kroeung rouge après broyage — photo d'un résultat, pas des étapes de l'atelier.</figcaption>
           </figure>
         </div>
-        <p class="v17-gesture-study-note">La photo montre une pâte terminée, pas les étapes de notre atelier. La séquence de gestes reste à photographier.</p>
-      </div>
-      <div class="v17-gesture-copy" data-v17-reveal>
-        <p class="v17-eyebrow">03 / 06 · Le geste</p>
-        <h2 id="v17-gesture-title">Couper. Piler. <em>Sentir.</em></h2>
-        <p>Le kroeung prend forme peu à peu. Citronnelle, galanga, curcuma : apprendre à observer la texture et reconnaître le parfum de la pâte.</p>
-        <a class="v17-text-link" href="/apprendre/piler-aromates-au-mortier/">S'entraîner au mortier <span aria-hidden="true">↗</span></a>
-      </div>
-    </section>
+      </section>
 
-    <section class="v17-bridge v17-bridge-table" aria-labelledby="v17-bridge-table-title" data-v17-bridge>
-      <div class="v17-bridge-inner">
-        <p class="v17-bridge-kicker">Du geste au repas · Interlude II</p>
-        <h2 id="v17-bridge-table-title">La préparation prend forme.<br /><em>À chacun son plat.</em></h2>
-        <p class="v17-bridge-description">Une pâte aromatique n'est qu'un début : ce sont les recettes et les accompagnements qui composent le repas.</p>
-        <span class="v17-bridge-trace" aria-hidden="true"></span>
-      </div>
-    </section>
+      <section class="v17-table" aria-labelledby="v17-table-title" data-v17-scene="table">
+        <div class="v17-scene-top"><span>03 / À TABLE</span><span>LE MEILLEUR MOMENT</span></div>
+        <h2 id="v17-table-title">ON PASSE<br/><span>À TABLE !</span></h2>
+        <figure class="v17-table-photo" data-v17-reveal>
+          <img data-v17-parallax src={images.table}
+            srcset="/images/cuisine/v17-khmer-table-640.webp 640w, /images/cuisine/v17-khmer-table-1280.webp 1280w"
+            sizes="(max-width: 760px) 85vw, 44vw" alt="Assortiment de spécialités khmères avec un bol de riz"
+            width="2448" height="3264" loading="lazy" decoding="async"/>
+          <figcaption>Assortiment photographié à Phnom Penh.</figcaption>
+        </figure>
+        <div class="v17-table-bottom">
+          <p>Un plat, du riz, des accompagnements : chacun compose son assiette et partage le plaisir d'être à table.</p>
+          <a class="v17-action-secondary" href="/culture/construire-repas-cambodgien/">Comprendre le repas <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="v17-table-stamp" aria-hidden="true">BON<br/>APPÉTIT ✳</div>
+      </section>
 
-    <section class="v17-table" aria-labelledby="v17-table-title">
-      <div class="v17-table-copy" data-v17-reveal>
-        <p class="v17-eyebrow">04–05 / 06 · Du feu à la table</p>
-        <h2 id="v17-table-title">Le plaisir de <em>passer à table.</em></h2>
-        <p>Un plat chaud, du riz, des herbes fraîches et un condiment poivré : choisissez ce qui vous fait envie, puis composez votre repas à partager.</p>
-        <a class="v17-text-link" href="/culture/construire-repas-cambodgien/">Comprendre le repas <span aria-hidden="true">↗</span></a>
-      </div>
-      <figure class="v17-table-photo" data-v17-reveal>
-        <img data-v17-parallax src={images.table} srcset="/images/cuisine/v17-khmer-table-640.webp 640w, /images/cuisine/v17-khmer-table-1280.webp 1280w" sizes="(max-width: 760px) 100vw, 44vw" alt="Assortiment de spécialités khmères présenté sur un plateau avec un bol de riz" width="2448" height="3264" loading="lazy" decoding="async" />
-        <figcaption>Assortiment cambodgien photographié à Phnom Penh</figcaption>
-      </figure>
-    </section>
-
-    <section class="v17-finale" aria-labelledby="v17-finale-title" data-v17-reveal>
-      <p class="v17-eyebrow">06 / 06 · À vous de cuisiner</p>
-      <h2 id="v17-finale-title">La suite se passe <em>dans votre cuisine.</em></h2>
-      <p>Choisissez un plat, ajustez les portions et suivez les étapes à votre rythme.</p>
-      <a class="v17-action-primary" href="/recettes/">Choisir une recette <span aria-hidden="true">↗</span></a>
-    </section>
-
-    <aside class="v17-preview-legal">
-      <p>Prototype de mise en scène, non destiné à la publication directe. Deux photographies issues de V16, créditées sur <a href="/credits-photos/">la page dédiée</a>, et quatre photographies issues de Wikimedia Commons : <a href="https://commons.wikimedia.org/wiki/File:Fish_Amok_with_Rice.jpg" target="_blank" rel="noopener noreferrer">Amok — sharonang, CC0 1.0</a> ; <a href="https://commons.wikimedia.org/wiki/File:Cambodia_08_-_038_-_fruit_at_the_market_(3198828515).jpg" target="_blank" rel="noopener noreferrer">fruits du marché — McKay Savage, CC BY 2.0</a> (<a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener noreferrer">licence</a>) ; <a href="https://commons.wikimedia.org/wiki/File:Red_Kroeung_Paste.jpg" target="_blank" rel="noopener noreferrer">pâte de kroeung rouge — Trilinguist, CC BY-SA 3.0</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer">licence</a>) ; <a href="https://commons.wikimedia.org/wiki/File:Khmer_Borane_-_amazing_sampler_(8532779364).jpg" target="_blank" rel="noopener noreferrer">assortiment servi à Phnom Penh — Jason Eppink, CC BY 2.0</a> (<a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener noreferrer">licence</a>). Photographies redimensionnées, recadrage CSS. Elles ne documentent pas des essais réalisés pour V17.</p>
-    </aside>
-  </main>
-  <SiteFooter />
+      <section class="v17-finale" aria-labelledby="v17-finale-title" data-v17-scene="finale">
+        <div class="v17-scene-top"><span>04 / C'EST À VOUS</span><span>ALLEZ, ON CUISINE !</span></div>
+        <h2 id="v17-finale-title">À VOUS<br/>DE <span>JOUER.</span></h2>
+        <p class="v17-finale-lead">Choisissez une recette, adaptez les portions et cuisinez à votre rythme.</p>
+        <div class="v17-finale-cards">
+          <a class="v17-finale-card v17-finale-card-recipe" href="/recettes/amok-trey/">
+            <span>01 / LE PLAT INCONTOURNABLE</span>
+            <strong>AMOK<br/>TREY</strong>
+            <span>Découvrir la recette <b aria-hidden="true">↗</b></span>
+          </a>
+          <a class="v17-finale-card v17-finale-card-atelier" href="/apprendre/piler-aromates-au-mortier/">
+            <span>02 / LE GESTE À APPRENDRE</span>
+            <strong>LE<br/>MORTIER</strong>
+            <span>Essayer l'atelier <b aria-hidden="true">↗</b></span>
+          </a>
+        </div>
+        <a class="v17-finale-all" href="/recettes/">Voir toutes les recettes <span aria-hidden="true">↗</span></a>
+      </section>
+      <aside class="v17-preview-legal">
+        <p><strong>Prototype V17 — non publié.</strong> Les dessins de feuilles et de piments sont décoratifs, pas documentaires. Photographies issues de V16 (<a href="/credits-photos/">crédits</a>) et de Wikimedia Commons :
+        <a href="https://commons.wikimedia.org/wiki/File:Fish_Amok_with_Rice.jpg" target="_blank" rel="noopener noreferrer">Amok — sharonang, CC0 1.0</a> ·
+        <a href="https://commons.wikimedia.org/wiki/File:Cambodia_08_-_038_-_fruit_at_the_market_(3198828515).jpg" target="_blank" rel="noopener noreferrer">fruits du marché — McKay Savage, CC BY 2.0</a> (<a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener noreferrer">licence</a>) ·
+        <a href="https://commons.wikimedia.org/wiki/File:Red_Kroeung_Paste.jpg" target="_blank" rel="noopener noreferrer">kroeung — Trilinguist, CC BY-SA 3.0</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer">licence</a>) ·
+        <a href="https://commons.wikimedia.org/wiki/File:Khmer_Borane_-_amazing_sampler_(8532779364).jpg" target="_blank" rel="noopener noreferrer">assortiment — Jason Eppink, CC BY 2.0</a> (<a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener noreferrer">licence</a>).
+        Les photographies ne représentent pas des recettes testées par l'équipe.</p>
+      </aside>
+    </main>
+    <footer class="v17-footer">
+      <div><strong>CUISINE<br/>DU CAMBODGE<span>.</span></strong><p>DES SAVEURS À DÉCOUVRIR. DES RECETTES À PARTAGER.</p></div>
+      <nav aria-label="Navigation du pied de page">
+        <a href="/recettes/">Recettes</a><a href="/glossaire/">Glossaire</a><a href="/apprendre/">Ateliers</a><a href="/culture/">Culture</a><a href="/a-propos/">À propos</a>
+      </nav>
+    </footer>
+  </div>
   <script>
     import { initV17PreviewMotion } from '../scripts/v17PreviewMotion';
     initV17PreviewMotion();

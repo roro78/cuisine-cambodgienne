@@ -1,57 +1,64 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 
-const page = fs.readFileSync('src/pages/v17-preview.astro', 'utf8');
-const css = fs.readFileSync('src/styles/home-v17-preview.css', 'utf8');
-const motion = fs.readFileSync('src/scripts/v17PreviewMotion.ts', 'utf8');
-const production = fs.readFileSync('src/pages/index.astro', 'utf8');
-const sitemap = fs.readFileSync('src/pages/sitemap.xml.ts', 'utf8');
+const page = fs.readFileSync('src/pages/v17-preview.astro','utf8');
+const css = fs.readFileSync('src/styles/home-v17-preview.css','utf8');
+const motion = fs.readFileSync('src/scripts/v17PreviewMotion.ts','utf8');
+const homeV16 = fs.readFileSync('src/pages/index.astro','utf8');
+const sitemap = fs.readFileSync('src/pages/sitemap.xml.ts','utf8');
 
 assert.match(page, /<BaseLayout[\s\S]*?noindex/);
-assert.match(page, /aria-labelledby="v17-hero-title"/);
-assert.match(page, /<h1 id="v17-hero-title">/);
+assert.match(page, /<h1 id="v17-hero-title"/);
+assert.match(page, /DU GOÛT\./);
+assert.match(page, /DU <span class="v17-hero-accent">CAMBODGE/);
+assert.match(page, /<SiteHeader\s*\/>/, 'Reuse accessible V16 mobile navigation');
+assert.match(page, /v17-hero-stage/);
+assert.equal((page.match(/<section class="v17-(hero|market|gesture|table|finale)"/g)||[]).length,5);
+assert.match(page, /data-v17-scene="market"/);
+assert.match(page, /data-v17-scene="gesture"/);
+assert.match(page, /data-v17-scene="table"/);
+assert.match(page, /data-v17-scene="finale"/);
+assert.match(page, /v17-illustration-chili/);
+assert.match(page, /v17-illustration-leaf/);
+assert.match(page, /Les dessins de feuilles et de piments sont décoratifs/);
 assert.match(page, /href="\/recettes\/"/);
 assert.match(page, /href="\/apprendre\/"/);
+assert.match(page, /href="\/glossaire\/"/);
+assert.match(page, /href="\/recettes\/amok-trey\/"/);
+assert.match(page, /href="\/apprendre\/piler-aromates-au-mortier\/"/);
 assert.match(page, /href="\/credits-photos\/"/);
-assert.doesNotMatch(page, /<form\b|localStorage|fetch\(|Stripe|set:html/);
-assert.doesNotMatch(sitemap, /v17-preview/);
-assert.doesNotMatch(production, /v17-preview|home-v17-preview/);
-assert.match(css, /@media\(max-width:760px\)/);
-assert.match(css, /@media\(max-width:360px\)/);
-assert.match(css, /@media\(prefers-reduced-motion:reduce\)/);
-assert.match(css, /\.v17-preview a:focus-visible/);
-assert.match(motion, /prefers-reduced-motion: no-preference/);
-assert.match(motion, /mm\.revert\(\)/);
-
-const photos = [...page.matchAll(/src=\{images\.([A-Za-z]+)\}/g)].map((x) => x[1]);
-assert.equal(photos.length, 5, 'Cinq photos documentees sur le prototype V17');
-assert.equal(new Set(photos).size, photos.length, 'Ne pas reutiliser la meme photo sur le prototype');
-assert.match(page, /v17-amok-rice-960\.jpg 960w, \/images\/cuisine\/v17-amok-rice-1920\.jpg 1920w/);
-assert.match(page, /Amok — sharonang, CC0 1\.0/);
-assert.match(page, /https:\/\/commons\.wikimedia\.org\/wiki\/File:Fish_Amok_with_Rice\.jpg/);
-for (const width of [960, 1920]) {
-  assert.ok(fs.existsSync(`public/images/cuisine/v17-amok-rice-${width}.jpg`), `Missing responsive V17 amok photo (${width}px)`);
-  assert.ok(fs.existsSync(`public/images/cuisine/v17-fruit-market-${width}.jpg`), `Missing responsive V17 market photo (${width}px)`);
-}
-assert.match(page, /v17-fruit-market-960\.jpg 960w, \/images\/cuisine\/v17-fruit-market-1920\.jpg 1920w/);
+assert.match(page, /sharonang, CC0 1\.0/);
 assert.match(page, /McKay Savage, CC BY 2\.0/);
 assert.match(page, /Trilinguist, CC BY-SA 3\.0/);
 assert.match(page, /Jason Eppink, CC BY 2\.0/);
-assert.match(page, /v17-khmer-table-640\.webp 640w, \/images\/cuisine\/v17-khmer-table-1280\.webp 1280w/);
-for (const width of [640, 1280]) {
-  assert.ok(fs.existsSync(`public/images/cuisine/v17-khmer-table-${width}.webp`), `Missing responsive Khmer table photo (${width}px)`);
-}
-assert.match(page, /https:\/\/commons\.wikimedia\.org\/wiki\/File:Red_Kroeung_Paste\.jpg/);
-assert.ok(fs.existsSync('public/images/cuisine/v17-kroeung-final.jpg'), 'Missing documented final kroeung photograph');
-assert.match(page, /La photo montre une pâte terminée, pas les étapes de notre atelier/);
-assert.doesNotMatch(motion, /autoAlpha: 0/);
-assert.equal((page.match(/data-v17-bridge/g) || []).length, 2, 'Two narrative transitions required');
-assert.equal((page.match(/data-v17-parallax/g) || []).length, 2, 'Parallax only on market and table photographs');
+assert.doesNotMatch(page, /<form\b|localStorage|Stripe|set:html/);
+assert.doesNotMatch(sitemap, /v17-preview/);
+assert.doesNotMatch(homeV16, /v17-preview|home-v17-preview/);
+
+assert.match(css, /--v17-white:\s*#fffdf7/);
+assert.match(css, /--v17-orange:\s*#ff6339/);
+assert.match(css, /--v17-lime:\s*#d9f16d/);
+assert.match(css, /--v17-mango:\s*#ffcf43/);
+assert.doesNotMatch(css, /--v17-serif|#203127|#934a38/);
+assert.match(css, /@media\(max-width:760px\)/);
+assert.match(css, /@media\(max-width:360px\)/);
+assert.match(css, /@media\(prefers-reduced-motion:reduce\)/);
+assert.match(css, /\.v17-skip-link:focus/);
+assert.match(motion, /prefers-reduced-motion: no-preference/);
 assert.match(motion, /\(min-width: 761px\)/);
-assert.doesNotMatch(motion, /\bpin:\s*true\b|\bscrollTo\s*\(/);
-assert.match(css, /--v17-bridge-progress,1/);
-assert.doesNotMatch(page, /Au marché de Kep/);
-for (const [, path] of page.matchAll(/'(\/images\/cuisine\/[^']+)'/g)) {
-  assert.ok(fs.existsSync('public' + path), 'Image manquante : ' + path);
+assert.match(motion, /mm\.revert\(\)/);
+assert.doesNotMatch(motion, /pin:\s*true|ScrollSmoother|autoAlpha: 0/);
+assert.doesNotMatch(page, /v17-bridge-market|v17-bridge-table|v17-hero-serial/);
+
+for(const width of [960,1920]){
+  assert.ok(fs.existsSync(`public/images/cuisine/v17-amok-rice-${width}.jpg`));
+  assert.ok(fs.existsSync(`public/images/cuisine/v17-fruit-market-${width}.jpg`));
 }
-console.log('V17-01 preview contract: PASS (isolation, liens, accessibilite, photos et mouvement)');
+for(const width of [640,1280]){
+  assert.ok(fs.existsSync(`public/images/cuisine/v17-khmer-table-${width}.webp`));
+}
+assert.ok(fs.existsSync('public/images/cuisine/v17-kroeung-final.jpg'));
+for (const [,path] of page.matchAll(/'(\/images\/cuisine\/[^']+)'/g)) {
+  assert.ok(fs.existsSync('public' + path), 'Image missing: ' + path);
+}
+console.log('V17 Fresh & Bold contract: PASS — isolated, bright, linked, source credited');

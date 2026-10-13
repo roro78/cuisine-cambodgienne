@@ -216,10 +216,10 @@ La validation technique de #24 est acquise sur son HEAD contrôlé ; **la récep
 | Lot | Objet | État | Gate avant avancement |
 | --- | --- | --- | --- |
 | V17-00 | Audit visuel/code et inventaire des médias | PARTIEL (écrans et parcours incomplets) | Captures et recette réelle des vues restantes |
-| V17-01 | Direction artistique et prototype `/v17-preview/` | EN COURS (branche de développement) | CI, validation du cadrage et choix artistique |
+| V17-01 | Direction artistique et prototype `/v17-preview/` | **REPRISE — Fresh & Bold clair** (ancienne DA rejetée) | Build/CI, lecture des captures et réception créative de la nouvelle DA |
 | V17-02 | Refonte contrôlée du héros de l'accueil réel | NON COMMENCÉ | Réception V17-01 |
 | V17-03 | Acquisition de prises de vues vérifiées | PARTIEL — 4 nouvelles photographies documentées (Amok, marché, kroeung final, assortiment de table), 1 famille V16 | Compléter les gestes, les produits et la table ; droits et cadrages |
-| V17-04 | Transition des six scènes d'accueil | PROTOTYPE PARTIEL — deux liaisons marché/geste/table réalisées uniquement sur /v17-preview/ | Promotion vers accueil réel après V17-02 + médias V17-03 |
+| V17-04 | Transitions visuelles du récit | **ANCIENNE VERSION REJETÉE** — nouvelle mise en scène intégrée uniquement à la maquette Fresh & Bold | Revoir mouvement et composition après validation artistique |
 | V17-05 | Recettes et typographie | NON COMMENCÉ | Direction et médias validés |
 | V17-06 | Ateliers pédagogiques visuels | NON COMMENCÉ | Médias de gestes vérifiés |
 | V17-07 | Culture et À propos | NON COMMENCÉ | Ligne éditoriale vérifiée |
@@ -228,3 +228,8 @@ La validation technique de #24 est acquise sur son HEAD contrôlé ; **la récep
 **Référence artistique détaillée :** [`docs/v17-direction-artistique.md`](./v17-direction-artistique.md). La PR historique #24 est actuellement **fermée sans fusion** (contrôlé dans GitHub), contrairement aux anciens tableaux de suivi. Les pages d'expérience déjà présentes sur `main` restent hors périmètre V17-01.
 
 **Interdictions maintenues :** aucune modification de `main` ni de `ovh-production` ; aucune publication OVH, aucune activation commerciale, aucune présentation d'image synthétique comme photographie documentaire.
+
+
+### Arbitrage créatif du 13 octobre 2026 — rupture validée
+
+Les couleurs sombres et typographies sérif de l'ancien prototype V17 ont été rejetées par le commanditaire. Le chantier V17-01 reprend sur le même branche/PR brouillon avec une composition Fresh & Bold lumineuse (blanc chaud, orange papaye, jaune mangue, vert citronnelle ; typographies fortes ; photo/illustrations centrales). La **référence active** est [docs/v17-fresh-bold-direction.md](./v17-fresh-bold-direction.md). La documentation initiale est conservée avec bandeau d'archive. **Aucune modification V16 en production sans autorisation**.

@@ -13,181 +13,125 @@ const server = spawn(process.execPath, [astroCli, 'preview', '--host', '127.0.0.
   env: process.env
 });
 let logs = '';
-for (const stream of [server.stdout, server.stderr]) {
-  stream.on('data', (data) => { logs += data.toString(); });
-}
+for (const stream of [server.stdout, server.stderr]) stream.on('data', (data) => { logs += data.toString(); });
 let browser;
 const errors = [];
 
 async function waitForServer() {
-  for (let i = 0; i < 65; i++) {
-    if (server.exitCode !== null) throw new Error('Astro preview exited early: ' + logs);
+  for (let i=0;i<65;i++) {
+    if (server.exitCode !== null) throw new Error('Astro preview exited: '+logs);
     try {
-      const res = await fetch(base + '/v17-preview/', { signal: AbortSignal.timeout(1500) });
-      if (res.ok) return;
-    } catch { /* server still booting */ }
-    await new Promise((resolve) => setTimeout(resolve, 300));
+      const res=await fetch(base+'/v17-preview/',{signal:AbortSignal.timeout(1500)});
+      if(res.ok)return;
+    } catch {}
+    await new Promise(resolve=>setTimeout(resolve,300));
   }
-  throw new Error('Astro preview did not start: ' + logs);
+  throw new Error('Astro preview timeout: '+logs);
 }
 
-function listenErrors(page, name) {
-  page.on('pageerror', (error) => errors.push(name + ': ' + error.message));
-}
-
-async function inspectViewport(width, height, screenshotPath, options = {}) {
-  const page = await browser.newPage({
-    viewport: { width, height },
-    isMobile: width < 761,
-    hasTouch: width < 761,
-    reducedMotion: options.reduced ? 'reduce' : 'no-preference'
+async function inspect(width,height,screenshotPath,options={}) {
+  const page=await browser.newPage({
+    viewport:{width,height},isMobile:width<761,hasTouch:width<761,
+    reducedMotion:options.reduced?'reduce':'no-preference',
+    javaScriptEnabled:!options.noJs
   });
-  listenErrors(page, String(width));
-  page.setDefaultTimeout(12000);
+  page.setDefaultTimeout(14000);
+  page.on('pageerror',error=>errors.push(width+': '+error.message));
   try {
-    const response = await page.goto(base + '/v17-preview/', { waitUntil: 'networkidle' });
-    assert.equal(response?.status(), 200, 'Prototype route should return 200 at ' + width);
-    assert.match(await page.locator('meta[name="robots"]').getAttribute('content'), /noindex/);
-    assert.equal(await page.locator('h1').count(), 1, 'Exactly one H1');
-    assert.ok(await page.locator('.v17-hero-photo').isVisible());
-    assert.equal(await page.locator('.v17-actions a').count(), 2);
-    assert.equal(await page.locator('.v17-actions a').first().getAttribute('href'), '/recettes/');
-    assert.equal(await page.locator('.v17-actions a').last().getAttribute('href'), '/apprendre/');
-    assert.equal(await page.locator('.v17-gesture-study').count(), 1, 'Pedagogical study must exist');
-    assert.equal(await page.locator('[data-v17-bridge]').count(), 2, 'Market→gesture and gesture→table interludes');
-    assert.equal(await page.locator('[data-v17-parallax]').count(), 2, 'Parallax limited to two existing photos');
-    assert.equal(await page.locator('.v17-gesture-paste img').getAttribute('alt'), "Kroeung rouge après broyage : exemple photographié d'une pâte obtenue");
-    assert.equal(await page.locator('.v17-gesture-study ol li').count(), 3);
-    assert.match(await page.locator('.v17-table-photo figcaption').innerText(), /Phnom Penh/);
+    const response=await page.goto(base+'/v17-preview/',{waitUntil:'networkidle'});
+    assert.equal(response?.status(),200,'V17 route HTTP 200');
+    assert.match(await page.locator('meta[name="robots"]').getAttribute('content'),/noindex/);
+    assert.equal(await page.locator('h1').count(),1);
+    assert.ok(await page.locator('.v17-hero-stage').isVisible());
+    assert.equal(await page.locator('[data-v17-scene]').count(),4);
+    assert.equal(await page.locator('.v17-actions a').count(),2);
+    assert.equal(await page.locator('.v17-actions a').first().getAttribute('href'),'/recettes/');
+    assert.equal(await page.locator('.v17-actions a').last().getAttribute('href'),'/apprendre/');
+    assert.equal(await page.locator('.v17-finale-cards a').count(),2);
+    assert.equal(await page.locator('.v17-gesture-study ol li').count(),3);
+    assert.equal(await page.locator('[data-v17-parallax]').count(),2);
+    assert.equal(await page.locator('.v17-illustration[aria-hidden="true"]').count(),2);
     assert.ok(await page.locator('.v17-preview-legal a[href="/credits-photos/"]').count());
-    await page.waitForFunction(() => {
-      const image = document.querySelector('.v17-hero-photo img');
-      return image?.complete && image.naturalWidth > 0;
-    });
-    const dims = await page.evaluate(() => ({
-      client: document.documentElement.clientWidth,
-      scroll: document.documentElement.scrollWidth
+
+    const colors=await page.evaluate(()=>({
+      hero:getComputedStyle(document.querySelector('.v17-hero')).backgroundColor,
+      market:getComputedStyle(document.querySelector('.v17-market')).backgroundColor,
+      gesture:getComputedStyle(document.querySelector('.v17-gesture')).backgroundColor,
+      table:getComputedStyle(document.querySelector('.v17-table')).backgroundColor
     }));
-    assert.ok(dims.scroll - dims.client <= 2,
-      'Horizontal overflow at ' + width + ': ' + JSON.stringify(dims));
-    const buttons = await page.locator('.v17-actions a').evaluateAll((links) =>
-      links.map((el) => ({ w: el.getBoundingClientRect().width, h: el.getBoundingClientRect().height }))
-    );
-    assert.ok(buttons.every((button) => button.h >= 42), 'Hero links must have >=42px height');
-    if (options.reduced) {
-      const transform = await page.locator('.v17-hero-photo img').evaluate((img) =>
-        getComputedStyle(img).transform
-      );
-      assert.equal(transform, 'none', 'Reduced motion must disable hero parallax');
-      const imageTransforms = await page.locator('[data-v17-parallax]').evaluateAll((images) =>
-        images.map((img) => getComputedStyle(img).transform)
-      );
-      assert.ok(imageTransforms.every((value) => value === 'none'), 'Reduced motion must disable all photo parallax');
-    }
-    if (width === 1440 && !options.reduced) {
-      const bridge = page.locator('.v17-bridge-market');
-      const top = await bridge.evaluate((element) =>
-        element.getBoundingClientRect().top + window.scrollY
-      );
-      await page.evaluate((y) => window.scrollTo({ top: y, behavior: 'instant' }), top - 1200);
-      await page.waitForTimeout(350);
-      const before = await bridge.evaluate((el) =>
-        Number.parseFloat(getComputedStyle(el).getPropertyValue('--v17-bridge-progress')) || 0
-      );
-      await page.evaluate((y) => window.scrollTo({ top: y, behavior: 'instant' }), top + 900);
-      await page.waitForTimeout(950);
-      const after = await bridge.evaluate((el) =>
-        Number.parseFloat(getComputedStyle(el).getPropertyValue('--v17-bridge-progress')) || 0
-      );
-      assert.ok(after > before + .4,
-        'Scroll-linked transition should progress: ' + before + ' → ' + after);
-    }
-    if (width === 390) {
-      const menu = page.locator('[data-mobile-menu]');
+    assert.equal(colors.hero,'rgb(255, 253, 247)');
+    assert.equal(colors.market,'rgb(217, 241, 109)');
+    assert.equal(colors.table,'rgb(255, 99, 57)');
+
+    const geometry=await page.evaluate(()=>({
+      scroll:document.documentElement.scrollWidth,client:document.documentElement.clientWidth,
+      title:document.querySelector('.v17-hero-title').getBoundingClientRect().width,
+      viewport:window.innerWidth
+    }));
+    assert.ok(geometry.scroll-geometry.client<=2,'No horizontal overflow '+width+': '+JSON.stringify(geometry));
+
+    await page.waitForFunction(()=>{
+      const image=document.querySelector('.v17-hero-photo img');
+      return image?.complete && image.naturalWidth>0;
+    });
+    const buttons=await page.locator('.v17-actions a').evaluateAll(nodes=>nodes.map(n=>n.getBoundingClientRect().height));
+    assert.ok(buttons.every(h=>h>=42),'CTA tap targets >=42px');
+
+    if(width===390&&!options.noJs) {
+      const menu=page.locator('[data-mobile-menu]');
       await menu.locator('summary').click();
-      assert.equal(await menu.evaluate((el) => el.open), true, 'Mobile menu opens');
+      assert.equal(await menu.evaluate(el=>el.open),true,'Native menu opens');
       await page.keyboard.press('Escape');
-      assert.equal(await menu.evaluate((el) => el.open), false, 'Escape closes mobile menu');
+      assert.equal(await menu.evaluate(el=>el.open),false,'Escape closes menu');
     }
-    // GSAP reveals sections as they enter the viewport. Do not assert they are
-    // visible at scrollY=0 before their ScrollTrigger has run.
-    for (const selector of ['.v17-intro', '.v17-market', '.v17-bridge-market', '.v17-gesture-study', '.v17-bridge-table', '.v17-table', '.v17-finale']) {
-      await page.locator(selector).first().evaluate((element) =>
-        element.scrollIntoView({ block: 'center', behavior: 'instant' })
-      );
-      await page.waitForTimeout(170);
+    if(options.reduced) {
+      assert.ok(await page.locator('[data-v17-parallax]').evaluateAll(nodes=>nodes.every(el=>getComputedStyle(el).transform==='none')));
     }
-    await page.waitForTimeout(850);
-    assert.ok(await page.locator('.v17-gesture-study').isVisible(), 'Scene appears after scrolling');
-    assert.ok(await page.locator('.v17-bridge-market h2').isVisible(), 'First transition title stays accessible');
-    assert.ok(await page.locator('.v17-bridge-table h2').isVisible(), 'Second transition title stays accessible');
-    const bridgeLines = await page.locator('.v17-bridge-trace').evaluateAll((lines) =>
-      lines.map((el) => ({ width: el.getBoundingClientRect().width, height: el.getBoundingClientRect().height }))
-    );
-    assert.ok(bridgeLines.every((l) => l.width > 120 && l.height >= 2), 'Transition traces rendered');
-    await page.waitForFunction(() => {
-      const market = document.querySelector('.v17-market-large img');
-      const paste = document.querySelector('.v17-gesture-paste img');
-      const table = document.querySelector('.v17-table-photo img');
-      return market?.complete && market.naturalWidth > 0 &&
-             paste?.complete && paste.naturalWidth > 0 &&
-             table?.complete && table.naturalWidth > 0;
-    }, null, { timeout: 10000 });
-    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
-    await page.waitForTimeout(160);
-    if (screenshotPath) {
-      await fs.mkdir('artifacts', { recursive: true });
-      await page.screenshot({ path: screenshotPath, fullPage: true, animations: 'disabled' });
+
+    // Request images below the fold before capturing the complete document.
+    for(const selector of ['.v17-market','.v17-gesture','.v17-table','.v17-finale']) {
+      await page.locator(selector).scrollIntoViewIfNeeded();
+      await page.waitForTimeout(options.noJs?50:220);
     }
-    console.log('V17 browser: ' + width + 'x' + height + (options.reduced ? ' reduced' : '') + ' PASS');
+    await page.waitForFunction(()=>{
+      return ['.v17-market-large img','.v17-gesture-paste img','.v17-table-photo img']
+        .every(sel=>{const el=document.querySelector(sel);return el?.complete&&el.naturalWidth>0;});
+    },null,{timeout:12000});
+    if(options.noJs) {
+      assert.ok(await page.locator('.v17-market h2').isVisible(),'Market readable without JS');
+      assert.ok(await page.locator('.v17-gesture h2').isVisible(),'Gesture readable without JS');
+      assert.equal(await page.locator('.v17-market-large').evaluate(el=>getComputedStyle(el).opacity),'1');
+    }
+    await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
+    await page.waitForTimeout(options.noJs?100:600);
+    if(screenshotPath) {
+      await fs.mkdir('artifacts',{recursive:true});
+      await page.screenshot({path:screenshotPath,fullPage:true,animations:'disabled'});
+    }
+    console.log(`V17 fresh bold ${width}×${height} ${options.reduced?'reduced ':''}${options.noJs?'noJS ':''}PASS`);
   } finally {
     await page.close();
   }
 }
-
-try {
+try{
   await waitForServer();
-  browser = await chromium.launch({
-    executablePath: process.env.CHROME_BIN || undefined,
-    headless: true,
-    args: ['--no-sandbox', '--disable-dev-shm-usage']
+  browser=await chromium.launch({
+    executablePath:process.env.CHROME_BIN||undefined,
+    headless:true,args:['--no-sandbox','--disable-dev-shm-usage']
   });
-  await inspectViewport(1440, 900, 'artifacts/v17-preview-1440.png');
-  await inspectViewport(390, 844, 'artifacts/v17-preview-390.png');
-  await inspectViewport(360, 800, null);
-  await inspectViewport(768, 1024, null);
-  await inspectViewport(320, 640, null);
-  await inspectViewport(390, 844, null, { reduced: true });
-  // A static Astro export must remain usable if GSAP/JavaScript never starts.
-  const noJs = await browser.newPage({
-    viewport: { width: 390, height: 844 },
-    isMobile: true,
-    hasTouch: true,
-    javaScriptEnabled: false
-  });
-  try {
-    const response = await noJs.goto(base + '/v17-preview/', { waitUntil: 'domcontentloaded' });
-    assert.equal(response?.status(), 200, 'Static prototype returns 200 without JavaScript');
-    assert.ok(await noJs.locator('.v17-bridge-market h2').isVisible());
-    assert.ok(await noJs.locator('.v17-bridge-table h2').isVisible());
-    assert.equal(await noJs.locator('.v17-actions a').first().getAttribute('href'), '/recettes/');
-    assert.equal(await noJs.locator('.v17-actions a').last().getAttribute('href'), '/apprendre/');
-    const opacity = await noJs.locator('.v17-market-copy').evaluate((el) =>
-      getComputedStyle(el).opacity
-    );
-    assert.equal(opacity, '1', 'No-JS narrative content must be fully readable');
-  } finally {
-    await noJs.close();
-  }
-  assert.deepEqual(errors, [], 'No runtime JavaScript errors');
-  console.log('V17 preview browser QA: PASS — scroll progression, no-JS, accessibility, responsive and reduced motion');
-} catch (error) {
-  console.error('V17 preview browser QA: FAIL — ' + (error?.stack || error));
-  process.exitCode = 1;
+  await inspect(1440,900,'artifacts/v17-preview-1440.png');
+  await inspect(390,844,'artifacts/v17-preview-390.png');
+  await inspect(768,1024);
+  await inspect(360,800);
+  await inspect(320,640);
+  await inspect(390,844,null,{reduced:true});
+  await inspect(390,844,null,{noJs:true});
+  assert.deepEqual(errors,[],'No JavaScript runtime errors');
+  console.log('V17 Fresh & Bold full browser gate PASS');
+} catch(error) {
+  console.error('V17 Fresh & Bold browser gate FAIL: '+(error?.stack||error));
+  process.exitCode=1;
 } finally {
-  if (browser) await browser.close();
-  if (server.pid && process.platform !== 'win32') {
-    try { process.kill(-server.pid, 'SIGTERM'); }
-    catch { server.kill('SIGTERM'); }
-  } else server.kill('SIGTERM');
+  if(browser)await browser.close();
+  if(server.pid&&process.platform!=='win32'){try{process.kill(-server.pid,'SIGTERM')}catch{server.kill('SIGTERM')}}else server.kill('SIGTERM');
 }
