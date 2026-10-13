@@ -1,0 +1,32 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const page=fs.readFileSync('src/pages/v17-accueil-preview.astro','utf8');
+const css=fs.readFileSync('src/styles/v17-accueil-rebuild.css','utf8');
+const home=fs.readFileSync('src/pages/index.astro','utf8');
+const sitemap=fs.readFileSync('src/pages/sitemap.xml.ts','utf8');
+const header=fs.readFileSync('src/components/SiteHeader.astro','utf8');
+const footer=fs.readFileSync('src/components/SiteFooter.astro','utf8');
+assert.match(page, /\bnoindex\b/);
+assert.match(page, /<SiteHeader\s*\/>/);
+assert.match(page, /<SiteFooter\s*\/>/);
+assert.equal((page.match(/<h1\b/g)||[]).length,1);
+assert.equal((page.match(/<h2\b/g)||[]).length,6);
+for(const selector of ['v17r-hero','v17r-market','v17r-palette','v17r-gestures','v17r-table','v17r-dessert','v17r-finale']){
+  assert.match(page,new RegExp('class="'+selector+'"'));
+}
+const requiredLinks=['/recettes/','/ingredients/','/glossaire/','/apprendre/','/culture/construire-repas-cambodgien/','/recettes/chek-ktis/','/apprendre/piler-aromates-au-mortier/','/credits-photos/'];
+for(const href of requiredLinks)assert.ok(page.includes('href="'+href+'"'),'Missing genuine CTA '+href);
+for(const href of ['/recettes/','/glossaire/','/apprendre/','/culture/','/a-propos/'])assert.ok(header.includes('href="'+href+'"'),'Existing header changed '+href);
+for(const href of ['/ingredients/','/credits-photos/'])assert.ok(footer.includes('href="'+href+'"'),'Existing footer changed '+href);
+for(const path of [...page.matchAll(/(?:src|href)=\{?(?:hero|market|kampot|tamarind|lokLak)\}?/g)])assert.ok(path);
+for(const img of ['amok-1600.webp','kep-market-2200.webp','kampot-1600.webp','tamarind-1600.webp','lok-lak-800.webp'])assert.ok(fs.existsSync('public/images/cuisine/'+img),'Missing stock photo '+img);
+assert.match(page,/data-media-status="illustration-temporaire"/);
+assert.match(page,/photographie complète d’une table à sourcer/);
+assert.doesNotMatch(page, /\/v17-preview\/|home-v17-preview\.css|home-v17-air\.css/);
+assert.doesNotMatch(home,/v17-accueil-preview|v17-accueil-rebuild/,'V16 home untouched');
+assert.doesNotMatch(sitemap,/v17-accueil-preview/,'Preview must not be in sitemap');
+assert.match(css, /@media\(max-width:760px\)/);
+assert.match(css, /@media\(prefers-reduced-motion:reduce\)/);
+assert.match(css, /\.v17r-wrap/);
+assert.doesNotMatch(css,/ScrollSmoother|scroll-snap-type|position:\s*fixed/);
+console.log('V17 accueil D2: PASS — 7 scenes, real links, previews isolated, assets declared');

@@ -1,0 +1,156 @@
+---
+/**
+ * D2 — Reconstruction indépendante de la maquette V17 approuvée.
+ * Preview seulement. Ne jamais remplacer / avant validation graphique et médias.
+ * La référence canonique est enregistrée dans docs/v17-plan-directeur-accueil.md.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import '../styles/v17-accueil-rebuild.css';
+const hero = '/images/cuisine/amok-1600.webp';
+const market = '/images/cuisine/kep-market-2200.webp';
+const kampot = '/images/cuisine/kampot-1600.webp';
+const tamarind = '/images/cuisine/tamarind-1600.webp';
+const lokLak = '/images/cuisine/lok-lak-800.webp';
+---
+<BaseLayout
+  title="V17 — Prévisualisation du nouvel accueil | Cuisine du Cambodge"
+  description="Prévisualisation non publiée de la page d'accueil : recettes, ingrédients, gestes, repas et desserts cambodgiens."
+  image={hero}
+  imageAlt="Amok cambodgien"
+  noindex
+>
+  <a class="v17r-skip" href="#v17r-main">Aller au contenu</a>
+  <div class="v17r-wrap" data-v17r-preview>
+    <SiteHeader />
+    <main class="v17r" id="v17r-main">
+      <section class="v17r-hero" aria-labelledby="v17r-hero-title">
+        <div class="v17r-hero-art" aria-hidden="true"><span class="v17r-temple">⌁</span><span class="v17r-hero-flower">✿</span></div>
+        <div class="v17r-hero-copy">
+          <p class="v17r-eyebrow">Des saveurs vraies, un voyage gourmand.</p>
+          <h1 id="v17r-hero-title">LE CAMBODGE<br/>DANS VOTRE <span>ASSIETTE</span></h1>
+          <p>Des recettes parfumées, des ingrédients à découvrir et des gestes pour cuisiner le Cambodge chez soi.</p>
+          <a class="v17r-pill" href="/recettes/">Découvrir les recettes <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="v17r-hero-media">
+          <figure class="v17r-hero-dish">
+            <img src={hero} srcset="/images/cuisine/amok-800.webp 800w, /images/cuisine/amok-1200.webp 1200w, /images/cuisine/amok-1600.webp 1600w" sizes="(max-width: 760px) 90vw, 50vw" width="1600" height="1067" fetchpriority="high" decoding="async" alt="Amok de poisson cambodgien, photographie réelle" />
+            <figcaption>Amok Trey <span>Poisson, coco et aromates</span></figcaption>
+          </figure>
+          <span class="v17r-label" aria-hidden="true">DES SAVEURS<br/>VRAIES ✳</span>
+          <svg class="v17r-decoration v17r-leaf" viewBox="0 0 150 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M20 178C38 87 94 32 133 13C147 92 112 166 20 178Z" fill="#54873F"/><path d="M20 178C69 123 101 81 133 13M68 115L54 66M93 88L116 97" stroke="#24432A" stroke-width="5" stroke-linecap="round"/></svg>
+        </div>
+        <p class="v17r-hero-caption">La cuisine khmère se découvre autant qu'elle se partage.</p>
+      </section>
+
+      <section class="v17r-market" aria-labelledby="v17r-market-title">
+        <figure class="v17r-market-visual">
+          <img src={market} srcset="/images/cuisine/kep-market-800.webp 800w, /images/cuisine/kep-market-1600.webp 1600w, /images/cuisine/kep-market-2200.webp 2200w" sizes="(max-width: 760px) 100vw, 66vw" width="2200" height="1467" loading="lazy" decoding="async" alt="Marché au crabe de Kep, au Cambodge" />
+          <figcaption>Le marché au crabe de Kep · Cambodge</figcaption>
+        </figure>
+        <div class="v17r-market-copy">
+          <p class="v17r-kicker">01 — Les produits</p>
+          <h2 id="v17r-market-title">TOUT PART DES <em>BONS PRODUITS.</em></h2>
+          <p>Les marchés, les épices, les herbes fraîches : autant de parfums à apprivoiser.</p>
+          <a class="v17r-pill" href="/ingredients/">Explorer les ingrédients <span aria-hidden="true">↗</span></a>
+          <a class="v17r-underlink" href="/glossaire/">Voir aussi le glossaire <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+
+      <section class="v17r-palette" aria-labelledby="v17r-palette-title">
+        <p class="v17r-kicker">Des parfums uniques</p>
+        <h2 id="v17r-palette-title">UNE PALETTE<br/><em>D’INGRÉDIENTS</em><br/>D’EXCEPTION</h2>
+        <p class="v17r-palette-intro">Citronnelle, galanga, combava, piment, poivre de Kampot… Chaque ingrédient a sa place dans cet équilibre de saveurs.</p>
+        <div class="v17r-palette-media">
+          <figure class="v17r-palette-a">
+            <img src={tamarind} srcset="/images/cuisine/tamarind-800.webp 800w, /images/cuisine/tamarind-1600.webp 1600w" sizes="(max-width: 760px) 42vw, 24vw" width="1600" height="1067" loading="lazy" decoding="async" alt="Fruits du tamarinier, un ingrédient acidulé" />
+            <figcaption>Le tamarin</figcaption>
+          </figure>
+          <span class="v17r-palette-line" aria-hidden="true">✳</span>
+          <figure class="v17r-palette-b">
+            <img src={kampot} srcset="/images/cuisine/kampot-800.webp 800w, /images/cuisine/kampot-1600.webp 1600w" sizes="(max-width: 760px) 42vw, 24vw" width="1600" height="1067" loading="lazy" decoding="async" alt="Poivre de Kampot" />
+            <figcaption>Le poivre de Kampot</figcaption>
+          </figure>
+        </div>
+        <a class="v17r-pill" href="/glossaire/">En savoir plus <span aria-hidden="true">↗</span></a>
+      </section>
+
+      <section class="v17r-gestures" aria-labelledby="v17r-gestures-title">
+        <div class="v17r-gestures-visual" data-media-status="illustration-temporaire">
+          <svg viewBox="0 0 620 460" role="img" aria-labelledby="v17r-mortar-title v17r-mortar-desc" xmlns="http://www.w3.org/2000/svg">
+            <title id="v17r-mortar-title">Illustration d'un mortier et de ses aromates</title>
+            <desc id="v17r-mortar-desc">Dessin vectoriel de repérage, en attente d'une véritable photographie du geste de pilage.</desc>
+            <ellipse cx="310" cy="350" rx="235" ry="80" fill="#B9793C"/><path d="M95 238C115 370 167 419 308 423C450 419 518 370 524 238" fill="#8C6D4B"/><ellipse cx="310" cy="238" rx="218" ry="92" fill="#463E35"/><ellipse cx="310" cy="238" rx="189" ry="68" fill="#DB9635"/><path d="M176 240C245 205 335 208 447 246" stroke="#2E653A" stroke-width="23" stroke-linecap="round"/><path d="M238 270C320 240 373 258 426 278" stroke="#E3D05B" stroke-width="22" stroke-linecap="round"/><path d="M320 240L450 47" stroke="#5A4A36" stroke-width="64" stroke-linecap="round"/><path d="M320 239L450 47" stroke="#938064" stroke-width="42" stroke-linecap="round"/><path d="M198 280C263 313 351 305 435 282" stroke="#BC5933" stroke-width="10" stroke-linecap="round"/>
+          </svg>
+          <span class="v17r-image-warning">Illustration provisoire — photo réelle du geste à sourcer</span>
+        </div>
+        <div class="v17r-gestures-copy">
+          <p class="v17r-kicker">02 — Les gestes</p>
+          <h2 id="v17r-gestures-title">COUPER.<br/><em>PILER.</em><br/>SENTIR.</h2>
+          <p>Des gestes simples pour libérer les arômes : la préparation compte autant que les ingrédients.</p>
+          <a class="v17r-pill" href="/apprendre/piler-aromates-au-mortier/">Voir les étapes <span aria-hidden="true">↗</span></a>
+        </div>
+        <ol class="v17r-gestures-steps" aria-label="Les trois gestes">
+          <li><span aria-hidden="true">✎</span><div><strong>COUPER</strong><small>Préparer les aromates</small></div></li>
+          <li><span aria-hidden="true">◉</span><div><strong>PILER</strong><small>Travailler la texture</small></div></li>
+          <li><span aria-hidden="true">✳</span><div><strong>SENTIR</strong><small>Reconnaître les parfums</small></div></li>
+        </ol>
+      </section>
+
+      <section class="v17r-table" aria-labelledby="v17r-table-title">
+        <div class="v17r-table-media">
+          <figure class="v17r-table-amok"><img src={hero} width="1600" height="1067" loading="lazy" decoding="async" alt="Amok de poisson cambodgien" /></figure>
+          <figure class="v17r-table-lok"><img src={lokLak} width="800" height="533" loading="lazy" decoding="async" alt="Lok Lak au bœuf" /></figure>
+        </div>
+        <div class="v17r-table-copy">
+          <p class="v17r-kicker">03 — À table</p>
+          <h2 id="v17r-table-title">DES PLATS<br/><em>QUI RASSEMBLENT.</em></h2>
+          <p>Poissons, currys, salades, soupes… Des plats généreux que l’on aime retrouver et partager.</p>
+          <a class="v17r-pill" href="/recettes/">Découvrir les recettes <span aria-hidden="true">↗</span></a>
+          <a class="v17r-table-sub" href="/culture/construire-repas-cambodgien/">Comprendre le repas cambodgien →</a>
+        </div>
+        <p class="v17r-table-clarity">Deux photographies de plats existants — photographie complète d’une table à sourcer.</p>
+      </section>
+
+      <section class="v17r-dessert" aria-labelledby="v17r-dessert-title">
+        <div class="v17r-dessert-copy">
+          <p class="v17r-kicker">04 — Les douceurs</p>
+          <h2 id="v17r-dessert-title">DES DESSERTS<br/>TOUT EN FINESSE.</h2>
+          <p>Banane, coco, riz gluant… Une autre facette gourmande de la cuisine cambodgienne.</p>
+          <a class="v17r-pill" href="/recettes/chek-ktis/">Découvrir le Chek Ktis <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="v17r-dessert-art" data-media-status="illustration-temporaire">
+          <svg viewBox="0 0 540 340" role="img" aria-labelledby="v17r-dessert-art-title" xmlns="http://www.w3.org/2000/svg">
+            <title id="v17r-dessert-art-title">Illustration provisoire de douceurs à la banane et à la noix de coco</title>
+            <path d="M50 213Q197 314 478 195L445 259Q254 374 68 278Z" fill="#36854B"/><ellipse cx="270" cy="180" rx="181" ry="94" fill="#FFF9EB" stroke="#D9B778" stroke-width="8"/><path d="M133 178Q220 240 368 155" fill="none" stroke="#EACF83" stroke-width="47" stroke-linecap="round"/><circle cx="234" cy="166" r="35" fill="#F4F1D3"/><circle cx="303" cy="166" r="35" fill="#F4F1D3"/><circle cx="373" cy="172" r="28" fill="#F3C653"/><path d="M102 122Q166 44 291 64" stroke="#7DA64A" stroke-width="9" fill="none" stroke-linecap="round"/>
+          </svg>
+          <span class="v17r-image-warning">Illustration provisoire — photos des desserts à vérifier</span>
+        </div>
+      </section>
+
+      <section class="v17r-finale" aria-labelledby="v17r-finale-title">
+        <div class="v17r-finale-landscape" aria-hidden="true">
+          <svg viewBox="0 0 1450 310" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#17281E" d="M0 310V164h85V110h18V164h93v-58h38v-38h15v38h42v56h92V97h18V57h21v-34h18v34h21v40h18v78h95v-53h32V89h18V51h19V20h18v31h19v38h18v33h32v53h100v-69h40V71h20V35h19v36h20v35h40v69h140v-62h50v-30h20v-42h20v42h20v30h40v84h115v113Z"/>
+          </svg>
+        </div>
+        <div class="v17r-finale-copy">
+          <p class="v17r-kicker">05 — À vous de jouer</p>
+          <h2 id="v17r-finale-title">CUISINEZ,<br/>PARTAGEZ,<br/><em>VOYAGEZ.</em></h2>
+          <p>Des recettes, des ateliers et des découvertes pour faire entrer les saveurs du Cambodge dans votre quotidien.</p>
+          <div class="v17r-finale-actions">
+            <a class="v17r-pill" href="/apprendre/">Nos ateliers <span aria-hidden="true">↗</span></a>
+            <a class="v17r-pill v17r-pill-outline" href="/recettes/">Toutes les recettes <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <p class="v17r-finale-credit">Silhouette graphique originale inspirée de l'architecture khmère — photographie d'Angkor à sourcer.</p>
+      </section>
+
+      <aside class="v17r-preview-notice" aria-label="Statut du prototype">
+        <p><strong>Prévisualisation technique D2 — non publiée.</strong> Ce parcours reprend la structure et les liens de la maquette validée. Les visuels mortier, dessert et paysage sont explicitement illustratifs ; aucune photo n'est présentée comme un reportage inventé. <a href="/credits-photos/">Crédits des photographies existantes</a>.</p>
+      </aside>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
