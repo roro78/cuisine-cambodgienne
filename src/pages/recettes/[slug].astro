@@ -92,9 +92,7 @@ const recipeSchema = {
 <BaseLayout title={`${recipe.title} — Recette cambodgienne | Cuisine du Cambodge`} description={recipe.description} image={recipe.image} imageAlt={recipe.imageAlt}>
   <SiteHeader />
 
-  <main class:list={['recipe-v15', 'recipe-v16', {
-    'recipe-v17-generated-media': Boolean(recipe.image?.includes('-genere.webp'))
-  }]}>
+  <main class="recipe-v15 recipe-v16" data-generated-artwork={recipe.image?.includes('-genere.webp') ? 'true' : undefined}>
     <section class="recipe-v15-hero">
       <div class="recipe-v15-hero-copy" data-reveal="up">
         <p class="eyebrow">Recette cambodgienne · {recipe.category}</p>
