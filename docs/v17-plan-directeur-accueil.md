@@ -403,3 +403,19 @@ Chaque lot de code pr?sente : commit/PR, diff?rences visuelles desktop/mobile fa
 - **Preuves récupérées et inspectées** : artifact du run #38458930660 `v17-accueil-d7-browser-evidence` ID `11843874652`, 13 PNG (7 fullpage + 6 scènes) et 2 WebM. Une planche avant/après et storyboard original avec les scènes hero/table a été produite à partir des véritables captures.
 - **Réception artistique** : **AMÉLIORATION CONFIRMÉE, MAIS NON CONFORMITÉ EXACTE À LA MAQUETTE**. Le hero reste une photo documentaire de vrai Amok, avec une nappe et du riz ; les aliments et l'intégration florale ne reproduisent pas la scène composée de la maquette. La tablée est plus gourmande et cohérente, mais son cadrage/photo reste différent de la grande table de plats. Les desserts sont inchangés dans ce lot ; la variante reste un tableau photographique, pas le montage original. Ne pas déclarer le design achevé ou approuvé par le propriétaire.
 - **À faire avant D8** : comparatif artistique approfondi des autres scènes, révision image hero/table si meilleur média autorisé, consolidation du CSS V17 (~62 ko de règles itératives), audits Safari/lecteur d'écran et performance/LCP/CLS, vérification des dérivés et crédits BY-SA et migration contrôlée de la route preview vers `/`. **Aucune production modifiée.**
+
+
+### 13 octobre 2026 — livraison du lot images IA réellement intégrées
+
+**État final vérifiable : cinq illustrations IA WebP PHYSIQUEMENT PRÉSENTES ET AFFICHÉES** dans le dépôt et la preview V17. Commit objets binaires `0abb8b962b00b8fbe520666299fa3e1f54894c20`; dernier commit testé `b8b7e635043a23ccb65140404c93fb71cf39b2f5`. [CI #38465721313 SUCCESS](https://github.com/roro78/cuisine-cambodgienne/actions/runs/38465721313). Se référer au manifeste média mis à jour pour les cinq chemins, dimensions, tailles et déclarations de provenance.
+
+**Travail effectif** :
+- Remplacement du héros photographique par la composition générée Amok Trey. CSS dédié `v17-generated-media.css`, image WebP servie localement (pas de CDN), GSAP adapté aux proportions et `prefers-reduced-motion`.
+- Remplacement de la table documentaire par le visuel IA de festin convivial en pleine largeur ; rappel explicite du caractère illustratif.
+- Remplacement des deux vignettes desserts par la composition générée unique mangue/riz gluant/coco, accessible avec alt et légende.
+- Mise en image des recettes Lok Lak et Num Banh Chok (fiche et grille). L'image Num Banh Chok manquait auparavant ; les nouvelles images évitent les variantes `srcset` inexistantes.
+- Adaptation des tests V17 et des mentions de crédits, conservation des photos documentaires pour les scènes restantes.
+
+**QA** : tests CI PASS, Chromium 7 largeurs 320, 360, 390, 430, 768, 1024, 1440, sans JS et mouvement réduit ; téléchargements 7 captures complètes, 6 captures ciblées (hero, table, dessert en desktop/mobile) et 2 vidéos WebM (artifact `11848322729`). Captures desktop/mobile du hero, repas et desserts inspectées : images réellement présentes et chargées.
+
+**Décision** : `PR47 = DRAFT, CI PASS, VISUELS INTÉGRÉS`. **La réception artistique complète, Safari, a11y/performance et la migration de la preview vers `/` restent à clôturer avant toute production.** PR46 = documentation, PR47 = développement. Aucun merge ni déploiement OVH ; site V16 en place inchangé.
