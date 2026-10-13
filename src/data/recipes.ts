@@ -152,11 +152,11 @@ export const recipes: Recipe[] = [
     relatedIngredients: ['poivre-de-kampot'],
     glossarySlugs: ['poivre-de-kampot', 'lok-lak'],
     tags: ['bœuf', 'rapide', 'poivre', 'citron vert'],
-    image: '/images/cuisine/lok-lak-800.webp',
-    imageAlt: 'Lok lak cambodgien au bœuf accompagné de crudités',
-    imageWidth: 800,
-    imageHeight: 716,
-    imageWidths: [480, 800],
+    image: '/images/cuisine/v17-lok-lak-genere.webp',
+    imageAlt: 'Illustration culinaire générée d’un Lok Lak au bœuf saisi, servi avec crudités et sauce poivre-citron',
+    imageWidth: 1448,
+    imageHeight: 1086,
+    imageWidths: [],
     visualTone: 'fire'
   },
   {
@@ -319,6 +319,11 @@ export const recipes: Recipe[] = [
     equipment: ['Casserole', 'Grande passoire'],
     faqs: [{ question: 'La sauce peut-elle être préparée à l’avance ?', answer: 'Oui. Réchauffez-la doucement et préparez les nouilles au dernier moment.' }],
     tags: ['nouilles', 'poisson', 'herbes', 'classique'],
+    image: '/images/cuisine/v17-nom-banh-chok-genere.webp',
+    imageAlt: 'Illustration culinaire générée de Num Banh Chok aux nouilles de riz, sauce parfumée, crudités et herbes fraîches',
+    imageWidth: 1448,
+    imageHeight: 1086,
+    imageWidths: [],
     visualTone: 'herbs'
   },
   {
