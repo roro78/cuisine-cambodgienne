@@ -308,3 +308,20 @@ Chaque lot de code présente : commit/PR, différences visuelles desktop/mobile 
 4. Reprendre ensuite le mouvement GSAP et les contrôles D7 approfondis. Garder `/v17-accueil-preview/` noindex ; **ne pas merger, déployer, modifier la V16 ou appeler D8**.
 
 **Important :** la copie JPEG partagée est visuellement suffisante pour guider les compositions ; le défaut d'archivage du PNG original est un problème documentaire distinct, **pas une raison de demander au commanditaire de choisir une nouvelle maquette**.
+
+
+### 13 octobre 2026 — Exécution autonome des lots médias–motion
+
+**Consigne exécutée :** réaliser les lots sans validation intermédiaire, mais conserver la réception esthétique de la maquette comme gate indépendant. Tous les changements applicatifs sont **sur la PR #47 draft, branche `feat/v17-accueil-reconstruction`**. Aucune fusion, aucune mise en ligne et aucun changement de `/index.astro` V16.
+
+| Lot | Livrables réellement enregistrés | État de contrôle |
+| --- | --- | --- |
+| **L1 — Photos** | Import réplicable de quatre JPEG locaux via [Action #38424609626](https://github.com/roro78/cuisine-cambodgienne/actions/runs/38424609626), commit `2fa0cdb3`. Marché de Phnom Penh, mortier avec mains (photo générique), repas photographié à Siem Reap, Angkor au crépuscule ; manifeste licences/auteurs mis à jour. | **Import PASS**, pertinence artistique incomplète, aucune fausse localisation du pilage |
+| **L2 — Composition** | [`fc1c42cd`](https://github.com/roro78/cuisine-cambodgienne/commit/fc1c42cde358f9eed8578b6ae74d6b7db82294e0) : photos réellement reliées aux quatre scènes ; mortier vectoriel remplacé par une vraie photo de mains, pâte kroeung distincte ; deux photos de repas déclarées comme montage éditorial. | **Intégration committée**, réception artistique encore à faire |
+| **L3 — Immersion / hauteur** | [`419d3103`](https://github.com/roro78/cuisine-cambodgienne/commit/419d310335a7cd4ed9513bc6efccfa976bcca854) : scènes principales entre ~89svh et ~100svh sur desktop large, hauteurs MINIMALES (jamais fixes), rythme différent, photo dominante par scène ; [`782d0fdc`](https://github.com/roro78/cuisine-cambodgienne/commit/782d0fdc1155007108b7972df42c51e1e8491941) préserve la grandeur des desserts sur mobile. | **Code committé**, géométrie/scroll à confirmer par screenshot et tests réels |
+| **L4 — GSAP** | [`8b293e28`](https://github.com/roro78/cuisine-cambodgienne/commit/8b293e28cad81a0bc67ad6bac324c98ac6b06e4f) : parallax discret hero, marché, mortier, tablée et finale, ingrédients depuis plusieurs directions, version mobile sans pin ni hijacking, `prefers-reduced-motion` respecté. [`a0f7626b`](https://github.com/roro78/cuisine-cambodgienne/commit/a0f7626bd25f1d326bad528f4c00fc532f912827) simplifie le paramétrage. | **Code committé**, rendu motion à relire sur vidéos |
+| **L5 — Tests/revue** | [`a7070f89`](https://github.com/roro78/cuisine-cambodgienne/commit/a7070f8955d69b9d0329df5c8706f3d13b76158c) : garde-fous quatre médias existants, crédits et geste non documenté comme cambodgien. Échec [CI #38425640916](https://github.com/roro78/cuisine-cambodgienne/actions/runs/38425640916) dû à une ancienne assertion sur le texte de la table, corrigée par [`77ff6e29`](https://github.com/roro78/cuisine-cambodgienne/commit/77ff6e292bf2cb479aed88172e0d06604a5f8e20). | **CI #38425910680 à recevoir** : PASS non anticipé |
+
+**Règles de réception et suites :** attendre la CI sur le HEAD ; télécharger les sept captures et les deux vidéos réelles de scroll ; comparer séparément desktop et mobile à la maquette fournie, en noter les défauts. Vérifier la cohérence des crédits (Pexels, CC BY et CC BY-SA), les CTA réels, WCAG/contrastes, performance et toutes les routes V16. **Le retour exact de la photographie composite n'est pas encore prouvé** : les quatre nouveaux clichés sont réels et légalement sourcés, mais ne sont pas nécessairement les photos sources de la maquette. Ne pas confondre cohérence visuelle améliorée et approbation définitive du commanditaire.
+
+**Aucune approbation finale sollicitée pour fusion ou production**, ces étapes restent hors périmètre.
