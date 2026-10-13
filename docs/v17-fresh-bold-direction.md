@@ -100,3 +100,9 @@ Retour utilisateur : la direction **Fresh & Bold** est appréciée, mais les pho
 - Cette étape est une **première chorégraphie réelle**, pas encore une expérience de marque visuellement terminée. Les photographies sont historiquement hétérogènes et le mouvement ne remplace pas une vraie production de séquences de préparation et de cuisson.
 - Aucune publication sans contrôle du rendu en navigateur, test des transform au scroll, photos chargées, mobile, reduced-motion, sans JS et revue artistique.
 - Le profil de galanga est une photographie **générique de rhizome**, pas un reportage cambodgien ; le piment détouré est **CC0** ; la citronnelle est un **pictogramme**.
+
+## V17.4 — Rupture avec les photos carrées (13 octobre 2026)
+
+L'utilisateur ne veut **ni cadres Polaroïd ni rectangles/carrés répétitifs**. La V17.4 impose désormais une géométrie différenciée : Amok en ovale horizontal organique (environ 1,5:1), marché principal en panorama 2,1:1, poivre en contrepoint vertical mince (environ 0,48:1), texture du kroeung en bande immersive 2:1, photographie de table en forme haute organique 0,7:1, Chek Ktis en panorama 2,1:1 et Num Kom en silhouette verticale mince (0,54:1). Sur mobile, la composition garde ses contrastes panorama/portrait sans revenir au carré.
+
+Une légère révélation latérale par `clip-path` accompagne désormais le défilement du marché et du dessert panoramique uniquement sur grand écran sans réduction des animations ; les autres effets de convergence des ingrédients et des gestes restent en place. Aucun scroll forcé, aucune scène épinglée. Contrôles ajoutés : interdiction des ratios photographiques proches de 1:1 dans le contrat source, **mesure des proportions réelles dans Chromium** sur les cinq formats déjà testés, vérification du reduced-motion/sans JS. La V16 et sa production restent intactes.

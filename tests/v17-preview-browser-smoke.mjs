@@ -115,6 +115,18 @@ async function inspect(width,height,screenshotPath,options={}) {
       const ending=await stage.locator('[data-v17-ingredient="left"]').evaluate(el=>getComputedStyle(el).transform);
       assert.notEqual(beginning,ending,'Ingredient choreography must change during scrolling');
     }
+    // V17.4 regression: editorial photography must not slip back to square cards.
+    const ratios = await page.evaluate(() => {
+      const selectors=['.v17-hero-photo','.v17-market-large','.v17-market-small',
+        '.v17-gesture-paste img','.v17-table-photo',
+        '.v17-sweets-feature img','.v17-sweets-secondary img'];
+      return selectors.map(selector=>{
+        const rect=document.querySelector(selector).getBoundingClientRect();
+        return {selector,w:rect.width,h:rect.height,ratio:rect.width/rect.height};
+      });
+    });
+    assert.ok(ratios.every(r=>r.w>0&&r.h>0&&Math.abs(r.ratio-1)>=.23),
+      'V17.4 forbids near-square editorial photos: '+JSON.stringify(ratios));
     if(width===390) {
       const spacing=await page.evaluate(()=>{
         const photo=document.querySelector('.v17-table-photo').getBoundingClientRect();

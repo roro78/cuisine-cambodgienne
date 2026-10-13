@@ -102,6 +102,25 @@ export function initV17PreviewMotion() {
       }
     }
 
+    // Wide photographs open sideways as the visitor reaches each chapter.
+    // Default CSS is fully visible; only desktop, JS and no-reduced-motion enhance it.
+    for (const figure of gsap.utils.toArray<HTMLElement>('.v17-market-large, .v17-sweets-feature', page)) {
+      const picture = figure.querySelector<HTMLImageElement>('img');
+      if (!picture) continue;
+      gsap.fromTo(picture, {
+        clipPath: 'inset(0% 24% 0% 0%)'
+      }, {
+        clipPath: 'inset(0% 0% 0% 0%)',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: figure,
+          start: 'top 92%',
+          end: 'center 62%',
+          scrub: .7
+        }
+      });
+    }
+
     // Image parallax remains subtle and separate from any content text.
     for (const image of gsap.utils.toArray<HTMLImageElement>('[data-v17-parallax]', page)) {
       const frame = image.closest<HTMLElement>('figure');

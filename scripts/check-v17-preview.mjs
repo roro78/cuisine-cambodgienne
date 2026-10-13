@@ -97,4 +97,18 @@ for (const name of ['v17-chek-ktis-960.jpg','v17-num-kom-900.jpg','v17-galangal-
 for (const [,path] of page.matchAll(/'(\/images\/cuisine\/[^']+)'/g)) {
   assert.ok(fs.existsSync('public' + path), 'Image missing: ' + path);
 }
-console.log('V17 Fresh & Bold contract: PASS — isolated, bright, linked, source credited');
+
+// V17.4: creative gate: all editorial photos have intentionally non-square crops.
+// Small transparent ingredient cutouts and decorative SVGs are not photo cards.
+for (const selector of ['.v17-hero-photo', '.v17-market-large', '.v17-market-small',
+                       '.v17-gesture-paste img', '.v17-preview .v17-table-photo',
+                       '.v17-sweets-feature img', '.v17-sweets-secondary img']) {
+  const rule = firstRule(selector);
+  assert.match(rule, /aspect-ratio:/, selector + ' must declare an intentional crop');
+  assert.doesNotMatch(rule, /aspect-ratio:\s*1(?:[;\s]|$)/,
+    selector + ' must not use a square 1:1 photo');
+}
+assert.match(motion, /clipPath: 'inset\(0% 24% 0% 0%\)'/);
+assert.match(motion, /clipPath: 'inset\(0% 0% 0% 0%\)'/);
+
+console.log('V17.4 non-square photo composition contract: PASS');
