@@ -49,9 +49,8 @@ export function initV17AccueilMotion() {
     // 4. Mortar: the hands remain real; the prepared kroeung is a second image.
     sceneMotion('.v17r-gestures-main img', { scale: 1.07 }, { scale: 1.015 });
     sceneMotion('.v17r-gestures-kroeung', { yPercent: 12, xPercent: 7 }, { yPercent: 0, xPercent: 0 });
-    // 5. Table: separate photographs move on different depth planes.
+    // 5. Table: a single documented food photograph creates immersive depth.
     sceneMotion('.v17r-table-amok img', { scale: 1.07, xPercent: -2 }, { scale: 1.01, xPercent: 0 });
-    sceneMotion('.v17r-table-detail img', { scale: 1.06, yPercent: -2 }, { scale: 1, yPercent: 1 });
     // 6–7. Desserts and Angkor: restraint and varied composition.
     sceneMotion('.v17r-dessert-main', { xPercent: -4 }, { xPercent: 0 });
     sceneMotion('.v17r-dessert-second', { xPercent: 6 }, { xPercent: 0 });
