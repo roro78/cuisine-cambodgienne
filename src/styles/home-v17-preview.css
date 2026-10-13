@@ -428,3 +428,10 @@
  .v17-preview [data-v17-title]{transform:none!important;opacity:1!important}
  .v17-preview .v17-table-photo img{transform:none!important}
 }
+
+/* V17.5 tablet gate: preserve the immersive portrait photograph at 768–1050px.
+   Without this range, the full-bleed frame tends back towards a square. */
+@media(min-width:761px) and (max-width:1050px){
+  .v17-preview .v17-table-photo{min-height:max(66rem,110svh)}
+  .v17-preview .v17-table h2{font-size:clamp(4rem,8.5vw,7.5rem)}
+}
