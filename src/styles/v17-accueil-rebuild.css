@@ -725,7 +725,7 @@
   pointer-events:none
 }
 .v17r-market-postcard img{
-  display:block;width:100%;height:auto;aspect-ratio:.84;object-fit:cover;
+  display:block;width:100%;height:auto;min-height:0;aspect-ratio:.84;object-fit:cover;
   object-position:center;filter:saturate(1.18) contrast(1.06)
 }
 .v17r-market-postcard span{
@@ -776,7 +776,7 @@
   .v17r-hero-dish{aspect-ratio:1.4}
 }
 @media(max-width:760px){
-  .v17r-market-postcard{left:5%;bottom:13%;width:clamp(6.8rem,32vw,10rem);padding:.4rem .4rem 1rem;transform:rotate(-7deg)}
+  .v17r-market-postcard{left:8%;bottom:13%;width:clamp(6.8rem,32vw,10rem);padding:.4rem .4rem 1rem;transform:rotate(-7deg)}
   .v17r-market-postcard span{font-size:clamp(.62rem,2.5vw,.82rem);margin-top:.4rem}
   .v17r-hero-dish{aspect-ratio:1.31;width:96%}
   .v17r-hero-dish img{object-position:79% center;transform:scale(1.16)}
