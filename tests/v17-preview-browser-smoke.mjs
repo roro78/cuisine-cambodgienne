@@ -77,6 +77,29 @@ async function inspect(width,height,screenshotPath,options={}) {
     const buttons=await page.locator('.v17-actions a').evaluateAll(nodes=>nodes.map(n=>n.getBoundingClientRect().height));
     assert.ok(buttons.every(h=>h>=42),'CTA tap targets >=42px');
 
+    // V17.2: check that documentary photos form a clean editorial composition,
+    // without heavy frames, rotation or overlapping market photos.
+    const photoLayout = await page.evaluate(() => {
+      const selectors=['.v17-hero-photo','.v17-market-large','.v17-market-small','.v17-gesture-paste','.v17-table-photo'];
+      const items=selectors.map((selector)=>{
+        const el=document.querySelector(selector);
+        const cs=getComputedStyle(el);
+        const transform=cs.transform;
+        const m=transform.match(/^matrix\\(([^)]+)\\)$/);
+        const angle=m?Math.atan2(Number(m[1].split(',')[1]),Number(m[1].split(',')[0])):0;
+        const r=el.getBoundingClientRect();
+        return {selector,border:parseFloat(cs.borderTopWidth),angle,shadow:cs.boxShadow,x:r.x,y:r.y,w:r.width,h:r.height};
+      });
+      const [large,small]=[items[1],items[2]];
+      const intersect=Math.max(0,Math.min(large.x+large.w,small.x+small.w)-Math.max(large.x,small.x))
+        *Math.max(0,Math.min(large.y+large.h,small.y+small.h)-Math.max(large.y,small.y));
+      return {items,intersect};
+    });
+    assert.ok(photoLayout.items.every(p=>p.border<=1),
+      'Photos must not have visible Polaroid borders: '+JSON.stringify(photoLayout));
+    assert.ok(photoLayout.items.every(p=>Math.abs(p.angle)<0.025),
+      'Photos must not be tilted like Polaroids: '+JSON.stringify(photoLayout));
+    assert.equal(photoLayout.intersect,0,'Market photographs should not overlap');
     if(width===390) {
       const spacing=await page.evaluate(()=>{
         const photo=document.querySelector('.v17-table-photo').getBoundingClientRect();

@@ -60,3 +60,15 @@ La PR #45 reste **draft** : ni `main`, ni `ovh-production`, ni GitHub Actions de
 
 ## Sources de photographies
 Registre conservé et mis à jour dans [v17-sourcing-medias.md](./v17-sourcing-medias.md). Les quatre nouvelles prises de vue documentaires et la photographie V16 du poivre restent identifiées par leur provenance et leurs licences. Le besoin d'une campagne photographique culinaire homogène demeure **ouvert**.
+
+## V17.2 — Photographies sans effet Polaroïd (13 octobre 2026)
+
+Retour utilisateur : la direction **Fresh & Bold** est appréciée, mais les photographies inclinées et encadrées façon **Polaroïd** ne conviennent pas. Le traitement photo est donc corrigé **sans toucher à la palette ni à la typographie** :
+
+- **Héros** : plat toujours central et rond, mais sans bordure noire, ombre dure ni rotation de la photographie. Le disque mangue est un décor plat derrière le plat, indépendant de la photo.
+- **Ingrédients** : deux photographies en grille asymétrique, non superposées, sans tirage blanc, bordure ni ombre. Coins arrondis et légende en surimpression discrète.
+- **Mortier** : photo du résultat final dans un visuel droit sans cadre, avec une légende clairement séparée. Badge décoratif conservé mais non assimilable à une photographie collée.
+- **À table** : grande photo droite, sans contour ni ombre de Polaroïd, et marge mobile recalibrée pour protéger le texte suivant.
+- **Mobile** : photographie de marché principale sur une rangée entière, secondaire dans une composition distincte ; pas d'empilement incliné.
+
+**Contrat QA renforcé** : un test source interdit rotation, bordure épaisse et ombre des cadres photographiques, tandis que Chromium vérifie l'absence de bordure/rotation ainsi que de chevauchement des deux visuels du marché. L'identité Fresh & Bold, les licences, l'accessibilité et les interactions V16 restent inchangées.
