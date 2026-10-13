@@ -410,3 +410,76 @@
  .v17r-wrap footer.site-footer-premium .footer-primary a>strong{font-size:1.8rem}
  .v17r-wrap footer.site-footer-premium .footer-primary a>em{font-size:.71rem}
 }
+
+
+/* V17 D5.1 — réglages des proportions à partir de la maquette transmise
+   le 13/10 (copie JPEG 926×1536, empreinte différente du PNG canonique).
+   Il s'agit d'un rattrapage de composition, pas d'un nouveau design validé.
+   Tous les médias restent de véritables photos légendées, sans assemblage
+   présenté comme un repas réellement photographié par le site. */
+@media(min-width:1101px){
+  /* Hero : le plat reprend le rôle d'image maîtresse, sans écraser le H1. */
+  .v17r-hero{
+    grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr);
+    column-gap:clamp(.5rem,1.3vw,1.5rem);
+    padding-inline:clamp(2rem,4.25vw,5rem);
+  }
+  .v17r-hero-copy{z-index:5}
+  .v17r-hero h1{font-size:clamp(4.9rem,6.55vw,8.2rem)}
+  .v17r-hero-media{min-width:0;margin-left:-5%;overflow:visible}
+  .v17r-hero-dish{width:calc(100% + clamp(1.5rem,4vw,5rem));max-width:58rem;aspect-ratio:1.55}
+  .v17r-hero-green-corner{left:-6%;width:clamp(15rem,25vw,25rem)}
+  .v17r-hero-bloom-left{left:-1%;bottom:4%;width:clamp(6rem,10vw,10rem)}
+  .v17r-hero-flower-dish{left:0;bottom:0;width:clamp(6rem,10vw,10rem)}
+  .v17r-hero-lime{right:-2%;bottom:-2%;width:clamp(7rem,11vw,11rem)}
+
+  /* Palette : titre dégagé au centre, matières généreuses en périphérie. */
+  .v17r-palette{min-height:clamp(39rem,46vw,51rem)}
+  .v17r-palette-media .v17r-lemongrass{left:-5%;top:5%;width:clamp(17rem,34vw,36rem)}
+  .v17r-palette-a{left:3%;top:55%;width:clamp(13rem,24vw,23rem)}
+  .v17r-palette-b{right:1%;top:21%;width:clamp(13rem,23vw,23rem)}
+  .v17r-palette-media .v17r-palette-lime{right:12%;bottom:4%;width:clamp(9rem,16vw,17rem)}
+  .v17r-palette-media img.v17r-palette-chili{left:24%;top:22%;width:clamp(6rem,10vw,11rem)}
+  .v17r-palette h2{max-width:14ch}
+  .v17r-palette-intro{max-width:28rem}
+  /* Gestes : élargir la scène visuelle sans reprendre la photo trompeuse. */
+  .v17r-gestures{grid-template-columns:minmax(0,1.28fr) minmax(0,.76fr) minmax(13rem,.56fr);gap:clamp(1rem,2vw,2.5rem)}
+  .v17r-gestures-kroeung{left:0;top:7%;width:100%;height:78%}
+  .v17r-gestures-visual>svg{width:57%;max-height:21rem}
+  /* Repas : voir les plats, sans perdre le contraste du titre. */
+  .v17r-table::before{background:linear-gradient(180deg,rgba(20,13,11,.32),rgba(29,17,13,.44) 55%,rgba(23,14,11,.36))}
+  .v17r-table h2{font-size:clamp(4.2rem,6vw,7rem);margin:1rem 0}
+  .v17r-table-copy{max-width:54rem}
+  .v17r-table-media .v17r-table-amok img{filter:saturate(1.12) brightness(1.08);object-position:center 46%}
+}
+/* Dessert : un visuel gourmand dominant, le second en contrepoint.
+   Aucun cadre carré, vignette Polaroïd, ni photo déformée. */
+@media(min-width:761px){
+  .v17r-dessert{grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);gap:clamp(1rem,3vw,4rem)}
+  .v17r-dessert-art{position:relative;display:block;min-height:clamp(19rem,29vw,34rem)}
+  .v17r-dessert-main{position:absolute;left:0;top:6%;width:77%;height:86%}
+  .v17r-dessert-second{position:absolute;right:0;bottom:3%;width:31%;height:65%}
+  .v17r-dessert-main img,.v17r-dessert-second img{width:100%;height:100%;object-fit:cover}
+  .v17r-dessert-main img{aspect-ratio:auto;border-radius:43% 57% 47% 53% / 53% 42% 58% 47%}
+  .v17r-dessert-second img{aspect-ratio:auto;border-radius:47% 53% 46% 54% / 51% 51% 49% 49%}
+  .v17r-dessert-art figcaption{font-size:.77rem;margin-top:.25rem}
+  .v17r-dessert-flower{right:19%;bottom:0;width:clamp(5rem,8vw,8rem)}
+  .v17r-dessert-lime{left:14%;top:0;width:clamp(4rem,6vw,7rem)}
+}
+@media(max-width:760px){
+  /* Maintenir le rythme compact du mobile et de vrais CTA accessibles. */
+  .v17r-hero-dish{width:min(100%,34rem)}
+  .v17r-hero-flower-dish{left:-.25rem}
+  .v17r-palette-media{min-height:17rem;gap:1.3rem}
+  .v17r-palette-media figure{aspect-ratio:1.45}
+  .v17r-gestures-visual{min-height:23rem}
+  .v17r-table::before{background:linear-gradient(180deg,rgba(25,15,12,.43),rgba(27,17,12,.56) 55%,rgba(19,13,12,.43))}
+  .v17r-table-media .v17r-table-amok img{filter:saturate(1.12) brightness(1.06)}
+  .v17r-dessert-art{gap:clamp(.6rem,2vw,1rem)}
+  .v17r-dessert-main img{aspect-ratio:1.3}
+  .v17r-dessert-second img{aspect-ratio:.72}
+}
+/* Aucune information vitale ne dépend d'une transformation GSAP. */
+@media(prefers-reduced-motion:reduce){
+  .v17r-dessert-art figure,.v17r-hero-dish,.v17r-palette-media figure{transition:none!important}
+}
