@@ -283,3 +283,28 @@ Chaque lot de code présente : commit/PR, différences visuelles desktop/mobile 
 - **Relecture réelle de l'ultime capture hero 1440 px :** photographie agrandie, titre désormais entièrement distinct, CTA lisible, phrase superflue disparue. La différence avec la maquette est encore forte : photo Amok non détourée, scène marché non immersive, illustrations d'ingrédients insuffisantes, geste de mortier non documenté, photos tablée/desserts et atmosphère Angkor à améliorer.
 - **Gates :** lot de corrections géométriques **PASS TECHNIQUE** ; fidélité de la maquette **PARTIELLE / NON VALIDÉE** ; sourçage/licences **OUVERT** ; D6 animations mobiles **OUVERT** ; D7 complet et D8 **NON VALIDÉS**. La copie JPEG n'a toujours pas l'empreinte du PNG canonique.
 - **Prochaine priorité :** photographie de mortier réellement contextualisée (droits et provenance), remplacement des photos les plus éloignées de la planche par des images réellement autorisées, enrichissement mesuré de la palette, puis comparaison nouvelle capture/maquette et mesures d'accessibilité/performances. **Aucun merge, aucune publication.**
+
+
+### 13 octobre 2026 — Décision de réception — la maquette fait foi (priorité absolue)
+
+**Décision explicite du commanditaire :** la prévisualisation actuelle **ne ressemble pas suffisamment à la maquette acceptée** ; elle est **REFUSÉE artistiquement**. Les tests CI déjà PASS prouvent seulement l'intégrité technique. Ne plus présenter une retouche ponctuelle CSS, une composition reconstruite approximativement ou des décorations comme une réception créative. Il ne faut pas demander une nouvelle direction artistique : la planche reçue dans la conversation le 13 octobre reste la référence approuvée.
+
+**Diagnostic contrôlé :** comparaison entre la planche de référence (copie visuelle JPEG 926×1536 fournie par l'utilisateur) et une capture de la preview 1440 px issue des artifacts du commit `e868a106e421217eb8e2043f69fdf84b9d401a8e`. La page reste sensiblement moins dense en médias : plat principal en photographie de riz/Amok non détourée, étal de fruits au lieu de scène de marché animée, ingrédients trop peu nombreux, illustration de mortier plutôt que véritable geste, photo d'assortiment peu gourmande, dessert dans un bol bleu et Angkor sous une ambiance bleue au lieu de l'atmosphère rouge/orange de la planche. **D3–D5 = FAIL ARTISTIQUE / ouverts.**
+
+**Lots techniques post-décision sur PR #47 :**
+- `56f5c640` : repères manuscrits limités et sceau final intégré aux sept scènes, sans contenu indispensable masqué.
+- `83a21b9d` : original SVG `public/images/brand/v17-spice-bowls.svg` (bols de poivre et curcuma ; dessin vectoriel, pas photo documentaire).
+- `639c24bc` : composition hero en trois plans sur écran large, rythme des scènes maintenu distinct, mise en scène des ingrédients, gestes et finale.
+- `b9149aa3` : extension du contrat de test pour les SVG, annotations et sceau.
+- `e868a106` : correction du dimensionnement CSS du SVG pour éviter un zoom géant.
+- [CI #38421607441](https://github.com/roro78/cuisine-cambodgienne/actions/runs/38421607441) **SUCCESS** pour la structure responsive/noJS/reduced-motion/régression. Artifacts photographiques réels de test récupérés (captures 1440/390) ; **aucune fidélité artistique déduite de cette CI**.
+
+**Réception visuelle des derniers ajustements : toujours REFUSÉE / non atteinte.** Ils peuvent améliorer quelques éléments de la composition, mais l'écart photographique principal demeure. Ne pas ajouter de dizaines de stickers pour cacher un défaut de sourcing ou un manque de vraies scènes culinaires.
+
+**Conditions de poursuite prioritaires et bloquantes avant réception artistique :**
+1. Rechercher, inspecter et acquérir **des photos authentiques autorisées** avec sujet/location vérifiables (marché vivant au Cambodge, mains au mortier documentées, tablée khmère, desserts crédibles, Angkor dans la bonne lumière). En l'absence d'une photo appropriée, conserver un placeholder reconnu, sans tromper.
+2. Reconstituer la hiérarchie photographique du storyboard : Amok réellement dominant à droite, marché plein format, ingrédients autour du texte central, mortier illustrant le geste réel, tablée immersive, dessert gourmand dominant à droite, Angkor au coucher de soleil. Préserver les sept dispositions de texte/CTA et le contenu fonctionnel.
+3. Comparer de nouvelles captures 1440/390/320 px à la maquette **scène par scène**, signaler chaque différence résiduelle ; ne pas utiliser un simple score CI comme verdict visuel.
+4. Reprendre ensuite le mouvement GSAP et les contrôles D7 approfondis. Garder `/v17-accueil-preview/` noindex ; **ne pas merger, déployer, modifier la V16 ou appeler D8**.
+
+**Important :** la copie JPEG partagée est visuellement suffisante pour guider les compositions ; le défaut d'archivage du PNG original est un problème documentaire distinct, **pas une raison de demander au commanditaire de choisir une nouvelle maquette**.
