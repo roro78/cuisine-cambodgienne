@@ -419,3 +419,18 @@ Chaque lot de code pr?sente : commit/PR, diff?rences visuelles desktop/mobile fa
 **QA** : tests CI PASS, Chromium 7 largeurs 320, 360, 390, 430, 768, 1024, 1440, sans JS et mouvement réduit ; téléchargements 7 captures complètes, 6 captures ciblées (hero, table, dessert en desktop/mobile) et 2 vidéos WebM (artifact `11848322729`). Captures desktop/mobile du hero, repas et desserts inspectées : images réellement présentes et chargées.
 
 **Décision** : `PR47 = DRAFT, CI PASS, VISUELS INTÉGRÉS`. **La réception artistique complète, Safari, a11y/performance et la migration de la preview vers `/` restent à clôturer avant toute production.** PR46 = documentation, PR47 = développement. Aucun merge ni déploiement OVH ; site V16 en place inchangé.
+
+
+### 13 octobre 2026 — D6 — intégration visuelle et recettes IA — clôture des correctifs UX
+
+**Point de départ** : la PR #47 possédait déjà les cinq visuels générés et physiquement commités, HEAD `b8b7e635`, CI verte. Demande : continuer ici, sans IDE ni nouveaux médias, en améliorant la finition UX réelle.
+
+**Livré sur la PR #47** (HEAD `08a1710cafa33c66d4ae9b3eacfa7f4a5b98767b`) :
+- `v17-generated-media.css` : bordure rectangulaire de l'Amok fondue par masque radial progressif sur 1440, tablette et mobile ; motif du temple atténué ; annotations repositionnées ; titres des desserts redimensionnés pour la lisibilité et meilleurs rapports photo/texte ; légende IA discrète **sous** la photo ; suppression d'illustrations SVG redondantes sur les images IA.
+- **Recettes Lok Lak et Num Banh Chok** : de vraies captures Playwright ont révélé que le dégradé diagonal V16 traversait les textes, les chiffres et les CTA. Correctif limité aux deux fiches IA via `data-generated-artwork="true"` ajouté au `<main class="recipe-v15 recipe-v16">` sans renommer les classes historiques, nouveau CSS `src/styles/v17-recipe-generated.css` : séparation **verticale** desktop alignée aux colonnes, fond crème uni sous 900 px.
+- Tests navigateur V17 étendus : images des deux recettes réellement chargées, `alt` généré vérifié, absence de débordement, dégradé 90° desktop, fond uni mobile. Captures dédiées de chaque recette en 1440 et **captures pleine page en 390 depuis le haut** pour éviter le faux défaut de menu sticky dans les preuves. Workflow d'artifacts étendu aux quatre PNG recettes.
+- Diff depuis `b8b7e635` : uniquement `.github/workflows/ci.yml`, `src/pages/recettes/[slug].astro`, `src/styles/v17-generated-media.css`, `src/styles/v17-recipe-generated.css`, `tests/v17-accueil-browser-smoke.mjs`. Pas de modifications de `src/pages/index.astro`, header/footer partagés, branche `main` ou `ovh-production`.
+- **Preuves navigateur** : comparaisons 1440 px avant/après du hero et desserts, puis du chevauchement du texte Lok Lak et Num Banh Chok. Captures des deux recettes desktop et mobile vérifiées. [**CI finale #38473654973 SUCCESS**](https://github.com/roro78/cuisine-cambodgienne/actions/runs/38473654973), artifact `v17-accueil-d7-browser-evidence` ID `11852308006` : 7 captures de la preview, 6 captures des scènes, 4 captures de recettes et 2 vidéos WebM.
+- **Échecs intermédiaires traités sans masquer les tests** : un changement de syntaxe du `class` V16 a rompu un contrat éditorial ; classes d'origine rétablies et style piloté via attribut. Mauvais échappement d'une assertion regex corrigé. Aucun test historique contourné.
+
+**Gate** : **D6 CODE & CHROMIUM PASS ; réception esthétique de la maquette par le propriétaire = EN ATTENTE**. Safari, parcours lecteur d'écran et audits LCP/CLS restent à faire. Aucun merge PR #46/#47, aucune mise en ligne et aucune transformation de la preview en véritable `/`.
