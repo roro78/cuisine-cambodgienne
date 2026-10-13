@@ -75,3 +75,11 @@ Le média **mortier réel pendant le geste** manque toujours ; ne pas le remplac
 - Photos de la preview : contrôles de chargement et de présence couverts par les recettes CI connues ; l'adéquation documentaire et les conditions de dérivation restent une **revue manuelle ouverte**.
 - Mortier réel : **NON ACQUIS** ; conserver le repère illustratif honnête jusqu'à l'obtention d'un média fiable.
 - Captures desktop/mobile de la CI du commit `1a56f628` effectivement récupérées, mais **ne prouvent pas l'équivalence avec l'original validé**.
+
+
+### Planche visuelle reçue de nouveau — 13 octobre 2026
+
+- **Copie exploitable :** fichier nommé `2399.png`, mais octets **JPEG** 926 × 1536 ; SHA-256 `fbe345f9984f3ba06bab438202de5afcadec37e0eca9608c0ebdc5be2a3316ff`. **Ne pas confondre** avec la maquette originale PNG 974 × 1615, SHA-256 `f775e6f3a483479f4a2d095406593d3d5dc354213b80d2a99839c6f23f4ddc71`. La comparaison visuelle avec la copie est autorisée, la comparaison d'empreinte canonique et l'archivage du maître demeurent ouverts.
+- La planche composite montre des compositions culinaires idéalisées ; elle n'atteste pas les droits ni la provenance d'une image documentaire individuelle. **Ne pas extraire** directement ses morceaux en prétendant disposer des photographies réelles (marché, mortier, tablée, desserts).
+- Reprise de comparaison : photographie héro Amok réelle mais cadrage différent, marché réel d'étal fixe, palette trop peu fournie, mortier actuellement illustré, tablée réelle moins lumineuse, desserts réels mais différents des arrangements générés, Angkor réel en ambiance diurne différente de la planche.
+- **Aucun nouvel asset non sourcé introduit** dans le lot CSS `fac99b4` → `be7764f`. Les droits des fichiers Commons déjà présents devront être revalidés avant publication. La recherche d'une photographie du pilage khmer documenté demeure prioritaire.
