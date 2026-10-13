@@ -428,7 +428,7 @@
   .v17r-hero h1{font-size:clamp(4.4rem,5.5vw,7.8rem)}
   .v17r-hero-media{min-width:0;margin-left:-5%;overflow:visible}
   .v17r-hero-dish{width:calc(100% + clamp(1.5rem,4vw,5rem));max-width:58rem;aspect-ratio:1.55}
-  .v17r-hero-green-corner{left:-14%;top:-28%;width:clamp(12rem,20vw,20rem)}
+  .v17r-hero-green-corner{left:-8%;top:-35%;width:clamp(12rem,19vw,18rem)}
   .v17r-hero-bloom-left{left:-1%;bottom:4%;width:clamp(6rem,10vw,10rem)}
   .v17r-hero-flower-dish{left:0;bottom:0;width:clamp(6rem,10vw,10rem)}
   .v17r-hero-lime{right:-2%;bottom:-2%;width:clamp(7rem,11vw,11rem)}
