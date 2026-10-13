@@ -203,3 +203,22 @@ La maquette contient des **images générées**, des illustrations et un rendu c
 Chaque lot de code présente : commit/PR, différences visuelles desktop/mobile face à la référence, captures **réelles**, vidéo dès la phase motion, liste des URL touchées, QA exécutée, performances mesurées et limitations honnêtement reportées. Les problèmes de direction artistique, texte approximatif, faux visuel cambodgien, lien cassé, animation imposée, pages existantes cassées ou retour aux compositions répétitives **bloquent la promotion**.
 
 **En une phrase : reproduire fidèlement la maquette validée, restaurer ses compositions et son rythme sur un vrai site Astro sans sacrifier la navigation, le contenu et les fonctionnalités V16.**
+
+
+## 8 — JOURNAL D'AVANCEMENT (mise à jour à chaque lot)
+
+> Les mentions PASS ci-dessous concernent **uniquement les livrables cités**, pas le produit final. Les blocages sont consignés et ne peuvent être masqués par une CI verte.
+
+### 13 octobre 2026 — D0 puis D1
+
+| Gate | Statut vérifié | Résultat / preuve | Suite |
+| --- | --- | --- | --- |
+| **D0 — Plan directeur** | **PASS — en revue, PR #46 draft** | Plan fondé sur la maquette retenue et sur les routes existantes ; historique des anciens prototypes isolé | Ne pas fusionner sans revue |
+| **D1.1 — Maquette source** | **PASS LOCAL / ARCHIVAGE GITHUB OUVERT** | Original de 974×1615 contrôlé par SHA-256 `f775e6f3a483479f4a2d095406593d3d5dc354213b80d2a99839c6f23f4ddc71` ; archive téléchargeable fournie dans la conversation | Intégrer le vrai PNG original dans la future branche d'implémentation (le connecteur GitHub texte n'accepte pas ce transfert binaire depuis le conteneur). Ne pas annoncer « archivé sur GitHub » |
+| **D1.2 — Inventaire des médias** | **PASS** | [Manifest médias V17](./v17-media-manifeste.md) : 8 familles V16, licences publiées et besoins scène par scène | Examiner candidats autorisés / nouvelles photos |
+| **D1.3 — Médias finaux** | **PARTIAL — gate ouvert** | Manquent principalement vrai pilage au mortier, table cambodgienne, visuel final Angkor et harmonie des photographies | Acheter/produire/sourcer les médias sous licence avant la réception des scènes |
+| **D2 — Squelette Astro** | **À FAIRE SUR BRANCHE DISTINCTE** | Base `main` actuelle, pas la PR #45 | Preview isolée noindex ; header/footer/URLs identiques ; aucun merge prod |
+| **D3–D8** | **NON DÉMARRÉS** | Les étapes restent bloquées par les gates visuels ou dépendances en amont | Mise à jour à chaque réception |
+
+**Règle d'autonomie :** avancer sur les sous-lots techniques isolés qui ne nécessitent pas d'inventer une photo documentaire ; ne jamais publier, merger la page ou annoncer une fidélité artistique complète pendant que les médias source ou la réception du commanditaire manquent.
+
