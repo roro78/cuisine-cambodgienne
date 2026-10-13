@@ -907,6 +907,8 @@
     mask-image:radial-gradient(ellipse 78% 76% at 66% 62%,#000 46%,rgba(0,0,0,.93) 65%,transparent 97%);
     box-shadow:none;
   }
+  .v17r-note-amok{top:4%;right:26%;z-index:7}
+  .v17r-hero-dish img{object-position:77% 56%;transform-origin:76% 79%}
   .v17r-table{min-height:max(42rem,100svh)}
   .v17r-table-media .v17r-table-amok img{object-position:50% 46%}
   .v17r-table-copy{margin:0 auto;max-width:50rem}
