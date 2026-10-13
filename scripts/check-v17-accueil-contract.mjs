@@ -30,10 +30,10 @@ for (const img of [
 ]) assert.ok(fs.existsSync('public/images/cuisine/'+img),'Missing verified V17 photograph '+img);
 assert.match(page,/Radosław Botev/);
 assert.match(page,/Filipp Romanovski/);
-assert.match(page,/Bahnfrend/);
+assert.match(page,/Jason Eppink/);
 assert.match(page,/Eric Hossinger/);
 assert.match(page,/v17r-gestures-main/);
-assert.match(page,/v17r-table-detail/);
+assert.doesNotMatch(page,/v17r-table-detail/,'No detached bowl inset in the immersive table scene');
 assert.ok(fs.existsSync('public/images/cuisine/v17-num-plae-ai-641.jpg'),'Num Plae Ai approved real photograph missing');
 assert.match(page,/Num Plae Ai · riz gluant et coco/,'The dessert must be accurately captioned');
 assert.match(page,/Hyzuko, CC BY-SA 4\.0/,'The dessert photo attribution is required');
@@ -61,8 +61,8 @@ assert.match(script,/scrub: \.75/);
 assert.doesNotMatch(script,/pin:\s*true|ScrollSmoother|window\.scrollTo/);
 
 
-assert.match(page,/Deux photographies documentaires de repas khmers à Siem Reap et Phnom Penh/);
-assert.match(page,/montage éditorial, pas une même tablée/);
+assert.match(page,/Photographie authentique d.un assortiment de spécialités khmères/);
+assert.doesNotMatch(page,/montage éditorial, pas une même tablée/);
 assert.doesNotMatch(page, /\/v17-preview\/|home-v17-preview\.css|home-v17-air\.css/);
 assert.doesNotMatch(home,/v17-accueil-preview|v17-accueil-rebuild/,'V16 home untouched');
 assert.doesNotMatch(sitemap,/v17-accueil-preview/,'Preview must not be in sitemap');
