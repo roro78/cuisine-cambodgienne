@@ -19,7 +19,7 @@ for(const href of requiredLinks)assert.ok(page.includes('href="'+href+'"'),'Miss
 for(const href of ['/recettes/','/glossaire/','/apprendre/','/culture/','/a-propos/'])assert.ok(header.includes('href="'+href+'"'),'Existing header changed '+href);
 for(const href of ['/ingredients/','/credits-photos/'])assert.ok(footer.includes('href="'+href+'"'),'Existing footer changed '+href);
 for(const path of [...page.matchAll(/(?:src|href)=\{?(?:hero|market|kampot|tamarind|lokLak)\}?/g)])assert.ok(path);
-for(const img of ['amok-1600.webp','kep-market-2200.webp','kampot-1600.webp','tamarind-1600.webp','lok-lak-800.webp'])assert.ok(fs.existsSync('public/images/cuisine/'+img),'Missing stock photo '+img);
+for(const img of ['v17-amok-rice-1920.jpg','v17-amok-rice-960.jpg','v17-fruit-market-1920.jpg','v17-fruit-market-960.jpg','v17-khmer-table-1280.webp','v17-khmer-table-640.webp','v17-chek-ktis-960.jpg','v17-num-kom-900.jpg','v17-galangal-1000.jpg','v17-chili-450.png','kampot-1600.webp'])assert.ok(fs.existsSync('public/images/cuisine/'+img),'Missing stock photo '+img);
 assert.match(page,/data-media-status="illustration-temporaire"/);
 assert.match(page,/photographie complète d’une table à sourcer/);
 assert.doesNotMatch(page, /\/v17-preview\/|home-v17-preview\.css|home-v17-air\.css/);

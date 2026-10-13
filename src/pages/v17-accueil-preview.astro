@@ -8,11 +8,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import '../styles/v17-accueil-rebuild.css';
-const hero = '/images/cuisine/amok-1600.webp';
-const market = '/images/cuisine/kep-market-2200.webp';
+const hero = '/images/cuisine/v17-amok-rice-1920.jpg';
+const market = '/images/cuisine/v17-fruit-market-1920.jpg';
 const kampot = '/images/cuisine/kampot-1600.webp';
 const tamarind = '/images/cuisine/tamarind-1600.webp';
-const lokLak = '/images/cuisine/lok-lak-800.webp';
+const table = '/images/cuisine/v17-khmer-table-1280.webp';
+const dessertChek = '/images/cuisine/v17-chek-ktis-960.jpg';
+const dessertKom = '/images/cuisine/v17-num-kom-900.jpg';
+const galangal = '/images/cuisine/v17-galangal-1000.jpg';
+const chili = '/images/cuisine/v17-chili-450.png';
 ---
 <BaseLayout
   title="V17 — Prévisualisation du nouvel accueil | Cuisine du Cambodge"
@@ -35,7 +39,7 @@ const lokLak = '/images/cuisine/lok-lak-800.webp';
         </div>
         <div class="v17r-hero-media">
           <figure class="v17r-hero-dish">
-            <img src={hero} srcset="/images/cuisine/amok-800.webp 800w, /images/cuisine/amok-1200.webp 1200w, /images/cuisine/amok-1600.webp 1600w" sizes="(max-width: 760px) 90vw, 50vw" width="1600" height="1067" fetchpriority="high" decoding="async" alt="Amok de poisson cambodgien, photographie réelle" />
+            <img src={hero} srcset="/images/cuisine/v17-amok-rice-960.jpg 960w, /images/cuisine/v17-amok-rice-1920.jpg 1920w" sizes="(max-width: 760px) 90vw, 50vw" width="1920" height="1280" fetchpriority="high" decoding="async" alt="Amok de poisson cambodgien, photographie réelle" />
             <figcaption>Amok Trey <span>Poisson, coco et aromates</span></figcaption>
           </figure>
           <span class="v17r-label" aria-hidden="true">DES SAVEURS<br/>VRAIES ✳</span>
@@ -46,8 +50,8 @@ const lokLak = '/images/cuisine/lok-lak-800.webp';
 
       <section class="v17r-market" aria-labelledby="v17r-market-title">
         <figure class="v17r-market-visual">
-          <img src={market} srcset="/images/cuisine/kep-market-800.webp 800w, /images/cuisine/kep-market-1600.webp 1600w, /images/cuisine/kep-market-2200.webp 2200w" sizes="(max-width: 760px) 100vw, 66vw" width="2200" height="1467" loading="lazy" decoding="async" alt="Marché au crabe de Kep, au Cambodge" />
-          <figcaption>Le marché au crabe de Kep · Cambodge</figcaption>
+          <img src={market} srcset="/images/cuisine/v17-fruit-market-960.jpg 960w, /images/cuisine/v17-fruit-market-1920.jpg 1920w" sizes="(max-width: 760px) 100vw, 66vw" width="1920" height="1440" loading="lazy" decoding="async" alt="Fruits disposés sur un étal au Cambodge" />
+          <figcaption>Étal de fruits au Cambodge</figcaption>
         </figure>
         <div class="v17r-market-copy">
           <p class="v17r-kicker">01 — Les produits</p>
@@ -64,10 +68,10 @@ const lokLak = '/images/cuisine/lok-lak-800.webp';
         <p class="v17r-palette-intro">Citronnelle, galanga, combava, piment, poivre de Kampot… Chaque ingrédient a sa place dans cet équilibre de saveurs.</p>
         <div class="v17r-palette-media">
           <figure class="v17r-palette-a">
-            <img src={tamarind} srcset="/images/cuisine/tamarind-800.webp 800w, /images/cuisine/tamarind-1600.webp 1600w" sizes="(max-width: 760px) 42vw, 24vw" width="1600" height="1067" loading="lazy" decoding="async" alt="Fruits du tamarinier, un ingrédient acidulé" />
-            <figcaption>Le tamarin</figcaption>
+            <img src={galangal} sizes="(max-width: 760px) 42vw, 24vw" width="1000" height="538" loading="lazy" decoding="async" alt="Rhizomes de galanga, photographie botanique générique" />
+            <figcaption>Le galanga</figcaption>
           </figure>
-          <span class="v17r-palette-line" aria-hidden="true">✳</span>
+          <img class="v17r-palette-chili" src={chili} alt="" aria-hidden="true" width="450" height="474" loading="lazy" decoding="async" />
           <figure class="v17r-palette-b">
             <img src={kampot} srcset="/images/cuisine/kampot-800.webp 800w, /images/cuisine/kampot-1600.webp 1600w" sizes="(max-width: 760px) 42vw, 24vw" width="1600" height="1067" loading="lazy" decoding="async" alt="Poivre de Kampot" />
             <figcaption>Le poivre de Kampot</figcaption>
@@ -100,8 +104,7 @@ const lokLak = '/images/cuisine/lok-lak-800.webp';
 
       <section class="v17r-table" aria-labelledby="v17r-table-title">
         <div class="v17r-table-media">
-          <figure class="v17r-table-amok"><img src={hero} width="1600" height="1067" loading="lazy" decoding="async" alt="Amok de poisson cambodgien" /></figure>
-          <figure class="v17r-table-lok"><img src={lokLak} width="800" height="533" loading="lazy" decoding="async" alt="Lok Lak au bœuf" /></figure>
+          <figure class="v17r-table-amok"><img src={table} srcset="/images/cuisine/v17-khmer-table-640.webp 640w, /images/cuisine/v17-khmer-table-1280.webp 1280w" sizes="100vw" width="1280" height="1707" loading="lazy" decoding="async" alt="Assortiment de spécialités khmères photographié à Phnom Penh" /></figure>
         </div>
         <div class="v17r-table-copy">
           <p class="v17r-kicker">03 — À table</p>
@@ -110,7 +113,7 @@ const lokLak = '/images/cuisine/lok-lak-800.webp';
           <a class="v17r-pill" href="/recettes/">Découvrir les recettes <span aria-hidden="true">↗</span></a>
           <a class="v17r-table-sub" href="/culture/construire-repas-cambodgien/">Comprendre le repas cambodgien →</a>
         </div>
-        <p class="v17r-table-clarity">Deux photographies de plats existants — photographie complète d’une table à sourcer.</p>
+        <p class="v17r-table-clarity">Assortiment de spécialités khmères photographié à Phnom Penh — photo réelle, non réalisée par le site.</p>
       </section>
 
       <section class="v17r-dessert" aria-labelledby="v17r-dessert-title">
@@ -120,12 +123,9 @@ const lokLak = '/images/cuisine/lok-lak-800.webp';
           <p>Banane, coco, riz gluant… Une autre facette gourmande de la cuisine cambodgienne.</p>
           <a class="v17r-pill" href="/recettes/chek-ktis/">Découvrir le Chek Ktis <span aria-hidden="true">↗</span></a>
         </div>
-        <div class="v17r-dessert-art" data-media-status="illustration-temporaire">
-          <svg viewBox="0 0 540 340" role="img" aria-labelledby="v17r-dessert-art-title" xmlns="http://www.w3.org/2000/svg">
-            <title id="v17r-dessert-art-title">Illustration provisoire de douceurs à la banane et à la noix de coco</title>
-            <path d="M50 213Q197 314 478 195L445 259Q254 374 68 278Z" fill="#36854B"/><ellipse cx="270" cy="180" rx="181" ry="94" fill="#FFF9EB" stroke="#D9B778" stroke-width="8"/><path d="M133 178Q220 240 368 155" fill="none" stroke="#EACF83" stroke-width="47" stroke-linecap="round"/><circle cx="234" cy="166" r="35" fill="#F4F1D3"/><circle cx="303" cy="166" r="35" fill="#F4F1D3"/><circle cx="373" cy="172" r="28" fill="#F3C653"/><path d="M102 122Q166 44 291 64" stroke="#7DA64A" stroke-width="9" fill="none" stroke-linecap="round"/>
-          </svg>
-          <span class="v17r-image-warning">Illustration provisoire — photos des desserts à vérifier</span>
+        <div class="v17r-dessert-art">
+          <figure class="v17r-dessert-main"><img src={dessertChek} width="960" height="720" loading="lazy" decoding="async" alt="Chek Ktis, dessert cambodgien à base de bananes et lait de coco" /><figcaption>Chek Ktis · banane et coco</figcaption></figure>
+          <figure class="v17r-dessert-second"><img src={dessertKom} width="900" height="1094" loading="lazy" decoding="async" alt="Num Kom, gâteaux de riz gluant cambodgiens enveloppés de feuilles de bananier" /><figcaption>Num Kom · riz gluant</figcaption></figure>
         </div>
       </section>
 
@@ -148,7 +148,14 @@ const lokLak = '/images/cuisine/lok-lak-800.webp';
       </section>
 
       <aside class="v17r-preview-notice" aria-label="Statut du prototype">
-        <p><strong>Prévisualisation technique D2 — non publiée.</strong> Ce parcours reprend la structure et les liens de la maquette validée. Les visuels mortier, dessert et paysage sont explicitement illustratifs ; aucune photo n'est présentée comme un reportage inventé. <a href="/credits-photos/">Crédits des photographies existantes</a>.</p>
+        <p><strong>Prévisualisation technique D2 — non publiée.</strong> Ce parcours reprend la structure et les liens de la maquette validée. Le mortier et la finale sont des illustrations provisoires. Les photos des plats, ingrédients et desserts proviennent de Wikimedia Commons ; aucune recette n'est présentée comme réalisée par l'équipe. <a href="/credits-photos/">Crédits des photographies existantes</a>. Nouvelles sources :
+        <a href="https://commons.wikimedia.org/wiki/File:Fish_Amok_with_Rice.jpg" target="_blank" rel="noopener noreferrer">Amok — sharonang, CC0</a> ;
+        <a href="https://commons.wikimedia.org/wiki/File:Cambodia_08_-_038_-_fruit_at_the_market_(3198828515).jpg" target="_blank" rel="noopener noreferrer">marché — McKay Savage, CC BY 2.0</a> ;
+        <a href="https://commons.wikimedia.org/wiki/File:Khmer_Borane_-_amazing_sampler_(8532779364).jpg" target="_blank" rel="noopener noreferrer">table — Jason Eppink, CC BY 2.0</a> ;
+        <a href="https://commons.wikimedia.org/wiki/File:Chek_ktis.jpg" target="_blank" rel="noopener noreferrer">Chek Ktis — Marie, CC BY-SA 2.0</a> ;
+        <a href="https://commons.wikimedia.org/wiki/File:Num_kom_sticky_rice_cake_Khmer_Cambodian_dessert.jpg" target="_blank" rel="noopener noreferrer">Num Kom — MoonsMoon, CC BY 4.0</a> ;
+        <a href="https://commons.wikimedia.org/wiki/File:Galangal.jpg" target="_blank" rel="noopener noreferrer">galanga — Liza Daly, domaine public</a> ;
+        <a href="https://commons.wikimedia.org/wiki/File:Red_Chili_Pepper_PNG.png" target="_blank" rel="noopener noreferrer">piment — Spicy Anonymous, CC0</a>.</p>
       </aside>
     </main>
     <SiteFooter />
