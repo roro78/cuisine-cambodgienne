@@ -84,6 +84,9 @@ jobs:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
         run: npm run test:browser-experiences
 
+      - name: Install Playwright video encoder
+        run: node node_modules/playwright-core/cli.js install ffmpeg
+
       - name: V17 preview browser visual gate
         env:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
