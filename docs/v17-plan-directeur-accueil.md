@@ -366,3 +366,20 @@ Chaque lot de code présente : commit/PR, différences visuelles desktop/mobile 
 - **Preuve visuelle** : planche avant/après du premier écran créée depuis les captures Chrome, et captures complètes desktop/mobile conservées ; l'Amok est désormais plus central, mais la photographie, les illustrations, l'ambiance des desserts et la tablée restent **sensiblement différentes** de la maquette maîtresse.
 - **Verdict** : **PASS TECHNIQUE du lot D5.3** ; **RÉCEPTION ARTISTIQUE = NON VALIDÉE** ; D7 complet (Lighthouse/Safari/WCAG avancée, licence de chaque dérivé) en attente ; aucun passage à D8.
 - **Nettoyage nécessaire avant fusion future** : suppression des assets candidats non utilisés et désactivation de l'importeur automatique après fin du sourcing ; alléger les surcharges CSS répétées, réévaluer le poids des images pour les mobiles.
+
+
+### 13 octobre 2026 — D5.4 autonome ici : photographie desserts et nettoyage
+
+**Décision du client :** poursuivre les corrections V17 directement avec l'assistant ici, sans passer par l'IDE local et sans ouvrir de nouveau chantier ou PR.
+
+**Livraison sur [PR #47](https://github.com/roro78/cuisine-cambodgienne/pull/47)**, HEAD `075a54f6005b517c9471a9c8a2cb4d0b7fc50235` :
+- `1547aa53` : remplacement de la photo principale de dessert peu valorisante (Chek Ktis dans un bol) par une photo de Num Plae Ai **documentée comme cambodgienne** (Hyzuko, CC BY-SA 4.0), légendes et crédits exacts, vraie route Chek Ktis conservée pour le CTA.
+- `b3bee58a` : composition éditoriale dessert plus généreuse sur desktop/tablette et mobile, photo principale sur feuille de bananier, Num Kom en contrepoint, botanique d'accompagnement.
+- `a058121e` / `178d4f86` / `f2af06a53` / `4cb7b727` / `7565752e` : suppression des trois photos rejetées et de l'import automatisé associé, sans effet sur les quatre photographies utiles précédemment sourcées.
+- `158b8c25` : suppression d'une constante Astro devenue inutilisée.
+- `2da7cb2e` : test contractuel explicite sur le fichier Num Plae Ai, le crédit Hyzuko CC BY-SA 4.0 et l'absence de références à des images rejetées.
+- `075a54f6` : correction des deux légendes coupées par les arrondis, détectée à l'examen d'une vraie capture desktop.
+
+**Validation vérifiée :** [CI #38439231403 SUCCESS](https://github.com/roro78/cuisine-cambodgienne/actions/runs/38439231403), 7 captures navigateur (320/360/390/430/768/1024/1440 px) + deux vidéos WebM scroll 390/1440, artifact `v17-accueil-d7-browser-evidence` ID `11833859469`. Captures 1440/390 examinées, avant/après dessert réalisé directement à partir des captures réelles, légendes désormais lisibles. Revue de diff PR #47 : ni `src/pages/index.astro`, ni les composants partagés `SiteHeader/SiteFooter`, ni le workflow OVH n'ont été modifiés.
+
+**Verdict : PASS TECHNIQUE DU LOT / ÉVOLUTION VISUELLE CONSTATÉE / RÉCEPTION ARTISTIQUE COMPLÈTE TOUJOURS NON VALIDÉE.** Le résultat n'est pas une reproduction photo identique de la planche. Prochaine priorité artistique : hero Amok, desserts plus proches encore de la composition, finale et tablée ; ensuite optimiser CSS (surcharges historiques ~55 Ko), LCP/CLS/images et contrôler Safari/accessibilité/attributions avant D8. **Interdiction maintenue : merge, déploiement OVH, modification V16.**
