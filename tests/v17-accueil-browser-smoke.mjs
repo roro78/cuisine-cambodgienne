@@ -126,12 +126,14 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           photoWidth:image.getBoundingClientRect().width,
           mediaWidth:media.getBoundingClientRect().width,
           ratio:image.getBoundingClientRect().width/image.getBoundingClientRect().height,
-          clip:getComputedStyle(image).clipPath};
+          clip:getComputedStyle(image).clipPath,
+          mask:getComputedStyle(image).maskImage};
       });
       assert.ok(heroFidelity && heroFidelity.firstLineRight<=heroFidelity.photoLeft,
         'Hero heading must not touch the food photograph: '+JSON.stringify(heroFidelity));
       assert.ok(heroFidelity.photoWidth>=heroFidelity.mediaWidth &&
-        heroFidelity.ratio>=1.15 && heroFidelity.ratio<=1.34 && heroFidelity.clip!=='none',
+        heroFidelity.ratio>=1.15 && heroFidelity.ratio<=1.34 &&
+         (heroFidelity.clip!=='none'||heroFidelity.mask!=='none'),
         'Hero food photograph must be monumental and non-elliptical: '+JSON.stringify(heroFidelity));
       const dessertComposition=await page.evaluate(()=>{
         const art=document.querySelector('.v17r-dessert-art')?.getBoundingClientRect();
@@ -152,6 +154,20 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         'Desserts must read as one integrated botanical tableau: '+JSON.stringify(dessertComposition));
     }
     if(width===1440 && !noJs && !reduced){
+      const tableScene=await page.evaluate(()=>{
+        const frame=document.querySelector('.v17r-table');
+        const main=document.querySelector('.v17r-table-amok img');
+        const inset=document.querySelector('.v17r-table-detail');
+        return {
+          frameWidth:frame?.getBoundingClientRect().width,
+          mainWidth:main?.getBoundingClientRect().width,
+          insetCount:inset?1:0,
+          mainLoaded:!!main?.complete&&main.naturalWidth>0
+        };
+      });
+      assert.ok(tableScene.mainLoaded&&tableScene.insetCount===0&&
+        tableScene.mainWidth>=tableScene.frameWidth*.98,
+        'Table must be immersive, with one real food image and no oval collage: '+JSON.stringify(tableScene));
       const anim=await page.evaluate(async()=>{
         const scene=document.querySelector('.v17r-palette');
         const node=scene.querySelector('.v17r-palette-a');
@@ -191,6 +207,14 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       await page.waitForTimeout(400);
       await fs.mkdir('artifacts',{recursive:true});
       await page.screenshot({path:'artifacts/v17-accueil-'+width+'.png',fullPage:true,animations:'disabled'});
+      if([390,1440].includes(width)){
+        for(const scene of ['hero','table','dessert']){
+          await page.locator('.v17r-'+scene).screenshot({
+            path:'artifacts/v17-accueil-'+width+'-'+scene+'.png',
+            animations:'disabled',
+          });
+        }
+      }
     }
     // Record the actual browser while it scrolls through the complete preview.
     // Video is evidence, not a visual comparison against the approved PNG.
