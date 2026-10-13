@@ -45,9 +45,9 @@ assert.match(css, /@media\(max-width:360px\)/);
 assert.match(css, /@media\(prefers-reduced-motion:reduce\)/);
 assert.match(css, /\.v17-skip-link:focus/);
 function firstRule(selector) {
-  const match = css.match(new RegExp(selector.replace(/[.*+?^\x24{}()|[\]\\]/g,'\\assert.match(css, /\.v17-skip-link:focus/);') + '\\{([^}]*)\\}'));
-  assert.ok(match, 'Missing styling for ' + selector);
-  return match[1];
+  const index = css.indexOf(selector + '{');
+  assert.ok(index >= 0, 'Missing styling for ' + selector);
+  return css.slice(index + selector.length + 1).split('}')[0];
 }
 for (const selector of ['.v17-hero-photo', '.v17-market-large', '.v17-market-small', '.v17-gesture-paste', '.v17-preview .v17-table-photo']) {
   const rule = firstRule(selector);
