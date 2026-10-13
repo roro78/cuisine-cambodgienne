@@ -77,6 +77,15 @@ async function inspect(width,height,screenshotPath,options={}) {
     const buttons=await page.locator('.v17-actions a').evaluateAll(nodes=>nodes.map(n=>n.getBoundingClientRect().height));
     assert.ok(buttons.every(h=>h>=42),'CTA tap targets >=42px');
 
+    if(width===390) {
+      const spacing=await page.evaluate(()=>{
+        const photo=document.querySelector('.v17-table-photo').getBoundingClientRect();
+        const text=document.querySelector('.v17-table-bottom p').getBoundingClientRect();
+        return {photoBottom:photo.bottom,textTop:text.top};
+      });
+      assert.ok(spacing.textTop >= spacing.photoBottom+8,
+        'The rotated table photograph must not cover the following paragraph: '+JSON.stringify(spacing));
+    }
     if(width===390&&!options.noJs) {
       const menu=page.locator('[data-mobile-menu]');
       await menu.locator('summary').click();
@@ -105,6 +114,7 @@ async function inspect(width,height,screenshotPath,options={}) {
     await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
     await page.waitForTimeout(options.noJs?100:600);
     if(screenshotPath) {
+      await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
       await fs.mkdir('artifacts',{recursive:true});
       await page.screenshot({path:screenshotPath,fullPage:true,animations:'disabled'});
     }
