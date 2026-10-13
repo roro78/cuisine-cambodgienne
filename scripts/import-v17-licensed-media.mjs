@@ -10,9 +10,10 @@ import { createHash } from 'node:crypto';
 const assets = [
   {
     path: 'public/images/cuisine/v17-amok-coconut-1800.jpg',
-    commonsTitle: 'File:Tasty fish amok in a coconut (15941045359).jpg',
+    commonsTitle: 'File:Amok with fish (8259154034).jpg',
     width: 1800,
-    credit: 'yashima — CC BY-SA 2.0; photographed in Siem Reap, 2014',
+    refresh: true,
+    credit: 'eric yeargan — CC BY 2.0; photographed in Siem Reap, 2012',
   },
   {
     path: 'public/images/cuisine/v17-khmer-sweets-1400.jpg',
@@ -64,7 +65,7 @@ async function download(entry) {
   // Preserve reviewed, already versioned assets. Avoid silently changing the
   // visual baseline when a remote thumbnail is recompressed or updated.
   const exists = await fs.stat(entry.path).then(stat => stat.size > 30_000).catch(() => false);
-  if (exists) {
+  if (exists && !entry.refresh) {
     console.log('Reviewed asset retained: ' + entry.path);
     return;
   }
