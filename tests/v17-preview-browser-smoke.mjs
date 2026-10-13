@@ -165,6 +165,48 @@ async function inspect(width,height,screenshotPath,options={}) {
     await page.close();
   }
 }
+
+/** Short real-browser motion proof. Not a fabricated storyboard video. */
+async function recordScrollStory() {
+  await fs.mkdir('artifacts',{recursive:true});
+  const context=await browser.newContext({
+    viewport:{width:1280,height:720},deviceScaleFactor:1,
+    reducedMotion:'no-preference',
+    recordVideo:{dir:'artifacts',size:{width:1280,height:720}}
+  });
+  const page=await context.newPage();
+  page.on('pageerror',error=>errors.push('video: '+error.message));
+  try {
+    const response=await page.goto(base+'/v17-preview/',{waitUntil:'networkidle'});
+    assert.equal(response?.status(),200);
+    await page.evaluate(async()=>{
+      await new Promise(resolve=>{
+        const duration=18000;
+        const start=performance.now();
+        const maxScroll=Math.max(0,document.documentElement.scrollHeight-innerHeight);
+        function frame(time) {
+          const p=Math.min(1,(time-start)/duration);
+          window.scrollTo({top:maxScroll*p,behavior:'instant'});
+          if(p<1)requestAnimationFrame(frame);
+          else resolve();
+        }
+        requestAnimationFrame(frame);
+      });
+    });
+    await page.waitForTimeout(250);
+  } finally {
+    const video=page.video();
+    await page.close();
+    await context.close();
+    if(video) {
+      await video.saveAs('artifacts/v17-story-scroll.webm');
+      const stat=await fs.stat('artifacts/v17-story-scroll.webm');
+      assert.ok(stat.size>50000,'Motion video must not be empty');
+      console.log('V17 real-browser motion recording: PASS, '+stat.size+' bytes');
+    }
+  }
+}
+
 try{
   await waitForServer();
   browser=await chromium.launch({
@@ -178,6 +220,7 @@ try{
   await inspect(320,640);
   await inspect(390,844,null,{reduced:true});
   await inspect(390,844,null,{noJs:true});
+  if(process.env.CI) await recordScrollStory();
   assert.deepEqual(errors,[],'No JavaScript runtime errors');
   console.log('V17 Fresh & Bold full browser gate PASS');
 } catch(error) {
