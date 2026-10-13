@@ -163,3 +163,86 @@
     animation: none !important;
   }
 }
+
+
+/* V17 D6 — Relecture des captures Chromium avec les images IA déjà importées.
+   Hero : supprimer la silhouette rectangulaire du JPEG sur fond crème.
+   Desserts : deux lignes éditoriales plutôt qu'un bloc typographique géant.
+   Toutes les règles restent exclusivement sur la preview V17. */
+.v17r-hero--generated .v17r-hero-dish {
+  background: transparent;
+  border-radius: 0;
+  -webkit-mask-image: radial-gradient(ellipse 64% 79% at 58% 59%, #000 45%, rgba(0,0,0,.94) 57%, transparent 97%);
+  mask-image: radial-gradient(ellipse 64% 79% at 58% 59%, #000 45%, rgba(0,0,0,.94) 57%, transparent 97%);
+}
+.v17r-hero--generated .v17r-temple-illustration {
+  opacity: .11;
+}
+.v17r-dessert-art--generated .v17r-dessert-generated figcaption {
+  position: relative;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  width: auto;
+  max-width: none;
+  transform: none;
+  margin: .65rem auto 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #596146;
+  font-size: .7rem;
+  font-weight: 650;
+  text-align: center;
+  line-height: 1.45;
+}
+.v17r-dessert-art--generated .v17r-dessert-generated {
+  overflow: visible;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.v17r-dessert-art--generated .v17r-dessert-generated img {
+  border-radius: clamp(.7rem,1.8vw,1.5rem);
+}
+@media(min-width:1200px) {
+  .v17r-hero--generated .v17r-hero-aromatics { display: none; }
+  .v17r-hero--generated .v17r-hero-dish { width: min(108%,58rem); }
+  .v17r-hero--generated .v17r-note-amok { top: 3%; right: 22%; }
+  .v17r-dessert:has(.v17r-dessert-art--generated) {
+    grid-template-columns: minmax(0,.97fr) minmax(0,1.03fr);
+    gap: clamp(2rem,3.2vw,4rem);
+  }
+  .v17r-dessert:has(.v17r-dessert-art--generated) .v17r-dessert-copy h2 {
+    max-width: none;
+    font-size: clamp(3.2rem,4.05vw,4.5rem);
+    letter-spacing: -.052em;
+    line-height: .98;
+  }
+  .v17r-dessert-art--generated { min-height: 0; }
+}
+@media(min-width:761px) and (max-width:1199px) {
+  .v17r-hero--generated .v17r-hero-dish {
+    -webkit-mask-image: radial-gradient(ellipse 69% 81% at 56% 59%, #000 44%, rgba(0,0,0,.95) 62%, transparent 98%);
+    mask-image: radial-gradient(ellipse 69% 81% at 56% 59%, #000 44%, rgba(0,0,0,.95) 62%, transparent 98%);
+  }
+  .v17r-dessert:has(.v17r-dessert-art--generated) .v17r-dessert-copy h2 {
+    font-size: clamp(2.9rem,4.7vw,4.7rem);
+    letter-spacing: -.05em;
+    line-height: 1;
+  }
+}
+@media(max-width:760px) {
+  .v17r-hero--generated .v17r-hero-dish {
+    -webkit-mask-image: radial-gradient(ellipse 70% 75% at 53% 55%, #000 49%, rgba(0,0,0,.96) 64%, transparent 99%);
+    mask-image: radial-gradient(ellipse 70% 75% at 53% 55%, #000 49%, rgba(0,0,0,.96) 64%, transparent 99%);
+  }
+  .v17r-dessert:has(.v17r-dessert-art--generated) .v17r-dessert-copy h2 {
+    font-size: clamp(2.8rem,10vw,4.4rem);
+    letter-spacing: -.055em;
+    line-height: .98;
+  }
+  .v17r-dessert-art--generated .v17r-dessert-generated figcaption {
+    font-size: .67rem;
+    margin: .6rem .25rem 0;
+  }
+}
