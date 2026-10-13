@@ -80,6 +80,22 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     });
     assert.ok(heroLines.scrollWidth-heroLines.clientWidth<=2,
       'Headline must not be clipped on small screens: '+JSON.stringify(heroLines));
+    if(width===1440 && !noJs && !reduced){
+      const anim=await page.evaluate(async()=>{
+        const scene=document.querySelector('.v17r-palette');
+        const node=scene.querySelector('.v17r-palette-a');
+        const offset=scrollY+scene.getBoundingClientRect().top;
+        scrollTo({top:Math.max(0,offset-innerHeight+30),behavior:'instant'});
+        await new Promise(r=>setTimeout(r,300));
+        const initial=getComputedStyle(node).transform;
+        scrollTo({top:offset+scene.getBoundingClientRect().height*.2,behavior:'instant'});
+        await new Promise(r=>setTimeout(r,650));
+        return {initial,current:getComputedStyle(node).transform};
+      });
+      assert.notEqual(anim.initial,anim.current,
+        'Desktop ingredients must converge during native scroll: '+JSON.stringify(anim));
+      await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
+    }
     const rhythm=await page.evaluate(()=>{
       const items=['hero','market','palette','gestures','table','dessert','finale'];
       return items.map(key=>{const el=document.querySelector('.v17r-'+key);return {

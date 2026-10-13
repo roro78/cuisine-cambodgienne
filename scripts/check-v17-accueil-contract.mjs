@@ -29,6 +29,15 @@ assert.match(page,/v17r-gestures-kroeung/);
 assert.match(page,/<details><summary>Sources photographiques/);
 assert.match(page,/class="v17r-wave/);
 assert.match(page,/Red_Kroeung_Paste.jpg/);
+const script=fs.readFileSync('src/scripts/v17AccueilMotion.ts','utf8');
+assert.match(page,/initV17AccueilMotion/);
+assert.match(script,/gsap\.matchMedia\(\)/);
+assert.match(script,/prefers-reduced-motion: no-preference/);
+assert.match(script,/\.v17r-palette-a/);
+assert.match(script,/\.v17r-palette-b/);
+assert.match(script,/scrub: \.75/);
+assert.doesNotMatch(script,/pin:\s*true|ScrollSmoother|window\.scrollTo/);
+
 
 assert.match(page,/Assortiment de spécialités khmères photographié à Phnom Penh/);
 assert.doesNotMatch(page, /\/v17-preview\/|home-v17-preview\.css|home-v17-air\.css/);
