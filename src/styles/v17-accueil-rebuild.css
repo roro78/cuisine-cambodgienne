@@ -790,3 +790,31 @@
 @media(prefers-reduced-motion:reduce){
   .v17r-market-postcard{transition:none!important}
 }
+
+
+/* V17 D5.3 — fidélité des volumes après confrontation photo/maquette.
+   Ajuster les silhouettes, pas ajouter de stickers ni inventer des photos. */
+@media(min-width:1200px){
+  .v17r-hero-copy{max-width:38rem}
+  .v17r-hero-dish{aspect-ratio:1.48;border-radius:48% 52% 46% 54% / 49% 46% 54% 51%}
+  .v17r-hero-dish img{object-position:83% 50%;transform:scale(1.72);transform-origin:79% 50%}
+  .v17r-hero-flower-dish{left:-4%;bottom:1%;width:clamp(6rem,10vw,11rem)}
+  .v17r-hero-lime{right:-5%;bottom:0;width:clamp(7rem,11vw,12rem)}
+  .v17r-palette-media .v17r-lemongrass{left:-11%;top:11%;width:clamp(22rem,36vw,40rem)}
+  .v17r-palette-a{left:3%;top:56%;width:clamp(16rem,24vw,26rem)}
+  .v17r-palette-b{right:1%;top:12%;width:clamp(14rem,21vw,24rem)}
+  .v17r-palette-media img.v17r-spice-bowls{right:-5%;bottom:-6%;width:clamp(24rem,37vw,39rem)}
+  .v17r-palette-media .v17r-palette-lime{right:25%;bottom:12%;width:clamp(8rem,12vw,13rem)}
+  .v17r-palette h2{font-size:clamp(3.4rem,5.3vw,6.5rem)}
+  .v17r-palette-intro{max-width:26rem}
+  .v17r-dessert-art{min-height:clamp(29rem,37vw,39rem)}
+  .v17r-dessert-art .v17r-dessert-main{left:1%;top:3%;width:77%;height:92%}
+  .v17r-dessert-art .v17r-dessert-second{right:-2%;bottom:0;width:36%;height:72%}
+  .v17r-dessert-flower{right:14%;bottom:0;width:clamp(6rem,10vw,11rem)}
+}
+@media(min-width:761px) and (max-width:1199px){
+  .v17r-hero-dish img{object-position:80% 50%;transform:scale(1.5);transform-origin:77% 50%}
+}
+@media(max-width:760px){
+  .v17r-hero-dish img{object-position:81% 50%;transform:scale(1.41);transform-origin:78% 50%}
+}
