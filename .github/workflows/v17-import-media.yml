@@ -1,0 +1,38 @@
+name: V17 import reviewed photography (branch only)
+on:
+  push:
+    branches:
+      - feat/v17-accueil-reconstruction
+    paths:
+      - .github/workflows/v17-import-media.yml
+      - scripts/import-v17-licensed-media.mjs
+permissions:
+  contents: write
+concurrency:
+  group: v17-import-reviewed-photos
+  cancel-in-progress: false
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Retrieve and verify licensed JPEGs
+        run: node scripts/import-v17-licensed-media.mjs
+      - name: Commit only V17 preview assets to development branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/images/cuisine/v17-market-live-1800.jpg public/images/cuisine/v17-mortar-hands-1600.jpg public/images/cuisine/v17-angkor-dusk-1800.jpg public/images/cuisine/v17-table-meal-1600.jpg
+          if git diff --cached --quiet; then
+            echo "No media updates"
+          else
+            git commit -m "assets(v17): add sourced market, mortar, meal and Angkor photographs"
+            git push origin HEAD:feat/v17-accueil-reconstruction
+          fi
