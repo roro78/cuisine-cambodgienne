@@ -11,6 +11,7 @@ import { imageSrcSet } from '../../utils/images';
 import { getWorkshopsForRecipe } from '../../data/workshops';
 import '../../styles/recipe-v15.css';
 import '../../styles/v16-editorial.css';
+import '../../styles/v17-recipe-generated.css';
 import '../../styles/v17-generated-recipes.css';
 
 export function getStaticPaths() {
@@ -91,7 +92,9 @@ const recipeSchema = {
 <BaseLayout title={`${recipe.title} — Recette cambodgienne | Cuisine du Cambodge`} description={recipe.description} image={recipe.image} imageAlt={recipe.imageAlt}>
   <SiteHeader />
 
-  <main class="recipe-v15 recipe-v16">
+  <main class:list={['recipe-v15', 'recipe-v16', {
+    'recipe-v17-generated-media': Boolean(recipe.image?.includes('-genere.webp'))
+  }]}>
     <section class="recipe-v15-hero">
       <div class="recipe-v15-hero-copy" data-reveal="up">
         <p class="eyebrow">Recette cambodgienne · {recipe.category}</p>
