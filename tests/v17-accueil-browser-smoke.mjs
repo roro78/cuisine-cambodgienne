@@ -116,15 +116,40 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       const heroFidelity=await page.evaluate(()=>{
         const title=document.querySelector('#v17r-hero-title');
         const image=document.querySelector('.v17r-hero-dish');
+        const media=document.querySelector('.v17r-hero-media');
         const first=title?.firstChild;
-        if(!first||!image)return null;
+        if(!first||!image||!media)return null;
         const line=document.createRange();
         line.selectNodeContents(first);
         return {firstLineRight:line.getBoundingClientRect().right,
-          photoLeft:image.getBoundingClientRect().left};
+          photoLeft:image.getBoundingClientRect().left,
+          photoWidth:image.getBoundingClientRect().width,
+          mediaWidth:media.getBoundingClientRect().width,
+          ratio:image.getBoundingClientRect().width/image.getBoundingClientRect().height,
+          clip:getComputedStyle(image).clipPath};
       });
       assert.ok(heroFidelity && heroFidelity.firstLineRight<=heroFidelity.photoLeft,
         'Hero heading must not touch the food photograph: '+JSON.stringify(heroFidelity));
+      assert.ok(heroFidelity.photoWidth>=heroFidelity.mediaWidth &&
+        heroFidelity.ratio>=1.15 && heroFidelity.ratio<=1.34 && heroFidelity.clip!=='none',
+        'Hero food photograph must be monumental and non-elliptical: '+JSON.stringify(heroFidelity));
+      const dessertComposition=await page.evaluate(()=>{
+        const art=document.querySelector('.v17r-dessert-art')?.getBoundingClientRect();
+        const main=document.querySelector('.v17r-dessert-main')?.getBoundingClientRect();
+        const detail=document.querySelector('.v17r-dessert-second')?.getBoundingClientRect();
+        const detailStyle=getComputedStyle(document.querySelector('.v17r-dessert-second'));
+        return art&&main&&detail?{
+          mainShare:main.width/art.width,
+          overlap:Math.max(0,Math.min(main.right,detail.right)-Math.max(main.left,detail.left)),
+          detailWidth:detail.width,
+          detailBorder:parseFloat(detailStyle.borderTopWidth),
+          detailClip:detailStyle.clipPath
+        }:null;
+      });
+      assert.ok(dessertComposition && dessertComposition.mainShare>=.88 &&
+        dessertComposition.overlap>=dessertComposition.detailWidth*.35 &&
+        dessertComposition.detailBorder===0 && dessertComposition.detailClip!=='none',
+        'Desserts must read as one integrated botanical tableau: '+JSON.stringify(dessertComposition));
     }
     if(width===1440 && !noJs && !reduced){
       const anim=await page.evaluate(async()=>{

@@ -69,5 +69,9 @@ assert.doesNotMatch(sitemap,/v17-accueil-preview/,'Preview must not be in sitema
 assert.match(css, /@media\(max-width:760px\)/);
 assert.match(css, /@media\(prefers-reduced-motion:reduce\)/);
 assert.match(css, /\.v17r-wrap/);
+assert.match(css, /Hero food photograph must be monumental|clip-path:polygon\(5% 5%,100% 0/,
+  'The hero needs a monumental non-elliptical photographic frame');
+assert.match(css, /\.v17r-dessert-art \.v17r-dessert-main\{[\s\S]*?width:93%/,
+  'The dessert scene needs one dominant photographic tableau');
 assert.doesNotMatch(css,/ScrollSmoother|scroll-snap-type|position:\s*fixed/);
 console.log('V17 accueil D2: PASS — 7 scenes, real links, previews isolated, assets declared');
