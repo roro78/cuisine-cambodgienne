@@ -51,9 +51,9 @@ function firstRule(selector) {
 }
 for (const selector of ['.v17-hero-photo', '.v17-market-large', '.v17-market-small', '.v17-gesture-paste', '.v17-preview .v17-table-photo']) {
   const rule = firstRule(selector);
-  assert.doesNotMatch(rule, /transform:\\s*rotate\\(/, selector + ' must not rotate like Polaroid');
-  assert.doesNotMatch(rule, /box-shadow:\\s*(?!none)/, selector + ' must not have scrapbook shadow');
-  assert.match(rule, /border:\\s*0/, selector + ' must have no thick frame');
+  assert.doesNotMatch(rule, /transform:\s*rotate\(/, selector + ' must not rotate like Polaroid');
+  assert.doesNotMatch(rule, /box-shadow:\s*(?!none)/, selector + ' must not have scrapbook shadow');
+  assert.match(rule, /border:\s*0/, selector + ' must have no thick frame');
 }
 assert.match(firstRule('.v17-market-collage'), /display:grid/);
 assert.match(firstRule('.v17-market-large'), /border-radius:/);
