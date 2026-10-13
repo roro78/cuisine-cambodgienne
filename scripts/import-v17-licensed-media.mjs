@@ -9,17 +9,16 @@ import { createHash } from 'node:crypto';
 
 const assets = [
   {
-    path: 'public/images/cuisine/v17-amok-coconut-1800.jpg',
-    commonsTitle: 'File:Amok with fish (8259154034).jpg',
-    width: 1800,
-    refresh: true,
-    credit: 'eric yeargan — CC BY 2.0; photographed in Siem Reap, 2012',
+    path: 'public/images/cuisine/v17-num-plae-ai-641.jpg',
+    commonsTitle: 'File:Num Plae Ai.jpg',
+    width: 641,
+    credit: 'Hyzuko — CC BY-SA 4.0 (Khmer sticky rice balls with coconut)',
   },
   {
-    path: 'public/images/cuisine/v17-khmer-sweets-1400.jpg',
-    commonsTitle: 'File:Cambodian sweets.jpg',
+    path: 'public/images/cuisine/v17-num-krouch-1400.jpg',
+    commonsTitle: 'File:Num Krouch, Num Krong, and Num Pong Ansorng.jpg',
     width: 1400,
-    credit: 'Wikimedia Commons; check API authorship/license before publishing',
+    credit: 'Turaids — CC BY-SA 4.0 (real Khmer desserts at Siem Reap market)',
   },
   {
     path: 'public/images/cuisine/v17-market-live-1800.jpg',
