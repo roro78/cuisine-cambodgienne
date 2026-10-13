@@ -9,7 +9,11 @@ const images = {
   pepper: '/images/cuisine/kampot-1600.webp',
   finishedKroeung: '/images/cuisine/v17-kroeung-final.jpg',
   table: '/images/cuisine/v17-khmer-table-1280.webp',
-  lokLak: '/images/cuisine/lok-lak-800.webp'
+  lokLak: '/images/cuisine/lok-lak-800.webp',
+  chekKtis: '/images/cuisine/v17-chek-ktis-960.jpg',
+  numKom: '/images/cuisine/v17-num-kom-900.jpg',
+  galangal: '/images/cuisine/v17-galangal-1000.jpg',
+  chili: '/images/cuisine/v17-chili-450.png'
 };
 ---
 <BaseLayout
@@ -42,11 +46,7 @@ const images = {
               width="3456" height="2304" decoding="async" fetchpriority="high" />
             <figcaption>AMOK TREY <span>Poisson · lait de coco · riz</span></figcaption>
           </figure>
-          <svg class="v17-illustration v17-illustration-chili" viewBox="0 0 170 180" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" data-v17-float>
-            <path d="M82 42C80 24 91 15 103 14" stroke="#174B34" stroke-width="11" stroke-linecap="round"/>
-            <path d="M79 44C51 33 30 52 29 87C28 130 60 156 116 165C94 141 82 116 88 89C94 67 93 51 79 44Z" fill="#FF5C37" stroke="#161616" stroke-width="4"/>
-            <path d="M56 57C43 74 44 97 51 110" stroke="#FFB3A0" stroke-width="8" stroke-linecap="round"/>
-          </svg>
+          <img class="v17-hero-chili" src={images.chili} width="450" height="474" alt="" aria-hidden="true" decoding="async" data-v17-float />
           <svg class="v17-illustration v17-illustration-leaf" viewBox="0 0 190 190" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" data-v17-float>
             <path d="M29 156C35 76 93 27 170 22C150 107 102 163 29 156Z" fill="#BDE964" stroke="#161616" stroke-width="4"/>
             <path d="M31 157C70 108 105 76 169 23" stroke="#174B34" stroke-width="5" stroke-linecap="round"/>
@@ -70,7 +70,7 @@ const images = {
       </div>
 
       <section class="v17-market" aria-labelledby="v17-market-title" data-v17-scene="market">
-        <div class="v17-scene-top"><span>01 / LES INGRÉDIENTS</span><span>À REGARDER · À SENTIR · À CONNAÎTRE</span></div>
+        <div class="v17-scene-top"><span>01 / SUR LES ÉTALS</span><span>À REGARDER · À SENTIR · À CONNAÎTRE</span></div>
         <div class="v17-market-head">
           <h2 id="v17-market-title">TOUT PART<br/>DES <span>BONS</span><br/>PRODUITS.</h2>
           <p>Citronnelle, poivre, herbes fraîches… Avant de cuisiner, on découvre ce qui parfume les plats.</p>
@@ -99,8 +99,40 @@ const images = {
         </div>
       </section>
 
+      <section class="v17-pantry" aria-labelledby="v17-pantry-title" data-v17-scene="pantry">
+        <div class="v17-scene-top"><span>02 / LES PARFUMS</span><span>DE LA MATIÈRE AU GOÛT</span></div>
+        <div class="v17-pantry-heading">
+          <p>Le marché ne fait pas tout. Les ingrédients deviennent une cuisine quand on sait les préparer.</p>
+          <h2 id="v17-pantry-title">CHAQUE<br/><span>INGRÉDIENT</span><br/>COMPTE.</h2>
+        </div>
+        <div class="v17-pantry-stage" data-v17-ingredient-stage>
+          <div class="v17-pantry-orbit" aria-hidden="true">✳</div>
+          <figure class="v17-pantry-actor v17-pantry-galangal" data-v17-ingredient="left">
+            <img src={images.galangal} width="1000" height="538" loading="lazy" decoding="async" alt="Galanga, rhizome aromatique employé dans plusieurs cuisines asiatiques"/>
+            <figcaption><strong>GALANGA</strong><small>Une racine vive et parfumée.</small></figcaption>
+          </figure>
+          <figure class="v17-pantry-actor v17-pantry-citronnelle" data-v17-ingredient="top">
+            <svg viewBox="0 0 230 170" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <path d="M56 150C92 116 141 82 190 20M68 155C122 127 170 76 219 33M39 147C70 105 122 63 165 12" stroke="#24492B" stroke-width="7" stroke-linecap="round" fill="none"/>
+              <path d="M45 155C63 153 85 143 95 133M55 148C89 125 124 98 146 74" stroke="#F7F0AF" stroke-width="16" stroke-linecap="round" fill="none"/>
+              <path d="M125 61C122 26 142 8 160 5M152 85C189 71 214 78 228 90" stroke="#60A440" stroke-width="10" stroke-linecap="round" fill="none"/>
+            </svg>
+            <figcaption><strong>CITRONNELLE</strong><small>À couper fin pour en libérer les arômes.</small></figcaption>
+          </figure>
+          <figure class="v17-pantry-actor v17-pantry-chili" data-v17-ingredient="right">
+            <img src={images.chili} width="450" height="474" loading="lazy" decoding="async" alt="Piment rouge détouré, photo illustrative d'un ingrédient"/>
+            <figcaption><strong>PIMENT</strong><small>Une touche de chaleur, à doser.</small></figcaption>
+          </figure>
+          <p class="v17-pantry-center" aria-hidden="true">ON COMPOSE<br/>LES PARFUMS<br/><span>ENSEMBLE.</span></p>
+        </div>
+        <div class="v17-pantry-footer">
+          <p>Les produits voyagent ; les gestes et les associations racontent la cuisine cambodgienne.</p>
+          <a class="v17-text-link" href="/glossaire/">Explorer les ingrédients <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+
       <section class="v17-gesture" aria-labelledby="v17-gesture-title" data-v17-scene="gesture">
-        <div class="v17-scene-top"><span>02 / LES GESTES</span><span>PRENDRE LE TEMPS DE FAIRE</span></div>
+        <div class="v17-scene-top"><span>03 / LES GESTES</span><span>PRENDRE LE TEMPS DE FAIRE</span></div>
         <h2 id="v17-gesture-title">COUPER.<br/><span>PILER.</span><br/>SENTIR.</h2>
         <div class="v17-gesture-layout">
           <div class="v17-gesture-study" data-v17-reveal>
@@ -122,7 +154,7 @@ const images = {
       </section>
 
       <section class="v17-table" aria-labelledby="v17-table-title" data-v17-scene="table">
-        <div class="v17-scene-top"><span>03 / À TABLE</span><span>LE MEILLEUR MOMENT</span></div>
+        <div class="v17-scene-top"><span>04 / À TABLE</span><span>LE MEILLEUR MOMENT</span></div>
         <h2 id="v17-table-title">ON PASSE<br/><span>À TABLE !</span></h2>
         <figure class="v17-table-photo" data-v17-reveal>
           <img data-v17-parallax src={images.table}
@@ -138,8 +170,36 @@ const images = {
         <div class="v17-table-stamp" aria-hidden="true">BON<br/>APPÉTIT ✳</div>
       </section>
 
+      <section class="v17-sweets" aria-labelledby="v17-sweets-title" data-v17-scene="sweets">
+        <div class="v17-scene-top"><span>05 / LES DOUCEURS</span><span>UNE AUTRE FACETTE DE LA CUISINE CAMBODGIENNE</span></div>
+        <div class="v17-sweets-heading">
+          <p>Et après le salé ?</p>
+          <h2 id="v17-sweets-title">PLACE<br/>AU <span>SUCRÉ.</span></h2>
+          <svg class="v17-sweets-coconut" viewBox="0 0 170 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M21 82C21 46 49 19 86 19S152 49 152 85C152 121 123 147 86 147S21 120 21 82Z" fill="#FFFDF7" stroke="#191919" stroke-width="5"/>
+            <path d="M39 82C39 56 59 37 86 37S134 58 134 85C134 111 113 129 86 129S39 109 39 82Z" fill="#A9C968" stroke="#191919" stroke-width="4"/>
+            <path d="M65 60L79 71L95 58L112 75" stroke="#F1F6C6" stroke-width="8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="v17-sweets-gallery">
+          <figure class="v17-sweets-feature" data-v17-sweet="left">
+            <img src={images.chekKtis} width="960" height="720" loading="lazy" decoding="async" alt="Chek Ktis, dessert cambodgien à la banane et au lait de coco"/>
+            <figcaption><strong>CHEK KTIS</strong><span>Banane et coco, tout en douceur.</span></figcaption>
+          </figure>
+          <p class="v17-sweets-interlude" aria-hidden="true">✳<strong>UNE PAUSE<br/>DOUCE.</strong>✳</p>
+          <figure class="v17-sweets-secondary" data-v17-sweet="right">
+            <img src={images.numKom} width="900" height="1094" loading="lazy" decoding="async" alt="Num Kom, gâteaux cambodgiens de riz gluant enveloppés de feuilles de bananier"/>
+            <figcaption><strong>NUM KOM</strong><span>Riz gluant et douceur enveloppée.</span></figcaption>
+          </figure>
+        </div>
+        <div class="v17-sweets-bottom">
+          <p>Coco, banane, riz gluant, sucre de palme… La découverte ne s'arrête pas aux plats salés.</p>
+          <a class="v17-action-primary" href="/recettes/chek-ktis/">Cuisiner le Chek Ktis <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+
       <section class="v17-finale" aria-labelledby="v17-finale-title" data-v17-scene="finale">
-        <div class="v17-scene-top"><span>04 / C'EST À VOUS</span><span>ALLEZ, ON CUISINE !</span></div>
+        <div class="v17-scene-top"><span>06 / C'EST À VOUS</span><span>ALLEZ, ON CUISINE !</span></div>
         <h2 id="v17-finale-title">À VOUS<br/>DE <span>JOUER.</span></h2>
         <p class="v17-finale-lead">Choisissez une recette, adaptez les portions et cuisinez à votre rythme.</p>
         <div class="v17-finale-cards">
@@ -162,6 +222,10 @@ const images = {
         <a href="https://commons.wikimedia.org/wiki/File:Cambodia_08_-_038_-_fruit_at_the_market_(3198828515).jpg" target="_blank" rel="noopener noreferrer">fruits du marché — McKay Savage, CC BY 2.0</a> (<a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener noreferrer">licence</a>) ·
         <a href="https://commons.wikimedia.org/wiki/File:Red_Kroeung_Paste.jpg" target="_blank" rel="noopener noreferrer">kroeung — Trilinguist, CC BY-SA 3.0</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer">licence</a>) ·
         <a href="https://commons.wikimedia.org/wiki/File:Khmer_Borane_-_amazing_sampler_(8532779364).jpg" target="_blank" rel="noopener noreferrer">assortiment — Jason Eppink, CC BY 2.0</a> (<a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener noreferrer">licence</a>).
+        <a href="https://commons.wikimedia.org/wiki/File:Chek_ktis.jpg" target="_blank" rel="noopener noreferrer">Chek Ktis — Marie, CC BY-SA 2.0</a> (<a href="https://creativecommons.org/licenses/by-sa/2.0/" target="_blank" rel="noopener noreferrer">licence</a>) ·
+        <a href="https://commons.wikimedia.org/wiki/File:Num_kom_sticky_rice_cake_Khmer_Cambodian_dessert.jpg" target="_blank" rel="noopener noreferrer">Num Kom — MoonsMoon, CC BY 4.0</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">licence</a>) ·
+        <a href="https://commons.wikimedia.org/wiki/File:Galangal.jpg" target="_blank" rel="noopener noreferrer">galanga — Liza Daly, domaine public</a> ·
+        <a href="https://commons.wikimedia.org/wiki/File:Red_Chili_Pepper_PNG.png" target="_blank" rel="noopener noreferrer">piment détouré — Spicy Anonymous, CC0</a>.
         Les photographies ne représentent pas des recettes testées par l'équipe.</p>
       </aside>
     </main>

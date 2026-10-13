@@ -233,3 +233,8 @@ La validation technique de #24 est acquise sur son HEAD contrôlé ; **la récep
 ### Arbitrage créatif du 13 octobre 2026 — rupture validée
 
 Les couleurs sombres et typographies sérif de l'ancien prototype V17 ont été rejetées par le commanditaire. Le chantier V17-01 reprend sur le même branche/PR brouillon avec une composition Fresh & Bold lumineuse (blanc chaud, orange papaye, jaune mangue, vert citronnelle ; typographies fortes ; photo/illustrations centrales). La **référence active** est [docs/v17-fresh-bold-direction.md](./v17-fresh-bold-direction.md). La documentation initiale est conservée avec bandeau d'archive. **Aucune modification V16 en production sans autorisation**.
+
+
+### V17.3 — Extension du récit (13 octobre 2026)
+
+La nouvelle DA « Fresh & Bold » inclut désormais deux chapitres nouveaux dans la route de prévisualisation : **ingrédients/convergence** et **desserts Chek Ktis–Num Kom**, avec quatre médias additionnels sourcés et des éléments de composition graphiques. Les actions GSAP sont directionnelles et corrélées au défilement, sur desktop/tablettes larges uniquement ; mobile, reduced-motion et sans JS restent lisibles. **État : EN VALIDATION**, non intégré à `main`, `ovh-production` ou à l'accueil réel. Gate : CI et inspection visuelle obligatoires, puis revue créative avant tout merge.

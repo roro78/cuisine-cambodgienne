@@ -72,3 +72,31 @@ Retour utilisateur : la direction **Fresh & Bold** est appréciée, mais les pho
 - **Mobile** : photographie de marché principale sur une rangée entière, secondaire dans une composition distincte ; pas d'empilement incliné.
 
 **Contrat QA renforcé** : un test source interdit rotation, bordure épaisse et ombre des cadres photographiques, tandis que Chromium vérifie l'absence de bordure/rotation ainsi que de chevauchement des deux visuels du marché. L'identité Fresh & Bold, les licences, l'accessibilité et les interactions V16 restent inchangées.
+
+## V17.3 — Le récit s'élargit (13 octobre 2026)
+
+**Retour déterminant :** une belle page ne peut pas se limiter aux clichés existants, aux marchés et aux plats. Le site doit orchestrer **les ingrédients, leur transformation, le repas et les desserts** avec une progression visuelle : photographies, formes éditoriales, pictogrammes, transitions et mouvements du scroll.
+
+### Nouveau storyboard de production
+
+1. **Du goût / du Cambodge** : plat central avec un vrai piment détouré. Les éléments décoratifs réagissent légèrement au scroll.
+2. **Sur les étals** : image de marché localisée avec prudence, poivre de Kampot, lien glossaire.
+3. **Chaque ingrédient compte** : nouveau chapitre lumineux. Galanga en photo documentaire générique, dessin vectoriel de citronnelle et piment détouré **convergent visuellement** depuis la gauche, le haut et la droite vers la composition des parfums. L'affirmation reste générale : leurs clichés ne sont pas présentés comme pris au Cambodge.
+4. **Couper / piler / sentir** : les trois consignes entrent alternativement depuis gauche/droite pendant le scroll, sans imiter une séquence photographique de gestes non disponible.
+5. **À table** : photographie du repas réel et mouvement discret de cadrage.
+6. **Place au sucré** : deux vrais desserts khmers, **Chek Ktis** (banane-coco, recette existante) et **Num Kom** (gâteaux de riz gluant dans des feuilles de bananier, présentés pour découverte, sans inventer de fiche recette). Leurs photos apparaissent depuis des côtés opposés, autour d'un pictogramme coco réalisé en SVG.
+7. **À vous de jouer** : chemins directs vers les recettes et ateliers existants.
+
+### Principes d'animation
+
+- **GSAP ScrollTrigger lié au scroll** : ouverture des ingrédients depuis des directions différentes puis recentrage, progression des gestes par étape, arrivée des desserts en sens opposés.
+- **Aucun pin, aucune interception du scroll, aucun autoplay de carrousel** : on suit les gestes du lecteur, pas un diaporama qui tourne sans contrôle.
+- Au-dessous de 761 px et pour `prefers-reduced-motion`, **compositions statiques entièrement lisibles**. Idem sans JS. Les contenus restent dans le DOM avec de véritables balises `figure`, `figcaption`, titres et liens.
+- Photos libres ou sous licence vérifiée et **illustrations originales SVG clairement décoratives**, sans confusion de provenance géographique.
+- Respect des composants V16 : la maquette reste isolée sur `/v17-preview/`.
+
+### Limitations restantes
+
+- Cette étape est une **première chorégraphie réelle**, pas encore une expérience de marque visuellement terminée. Les photographies sont historiquement hétérogènes et le mouvement ne remplace pas une vraie production de séquences de préparation et de cuisson.
+- Aucune publication sans contrôle du rendu en navigateur, test des transform au scroll, photos chargées, mobile, reduced-motion, sans JS et revue artistique.
+- Le profil de galanga est une photographie **générique de rhizome**, pas un reportage cambodgien ; le piment détouré est **CC0** ; la citronnelle est un **pictogramme**.

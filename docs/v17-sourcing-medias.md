@@ -91,3 +91,16 @@ Une **séquence photographique continue** des gestes (coupe, pilonnage, texture 
 | Usage | Unique photographie de la scène « Du feu à la table » ; le prototype ne prétend pas que le repas a été dressé par l'équipe. |
 
 Cette photo remplace `amok-1600.webp` dans la séquence afin de ne pas réutiliser une photographie V16 déjà montrée ailleurs. Attention : le sujet reste un **assortiment servi au restaurant**, pas un reportage sur un repas familial.
+
+## Médias supplémentaires V17.3 — ingrédients et douceurs
+
+| Média local | Provenance documentaire | Auteur déclaré | Licence et utilisation |
+| --- | --- | --- | --- |
+| `v17-chek-ktis-960.jpg` | [Chek ktis.jpg](https://commons.wikimedia.org/wiki/File:Chek_ktis.jpg), photo originale d'un dessert cambodgien banane-coco (2014) | Marie | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) ; vignette fournie par Wikimedia 960 × 720, non représentée comme recette testée par le site |
+| `v17-num-kom-900.jpg` | [Num kom sticky rice cake Khmer Cambodian dessert.jpg](https://commons.wikimedia.org/wiki/File:Num_kom_sticky_rice_cake_Khmer_Cambodian_dessert.jpg), gâteaux en feuilles de bananier (2026) | MoonsMoon | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) ; vignette 900 px de large, découverte culinaire et non fiche de recette inventée |
+| `v17-galangal-1000.jpg` | [Galangal.jpg](https://commons.wikimedia.org/wiki/File:Galangal.jpg), photographie botanique générique | Liza Daly (ld31337) | Domaine public déclaré sur Commons ; **ne pas localiser au Cambodge** |
+| `v17-chili-450.png` | [Red Chili Pepper PNG.png](https://commons.wikimedia.org/wiki/File:Red_Chili_Pepper_PNG.png), élément détouré | Spicy Anonymous | CC0 déclaré sur Commons ; élément graphique réutilisé dans le héros et la scène des parfums |
+
+**Attribution au public :** ces quatre sources et licences sont liées dans le bloc de crédits de la maquette. Les tailles ci-dessus correspondent aux fichiers servis par Wikimedia, pas à une prise de vue originale. Les formats, la transcription des noms, le cadrage et la durée de chargement doivent être recontrôlés avant une éventuelle promotion vers l'accueil réel.
+
+**Gardes-fous :** rien ne permet d'utiliser une photo de marché thaïlandais ou vietnamien comme reportage au Cambodge ; une photo d'ingrédient botanique peut être utilisée comme ingrédient générique avec crédit explicite. Aucun sourcing ne suppose qu'une photographie sous licence libre est automatiquement sans obligation d'attribution.

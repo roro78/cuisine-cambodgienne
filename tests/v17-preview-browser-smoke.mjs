@@ -43,14 +43,18 @@ async function inspect(width,height,screenshotPath,options={}) {
     assert.match(await page.locator('meta[name="robots"]').getAttribute('content'),/noindex/);
     assert.equal(await page.locator('h1').count(),1);
     assert.ok(await page.locator('.v17-hero-stage').isVisible());
-    assert.equal(await page.locator('[data-v17-scene]').count(),4);
+    assert.equal(await page.locator('[data-v17-scene]').count(),6);
+    assert.equal(await page.locator('[data-v17-ingredient]').count(),3);
+    assert.equal(await page.locator('[data-v17-sweet]').count(),2);
+    assert.equal(await page.locator('.v17-sweets-bottom a').getAttribute('href'),'/recettes/chek-ktis/');
     assert.equal(await page.locator('.v17-actions a').count(),2);
     assert.equal(await page.locator('.v17-actions a').first().getAttribute('href'),'/recettes/');
     assert.equal(await page.locator('.v17-actions a').last().getAttribute('href'),'/apprendre/');
     assert.equal(await page.locator('.v17-finale-cards a').count(),2);
     assert.equal(await page.locator('.v17-gesture-study ol li').count(),3);
     assert.equal(await page.locator('[data-v17-parallax]').count(),2);
-    assert.equal(await page.locator('.v17-illustration[aria-hidden="true"]').count(),2);
+    assert.equal(await page.locator('.v17-illustration[aria-hidden="true"]').count(),1);
+    assert.equal(await page.locator('.v17-hero-chili').count(),1);
     assert.ok(await page.locator('.v17-preview-legal a[href="/credits-photos/"]').count());
 
     const colors=await page.evaluate(()=>({
@@ -100,6 +104,17 @@ async function inspect(width,height,screenshotPath,options={}) {
     assert.ok(photoLayout.items.every(p=>Math.abs(p.angle)<0.025),
       'Photos must not be tilted like Polaroids: '+JSON.stringify(photoLayout));
     assert.equal(photoLayout.intersect,0,'Market photographs should not overlap');
+    if(width===1440&&!options.reduced&&!options.noJs) {
+      const stage=page.locator('[data-v17-ingredient-stage]');
+      const top=await stage.evaluate(el=>window.scrollY+el.getBoundingClientRect().top);
+      await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),top-850);
+      await page.waitForTimeout(450);
+      const beginning=await stage.locator('[data-v17-ingredient="left"]').evaluate(el=>getComputedStyle(el).transform);
+      await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),top+170);
+      await page.waitForTimeout(950);
+      const ending=await stage.locator('[data-v17-ingredient="left"]').evaluate(el=>getComputedStyle(el).transform);
+      assert.notEqual(beginning,ending,'Ingredient choreography must change during scrolling');
+    }
     if(width===390) {
       const spacing=await page.evaluate(()=>{
         const photo=document.querySelector('.v17-table-photo').getBoundingClientRect();
@@ -121,17 +136,21 @@ async function inspect(width,height,screenshotPath,options={}) {
     }
 
     // Request images below the fold before capturing the complete document.
-    for(const selector of ['.v17-market','.v17-gesture','.v17-table','.v17-finale']) {
+    for(const selector of ['.v17-market','.v17-pantry','.v17-gesture','.v17-table','.v17-sweets','.v17-finale']) {
       await page.locator(selector).scrollIntoViewIfNeeded();
       await page.waitForTimeout(options.noJs?50:220);
     }
     await page.waitForFunction(()=>{
-      return ['.v17-market-large img','.v17-gesture-paste img','.v17-table-photo img']
+      return ['.v17-market-large img','.v17-gesture-paste img','.v17-table-photo img',
+        '.v17-pantry-galangal img','.v17-pantry-chili img',
+        '.v17-sweets-feature img','.v17-sweets-secondary img']
         .every(sel=>{const el=document.querySelector(sel);return el?.complete&&el.naturalWidth>0;});
     },null,{timeout:12000});
     if(options.noJs) {
       assert.ok(await page.locator('.v17-market h2').isVisible(),'Market readable without JS');
       assert.ok(await page.locator('.v17-gesture h2').isVisible(),'Gesture readable without JS');
+      assert.ok(await page.locator('.v17-pantry h2').isVisible(),'Ingredient scene readable without JS');
+      assert.ok(await page.locator('.v17-sweets h2').isVisible(),'Dessert scene readable without JS');
       assert.equal(await page.locator('.v17-market-large').evaluate(el=>getComputedStyle(el).opacity),'1');
     }
     await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));

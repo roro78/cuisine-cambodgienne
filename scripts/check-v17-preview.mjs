@@ -13,12 +13,18 @@ assert.match(page, /DU GOÛT\./);
 assert.match(page, /DU <span class="v17-hero-accent">CAMBODGE/);
 assert.match(page, /<SiteHeader\s*\/>/, 'Reuse accessible V16 mobile navigation');
 assert.match(page, /v17-hero-stage/);
-assert.equal((page.match(/<section class="v17-(hero|market|gesture|table|finale)"/g)||[]).length,5);
+assert.equal((page.match(/<section class="v17-(hero|market|pantry|gesture|table|sweets|finale)"/g)||[]).length,7);
 assert.match(page, /data-v17-scene="market"/);
 assert.match(page, /data-v17-scene="gesture"/);
 assert.match(page, /data-v17-scene="table"/);
 assert.match(page, /data-v17-scene="finale"/);
-assert.match(page, /v17-illustration-chili/);
+assert.match(page, /v17-hero-chili/);
+assert.match(page, /data-v17-ingredient="left"/);
+assert.match(page, /data-v17-ingredient="top"/);
+assert.match(page, /data-v17-ingredient="right"/);
+assert.match(page, /data-v17-sweet="left"/);
+assert.match(page, /data-v17-sweet="right"/);
+assert.match(page, /href="\/recettes\/chek-ktis\/"/);
 assert.match(page, /v17-illustration-leaf/);
 assert.match(page, /Les dessins de feuilles et de piments sont décoratifs/);
 assert.match(page, /href="\/recettes\/"/);
@@ -31,6 +37,10 @@ assert.match(page, /sharonang, CC0 1\.0/);
 assert.match(page, /McKay Savage, CC BY 2\.0/);
 assert.match(page, /Trilinguist, CC BY-SA 3\.0/);
 assert.match(page, /Jason Eppink, CC BY 2\.0/);
+assert.match(page, /Marie, CC BY-SA 2\.0/);
+assert.match(page, /MoonsMoon, CC BY 4\.0/);
+assert.match(page, /Spicy Anonymous, CC0/);
+assert.match(page, /Liza Daly, domaine public/);
 assert.doesNotMatch(page, /<form\b|localStorage|Stripe|set:html/);
 assert.doesNotMatch(sitemap, /v17-preview/);
 assert.doesNotMatch(homeV16, /v17-preview|home-v17-preview/);
@@ -64,6 +74,14 @@ assert.match(motion, /\(min-width: 761px\)/);
 assert.match(motion, /mm\.revert\(\)/);
 assert.doesNotMatch(motion, /pin:\s*true|ScrollSmoother|autoAlpha: 0/);
 assert.doesNotMatch(page, /v17-bridge-market|v17-bridge-table|v17-hero-serial/);
+assert.match(motion, /data-v17-ingredient/);
+assert.match(motion, /data-v17-sweet/);
+assert.match(motion, /scrub: \.8/);
+assert.match(motion, /scrub: \.75/);
+assert.doesNotMatch(motion, /pin:\s*true|ScrollSmoother|window\.scrollTo/);
+assert.match(css, /\.v17-pantry-stage\{/);
+assert.match(css, /\.v17-sweets-gallery\{/);
+assert.match(css, /@media\(prefers-reduced-motion:reduce\)/);
 
 for(const width of [960,1920]){
   assert.ok(fs.existsSync(`public/images/cuisine/v17-amok-rice-${width}.jpg`));
@@ -73,6 +91,9 @@ for(const width of [640,1280]){
   assert.ok(fs.existsSync(`public/images/cuisine/v17-khmer-table-${width}.webp`));
 }
 assert.ok(fs.existsSync('public/images/cuisine/v17-kroeung-final.jpg'));
+for (const name of ['v17-chek-ktis-960.jpg','v17-num-kom-900.jpg','v17-galangal-1000.jpg','v17-chili-450.png']) {
+  assert.ok(fs.existsSync('public/images/cuisine/' + name), 'New V17.3 licensed media missing: ' + name);
+}
 for (const [,path] of page.matchAll(/'(\/images\/cuisine\/[^']+)'/g)) {
   assert.ok(fs.existsSync('public' + path), 'Image missing: ' + path);
 }
