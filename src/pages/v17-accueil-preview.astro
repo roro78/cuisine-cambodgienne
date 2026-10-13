@@ -30,7 +30,14 @@ const chili = '/images/cuisine/v17-chili-450.png';
     <SiteHeader />
     <main class="v17r" id="v17r-main">
       <section class="v17r-hero" aria-labelledby="v17r-hero-title">
-        <div class="v17r-hero-art" aria-hidden="true"><span class="v17r-temple">⌁</span><span class="v17r-hero-flower">✿</span></div>
+        <div class="v17r-hero-art" aria-hidden="true">
+          <svg class="v17r-temple-illustration" viewBox="0 0 900 430" xmlns="http://www.w3.org/2000/svg" fill="none">
+            <g fill="#b58c50" opacity=".38"><path d="M50 430V311h105v-61h35v-69h25v-38h26v38h26v69h37v61h78V252h25v-43h25v-52h23v-40h25v40h22v52h27v43h95v58h59V248h32v-48h28v-50h23v50h28v48h32v63h89v119H50Z"/><path d="M427 157l15-74 17-40 17 40 18 74z"/></g>
+            <g stroke="#b58c50" stroke-width="5" opacity=".25"><path d="M17 430L84 360M748 430l84-120M660 430l25-120M206 430l19-100"/></g>
+          </svg>
+          <img class="v17r-botanic v17r-hero-green-corner" src="/images/brand/v17-banana-leaves.svg" alt="" width="560" height="690" />
+          <img class="v17r-botanic v17r-hero-bloom-left" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
+        </div>
         <div class="v17r-hero-copy">
           <p class="v17r-eyebrow">Des saveurs vraies, un voyage gourmand.</p>
           <h1 id="v17r-hero-title">LE CAMBODGE<br/>DANS VOTRE <span>ASSIETTE</span></h1>
@@ -43,10 +50,14 @@ const chili = '/images/cuisine/v17-chili-450.png';
             <figcaption>Amok Trey <span>Poisson, coco et aromates</span></figcaption>
           </figure>
           <span class="v17r-label" aria-hidden="true">DES SAVEURS<br/>VRAIES ✳</span>
+          <span class="v17r-handnote v17r-note-amok" aria-hidden="true">Amok Trey ↘</span>
+          <img class="v17r-botanic v17r-hero-flower-dish" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
+          <img class="v17r-botanic v17r-hero-lime" src="/images/brand/v17-lime.svg" alt="" width="420" height="360" />
           <svg class="v17r-decoration v17r-leaf" viewBox="0 0 150 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M20 178C38 87 94 32 133 13C147 92 112 166 20 178Z" fill="#54873F"/><path d="M20 178C69 123 101 81 133 13M68 115L54 66M93 88L116 97" stroke="#24432A" stroke-width="5" stroke-linecap="round"/></svg>
         </div>
         <p class="v17r-hero-caption">La cuisine khmère se découvre autant qu'elle se partage.</p>
       </section>
+      <div class="v17r-wave v17r-wave-ivory" aria-hidden="true"><svg viewBox="0 0 1440 95" preserveAspectRatio="none"><path d="M0 0C130 12 225 82 394 40S750 6 900 46s360 25 540-5v54H0Z" fill="#143929"/></svg></div>
 
       <section class="v17r-market" aria-labelledby="v17r-market-title">
         <figure class="v17r-market-visual">
@@ -54,6 +65,8 @@ const chili = '/images/cuisine/v17-chili-450.png';
           <figcaption>Étal de fruits au Cambodge</figcaption>
         </figure>
         <div class="v17r-market-copy">
+          <img class="v17r-botanic v17r-market-flower" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
+          <span class="v17r-handnote v17r-market-note" aria-hidden="true">Des marchés<br/>pleins de vie ↙</span>
           <p class="v17r-kicker">01 — Les produits</p>
           <h2 id="v17r-market-title">TOUT PART DES <em>BONS PRODUITS.</em></h2>
           <p>Les marchés, les épices, les herbes fraîches : autant de parfums à apprivoiser.</p>
@@ -61,12 +74,16 @@ const chili = '/images/cuisine/v17-chili-450.png';
           <a class="v17r-underlink" href="/glossaire/">Voir aussi le glossaire <span aria-hidden="true">↗</span></a>
         </div>
       </section>
+      <div class="v17r-wave v17r-wave-green" aria-hidden="true"><svg viewBox="0 0 1440 95" preserveAspectRatio="none"><path d="M0 36C166 -3 330 66 499 35S848 6 1030 44 1271 85 1440 21v74H0Z" fill="#fff9ec"/></svg></div>
 
       <section class="v17r-palette" aria-labelledby="v17r-palette-title">
         <p class="v17r-kicker">Des parfums uniques</p>
         <h2 id="v17r-palette-title">UNE PALETTE<br/><em>D’INGRÉDIENTS</em><br/>D’EXCEPTION</h2>
         <p class="v17r-palette-intro">Citronnelle, galanga, combava, piment, poivre de Kampot… Chaque ingrédient a sa place dans cet équilibre de saveurs.</p>
         <div class="v17r-palette-media">
+          <img class="v17r-botanic v17r-lemongrass" src="/images/brand/v17-lemongrass.svg" alt="" width="670" height="420" />
+          <img class="v17r-botanic v17r-palette-lime" src="/images/brand/v17-lime.svg" alt="" width="420" height="360" />
+          <img class="v17r-botanic v17r-palette-flower" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
           <figure class="v17r-palette-a">
             <img src={galangal} sizes="(max-width: 760px) 42vw, 24vw" width="1000" height="538" loading="lazy" decoding="async" alt="Rhizomes de galanga, photographie botanique générique" />
             <figcaption>Le galanga</figcaption>
@@ -82,12 +99,17 @@ const chili = '/images/cuisine/v17-chili-450.png';
 
       <section class="v17r-gestures" aria-labelledby="v17r-gestures-title">
         <div class="v17r-gestures-visual" data-media-status="illustration-temporaire">
+          <figure class="v17r-gestures-kroeung">
+            <img src="/images/cuisine/v17-kroeung-final.jpg" alt="Pâte de kroeung rouge après mélange, photographie d’une texture terminée et non du geste de pilage" width="800" height="600" loading="lazy" decoding="async" />
+            <figcaption>Pâte de kroeung rouge après mélange</figcaption>
+          </figure>
+          <img class="v17r-botanic v17r-gestures-flower" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
           <svg viewBox="0 0 620 460" role="img" aria-labelledby="v17r-mortar-title v17r-mortar-desc" xmlns="http://www.w3.org/2000/svg">
             <title id="v17r-mortar-title">Illustration d'un mortier et de ses aromates</title>
             <desc id="v17r-mortar-desc">Dessin vectoriel de repérage, en attente d'une véritable photographie du geste de pilage.</desc>
             <ellipse cx="310" cy="350" rx="235" ry="80" fill="#B9793C"/><path d="M95 238C115 370 167 419 308 423C450 419 518 370 524 238" fill="#8C6D4B"/><ellipse cx="310" cy="238" rx="218" ry="92" fill="#463E35"/><ellipse cx="310" cy="238" rx="189" ry="68" fill="#DB9635"/><path d="M176 240C245 205 335 208 447 246" stroke="#2E653A" stroke-width="23" stroke-linecap="round"/><path d="M238 270C320 240 373 258 426 278" stroke="#E3D05B" stroke-width="22" stroke-linecap="round"/><path d="M320 240L450 47" stroke="#5A4A36" stroke-width="64" stroke-linecap="round"/><path d="M320 239L450 47" stroke="#938064" stroke-width="42" stroke-linecap="round"/><path d="M198 280C263 313 351 305 435 282" stroke="#BC5933" stroke-width="10" stroke-linecap="round"/>
           </svg>
-          <span class="v17r-image-warning">Illustration provisoire — photo réelle du geste à sourcer</span>
+          <span class="v17r-image-warning">Mortier illustré ; photo du pilage à sourcer. La pâte de kroeung est photographiée après préparation.</span>
         </div>
         <div class="v17r-gestures-copy">
           <p class="v17r-kicker">02 — Les gestes</p>
@@ -101,12 +123,14 @@ const chili = '/images/cuisine/v17-chili-450.png';
           <li><span aria-hidden="true">✳</span><div><strong>SENTIR</strong><small>Reconnaître les parfums</small></div></li>
         </ol>
       </section>
+      <div class="v17r-wave v17r-wave-cream" aria-hidden="true"><svg viewBox="0 0 1440 95" preserveAspectRatio="none"><path d="M0 12C135 89 327 7 495 45S839 65 1010 26 1241 79 1440 38v57H0Z" fill="#69361e"/></svg></div>
 
       <section class="v17r-table" aria-labelledby="v17r-table-title">
         <div class="v17r-table-media">
           <figure class="v17r-table-amok"><img src={table} srcset="/images/cuisine/v17-khmer-table-640.webp 640w, /images/cuisine/v17-khmer-table-1280.webp 1280w" sizes="100vw" width="1280" height="1707" loading="lazy" decoding="async" alt="Assortiment de spécialités khmères photographié à Phnom Penh" /></figure>
         </div>
         <div class="v17r-table-copy">
+          <img class="v17r-botanic v17r-table-flower" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
           <p class="v17r-kicker">03 — À table</p>
           <h2 id="v17r-table-title">DES PLATS<br/><em>QUI RASSEMBLENT.</em></h2>
           <p>Poissons, currys, salades, soupes… Des plats généreux que l’on aime retrouver et partager.</p>
@@ -124,6 +148,8 @@ const chili = '/images/cuisine/v17-chili-450.png';
           <a class="v17r-pill" href="/recettes/chek-ktis/">Découvrir le Chek Ktis <span aria-hidden="true">↗</span></a>
         </div>
         <div class="v17r-dessert-art">
+          <img class="v17r-botanic v17r-dessert-flower" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
+          <img class="v17r-botanic v17r-dessert-lime" src="/images/brand/v17-lime.svg" alt="" width="420" height="360" />
           <figure class="v17r-dessert-main"><img src={dessertChek} width="960" height="720" loading="lazy" decoding="async" alt="Chek Ktis, dessert cambodgien à base de bananes et lait de coco" /><figcaption>Chek Ktis · banane et coco</figcaption></figure>
           <figure class="v17r-dessert-second"><img src={dessertKom} width="900" height="1094" loading="lazy" decoding="async" alt="Num Kom, gâteaux de riz gluant cambodgiens enveloppés de feuilles de bananier" /><figcaption>Num Kom · riz gluant</figcaption></figure>
         </div>
@@ -147,13 +173,14 @@ const chili = '/images/cuisine/v17-chili-450.png';
 
       <aside class="v17r-preview-notice" aria-label="Statut et sources du prototype">
         <details><summary>Sources photographiques et état de la prévisualisation</summary>
-        <p><strong>Prévisualisation technique D2 — non publiée.</strong> Ce parcours reprend la structure et les liens de la maquette validée. Le mortier est illustré ; une vraie photo de pâte de kroeung achevée illustre sa texture. La finale utilise une photo authentique d’Angkor. Les photos des plats, ingrédients et desserts proviennent de Wikimedia Commons ; aucune recette n'est présentée comme réalisée par l'équipe. <a href="/credits-photos/">Crédits des photographies existantes</a>. Nouvelles sources :
+        <p><strong>Prévisualisation technique V17 — non publiée.</strong> Ce parcours reprend la structure et les liens de la maquette validée. Le mortier est illustré et une vraie photographie de pâte de kroeung préparée enrichit cette scène ; la finale utilise une photo authentique d’Angkor. Les photos des plats, ingrédients et desserts proviennent de Wikimedia Commons ; aucune recette n'est présentée comme réalisée par l'équipe. <a href="/credits-photos/">Crédits des photographies existantes</a>. Nouvelles sources :
         <a href="https://commons.wikimedia.org/wiki/File:Fish_Amok_with_Rice.jpg" target="_blank" rel="noopener noreferrer">Amok — sharonang, CC0</a> ;
         <a href="https://commons.wikimedia.org/wiki/File:Cambodia_08_-_038_-_fruit_at_the_market_(3198828515).jpg" target="_blank" rel="noopener noreferrer">marché — McKay Savage, CC BY 2.0</a> ;
         <a href="https://commons.wikimedia.org/wiki/File:Khmer_Borane_-_amazing_sampler_(8532779364).jpg" target="_blank" rel="noopener noreferrer">table — Jason Eppink, CC BY 2.0</a> ;
         <a href="https://commons.wikimedia.org/wiki/File:Chek_ktis.jpg" target="_blank" rel="noopener noreferrer">Chek Ktis — Marie, CC BY-SA 2.0</a> ;
         <a href="https://commons.wikimedia.org/wiki/File:Num_kom_sticky_rice_cake_Khmer_Cambodian_dessert.jpg" target="_blank" rel="noopener noreferrer">Num Kom — MoonsMoon, CC BY 4.0</a> ;
         <a href="https://commons.wikimedia.org/wiki/File:Galangal.jpg" target="_blank" rel="noopener noreferrer">galanga — Liza Daly, domaine public</a> ;
+        <a href="https://commons.wikimedia.org/wiki/File:Red_Kroeung_Paste.jpg" target="_blank" rel="noopener noreferrer">texture de kroeung rouge — Trilinguist, CC BY-SA 3.0</a> ;
         <a href="https://commons.wikimedia.org/wiki/File:Red_Chili_Pepper_PNG.png" target="_blank" rel="noopener noreferrer">piment — Spicy Anonymous, CC0</a>.</p></details>
       </aside>
     </main>
