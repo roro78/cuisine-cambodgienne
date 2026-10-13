@@ -869,3 +869,18 @@
   .v17r-dessert-art .v17r-dessert-second img{width:100%;height:auto;aspect-ratio:.77;object-fit:cover;object-position:center;filter:saturate(1.1)}
   .v17r-dessert-art figure figcaption{font-size:.73rem;line-height:1.4;max-width:100%}
 }
+
+
+/* QA navigateur post D5.4: annotations photographiques entièrement lisibles. */
+@media(min-width:761px){
+  .v17r-dessert-art .v17r-dessert-main figcaption{
+    z-index:5;left:50%;right:auto;bottom:11%;
+    transform:translateX(-50%);text-align:center;width:max-content;max-width:75%;
+    margin:0;
+  }
+  .v17r-dessert-art .v17r-dessert-second figcaption{
+    z-index:5;left:50%;right:auto;bottom:14%;
+    transform:translateX(-50%);text-align:center;width:max-content;max-width:80%;
+    margin:0;padding:.35rem .4rem;
+  }
+}
