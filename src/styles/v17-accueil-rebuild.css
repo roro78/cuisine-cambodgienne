@@ -8,7 +8,7 @@
 .v17r-wrap .nav-links a{font-size:clamp(.69rem,.85vw,.83rem);font-weight:850;letter-spacing:.02em;color:var(--vr-ink);text-transform:uppercase}
 .v17r-wrap .site-nav a:focus-visible,.v17r a:focus-visible,.v17r-skip:focus-visible{outline:3px solid #164f41;outline-offset:4px}
 .v17r-wrap .brand-logo{width:clamp(10rem,13vw,13rem);height:auto;max-height:4rem;object-fit:contain}
-.v17r-skip{position:absolute;z-index:80;top:-4rem;left:1rem;padding:1rem;background:var(--vr-forest);color:#fff}
+.v17r-skip{position:absolute;z-index:80;top:-4rem;left:1rem;padding:1rem;background:var(--vr-forest,#143929);color:#fff}
 .v17r-skip:focus{top:0}
 .v17r{overflow:clip}
 .v17r :is(h1,h2,h3,p){margin-top:0}
