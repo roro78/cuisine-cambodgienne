@@ -261,7 +261,7 @@ async function checkGeneratedRecipe(slug,filename,width,height){
     const recipeHero=page.locator('.recipe-v17-generated-media .recipe-v15-hero');
     assert.equal(await recipeHero.count(),1,'Generated recipe must have a scoped style variant');
     const background=await recipeHero.evaluate(el=>getComputedStyle(el).backgroundImage);
-    if(width>=901)assert.match(background,/linear-gradient\\(90deg/i,
+    if(width>=901)assert.match(background,/linear-gradient\(90deg/i,
       'Generated recipe desktop text must not be crossed by a diagonal background');
     else assert.equal(background,'none','Mobile recipe keeps one cream background');
     const dimension=await page.evaluate(()=>({
