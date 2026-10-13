@@ -60,6 +60,11 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     for(const chapter of chapters)assert.equal(await page.locator('.v17r-'+chapter).count(),1);
     const links=['/recettes/','/ingredients/','/glossaire/','/apprendre/','/recettes/chek-ktis/','/apprendre/piler-aromates-au-mortier/'];
     for(const href of links)assert.ok(await page.locator('a[href="'+href+'"]').count()>0,'Missing '+href);
+    const angkorImage=page.locator('.v17r-finale-landscape img');
+    assert.match(await angkorImage.getAttribute('src'),/v17-angkor-sunset-1600\\.jpg$/);
+    assert.match(await angkorImage.getAttribute('alt'),/Angkor Wat.*soleil couchant/);
+    assert.equal(await page.locator('.v17r-finale-credit a[href*="Angkor_Wat_Reflection"]').count(),1,
+      'Golden-hour photograph must keep the correct source attribution');
     // D7 accessibility: every primary CTA remains a genuine 44px touch target.
     // Check actual layout bounds, not just the presence of a CSS declaration.
     if([390,1440].includes(width) && !noJs && !reduced){
