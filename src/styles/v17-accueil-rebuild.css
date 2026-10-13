@@ -879,3 +879,57 @@
     margin:0;padding:.35rem .4rem;
   }
 }
+
+
+/* D5.6 — réception comparative du 13/10 :
+   photo culinaire continue, pas d'assiette elliptique flottante.
+   Hero intégré au papier/feuillage avec bords photographiques adoucis.
+   Aucun changement de la structure mobile ni du scroll natif. */
+.v17r-table-media{z-index:0;inset:0;overflow:hidden}
+.v17r-table-media .v17r-table-amok{position:absolute;inset:0;width:100%;height:100%;margin:0}
+.v17r-table-media .v17r-table-amok img{
+  width:100%;height:100%;object-fit:cover;object-position:50% 45%;
+  filter:saturate(1.25) contrast(1.04) brightness(.99)
+}
+.v17r-table::before{
+  background:
+    linear-gradient(90deg,rgba(13,23,13,.18) 0%,rgba(17,23,16,.63) 39%,rgba(15,22,14,.6) 61%,rgba(20,24,13,.15) 100%),
+    linear-gradient(180deg,rgba(15,25,13,.17),transparent 24%,transparent 78%,rgba(12,17,11,.32));
+}
+.v17r-table-copy{position:relative;z-index:4;margin-inline:auto;max-width:49rem;text-align:center;filter:drop-shadow(0 2px 8px rgba(6,16,7,.36))}
+.v17r-table-clarity{z-index:4}
+.v17r-table-handnote{z-index:4;text-shadow:0 2px 9px #162014}
+@media(min-width:1200px){
+  .v17r-hero-dish{
+    clip-path:none;
+    border-radius:0 0 0 4.5rem;
+    -webkit-mask-image:radial-gradient(ellipse 92% 94% at 62% 49%,#000 63%,rgba(0,0,0,.98) 78%,transparent 100%);
+    mask-image:radial-gradient(ellipse 92% 94% at 62% 49%,#000 63%,rgba(0,0,0,.98) 78%,transparent 100%);
+    box-shadow:none;
+  }
+  .v17r-table{min-height:max(42rem,100svh)}
+  .v17r-table-media .v17r-table-amok img{object-position:50% 46%}
+  .v17r-table-copy{margin:0 auto;max-width:50rem}
+  .v17r-table h2{font-size:clamp(3.65rem,5.4vw,6.5rem);line-height:.98}
+}
+@media(min-width:761px) and (max-width:1199px){
+  .v17r-hero-dish{
+    clip-path:none;border-radius:0 0 0 2rem;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 13%,#000 98%);
+    mask-image:linear-gradient(90deg,transparent,#000 13%,#000 98%);
+  }
+  .v17r-table-media .v17r-table-amok img{object-position:50% 45%}
+}
+@media(max-width:760px){
+  .v17r-hero-dish{
+    clip-path:none;border-radius:0 0 1.4rem 2.5rem;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 98%);
+    mask-image:linear-gradient(90deg,transparent,#000 7%,#000 98%);
+  }
+  .v17r-table-media .v17r-table-amok img{object-position:50% 46%;filter:saturate(1.15) contrast(1.02)}
+  .v17r-table::before{background:linear-gradient(180deg,rgba(16,22,13,.34),rgba(13,20,12,.68) 47%,rgba(14,22,14,.48))}
+  .v17r-table h2{font-size:clamp(3.05rem,8.7vw,5.35rem)}
+}
+@media(prefers-reduced-motion:reduce){
+  .v17r-hero-dish,.v17r-table-media img{transition:none!important}
+}
