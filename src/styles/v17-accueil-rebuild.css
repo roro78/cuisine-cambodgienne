@@ -673,3 +673,14 @@
   .v17r-finale{min-height:clamp(36rem,82svh,52rem)}
   .v17r-finale-landscape img{object-position:center}
 }
+
+/* D5 responsive QA: keep both desserts genuinely large on narrow viewports. */
+@media(max-width:760px){
+  .v17r-dessert-art{grid-template-columns:minmax(0,1.5fr) minmax(0,.85fr);align-items:center;min-height:0;gap:.5rem}
+  .v17r-dessert-art .v17r-dessert-main,
+  .v17r-dessert-art .v17r-dessert-second{
+    position:relative;inset:auto;width:100%;height:auto;min-width:0;transform:none
+  }
+  .v17r-dessert-art .v17r-dessert-main img{width:100%;height:auto;aspect-ratio:1.15;object-fit:cover}
+  .v17r-dessert-art .v17r-dessert-second img{width:100%;height:auto;aspect-ratio:.78;object-fit:cover}
+}
