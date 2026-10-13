@@ -21,7 +21,7 @@ assert.match(css, /@media\(max-width:360px\)/);
 assert.match(css, /@media\(prefers-reduced-motion:reduce\)/);
 assert.match(css, /\.v17-preview a:focus-visible/);
 assert.match(motion, /prefers-reduced-motion: no-preference/);
-assert.match(motion, /media\.revert\(\)/);
+assert.match(motion, /mm\.revert\(\)/);
 
 const photos = [...page.matchAll(/src=\{images\.([A-Za-z]+)\}/g)].map((x) => x[1]);
 assert.equal(photos.length, 5, 'Cinq photos documentees sur le prototype V17');

@@ -84,6 +84,24 @@ async function inspectViewport(width, height, screenshotPath, options = {}) {
       );
       assert.ok(imageTransforms.every((value) => value === 'none'), 'Reduced motion must disable all photo parallax');
     }
+    if (width === 1440 && !options.reduced) {
+      const bridge = page.locator('.v17-bridge-market');
+      const top = await bridge.evaluate((element) =>
+        element.getBoundingClientRect().top + window.scrollY
+      );
+      await page.evaluate((y) => window.scrollTo({ top: y, behavior: 'instant' }), top - 1200);
+      await page.waitForTimeout(350);
+      const before = await bridge.evaluate((el) =>
+        Number.parseFloat(getComputedStyle(el).getPropertyValue('--v17-bridge-progress')) || 0
+      );
+      await page.evaluate((y) => window.scrollTo({ top: y, behavior: 'instant' }), top + 900);
+      await page.waitForTimeout(950);
+      const after = await bridge.evaluate((el) =>
+        Number.parseFloat(getComputedStyle(el).getPropertyValue('--v17-bridge-progress')) || 0
+      );
+      assert.ok(after > before + .4,
+        'Scroll-linked transition should progress: ' + before + ' → ' + after);
+    }
     if (width === 390) {
       const menu = page.locator('[data-mobile-menu]');
       await menu.locator('summary').click();
