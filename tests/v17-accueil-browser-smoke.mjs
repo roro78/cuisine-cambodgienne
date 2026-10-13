@@ -22,8 +22,13 @@ async function waitForServer(){
   throw Error('Astro server timeout: '+logs);
 }
 async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
+  const captureVideo=screenshot && !noJs && !reduced && [390,1440].includes(width);
+  if(captureVideo)await fs.mkdir('artifacts',{recursive:true});
   const page=await browser.newPage({viewport:{width,height},isMobile:width<=430,hasTouch:width<=430,
-    javaScriptEnabled:!noJs,reducedMotion:reduced?'reduce':'no-preference'});
+    javaScriptEnabled:!noJs,reducedMotion:reduced?'reduce':'no-preference',
+    ...(captureVideo?{recordVideo:{dir:'artifacts',size:width===1440?{width:720,height:450}:{width:390,height:844}}}:{})
+  });
+  const video=page.video();
   page.setDefaultTimeout(17000);
   page.on('pageerror',e=>errors.push(width+': '+e.message));
   try{
@@ -121,6 +126,18 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       await fs.mkdir('artifacts',{recursive:true});
       await page.screenshot({path:'artifacts/v17-accueil-'+width+'.png',fullPage:true,animations:'disabled'});
     }
+    // Record the actual browser while it scrolls through the complete preview.
+    // Video is evidence, not a visual comparison against the approved PNG.
+    if(captureVideo){
+      const total=await page.evaluate(()=>document.documentElement.scrollHeight-innerHeight);
+      const step=height*.28;
+      for(let offset=0;offset<=total;offset+=step){
+        await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),offset);
+        await page.waitForTimeout(110);
+      }
+      await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),total);
+      await page.waitForTimeout(450);
+    }
     // The preview must never be confused with the public homepage.
     if(width===390||width===1440){
       const homeRes=await page.request.get(base+'/');
@@ -128,14 +145,20 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       assert.doesNotMatch(await homeRes.text(),/v17r-hero/);
     }
     console.log('V17 D2 preview '+width+' × '+height+(noJs?' noJS':'')+(reduced?' reduced':'')+' PASS');
-  }finally{await page.close()}
+  }finally{
+    await page.close();
+    if(video){
+      await video.saveAs('artifacts/v17-accueil-'+width+'-scroll.webm');
+      console.log('V17 D7 browser video recorded: '+width+'px');
+    }
+  }
 }
 try{
   await waitForServer();
   browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,
     args:['--no-sandbox','--disable-dev-shm-usage']});
   for(const [w,h] of [[1440,900],[390,844],[320,640],[360,800],[430,932],[768,1024],[1024,768]]){
-    await run(w,h,{screenshot:w===1440||w===390});
+    await run(w,h,{screenshot:true});
   }
   await run(390,844,{reduced:true});
   await run(390,844,{noJs:true});
