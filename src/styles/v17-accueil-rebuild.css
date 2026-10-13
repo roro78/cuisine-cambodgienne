@@ -684,3 +684,16 @@
   .v17r-dessert-art .v17r-dessert-main img{width:100%;height:auto;aspect-ratio:1.15;object-fit:cover}
   .v17r-dessert-art .v17r-dessert-second img{width:100%;height:auto;aspect-ratio:.78;object-fit:cover}
 }
+
+
+/* QA 768–1199px: avoid seven identical almost-full-screen panels.
+   Intentionally vary scene pacing while preserving natural content height. */
+@media(min-width:761px) and (max-width:1199px){
+  .v17r-hero{min-height:86svh}
+  .v17r-market{min-height:92svh}
+  .v17r-palette{min-height:102svh}
+  .v17r-gestures{min-height:80svh}
+  .v17r-table{min-height:108svh}
+  .v17r-dessert{min-height:78svh}
+  .v17r-finale{min-height:92svh}
+}
