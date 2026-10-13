@@ -797,7 +797,7 @@
   .v17r-hero-media{min-height:clamp(35rem,49vw,51rem)}
   .v17r-hero-dish{
     width:calc(100% + clamp(2rem,5vw,6rem));max-width:none;aspect-ratio:1.24;
-    transform:none;border-radius:2.8rem 0 1.8rem 5.5rem;
+    transform:translateX(clamp(.5rem,.7vw,.75rem));border-radius:2.8rem 0 1.8rem 5.5rem;
     clip-path:polygon(5% 5%,100% 0,100% 94%,82% 100%,12% 97%,0 73%,2% 24%)
   }
   .v17r-hero-dish img{object-position:67% 50%;transform:scale(1.13);transform-origin:68% 50%;filter:saturate(1.09) contrast(1.035)}
