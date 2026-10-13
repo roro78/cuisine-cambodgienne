@@ -29,6 +29,25 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     ...(captureVideo?{recordVideo:{dir:'artifacts',size:width===1440?{width:720,height:450}:{width:390,height:844}}}:{})
   });
   const video=page.video();
+  // Lab telemetry only. Not a substitute for Lighthouse or real-user Core Web Vitals.
+  if(!noJs && !reduced && [390,1440].includes(width)){
+    await page.addInitScript(() => {
+      window.__v17Lab = {lcpMs:null,cls:0};
+      if(!('PerformanceObserver' in window))return;
+      try {
+        new PerformanceObserver(list => {
+          for(const entry of list.getEntries())window.__v17Lab.lcpMs=entry.startTime;
+        }).observe({type:'largest-contentful-paint',buffered:true});
+      } catch {}
+      try {
+        new PerformanceObserver(list => {
+          for(const entry of list.getEntries()){
+            if(!entry.hadRecentInput)window.__v17Lab.cls+=entry.value;
+          }
+        }).observe({type:'layout-shift',buffered:true});
+      } catch {}
+    });
+  }
   page.setDefaultTimeout(17000);
   page.on('pageerror',e=>errors.push(width+': '+e.message));
   try{
@@ -41,6 +60,27 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     for(const chapter of chapters)assert.equal(await page.locator('.v17r-'+chapter).count(),1);
     const links=['/recettes/','/ingredients/','/glossaire/','/apprendre/','/recettes/chek-ktis/','/apprendre/piler-aromates-au-mortier/'];
     for(const href of links)assert.ok(await page.locator('a[href="'+href+'"]').count()>0,'Missing '+href);
+    // D7 accessibility: every primary CTA remains a genuine 44px touch target.
+    // Check actual layout bounds, not just the presence of a CSS declaration.
+    if([390,1440].includes(width) && !noJs && !reduced){
+      const targets=await page.locator('.v17r-pill').evaluateAll(nodes =>
+        nodes.map(el => {
+          const box=el.getBoundingClientRect();
+          return {text:el.textContent?.trim(),width:box.width,height:box.height};
+        })
+      );
+      assert.ok(targets.length>=7 && targets.every(t=>t.width>=44 && t.height>=44),
+        'V17 primary CTAs must be at least 44×44 CSS px: '+JSON.stringify(targets));
+    }
+    if(width===390 && !noJs && !reduced){
+      // The skip link must be first in keyboard order, before the shared header.
+      await page.keyboard.press('Tab');
+      assert.equal(await page.locator('.v17r-skip').evaluate(el=>el===document.activeElement),
+        true,'Keyboard must reach the skip-to-content link first');
+      await page.keyboard.press('Enter');
+      assert.equal(await page.evaluate(()=>location.hash),'#v17r-main',
+        'Skip link should navigate directly to main content');
+    }
     const photoContrast=await page.evaluate(()=>{
       const scene=document.querySelector('.v17r-table');
       const media=document.querySelector('.v17r-table-media');
@@ -214,6 +254,30 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           });
         }
       }
+    }
+    // Evidence is gathered on the same two viewports as the recorded scroll.
+    // LCP/CLS are synthetic Chromium values affected by CI hardware and scripted
+    // scrolling. They are reported, never treated as field performance scores.
+    if(!noJs && !reduced && [390,1440].includes(width)){
+      const metrics=await page.evaluate(() => {
+        const resource=performance.getEntriesByType('resource');
+        const images=resource.filter(x=>x.initiatorType==='img');
+        const paints=performance.getEntriesByType('paint');
+        return {
+          viewport:{width:innerWidth,height:innerHeight},
+          observedAtMs:Math.round(performance.now()),
+          lcpMs:window.__v17Lab?.lcpMs ?? null,
+          cls:window.__v17Lab?.cls ?? null,
+          firstContentfulPaintMs:paints.find(x=>x.name==='first-contentful-paint')?.startTime??null,
+          imageRequests:images.length,
+          knownImageTransferBytes:images.reduce((sum,x)=>sum+(x.transferSize||0),0),
+          note:'CI Chromium lab observation; not Lighthouse, Safari, mobile-device or real-user CWV'
+        };
+      });
+      await fs.mkdir('artifacts',{recursive:true});
+      await fs.writeFile('artifacts/v17-accueil-d7-metrics-'+width+'.json',
+        JSON.stringify(metrics,null,2)+'\\n');
+      console.log('V17 D7 lab metrics '+width+'px '+JSON.stringify(metrics));
     }
     // Record the actual browser while it scrolls through the complete preview.
     // Video is evidence, not a visual comparison against the approved PNG.
