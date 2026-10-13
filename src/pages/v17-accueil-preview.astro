@@ -9,10 +9,10 @@ import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import '../styles/v17-accueil-rebuild.css';
 const hero = '/images/cuisine/v17-amok-rice-1920.jpg';
-const market = '/images/cuisine/v17-fruit-market-1920.jpg';
+const market = '/images/cuisine/v17-market-live-1800.jpg';
 const kampot = '/images/cuisine/kampot-1600.webp';
 const tamarind = '/images/cuisine/tamarind-1600.webp';
-const table = '/images/cuisine/v17-khmer-table-1280.webp';
+const table = '/images/cuisine/v17-table-meal-1600.jpg';
 const dessertChek = '/images/cuisine/v17-chek-ktis-960.jpg';
 const dessertKom = '/images/cuisine/v17-num-kom-900.jpg';
 const galangal = '/images/cuisine/v17-galangal-1000.jpg';
@@ -62,8 +62,8 @@ const chili = '/images/cuisine/v17-chili-450.png';
 
       <section class="v17r-market" aria-labelledby="v17r-market-title">
         <figure class="v17r-market-visual">
-          <img src={market} srcset="/images/cuisine/v17-fruit-market-960.jpg 960w, /images/cuisine/v17-fruit-market-1920.jpg 1920w" sizes="(max-width: 760px) 100vw, 66vw" width="1920" height="1440" loading="lazy" decoding="async" alt="Fruits disposés sur un étal au Cambodge" />
-          <figcaption>Étal de fruits au Cambodge</figcaption>
+          <img src={market} sizes="(max-width: 760px) 100vw, 72vw" width="1800" height="1350" loading="lazy" decoding="async" alt="Étals et visiteurs d’un marché alimentaire à Phnom Penh au Cambodge" />
+          <figcaption>Marché alimentaire de Phnom Penh · Radosław Botev</figcaption>
         </figure>
         <div class="v17r-market-copy">
           <img class="v17r-botanic v17r-market-flower" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
@@ -101,19 +101,18 @@ const chili = '/images/cuisine/v17-chili-450.png';
       </section>
 
       <section class="v17r-gestures" aria-labelledby="v17r-gestures-title">
-        <div class="v17r-gestures-visual" data-media-status="illustration-temporaire">
+        <div class="v17r-gestures-visual" data-media-status="photographie-geste-generique">
+          <figure class="v17r-gestures-main">
+            <img src="/images/cuisine/v17-mortar-hands-1600.jpg" width="1600" height="1067" loading="lazy" decoding="async" alt="Mains utilisant un mortier en pierre pour broyer des aromates, photographie illustrative du geste" />
+            <figcaption>Le pilage au mortier · photo d’illustration</figcaption>
+          </figure>
           <figure class="v17r-gestures-kroeung">
-            <img src="/images/cuisine/v17-kroeung-final.jpg" alt="Pâte de kroeung rouge après mélange, photographie d’une texture terminée et non du geste de pilage" width="800" height="600" loading="lazy" decoding="async" />
-            <figcaption>Pâte de kroeung rouge après mélange</figcaption>
+            <img src="/images/cuisine/v17-kroeung-final.jpg" alt="Pâte de kroeung rouge après préparation, photographie distincte" width="800" height="600" loading="lazy" decoding="async" />
+            <figcaption>Texture du kroeung préparé</figcaption>
           </figure>
           <img class="v17r-botanic v17r-gestures-flower" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
           <span class="v17r-calligraphy v17r-gestures-handnote" aria-hidden="true">Le geste et<br/>les arômes</span>
-          <svg viewBox="0 0 620 460" role="img" aria-labelledby="v17r-mortar-title v17r-mortar-desc" xmlns="http://www.w3.org/2000/svg">
-            <title id="v17r-mortar-title">Illustration d'un mortier et de ses aromates</title>
-            <desc id="v17r-mortar-desc">Dessin vectoriel de repérage, en attente d'une véritable photographie du geste de pilage.</desc>
-            <ellipse cx="310" cy="350" rx="235" ry="80" fill="#B9793C"/><path d="M95 238C115 370 167 419 308 423C450 419 518 370 524 238" fill="#8C6D4B"/><ellipse cx="310" cy="238" rx="218" ry="92" fill="#463E35"/><ellipse cx="310" cy="238" rx="189" ry="68" fill="#DB9635"/><path d="M176 240C245 205 335 208 447 246" stroke="#2E653A" stroke-width="23" stroke-linecap="round"/><path d="M238 270C320 240 373 258 426 278" stroke="#E3D05B" stroke-width="22" stroke-linecap="round"/><path d="M320 240L450 47" stroke="#5A4A36" stroke-width="64" stroke-linecap="round"/><path d="M320 239L450 47" stroke="#938064" stroke-width="42" stroke-linecap="round"/><path d="M198 280C263 313 351 305 435 282" stroke="#BC5933" stroke-width="10" stroke-linecap="round"/>
-          </svg>
-          <span class="v17r-image-warning">Mortier illustré ; photo du pilage à sourcer. La pâte de kroeung est photographiée après préparation.</span>
+          <span class="v17r-image-warning">Geste photographié à titre d’illustration, non documenté comme une préparation khmère.</span>
         </div>
         <div class="v17r-gestures-copy">
           <p class="v17r-kicker">02 — Les gestes</p>
@@ -131,7 +130,8 @@ const chili = '/images/cuisine/v17-chili-450.png';
 
       <section class="v17r-table" aria-labelledby="v17r-table-title">
         <div class="v17r-table-media">
-          <figure class="v17r-table-amok"><img src={table} srcset="/images/cuisine/v17-khmer-table-640.webp 640w, /images/cuisine/v17-khmer-table-1280.webp 1280w" sizes="100vw" width="1280" height="1707" loading="lazy" decoding="async" alt="Assortiment de spécialités khmères photographié à Phnom Penh" /></figure>
+          <figure class="v17r-table-amok"><img src={table} width="1600" height="1067" loading="lazy" decoding="async" alt="Repas photographié au Khmer Family Restaurant de Siem Reap" /></figure>
+          <figure class="v17r-table-detail"><img src="/images/cuisine/v17-khmer-table-1280.webp" width="1280" height="1707" loading="lazy" decoding="async" alt="Assortiment de plats khmers photographié à Phnom Penh" /></figure>
         </div>
         <div class="v17r-table-copy">
           <img class="v17r-botanic v17r-table-flower" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
@@ -142,7 +142,7 @@ const chili = '/images/cuisine/v17-chili-450.png';
           <a class="v17r-table-sub" href="/culture/construire-repas-cambodgien/">Comprendre le repas cambodgien →</a>
         </div>
         <span class="v17r-calligraphy v17r-table-handnote" aria-hidden="true">Frais<br/>Coloré<br/>Généreux</span>
-        <p class="v17r-table-clarity">Assortiment de spécialités khmères photographié à Phnom Penh — photo réelle, non réalisée par le site.</p>
+        <p class="v17r-table-clarity">Deux photographies documentaires de repas khmers à Siem Reap et Phnom Penh — montage éditorial, pas une même tablée.</p>
       </section>
 
       <section class="v17r-dessert" aria-labelledby="v17r-dessert-title">
@@ -164,7 +164,7 @@ const chili = '/images/cuisine/v17-chili-450.png';
 
       <section class="v17r-finale" aria-labelledby="v17r-finale-title">
         <div class="v17r-finale-landscape">
-          <img src="/images/cuisine/v17-angkor-sunset-1600.jpg" width="1600" height="900" loading="lazy" decoding="async" alt="Angkor Wat au coucher du soleil et son reflet dans l’eau" />
+          <img src="/images/cuisine/v17-angkor-dusk-1800.jpg" width="1800" height="1013" loading="lazy" decoding="async" alt="Angkor Wat au crépuscule, photographie documentaire" />
         </div>
         <div class="v17r-finale-stamp" aria-hidden="true">
           <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
@@ -184,12 +184,16 @@ const chili = '/images/cuisine/v17-chili-450.png';
             <a class="v17r-pill v17r-pill-outline" href="/recettes/">Toutes les recettes <span aria-hidden="true">↗</span></a>
           </div>
         </div>
-        <p class="v17r-finale-credit">Angkor Wat au coucher du soleil : photo <a href="https://commons.wikimedia.org/wiki/File:Angkor_Wat_Reflection_(46810498612).jpg" target="_blank" rel="noopener noreferrer">Radek Kucharski</a>, <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener noreferrer">CC BY 2.0</a>, recadrée à l'écran.</p>
+        <p class="v17r-finale-credit">Angkor au crépuscule : photo <a href="https://commons.wikimedia.org/wiki/File:Angkor_Wat_at_dusk,_Siem_Reap,_Cambodia.jpg" target="_blank" rel="noopener noreferrer">Eric Hossinger</a>, <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener noreferrer">CC BY 2.0</a> ; redimensionnement et cadrage CSS.</p>
       </section>
 
       <aside class="v17r-preview-notice" aria-label="Statut et sources du prototype">
         <details><summary>Sources photographiques et état de la prévisualisation</summary>
-        <p><strong>Prévisualisation technique V17 — non publiée.</strong> Ce parcours reprend la structure et les liens de la maquette validée. Le mortier est illustré et une vraie photographie de pâte de kroeung préparée enrichit cette scène ; la finale utilise une photo authentique d’Angkor. Les photos des plats, ingrédients et desserts proviennent de Wikimedia Commons ; aucune recette n'est présentée comme réalisée par l'équipe. <a href="/credits-photos/">Crédits des photographies existantes</a>. Nouvelles sources :
+        <p><strong>Prévisualisation technique V17 — non publiée.</strong> Ce parcours reprend la structure et les liens de la maquette validée. Le pilage est désormais illustré par une photographie de mains au mortier, sans allégation de provenance cambodgienne ; le kroeung est représenté par une photo distincte. La finale emploie un cliché réel d'Angkor au crépuscule. Les photos des plats, ingrédients et desserts proviennent de Wikimedia Commons ; aucune recette n'est présentée comme réalisée par l'équipe. <a href="/credits-photos/">Crédits des photographies existantes</a>. Nouvelles sources :
+        <a href="https://commons.wikimedia.org/wiki/File:Market_in_Phnom_Penh.jpg" target="_blank" rel="noopener noreferrer">marché — Radosław Botev / Fundacja Nomos, CC BY 3.0 PL, redimensionné</a> ;
+        <a href="https://www.pexels.com/photo/woman-hands-holding-mortar-21937648/" target="_blank" rel="noopener noreferrer">mortier — Filipp Romanovski, Pexels License, illustration générique</a> ;
+        <a href="https://commons.wikimedia.org/wiki/File:Khmer_Family_Restaurant,_2018_(03).jpg" target="_blank" rel="noopener noreferrer">repas — Bahnfrend, CC BY-SA 4.0, redimensionné</a> ;
+        <a href="https://commons.wikimedia.org/wiki/File:Angkor_Wat_at_dusk,_Siem_Reap,_Cambodia.jpg" target="_blank" rel="noopener noreferrer">Angkor — Eric Hossinger, CC BY 2.0, redimensionné</a> ;
         <a href="https://commons.wikimedia.org/wiki/File:Fish_Amok_with_Rice.jpg" target="_blank" rel="noopener noreferrer">Amok — sharonang, CC0</a> ;
         <a href="https://commons.wikimedia.org/wiki/File:Cambodia_08_-_038_-_fruit_at_the_market_(3198828515).jpg" target="_blank" rel="noopener noreferrer">marché — McKay Savage, CC BY 2.0</a> ;
         <a href="https://commons.wikimedia.org/wiki/File:Khmer_Borane_-_amazing_sampler_(8532779364).jpg" target="_blank" rel="noopener noreferrer">table — Jason Eppink, CC BY 2.0</a> ;
