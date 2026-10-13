@@ -31,7 +31,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     assert.equal(res?.status(),200);
     assert.match(await page.locator('meta[name="robots"]').getAttribute('content'),/noindex/);
     assert.equal(await page.locator('h1').count(),1);
-    assert.equal(await page.locator('h2').count(),6);
+    assert.equal(await page.locator('.v17r h2').count(),6);
     const chapters=['hero','market','palette','gestures','table','dessert','finale'];
     for(const chapter of chapters)assert.equal(await page.locator('.v17r-'+chapter).count(),1);
     const links=['/recettes/','/ingredients/','/glossaire/','/apprendre/','/recettes/chek-ktis/','/apprendre/piler-aromates-au-mortier/'];
