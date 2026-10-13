@@ -36,7 +36,7 @@ export function initV17AccueilMotion() {
 
   mm.add('(min-width: 761px) and (prefers-reduced-motion: no-preference)', () => {
     // 1. Hero: quiet depth, never displacing the headline or CTA.
-    sceneMotion('.v17r-hero-dish img', { scale: 1.2, yPercent: 1.5 }, { scale: 1.12, yPercent: -1 });
+    sceneMotion('.v17r-hero-dish img', { scale: 1.29, yPercent: 1.5 }, { scale: 1.24, yPercent: -1 });
     sceneMotion('.v17r-hero-flower-dish', { yPercent: 12 }, { yPercent: -8 });
     // 2. Market: photographic parallax, no artificial scroll velocity.
     sceneMotion('.v17r-market-visual img', { scale: 1.075, yPercent: -2 }, { scale: 1.015, yPercent: 2 });
