@@ -242,6 +242,35 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     }
   }
 }
+/* Generated recipe artwork must also work on the real V16 recipe routes.
+ * This is a read-only browser check; the V17 preview remains isolated. */
+async function checkGeneratedRecipe(slug,filename,width,height){
+  const page=await browser.newPage({viewport:{width,height},isMobile:width<=430,hasTouch:width<=430});
+  try{
+    const response=await page.goto(base+'/recettes/'+slug+'/',{waitUntil:'networkidle',timeout:30000});
+    assert.equal(response?.status(),200,'Recipe URL '+slug);
+    const cover=page.locator('.recipe-v15-cover img');
+    await cover.scrollIntoViewIfNeeded();
+    await page.waitForFunction(()=>{
+      const img=document.querySelector('.recipe-v15-cover img');
+      return img?.complete && img.naturalWidth>1000 && img.naturalHeight>700;
+    },undefined,{timeout:15000});
+    const src=await cover.getAttribute('src');
+    assert.equal(src,'/images/cuisine/'+filename);
+    assert.match(await cover.getAttribute('alt'),/Illustration culinaire générée/);
+    const dimension=await page.evaluate(()=>({
+      html:document.documentElement.scrollWidth,
+      client:document.documentElement.clientWidth
+    }));
+    assert.ok(dimension.html-dimension.client<=2,'Recipe horizontal overflow: '+slug+' '+width+'px '+JSON.stringify(dimension));
+    await fs.mkdir('artifacts',{recursive:true});
+    await page.locator('.recipe-v15-hero').screenshot({
+      path:'artifacts/v17-recipe-'+slug+'-'+width+'.png',
+      animations:'disabled'
+    });
+    console.log('V17 generated recipe '+slug+' '+width+'px PASS');
+  }finally{await page.close()}
+}
 try{
   await waitForServer();
   browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,
@@ -251,6 +280,13 @@ try{
   }
   await run(390,844,{reduced:true});
   await run(390,844,{noJs:true});
+  for(const [slug,file] of [
+    ['lok-lak','v17-lok-lak-genere.webp'],
+    ['num-banh-chok','v17-nom-banh-chok-genere.webp']
+  ]){
+    await checkGeneratedRecipe(slug,file,1440,900);
+    await checkGeneratedRecipe(slug,file,390,844);
+  }
   assert.deepEqual(errors,[],'No browser JS errors');
   console.log('V17 D2 browser gate: PASS');
 }catch(e){console.error('V17 D2 browser gate FAIL:',e?.stack||e);process.exitCode=1}
