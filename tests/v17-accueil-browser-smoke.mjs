@@ -78,6 +78,30 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     });
     assert.ok(decorativeAssets.every(x=>x.exists&&x.loaded),
       'All botanical SVG and genuine texture layers must load: '+JSON.stringify(decorativeAssets));
+    const marketPostcard=await page.evaluate(()=>{
+      const frame=document.querySelector('.v17r-market-visual')?.getBoundingClientRect();
+      const card=document.querySelector('.v17r-market-postcard')?.getBoundingClientRect();
+      const photo=document.querySelector('.v17r-market-postcard img');
+      return {frame:frame&&{x:frame.x,y:frame.y,right:frame.right,bottom:frame.bottom},
+        card:card&&{x:card.x,y:card.y,right:card.right,bottom:card.bottom},
+        photoLoaded:!!photo?.complete&&photo.naturalWidth>0};
+    });
+    assert.ok(marketPostcard.photoLoaded && marketPostcard.frame && marketPostcard.card,
+      'Market must include the separately sourced fruit photograph: '+JSON.stringify(marketPostcard));
+    assert.ok(marketPostcard.card.x>=marketPostcard.frame.x-1 &&
+      marketPostcard.card.y>=marketPostcard.frame.y-1 &&
+      marketPostcard.card.right<=marketPostcard.frame.right+1 &&
+      marketPostcard.card.bottom<=marketPostcard.frame.bottom+1,
+      'Market postcard must stay inside the photographed market frame: '+JSON.stringify(marketPostcard));
+    if(width===1440){
+      const immersive=await page.evaluate(()=>({
+        hero:document.querySelector('.v17r-hero').getBoundingClientRect().height,
+        market:document.querySelector('.v17r-market').getBoundingClientRect().height,
+        viewport:innerHeight
+      }));
+      assert.ok(immersive.hero>=immersive.viewport*.78 && immersive.market>=immersive.viewport*.9,
+        'Key chapters should have full-screen editorial presence: '+JSON.stringify(immersive));
+    }
     const heroLines=await page.evaluate(()=>{
       const el=document.querySelector('#v17r-hero-title');
       return {viewport:innerWidth,font:getComputedStyle(el).fontSize,
