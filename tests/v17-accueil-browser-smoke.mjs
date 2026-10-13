@@ -62,7 +62,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       w:innerWidth
     }));
     assert.ok(dimension.html-dimension.client<=2,'Horizontal overflow '+JSON.stringify(dimension));
-    for(const selector of ['.v17r-hero-dish img','.v17r-market-visual > img','.v17r-palette-a img','.v17r-palette-b img','.v17r-gestures-main img','.v17r-table-amok img','.v17r-dessert-main img','.v17r-dessert-second img','.v17r-finale-landscape img']){
+    for(const selector of ['.v17r-hero-dish img','.v17r-market-visual > img','.v17r-palette-a img','.v17r-palette-b img','.v17r-gestures-main img','.v17r-table-amok img','.v17r-dessert-generated img','.v17r-finale-landscape img']){
       if(!(await page.locator(selector).isVisible()))continue;
       await page.locator(selector).scrollIntoViewIfNeeded();
       await page.waitForFunction(s=>{const img=document.querySelector(s);return img?.complete&&img.naturalWidth>0},selector,{timeout:10000});
@@ -70,7 +70,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     const decorativeAssets=await page.evaluate(()=>{
       const selected=['.v17r-hero-green-corner','.v17r-hero-flower-dish',
         '.v17r-lemongrass','.v17r-palette-lime','.v17r-gestures-kroeung img',
-        '.v17r-dessert-lime'];
+        '.v17r-dessert-generated img'];
       return selected.map(selector=>{
         const node=document.querySelector(selector);
         return {selector,exists:!!node,loaded:!!node?.complete&&node.naturalWidth>0}
@@ -132,26 +132,25 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       assert.ok(heroFidelity && heroFidelity.firstLineRight<=heroFidelity.photoLeft,
         'Hero heading must not touch the food photograph: '+JSON.stringify(heroFidelity));
       assert.ok(heroFidelity.photoWidth>=heroFidelity.mediaWidth &&
-        heroFidelity.ratio>=1.15 && heroFidelity.ratio<=1.34 &&
+        heroFidelity.ratio>=1.2 && heroFidelity.ratio<=1.5 &&
          (heroFidelity.clip!=='none'||heroFidelity.mask!=='none'),
         'Hero food photograph must be monumental and non-elliptical: '+JSON.stringify(heroFidelity));
       const dessertComposition=await page.evaluate(()=>{
         const art=document.querySelector('.v17r-dessert-art')?.getBoundingClientRect();
-        const main=document.querySelector('.v17r-dessert-main')?.getBoundingClientRect();
-        const detail=document.querySelector('.v17r-dessert-second')?.getBoundingClientRect();
-        const detailStyle=getComputedStyle(document.querySelector('.v17r-dessert-second'));
-        return art&&main&&detail?{
-          mainShare:main.width/art.width,
-          overlap:Math.max(0,Math.min(main.right,detail.right)-Math.max(main.left,detail.left)),
-          detailWidth:detail.width,
-          detailBorder:parseFloat(detailStyle.borderTopWidth),
-          detailClip:detailStyle.clipPath
+        const scene=document.querySelector('.v17r-dessert-generated')?.getBoundingClientRect();
+        const image=document.querySelector('.v17r-dessert-generated img');
+        const inset=document.querySelector('.v17r-dessert-main,.v17r-dessert-second');
+        return art&&scene&&image?{
+          mainShare:scene.width/art.width,
+          imageLoaded:image.complete&&image.naturalWidth>0,
+          imageWidth:image.naturalWidth,
+          extraInserts:inset?1:0
         }:null;
       });
       assert.ok(dessertComposition && dessertComposition.mainShare>=.88 &&
-        dessertComposition.overlap>=dessertComposition.detailWidth*.35 &&
-        dessertComposition.detailBorder===0 && dessertComposition.detailClip!=='none',
-        'Desserts must read as one integrated botanical tableau: '+JSON.stringify(dessertComposition));
+        dessertComposition.imageLoaded && dessertComposition.imageWidth>=1200 &&
+        dessertComposition.extraInserts===0,
+        'Desserts must use one premium full-width generated composition: '+JSON.stringify(dessertComposition));
     }
     if(width===1440 && !noJs && !reduced){
       const tableScene=await page.evaluate(()=>{
@@ -167,7 +166,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       });
       assert.ok(tableScene.mainLoaded&&tableScene.insetCount===0&&
         tableScene.mainWidth>=tableScene.frameWidth*.98,
-        'Table must be immersive, with one real food image and no oval collage: '+JSON.stringify(tableScene));
+        'Table must be immersive, with one editorial image and no oval collage: '+JSON.stringify(tableScene));
       const anim=await page.evaluate(async()=>{
         const scene=document.querySelector('.v17r-palette');
         const node=scene.querySelector('.v17r-palette-a');
