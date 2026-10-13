@@ -100,6 +100,7 @@ jobs:
           path: |
             artifacts/v17-accueil-*.png
             artifacts/v17-accueil-*.webm
+            artifacts/v17-accueil-d7-metrics-*.json
             artifacts/v17-recipe-*.png
           retention-days: 7
           if-no-files-found: ignore
