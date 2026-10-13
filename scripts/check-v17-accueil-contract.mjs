@@ -20,7 +20,20 @@ for(const href of ['/recettes/','/glossaire/','/apprendre/','/culture/','/a-prop
 for(const href of ['/ingredients/','/credits-photos/'])assert.ok(footer.includes('href="'+href+'"'),'Existing footer changed '+href);
 for(const path of [...page.matchAll(/(?:src|href)=\{?(?:hero|market|kampot|tamarind|lokLak)\}?/g)])assert.ok(path);
 for(const img of ['v17-angkor-sunset-1600.jpg','v17-amok-rice-1920.jpg','v17-amok-rice-960.jpg','v17-fruit-market-1920.jpg','v17-fruit-market-960.jpg','v17-khmer-table-1280.webp','v17-khmer-table-640.webp','v17-chek-ktis-960.jpg','v17-num-kom-900.jpg','v17-galangal-1000.jpg','v17-chili-450.png','kampot-1600.webp'])assert.ok(fs.existsSync('public/images/cuisine/'+img),'Missing stock photo '+img);
-assert.match(page,/data-media-status="illustration-temporaire"/);
+assert.match(page,/data-media-status="photographie-geste-generique"/);
+assert.match(page,/photo d.illustration|photo illustrative|photographie illustrative/i,'No false claim that the mortar photo documents Khmer preparation');
+for (const img of [
+  'v17-market-live-1800.jpg',
+  'v17-mortar-hands-1600.jpg',
+  'v17-angkor-dusk-1800.jpg',
+  'v17-table-meal-1600.jpg',
+]) assert.ok(fs.existsSync('public/images/cuisine/'+img),'Missing verified V17 photograph '+img);
+assert.match(page,/Radosław Botev/);
+assert.match(page,/Filipp Romanovski/);
+assert.match(page,/Bahnfrend/);
+assert.match(page,/Eric Hossinger/);
+assert.match(page,/v17r-gestures-main/);
+assert.match(page,/v17r-table-detail/);
 for(const media of [
  'v17-banana-leaves.svg','v17-plumeria.svg','v17-lemongrass.svg','v17-lime.svg'
 ]) assert.ok(fs.existsSync('public/images/brand/'+media),'Missing original botanical decoration '+media);
