@@ -56,7 +56,8 @@ assert.match(script,/scrub: \.75/);
 assert.doesNotMatch(script,/pin:\s*true|ScrollSmoother|window\.scrollTo/);
 
 
-assert.match(page,/Assortiment de spécialités khmères photographié à Phnom Penh/);
+assert.match(page,/Deux photographies documentaires de repas khmers à Siem Reap et Phnom Penh/);
+assert.match(page,/montage éditorial, pas une même tablée/);
 assert.doesNotMatch(page, /\/v17-preview\/|home-v17-preview\.css|home-v17-air\.css/);
 assert.doesNotMatch(home,/v17-accueil-preview|v17-accueil-rebuild/,'V16 home untouched');
 assert.doesNotMatch(sitemap,/v17-accueil-preview/,'Preview must not be in sitemap');
