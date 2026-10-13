@@ -61,6 +61,24 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       await page.locator(selector).scrollIntoViewIfNeeded();
       await page.waitForFunction(s=>{const img=document.querySelector(s);return img?.complete&&img.naturalWidth>0},selector,{timeout:10000});
     }
+    const decorativeAssets=await page.evaluate(()=>{
+      const selected=['.v17r-hero-green-corner','.v17r-hero-flower-dish',
+        '.v17r-lemongrass','.v17r-palette-lime','.v17r-gestures-kroeung img',
+        '.v17r-dessert-lime'];
+      return selected.map(selector=>{
+        const node=document.querySelector(selector);
+        return {selector,exists:!!node,loaded:!!node?.complete&&node.naturalWidth>0}
+      });
+    });
+    assert.ok(decorativeAssets.every(x=>x.exists&&x.loaded),
+      'All botanical SVG and genuine texture layers must load: '+JSON.stringify(decorativeAssets));
+    const heroLines=await page.evaluate(()=>{
+      const el=document.querySelector('#v17r-hero-title');
+      return {width:el.getBoundingClientRect().width,
+        scrollWidth:el.scrollWidth,clientWidth:el.clientWidth};
+    });
+    assert.ok(heroLines.scrollWidth-heroLines.clientWidth<=2,
+      'Headline must not be clipped on small screens: '+JSON.stringify(heroLines));
     const rhythm=await page.evaluate(()=>{
       const items=['hero','market','palette','gestures','table','dessert','finale'];
       return items.map(key=>{const el=document.querySelector('.v17r-'+key);return {

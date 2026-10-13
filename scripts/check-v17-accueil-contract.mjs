@@ -21,6 +21,15 @@ for(const href of ['/ingredients/','/credits-photos/'])assert.ok(footer.includes
 for(const path of [...page.matchAll(/(?:src|href)=\{?(?:hero|market|kampot|tamarind|lokLak)\}?/g)])assert.ok(path);
 for(const img of ['v17-angkor-sunset-1600.jpg','v17-amok-rice-1920.jpg','v17-amok-rice-960.jpg','v17-fruit-market-1920.jpg','v17-fruit-market-960.jpg','v17-khmer-table-1280.webp','v17-khmer-table-640.webp','v17-chek-ktis-960.jpg','v17-num-kom-900.jpg','v17-galangal-1000.jpg','v17-chili-450.png','kampot-1600.webp'])assert.ok(fs.existsSync('public/images/cuisine/'+img),'Missing stock photo '+img);
 assert.match(page,/data-media-status="illustration-temporaire"/);
+for(const media of [
+ 'v17-banana-leaves.svg','v17-plumeria.svg','v17-lemongrass.svg','v17-lime.svg'
+]) assert.ok(fs.existsSync('public/images/brand/'+media),'Missing original botanical decoration '+media);
+assert.ok(fs.existsSync('public/images/cuisine/v17-kroeung-final.jpg'));
+assert.match(page,/v17-gestures-kroeung/);
+assert.match(page,/<details><summary>Sources photographiques/);
+assert.match(page,/class="v17r-wave/);
+assert.match(page,/Red_Kroeung_Paste.jpg/);
+
 assert.match(page,/Assortiment de spécialités khmères photographié à Phnom Penh/);
 assert.doesNotMatch(page, /\/v17-preview\/|home-v17-preview\.css|home-v17-air\.css/);
 assert.doesNotMatch(home,/v17-accueil-preview|v17-accueil-rebuild/,'V16 home untouched');
