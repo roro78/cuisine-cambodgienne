@@ -261,3 +261,17 @@
     top: 4%;
   }
 }
+
+
+/* D8 generated hero scale, applied after the illustration's existing mask.
+   The photograph includes flowers and foliage, so don't bring SVG duplicates. */
+@media(min-width:1200px){
+  .v17r-hero--generated .v17r-hero-dish{
+    width:min(113%,61rem);
+    max-width:none;
+    aspect-ratio:1.48;
+    -webkit-mask-image:radial-gradient(ellipse 77% 81% at 58% 55%,#000 54%,rgba(0,0,0,.95) 69%,transparent 99%);
+    mask-image:radial-gradient(ellipse 77% 81% at 58% 55%,#000 54%,rgba(0,0,0,.95) 69%,transparent 99%);
+  }
+  .v17r-hero--generated .v17r-hero-dish img{object-position:54% 50%}
+}
