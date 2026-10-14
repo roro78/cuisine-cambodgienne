@@ -53,7 +53,9 @@ export function initV17AccueilMotion() {
     if (!nodes.length) return;
     const timeline = gsap.timeline({
       scrollTrigger: {
-        trigger: scene,
+        // On stacked mobile scenes, the heading enters long after the photo.
+        // Trigger from the heading itself so motion is actually perceived.
+        trigger: distance <= 11 ? nodes[0] : scene,
         start: 'top 90%',
         end: 'top 30%',
         scrub: .75,
