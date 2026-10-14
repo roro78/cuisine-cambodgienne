@@ -35,10 +35,11 @@ export function initV17AccueilMotion() {
   };
 
   /**
-   * D15 — A readable editorial performance, NOT a static layout with fades.
-   * For each chapter: lead-in -> full readable hold -> physical exit.
-   * Only GSAP transforms, opacity and temporary clip masks touch copy.
-   * HTML/CSS remains complete with JS off or reduced motion requested.
+   * D16 — Actual kinetic typography. D15 only moved titles 26–98 pixels,
+   * which was technically measurable but artistically invisible. Here the
+   * headline travels across a meaningful fraction of the viewport, settles
+   * for reading, then exits with an unmistakable opposing movement.
+   * All content is complete in HTML/CSS when JS is off or reduced motion.
    */
   const chapterPerformance = (
     chapterSelector: string,
@@ -50,74 +51,83 @@ export function initV17AccueilMotion() {
     const heading = chapter.querySelector<HTMLElement>('h2');
     if (!heading) return;
     const kicker = chapter.querySelector<HTMLElement>('.v17r-kicker');
-    const copy = chapter.querySelector<HTMLElement>(
-      chapterSelector === '.v17r-palette' ? '.v17r-palette-intro' :
-      chapterSelector === '.v17r-market' ? '.v17r-market-copy > p:not(.v17r-kicker)' :
-      chapterSelector === '.v17r-table' ? '.v17r-table-copy > p:not(.v17r-kicker)' :
-      chapterSelector === '.v17r-dessert' ? '.v17r-dessert-copy > p:not(.v17r-kicker)' :
-      '.v17r-finale-copy > p:not(.v17r-kicker)',
-    );
+    const contentSelector: Record<string, string> = {
+      '.v17r-market': '.v17r-market-copy > p:not(.v17r-kicker)',
+      '.v17r-palette': '.v17r-palette-intro',
+      '.v17r-table': '.v17r-table-copy > p:not(.v17r-kicker)',
+      '.v17r-dessert': '.v17r-dessert-copy > p:not(.v17r-kicker)',
+      '.v17r-finale': '.v17r-finale-copy > p:not(.v17r-kicker)',
+    };
+    const copy = chapter.querySelector<HTMLElement>(contentSelector[chapterSelector]);
     const actions = gsap.utils.toArray<HTMLElement>(
-      chapterSelector === '.v17r-finale' ? '.v17r-finale-actions' : '.v17r-pill', chapter,
+      chapterSelector === '.v17r-finale' ? '.v17r-finale-actions' : '.v17r-pill',
+      chapter,
     ).filter((node) => node.closest('section') === chapter);
-    // One chapter timeline: enter visibly while in view, dwell long enough
-    // to read, then retreat before the next full-screen act replaces it.
+    const isPalette = chapterSelector === '.v17r-palette';
+    const isTable = chapterSelector === '.v17r-table';
+    const isFinale = chapterSelector === '.v17r-finale';
+    const entrance: gsap.TweenVars = isPalette ? {
+      yPercent: mobile ? -110 : -165, scale: 1.21, opacity: 0,
+    } : isTable ? {
+      yPercent: mobile ? 110 : 155, scale: .87, opacity: 0,
+    } : isFinale ? {
+      yPercent: mobile ? 115 : 170, scale: 1.22, opacity: 0,
+    } : {
+      xPercent: direction * (mobile ? 145 : 170), opacity: 0,
+    };
+    const departure: gsap.TweenVars = isPalette ? {
+      yPercent: mobile ? 85 : 130, scale: .91, opacity: 0,
+    } : isTable ? {
+      yPercent: mobile ? -90 : -125, scale: 1.06, opacity: 0,
+    } : isFinale ? {
+      yPercent: mobile ? -110 : -150, scale: .80, opacity: 0,
+    } : {
+      xPercent: -direction * (mobile ? 140 : 165), opacity: 0,
+    };
     const timeline = gsap.timeline({
       scrollTrigger: {
         trigger: mobile ? heading : chapter,
-        start: mobile ? 'top 93%' : 'top 91%',
+        start: mobile ? 'top 94%' : 'top 90%',
         endTrigger: chapter,
-        end: mobile ? 'bottom 11%' : 'bottom 12%',
-        scrub: mobile ? .48 : .72,
+        end: mobile ? 'bottom 10%' : 'bottom 10%',
+        scrub: mobile ? .28 : .42,
         invalidateOnRefresh: true,
       },
     });
+    // Kicker leads, headline occupies the entire stage, supporting content
+    // and invitation follow, leaving a full, readable middle beat.
     if (kicker) {
       timeline.fromTo(kicker,
-        { y: mobile ? -12 : -24, opacity: .4 },
-        { y: 0, opacity: 1, duration: .68, ease: 'power2.out', immediateRender: false }, 0);
-      timeline.to(kicker,
-        { y: mobile ? -8 : -20, opacity: .4, duration: .55, ease: 'power2.in' }, 3.7);
+        { y: mobile ? -45 : -95, opacity: 0 },
+        { y: 0, opacity: 1, duration: .58, ease: 'power2.out',
+          immediateRender: false }, 0);
     }
-    timeline.fromTo(heading,
-      {
-        x: direction * (mobile ? 26 : 98),
-        y: mobile ? 12 : 24,
-        clipPath: 'inset(0% 0% 72% 0%)',
-        opacity: .28,
-      },
-      {
-        x: 0, y: 0,
-        clipPath: 'inset(0% 0% 0% 0%)',
-        opacity: 1,
-        duration: 1.1, ease: 'power3.out', immediateRender: false,
-      }, .12);
-    // Typographic exit is deliberate and perceptible: it exits in the
-    // opposite direction, after a generous static reading interval.
-    timeline.to(heading, {
-      x: -direction * (mobile ? 20 : 66),
-      y: mobile ? -9 : -19,
-      clipPath: 'inset(0% 0% 67% 0%)',
-      opacity: .26,
-      duration: .78, ease: 'power2.in',
-    }, 3.7);
-    if (copy) {
-      timeline.fromTo(copy,
-        { x: direction * (mobile ? 12 : 34), y: mobile ? 14 : 30, opacity: .38 },
-        { x: 0, y: 0, opacity: 1, duration: .88, ease: 'power2.out', immediateRender: false }, .55);
-      timeline.to(copy,
-        { y: mobile ? -8 : -21, opacity: .48, duration: .62, ease: 'power2.in' }, 3.82);
-    }
-    actions.forEach((action, index) => {
-      timeline.fromTo(action,
-        { x: direction * (mobile ? 12 : 40), y: mobile ? 8 : 17, opacity: .48 },
-        { x: 0, y: 0, opacity: 1, duration: .72, ease: 'power2.out', immediateRender: false },
-        .85 + index * .12);
-      timeline.to(action,
-        { x: -direction * (mobile ? 8 : 30), opacity: .55,
-          duration: .65, ease: 'power2.in' }, 3.94 + index * .1);
-    });
-    // The gap between reveal and departure is an intentional reading hold.
+    timeline.fromTo(heading, entrance,
+      { xPercent: 0, yPercent: 0, scale: 1, opacity: 1,
+        duration: 1.05, ease: 'power3.out', immediateRender: false }, .16);
+    if (copy) timeline.fromTo(copy,
+      { xPercent: direction * (mobile ? 90 : 115),
+        y: mobile ? 25 : 64, opacity: 0 },
+      { xPercent: 0, y: 0, opacity: 1, duration: .85,
+        ease: 'power3.out', immediateRender: false }, .58);
+    actions.forEach((action, index) => timeline.fromTo(action,
+      { y: mobile ? 80 : 120, scale: .85, opacity: 0 },
+      { y: 0, scale: 1, opacity: 1, duration: .73,
+        ease: 'back.out(1.25)', immediateRender: false }, .90+index*.12));
+    // 1.6 → 2.85: genuine static reading hold, before any departure.
+    timeline.to(heading, { ...departure, duration: 1.05,
+      ease: 'power2.in' }, 2.90);
+    if (copy) timeline.to(copy, {
+      xPercent: -direction * (mobile ? 70 : 110),
+      y: mobile ? -22 : -55,
+      opacity: 0, duration: .87, ease: 'power2.in',
+    }, 3.02);
+    actions.forEach((action,index) => timeline.to(action, {
+      y: mobile ? -70 : -110, scale: .88, opacity: 0,
+      duration: .73, ease: 'power2.in',
+    },3.13+index*.08));
+    if (kicker) timeline.to(kicker,
+      { y: mobile ? -36 : -82, opacity: 0, duration: .64 }, 3.18);
   };
 
   const heroDeparture = (mobile: boolean) => {
