@@ -194,9 +194,16 @@
   .v17r .v17r-hero-media{
     position:absolute;
     z-index:1;
+    /* Original 3-column hero declared grid-column:3. Clear the stale placement
+       when turning the photo into an absolute full-height editorial layer. */
+    grid-column:auto;
+    grid-row:auto;
+    justify-self:auto;
+    align-self:auto;
     top:0;
     right:0;
     bottom:0;
+    left:auto;
     width:62%;
     height:100%;
     min-height:0;
