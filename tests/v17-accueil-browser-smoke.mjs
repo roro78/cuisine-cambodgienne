@@ -307,11 +307,35 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           seamCount:document.querySelectorAll('.v17r-wave svg').length
         };
       });
-      assert.notEqual(stage.mortarShape,'0px',
-        'Mortar photo keeps its organic composition: '+JSON.stringify(stage));
+      // D13: no more floating rounded card — photography is now full bleed.
+      assert.equal(stage.mortarShape,'0px',
+        'Mortar main photo must be a cinematic stage, not a rounded card: '+JSON.stringify(stage));
       assert.ok(stage.captionVisible && stage.photographedIngredients===2 &&
         stage.botanicalLayers===2 && stage.seamCount===3,
         'V17 ingredients, market attribution and scene seams: '+JSON.stringify(stage));
+    }
+    if([390,1440].includes(width) && !noJs && !reduced){
+      const cinema=await page.evaluate(()=>{
+        const section=document.querySelector('[data-v17-mortar-scene]');
+        const photo=section?.querySelector('.v17r-gestures-main');
+        const copy=section?.querySelector('.v17r-gestures-copy');
+        const words=section?.querySelectorAll('.v17r-gesture-word');
+        const shade=section?.querySelector('.v17r-gestures-shade');
+        const rect=section?.getBoundingClientRect();
+        const photoRect=photo?.getBoundingClientRect();
+        const copyRect=copy?.getBoundingClientRect();
+        return {
+          width:rect?.width,photoWidth:photoRect?.width,
+          height:rect?.height,photoHeight:photoRect?.height,
+          wordCount:words?.length,copyWidth:copyRect?.width,
+          shade:shade?getComputedStyle(shade).backgroundImage:'',
+          articleLink:!!copy?.querySelector('a[href="/apprendre/piler-aromates-au-mortier/"]')
+        };
+      });
+      assert.ok(cinema.width>0 && Math.abs(cinema.photoWidth-cinema.width)<3 &&
+        Math.abs(cinema.photoHeight-cinema.height)<3 && cinema.wordCount===3 &&
+        cinema.copyWidth>0 && cinema.shade.includes('linear-gradient') && cinema.articleLink,
+        'Mortar must be a full-bleed, readable three-beat stage: '+JSON.stringify(cinema));
     }
     if(width===1440){
       const immersive=await page.evaluate(()=>({
@@ -415,7 +439,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       // scene enters the viewport; never conceal essential copy.
       const entry=await page.evaluate(async()=>{
         const scene=document.querySelector('.v17r-gestures');
-        const heading=scene.querySelector('h2');
+        const heading=scene.querySelector('.v17r-gesture-word--accent');
         const top=scrollY+scene.getBoundingClientRect().top;
         scrollTo({top:Math.max(0,top-innerHeight*.82),behavior:'instant'});
         await new Promise(r=>setTimeout(r,850));
@@ -430,7 +454,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       assert.ok(entry.from.transform!==entry.to.transform &&
         entry.from.opacity>=.8 && entry.to.opacity>=.8 &&
         entry.to.opacity>entry.from.opacity,
-        'D12 heading entrance must be perceptible and readable: '+JSON.stringify(entry));
+        'D13 mortar word entrance must be perceptible and readable: '+JSON.stringify(entry));
       await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
     }
     const rhythm=await page.evaluate(()=>{
