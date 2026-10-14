@@ -814,17 +814,18 @@ async function recordTextArrivalEvidence(width,height){
     assert.equal(response?.status(),200);
     for(const name of ['market','gestures','dessert']){
       const scene=page.locator('.v17r-'+name);
-      const bounds=await scene.evaluate((el,mobile)=>{
+      const bounds=await scene.evaluate((el,options)=>{
+        const {mobile,name}=options;
         const heading=el.querySelector('h2');
         const sceneTop=scrollY+el.getBoundingClientRect().top;
         const titleTop=scrollY+heading.getBoundingClientRect().top;
-        const end=mobile?titleTop-innerHeight*.04:
-          sceneTop+el.getBoundingClientRect().height-innerHeight*.10;
         return {
-          start:mobile?titleTop-innerHeight*.94:sceneTop-innerHeight*(name==='gestures'?.85:.90),
-          end
+          start:mobile?titleTop-innerHeight*.94:
+            sceneTop-innerHeight*(name==='gestures'?.85:.90),
+          end:mobile?titleTop-innerHeight*.04:
+            sceneTop+el.getBoundingClientRect().height-innerHeight*(name==='gestures'?.22:.10)
         };
-      },width<=760);
+      },{name,mobile:width<=760});
       for(const [phase,ratio] of [['entry',.055],['read',.46],['exit',.88]]){
         const y=Math.max(0,bounds.start+(bounds.end-bounds.start)*ratio);
         await page.evaluate(v=>scrollTo({top:v,behavior:'instant'}),y);
