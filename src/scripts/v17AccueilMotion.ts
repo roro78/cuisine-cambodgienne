@@ -37,12 +37,8 @@ export function initV17AccueilMotion() {
   mm.add('(min-width: 761px) and (prefers-reduced-motion: no-preference)', () => {
     // 1. Hero: quiet depth, never displacing the headline or CTA.
     sceneMotion('.v17r-hero-dish img', { scale: 1.04, yPercent: 1 }, { scale: 1.005, yPercent: -1 });
-    sceneMotion('.v17r-hero-flower-dish', { yPercent: 12 }, { yPercent: -8 });
     // 2. Market: photographic parallax, no artificial scroll velocity.
     sceneMotion('.v17r-market-visual > img', { scale: 1.075, yPercent: -2 }, { scale: 1.015, yPercent: 2 });
-    // A second documented fruit photograph brings depth without fabricating one scene.
-    sceneMotion('.v17r-market-postcard img', { scale: 1.11 }, { scale: 1.025 });
-    sceneMotion('.v17r-market-bloom', { yPercent: 14, rotation: -23 }, { yPercent: -12, rotation: -8 });
     // 3. Ingredients: converging from different axes, title stays static.
     sceneMotion('.v17r-palette-a', { xPercent: -17, yPercent: 9 }, { xPercent: 0, yPercent: 0 });
     sceneMotion('.v17r-palette-b', { xPercent: 16, yPercent: -7 }, { xPercent: 0, yPercent: 0 });
@@ -55,7 +51,6 @@ export function initV17AccueilMotion() {
     // 4. Mortar: the hands remain real; the prepared kroeung is a second image.
     sceneMotion('.v17r-gestures-main img', { scale: 1.07 }, { scale: 1.015 });
     sceneMotion('.v17r-gestures-kroeung', { yPercent: 12, xPercent: 7 }, { yPercent: 0, xPercent: 0 });
-    sceneMotion('.v17r-gestures-steps', { yPercent: 3 }, { yPercent: -1 });
     // 5. Table: a single AI-generated culinary tableau creates immersive depth.
     sceneMotion('.v17r-table-amok img', { scale: 1.07, xPercent: -2 }, { scale: 1.01, xPercent: 0 });
     // 6–7. Desserts and Angkor: restraint and varied composition.
@@ -69,7 +64,6 @@ export function initV17AccueilMotion() {
     // visually composed by CSS without a late compositor animation.
     // Mobile: movements < 14px in practice, never hide content or block gestures.
     sceneMotion('.v17r-market-visual > img', { scale: 1.045, yPercent: -1 }, { scale: 1.01, yPercent: 1 });
-    sceneMotion('.v17r-market-postcard img', { scale: 1.04 }, { scale: 1.015 });
     sceneMotion('.v17r-palette-a', { xPercent: -5 }, { xPercent: 0 });
     sceneMotion('.v17r-palette-b', { xPercent: 5 }, { xPercent: 0 });
     sceneMotion('.v17r-gestures-main img', { scale: 1.035 }, { scale: 1.005 });
