@@ -9,8 +9,15 @@ import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import '../styles/v17-accueil-rebuild.css';
 import '../styles/v17-generated-media.css';
+import { existsSync } from 'node:fs';
 const hero = '/images/cuisine/v17-hero-amok-genere.webp';
-const market = '/images/cuisine/v17-market-live-1800.jpg';
+// Release gate: preview changes automatically once the approved binary is
+// committed. Until then, retain the genuine, separately credited photographs.
+const marketIllustrationPath = '/images/cuisine/v17-marche-cambodgien-ia.webp';
+const marketIsIllustrated = existsSync('public' + marketIllustrationPath);
+const market = marketIsIllustrated
+  ? marketIllustrationPath
+  : '/images/cuisine/v17-market-live-1800.jpg';
 const kampot = '/images/cuisine/kampot-1600.webp';
 const table = '/images/cuisine/v17-tablee-khmere-generee.webp';
 const dessertGenerated = '/images/cuisine/v17-desserts-khmers-generes.webp';
@@ -60,14 +67,25 @@ const chili = '/images/cuisine/v17-chili-450.png';
       <div class="v17r-wave v17r-wave-ivory" aria-hidden="true"><svg viewBox="0 0 1440 95" preserveAspectRatio="none"><path d="M0 0C130 12 225 82 394 40S750 6 900 46s360 25 540-5v54H0Z" fill="#143929"/></svg></div>
 
       <section class="v17r-market" aria-labelledby="v17r-market-title">
-        <figure class="v17r-market-visual">
-          <img src={market} sizes="(max-width: 760px) 100vw, 72vw" width="1800" height="1350" loading="lazy" decoding="async" alt="Étals et visiteurs d’un marché alimentaire à Phnom Penh au Cambodge" />
-          <div class="v17r-market-postcard" role="group" aria-label="Seconde photographie documentaire : des fruits sur un marché cambodgien">
-            <img src="/images/cuisine/v17-fruit-market-960.jpg" width="960" height="640" loading="lazy" decoding="async" alt="Fruits présentés sur un étal de marché au Cambodge, autre photographie documentaire" />
-            <span aria-hidden="true">Un autre marché, un autre regard</span>
-          </div>
+        <figure class:list={['v17r-market-visual', { 'v17r-market-visual--generated': marketIsIllustrated }]}>
+          <img src={market}
+            sizes="(max-width: 760px) 100vw, 72vw"
+            width={marketIsIllustrated ? 1672 : 1800}
+            height={marketIsIllustrated ? 941 : 1350}
+            loading="lazy" decoding="async"
+            alt={marketIsIllustrated
+              ? "Illustration générée par IA d’un marché terrestre imaginaire d’inspiration cambodgienne, avec vendeuses, étals, citronnelle, piments et légumes"
+              : "Étals et visiteurs d’un marché alimentaire à Phnom Penh au Cambodge"} />
+          {!marketIsIllustrated && (
+            <div class="v17r-market-postcard" role="group" aria-label="Seconde photographie documentaire : des fruits sur un marché cambodgien">
+              <img src="/images/cuisine/v17-fruit-market-960.jpg" width="960" height="640" loading="lazy" decoding="async" alt="Fruits présentés sur un étal de marché au Cambodge, autre photographie documentaire" />
+              <span aria-hidden="true">Un autre marché, un autre regard</span>
+            </div>
+          )}
           <div class="v17r-market-bloom" aria-hidden="true"><img src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" loading="lazy" decoding="async" /></div>
-          <figcaption>Deux photographies distinctes de marchés cambodgiens · Radosław Botev et McKay Savage</figcaption>
+          <figcaption>{marketIsIllustrated
+            ? "Illustration éditoriale générée par IA · scène fictive inspirée des marchés terrestres du Cambodge"
+            : "Deux photographies distinctes de marchés cambodgiens · Radosław Botev et McKay Savage"}</figcaption>
         </figure>
         <div class="v17r-market-copy">
           <img class="v17r-botanic v17r-market-flower" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
@@ -194,7 +212,7 @@ const chili = '/images/cuisine/v17-chili-450.png';
 
       <aside class="v17r-preview-notice" aria-label="Statut et sources du prototype">
         <details><summary>Sources photographiques et état de la prévisualisation</summary>
-        <p><strong>Prévisualisation technique V17 — non publiée.</strong> Ce parcours reprend la structure et les liens de la maquette validée. Le pilage est illustré par une photographie de mains au mortier, sans allégation de provenance cambodgienne ; le kroeung est représenté par une photo distincte. La finale emploie un cliché réel d'Angkor au crépuscule. Les illustrations du hero Amok, de la tablée et des desserts sont générées par IA et ne sont pas des photographies documentaires. Les autres photographies d’ingrédients, de marché et de gestes restent créditées selon leurs sources ; aucune recette n’est présentée comme réalisée par l’équipe. <a href="/credits-photos/">Crédits des photographies existantes</a>. Nouvelles sources :
+        <p><strong>Prévisualisation technique V17 — non publiée.</strong> Ce parcours reprend la structure et les liens de la maquette validée. Le pilage est illustré par une photographie de mains au mortier, sans allégation de provenance cambodgienne ; le kroeung est représenté par une photo distincte. La finale emploie un cliché réel d'Angkor au crépuscule. Les illustrations du hero Amok, de la tablée et des desserts sont générées par IA et ne sont pas des photographies documentaires. Le marché utilise l'illustration IA uniquement lorsque son fichier approuvé est présent ; sinon, deux photographies documentaires distinctes et créditées restent affichées. Les autres photographies d’ingrédients et de gestes restent créditées selon leurs sources ; aucune recette n’est présentée comme réalisée par l’équipe. <a href="/credits-photos/">Crédits des photographies existantes</a>. Nouvelles sources :
         
         <a href="https://commons.wikimedia.org/wiki/File:Market_in_Phnom_Penh.jpg" target="_blank" rel="noopener noreferrer">marché — Radosław Botev / Fundacja Nomos, CC BY 3.0 PL, redimensionné</a> ;
         <a href="https://www.pexels.com/photo/woman-hands-holding-mortar-21937648/" target="_blank" rel="noopener noreferrer">mortier — Filipp Romanovski, Pexels License, illustration générique</a> ;
