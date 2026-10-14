@@ -57,8 +57,9 @@ assert.doesNotMatch(page,/marketIsIllustrated|v17-market-live-1800/,
   'No silent return to the obsolete documentary market');
 assert.match(credits,/Filipp Romanovski/);
 assert.match(credits,/composition éditoriale d’un repas/);
-assert.match(page,/Radek Kucharski/);
-assert.match(page,/Angkor_Wat_Reflection_\(46810498612\)\.jpg/);
+assert.match(credits,/Radek Kucharski/);
+assert.match(credits,/Angkor_Wat_Reflection_\(46810498612\)\.jpg/);
+assert.doesNotMatch(page,/v17r-finale-credit/,'Long author license line belongs to dedicated credits page');
 assert.match(page,/v17r-gestures-main/);
 assert.doesNotMatch(page,/v17r-table-detail/,'No detached bowl inset in the immersive table scene');
 assert.ok(fs.existsSync('public/images/cuisine/v17-num-plae-ai-641.jpg'),'Num Plae Ai approved real photograph missing');
@@ -72,7 +73,10 @@ for(const media of [
 assert.ok(fs.existsSync('public/images/cuisine/v17-kroeung-final.jpg'));
 assert.ok(fs.existsSync('public/images/brand/v17-spice-bowls.svg'),'Missing original pepper/turmeric illustration');
 assert.match(page,/v17r-finale-stamp/,'Missing Angkor finale illustration');
-assert.match(page,/v17r-hero-sidebar/,'Missing storyboard side annotation');
+assert.doesNotMatch(page,/v17r-hero-sidebar|v17r-table-handnote|v17r-market-note/,'Decorative microcopy must not clutter or overlap premium headlines');
+assert.doesNotMatch(page,/v17r-gestures-steps/,'Gesture icon list must not duplicate the large three-line heading');
+assert.doesNotMatch(page,/v17r-image-warning/,'Generic mortar photography caveat belongs to the credits page');
+assert.match(credits,/Illustration générique du geste/,'Mortar caveat remains transparently credited');
 assert.match(page,/v17r-spice-bowls/,'Missing spice bowl visual');
 assert.match(page,/v17r-gestures-kroeung/);
 assert.doesNotMatch(page,/v17r-preview-notice|v17r-table-clarity/,'No disruptive repeated credit blocks on the homepage');
