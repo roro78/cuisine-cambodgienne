@@ -145,10 +145,11 @@ export function initV17AccueilMotion() {
       },
     });
     departure.to(headline,
-      { x: mobile ? -20 : -75, y: mobile ? -8 : -24,
-        opacity: .43, ease: 'power2.in', duration: 1 }, .15);
+      { xPercent: mobile ? -115 : -150, yPercent: -20,
+        opacity: 0, ease: 'power2.in', duration: 1 }, .15);
     if (intro) departure.to(intro,
-      { x: mobile ? -9 : -35, opacity: .5, duration: .8, ease: 'power2.in' }, .35);
+      { xPercent: mobile ? -85 : -120, opacity: 0,
+        duration: .9, ease: 'power2.in' }, .24);
   };
 
   /**
@@ -179,16 +180,18 @@ export function initV17AccueilMotion() {
     if (image) timeline.fromTo(image,
       { scale: mobile ? 1.045 : 1.14, xPercent: mobile ? -1 : -2 },
       { scale: 1.005, xPercent: 0, ease: 'none', duration: 2.8, immediateRender: false }, 0);
-    words.forEach((word, index) => {
-      timeline.fromTo(word,
-        { x: mobile ? -9 : -26, y: mobile ? 6 : 16, opacity: .84 },
-        { x: 0, y: 0, opacity: 1, ease: 'power2.out', duration: .8, immediateRender: false },
-        .24 + index * .36);
-    });
-    for (const [node, at] of [[kicker,.22],[description,1.04],[action,1.35]] as const) {
+    // Alternate directions: real offstage arrival, not the D15 9–26px shift.
+    words.forEach((word,index) => timeline.fromTo(word,
+      { xPercent: (index===1?-1:1) * (mobile ? 155 : 190),
+        yPercent: mobile ? 27 : 37, rotation: index===1?-7:7, opacity: 0 },
+      { xPercent: 0, yPercent: 0, rotation: 0, opacity: 1,
+        ease: 'power3.out', duration: 1.00, immediateRender: false },
+      .18 + index*.37));
+    for (const [node, at] of [[kicker,.20],[description,.96],[action,1.34]] as const) {
       if (node) timeline.fromTo(node,
-        { y: mobile ? 9 : 18, opacity: .85 },
-        { y: 0, opacity: 1, ease: 'power2.out', duration: .85, immediateRender: false }, at);
+        { xPercent: mobile ? 63 : 90, y: mobile ? 16 : 48, opacity: 0 },
+        { xPercent: 0, y: 0, opacity: 1, ease: 'power3.out',
+          duration: .88, immediateRender: false }, at);
     }
     if (closeup) timeline.fromTo(closeup,
       { scale: mobile ? .90 : .78, rotation: mobile ? -3 : -7, opacity: .65 },
@@ -196,10 +199,11 @@ export function initV17AccueilMotion() {
     if (progress) timeline.fromTo(progress,
       { scaleX: .08 }, { scaleX: 1, ease: 'none', duration: 2.7, immediateRender: false }, 0);
     // D15: words leave individually, as the photograph gives way to the table.
-    words.forEach((word, index) => timeline.to(word, {
-      x: mobile ? -20 : -63, y: mobile ? -8 : -23,
-      opacity: .32, duration: .64, ease: 'power2.in',
-    }, 3.18 + index * .14));
+    words.forEach((word,index) => timeline.to(word, {
+      xPercent: (index===1?1:-1) * (mobile ? 140 : 185),
+      yPercent: mobile ? -25 : -45, rotation: index===1?8:-8,
+      opacity: 0, duration: .88, ease: 'power2.in',
+    }, 3.17 + index*.12));
     if (closeup) timeline.to(closeup,
       { xPercent: mobile ? 6 : 18, rotation: mobile ? 2 : 8,
         scale: .91, opacity: .55, duration: .9, ease: 'power2.in' }, 3.15);
@@ -305,14 +309,16 @@ export function initV17AccueilMotion() {
         },
       });
       motion.fromTo(detail,
-        { xPercent: direction * (mobile ? 12 : 29), yPercent: mobile ? 10 : 18,
-          rotation: direction * (mobile ? 8 : 14), scale: .86, opacity: .35 },
+        { xPercent: direction * (mobile ? 180 : 290),
+          yPercent: mobile ? 80 : 130,
+          rotation: direction * (mobile ? 22 : 38), scale: .66, opacity: 0 },
         { xPercent: 0, yPercent: 0, rotation: 0, scale: 1, opacity: 1,
-          duration: 1.1, ease: 'power2.out', immediateRender: false }, .15);
+          duration: 1.12, ease: 'power3.out', immediateRender: false }, .18);
       motion.to(detail,
-        { xPercent: -direction * (mobile ? 9 : 24), yPercent: mobile ? -7 : -13,
-          rotation: -direction * 8, scale: .95, opacity: .47,
-          duration: .76, ease: 'power2.in' }, 3.25);
+        { xPercent: -direction * (mobile ? 145 : 240),
+          yPercent: mobile ? -90 : -145,
+          rotation: -direction * 24, scale: .72, opacity: 0,
+          duration: .88, ease: 'power2.in' }, 3.05);
     }
   };
 
