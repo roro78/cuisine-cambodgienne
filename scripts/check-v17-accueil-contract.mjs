@@ -89,7 +89,8 @@ assert.match(script,/prefers-reduced-motion: no-preference/);
 assert.match(script,/\.v17r-palette-a/);
 assert.match(script,/\.v17r-palette-b/);
 assert.match(script,/scrub: \.75/);
-assert.match(script,/const copyEntrance =/,'V17 chapters must have a dedicated editorial reveal grammar');
+assert.match(script,/const chapterPerformance =/,'D15: named chapter arrival and exit choreography required');
+assert.match(script,/const heroDeparture =/,'D15: hero departure choreography required');
 assert.match(page,/v17r-gestures--cinematic/,'Mortar cinematic composition missing');
 assert.match(page,/data-v17-mortar-scene/,'Mortar scroll trigger missing');
 assert.equal((page.match(/v17r-gesture-word/g)||[]).length,4,
@@ -116,11 +117,16 @@ assert.doesNotMatch(handoffCss,/--vr-(?:ivory|forest|orange|yellow|lime)\s*:/,
 
 assert.match(script,/mortarCinema\(false\)/,'Desktop mortar motion missing');
 assert.match(script,/mortarCinema\(true\)/,'Mobile mortar motion missing');
-assert.equal(script.split("copyEntrance('.v17r-").length-1,8,
-  'Five desktop and three mobile generic entrances; mortar owns a separate film timeline');
-assert.match(script,/opacity: \.86/,'Entrances must keep text perceptible at every scroll position');
-assert.match(script,/start: 'top 90%'/,'Chapter reveals must track the native scroll instead of a timer');
-
+assert.equal((script.match(/chapterPerformance\\('\.v17r-/g)||[]).length,10,
+  'D15: five storyboard chapters animated on both mobile and desktop');
+assert.match(script,/clipPath: 'inset\\(0% 0% 72% 0%\\)'/,
+  'D15: chapter title needs visible directional entrance');
+assert.match(script,/clipPath: 'inset\\(0% 0% 67% 0%\\)'/,
+  'D15: chapter title needs visible exit before next act');
+assert.match(script,/endTrigger: chapter/,
+  'D15: heading motion must span visible chapter, not autoplay');
+assert.match(script,/scrub: mobile/,
+  'D15: motion must respond to native scrolling on both form factors');
 assert.doesNotMatch(script,/pin:\s*true|ScrollSmoother|window\.scrollTo/);
 
 
