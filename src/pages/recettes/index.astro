@@ -6,6 +6,7 @@ import { recipes } from '../../data/recipes';
 import { imageSrcSet } from '../../utils/images';
 import '../../styles/recipe-v15.css';
 import '../../styles/v16-editorial.css';
+import '../../styles/v17-generated-recipes.css';
 
 const minutes = (value: string) => Number(value.match(/\d+/)?.[0] ?? 0);
 const collectionSchema = {
@@ -91,7 +92,7 @@ const toneMap: Record<string,string> = {
             <figure class="recipe-v15-card-media">
               <img
                 src={recipe.image}
-                srcset={imageSrcSet(recipe.image, recipe.imageWidths ?? [480,800,1200,1600])}
+                srcset={recipe.imageWidths?.length ? imageSrcSet(recipe.image, recipe.imageWidths) : undefined}
                 sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 34vw"
                 alt={recipe.imageAlt ?? recipe.title}
                 width={recipe.imageWidth ?? 1600}
@@ -99,6 +100,7 @@ const toneMap: Record<string,string> = {
                 loading="lazy"
                 decoding="async"
               />
+              {recipe.image.includes('-genere.webp') && <figcaption class="recipe-generated-note">Illustration créée par IA</figcaption>}
             </figure>
           ) : (
             <div class="recipe-v15-card-fallback" style={toneMap[recipe.visualTone ?? 'market']}>

@@ -1,0 +1,21 @@
+/*
+ * D6 — Fiches des recettes illustrées par IA.
+ * La diagonale de la V16 coupait les chiffres et les CTA sur desktop.
+ * Cette variation est appliquée uniquement aux recettes avec image
+ * explicitement marquée -genere.webp (Lok Lak et Num Banh Chok).
+ */
+.recipe-v16[data-generated-artwork="true"] .recipe-v15-hero {
+  background: linear-gradient(90deg,#efe2cf 0 39.5%,#1e2a22 39.5% 100%);
+}
+.recipe-v16[data-generated-artwork="true"] .recipe-v15-hero-copy {
+  position: relative;
+  z-index: 1;
+}
+.recipe-v16[data-generated-artwork="true"] .recipe-context {
+  color: #5d5246;
+}
+@media(max-width:900px) {
+  .recipe-v16[data-generated-artwork="true"] .recipe-v15-hero {
+    background: #f0e3d0;
+  }
+}
