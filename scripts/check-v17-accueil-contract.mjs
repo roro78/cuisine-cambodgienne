@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 const page=fs.readFileSync('src/pages/v17-accueil-preview.astro','utf8');
 const css=fs.readFileSync('src/styles/v17-accueil-rebuild.css','utf8');
 const generatedCss=fs.readFileSync('src/styles/v17-generated-media.css','utf8');
@@ -29,6 +30,21 @@ for (const img of [
   'v17-angkor-sunset-1600.jpg',
   'v17-table-meal-1600.jpg',
 ]) assert.ok(fs.existsSync('public/images/cuisine/'+img),'Missing verified V17 photograph '+img);
+// The AI market is not bundled until its approved binary has been committed.
+// The only allowed automatic switch is a precise local asset, never an external
+// fake travel photo or a missing/broken URL.
+assert.match(page,/marketIsIllustrated/);
+assert.match(page,/v17-marche-cambodgien-ia\\.webp/);
+assert.match(page,/scène fictive inspirée des marchés terrestres du Cambodge/);
+const aiMarketPath='public/images/cuisine/v17-marche-cambodgien-ia.webp';
+if(fs.existsSync(aiMarketPath)){
+  const bytes=fs.readFileSync(aiMarketPath);
+  assert.equal(bytes.subarray(0,4).toString(),'RIFF','Market artwork must be a real WebP');
+  assert.equal(bytes.subarray(8,12).toString(),'WEBP','Market artwork must be a real WebP');
+  assert.equal(createHash('sha256').update(bytes).digest('hex'),
+    'f6556fcfdf3de5159e12083d40cf96872a1000d956b1e2eb9874f8bec272721b',
+    'Market artwork must match the approved, high-resolution generated WebP');
+}
 assert.match(page,/Radosław Botev/);
 assert.match(page,/Filipp Romanovski/);
 assert.match(page,/Illustration culinaire générée par IA/);
