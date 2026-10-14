@@ -206,10 +206,21 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       const immersive=await page.evaluate(()=>({
         hero:document.querySelector('.v17r-hero').getBoundingClientRect().height,
         market:document.querySelector('.v17r-market').getBoundingClientRect().height,
+        palette:document.querySelector('.v17r-palette').getBoundingClientRect().height,
+        gestures:document.querySelector('.v17r-gestures').getBoundingClientRect().height,
+        table:document.querySelector('.v17r-table').getBoundingClientRect().height,
+        dessert:document.querySelector('.v17r-dessert').getBoundingClientRect().height,
         viewport:innerHeight
       }));
-      assert.ok(immersive.hero>=immersive.viewport*.78 && immersive.market>=immersive.viewport*.9,
-        'Key chapters should have full-screen editorial presence: '+JSON.stringify(immersive));
+      assert.ok(immersive.hero>=immersive.viewport*.78 &&
+        immersive.market>=immersive.viewport*.60 &&
+        immersive.market<=immersive.hero*.99,
+        'Hero dominates, with a tighter panoramic market chapter: '+JSON.stringify(immersive));
+      assert.ok(immersive.palette<immersive.hero &&
+        immersive.dessert<immersive.hero &&
+        immersive.gestures<=immersive.hero &&
+        immersive.table>=immersive.palette,
+        'Scene pacing should alternate dominant and quiet chapters: '+JSON.stringify(immersive));
     }
     const heroLines=await page.evaluate(()=>{
       const el=document.querySelector('#v17r-hero-title');
