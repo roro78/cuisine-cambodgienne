@@ -89,9 +89,12 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       // claim a full contrast audit of text over the photographic backgrounds.
       const ctaContrast=await page.locator('.v17r-pill:not(.v17r-pill-outline)').evaluateAll(nodes=>{
         const channels=(css)=>{
-          const m=css.match(/rgba?\\(([^)]+)\\)/);
-          if(!m)return null;
-          return m[1].split(',').slice(0,3).map(x=>Number(x.trim())/255);
+          if(!css.startsWith('rgb'))return null;
+          const from=css.indexOf('('),to=css.indexOf(')',from+1);
+          if(from<0||to<0)return null;
+          const values=css.slice(from+1,to).split(',').slice(0,3)
+            .map(x=>Number(x.trim())/255);
+          return values.length===3&&values.every(Number.isFinite)?values:null;
         };
         const luminance=(rgb)=>rgb.reduce((sum,v,i)=>{
           const linear=v<=.04045?v/12.92:((v+.055)/1.055)**2.4;
