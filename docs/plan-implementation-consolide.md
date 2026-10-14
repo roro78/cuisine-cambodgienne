@@ -1,6 +1,25 @@
 # Cuisine du Cambodge — Plan d’implémentation consolidé
 
-**Référence de pilotage — 12 octobre 2026.** Ce document rapproche les ambitions éditoriales, l’expérience « Grand Dîner Khmer », les futures activités commerciales et le code réellement présent. Il distingue **développement technique**, **validation visuelle**, **validation culinaire** et **commercialisation** : une CI verte ne vaut jamais réception du produit final.
+## Mise à jour prioritaire — 14 octobre 2026 : V17, direction artistique et motion
+
+**Le présent bloc prime sur les statuts historiques des 11–12 octobre ci-dessous.** La V17 est une refonte visuelle de l'accueil en sept scènes, pas un changement du produit commercial. Sa référence de composition est la maquette validée `voyage_culinaire_au_cambodge.png` (empreinte SHA-256 `f775e6f3a483479f4a2d095406593d3d5dc354213b80d2a99839c6f23f4ddc71`), décrite dans le [plan directeur V17 — PR #46](https://github.com/roro78/cuisine-cambodgienne/blob/docs/v17-accueil-plan-directeur-valide/docs/v17-plan-directeur-accueil.md) ; la PR #46 reste **ouverte en brouillon**.
+
+**Décisions du commanditaire, maintenues :** (1) **couleurs actuelles validées** : ne pas changer ivoire/vert/corail/jaune ; (2) **sections desktop plein écran volontaires**, pour donner du sens à la narration au scroll — dimensions minimum adaptatives, jamais `height: 100vh` rigide ; (3) pas de nouvelle direction artistique concurrente de la planche validée ; (4) le résultat visuel et les animations **ne sont pas encore acceptés**, même si des tests techniques réussissent.
+
+**Situation technique vérifiée le 14 octobre :**
+- [PR #45](https://github.com/roro78/cuisine-cambodgienne/pull/45) : ancien prototype, ne pas reprendre ses styles.
+- [PR #47](https://github.com/roro78/cuisine-cambodgienne/pull/47) : première reconstruction preview V17, **fermée sans fusion**, historique de travail seulement.
+- [PR #48](https://github.com/roro78/cuisine-cambodgienne/pull/48) : candidate D8, **fusionnée sur `main`** ; ceci **ne garantit pas** la publication OVH.
+- [PR #49](https://github.com/roro78/cuisine-cambodgienne/pull/49) : corrections D11 **ouverte, draft, non fusionnée** ; retouches D12 en cours sur la même branche, pas d'autorisation de déploiement.
+- [D12 — Direction artistique du mouvement](./v17-d12-direction-artistique-motion.md) : storyboard des sept actes, mouvement différencié sur desktop/mobile, règles de préservation et gates de réception. **Implémentation candidate : tests/CI et validation artistique à confirmer sur le nouveau HEAD.**
+
+**Prochaines étapes ordonnées :** D12 terminer CI + screenshots + vidéos et corriger toute régression → D13 comparer les sept actes à la planche, ajuster photographies/compositions sans changer les couleurs → D14 réception réelle de l'animation desktop et tactile → D15 approbation graphique, puis **décision explicite distincte** de fusion et d'éventuelle publication OVH.
+
+**Règle de décision :** une CI PASS, une performance Lighthouse en laboratoire ou une PR mergée ne valent jamais réception graphique ni preuve que le site public OVH correspond au HEAD. Le PNG original de référence doit rester distinct de toute copie JPEG ou simulation.
+
+---
+
+**Historique de pilotage — 12 octobre 2026.** Ce document rapproche les ambitions éditoriales, l’expérience « Grand Dîner Khmer », les futures activités commerciales et le code réellement présent. Il distingue **développement technique**, **validation visuelle**, **validation culinaire** et **commercialisation** : une CI verte ne vaut jamais réception du produit final.
 
 **Historique du socle au 12 octobre 2026 (complété par le point de livraison ci-dessous) :** site éditorial et six ateliers publiés ; corrections de sécurité Amok/Prahok (#25) publiées ; lots B1–B5 (#26–#30) fusionnés sur `main`, certains marqueurs vérifiés en public ; PR #24 « Expériences / Grand Dîner Khmer » ouverte, non fusionnée, **non publiée** et signalée en conflit avec `main`. Dernière revue de la PR #24 résolue et CI réussie sur le commit 5db43ca (https://github.com/roro78/cuisine-cambodgienne/actions/runs/38081774271). Sa valeur démontrée est celle d’un **prototype gratuit**, pas d’une offre premium commercialisable.
 
