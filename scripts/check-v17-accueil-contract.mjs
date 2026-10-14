@@ -40,11 +40,11 @@ assert.equal(aiMarketBytes.subarray(8,12).toString(),'WEBP','Market artwork must
 assert.equal(createHash('sha256').update(aiMarketBytes).digest('hex'),
   'f6556fcfdf3de5159e12083d40cf96872a1000d956b1e2eb9874f8bec272721b',
   'Market artwork must match the approved generated WebP');
-assert.match(page,/v17-marche-cambodgien-ia\\.webp/,'Approved market source required');
+assert.ok(page.includes('v17-marche-cambodgien-ia.webp'),'Approved market source required');
 assert.match(page,/v17r-market-visual--generated/);
 assert.match(page,/Illustration éditoriale générée par IA/);
 assert.match(page,/scène fictive inspirée des marchés terrestres du Cambodge/);
-assert.doesNotMatch(page,/marketIsIllustrated|v17-market-live-1800\\.jpg/,
+assert.doesNotMatch(page,/marketIsIllustrated|v17-market-live-1800/,
   'No silent return to the obsolete documentary market');
 assert.match(page,/Filipp Romanovski/);
 assert.match(page,/Illustration culinaire générée par IA/);
