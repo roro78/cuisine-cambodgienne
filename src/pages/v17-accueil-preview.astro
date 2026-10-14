@@ -9,6 +9,7 @@ import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import '../styles/v17-accueil-rebuild.css';
 import '../styles/v17-generated-media.css';
+// @ts-expect-error — node:fs is available during Astro SSG; this frontend-only TS setup omits Node typings.
 import { existsSync } from 'node:fs';
 const hero = '/images/cuisine/v17-hero-amok-genere.webp';
 // Release gate: preview changes automatically once the approved binary is
