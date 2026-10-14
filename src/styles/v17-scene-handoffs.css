@@ -1,0 +1,67 @@
+/*
+ * V17 D14 — Filmic transitions between chapters.
+ * The three new seams bridge otherwise hard joins; the existing V17 waves
+ * keep the other joins. Colours are exclusively those already in V17.
+ * Zero layout height means there is no new blank scroll region.
+ */
+.v17r-handoff {
+  position: relative;
+  z-index: 8;
+  isolation: isolate;
+  width: 100%;
+  height: 0;
+  min-height: 0;
+  overflow: visible;
+  pointer-events: none;
+  line-height: 0;
+}
+.v17r-handoff svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: clamp(5rem, 13svh, 10rem);
+  max-width: none;
+  transform: translate3d(0, -50%, 0);
+  transform-origin: center 57%;
+  overflow: visible;
+  pointer-events: none;
+}
+.v17r-handoff--aroma svg {
+  height: clamp(5.5rem, 15svh, 11rem);
+}
+.v17r-handoff--sweet svg {
+  height: clamp(5rem, 12svh, 9rem);
+}
+.v17r-handoff--journey svg {
+  height: clamp(5rem, 14svh, 10rem);
+}
+
+/* D14 replaces sharp, video-cut-like joins with photographic entrances.
+ * Native CSS is fully visible; only GSAP animates media masks while scrolling.
+ * Never clip the section or the text / CTAs themselves.
+ */
+.v17r .v17r-market-visual,
+.v17r .v17r-table-media,
+.v17r .v17r-dessert-art,
+.v17r .v17r-finale-landscape {
+  will-change: auto;
+}
+
+@media (max-width: 760px) {
+  .v17r-handoff svg {
+    height: clamp(3.5rem, 9svh, 6.25rem);
+  }
+  .v17r-handoff--aroma svg,
+  .v17r-handoff--sweet svg,
+  .v17r-handoff--journey svg {
+    height: clamp(3.5rem, 9svh, 6.25rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v17r-handoff svg {
+    animation: none !important;
+    transition: none !important;
+  }
+}
