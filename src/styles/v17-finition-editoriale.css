@@ -342,3 +342,73 @@
   .v17r .v17r-dessert-copy h2{font-size:clamp(2.5rem,9.1vw,3.2rem)}
   .v17r .v17r-finale h2{font-size:clamp(2.05rem,10vw,3rem)}
 }
+
+
+/* D11 visual QA at 390px: six decorative layers were piling on top of two
+   genuine ingredient photographs. Mobile now uses two coherent picture cards
+   with readable captions; desktop still keeps the full botanical still life. */
+.v17r .v17r-dessert-art--generated .v17r-dessert-generated img{
+  border-radius:clamp(1.7rem,4vw,4.5rem) clamp(4rem,9vw,9rem)
+    clamp(2rem,5vw,5rem) clamp(3rem,7vw,7rem);
+}
+@media(max-width:760px){
+  .v17r .v17r-palette-media{
+    display:grid;
+    position:relative;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    align-items:start;
+    gap:clamp(.85rem,3vw,1.4rem);
+    width:100%;
+    min-height:0;
+    margin:1.6rem auto 1.1rem;
+    padding:0 .2rem;
+  }
+  .v17r .v17r-palette-media .v17r-lemongrass,
+  .v17r .v17r-palette-media .v17r-palette-lime,
+  .v17r .v17r-palette-media .v17r-palette-flower,
+  .v17r .v17r-palette-media .v17r-palette-chili,
+  .v17r .v17r-palette-media img.v17r-spice-bowls{
+    display:none;
+  }
+  .v17r .v17r-palette-media figure{
+    position:relative;
+    inset:auto;
+    display:block;
+    width:100%;
+    height:auto;
+    min-width:0;
+    aspect-ratio:auto;
+    align-self:start;
+    margin:0;
+    transform:none;
+  }
+  .v17r .v17r-palette-media figure img{
+    display:block;
+    width:100%;
+    height:clamp(9.5rem,39vw,15rem);
+    object-fit:cover;
+    aspect-ratio:auto;
+    border-radius:1.65rem .55rem 1.3rem 1rem;
+  }
+  .v17r .v17r-palette-media figure:nth-of-type(2) img{
+    border-radius:.55rem 1.65rem 1rem 1.3rem;
+  }
+  .v17r .v17r-palette-media figure figcaption{
+    display:block;
+    position:static;
+    width:100%;
+    max-width:100%;
+    margin:.7rem 0 0;
+    padding:0;
+    color:#2b452f;
+    font-size:clamp(.75rem,2.5vw,.87rem);
+    line-height:1.4;
+    font-weight:750;
+    font-style:normal;
+    text-align:center;
+  }
+  .v17r .v17r-palette .v17r-pill{margin-top:1.1rem}
+  .v17r .v17r-dessert-art--generated .v17r-dessert-generated img{
+    border-radius:2.7rem .8rem 2rem 1.4rem;
+  }
+}
