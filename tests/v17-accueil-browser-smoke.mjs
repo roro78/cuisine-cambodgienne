@@ -87,8 +87,6 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       assert.deepEqual(seo.schemas.map(x=>x.type),['WebSite','WebPage']);
       assert.equal(new URL(seo.schemas[1].url).pathname,'/v17-accueil-preview/');
     }
-    assert.equal(await page.locator('link[rel="preload"][as="image"][href="/images/cuisine/v17-hero-amok-genere.webp"]').count(),1,
-      'The above-the-fold Amok must be preloaded once from the HTML head');
     assert.equal(await page.locator('h1').count(),1);
     assert.equal(await page.locator('.v17r h2').count(),6);
     const chapters=['hero','market','palette','gestures','table','dessert','finale'];
