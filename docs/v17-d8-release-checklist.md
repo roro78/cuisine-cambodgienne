@@ -14,7 +14,7 @@
 - [x] Contrat Astro et tests Chromium sur les 9 largeurs de 320 à 1920 px, version sans JS et mouvement réduit (preuve : CI de la PR #47).
 - [x] Test de visibilité des mots réels en 320/360/390/430 px ; aucun texte hors écran lors de la dernière CI verte.
 - [x] Source du marché IA contrôlée par une empreinte SHA-256 et explicitement qualifiée comme illustration fictive.
-- [ ] Analyse Lighthouse mobile et problèmes d'accessibilité documentés, sans présenter les mesures laboratoire comme des statistiques d'utilisateurs.
+- [x] Analyse Lighthouse mobile 12.8.2 exécutée, et problèmes d'accessibilité automatisés documentés. Dernière CI technique : [#38597112654](https://github.com/roro78/cuisine-cambodgienne/actions/runs/38597112654), accessibilité 100/100, performance 80/100, LCP 5,34 s, CLS 0. **Les objectifs LCP ≤ 2,5 s et performance ≥ 90 restent non atteints dans le laboratoire, sans métriques terrain.**
 - [ ] Vérification réelle Safari/iOS et VoiceOver (ou NVDA), zoom navigateur à 200 % et contraste du texte sur photographies.
 - [ ] Original de la maquette approuvée archivé sur GitHub, avec SHA-256 recalculé et comparé à la référence D0.
 - [ ] **Validation explicite de la composition finale** par le propriétaire sur desktop/mobile. La CI verte ne remplace pas cette réception.
