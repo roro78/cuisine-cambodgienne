@@ -1,5 +1,20 @@
 # Cuisine du Cambodge ? PLAN DIRECTEUR V17 : ACCUEIL VALID?
 
+## D12 — Actualisation du pilotage artistique au 14 octobre 2026
+
+**Cette section actualise le document initial du 13 octobre.** Les anciennes mentions « implémentation non commencée », « D8 interdit » ou « homepage V16 » ci-dessous sont **historiques**, non des états actuels. Cette PR de documentation #46 reste ouverte en brouillon et n'a pas été fusionnée.
+
+- **Maquette canonique inchangée** : `voyage_culinaire_au_cambodge.png`, SHA-256 `f775e6f3a483479f4a2d095406593d3d5dc354213b80d2a99839c6f23f4ddc71`. L'archivage de son original binaire sur GitHub doit encore être vérifié, sans confondre la copie JPEG avec l'original.
+- **Décision artistique récente** : conserver **strictement les couleurs actuelles**, jugées satisfaisantes. Les **sept scènes desktop plein écran** sont voulues : elles servent le récit animé au défilement. Employer des hauteurs minimum flexibles ; la règle plus ancienne proposant des scènes plus courtes n'est plus prioritaire.
+- **État des PR** : #47 fermée sans fusion, #48 fusionnée (V17 sur la route `/` dans `main`), #49 ouverte en brouillon pour D11/D12. Aucune preuve nouvelle fournie ici de mise en production OVH correspondant à #48/#49 ; #49 non fusionnée.
+- **Écart de réception** : le commanditaire juge toujours la ressemblance avec la maquette et la richesse des animations **insuffisantes**. D11 a corrigé le cadrage Amok, l'image de marché plein cadre et la lisibilité, mais les sept scènes et le rythme restent à valider visuellement.
+- **D12 en cours** : <https://github.com/roro78/cuisine-cambodgienne/blob/feat/v17-finition-artistique-d11/docs/v17-d12-direction-artistique-motion.md> définit la nouvelle grammaire GSAP/ScrollTrigger (entrées de textes variées, profondeur photo, mouvement modéré des transitions), sans changer la palette ni prendre le contrôle du scroll. En attente des preuves sur HEAD exact.
+- **Suite** : D13 = fidélité des médias / composition ; D14 = contrôle vidéo des animations desktop/mobile + mouvement réduit ; D15 = décision graphique globale avant toute fusion/déploiement.
+
+**Règle de réception** : « techniquement validé » ne signifie jamais « conforme à la maquette ». Les captures ne prouvent pas à elles seules la fluidité tactile. Aucun changement OVH sans accord spécifique.
+
+---
+
 **Statut : R?F?RENCE DE CONCEPTION VALID?E ? IMPL?MENTATION NON COMMENC?E.**  
 **Date de cadrage : 13 octobre 2026.**  
 **P?rim?tre : nouvelle page d?accueil uniquement ; toutes les autres pages restent accessibles et fonctionnelles.**  
