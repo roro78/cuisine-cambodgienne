@@ -1181,7 +1181,6 @@
 /* V17 D8 — fidelity refinements only. Preserve full-screen chapters and native
    ScrollTrigger progression: no shortened scenes, pinning or forced snapping. */
 @media(min-width:1200px){
-  .v17r-hero-media{margin-left:-5%}
   .v17r-hero-green-corner{top:-18%;left:-8%;width:clamp(16rem,23vw,26rem)}
   .v17r-market-visual>img{object-position:50% 89%;filter:saturate(1.30) contrast(1.045) brightness(1.07)}
   .v17r-market-postcard{bottom:7%;width:clamp(9rem,16vw,15rem);height:clamp(11.5rem,21vw,20rem)}
