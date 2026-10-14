@@ -148,6 +148,51 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       w:innerWidth
     }));
     assert.ok(dimension.html-dimension.client<=2,'Horizontal overflow '+JSON.stringify(dimension));
+
+    // The page itself may have no horizontal scroll while an oversized H2 is
+    // silently cut by .v17r{overflow:clip}. Measure actual WORD glyph boxes.
+    // Only meaningful visible content, not decorative / aria-hidden typography.
+    if([320,360,390,430].includes(width)){
+      const clippedWords=await page.evaluate(()=>{
+        const offenders=[];
+        const content=document.querySelector('.v17r');
+        const nodes=content.querySelectorAll('h1,h2,p,a,figcaption');
+        for(const el of nodes){
+          if(el.closest('[aria-hidden="true"]')||el.getClientRects().length===0)continue;
+          const st=getComputedStyle(el);
+          if(st.display==='none'||st.visibility==='hidden')continue;
+          const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,{
+            acceptNode(node){
+              return node.parentElement?.closest('[aria-hidden="true"]') ||
+                !node.nodeValue?.trim() ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+            }
+          });
+          let node;
+          while((node=walker.nextNode())){
+            for(const match of node.nodeValue.matchAll(/\S+/g)){
+              const range=document.createRange();
+              range.setStart(node,match.index);
+              range.setEnd(node,match.index+match[0].length);
+              const rect=range.getBoundingClientRect();
+              if(rect.width>.5 && (rect.left < -2 || rect.right > innerWidth+2)){
+                offenders.push({
+                  element:el.tagName.toLowerCase(),
+                  text:match[0],
+                  section:el.closest('section')?.className||'unknown',
+                  left:Math.round(rect.left),
+                  right:Math.round(rect.right),
+                  viewport:innerWidth
+                });
+              }
+              range.detach();
+            }
+          }
+        }
+        return offenders.slice(0,20);
+      });
+      assert.deepEqual(clippedWords,[],
+        'Visible text glyphs must not be cut off-screen at '+width+'px: '+JSON.stringify(clippedWords));
+    }
     for(const selector of ['.v17r-hero-dish img','.v17r-market-visual > img','.v17r-palette-a img','.v17r-palette-b img','.v17r-gestures-main img','.v17r-table-amok img','.v17r-dessert-generated img','.v17r-finale-landscape img']){
       if(!(await page.locator(selector).isVisible()))continue;
       await page.locator(selector).scrollIntoViewIfNeeded();
