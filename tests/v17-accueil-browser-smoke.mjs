@@ -155,7 +155,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     }
     const decorativeAssets=await page.evaluate(()=>{
       const selected=['.v17r-hero-green-corner','.v17r-hero-flower-dish',
-        '.v17r-lemongrass','.v17r-palette-lime','.v17r-market-bloom',
+        '.v17r-lemongrass','.v17r-palette-lime','.v17r-market-bloom img',
         '.v17r-palette-foliage-left','.v17r-palette-foliage-right',
         '.v17r-gestures-kroeung img',
         '.v17r-dessert-generated img'];
