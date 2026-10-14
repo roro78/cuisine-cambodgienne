@@ -71,6 +71,53 @@ export function initV17AccueilMotion() {
     });
   };
 
+
+  /**
+   * Mortar film: one full-bleed continuous photographic gesture, three
+   * typographic beats and an organic preparation close-up. This is not video
+   * footage; it is an animated still composition driven by native scrolling.
+   * Every element is fully readable and visible in no-JS/reduced motion.
+   */
+  const mortarCinema = (mobile: boolean) => {
+    const scene = root.querySelector<HTMLElement>('[data-v17-mortar-scene]');
+    if (!scene) return;
+    const image = scene.querySelector<HTMLElement>('.v17r-gestures-main img');
+    const closeup = scene.querySelector<HTMLElement>('.v17r-gestures-kroeung');
+    const words = gsap.utils.toArray<HTMLElement>('.v17r-gesture-word', scene);
+    const kicker = scene.querySelector<HTMLElement>('.v17r-kicker');
+    const description = scene.querySelector<HTMLElement>('.v17r-gestures-copy > p:not(.v17r-kicker)');
+    const action = scene.querySelector<HTMLElement>('.v17r-pill');
+    const progress = scene.querySelector<HTMLElement>('.v17r-gestures-progress span');
+    const timeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: scene,
+        start: 'top 85%',
+        end: mobile ? 'bottom 20%' : 'bottom 22%',
+        scrub: mobile ? .65 : .85,
+        invalidateOnRefresh: true,
+      },
+    });
+    if (image) timeline.fromTo(image,
+      { scale: mobile ? 1.045 : 1.14, xPercent: mobile ? -1 : -2 },
+      { scale: 1.005, xPercent: 0, ease: 'none', duration: 2.8, immediateRender: false }, 0);
+    words.forEach((word, index) => {
+      timeline.fromTo(word,
+        { x: mobile ? -9 : -26, y: mobile ? 6 : 16, opacity: .84 },
+        { x: 0, y: 0, opacity: 1, ease: 'power2.out', duration: .8, immediateRender: false },
+        .24 + index * .36);
+    });
+    for (const [node, at] of [[kicker,.22],[description,1.04],[action,1.35]] as const) {
+      if (node) timeline.fromTo(node,
+        { y: mobile ? 9 : 18, opacity: .85 },
+        { y: 0, opacity: 1, ease: 'power2.out', duration: .85, immediateRender: false }, at);
+    }
+    if (closeup) timeline.fromTo(closeup,
+      { scale: mobile ? .90 : .78, rotation: mobile ? -3 : -7, opacity: .65 },
+      { scale: 1, rotation: 0, opacity: 1, ease: 'power2.out', duration: 1.45, immediateRender: false }, 1.1);
+    if (progress) timeline.fromTo(progress,
+      { scaleX: .08 }, { scaleX: 1, ease: 'none', duration: 2.7, immediateRender: false }, 0);
+  };
+
   mm.add('(min-width: 761px) and (prefers-reduced-motion: no-preference)', () => {
     // 1. Hero: quiet depth, never displacing the headline or CTA.
     sceneMotion('.v17r-hero-dish img', { scale: 1.09, yPercent: 2 }, { scale: 1.005, yPercent: -2 });
@@ -86,8 +133,8 @@ export function initV17AccueilMotion() {
     sceneMotion('.v17r-palette-foliage-left', { xPercent: -16, yPercent: 10, rotation: -25 }, { xPercent: 0, yPercent: -3, rotation: -17 });
     sceneMotion('.v17r-palette-foliage-right', { xPercent: 13, yPercent: -10, rotation: 168 }, { xPercent: 0, yPercent: 4, rotation: 157 });
     // 4. Mortar: the hands remain real; the prepared kroeung is a second image.
-    sceneMotion('.v17r-gestures-main img', { scale: 1.09, yPercent: -2 }, { scale: 1.01, yPercent: 2 });
-    sceneMotion('.v17r-gestures-kroeung', { yPercent: 12, xPercent: 7 }, { yPercent: 0, xPercent: 0 });
+
+    mortarCinema(false);
     // 5. Table: a single AI-generated culinary tableau creates immersive depth.
     sceneMotion('.v17r-table-amok img', { scale: 1.10, xPercent: -2 }, { scale: 1.01, xPercent: 1 });
     // 6–7. Desserts and Angkor: restraint and varied composition.
@@ -96,7 +143,7 @@ export function initV17AccueilMotion() {
     // Every scene has its own visual entrance; the static palette is preserved.
     copyEntrance('.v17r-market', ['.v17r-market h2', '.v17r-market-copy > p:not(.v17r-kicker)', '.v17r-market .v17r-pill'], 22);
     copyEntrance('.v17r-palette', ['.v17r-palette h2', '.v17r-palette-intro', '.v17r-palette > .v17r-pill']);
-    copyEntrance('.v17r-gestures', ['.v17r-gestures h2', '.v17r-gestures-copy > p:not(.v17r-kicker)', '.v17r-gestures .v17r-pill'], 19);
+
     copyEntrance('.v17r-table', ['.v17r-table h2', '.v17r-table-copy > p:not(.v17r-kicker)', '.v17r-table .v17r-pill']);
     copyEntrance('.v17r-dessert', ['.v17r-dessert h2', '.v17r-dessert-copy > p:not(.v17r-kicker)', '.v17r-dessert .v17r-pill'], -19);
     copyEntrance('.v17r-finale', ['.v17r-finale h2', '.v17r-finale-copy > p:not(.v17r-kicker)', '.v17r-finale-actions'], 0, 32);
@@ -113,12 +160,13 @@ export function initV17AccueilMotion() {
     sceneMotion('.v17r-market-visual > img', { scale: 1.045, yPercent: -1 }, { scale: 1.01, yPercent: 1 });
     sceneMotion('.v17r-palette-a', { xPercent: -5 }, { xPercent: 0 });
     sceneMotion('.v17r-palette-b', { xPercent: 5 }, { xPercent: 0 });
-    sceneMotion('.v17r-gestures-main img', { scale: 1.035 }, { scale: 1.005 });
+
     sceneMotion('.v17r-table-amok img', { scale: 1.035 }, { scale: 1.005 });
     sceneMotion('.v17r-finale-landscape img', { scale: 1.04 }, { scale: 1.005 });
+    mortarCinema(true);
     // Native touch scrolling with lower motion amplitude than on desktop.
     copyEntrance('.v17r-market', ['.v17r-market h2', '.v17r-market .v17r-pill'], 0, 11);
-    copyEntrance('.v17r-gestures', ['.v17r-gestures h2', '.v17r-gestures .v17r-pill'], 0, 11);
+
     copyEntrance('.v17r-dessert', ['.v17r-dessert h2', '.v17r-dessert .v17r-pill'], 0, 11);
     copyEntrance('.v17r-finale', ['.v17r-finale h2', '.v17r-finale-actions'], 0, 11);
   });
