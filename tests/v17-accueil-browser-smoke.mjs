@@ -447,11 +447,20 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),total);
       await page.waitForTimeout(450);
     }
-    // The preview must never be confused with the public homepage.
+    // D8: the public / is the real V17 site, with indexable canonical SEO.
+    // The preview stays noindex and has its own /v17-accueil-preview/ canonical.
     if(width===390||width===1440){
       const homeRes=await page.request.get(base+'/');
       assert.equal(homeRes.status(),200);
-      assert.doesNotMatch(await homeRes.text(),/v17r-hero/);
+      const html=await homeRes.text();
+      assert.match(html,/id="v17r-hero-title"/,'Public / must render V17');
+      assert.match(html,/name="robots" content="index,follow/,'Public / must be indexable');
+      assert.doesNotMatch(html,/Prévisualisation technique V17 — non publiée/);
+      const canonical=html.match(/<link[^>]+rel="canonical"[^>]+href="([^"]+)"/)?.[1];
+      assert.ok(canonical,'Public homepage canonical missing');
+      assert.equal(new URL(canonical).pathname,'/');
+      const ogUrl=html.match(/<meta[^>]+property="og:url"[^>]+content="([^"]+)"/)?.[1];
+      assert.equal(new URL(ogUrl).pathname,'/');
     }
     console.log('V17 D2 preview '+width+' × '+height+(noJs?' noJS':'')+(reduced?' reduced':'')+' PASS');
   }finally{
