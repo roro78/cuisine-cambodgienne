@@ -1177,69 +1177,26 @@
 }
 
 
-/* V17 D8 visual pacing pass — 14/10 review against user's 926×1536 master.
-   The reference is a compact illustration board, NOT a pixel-perfect CSS
-   viewport grid. Preserve natural content heights and the live/real credits. */
+
+/* V17 D8 — fidelity refinements only. Preserve full-screen chapters and native
+   ScrollTrigger progression: no shortened scenes, pinning or forced snapping. */
 @media(min-width:1200px){
-  /* Establish three distinct tempi: ample hero, flowing market, quiet spices. */
-  .v17r-hero{
-    min-height:max(43rem,82svh);
-    padding-block:clamp(3.25rem,4.5vw,5.25rem) clamp(3rem,4vw,4.75rem);
-    grid-template-columns:minmax(0,44%) minmax(0,56%);
-  }
-  .v17r-hero-copy{align-self:center}
-  .v17r-hero-media{min-height:clamp(30rem,40vw,47rem);margin-left:-5%}
-  .v17r-hero--generated .v17r-hero-dish{
-    width:min(113%,61rem);
-    max-width:none;
-    aspect-ratio:1.48;
-    -webkit-mask-image:radial-gradient(ellipse 77% 81% at 58% 55%,#000 54%,rgba(0,0,0,.95) 69%,transparent 99%);
-    mask-image:radial-gradient(ellipse 77% 81% at 58% 55%,#000 54%,rgba(0,0,0,.95) 69%,transparent 99%);
-  }
-  .v17r-hero--generated .v17r-hero-dish img{object-position:54% 50%}
+  .v17r-hero-media{margin-left:-5%}
   .v17r-hero-green-corner{top:-18%;left:-8%;width:clamp(16rem,23vw,26rem)}
-  .v17r-market{
-    min-height:clamp(35rem,71svh,49rem);
-    grid-template-columns:minmax(0,1.85fr) minmax(18rem,.85fr);
-  }
-  .v17r-market-copy{padding-block:clamp(2.4rem,3.6vw,4rem)}
-  .v17r-market-visual>img{object-position:50% 89%;filter:saturate(1.36) contrast(1.045) brightness(1.08)}
+  .v17r-market-visual>img{object-position:50% 89%;filter:saturate(1.30) contrast(1.045) brightness(1.07)}
   .v17r-market-postcard{bottom:7%;width:clamp(9rem,16vw,15rem);height:clamp(11.5rem,21vw,20rem)}
-  .v17r-palette{
-    min-height:clamp(40rem,73svh,53rem);
-    padding-block:clamp(3.75rem,5.5vw,6rem);
-  }
   .v17r-palette .v17r-palette-a{left:5%;top:55%;width:clamp(14rem,19vw,20rem)}
   .v17r-palette .v17r-palette-b{right:2%;top:14%;width:clamp(13rem,18vw,19rem)}
   .v17r-palette-media .v17r-lemongrass{left:-4%;top:6%;width:clamp(26rem,39vw,43rem)}
   .v17r-palette-media img.v17r-palette-chili{left:18%;top:26%;width:clamp(7rem,9vw,10rem)}
   .v17r-palette-media img.v17r-spice-bowls{right:-2%;bottom:1%;width:clamp(27rem,35vw,40rem)}
-  .v17r-gestures{min-height:clamp(36rem,68svh,48rem);padding-block:clamp(2.5rem,4vw,4.5rem)}
-  .v17r-gestures-main{min-height:clamp(25rem,31vw,34rem)}
-  .v17r-table{min-height:clamp(37rem,82svh,55rem);padding-block:clamp(4rem,6vw,6.5rem)}
-  .v17r-dessert{min-height:clamp(34rem,70svh,49rem);padding-block:clamp(3rem,4.5vw,5rem)}
-  .v17r-finale{min-height:clamp(36rem,78svh,52rem);padding-block:clamp(4rem,5vw,6rem)}
 }
-@media(min-width:1800px){
-  /* Preserve legibility of the unbroken H1 at 1920px and above. */
-  .v17r-hero h1{font-size:clamp(4.5rem,4.28vw,5.6rem);letter-spacing:-.075em}
-}
-@media(min-width:761px) and (max-width:1199px){
-  .v17r-market{min-height:clamp(31rem,72svh,44rem)}
-  .v17r-palette{min-height:clamp(36rem,78svh,48rem)}
-  .v17r-gestures{min-height:clamp(32rem,75svh,46rem)}
-}
-/* Tablet-sized page reflow is deliberately not treated as a shrunk poster.
-   Put the photo first, then the coherent body of market text. */
 @media(max-width:760px){
-  .v17r-market-visual>img{object-position:52% 91%;filter:saturate(1.28) contrast(1.04) brightness(1.06)}
-  .v17r-palette-media{gap:clamp(.65rem,2.8vw,1.25rem)}
+  /* Mobile keeps natural content height rather than imposing 100svh panels. */
+  .v17r-market-visual>img{object-position:52% 87%;filter:saturate(1.26) contrast(1.04) brightness(1.06)}
   .v17r-palette-media figure{aspect-ratio:1.28}
   .v17r-palette-media img.v17r-spice-bowls{margin-bottom:-1rem}
-  .v17r-palette-media .v17r-lemongrass{top:-1rem;width:clamp(9rem,40vw,19rem)}
-  .v17r-gestures{padding-block:clamp(3rem,9vw,4.5rem)}
 }
 @media(prefers-reduced-motion:reduce){
-  .v17r-hero--generated .v17r-hero-dish,
   .v17r-market-visual>img{transition:none!important;animation:none!important}
 }
