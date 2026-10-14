@@ -96,8 +96,8 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     const angkorImage=page.locator('.v17r-finale-landscape img');
     assert.equal(await angkorImage.getAttribute('src'),'/images/cuisine/v17-angkor-sunset-1600.jpg');
     assert.match(await angkorImage.getAttribute('alt'),/Angkor Wat.*soleil couchant/);
-    assert.equal(await page.locator('.v17r-finale-credit a[href*="Angkor_Wat_Reflection"]').count(),1,
-      'Golden-hour photograph must keep the correct source attribution');
+    assert.equal(await page.locator('.v17r-finale-credit').count(),0,
+      'Photographer credit line must be kept on the dedicated credits page');
     // D7 accessibility: every primary CTA remains a genuine 44px touch target.
     // Check actual layout bounds, not just the presence of a CSS declaration.
     if([390,1440].includes(width) && !noJs && !reduced){
@@ -228,7 +228,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     }
     const decorativeAssets=await page.evaluate(()=>{
       const selected=['.v17r-hero-green-corner','.v17r-hero-flower-dish',
-        '.v17r-lemongrass','.v17r-palette-lime','.v17r-market-bloom img',
+        '.v17r-lemongrass','.v17r-palette-lime',
         '.v17r-palette-foliage-left','.v17r-palette-foliage-right',
         '.v17r-gestures-kroeung img',
         '.v17r-dessert-generated img'];
@@ -255,6 +255,31 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       'Remove the intrusive source note on the table illustration');
     assert.equal(await page.locator('.v17r-market-postcard').count(),0,
       'The new illustrated market must not overlay old documentary photography');
+    if([390,1440].includes(width) && !noJs && !reduced){
+      const stage=await page.evaluate(()=>{
+        const market=document.querySelector('.v17r-market').getBoundingClientRect();
+        const photo=document.querySelector('.v17r-market-visual').getBoundingClientRect();
+        const copy=document.querySelector('.v17r-market-copy');
+        const gesture=document.querySelector('.v17r-gestures');
+        return {
+          marketWidth:market.width,
+          photoWidth:photo.width,
+          photoHeight:photo.height,
+          marketHeight:market.height,
+          copyBackground:getComputedStyle(copy).backgroundColor,
+          gestureCols:getComputedStyle(gesture).gridTemplateColumns,
+          duplicateGestures:document.querySelectorAll('.v17r-gestures-steps li').length,
+          decorativeNotes:document.querySelectorAll('.v17r-handnote,.v17r-calligraphy,.v17r-label').length
+        };
+      });
+      assert.ok(stage.photoWidth>=stage.marketWidth-2 &&
+        Math.abs(stage.photoHeight-stage.marketHeight)<3,
+        'Market artwork must span the WHOLE scene, not end at a green side panel: '+JSON.stringify(stage));
+      assert.equal(stage.copyBackground,'rgba(0, 0, 0, 0)',
+        'Market text must overlay photography without a solid green card');
+      assert.equal(stage.duplicateGestures,0,'No repeated Couper Piler Sentir pictograms');
+      assert.equal(stage.decorativeNotes,0,'No micro decorative text overlapping headlines');
+    }
     const marketDimensions=await marketImage.evaluate(el=>({
       loaded:el.complete&&el.naturalWidth>0,
       width:el.naturalWidth,height:el.naturalHeight
@@ -328,12 +353,12 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           clip:getComputedStyle(image).clipPath,
           mask:getComputedStyle(image).maskImage};
       });
-      assert.ok(heroFidelity && heroFidelity.firstLineRight<=heroFidelity.photoLeft,
-        'Hero heading must not touch the food photograph: '+JSON.stringify(heroFidelity));
-      assert.ok(heroFidelity.photoWidth>=heroFidelity.mediaWidth &&
-        heroFidelity.ratio>=1.2 && heroFidelity.ratio<=1.5 &&
-         (heroFidelity.clip!=='none'||heroFidelity.mask!=='none'),
-        'Hero food photograph must be monumental and non-elliptical: '+JSON.stringify(heroFidelity));
+      assert.ok(heroFidelity && heroFidelity.firstLineRight<=heroFidelity.photoLeft+heroFidelity.photoWidth*.22,
+        'The headline must remain outside the opaque part of the hero photo: '+JSON.stringify(heroFidelity));
+      assert.ok(heroFidelity.photoWidth>=heroFidelity.mediaWidth*.96 &&
+        heroFidelity.ratio>=.8 && heroFidelity.ratio<=1.8 &&
+        heroFidelity.clip==='none' && heroFidelity.mask.includes('linear-gradient'),
+        'Hero food photo must fill the chapter edge with a soft fade, not an image square: '+JSON.stringify(heroFidelity));
       const dessertComposition=await page.evaluate(()=>{
         const art=document.querySelector('.v17r-dessert-art')?.getBoundingClientRect();
         const scene=document.querySelector('.v17r-dessert-generated')?.getBoundingClientRect();
