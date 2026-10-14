@@ -378,41 +378,47 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         photoOpen.start.includes('inset(') && photoOpen.end.includes('inset('),
         'D14 table photograph must genuinely open while scrolling: '+JSON.stringify(photoOpen));
     }
-    // D15 three-frame typographic performance: chapter copy must arrive,
-    // dwell at full legibility, then visibly leave. Static screenshots do not
-    // validate this: sample actual computed styles at three scroll offsets.
+    // D16 REAL artistic-motion gate. D15 erroneously passed tiny 26-pixel
+    // changes; measure screen-space travel (not mere CSS inequality) while
+    // the headline is still visibly on-screen. Both desktop + mobile.
     if([390,1440].includes(width) && !noJs && !reduced){
-      const performance=await page.evaluate(async(width)=>{
+      const stageMotion=await page.evaluate(async(width)=>{
         const mobile=width<=760;
         const scene=document.querySelector(mobile?'.v17r-dessert':'.v17r-table');
         const title=scene.querySelector('h2');
         const sceneTop=scrollY+scene.getBoundingClientRect().top;
         const titleTop=scrollY+title.getBoundingClientRect().top;
         const sceneHeight=scene.getBoundingClientRect().height;
-        const start=mobile?titleTop-innerHeight*.93:sceneTop-innerHeight*.91;
-        const end=sceneTop+sceneHeight-innerHeight*(mobile?.11:.12);
+        const start=mobile?titleTop-innerHeight*.94:sceneTop-innerHeight*.90;
+        const end=mobile?titleTop-innerHeight*.04:
+          sceneTop+sceneHeight-innerHeight*.10;
         const samples=[];
-        for(const progress of [.03,.48,.97]){
+        for(const progress of [.025,.46,.955]){
           scrollTo({top:Math.max(0,start+(end-start)*progress),behavior:'instant'});
-          await new Promise(r=>setTimeout(r,1100));
-          const css=getComputedStyle(title);
+          await new Promise(r=>setTimeout(r,1000));
+          const style=getComputedStyle(title);
+          const matrix=new DOMMatrixReadOnly(style.transform);
+          const rect=title.getBoundingClientRect();
           samples.push({
-            opacity:Number(css.opacity),
-            transform:css.transform,
-            clipPath:css.clipPath,
+            opacity:Number(style.opacity),
+            x:Math.round(matrix.m41),y:Math.round(matrix.m42),
+            visibleY:Math.round(rect.top),
             progress
           });
         }
-        return {mobile,start,end,samples};
+        return {mobile,start,end,samples,viewport:{w:innerWidth,h:innerHeight}};
       },width);
-      const [arrive,hold,leave]=performance.samples;
-      assert.ok(performance.end>performance.start &&
-        hold.opacity>.86 && hold.opacity>arrive.opacity+.16 &&
-        hold.opacity>leave.opacity+.16 &&
-        arrive.transform!==hold.transform && hold.transform!==leave.transform &&
-        arrive.clipPath!==hold.clipPath && hold.clipPath!==leave.clipPath,
-        'D15 headings must enter, remain readable, then exit during actual scrolling: '+
-        JSON.stringify(performance));
+      const [enter,read,depart]=stageMotion.samples;
+      const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+      const minimum=width===390?95:145;
+      assert.ok(stageMotion.end>stageMotion.start &&
+        read.opacity>.90 && read.opacity>enter.opacity+.35 &&
+        read.opacity>depart.opacity+.35 &&
+        distance(enter,read)>minimum &&
+        distance(depart,read)>minimum,
+        'D16: title must visibly cross the screen, HOLD, and LEAVE while visible: '+
+        JSON.stringify(stageMotion));
+      console.log('V17 D16 ACTUAL TEXT MOTION '+width+'px '+JSON.stringify(stageMotion));
       await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
     }
     if(width===1440){
@@ -625,6 +631,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
   if(captureVideo)await recordMortarSequence(width,height);
   if(captureVideo)await recordHandoffReel(width,height);
   if(captureVideo)await recordContinuousStory(width,height);
+  if(captureVideo)await recordTextArrivalEvidence(width,height);
 }
 async function recordCleanScroll(width,height){
   const page=await browser.newPage({
@@ -789,6 +796,47 @@ async function recordContinuousStory(width,height){
       await video.saveAs('artifacts/v17-accueil-d15-integral-'+width+'.webm');
       console.log('V17 D15 verified uninterrupted seven-chapter scroll: '+width+'px');
     }
+  }
+}
+/**
+ * Evidence D16: actual before / middle / exit stills for TWO distinct scenes.
+ * Screenshots show the same scene at three scroll offsets and should never
+ * be mistaken for proof of smoothness; the full-scroll videos remain evidence.
+ */
+async function recordTextArrivalEvidence(width,height){
+  const page=await browser.newPage({
+    viewport:{width,height},isMobile:width<=430,hasTouch:width<=430,
+    reducedMotion:'no-preference'
+  });
+  try{
+    const response=await page.goto(base+'/v17-accueil-preview/',
+      {waitUntil:'networkidle',timeout:30000});
+    assert.equal(response?.status(),200);
+    for(const name of ['market','gestures','dessert']){
+      const scene=page.locator('.v17r-'+name);
+      const bounds=await scene.evaluate((el,mobile)=>{
+        const heading=el.querySelector('h2');
+        const sceneTop=scrollY+el.getBoundingClientRect().top;
+        const titleTop=scrollY+heading.getBoundingClientRect().top;
+        const end=mobile?titleTop-innerHeight*.04:
+          sceneTop+el.getBoundingClientRect().height-innerHeight*.10;
+        return {
+          start:mobile?titleTop-innerHeight*.94:sceneTop-innerHeight*(name==='gestures'?.85:.90),
+          end
+        };
+      },width<=760);
+      for(const [phase,ratio] of [['entry',.055],['read',.46],['exit',.88]]){
+        const y=Math.max(0,bounds.start+(bounds.end-bounds.start)*ratio);
+        await page.evaluate(v=>scrollTo({top:v,behavior:'instant'}),y);
+        await page.waitForTimeout(1150);
+        await page.screenshot({
+          path:'artifacts/v17-accueil-d16-'+name+'-'+width+'-'+phase+'.png',
+          animations:'allow'
+        });
+      }
+    }
+  }finally{
+    await page.close();
   }
 }
 /* Generated recipe artwork must also work on the real V16 recipe routes.
