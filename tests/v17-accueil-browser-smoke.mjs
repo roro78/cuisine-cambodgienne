@@ -166,14 +166,13 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           const elBox=el.getBoundingClientRect();
           if(st.clipPath==='inset(50%)' ||
             (elBox.width<=2 && elBox.height<=2 && st.overflow==='hidden'))continue;
-          const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,{
-            acceptNode(node){
-              return node.parentElement?.closest('[aria-hidden="true"]') ||
-                !node.nodeValue?.trim() ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
-            }
-          });
+          // Avoid passing a JS filter callback to native TreeWalker: Chromium
+          // may reclaim it during long scroll QA runs ('no longer runnable').
+          const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);
           let node;
           while((node=walker.nextNode())){
+            if(node.parentElement?.closest('[aria-hidden="true"]') ||
+              !node.nodeValue?.trim())continue;
             for(const match of node.nodeValue.matchAll(/\S+/g)){
               const range=document.createRange();
               range.setStart(node,match.index);
