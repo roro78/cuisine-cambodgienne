@@ -1440,6 +1440,19 @@
     max-width: 100%;
     overflow-wrap: break-word;
   }
+  .v17r-table-sub {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-height: 2.75rem;
+    padding: .6rem .25rem;
+    font-size: clamp(.8rem, 3.7vw, .96rem);
+    line-height: 1.35;
+    white-space: normal;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+  }
   .v17r-finale-copy {
     box-sizing: border-box;
     width: 100%;
