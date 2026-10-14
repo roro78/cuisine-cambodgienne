@@ -234,11 +234,18 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         '.v17r-dessert-generated img'];
       return selected.map(selector=>{
         const node=document.querySelector(selector);
-        return {selector,exists:!!node,loaded:!!node?.complete&&node.naturalWidth>0}
+        return {
+          selector,
+          exists:!!node,
+          hidden:!!node && getComputedStyle(node).display==='none',
+          loaded:!!node?.complete && node.naturalWidth>0
+        };
       });
     });
-    assert.ok(decorativeAssets.every(x=>x.exists&&x.loaded),
-      'All botanical SVG and genuine texture layers must load: '+JSON.stringify(decorativeAssets));
+    // A deliberately hidden responsive ornament is not fetched by Chromium
+    // when loading="lazy". That is a bandwidth win, not a missing resource.
+    assert.ok(decorativeAssets.every(x=>x.exists && (x.hidden || x.loaded)),
+      'Every visible botanical or food photograph must load: '+JSON.stringify(decorativeAssets));
     // The approved AI market is mandatory; no fallback to documentary photos.
     assert.equal(await page.locator('.v17r-market-visual--generated').count(),1,
       'The approved fictional land-market illustration must be the active scene');
