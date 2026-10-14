@@ -3,12 +3,13 @@ import fs from 'node:fs';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-// Reproducible PREVIEW lab run. Lighthouse scores are not real-user Core Web Vitals.
-// The preview intentionally uses noindex; its SEO score cannot establish that
-// the future public / route is indexed.
+// Reproducible lab audit of a preview or of the D8 public / release candidate.
+// Never confuse Lighthouse synthetic scores with real-user Core Web Vitals.
 const PORT=4352;
 const ROOT='http://127.0.0.1:'+PORT;
-const targetUrl=ROOT+'/v17-accueil-preview/';
+const routePath=process.env.V17_AUDIT_ROUTE || '/v17-accueil-preview/';
+const isPreview=routePath.includes('preview');
+const targetUrl=ROOT+routePath;
 const OUT='artifacts/v17-lighthouse-mobile.json';
 const SUMMARY='artifacts/v17-lighthouse-mobile-summary.json';
 const astroCli=fileURLToPath(new URL('../node_modules/astro/astro.js',import.meta.url));
@@ -59,7 +60,7 @@ try{
   await ready();
   await lighthouse();
   const report=JSON.parse(fs.readFileSync(OUT,'utf8'));
-  assert.equal(report.finalUrl,targetUrl,'Lighthouse must test the isolated V17 preview');
+  assert.equal(report.finalUrl,targetUrl,'Lighthouse must test the requested V17 route');
   const categories=Object.fromEntries(['performance','accessibility','seo'].map(key=>[
     key,Math.round((report.categories?.[key]?.score??0)*100)
   ]));
@@ -68,7 +69,7 @@ try{
     return Number.isFinite(audit?.numericValue)?Math.round(audit.numericValue):null;
   };
   const summary={
-    page:'V17 private noindex preview (not the public homepage)',
+    page:isPreview?'V17 private noindex preview':'V17 PUBLIC / homepage release candidate',
     audit:'Lighthouse mobile / simulated lab conditions',
     lighthouseVersion:report.lighthouseVersion,
     requestedUrl:targetUrl,
@@ -84,10 +85,19 @@ try{
       .filter(ref=>ref.weight>0 && (report.audits?.[ref.id]?.score??1)<.9)
       .map(ref=>({id:ref.id,title:report.audits?.[ref.id]?.title,
         score:report.audits?.[ref.id]?.score})),
-    note:'Scores are CI lab observations, NOT CrUX or field INP. Noindex is deliberate and penalizes preview SEO.'
+    note:isPreview
+      ? 'CI lab observations, not field INP/CrUX. Noindex is deliberate in preview.'
+      : 'Indexable public release-candidate /, assessed only in CI laboratory; not field INP/CrUX.'
   };
   fs.writeFileSync(SUMMARY,JSON.stringify(summary,null,2)+'\n');
   console.log('V17 LIGHTHOUSE LAB '+JSON.stringify(summary));
+  if(!isPreview){
+    assert.ok(categories.performance>=90,'D8 public performance below 90: '+JSON.stringify(categories));
+    assert.ok(categories.accessibility>=95,'D8 public accessibility below 95: '+JSON.stringify(categories));
+    assert.ok(categories.seo>=90,'D8 public indexable SEO below 90: '+JSON.stringify(categories));
+    assert.ok((summary.metrics.cumulativeLayoutShift??1)<=0.1,
+      'D8 public homepage has excessive layout shift');
+  }
 }catch(error){
   console.error('V17 Lighthouse run failed:',error.stack||error);
   process.exitCode=1;
