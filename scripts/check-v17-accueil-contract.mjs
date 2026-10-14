@@ -99,7 +99,7 @@ assert.match(script,/const mortarCinema =/,'Dedicated mortar storyboard missing'
 assert.match(script,/mortarCinema\(false\)/,'Desktop mortar motion missing');
 assert.match(script,/mortarCinema\(true\)/,'Mobile mortar motion missing');
 assert.equal(script.split("copyEntrance('.v17r-").length-1,8,
-  'Six desktop and four mobile staged entrances must remain intentional');
+  'Five desktop and three mobile generic entrances; mortar owns a separate film timeline');
 assert.match(script,/opacity: \.86/,'Entrances must keep text perceptible at every scroll position');
 assert.match(script,/start: 'top 90%'/,'Chapter reveals must track the native scroll instead of a timer');
 
