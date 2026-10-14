@@ -15,7 +15,7 @@
 
 ---
 
-**Statut : R?F?RENCE DE CONCEPTION VALID?E ? IMPL?MENTATION NON COMMENC?E.**  
+**Statut au 13 octobre 2026 (historique) : cadrage validé, chantier V17 encore non commencé à cette date. Voir la mise à jour D12 ci-dessus pour l’état actuel.**
 **Date de cadrage : 13 octobre 2026.**  
 **P?rim?tre : nouvelle page d?accueil uniquement ; toutes les autres pages restent accessibles et fonctionnelles.**  
 **Socle de d?part : main, commit 2b7387bae6ef88e815befe44227bafc777e8fca2.**
