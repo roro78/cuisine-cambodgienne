@@ -1199,3 +1199,145 @@
 @media(prefers-reduced-motion:reduce){
   .v17r-market-visual>img{transition:none!important;animation:none!important}
 }
+
+
+/* V17 D9 — two clearly identified Cambodian market photos, composed as one
+   editorial scene, never presented as a single documentary exposure.
+   Maintain full-viewport desktop chapters and organic transitions. */
+.v17r-market-visual>img{
+  inset:-23% auto auto -7%;
+  width:114%;
+  height:131%;
+  min-height:131%;
+  object-fit:cover;
+  object-position:50% 55%;
+  filter:saturate(1.28) contrast(1.065) brightness(1.055);
+}
+.v17r-market-postcard{
+  z-index:3;
+  left:2.8%;
+  bottom:8%;
+  width:clamp(15rem,29vw,32rem);
+  height:clamp(19rem,45svh,31rem);
+  transform:none;
+  border:3px solid #fff8e7;
+  border-radius:48% 52% 48% 52% / 13% 13% 15% 15%;
+  box-shadow:0 1.6rem 2.6rem rgba(7,31,15,.4);
+}
+.v17r-market-postcard img{object-position:53% 50%;filter:saturate(1.28) contrast(1.08)}
+.v17r-market-postcard span{
+  font-size:clamp(.64rem,.86vw,.8rem);
+  max-width:calc(100% - 1rem);
+  justify-self:center;
+  inset:auto .5rem .65rem;
+}
+.v17r-market-bloom{
+  z-index:3;
+  right:2%;
+  top:16%;
+  width:clamp(5rem,8vw,8rem);
+  transform:rotate(-17deg);
+  filter:drop-shadow(0 .5rem .5rem #1d3d253d);
+}
+.v17r-market-visual figcaption{
+  z-index:4;
+  max-width:100%;
+  padding-left:46%;
+  font-size:clamp(.61rem,.73vw,.76rem);
+  line-height:1.4;
+}
+
+/* Full-screen still life: botanical framing, no added photo provenance claims. */
+.v17r-palette-media .v17r-palette-foliage-left,
+.v17r-palette-media .v17r-palette-foliage-right{
+  z-index:0;
+  max-width:none;
+  width:clamp(14rem,22vw,27rem);
+  height:auto;
+  opacity:.87;
+  filter:drop-shadow(0 .6rem .85rem rgba(27,57,22,.12));
+}
+.v17r-palette-media .v17r-palette-foliage-left{
+  left:-12%;
+  top:27%;
+  transform:rotate(-34deg);
+}
+.v17r-palette-media .v17r-palette-foliage-right{
+  right:-11%;
+  top:16%;
+  transform:rotate(128deg) scaleX(-1);
+  opacity:.68;
+}
+.v17r-palette-media .v17r-palette-note-left,
+.v17r-palette-media .v17r-palette-note-right{
+  position:absolute;
+  z-index:2;
+  color:#31512b;
+  font-size:clamp(1.02rem,1.5vw,1.5rem);
+  line-height:1.15;
+  pointer-events:none;
+}
+.v17r-palette-media .v17r-palette-note-left{
+  left:18%;
+  top:12%;
+  transform:rotate(-10deg);
+}
+.v17r-palette-media .v17r-palette-note-right{
+  right:11%;
+  bottom:13%;
+  transform:rotate(8deg);
+}
+.v17r-palette .v17r-palette-a,
+.v17r-palette .v17r-palette-b{
+  z-index:2;
+}
+.v17r-palette .v17r-lemongrass{
+  z-index:2;
+  filter:drop-shadow(0 .7rem .6rem rgba(48,69,24,.15));
+}
+.v17r-palette .v17r-palette-lime,
+.v17r-palette .v17r-palette-chili,
+.v17r-palette .v17r-spice-bowls{z-index:2}
+
+@media(min-width:1200px){
+  .v17r-palette-media .v17r-palette-foliage-left{left:-9%;top:25%}
+  .v17r-palette-media .v17r-palette-foliage-right{right:-10%;top:10%}
+  .v17r-palette-media .v17r-palette-note-left{left:22%;top:12%}
+  .v17r-palette-media .v17r-palette-note-right{right:16%;bottom:13%}
+  .v17r-palette-a{left:7%;top:53%}
+  .v17r-palette-b{right:4%;top:15%}
+}
+@media(min-width:761px) and (max-width:1199px){
+  .v17r-market-postcard{width:clamp(10rem,30vw,18rem);height:clamp(13rem,42svh,23rem)}
+  .v17r-market-visual figcaption{padding-left:45%}
+  .v17r-palette-media .v17r-palette-foliage-left{left:-14%;width:clamp(13rem,21vw,19rem)}
+  .v17r-palette-media .v17r-palette-foliage-right{right:-14%;width:clamp(13rem,21vw,19rem)}
+  .v17r-palette-media .v17r-palette-note-left,.v17r-palette-media .v17r-palette-note-right{display:none}
+}
+@media(max-width:760px){
+  .v17r-market-visual>img{
+    inset:-16% auto auto -7%;
+    width:114%;
+    height:120%;
+    min-height:120%;
+    object-position:48% 50%;
+  }
+  .v17r-market-postcard{
+    left:3%;bottom:8%;
+    width:clamp(6.75rem,36vw,13rem);
+    height:67%;
+    border-width:2px;
+    border-radius:40% 60% 40% 60% / 14% 14% 13% 13%;
+  }
+  .v17r-market-postcard span{
+    inset:auto .25rem .35rem;
+    font-size:clamp(.53rem,2.1vw,.7rem);
+    line-height:1.1;
+  }
+  .v17r-market-bloom{top:7%;right:3%;width:clamp(3rem,10vw,4.5rem)}
+  .v17r-market-visual figcaption{padding-left:47%;font-size:.61rem}
+  .v17r-palette-media .v17r-palette-note-left,
+  .v17r-palette-media .v17r-palette-note-right{display:none}
+  .v17r-palette-media .v17r-palette-foliage-left,
+  .v17r-palette-media .v17r-palette-foliage-right{display:none}
+}
