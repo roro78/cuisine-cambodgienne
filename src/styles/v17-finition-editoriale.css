@@ -116,7 +116,7 @@
   column-gap:clamp(2rem,4.5vw,5.5rem);
   align-items:center;
   padding:clamp(3rem,5vw,6rem) clamp(1.3rem,4.2vw,5.5rem);
-  min-height:max(42rem,90svh);
+  min-height:max(42rem,86svh);
 }
 .v17r .v17r-gestures-visual{
   min-width:0;
