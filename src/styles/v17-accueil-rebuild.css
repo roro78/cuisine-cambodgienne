@@ -967,6 +967,7 @@
   object-position:51% 68%;
   filter:saturate(1.26) contrast(1.06) brightness(1.075);
 }
+.v17r-market-bloom img{display:block;width:100%;height:auto;max-width:100%}
 .v17r-market-visual figcaption{
   z-index:4;
   text-shadow:0 1px 5px rgba(0,0,0,.65);
@@ -1232,6 +1233,8 @@
   inset:auto .5rem .65rem;
 }
 .v17r-market-bloom{
+  position:absolute;
+  pointer-events:none;
   z-index:3;
   right:2%;
   top:16%;
