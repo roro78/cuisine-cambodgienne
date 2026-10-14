@@ -8,7 +8,6 @@ interface Props {
   image?: string;
   imageAlt?: string;
   noindex?: boolean;
-  preloadImage?: boolean;
 }
 
 const {
@@ -16,8 +15,7 @@ const {
   description = 'Recettes cambodgiennes, ingrédients, techniques et culture culinaire khmère : découvrez et cuisinez les saveurs du Cambodge.',
   image,
   imageAlt = 'Cuisine cambodgienne',
-  noindex = false,
-  preloadImage = false
+  noindex = false
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
@@ -69,7 +67,6 @@ const webpageSchema = {
 <meta name="twitter:description" content={description} />
 {imageURL && <meta name="twitter:image" content={imageURL} />}
 
-{preloadImage && image && <link rel="preload" as="image" href={image} fetchpriority="high" />}
 <link rel="canonical" href={canonicalURL} />
 <title>{title}</title>
 
