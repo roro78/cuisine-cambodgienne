@@ -439,8 +439,15 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         key,height:Math.round(el.getBoundingClientRect().height),cols:getComputedStyle(el).gridTemplateColumns
       }});
     });
-    assert.ok(Math.max(...rhythm.map(x=>x.height))-Math.min(...rhythm.map(x=>x.height))>100,
-      'Scenes must be different heights: '+JSON.stringify(rhythm));
+    if(width>=1024){
+      // User-approved viewport chapters are intentionally immersive, not
+      // artificially alternated short/long sections.
+      assert.ok(rhythm.every((scene,index)=>scene.height>=height*(index===0?.84:.94)),
+        'Every desktop chapter must occupy at least one useful screen: '+JSON.stringify(rhythm));
+    }else{
+      assert.ok(Math.max(...rhythm.map(x=>x.height))-Math.min(...rhythm.map(x=>x.height))>100,
+        'Mobile/tablet chapters must remain content-adaptive: '+JSON.stringify(rhythm));
+    }
     if(width===390 && !noJs){
       const menu=page.locator('[data-mobile-menu]');
       await menu.locator('summary').click();
