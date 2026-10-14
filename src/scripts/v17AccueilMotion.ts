@@ -117,8 +117,7 @@ export function initV17AccueilMotion() {
         { x: -direction * (mobile ? 8 : 30), opacity: .55,
           duration: .65, ease: 'power2.in' }, 3.94 + index * .1);
     });
-    // Guarantees a proper reading beat even in chapters with fewer elements.
-    timeline.set({}, {}, 4.7);
+    // The gap between reveal and departure is an intentional reading hold.
   };
 
   const heroDeparture = (mobile: boolean) => {
@@ -186,6 +185,18 @@ export function initV17AccueilMotion() {
       { scale: 1, rotation: 0, opacity: 1, ease: 'power2.out', duration: 1.45, immediateRender: false }, 1.1);
     if (progress) timeline.fromTo(progress,
       { scaleX: .08 }, { scaleX: 1, ease: 'none', duration: 2.7, immediateRender: false }, 0);
+    // D15: words leave individually, as the photograph gives way to the table.
+    words.forEach((word, index) => timeline.to(word, {
+      x: mobile ? -20 : -63, y: mobile ? -8 : -23,
+      opacity: .32, duration: .64, ease: 'power2.in',
+    }, 3.18 + index * .14));
+    if (closeup) timeline.to(closeup,
+      { xPercent: mobile ? 6 : 18, rotation: mobile ? 2 : 8,
+        scale: .91, opacity: .55, duration: .9, ease: 'power2.in' }, 3.15);
+    if (description) timeline.to(description,
+      { y: mobile ? -9 : -23, opacity: .52, duration: .66, ease: 'power2.in' }, 3.48);
+    if (action) timeline.to(action,
+      { x: mobile ? -9 : -29, opacity: .55, duration: .58, ease: 'power2.in' }, 3.62);
   };
 
 
@@ -262,6 +273,39 @@ export function initV17AccueilMotion() {
     }
   };
 
+  /** An ingredient, flower or seal travels in and leaves with the chapter. */
+  const objectPerformance = (mobile: boolean) => {
+    const objects = [
+      {chapter: '.v17r-hero', item: '.v17r-hero-flower-dish', direction: 1},
+      {chapter: '.v17r-palette', item: '.v17r-palette-flower', direction: -1},
+      {chapter: '.v17r-palette', item: '.v17r-palette-chili', direction: 1},
+      {chapter: '.v17r-table', item: '.v17r-table-flower', direction: -1},
+      {chapter: '.v17r-finale', item: '.v17r-finale-stamp', direction: 1},
+    ];
+    for (const {chapter, item, direction} of objects) {
+      const frame = root.querySelector<HTMLElement>(chapter);
+      const detail = frame?.querySelector<HTMLElement>(item);
+      if (!frame || !detail || getComputedStyle(detail).display === 'none') continue;
+      const motion = gsap.timeline({
+        scrollTrigger: {
+          trigger: frame,
+          start: 'top 93%', end: 'bottom 18%',
+          scrub: mobile ? .55 : .85,
+          invalidateOnRefresh: true,
+        },
+      });
+      motion.fromTo(detail,
+        { xPercent: direction * (mobile ? 12 : 29), yPercent: mobile ? 10 : 18,
+          rotation: direction * (mobile ? 8 : 14), scale: .86, opacity: .35 },
+        { xPercent: 0, yPercent: 0, rotation: 0, scale: 1, opacity: 1,
+          duration: 1.1, ease: 'power2.out', immediateRender: false }, .15);
+      motion.to(detail,
+        { xPercent: -direction * (mobile ? 9 : 24), yPercent: mobile ? -7 : -13,
+          rotation: -direction * 8, scale: .95, opacity: .47,
+          duration: .76, ease: 'power2.in' }, 3.25);
+    }
+  };
+
   mm.add('(min-width: 761px) and (prefers-reduced-motion: no-preference)', () => {
     // 1. Hero: quiet depth, never displacing the headline or CTA.
     sceneMotion('.v17r-hero-dish img', { scale: 1.09, yPercent: 2 }, { scale: 1.005, yPercent: -2 });
@@ -286,6 +330,7 @@ export function initV17AccueilMotion() {
     sceneMotion('.v17r-finale-landscape img', { scale: 1.09, yPercent: -3 }, { scale: 1.01, yPercent: 2 });
     // D15 editorial choreography: visible arrival, reading beat, exit.
     heroDeparture(false);
+    objectPerformance(false);
     chapterPerformance('.v17r-market', 1, false);
     chapterPerformance('.v17r-palette', -1, false);
     chapterPerformance('.v17r-table', 1, false);
@@ -312,6 +357,7 @@ export function initV17AccueilMotion() {
     sceneHandoffs(true);
     // D15 mobile uses heading-driven movement, not offscreen scene entrances.
     heroDeparture(true);
+    objectPerformance(true);
     chapterPerformance('.v17r-market', 1, true);
     chapterPerformance('.v17r-palette', -1, true);
     chapterPerformance('.v17r-table', 1, true);
