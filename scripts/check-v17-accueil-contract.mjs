@@ -90,7 +90,15 @@ assert.match(script,/\.v17r-palette-a/);
 assert.match(script,/\.v17r-palette-b/);
 assert.match(script,/scrub: \.75/);
 assert.match(script,/const copyEntrance =/,'V17 chapters must have a dedicated editorial reveal grammar');
-assert.equal(script.split("copyEntrance('.v17r-").length-1,10,
+assert.match(page,/v17r-gestures--cinematic/,'Mortar cinematic composition missing');
+assert.match(page,/data-v17-mortar-scene/,'Mortar scroll trigger missing');
+assert.equal((page.match(/v17r-gesture-word/g)||[]).length,4,
+  'Mortar requires three independent animated words and accent class');
+assert.match(page,/v17-mortar-cinema\.css/,'Mortar last-scene stylesheet must be loaded');
+assert.match(script,/const mortarCinema =/,'Dedicated mortar storyboard missing');
+assert.match(script,/mortarCinema\(false\)/,'Desktop mortar motion missing');
+assert.match(script,/mortarCinema\(true\)/,'Mobile mortar motion missing');
+assert.equal(script.split("copyEntrance('.v17r-").length-1,8,
   'Six desktop and four mobile staged entrances must remain intentional');
 assert.match(script,/opacity: \.86/,'Entrances must keep text perceptible at every scroll position');
 assert.match(script,/start: 'top 90%'/,'Chapter reveals must track the native scroll instead of a timer');
