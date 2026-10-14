@@ -414,3 +414,23 @@
     border-radius:2.7rem .8rem 2rem 1.4rem;
   }
 }
+
+/*
+ * D12 — Full-screen editorial acts are a deliberate owner-approved choice.
+ * Keep the existing ivory/forest/coral/yellow palette intact. Use minimum
+ * viewport presence, not fixed heights: text can grow at zoom / localization.
+ * The opening scene accounts for the shared desktop navigation.
+ */
+@media (min-width:1024px) {
+  .v17r .v17r-hero {
+    min-height:max(44rem, calc(100svh - 5.5rem));
+  }
+  .v17r .v17r-market,
+  .v17r .v17r-palette,
+  .v17r .v17r-gestures,
+  .v17r .v17r-table,
+  .v17r .v17r-dessert,
+  .v17r .v17r-finale {
+    min-height:max(44rem, 100svh);
+  }
+}
