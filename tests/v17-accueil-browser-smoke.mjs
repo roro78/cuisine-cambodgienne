@@ -53,6 +53,15 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
   try{
     const res=await page.goto(base+'/v17-accueil-preview/',{waitUntil:'networkidle',timeout:30000});
     assert.equal(res?.status(),200);
+    // Snapshot before the scripted full-page scroll. LCP measured after scrolling
+    // would describe the test journey rather than the page's initial render.
+    const initialLoad=(!noJs && !reduced && [390,1440].includes(width))
+      ? await page.evaluate(()=>({
+          lcpMs:window.__v17Lab?.lcpMs ?? null,
+          cls:window.__v17Lab?.cls ?? null,
+          navigationMs:performance.getEntriesByType('navigation')[0]?.duration??null
+        }))
+      : null;
     assert.match(await page.locator('meta[name="robots"]').getAttribute('content'),/noindex/);
     assert.equal(await page.locator('h1').count(),1);
     assert.equal(await page.locator('.v17r h2').count(),6);
@@ -294,21 +303,22 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     // LCP/CLS are synthetic Chromium values affected by CI hardware and scripted
     // scrolling. They are reported, never treated as field performance scores.
     if(!noJs && !reduced && [390,1440].includes(width)){
-      const metrics=await page.evaluate(() => {
+      const metrics=await page.evaluate((initialLoad) => {
         const resource=performance.getEntriesByType('resource');
         const images=resource.filter(x=>x.initiatorType==='img');
         const paints=performance.getEntriesByType('paint');
         return {
           viewport:{width:innerWidth,height:innerHeight},
           observedAtMs:Math.round(performance.now()),
-          lcpMs:window.__v17Lab?.lcpMs ?? null,
-          cls:window.__v17Lab?.cls ?? null,
+          initialLoad,
+          postScrollLcpMs:window.__v17Lab?.lcpMs ?? null,
+          postScrollCls:window.__v17Lab?.cls ?? null,
           firstContentfulPaintMs:paints.find(x=>x.name==='first-contentful-paint')?.startTime??null,
           imageRequests:images.length,
           knownImageTransferBytes:images.reduce((sum,x)=>sum+(x.transferSize||0),0),
-          note:'CI Chromium lab observation; not Lighthouse, Safari, mobile-device or real-user CWV'
+          note:'Initial-load LCP is captured before scripted scrolling; post-scroll LCP/CLS are not field CWV. Chromium CI lab only.'
         };
-      });
+      },initialLoad);
       await fs.mkdir('artifacts',{recursive:true});
       await fs.writeFile('artifacts/v17-accueil-d7-metrics-'+width+'.json',
         JSON.stringify(metrics,null,2)+'\\n');
@@ -393,7 +403,9 @@ try{
   await waitForServer();
   browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,
     args:['--no-sandbox','--disable-dev-shm-usage']});
-  for(const [w,h] of [[1440,900],[390,844],[320,640],[360,800],[430,932],[768,1024],[1024,768]]){
+  // 1920 = wide desktop. 640 = responsive layout reflow corresponding to
+  // 1280 CSS px at 200% browser zoom; this is not a substitute for actual zoom QA.
+  for(const [w,h] of [[1920,1080],[1440,900],[1024,768],[768,1024],[640,720],[430,932],[390,844],[360,800],[320,640]]){
     await run(w,h,{screenshot:true});
   }
   await run(390,844,{reduced:true});
