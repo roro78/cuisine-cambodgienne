@@ -145,6 +145,29 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       marketPostcard.card.right<=marketPostcard.frame.right+1 &&
       marketPostcard.card.bottom<=marketPostcard.frame.bottom+1,
       'Market postcard must stay inside the photographed market frame: '+JSON.stringify(marketPostcard));
+    // D7 editorial finish: separate verified photos form an organic inset,
+    // not a fake photograph of one composite Phnom Penh market.
+    if([390,1440].includes(width) && !noJs && !reduced){
+      const stage=await page.evaluate(()=>{
+        const inset=document.querySelector('.v17r-market-postcard');
+        const mortar=document.querySelector('.v17r-gestures-main');
+        const caption=document.querySelector('.v17r-market-visual figcaption');
+        const ingredients=document.querySelectorAll('.v17r-palette-media figure img');
+        return {
+          marketInsetShape:getComputedStyle(inset).borderTopLeftRadius,
+          insetTransform:getComputedStyle(inset).transform,
+          mortarShape:getComputedStyle(mortar).borderTopLeftRadius,
+          captionVisible:getComputedStyle(caption).display!=='none',
+          photographedIngredients:ingredients.length,
+          seamCount:document.querySelectorAll('.v17r-wave svg').length
+        };
+      });
+      assert.notEqual(stage.marketInsetShape,'0px','Market inset requires organic cropping: '+JSON.stringify(stage));
+      assert.equal(stage.insetTransform,'none','Market inset must not be a tilted Polaroid: '+JSON.stringify(stage));
+      assert.notEqual(stage.mortarShape,'0px','Mortar photo requires a distinct composition: '+JSON.stringify(stage));
+      assert.ok(stage.captionVisible && stage.photographedIngredients===2 && stage.seamCount===3,
+        'V17 ingredients, photographic credit and scene seams: '+JSON.stringify(stage));
+    }
     if(width===1440){
       const immersive=await page.evaluate(()=>({
         hero:document.querySelector('.v17r-hero').getBoundingClientRect().height,
@@ -259,7 +282,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       await fs.mkdir('artifacts',{recursive:true});
       await page.screenshot({path:'artifacts/v17-accueil-'+width+'.png',fullPage:true,animations:'disabled'});
       if([390,1440].includes(width)){
-        for(const scene of ['hero','table','dessert']){
+        for(const scene of ['hero','market','palette','gestures','table','dessert']){
           await page.locator('.v17r-'+scene).screenshot({
             path:'artifacts/v17-accueil-'+width+'-'+scene+'.png',
             animations:'disabled',
