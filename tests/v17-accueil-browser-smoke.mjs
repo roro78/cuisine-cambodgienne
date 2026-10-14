@@ -378,6 +378,43 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         photoOpen.start.includes('inset(') && photoOpen.end.includes('inset('),
         'D14 table photograph must genuinely open while scrolling: '+JSON.stringify(photoOpen));
     }
+    // D15 three-frame typographic performance: chapter copy must arrive,
+    // dwell at full legibility, then visibly leave. Static screenshots do not
+    // validate this: sample actual computed styles at three scroll offsets.
+    if([390,1440].includes(width) && !noJs && !reduced){
+      const performance=await page.evaluate(async(width)=>{
+        const mobile=width<=760;
+        const scene=document.querySelector(mobile?'.v17r-dessert':'.v17r-table');
+        const title=scene.querySelector('h2');
+        const sceneTop=scrollY+scene.getBoundingClientRect().top;
+        const titleTop=scrollY+title.getBoundingClientRect().top;
+        const sceneHeight=scene.getBoundingClientRect().height;
+        const start=mobile?titleTop-innerHeight*.93:sceneTop-innerHeight*.91;
+        const end=sceneTop+sceneHeight-innerHeight*(mobile?.11:.12);
+        const samples=[];
+        for(const progress of [.03,.48,.97]){
+          scrollTo({top:Math.max(0,start+(end-start)*progress),behavior:'instant'});
+          await new Promise(r=>setTimeout(r,1100));
+          const css=getComputedStyle(title);
+          samples.push({
+            opacity:Number(css.opacity),
+            transform:css.transform,
+            clipPath:css.clipPath,
+            progress
+          });
+        }
+        return {mobile,start,end,samples};
+      },width);
+      const [arrive,hold,leave]=performance.samples;
+      assert.ok(performance.end>performance.start &&
+        hold.opacity>.86 && hold.opacity>arrive.opacity+.16 &&
+        hold.opacity>leave.opacity+.16 &&
+        arrive.transform!==hold.transform && hold.transform!==leave.transform &&
+        arrive.clipPath!==hold.clipPath && hold.clipPath!==leave.clipPath,
+        'D15 headings must enter, remain readable, then exit during actual scrolling: '+
+        JSON.stringify(performance));
+      await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
+    }
     if(width===1440){
       const immersive=await page.evaluate(()=>({
         hero:document.querySelector('.v17r-hero').getBoundingClientRect().height,
@@ -587,6 +624,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
   if(captureVideo)await recordCleanScroll(width,height);
   if(captureVideo)await recordMortarSequence(width,height);
   if(captureVideo)await recordHandoffReel(width,height);
+  if(captureVideo)await recordContinuousStory(width,height);
 }
 async function recordCleanScroll(width,height){
   const page=await browser.newPage({
@@ -698,6 +736,58 @@ async function recordHandoffReel(width,height){
     if(video){
       await video.saveAs('artifacts/v17-accueil-d14-transitions-'+width+'.webm');
       console.log('V17 D14 all six boundary clips recorded: '+width+'px');
+    }
+  }
+}
+/**
+ * D15 proof, not a 2-second jump cut: one full, uninterrupted seven-act
+ * scroll. Roughly a minute of actual browser motion, including readable holds
+ * at every chapter's centre and footer. Recorded for both 390 and 1440 px.
+ */
+async function recordContinuousStory(width,height){
+  const page=await browser.newPage({
+    viewport:{width,height},
+    isMobile:width<=430,hasTouch:width<=430,
+    reducedMotion:'no-preference',
+    recordVideo:{dir:'artifacts',
+      size:width===1440?{width:960,height:600}:{width:390,height:844}}
+  });
+  const video=page.video();
+  try{
+    const response=await page.goto(base+'/v17-accueil-preview/',{waitUntil:'networkidle',timeout:30000});
+    assert.equal(response?.status(),200);
+    const timeline=await page.evaluate(()=>{
+      const chapters=['hero','market','palette','gestures','table','dessert','finale'];
+      const centres=chapters.map(name=>{
+        const el=document.querySelector('.v17r-'+name);
+        const box=el.getBoundingClientRect();
+        return Math.round(scrollY+box.top+box.height*.5-innerHeight*.5);
+      });
+      return {
+        total:document.documentElement.scrollHeight-innerHeight,
+        centres
+      };
+    });
+    const step=Math.max(13,Math.round(height*.018));
+    await page.waitForTimeout(1200);
+    const held=new Set();
+    for(let y=0;y<=timeline.total;y+=step){
+      await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),y);
+      await page.waitForTimeout(90);
+      for(let i=0;i<timeline.centres.length;i++){
+        if(!held.has(i) && y>=timeline.centres[i]){
+          held.add(i);
+          await page.waitForTimeout(850);
+        }
+      }
+    }
+    await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),timeline.total);
+    await page.waitForTimeout(900);
+  }finally{
+    await page.close();
+    if(video){
+      await video.saveAs('artifacts/v17-accueil-d15-integral-'+width+'.webm');
+      console.log('V17 D15 verified uninterrupted seven-chapter scroll: '+width+'px');
     }
   }
 }
