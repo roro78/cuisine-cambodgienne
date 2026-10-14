@@ -88,8 +88,10 @@ export function initV17AccueilMotion() {
       scrollTrigger: {
         trigger: mobile ? heading : chapter,
         start: mobile ? 'top 94%' : 'top 90%',
-        endTrigger: chapter,
-        end: mobile ? 'bottom 10%' : 'bottom 10%',
+        // Mobile copy is often BELOW the photo: finish while the headline is
+        // still visible rather than after it has naturally scrolled away.
+        endTrigger: mobile ? heading : chapter,
+        end: mobile ? 'top 4%' : 'bottom 10%',
         scrub: mobile ? .28 : .42,
         invalidateOnRefresh: true,
       },
@@ -170,9 +172,10 @@ export function initV17AccueilMotion() {
     const progress = scene.querySelector<HTMLElement>('.v17r-gestures-progress span');
     const timeline = gsap.timeline({
       scrollTrigger: {
-        trigger: scene,
-        start: 'top 85%',
-        end: mobile ? 'bottom 20%' : 'bottom 22%',
+        trigger: mobile ? (words[0] ?? scene) : scene,
+        start: mobile ? 'top 95%' : 'top 85%',
+        endTrigger: mobile ? (words[0] ?? scene) : scene,
+        end: mobile ? 'top 4%' : 'bottom 22%',
         scrub: mobile ? .65 : .85,
         invalidateOnRefresh: true,
       },
