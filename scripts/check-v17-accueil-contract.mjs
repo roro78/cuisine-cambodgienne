@@ -128,8 +128,8 @@ assert.ok(script.includes('timeline.to(heading, { ...departure'),
   'D16: chapter title must exit after a reading hold');
 assert.ok(script.includes('mobile ? 155 : 190'),
   'D16: individual mortar words require cinematic lateral trajectories');
-assert.match(script,/endTrigger: chapter/,
-  'D15: heading motion must span visible chapter, not autoplay');
+assert.ok(script.includes('endTrigger: mobile ? heading : chapter'),
+  'D16: mobile title exits must finish on the visible heading, desktop on chapter');
 assert.match(script,/scrub: mobile/,
   'D15: motion must respond to native scrolling on both form factors');
 assert.doesNotMatch(script,/pin:\s*true|ScrollSmoother|window\.scrollTo/);
