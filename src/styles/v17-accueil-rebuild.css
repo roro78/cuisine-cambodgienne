@@ -1440,4 +1440,18 @@
     max-width: 100%;
     overflow-wrap: break-word;
   }
+  .v17r-finale-copy {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+  .v17r-finale h2 {
+    width: 100%;
+    max-width: 100%;
+    font-size: clamp(2.1rem, 10.5vw, 3rem);
+    line-height: 1.03;
+    letter-spacing: -.045em;
+    overflow-wrap: break-word;
+  }
 }
