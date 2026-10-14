@@ -155,7 +155,9 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     }
     const decorativeAssets=await page.evaluate(()=>{
       const selected=['.v17r-hero-green-corner','.v17r-hero-flower-dish',
-        '.v17r-lemongrass','.v17r-palette-lime','.v17r-gestures-kroeung img',
+        '.v17r-lemongrass','.v17r-palette-lime','.v17r-market-bloom',
+        '.v17r-palette-foliage-left','.v17r-palette-foliage-right',
+        '.v17r-gestures-kroeung img',
         '.v17r-dessert-generated img'];
       return selected.map(selector=>{
         const node=document.querySelector(selector);
@@ -174,6 +176,11 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     });
     assert.ok(marketPostcard.photoLoaded && marketPostcard.frame && marketPostcard.card,
       'Market must include the separately sourced fruit photograph: '+JSON.stringify(marketPostcard));
+    const editorialMarket=await page.locator('.v17r-market-visual figcaption').innerText();
+    assert.match(editorialMarket,/photographies distinctes/i,
+      'The editorial collage must not masquerade as one documentary exposure');
+    assert.match(editorialMarket,/Radosław Botev/);
+    assert.match(editorialMarket,/McKay Savage/);
     assert.ok(marketPostcard.card.x>=marketPostcard.frame.x-1 &&
       marketPostcard.card.y>=marketPostcard.frame.y-1 &&
       marketPostcard.card.right<=marketPostcard.frame.right+1 &&
@@ -193,13 +200,15 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           mortarShape:getComputedStyle(mortar).borderTopLeftRadius,
           captionVisible:getComputedStyle(caption).display!=='none',
           photographedIngredients:ingredients.length,
+          botanicalLayers:document.querySelectorAll('.v17r-palette-foliage-left,.v17r-palette-foliage-right').length,
           seamCount:document.querySelectorAll('.v17r-wave svg').length
         };
       });
       assert.notEqual(stage.marketInsetShape,'0px','Market inset requires organic cropping: '+JSON.stringify(stage));
       assert.equal(stage.insetTransform,'none','Market inset must not be a tilted Polaroid: '+JSON.stringify(stage));
       assert.notEqual(stage.mortarShape,'0px','Mortar photo requires a distinct composition: '+JSON.stringify(stage));
-      assert.ok(stage.captionVisible && stage.photographedIngredients===2 && stage.seamCount===3,
+      assert.ok(stage.captionVisible && stage.photographedIngredients===2 &&
+        stage.botanicalLayers===2 && stage.seamCount===3,
         'V17 ingredients, photographic credit and scene seams: '+JSON.stringify(stage));
     }
     if(width===1440){
