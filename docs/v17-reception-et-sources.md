@@ -11,23 +11,19 @@
 - Les images générées par IA (hero Amok, tablée, desserts ; visuels des fiches Lok Lak / Num Banh Chok) sont **annoncées comme illustrations**, pas comme reportages ni preuves d'authenticité culinaire.
 - Site public `/` inchangé, preview `/v17-accueil-preview/` en `noindex`, absente du sitemap et du menu principal ; aucun merge ni déploiement OVH.
 
-## Nouvelle scène du marché terrestre — intégration préparée
+## Nouvelle scène du marché terrestre — intégration validée dans la preview
 
-- Le commanditaire a refusé l'ancienne illustration (fleuve et silhouettes d'Angkor Wat près du marché, géographie fantaisiste). Elle **ne doit jamais être utilisée**.
-- Une **nouvelle illustration IA** montre un marché **terrestre** inspiré du Cambodge : étals, citronnelle, piments, vendeuses, parasols ; **pas de fleuve, pas d'Angkor Wat**, aucune prétention à une photographie d'un lieu existant.
-- Asset exact accepté dans la conversation : `v17-marche-cambodgien-ia.webp`, **1672 × 941 px**, WebP, **SHA-256 `f6556fcfdf3de5159e12083d40cf96872a1000d956b1e2eb9874f8bec272721b`**, environ 281 Ko.
-- **Gate binaire ouvert :** le connecteur GitHub utilisé ici ne copie pas de fichier local vers le dépôt ; le WebP n'a pas été commité. Ne pas annoncer sa présence dans la preview.
-- Une fois l'asset placé dans le dépôt, `src/pages/v17-accueil-preview.astro` détecte automatiquement sa présence au build Astro ; il remplace les deux photos documentaires par cette illustration en conservant une légende explicite **« illustration éditoriale générée par IA · scène fictive »**. Tant que le fichier manque, les deux véritables photos et leurs auteurs restent utilisés comme alternative honnête.
-- Import local sûr et reproductible à partir du fichier fourni dans la conversation :
-  ```bash
-  node scripts/import-v17-market-artwork.mjs /chemin/vers/v17-marche-cambodgien-ia.webp
-  git add public/images/cuisine/v17-marche-cambodgien-ia.webp
-  ```
-  L'importeur rejette les autres images et les WebP ne correspondant pas à l'empreinte validée. Relancer les tests après le commit pour vérifier le **véritable parcours de la nouvelle image** ; la CI actuelle sans asset vérifie seulement le fallback.
+- L'ancienne illustration avec fleuve et silhouettes d'Angkor Wat a été refusée car géographiquement trompeuse ; elle **n'est pas utilisée**.
+- Nouvelle illustration **fictive générée par IA**, représentant un marché **terrestre** inspiré du Cambodge, avec étals, citronnelle, piments, légumes et vendeuses. Il ne s'agit ni d'un reportage ni de la représentation d'un lieu réel.
+- **Fichier commité :** `public/images/cuisine/v17-marche-cambodgien-ia.webp` ; **1672 × 941 px**, **288 180 octets**, SHA-256 attendu et contrôlé : `f6556fcfdf3de5159e12083d40cf96872a1000d956b1e2eb9874f8bec272721b`.
+- La preview utilise **toujours** ce média approuvé : aucun retour silencieux vers les anciennes photographies n'est permis. Le contrat `scripts/check-v17-accueil-contract.mjs` doit bloquer la CI si le fichier est manquant, altéré ou si le template renvoie au montage documentaire.
+- Le `alt` et la légende de scène qualifient expressément l'illustration de **création IA / scène fictive**, conformément à son statut.
+- La validation visuelle a été réalisée sur les captures navigateur desktop 1440 px et mobile 390 px de la CI du 14/10/2026. Les sections desktop gardent leur déroulement plein écran, et la version mobile conserve sa hauteur naturelle.
+- L'utilitaire `scripts/import-v17-market-artwork.mjs` reste disponible pour réimporter **exactement ce WebP** depuis une copie locale vérifiée ; aucune régénération non approuvée ne peut être substituée sans actualiser le contrat d'empreinte et les captures de recette.
 
 ## Sourcing des photographies de la preview
 
-La présente liste est une vérification des **pages source et licences indiquées**, pas un avis juridique global ni une vérification exhaustive des droits de tiers éventuellement représentés.
+La présente liste documente également les médias photographiques historiques encore présents dans le dépôt, **même lorsqu'ils ne sont plus affichés dans la preview V17**. Les deux anciennes photos de marché ne sont plus utilisées dans cette scène. Ce suivi des sources n'est pas un avis juridique global ni une vérification exhaustive des droits de tiers éventuellement représentés.
 
 | Média ou usage | Origine / auteur | Licence annoncée sur la page d'origine | Source et indication |
 | --- | --- | --- | --- |
