@@ -118,6 +118,80 @@ export function initV17AccueilMotion() {
       { scaleX: .08 }, { scaleX: 1, ease: 'none', duration: 2.7, immediateRender: false }, 0);
   };
 
+
+  /**
+   * D14 — chapter-to-chapter animation, never a page transition or scroll
+   * replacement. Decorative bridges and photo frames only; real content
+   * remains usable at every point, without JS and with reduced motion.
+   */
+  const sceneHandoffs = (mobile: boolean) => {
+    const scrub = mobile ? .45 : .8;
+    const bridges = [
+      {selector: '.v17r-handoff--aroma svg', x: mobile ? -2 : -7, scale: .76},
+      {selector: '.v17r-handoff--sweet svg', x: mobile ? 2 : 6, scale: .83},
+      {selector: '.v17r-handoff--journey svg', x: mobile ? -2 : -5, scale: .78},
+    ];
+    for (const {selector, x, scale} of bridges) {
+      const sheet = root.querySelector<SVGSVGElement>(selector);
+      if (!sheet) continue;
+      gsap.fromTo(sheet,
+        { xPercent: x, yPercent: -50, scaleY: scale },
+        {
+          xPercent: 0, yPercent: -50, scaleY: 1,
+          ease: 'none', overwrite: 'auto',
+          scrollTrigger: {
+            trigger: sheet.parentElement ?? sheet,
+            start: 'top 95%', end: 'top 35%',
+            scrub, invalidateOnRefresh: true,
+          },
+        });
+    }
+
+    // Progressive photographic reveal: left at market, top at the table,
+    // right for the desserts, bottom at Angkor. Underlying scene background
+    // deliberately stays visible during the handoff.
+    const photographs = [
+      {section: '.v17r-market', frame: '.v17r-market-visual', edge: 'left', crop: mobile ? 7 : 13},
+      {section: '.v17r-table', frame: '.v17r-table-media', edge: 'top', crop: mobile ? 6 : 11},
+      {section: '.v17r-dessert', frame: '.v17r-dessert-art', edge: 'right', crop: mobile ? 7 : 13},
+      {section: '.v17r-finale', frame: '.v17r-finale-landscape', edge: 'bottom', crop: mobile ? 6 : 12},
+    ] as const;
+    for (const {section, frame, edge, crop} of photographs) {
+      const chapter = root.querySelector<HTMLElement>(section);
+      const artwork = root.querySelector<HTMLElement>(frame);
+      if (!chapter || !artwork) continue;
+      const cropped = {
+        left: 'inset(0% 0% 0% ' + crop + '%)',
+        right: 'inset(0% ' + crop + '% 0% 0%)',
+        top: 'inset(' + crop + '% 0% 0% 0%)',
+        bottom: 'inset(0% 0% ' + crop + '% 0%)',
+      }[edge];
+      gsap.fromTo(artwork, {clipPath: cropped}, {
+        clipPath: 'inset(0% 0% 0% 0%)',
+        ease: 'none', overwrite: 'auto',
+        scrollTrigger: {
+          trigger: chapter,
+          start: 'top 94%', end: 'top 37%',
+          scrub, invalidateOnRefresh: true,
+        },
+      });
+    }
+
+    // The market-to-ingredients bridge has a softer botanical approach,
+    // rather than yet another cropped photograph.
+    if (!mobile) {
+      const palette = root.querySelector<HTMLElement>('.v17r-palette');
+      const stillLife = root.querySelector<HTMLElement>('.v17r-palette-media');
+      if (palette && stillLife) gsap.fromTo(stillLife, {yPercent: 4}, {
+        yPercent: 0, ease: 'none', overwrite: 'auto',
+        scrollTrigger: {
+          trigger: palette, start: 'top 93%', end: 'top 36%',
+          scrub: .7, invalidateOnRefresh: true,
+        },
+      });
+    }
+  };
+
   mm.add('(min-width: 761px) and (prefers-reduced-motion: no-preference)', () => {
     // 1. Hero: quiet depth, never displacing the headline or CTA.
     sceneMotion('.v17r-hero-dish img', { scale: 1.09, yPercent: 2 }, { scale: 1.005, yPercent: -2 });
@@ -147,6 +221,7 @@ export function initV17AccueilMotion() {
     copyEntrance('.v17r-table', ['.v17r-table h2', '.v17r-table-copy > p:not(.v17r-kicker)', '.v17r-table .v17r-pill']);
     copyEntrance('.v17r-dessert', ['.v17r-dessert h2', '.v17r-dessert-copy > p:not(.v17r-kicker)', '.v17r-dessert .v17r-pill'], -19);
     copyEntrance('.v17r-finale', ['.v17r-finale h2', '.v17r-finale-copy > p:not(.v17r-kicker)', '.v17r-finale-actions'], 0, 32);
+    sceneHandoffs(false);
     // Organic seams move gently as chapter boundaries, without pinning.
     sceneMotion('.v17r-wave-green svg', { scaleX: 1.05, xPercent: -1 }, { scaleX: 1.05, xPercent: 1 });
     sceneMotion('.v17r-wave-cream svg', { scaleX: 1.05, xPercent: 1 }, { scaleX: 1.05, xPercent: -1 });
@@ -164,6 +239,7 @@ export function initV17AccueilMotion() {
     sceneMotion('.v17r-table-amok img', { scale: 1.035 }, { scale: 1.005 });
     sceneMotion('.v17r-finale-landscape img', { scale: 1.04 }, { scale: 1.005 });
     mortarCinema(true);
+    sceneHandoffs(true);
     // Native touch scrolling with lower motion amplitude than on desktop.
     copyEntrance('.v17r-market', ['.v17r-market h2', '.v17r-market .v17r-pill'], 0, 11);
 
