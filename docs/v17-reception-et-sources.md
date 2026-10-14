@@ -40,7 +40,9 @@ La présente liste documente également les médias photographiques historiques 
 
 ## Gates exécutés et preuves
 
-**Dernière CI vérifiée : [run #38527206066 — SUCCESS](https://github.com/roro78/cuisine-cambodgienne/actions/runs/38527206066), commit `a1bfce0c314ec437d2eb5b023a557660df30e63f`**, 26 étapes réussies. Captures responsive, vidéos et métriques : [artifact #11875839081](https://github.com/roro78/cuisine-cambodgienne/actions/runs/38527206066/artifacts/11875839081). Les URL d'artifacts GitHub expirent selon leur durée de rétention.
+**Dernière CI intégrale sur le code retenu : [#38597112654 — SUCCESS](https://github.com/roro78/cuisine-cambodgienne/actions/runs/38597112654), commit `f28a7eed76eb6f2afddeb8fc9959ee7d24b22268`**, 27 étapes réussies. [Captures, vidéos, métriques JSON valides et Lighthouse mobile 12.8.2 — artifact #11910796498](https://github.com/roro78/cuisine-cambodgienne/actions/runs/38597112654/artifacts/11910796498). Les artifacts GitHub expirent selon leur durée de rétention.
+
+**Réception technique automatisée : PASS_WITH_FINDINGS, et non autorisation de publication.** Lighthouse sur preview `noindex`, laboratoire Chromium simulé : **accessibilité 100/100**, **performance 80/100** et **LCP 5,34 s** lors du dernier passage, **CLS 0**, **TBT 0 ms**. Deux passes antérieures ont produit performance 80–83/100 et LCP 4,59–5,50 s. Cette variation ne permet pas de revendiquer une amélioration stable ; la cible indicative LCP ≤ 2,5 s et performance ≥ 90 n'est **pas démontrée**. Le score SEO de 69/100 est pénalisé par l'exclusion volontaire de l'index ; celui de la future page `/` reste à auditer après promotion. Les Core Web Vitals terrain (dont INP) ne sont pas disponibles à ce stade.
 
 - Vérifications Astro/TypeScript, contrats hérités, navigation des recettes et pages, build : GitHub Actions de la PR #47.
 - Navigateur Chromium : largeur 320, 360, 390, 430, 640, 768, 1024, 1440 et 1920 px ; no-JS et reduced motion sur mobile, navigation clavier, menu et liens, absence de débordement, chargement des images, cibles tactiles et contrastes des CTA à fond uni.
