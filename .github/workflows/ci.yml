@@ -92,9 +92,10 @@ jobs:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
         run: node tests/v17-accueil-browser-smoke.mjs
 
-      - name: V17 Lighthouse mobile lab audit
+      - name: V17 D8 public homepage Lighthouse mobile audit
         env:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+          V17_AUDIT_ROUTE: /
         run: node scripts/v17-lighthouse-audit.mjs
 
       - name: Upload V17 responsive screenshots and scroll videos
