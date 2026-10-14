@@ -263,3 +263,19 @@
 }
 
 
+
+/* Mobile LCP: don't mask/filter/scale the first-screen Amok. The artwork is
+   already composed on an ivory backdrop; a subtle edge radius preserves it
+   without a large alpha-mask compositor pass on constrained phones. */
+@media (max-width:760px) {
+  .v17r-hero--generated .v17r-hero-dish {
+    -webkit-mask-image:none;
+    mask-image:none;
+    overflow:hidden;
+    border-radius:clamp(.5rem,2.2vw,.9rem);
+  }
+  .v17r-hero--generated .v17r-hero-dish img {
+    filter:none;
+    transform:none;
+  }
+}
