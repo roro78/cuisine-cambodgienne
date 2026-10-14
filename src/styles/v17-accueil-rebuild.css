@@ -935,3 +935,203 @@
 @media(prefers-reduced-motion:reduce){
   .v17r-hero-dish,.v17r-table-media img{transition:none!important}
 }
+
+
+/* V17 D7 — finition éditoriale ciblée : marché / aromates / mortier / raccords.
+   Une seule famille de réglages par scène, sans retoucher la home publique.
+   Les photographies restent des documents distincts et attribués. */
+.v17r-market{
+  background:#133826;
+}
+.v17r-market-visual{
+  isolation:isolate;
+  background:#6c6d3a;
+}
+.v17r-market-visual::before{
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(135deg,rgba(248,186,64,.15),transparent 39%),
+    linear-gradient(180deg,transparent 61%,rgba(12,38,23,.35));
+}
+.v17r-market-visual > img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:51% 52%;
+  filter:saturate(1.26) contrast(1.06) brightness(1.075);
+}
+.v17r-market-visual figcaption{
+  z-index:4;
+  text-shadow:0 1px 5px rgba(0,0,0,.65);
+}
+.v17r-market-postcard{
+  left:4%;
+  bottom:9%;
+  width:clamp(10rem,20vw,19rem);
+  height:clamp(13rem,29vw,25rem);
+  padding:0;
+  overflow:hidden;
+  transform:none;
+  border:3px solid rgba(255,246,213,.88);
+  border-radius:46% 54% 40% 60% / 17% 20% 14% 16%;
+  background:#4a592b;
+  box-shadow:0 1.25rem 2.25rem rgba(7,26,15,.38);
+}
+.v17r-market-postcard img{
+  width:100%;
+  height:100%;
+  min-height:0;
+  aspect-ratio:auto;
+  object-fit:cover;
+  object-position:54% center;
+  filter:saturate(1.22) contrast(1.04);
+}
+.v17r-market-postcard span{
+  position:absolute;
+  inset:auto .55rem .55rem;
+  margin:0;
+  padding:.48rem .55rem;
+  border-radius:999px;
+  background:rgba(19,48,32,.91);
+  color:#fff9e8;
+  font-family:inherit;
+  font-size:clamp(.67rem,.88vw,.94rem);
+  font-style:normal;
+  font-weight:800;
+  text-align:center;
+  letter-spacing:.015em;
+}
+.v17r-market-copy{
+  background:
+    radial-gradient(circle at 97% 3%,rgba(192,217,111,.10),transparent 35%),
+    #133826;
+}
+.v17r-market-copy .v17r-kicker{letter-spacing:.14em}
+
+/* Composition ouverte : ingrédients latéraux généreux, cœur éditorial dégagé. */
+.v17r-palette{
+  background:
+    radial-gradient(circle at 8% 82%,rgba(241,179,83,.12),transparent 30%),
+    radial-gradient(circle at 91% 16%,rgba(137,169,93,.09),transparent 29%),
+    #fff9ec;
+}
+.v17r-palette::before{
+  border:1px solid rgba(195,141,77,.13);
+  inset:17% 29%;
+  opacity:.5;
+}
+.v17r-palette-a img,
+.v17r-palette-b img{
+  filter:saturate(1.14) contrast(1.035);
+  box-shadow:0 .8rem 1.7rem rgba(62,65,32,.14);
+}
+.v17r-palette-spice-label{
+  color:#2e4c27;
+  text-shadow:0 1px 0 rgba(255,249,236,.75);
+}
+.v17r-palette-intro{
+  max-width:29rem;
+}
+.v17r-palette-media .v17r-spice-bowls{
+  filter:drop-shadow(0 .75rem .6rem rgba(48,50,17,.18));
+}
+
+/* Le mortier reste un geste réel photographié à titre d'illustration ;
+   l'image de kroeung est une seconde prise de vue, jamais le même geste. */
+.v17r-gestures{
+  background:
+    radial-gradient(circle at 98% 8%,rgba(234,174,86,.14),transparent 34%),
+    #fff5e3;
+}
+.v17r-gestures-main{
+  border-radius:2.6rem 6.3rem 2.4rem 4.6rem;
+  box-shadow:0 1.2rem 2.4rem rgba(67,47,23,.15);
+}
+.v17r-gestures-main img{
+  object-position:50% 60%;
+  filter:saturate(1.12) contrast(1.05) brightness(1.035);
+}
+.v17r-gestures-kroeung{
+  border:5px solid #fff5e3;
+  border-radius:49% 51% 43% 57% / 52% 47% 53% 48%;
+  box-shadow:0 .7rem 1.5rem rgba(47,32,15,.18);
+}
+.v17r-gestures-steps li{
+  padding-bottom:.85rem;
+  border-bottom:1px solid rgba(115,83,40,.17);
+}
+.v17r-gestures-steps li:last-child{border-bottom:0}
+.v17r-gestures .v17r-image-warning{
+  color:#5a4932;
+  opacity:1;
+}
+
+/* Raccords papier/photographie : trois courbes, léger volume,
+   sans section épinglée ni effet bloquant au défilement. */
+.v17r-wave svg{
+  filter:drop-shadow(0 -.25rem .2rem rgba(29,47,29,.10));
+}
+.v17r-wave-green svg{
+  filter:drop-shadow(0 -.15rem .3rem rgba(29,45,27,.08));
+}
+.v17r-wave-cream svg{
+  filter:drop-shadow(0 -.2rem .26rem rgba(81,40,22,.12));
+}
+
+@media(min-width:1200px){
+  .v17r-market{grid-template-columns:minmax(0,1.86fr) minmax(20rem,.86fr)}
+  .v17r-market-visual > img{object-position:50% 48%}
+  .v17r-palette{min-height:max(44rem,91svh)}
+  .v17r-palette-media .v17r-lemongrass{left:-8%;top:7%;width:clamp(21rem,33vw,37rem)}
+  .v17r-palette-a{left:7%;top:59%;width:clamp(13rem,19vw,19rem)}
+  .v17r-palette-b{right:4%;top:13%;width:clamp(12rem,17vw,18rem)}
+  .v17r-palette-media img.v17r-spice-bowls{right:-5%;bottom:-5%;width:clamp(26rem,35vw,37rem)}
+  .v17r-palette-media .v17r-palette-lime{right:26%;bottom:12%;width:clamp(8rem,11vw,12rem)}
+  .v17r-gestures{min-height:max(38rem,85svh)}
+  .v17r-gestures-main{min-height:clamp(27rem,38vw,39rem)}
+  .v17r-gestures-kroeung{right:-4%;bottom:6%;width:32%;height:31%}
+}
+@media(min-width:761px) and (max-width:1199px){
+  .v17r-market-postcard{left:5%;bottom:9%;width:clamp(8rem,17vw,12rem);height:clamp(11rem,23vw,15rem)}
+  .v17r-palette-a{left:7%;top:59%}
+  .v17r-palette-b{right:4%;top:20%}
+  .v17r-gestures-main{border-radius:2rem 4.5rem 2rem 3rem}
+  .v17r-gestures-kroeung{right:-2%;bottom:7%}
+}
+@media(max-width:760px){
+  .v17r-market-visual{aspect-ratio:1.24}
+  .v17r-market-visual > img{object-position:52% 50%}
+  .v17r-market-visual::after{height:40%}
+  .v17r-market-postcard{
+    left:4%;bottom:8%;
+    width:clamp(6.75rem,32vw,10.5rem);
+    height:65%;
+    border-width:2px;
+    border-radius:36% 64% 38% 62% / 14% 15% 12% 13%;
+  }
+  .v17r-market-postcard span{inset:auto .25rem .35rem;padding:.25rem;font-size:clamp(.56rem,2.2vw,.72rem)}
+  .v17r-market-visual figcaption{padding-left:43%;padding-right:.8rem;font-size:.65rem}
+  .v17r-palette{padding-block:clamp(4.5rem,12vw,6.5rem)}
+  .v17r-palette::before{inset:15% 5% 13%}
+  .v17r-palette-media{gap:.8rem;margin-top:1.65rem}
+  .v17r-palette-media figure{aspect-ratio:1.47}
+  .v17r-palette-media .v17r-lemongrass{top:-2rem;left:-15%;width:49%}
+  .v17r-palette-media img.v17r-palette-chili{top:-1.3rem;left:42%;width:3rem}
+  .v17r-palette-media img.v17r-spice-bowls{
+    width:min(98%,22rem);
+    margin:-1.3rem -1rem -2.2rem 0;
+  }
+  .v17r-gestures-main{border-radius:2rem 4rem 2rem 3rem}
+  .v17r-gestures-main img{object-position:50% 58%}
+  .v17r-gestures-kroeung{right:0;bottom:9%;width:32%;height:30%}
+  .v17r-gestures-steps li{padding-bottom:.8rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .v17r-market-postcard,
+  .v17r-palette-media figure,
+  .v17r-gestures-main img{animation:none!important;transition:none!important}
+}
