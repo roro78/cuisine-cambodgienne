@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 // the future public / route is indexed.
 const PORT=4352;
 const ROOT='http://127.0.0.1:'+PORT;
-const URL=ROOT+'/v17-accueil-preview/';
+const targetUrl=ROOT+'/v17-accueil-preview/';
 const OUT='artifacts/v17-lighthouse-mobile.json';
 const SUMMARY='artifacts/v17-lighthouse-mobile-summary.json';
 const astroCli=fileURLToPath(new URL('../node_modules/astro/astro.js',import.meta.url));
@@ -24,7 +24,7 @@ async function ready(){
   for(let i=0;i<90;i++){
     if(server.exitCode!==null)throw Error('Astro preview stopped: '+serverLogs);
     try{
-      const response=await fetch(URL,{signal:AbortSignal.timeout(1800)});
+      const response=await fetch(targetUrl,{signal:AbortSignal.timeout(1800)});
       if(response.ok)return;
     }catch{}
     await new Promise(resolve=>setTimeout(resolve,250));
@@ -33,7 +33,7 @@ async function ready(){
 }
 async function lighthouse(){
   const args=[
-    '--yes','lighthouse@12',URL,
+    '--yes','lighthouse@12',targetUrl,
     '--only-categories=performance,accessibility,seo',
     '--form-factor=mobile',
     '--throttling-method=simulate',
@@ -59,7 +59,7 @@ try{
   await ready();
   await lighthouse();
   const report=JSON.parse(fs.readFileSync(OUT,'utf8'));
-  assert.equal(report.finalUrl,URL,'Lighthouse must test the isolated V17 preview');
+  assert.equal(report.finalUrl,targetUrl,'Lighthouse must test the isolated V17 preview');
   const categories=Object.fromEntries(['performance','accessibility','seo'].map(key=>[
     key,Math.round((report.categories?.[key]?.score??0)*100)
   ]));
@@ -71,7 +71,7 @@ try{
     page:'V17 private noindex preview (not the public homepage)',
     audit:'Lighthouse mobile / simulated lab conditions',
     lighthouseVersion:report.lighthouseVersion,
-    requestedUrl:URL,
+    requestedUrl:targetUrl,
     categories,
     metrics:{
       firstContentfulPaintMs:numeric('first-contentful-paint'),
