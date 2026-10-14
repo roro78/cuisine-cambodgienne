@@ -610,7 +610,7 @@ async function recordMortarSequence(width,height){
   }finally{
     await page.close();
     if(video){
-      await video.saveAs('artifacts/v17-mortier-cinema-'+width+'.webm');
+      await video.saveAs('artifacts/v17-accueil-mortier-cinema-'+width+'.webm');
       console.log('V17 D13 dedicated mortar scroll recorded: '+width+'px');
     }
   }
