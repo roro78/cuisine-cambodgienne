@@ -586,6 +586,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
   // resize CDP capture surfaces and distort recordings made on that page.
   if(captureVideo)await recordCleanScroll(width,height);
   if(captureVideo)await recordMortarSequence(width,height);
+  if(captureVideo)await recordHandoffReel(width,height);
 }
 async function recordCleanScroll(width,height){
   const page=await browser.newPage({
@@ -655,6 +656,48 @@ async function recordMortarSequence(width,height){
     if(video){
       await video.saveAs('artifacts/v17-accueil-mortier-cinema-'+width+'.webm');
       console.log('V17 D13 dedicated mortar scroll recorded: '+width+'px');
+    }
+  }
+}
+/**
+ * D14 art-direction evidence: review all six chapter joins slowly with
+ * deliberately framed cuts between joins. Native scrolling is unchanged;
+ * the test recorder is the only script that sets the scroll position.
+ */
+async function recordHandoffReel(width,height){
+  const page=await browser.newPage({
+    viewport:{width,height},
+    isMobile:width<=430,hasTouch:width<=430,
+    reducedMotion:'no-preference',
+    recordVideo:{dir:'artifacts',size:width===1440?{width:960,height:600}:{width:390,height:844}}
+  });
+  const video=page.video();
+  try{
+    const response=await page.goto(base+'/v17-accueil-preview/',{waitUntil:'networkidle',timeout:30000});
+    assert.equal(response?.status(),200);
+    const joins=['market','palette','gestures','table','dessert','finale'];
+    for(const chapter of joins){
+      const top=await page.locator('.v17r-'+chapter).evaluate(el=>
+        scrollY+el.getBoundingClientRect().top);
+      const max=await page.evaluate(()=>document.documentElement.scrollHeight-innerHeight);
+      const start=Math.max(0,Math.min(max,top-height*.98));
+      const end=Math.min(max,Math.max(start,top+height*.30));
+      await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),start);
+      await page.waitForTimeout(240);
+      const frames=23;
+      for(let frame=0;frame<=frames;frame++){
+        const t=frame/frames;
+        const eased=t<.5?2*t*t:1-((-2*t+2)**2)/2;
+        await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),start+(end-start)*eased);
+        await page.waitForTimeout(100);
+      }
+      await page.waitForTimeout(160);
+    }
+  }finally{
+    await page.close();
+    if(video){
+      await video.saveAs('artifacts/v17-accueil-d14-transitions-'+width+'.webm');
+      console.log('V17 D14 all six boundary clips recorded: '+width+'px');
     }
   }
 }
