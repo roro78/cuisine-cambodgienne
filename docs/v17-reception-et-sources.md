@@ -30,6 +30,8 @@ La présente liste est une vérification des **pages source et licences indiqué
 
 ## Gates exécutés et preuves
 
+**Dernière CI vérifiée : [run #38527206066 — SUCCESS](https://github.com/roro78/cuisine-cambodgienne/actions/runs/38527206066), commit `a1bfce0c314ec437d2eb5b023a557660df30e63f`**, 26 étapes réussies. Captures responsive, vidéos et métriques : [artifact #11875839081](https://github.com/roro78/cuisine-cambodgienne/actions/runs/38527206066/artifacts/11875839081). Les URL d'artifacts GitHub expirent selon leur durée de rétention.
+
 - Vérifications Astro/TypeScript, contrats hérités, navigation des recettes et pages, build : GitHub Actions de la PR #47.
 - Navigateur Chromium : largeur 320, 360, 390, 430, 640, 768, 1024, 1440 et 1920 px ; no-JS et reduced motion sur mobile, navigation clavier, menu et liens, absence de débordement, chargement des images, cibles tactiles et contrastes des CTA à fond uni.
 - Le run Chromium produit des captures intégrales, des scènes isolées (hero, marché, palette, mortier, tablée et desserts), et des vidéos scroll en desktop/mobile.
