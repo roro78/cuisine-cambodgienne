@@ -64,8 +64,10 @@ export function initV17AccueilMotion() {
   });
 
   mm.add('(max-width: 760px) and (prefers-reduced-motion: no-preference)', () => {
+    // Keep the first-screen Amok image static on mobile: it is the LCP candidate.
+    // Other scenes retain their subtle native-scroll depth, while the hero stays
+    // visually composed by CSS without a late compositor animation.
     // Mobile: movements < 14px in practice, never hide content or block gestures.
-    sceneMotion('.v17r-hero-dish img', { scale: 1.025 }, { scale: 1.005 });
     sceneMotion('.v17r-market-visual > img', { scale: 1.045, yPercent: -1 }, { scale: 1.01, yPercent: 1 });
     sceneMotion('.v17r-market-postcard img', { scale: 1.04 }, { scale: 1.015 });
     sceneMotion('.v17r-palette-a', { xPercent: -5 }, { xPercent: 0 });
