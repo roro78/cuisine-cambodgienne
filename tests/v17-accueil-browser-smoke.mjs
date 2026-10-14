@@ -432,7 +432,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       },initialLoad);
       await fs.mkdir('artifacts',{recursive:true});
       await fs.writeFile('artifacts/v17-accueil-d7-metrics-'+width+'.json',
-        JSON.stringify(metrics,null,2)+'\\n');
+        JSON.stringify(metrics,null,2)+String.fromCharCode(10));
       console.log('V17 D7 lab metrics '+width+'px '+JSON.stringify(metrics));
     }
     // Record the actual browser while it scrolls through the complete preview.
