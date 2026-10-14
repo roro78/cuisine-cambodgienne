@@ -86,13 +86,12 @@ export function initV17AccueilMotion() {
     };
     const timeline = gsap.timeline({
       scrollTrigger: {
-        trigger: mobile ? heading : chapter,
-        start: mobile ? 'top 94%' : 'top 90%',
-        // Mobile copy is often BELOW the photo: finish while the headline is
-        // still visible rather than after it has naturally scrolled away.
-        endTrigger: mobile ? heading : chapter,
-        end: mobile ? 'top 4%' : 'bottom 10%',
-        scrub: mobile ? .28 : .42,
+        // The heading travels naturally through the viewport. A stage-level
+        // trigger previously completed the exit after text was invisible.
+        trigger: heading,
+        start: 'top 96%',
+        end: 'top 8%',
+        scrub: mobile ? .25 : .36,
         invalidateOnRefresh: true,
       },
     });
@@ -116,20 +115,21 @@ export function initV17AccueilMotion() {
       { y: mobile ? 80 : 120, scale: .85, opacity: 0 },
       { y: 0, scale: 1, opacity: 1, duration: .73,
         ease: 'back.out(1.25)', immediateRender: false }, .90+index*.12));
-    // 1.6 → 2.85: genuine static reading hold, before any departure.
-    timeline.to(heading, { ...departure, duration: 1.05,
-      ease: 'power2.in' }, 2.90);
+    // Entry finishes around the first third of the onscreen passage,
+    // then the words rest before exiting while still visibly on stage.
+    timeline.to(heading, { ...departure, duration: .95,
+      ease: 'power2.in' }, 2.25);
     if (copy) timeline.to(copy, {
       xPercent: -direction * (mobile ? 70 : 110),
       y: mobile ? -22 : -55,
       opacity: 0, duration: .87, ease: 'power2.in',
-    }, 3.02);
+    }, 2.40);
     actions.forEach((action,index) => timeline.to(action, {
       y: mobile ? -70 : -110, scale: .88, opacity: 0,
       duration: .73, ease: 'power2.in',
-    },3.13+index*.08));
+    },2.48+index*.07));
     if (kicker) timeline.to(kicker,
-      { y: mobile ? -36 : -82, opacity: 0, duration: .64 }, 3.18);
+      { y: mobile ? -36 : -82, opacity: 0, duration: .64 }, 2.53);
   };
 
   const heroDeparture = (mobile: boolean) => {
@@ -172,11 +172,10 @@ export function initV17AccueilMotion() {
     const progress = scene.querySelector<HTMLElement>('.v17r-gestures-progress span');
     const timeline = gsap.timeline({
       scrollTrigger: {
-        trigger: mobile ? (words[0] ?? scene) : scene,
-        start: mobile ? 'top 95%' : 'top 85%',
-        endTrigger: mobile ? (words[0] ?? scene) : scene,
-        end: mobile ? 'top 4%' : 'bottom 22%',
-        scrub: mobile ? .65 : .85,
+        trigger: words[0] ?? scene,
+        start: 'top 96%',
+        end: 'top 8%',
+        scrub: mobile ? .25 : .38,
         invalidateOnRefresh: true,
       },
     });
@@ -206,14 +205,14 @@ export function initV17AccueilMotion() {
       xPercent: (index===1?1:-1) * (mobile ? 140 : 185),
       yPercent: mobile ? -25 : -45, rotation: index===1?8:-8,
       opacity: 0, duration: .88, ease: 'power2.in',
-    }, 3.17 + index*.12));
+    }, 2.42 + index*.10));
     if (closeup) timeline.to(closeup,
       { xPercent: mobile ? 6 : 18, rotation: mobile ? 2 : 8,
-        scale: .91, opacity: .55, duration: .9, ease: 'power2.in' }, 3.15);
+        scale: .91, opacity: .55, duration: .9, ease: 'power2.in' }, 2.45);
     if (description) timeline.to(description,
-      { y: mobile ? -9 : -23, opacity: .52, duration: .66, ease: 'power2.in' }, 3.48);
+      { y: mobile ? -9 : -23, opacity: .52, duration: .66, ease: 'power2.in' }, 2.67);
     if (action) timeline.to(action,
-      { x: mobile ? -9 : -29, opacity: .55, duration: .58, ease: 'power2.in' }, 3.62);
+      { x: mobile ? -9 : -29, opacity: .55, duration: .58, ease: 'power2.in' }, 2.76);
   };
 
 
