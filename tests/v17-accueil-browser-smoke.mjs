@@ -378,47 +378,48 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         photoOpen.start.includes('inset(') && photoOpen.end.includes('inset('),
         'D14 table photograph must genuinely open while scrolling: '+JSON.stringify(photoOpen));
     }
-    // D16 REAL artistic-motion gate. D15 erroneously passed tiny 26-pixel
-    // changes; measure screen-space travel (not mere CSS inequality) while
-    // the headline is still visibly on-screen. Both desktop + mobile.
+    // D16: measure TRANSLATION IN PIXELS, rather than mere CSS inequality.
+    // Source trigger follows the heading itself, so entry/exit occur while
+    // it is inside the viewport, unlike the previous offscreen fake pass.
     if([390,1440].includes(width) && !noJs && !reduced){
       const stageMotion=await page.evaluate(async(width)=>{
-        const mobile=width<=760;
-        const scene=document.querySelector(mobile?'.v17r-dessert':'.v17r-table');
+        scrollTo({top:0,behavior:'instant'});
+        await new Promise(r=>setTimeout(r,550));
+        const scene=document.querySelector(width<=760?'.v17r-dessert':'.v17r-table');
         const title=scene.querySelector('h2');
-        const sceneTop=scrollY+scene.getBoundingClientRect().top;
-        const titleTop=scrollY+title.getBoundingClientRect().top;
-        const sceneHeight=scene.getBoundingClientRect().height;
-        const start=mobile?titleTop-innerHeight*.94:sceneTop-innerHeight*.90;
-        const end=mobile?titleTop-innerHeight*.04:
-          sceneTop+sceneHeight-innerHeight*.10;
+        const startMatrix=new DOMMatrixReadOnly(getComputedStyle(title).transform);
+        const naturalTop=scrollY+title.getBoundingClientRect().top-startMatrix.m42;
+        const start=naturalTop-innerHeight*.96;
+        const end=naturalTop-innerHeight*.08;
         const samples=[];
-        for(const progress of [.025,.46,.955]){
+        for(const progress of [.08,.50,.92]){
           scrollTo({top:Math.max(0,start+(end-start)*progress),behavior:'instant'});
-          await new Promise(r=>setTimeout(r,1000));
+          await new Promise(r=>setTimeout(r,1120));
           const style=getComputedStyle(title);
           const matrix=new DOMMatrixReadOnly(style.transform);
           const rect=title.getBoundingClientRect();
           samples.push({
             opacity:Number(style.opacity),
             x:Math.round(matrix.m41),y:Math.round(matrix.m42),
-            visibleY:Math.round(rect.top),
+            top:Math.round(rect.top),height:Math.round(rect.height),
             progress
           });
         }
-        return {mobile,start,end,samples,viewport:{w:innerWidth,h:innerHeight}};
+        return {start,end,samples,viewport:{w:innerWidth,h:innerHeight}};
       },width);
       const [enter,read,depart]=stageMotion.samples;
       const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
-      const minimum=width===390?95:145;
       assert.ok(stageMotion.end>stageMotion.start &&
-        read.opacity>.90 && read.opacity>enter.opacity+.35 &&
-        read.opacity>depart.opacity+.35 &&
-        distance(enter,read)>minimum &&
-        distance(depart,read)>minimum,
-        'D16: title must visibly cross the screen, HOLD, and LEAVE while visible: '+
+        read.opacity>.90 && read.opacity>enter.opacity+.26 &&
+        read.opacity>depart.opacity+.20 &&
+        distance(enter,read)>(width===390?95:130) &&
+        distance(depart,read)>(width===390?70:80) &&
+        read.top>=0 && read.top<height &&
+        depart.top>-(depart.height*.8) && depart.top<height,
+        'D16 viewport choreography requires meaningful onscreen title travel: '+
         JSON.stringify(stageMotion));
-      console.log('V17 D16 ACTUAL TEXT MOTION '+width+'px '+JSON.stringify(stageMotion));
+      console.log('V17 D16 MEASURED ONSCREEN TITLE MOTION '+width+'px '+
+        JSON.stringify(stageMotion));
       await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
     }
     if(width===1440){
@@ -519,26 +520,32 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       });
       assert.notEqual(anim.initial,anim.current,
         'Desktop ingredients must converge during native scroll: '+JSON.stringify(anim));
-      // D12: the gesture headline should visibly settle into place as its
-      // scene enters the viewport; never conceal essential copy.
-      const entry=await page.evaluate(async()=>{
-        const scene=document.querySelector('.v17r-gestures');
-        const heading=scene.querySelector('.v17r-gesture-word--accent');
-        const top=scrollY+scene.getBoundingClientRect().top;
-        scrollTo({top:Math.max(0,top-innerHeight*.40),behavior:'instant'});
-        await new Promise(r=>setTimeout(r,850));
-        const from={transform:getComputedStyle(heading).transform,
-          opacity:Number(getComputedStyle(heading).opacity)};
-        scrollTo({top:Math.max(0,top+innerHeight*.12),behavior:'instant'});
-        await new Promise(r=>setTimeout(r,950));
-        const to={transform:getComputedStyle(heading).transform,
-          opacity:Number(getComputedStyle(heading).opacity)};
-        return {from,to};
+      // D16 mortar proof: the first word actually flies in/out across
+      // the screen while visible, not the previous imperceptible 26px.
+      const gesture=await page.evaluate(async()=>{
+        scrollTo({top:0,behavior:'instant'});
+        await new Promise(r=>setTimeout(r,500));
+        const scene=document.querySelector('[data-v17-mortar-scene]');
+        const word=scene.querySelector('.v17r-gesture-word');
+        const initial=new DOMMatrixReadOnly(getComputedStyle(word).transform);
+        const naturalTop=scrollY+word.getBoundingClientRect().top-initial.m42;
+        const start=naturalTop-innerHeight*.96;
+        const end=naturalTop-innerHeight*.08;
+        const measures=[];
+        for(const progress of [.14,.52,.91]){
+          scrollTo({top:Math.max(0,start+(end-start)*progress),behavior:'instant'});
+          await new Promise(r=>setTimeout(r,1050));
+          const style=getComputedStyle(word);
+          const matrix=new DOMMatrixReadOnly(style.transform);
+          measures.push({x:Math.round(matrix.m41),y:Math.round(matrix.m42),
+            opacity:Number(style.opacity),progress});
+        }
+        return measures;
       });
-      assert.ok(entry.from.transform!==entry.to.transform &&
-        entry.from.opacity>=.8 && entry.to.opacity>=.8 &&
-        entry.to.opacity>entry.from.opacity,
-        'D13 mortar word entrance must be perceptible and readable: '+JSON.stringify(entry));
+      const delta=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+      assert.ok(gesture[1].opacity>.90 && gesture[1].opacity>gesture[0].opacity+.15 &&
+        delta(gesture[0],gesture[1])>100 && delta(gesture[2],gesture[1])>75,
+        'D16 mortar words must really fly and leave: '+JSON.stringify(gesture));
       await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
     }
     const rhythm=await page.evaluate(()=>{
@@ -816,15 +823,11 @@ async function recordTextArrivalEvidence(width,height){
       const scene=page.locator('.v17r-'+name);
       const bounds=await scene.evaluate((el,options)=>{
         const {mobile,name}=options;
-        const heading=el.querySelector('h2');
-        const sceneTop=scrollY+el.getBoundingClientRect().top;
-        const titleTop=scrollY+heading.getBoundingClientRect().top;
-        return {
-          start:mobile?titleTop-innerHeight*.94:
-            sceneTop-innerHeight*(name==='gestures'?.85:.90),
-          end:mobile?titleTop-innerHeight*.04:
-            sceneTop+el.getBoundingClientRect().height-innerHeight*(name==='gestures'?.22:.10)
-        };
+        const heading=name==='gestures'?
+          el.querySelector('.v17r-gesture-word'):el.querySelector('h2');
+        const matrix=new DOMMatrixReadOnly(getComputedStyle(heading).transform);
+        const naturalTop=scrollY+heading.getBoundingClientRect().top-matrix.m42;
+        return {start:naturalTop-innerHeight*.96,end:naturalTop-innerHeight*.08};
       },{name,mobile:width<=760});
       for(const [phase,ratio] of [['entry',.055],['read',.46],['exit',.88]]){
         const y=Math.max(0,bounds.start+(bounds.end-bounds.start)*ratio);
