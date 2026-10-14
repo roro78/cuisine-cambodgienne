@@ -117,12 +117,12 @@ assert.doesNotMatch(handoffCss,/--vr-(?:ivory|forest|orange|yellow|lime)\s*:/,
 
 assert.match(script,/mortarCinema\(false\)/,'Desktop mortar motion missing');
 assert.match(script,/mortarCinema\(true\)/,'Mobile mortar motion missing');
-assert.equal((script.match(/chapterPerformance\\('\.v17r-/g)||[]).length,10,
+assert.equal(script.split("chapterPerformance('.v17r-").length-1,10,
   'D15: five storyboard chapters animated on both mobile and desktop');
-assert.match(script,/clipPath: 'inset\\(0% 0% 72% 0%\\)'/,
-  'D15: chapter title needs visible directional entrance');
-assert.match(script,/clipPath: 'inset\\(0% 0% 67% 0%\\)'/,
-  'D15: chapter title needs visible exit before next act');
+assert.ok(script.includes("clipPath: 'inset(0% 0% 72% 0%)'"),
+  'D15: chapter title needs a visible entrance');
+assert.ok(script.includes("clipPath: 'inset(0% 0% 67% 0%)'"),
+  'D15: chapter title needs a visible exit before the next act');
 assert.match(script,/endTrigger: chapter/,
   'D15: heading motion must span visible chapter, not autoplay');
 assert.match(script,/scrub: mobile/,
