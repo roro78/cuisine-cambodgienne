@@ -441,11 +441,11 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         const scene=document.querySelector('.v17r-gestures');
         const heading=scene.querySelector('.v17r-gesture-word--accent');
         const top=scrollY+scene.getBoundingClientRect().top;
-        scrollTo({top:Math.max(0,top-innerHeight*.82),behavior:'instant'});
+        scrollTo({top:Math.max(0,top-innerHeight*.40),behavior:'instant'});
         await new Promise(r=>setTimeout(r,850));
         const from={transform:getComputedStyle(heading).transform,
           opacity:Number(getComputedStyle(heading).opacity)};
-        scrollTo({top:Math.max(0,top-innerHeight*.28),behavior:'instant'});
+        scrollTo({top:Math.max(0,top+innerHeight*.12),behavior:'instant'});
         await new Promise(r=>setTimeout(r,950));
         const to={transform:getComputedStyle(heading).transform,
           opacity:Number(getComputedStyle(heading).opacity)};
