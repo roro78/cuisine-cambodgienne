@@ -92,6 +92,11 @@ jobs:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
         run: node tests/v17-accueil-browser-smoke.mjs
 
+      - name: V17 Lighthouse mobile lab audit
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node scripts/v17-lighthouse-audit.mjs
+
       - name: Upload V17 responsive screenshots and scroll videos
         if: always()
         uses: actions/upload-artifact@v4
@@ -102,5 +107,6 @@ jobs:
             artifacts/v17-accueil-*.webm
             artifacts/v17-accueil-d7-metrics-*.json
             artifacts/v17-recipe-*.png
+            artifacts/v17-lighthouse-mobile*.json
           retention-days: 7
           if-no-files-found: ignore
