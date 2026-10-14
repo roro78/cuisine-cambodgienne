@@ -76,7 +76,9 @@ export function initV17AccueilMotion() {
       xPercent: direction * (mobile ? 145 : 170), opacity: 0,
     };
     const departure: gsap.TweenVars = isPalette ? {
-      yPercent: mobile ? 85 : 130, scale: .91, opacity: 0,
+      // The earlier downward departure crossed the explanatory copy.
+      // Exit laterally into the botanical still life, not through body text.
+      xPercent: mobile ? 145 : 165, yPercent: 0, scale: .92, opacity: 0,
     } : isTable ? {
       yPercent: mobile ? -90 : -125, scale: 1.06, opacity: 0,
     } : isFinale ? {
