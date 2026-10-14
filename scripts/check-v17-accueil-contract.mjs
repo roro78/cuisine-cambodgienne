@@ -34,7 +34,7 @@ for (const img of [
 // The only allowed automatic switch is a precise local asset, never an external
 // fake travel photo or a missing/broken URL.
 assert.match(page,/marketIsIllustrated/);
-assert.match(page,/v17-marche-cambodgien-ia\\.webp/);
+assert.ok(page.includes('v17-marche-cambodgien-ia.webp'),'Missing AI-market artwork selector');
 assert.match(page,/scène fictive inspirée des marchés terrestres du Cambodge/);
 const aiMarketPath='public/images/cuisine/v17-marche-cambodgien-ia.webp';
 if(fs.existsSync(aiMarketPath)){
