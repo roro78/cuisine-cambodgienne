@@ -335,6 +335,49 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         cinema.copyWidth>0 && cinema.shade.includes('linear-gradient') && cinema.articleLink,
         'Mortar must be a full-bleed, readable three-beat stage: '+JSON.stringify(cinema));
     }
+    // D14: all three additional transition seams are purely decorative,
+    // zero-height and correctly located between their intended chapters.
+    const handoffs=await page.evaluate(()=>{
+      return [...document.querySelectorAll('.v17r-handoff')].map(node=>{
+        const rect=node.getBoundingClientRect();
+        const svg=node.querySelector('svg');
+        return {
+          cls:node.className,
+          height:rect.height,
+          svgHeight:svg?.getBoundingClientRect().height??0,
+          hidden:node.getAttribute('aria-hidden'),
+          events:getComputedStyle(node).pointerEvents,
+          from:node.previousElementSibling?.className??'',
+          to:node.nextElementSibling?.className??''
+        };
+      });
+    });
+    assert.equal(handoffs.length,3,'D14 must add exactly three restrained bridges');
+    for(const [index,from,to] of [[0,'v17r-palette','v17r-gestures'],
+      [1,'v17r-table','v17r-dessert'],[2,'v17r-dessert','v17r-finale']]){
+      const bridge=handoffs[index];
+      assert.ok(bridge.height===0 && bridge.svgHeight>0 &&
+        bridge.hidden==='true' && bridge.events==='none' &&
+        bridge.from.includes(from) && bridge.to.includes(to),
+        'D14 bridge must not add scroll space or block actions: '+JSON.stringify(bridge));
+    }
+    if(width===1440 && !noJs && !reduced){
+      const photoOpen=await page.evaluate(async()=>{
+        const scene=document.querySelector('.v17r-table');
+        const media=scene.querySelector('.v17r-table-media');
+        const top=scrollY+scene.getBoundingClientRect().top;
+        scrollTo({top:Math.max(0,top-innerHeight*.96),behavior:'instant'});
+        await new Promise(r=>setTimeout(r,650));
+        const start=getComputedStyle(media).clipPath;
+        scrollTo({top:Math.max(0,top-innerHeight*.30),behavior:'instant'});
+        await new Promise(r=>setTimeout(r,1000));
+        const end=getComputedStyle(media).clipPath;
+        return {start,end};
+      });
+      assert.ok(photoOpen.start!==photoOpen.end &&
+        photoOpen.start.includes('inset(') && photoOpen.end.includes('inset('),
+        'D14 table photograph must genuinely open while scrolling: '+JSON.stringify(photoOpen));
+    }
     if(width===1440){
       const immersive=await page.evaluate(()=>({
         hero:document.querySelector('.v17r-hero').getBoundingClientRect().height,
