@@ -98,7 +98,7 @@ assert.match(page,/v17-mortar-cinema\.css/,'Mortar last-scene stylesheet must be
 assert.match(script,/const mortarCinema =/,'Dedicated mortar storyboard missing');
 
 const handoffCss=fs.readFileSync('src/styles/v17-scene-handoffs.css','utf8');
-assert.match(page,/v17-scene-handoffs\\.css/,'D14 transition styles missing');
+assert.ok(page.includes('v17-scene-handoffs.css'),'D14 transition styles missing');
 for(const name of ['aroma','sweet','journey']){
   assert.ok(page.includes('v17r-handoff--'+name),'D14 bridge missing: '+name);
 }
@@ -111,7 +111,7 @@ assert.ok(script.includes("clipPath: 'inset(0% 0% 0% 0%)'"),
   'D14 photo masks must fully reveal the artworks');
 assert.match(handoffCss,/height: 0;/,'D14 bridges cannot create empty scroll space');
 assert.match(handoffCss,/pointer-events: none;/,'D14 bridges cannot block input');
-assert.doesNotMatch(handoffCss,/--vr-(?:ivory|forest|orange|yellow|lime)\\s*:/,
+assert.doesNotMatch(handoffCss,/--vr-(?:ivory|forest|orange|yellow|lime)\s*:/,
   'D14 must not override approved brand colors');
 
 assert.match(script,/mortarCinema\(false\)/,'Desktop mortar motion missing');
