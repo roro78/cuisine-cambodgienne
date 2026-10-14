@@ -161,6 +161,11 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           if(el.closest('[aria-hidden="true"]')||el.getClientRects().length===0)continue;
           const st=getComputedStyle(el);
           if(st.display==='none'||st.visibility==='hidden')continue;
+          // Accessibility-only figcaptions deliberately use a 1px clipped box.
+          // Their DOM text extends beyond that box, but no glyph is painted.
+          const elBox=el.getBoundingClientRect();
+          if(st.clipPath==='inset(50%)' ||
+            (elBox.width<=2 && elBox.height<=2 && st.overflow==='hidden'))continue;
           const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,{
             acceptNode(node){
               return node.parentElement?.closest('[aria-hidden="true"]') ||
