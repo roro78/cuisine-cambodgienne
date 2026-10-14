@@ -63,6 +63,30 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         }))
       : null;
     assert.match(await page.locator('meta[name="robots"]').getAttribute('content'),/noindex/);
+    // Preview must not accidentally claim the canonical or social URL of /.
+    // When D8 is approved, the public route receives its own SEO contract.
+    if(width===1440 && !noJs && !reduced){
+      const seo=await page.evaluate(()=>{
+        const meta=(name)=>document.querySelector(name)?.getAttribute('content')??null;
+        const canonical=document.querySelector('link[rel="canonical"]')?.href??null;
+        const schemas=[...document.querySelectorAll('script[type="application/ld+json"]')]
+          .map(el=>JSON.parse(el.textContent));
+        return {
+          canonical,
+          ogUrl:meta('meta[property="og:url"]'),
+          ogImage:meta('meta[property="og:image"]'),
+          title:document.title,
+          description:meta('meta[name="description"]'),
+          schemas:schemas.map(item=>({type:item['@type'],url:item.url}))
+        };
+      });
+      assert.equal(new URL(seo.canonical).pathname,'/v17-accueil-preview/');
+      assert.equal(new URL(seo.ogUrl).pathname,'/v17-accueil-preview/');
+      assert.ok(seo.ogImage?.endsWith('/images/cuisine/v17-hero-amok-genere.webp'));
+      assert.ok(seo.title.includes('V17')&&seo.description.length>50);
+      assert.deepEqual(seo.schemas.map(x=>x.type),['WebSite','WebPage']);
+      assert.equal(new URL(seo.schemas[1].url).pathname,'/v17-accueil-preview/');
+    }
     assert.equal(await page.locator('h1').count(),1);
     assert.equal(await page.locator('.v17r h2').count(),6);
     const chapters=['hero','market','palette','gestures','table','dessert','finale'];
