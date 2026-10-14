@@ -119,10 +119,15 @@ assert.match(script,/mortarCinema\(false\)/,'Desktop mortar motion missing');
 assert.match(script,/mortarCinema\(true\)/,'Mobile mortar motion missing');
 assert.equal(script.split("chapterPerformance('.v17r-").length-1,10,
   'D15: five storyboard chapters animated on both mobile and desktop');
-assert.ok(script.includes("clipPath: 'inset(0% 0% 72% 0%)'"),
-  'D15: chapter title needs a visible entrance');
-assert.ok(script.includes("clipPath: 'inset(0% 0% 67% 0%)'"),
-  'D15: chapter title needs a visible exit before the next act');
+assert.ok(script.includes('mobile ? 145 : 170'),
+  'D16: horizontal titles must travel more than their own width');
+assert.ok(script.includes('mobile ? -110 : -165') &&
+          script.includes('mobile ? 110 : 155'),
+  'D16: ingredients and table titles must enter from opposing vertical directions');
+assert.ok(script.includes('timeline.to(heading, { ...departure'),
+  'D16: chapter title must exit after a reading hold');
+assert.ok(script.includes('mobile ? 155 : 190'),
+  'D16: individual mortar words require cinematic lateral trajectories');
 assert.match(script,/endTrigger: chapter/,
   'D15: heading motion must span visible chapter, not autoplay');
 assert.match(script,/scrub: mobile/,
