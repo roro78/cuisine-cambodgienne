@@ -85,6 +85,28 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       );
       assert.ok(targets.length>=7 && targets.every(t=>t.width>=44 && t.height>=44),
         'V17 primary CTAs must be at least 44×44 CSS px: '+JSON.stringify(targets));
+      // WCAG AA text contrast on solid-colour primary buttons. This does not
+      // claim a full contrast audit of text over the photographic backgrounds.
+      const ctaContrast=await page.locator('.v17r-pill:not(.v17r-pill-outline)').evaluateAll(nodes=>{
+        const channels=(css)=>{
+          const m=css.match(/rgba?\\(([^)]+)\\)/);
+          if(!m)return null;
+          return m[1].split(',').slice(0,3).map(x=>Number(x.trim())/255);
+        };
+        const luminance=(rgb)=>rgb.reduce((sum,v,i)=>{
+          const linear=v<=.04045?v/12.92:((v+.055)/1.055)**2.4;
+          return sum+linear*[.2126,.7152,.0722][i];
+        },0);
+        return nodes.map(el=>{
+          const st=getComputedStyle(el);
+          const fore=channels(st.color),back=channels(st.backgroundColor);
+          const ratio=fore&&back?(Math.max(luminance(fore),luminance(back))+.05)/
+            (Math.min(luminance(fore),luminance(back))+.05):0;
+          return {label:el.textContent?.trim(),color:st.color,background:st.backgroundColor,ratio};
+        });
+      });
+      assert.ok(ctaContrast.length>=6 && ctaContrast.every(x=>x.ratio>=4.5),
+        'Primary CTA labels must meet 4.5:1 solid colour contrast: '+JSON.stringify(ctaContrast));
     }
     if(width===390 && !noJs && !reduced){
       // The skip link must be first in keyboard order, before the shared header.
