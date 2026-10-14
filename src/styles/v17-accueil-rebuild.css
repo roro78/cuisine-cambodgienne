@@ -1468,3 +1468,8 @@
     overflow-wrap: break-word;
   }
 }
+
+/* Transparence regroupée : une seule mention discrète dès le premier écran. */
+.v17r-hero-copy > p.v17r-hero-disclosure{max-width:29rem;margin:1rem 0 0;font-size:.75rem;line-height:1.4;font-weight:600;color:#38473b}
+.v17r-hero-disclosure a{color:inherit;text-decoration:underline;text-underline-offset:3px;font-weight:800}
+@media(max-width:760px){.v17r-hero-copy > p.v17r-hero-disclosure{font-size:.72rem;margin:.8rem 0 0}}

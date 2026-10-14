@@ -247,8 +247,12 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       '/images/cuisine/v17-marche-cambodgien-ia.webp');
     assert.match(await marketImage.getAttribute('alt'),/Illustration générée par IA/);
     const marketCaption=await page.locator('.v17r-market-visual figcaption').innerText();
-    assert.match(marketCaption,/illustration éditoriale générée par IA/i);
-    assert.match(marketCaption,/scène fictive/i);
+    assert.match(marketCaption,/marché imaginaire/i);
+    assert.match(marketCaption,/inspiré du Cambodge/i);
+    assert.equal(await page.locator('.v17r-hero-disclosure a[href="/credits-photos/#illustrations-ia"]').count(),1,
+      'AI disclosure should link to existing credits without repeated scene labels');
+    assert.equal(await page.locator('.v17r-table-clarity').count(),0,
+      'Remove the intrusive source note on the table illustration');
     assert.equal(await page.locator('.v17r-market-postcard').count(),0,
       'The new illustrated market must not overlay old documentary photography');
     const marketDimensions=await marketImage.evaluate(el=>({

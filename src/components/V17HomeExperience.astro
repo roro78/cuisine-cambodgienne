@@ -14,7 +14,7 @@ const galangal = '/images/cuisine/v17-galangal-1000.jpg';
 const chili = '/images/cuisine/v17-chili-450.png';
 
 interface Props { preview?: boolean; }
-const { preview=false }=Astro.props;
+// Le paramètre preview reste typé pour la route de prévisualisation, sans texte de debug.
 ---
 <a class="v17r-skip" href="#v17r-main">Aller au contenu</a>
   <div class="v17r-wrap" data-v17r-preview>
@@ -35,6 +35,7 @@ const { preview=false }=Astro.props;
           <h1 id="v17r-hero-title">LE CAMBODGE<br/>DANS VOTRE <span>ASSIETTE</span></h1>
           <p>Des recettes parfumées, des ingrédients à découvrir et des gestes pour cuisiner le Cambodge chez soi.</p>
           <a class="v17r-pill" href="/recettes/">Découvrir les recettes <span aria-hidden="true">↗</span></a>
+          <p class="v17r-hero-disclosure">Certaines scènes sont des illustrations créées avec l’IA. <a href="/credits-photos/#illustrations-ia">Voir les crédits</a>.</p>
         </div>
         <div class="v17r-hero-media">
           <figure class="v17r-hero-dish">
@@ -59,7 +60,7 @@ const { preview=false }=Astro.props;
             loading="lazy" decoding="async"
             alt="Illustration générée par IA d’un marché terrestre imaginaire d’inspiration cambodgienne, avec vendeuses, étals, citronnelle, piments et légumes" />
           <div class="v17r-market-bloom" aria-hidden="true"><img src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" loading="lazy" decoding="async" /></div>
-          <figcaption>Illustration éditoriale générée par IA · scène fictive inspirée des marchés terrestres du Cambodge</figcaption>
+          <figcaption>Marché imaginaire inspiré du Cambodge</figcaption>
         </figure>
         <div class="v17r-market-copy">
           <img class="v17r-botanic v17r-market-flower" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
@@ -141,7 +142,6 @@ const { preview=false }=Astro.props;
           <a class="v17r-table-sub" href="/culture/construire-repas-cambodgien/">Comprendre le repas cambodgien →</a>
         </div>
         <span class="v17r-calligraphy v17r-table-handnote" aria-hidden="true">Frais<br/>Coloré<br/>Généreux</span>
-        <p class="v17r-table-clarity">Illustration culinaire générée par IA : composition éditoriale d’un repas inspiré de la cuisine cambodgienne.</p>
       </section>
 
       <section class="v17r-dessert" aria-labelledby="v17r-dessert-title">
@@ -154,7 +154,7 @@ const { preview=false }=Astro.props;
         <div class="v17r-dessert-art v17r-dessert-art--generated">
           <figure class="v17r-dessert-generated">
             <img src={dessertGenerated} width="1448" height="1086" loading="lazy" decoding="async" alt="Illustration générée de douceurs d’inspiration khmère : riz gluant au lait de coco, mangue, fruits et gâteaux enveloppés de feuilles de bananier" />
-            <figcaption>Riz gluant, mangue, coco et feuilles de bananier · illustration culinaire IA</figcaption>
+            <figcaption>Riz gluant, mangue, coco et feuilles de bananier</figcaption>
           </figure>
         </div>
       </section>
@@ -184,21 +184,6 @@ const { preview=false }=Astro.props;
         <p class="v17r-finale-credit">Angkor au coucher du soleil : photo <a href="https://commons.wikimedia.org/wiki/File:Angkor_Wat_Reflection_(46810498612).jpg" target="_blank" rel="noopener noreferrer">Radek Kucharski</a>, <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener noreferrer">CC BY 2.0</a> ; version réduite et cadrage CSS.</p>
       </section>
 
-      <aside class="v17r-preview-notice" aria-label="Statut et sources du prototype">
-        <details><summary>{preview ? 'Sources photographiques et état de la prévisualisation' : 'Sources et nature des illustrations'}</summary>
-        <p><strong>{preview ? 'Prévisualisation technique V17 — non publiée.' : 'Sources des photographies et précisions sur les illustrations.'}</strong> Ce parcours reprend la structure et les liens de la maquette validée. Le pilage est illustré par une photographie de mains au mortier, sans allégation de provenance cambodgienne ; le kroeung est représenté par une photo distincte. La finale emploie un cliché réel d'Angkor au crépuscule. Les illustrations du hero Amok, de la tablée et des desserts sont générées par IA et ne sont pas des photographies documentaires. Le marché présente une scène fictive terrestre générée par IA, et non une photographie documentaire ou un lieu géographique réel. Les autres photographies d’ingrédients et de gestes restent créditées selon leurs sources ; aucune recette n’est présentée comme réalisée par l’équipe. <a href="/credits-photos/">Crédits des photographies existantes</a>. Nouvelles sources :
-        
-        <a href="https://www.pexels.com/photo/woman-hands-holding-mortar-21937648/" target="_blank" rel="noopener noreferrer">mortier — Filipp Romanovski, Pexels License, illustration générique</a> ;
-        
-        <a href="https://commons.wikimedia.org/wiki/File:Angkor_Wat_Reflection_(46810498612).jpg" target="_blank" rel="noopener noreferrer">Angkor — Radek Kucharski, CC BY 2.0, version réduite</a> ;
-        <a href="https://commons.wikimedia.org/wiki/File:Fish_Amok_with_Rice.jpg" target="_blank" rel="noopener noreferrer">Amok — sharonang, CC0</a> ;
-        
-        <a href="https://commons.wikimedia.org/wiki/File:Chek_ktis.jpg" target="_blank" rel="noopener noreferrer">Chek Ktis — Marie, CC BY-SA 2.0</a> ;
-        <a href="https://commons.wikimedia.org/wiki/File:Num_kom_sticky_rice_cake_Khmer_Cambodian_dessert.jpg" target="_blank" rel="noopener noreferrer">Num Kom — MoonsMoon, CC BY 4.0</a> ;
-        <a href="https://commons.wikimedia.org/wiki/File:Galangal.jpg" target="_blank" rel="noopener noreferrer">galanga — Liza Daly, domaine public</a> ;
-        <a href="https://commons.wikimedia.org/wiki/File:Red_Kroeung_Paste.jpg" target="_blank" rel="noopener noreferrer">texture de kroeung rouge — Trilinguist, CC BY-SA 3.0</a> ;
-        <a href="https://commons.wikimedia.org/wiki/File:Red_Chili_Pepper_PNG.png" target="_blank" rel="noopener noreferrer">piment — Spicy Anonymous, CC0</a>.</p></details>
-      </aside>
     </main>
     <SiteFooter />
   </div>

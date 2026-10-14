@@ -9,6 +9,7 @@ const home=fs.readFileSync('src/pages/index.astro','utf8');
 const sitemap=fs.readFileSync('src/pages/sitemap.xml.ts','utf8');
 const header=fs.readFileSync('src/components/SiteHeader.astro','utf8');
 const footer=fs.readFileSync('src/components/SiteFooter.astro','utf8');
+const credits=fs.readFileSync('src/pages/credits-photos.astro','utf8');
 assert.match(preview, /\bnoindex\b/);
 assert.match(preview, /<V17HomeExperience preview/);
 assert.match(home, /<V17HomeExperience\s*\/>/);
@@ -21,7 +22,7 @@ assert.equal((page.match(/<h2\b/g)||[]).length,6);
 for(const selector of ['v17r-hero','v17r-market','v17r-palette','v17r-gestures','v17r-table','v17r-dessert','v17r-finale']){
   assert.match(page,new RegExp('class="'+selector+'(?:\\s|\")'));
 }
-const requiredLinks=['/recettes/','/ingredients/','/glossaire/','/apprendre/','/culture/construire-repas-cambodgien/','/recettes/chek-ktis/','/apprendre/piler-aromates-au-mortier/','/credits-photos/'];
+const requiredLinks=['/recettes/','/ingredients/','/glossaire/','/apprendre/','/culture/construire-repas-cambodgien/','/recettes/chek-ktis/','/apprendre/piler-aromates-au-mortier/','/credits-photos/#illustrations-ia'];
 for(const href of requiredLinks)assert.ok(page.includes('href="'+href+'"'),'Missing genuine CTA '+href);
 for(const href of ['/recettes/','/glossaire/','/apprendre/','/culture/','/a-propos/'])assert.ok(header.includes('href="'+href+'"'),'Existing header changed '+href);
 for(const href of ['/ingredients/','/credits-photos/'])assert.ok(footer.includes('href="'+href+'"'),'Existing footer changed '+href);
@@ -47,18 +48,21 @@ assert.equal(createHash('sha256').update(aiMarketBytes).digest('hex'),
   'Market artwork must match the approved generated WebP');
 assert.ok(page.includes('v17-marche-cambodgien-ia.webp'),'Approved market source required');
 assert.match(page,/v17r-market-visual--generated/);
-assert.match(page,/Illustration éditoriale générée par IA/);
-assert.match(page,/scène fictive inspirée des marchés terrestres du Cambodge/);
+assert.match(page,/Marché imaginaire inspiré du Cambodge/);
+assert.match(page,/v17r-hero-disclosure/);
+assert.match(page,/Certaines scènes sont des illustrations créées avec l’IA/);
+assert.match(credits,/id="illustrations-ia"/);
+assert.match(credits,/marché terrestre imaginaire inspiré du Cambodge/);
 assert.doesNotMatch(page,/marketIsIllustrated|v17-market-live-1800/,
   'No silent return to the obsolete documentary market');
-assert.match(page,/Filipp Romanovski/);
-assert.match(page,/Illustration culinaire générée par IA/);
+assert.match(credits,/Filipp Romanovski/);
+assert.match(credits,/composition éditoriale d’un repas/);
 assert.match(page,/Radek Kucharski/);
 assert.match(page,/Angkor_Wat_Reflection_\(46810498612\)\.jpg/);
 assert.match(page,/v17r-gestures-main/);
 assert.doesNotMatch(page,/v17r-table-detail/,'No detached bowl inset in the immersive table scene');
 assert.ok(fs.existsSync('public/images/cuisine/v17-num-plae-ai-641.jpg'),'Num Plae Ai approved real photograph missing');
-assert.match(page,/illustration culinaire IA/,'The dessert scene must be honestly labelled as generated');
+assert.match(credits,/les desserts/,'Generated dessert source must be disclosed in credits');
 assert.match(page,/v17-desserts-khmers-generes\.webp/,'Missing generated editorial dessert source');
 assert.doesNotMatch(page,/v17-khmer-sweets-1400|v17-amok-coconut-1800|v17-num-krouch-1400/,'Rejected image still appears on page');
 
@@ -71,10 +75,9 @@ assert.match(page,/v17r-finale-stamp/,'Missing Angkor finale illustration');
 assert.match(page,/v17r-hero-sidebar/,'Missing storyboard side annotation');
 assert.match(page,/v17r-spice-bowls/,'Missing spice bowl visual');
 assert.match(page,/v17r-gestures-kroeung/);
-assert.match(page,/Sources photographiques et état de la prévisualisation/);
-assert.match(page,/Sources et nature des illustrations/);
+assert.doesNotMatch(page,/v17r-preview-notice|v17r-table-clarity/,'No disruptive repeated credit blocks on the homepage');
 assert.match(page,/class="v17r-wave/);
-assert.match(page,/Red_Kroeung_Paste.jpg/);
+assert.match(credits,/Red_Kroeung_Paste.jpg/);
 const script=fs.readFileSync('src/scripts/v17AccueilMotion.ts','utf8');
 assert.match(page,/initV17AccueilMotion/);
 assert.match(script,/gsap\.matchMedia\(\)/);
@@ -85,7 +88,7 @@ assert.match(script,/scrub: \.75/);
 assert.doesNotMatch(script,/pin:\s*true|ScrollSmoother|window\.scrollTo/);
 
 
-assert.match(page,/composition éditoriale d.un repas inspiré de la cuisine cambodgienne/);
+assert.match(credits,/composition éditoriale d’un repas autour d’une table/);
 assert.doesNotMatch(page,/montage éditorial, pas une même tablée/);
 assert.doesNotMatch(page, /\/v17-preview\/|home-v17-preview\.css|home-v17-air\.css/);
 assert.match(home, /V17HomeExperience/, 'D8 release must actually promote V17 on /');
