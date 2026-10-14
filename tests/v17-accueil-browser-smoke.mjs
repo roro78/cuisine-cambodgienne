@@ -411,6 +411,26 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       });
       assert.notEqual(anim.initial,anim.current,
         'Desktop ingredients must converge during native scroll: '+JSON.stringify(anim));
+      // D12: the gesture headline should visibly settle into place as its
+      // scene enters the viewport; never conceal essential copy.
+      const entry=await page.evaluate(async()=>{
+        const scene=document.querySelector('.v17r-gestures');
+        const heading=scene.querySelector('h2');
+        const top=scrollY+scene.getBoundingClientRect().top;
+        scrollTo({top:Math.max(0,top-innerHeight*.82),behavior:'instant'});
+        await new Promise(r=>setTimeout(r,850));
+        const from={transform:getComputedStyle(heading).transform,
+          opacity:Number(getComputedStyle(heading).opacity)};
+        scrollTo({top:Math.max(0,top-innerHeight*.28),behavior:'instant'});
+        await new Promise(r=>setTimeout(r,950));
+        const to={transform:getComputedStyle(heading).transform,
+          opacity:Number(getComputedStyle(heading).opacity)};
+        return {from,to};
+      });
+      assert.ok(entry.from.transform!==entry.to.transform &&
+        entry.from.opacity>=.8 && entry.to.opacity>=.8 &&
+        entry.to.opacity>entry.from.opacity,
+        'D12 heading entrance must be perceptible and readable: '+JSON.stringify(entry));
       await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
     }
     const rhythm=await page.evaluate(()=>{
