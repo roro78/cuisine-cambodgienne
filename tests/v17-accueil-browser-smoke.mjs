@@ -166,28 +166,48 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     });
     assert.ok(decorativeAssets.every(x=>x.exists&&x.loaded),
       'All botanical SVG and genuine texture layers must load: '+JSON.stringify(decorativeAssets));
-    const marketPostcard=await page.evaluate(()=>{
-      const frame=document.querySelector('.v17r-market-visual')?.getBoundingClientRect();
-      const card=document.querySelector('.v17r-market-postcard')?.getBoundingClientRect();
-      const photo=document.querySelector('.v17r-market-postcard img');
-      return {frame:frame&&{x:frame.x,y:frame.y,right:frame.right,bottom:frame.bottom},
-        card:card&&{x:card.x,y:card.y,right:card.right,bottom:card.bottom},
-        photoLoaded:!!photo?.complete&&photo.naturalWidth>0};
-    });
-    assert.ok(marketPostcard.photoLoaded && marketPostcard.frame && marketPostcard.card,
-      'Market must include the separately sourced fruit photograph: '+JSON.stringify(marketPostcard));
-    const editorialMarket=await page.locator('.v17r-market-visual figcaption').innerText();
-    assert.match(editorialMarket,/photographies distinctes/i,
-      'The editorial collage must not masquerade as one documentary exposure');
-    assert.match(editorialMarket,/Radosław Botev/);
-    assert.match(editorialMarket,/McKay Savage/);
-    assert.ok(marketPostcard.card.x>=marketPostcard.frame.x-1 &&
-      marketPostcard.card.y>=marketPostcard.frame.y-1 &&
-      marketPostcard.card.right<=marketPostcard.frame.right+1 &&
-      marketPostcard.card.bottom<=marketPostcard.frame.bottom+1,
-      'Market postcard must stay inside the photographed market frame: '+JSON.stringify(marketPostcard));
-    // D7 editorial finish: separate verified photos form an organic inset,
-    // not a fake photograph of one composite Phnom Penh market.
+    const generatedMarket=await page.locator('.v17r-market-visual--generated').count()===1;
+    const marketImage=page.locator('.v17r-market-visual > img').first();
+    const marketCaption=await page.locator('.v17r-market-visual figcaption').innerText();
+    if(generatedMarket){
+      // Once the artwork is committed, the preview must switch automatically.
+      assert.equal(await marketImage.getAttribute('src'),
+        '/images/cuisine/v17-marche-cambodgien-ia.webp');
+      assert.match(await marketImage.getAttribute('alt'),/Illustration générée par IA/);
+      assert.match(marketCaption,/illustration éditoriale générée par IA/i);
+      assert.match(marketCaption,/scène fictive/i);
+      assert.equal(await page.locator('.v17r-market-postcard').count(),0,
+        'Do not overlay documentary fruit photography on the fictional AI market');
+      const marketDimensions=await marketImage.evaluate(el=>({
+        loaded:el.complete&&el.naturalWidth>0,
+        width:el.naturalWidth,height:el.naturalHeight
+      }));
+      assert.ok(marketDimensions.loaded &&
+        marketDimensions.width>=1600 && marketDimensions.height>=900,
+        'Approved generated asset must have its native resolution: '+JSON.stringify(marketDimensions));
+    }else{
+      // Current CI without artwork continues to validate the real, correctly
+      // sourced photographic montage; not an imaginary Angkor waterside market.
+      assert.match(marketCaption,/photographies distinctes/i);
+      assert.match(marketCaption,/Radosław Botev/);
+      assert.match(marketCaption,/McKay Savage/);
+      const marketPostcard=await page.evaluate(()=>{
+        const frame=document.querySelector('.v17r-market-visual')?.getBoundingClientRect();
+        const card=document.querySelector('.v17r-market-postcard')?.getBoundingClientRect();
+        const photo=document.querySelector('.v17r-market-postcard img');
+        return {frame:frame&&{x:frame.x,y:frame.y,right:frame.right,bottom:frame.bottom},
+          card:card&&{x:card.x,y:card.y,right:card.right,bottom:card.bottom},
+          photoLoaded:!!photo?.complete&&photo.naturalWidth>0};
+      });
+      assert.ok(marketPostcard.photoLoaded && marketPostcard.frame && marketPostcard.card,
+        'Market fallback must include the separately sourced fruit photograph: '+JSON.stringify(marketPostcard));
+      assert.ok(marketPostcard.card.x>=marketPostcard.frame.x-1 &&
+        marketPostcard.card.y>=marketPostcard.frame.y-1 &&
+        marketPostcard.card.right<=marketPostcard.frame.right+1 &&
+        marketPostcard.card.bottom<=marketPostcard.frame.bottom+1,
+        'Market postcard must stay within its photographic frame: '+JSON.stringify(marketPostcard));
+    }
+    // Shared stage checks: no CSS regression to mortar or ingredients.
     if([390,1440].includes(width) && !noJs && !reduced){
       const stage=await page.evaluate(()=>{
         const inset=document.querySelector('.v17r-market-postcard');
@@ -195,8 +215,8 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         const caption=document.querySelector('.v17r-market-visual figcaption');
         const ingredients=document.querySelectorAll('.v17r-palette-media figure img');
         return {
-          marketInsetShape:getComputedStyle(inset).borderTopLeftRadius,
-          insetTransform:getComputedStyle(inset).transform,
+          marketInsetShape:inset?getComputedStyle(inset).borderTopLeftRadius:null,
+          insetTransform:inset?getComputedStyle(inset).transform:null,
           mortarShape:getComputedStyle(mortar).borderTopLeftRadius,
           captionVisible:getComputedStyle(caption).display!=='none',
           photographedIngredients:ingredients.length,
@@ -204,12 +224,17 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           seamCount:document.querySelectorAll('.v17r-wave svg').length
         };
       });
-      assert.notEqual(stage.marketInsetShape,'0px','Market inset requires organic cropping: '+JSON.stringify(stage));
-      assert.equal(stage.insetTransform,'none','Market inset must not be a tilted Polaroid: '+JSON.stringify(stage));
-      assert.notEqual(stage.mortarShape,'0px','Mortar photo requires a distinct composition: '+JSON.stringify(stage));
+      if(!generatedMarket){
+        assert.notEqual(stage.marketInsetShape,'0px',
+          'Photographic market fallback must have organic inset: '+JSON.stringify(stage));
+        assert.equal(stage.insetTransform,'none',
+          'Photographic market fallback must not have Polaroid tilt: '+JSON.stringify(stage));
+      }
+      assert.notEqual(stage.mortarShape,'0px',
+        'Mortar photo keeps its organic composition: '+JSON.stringify(stage));
       assert.ok(stage.captionVisible && stage.photographedIngredients===2 &&
         stage.botanicalLayers===2 && stage.seamCount===3,
-        'V17 ingredients, photographic credit and scene seams: '+JSON.stringify(stage));
+        'V17 ingredients, market attribution and scene seams: '+JSON.stringify(stage));
     }
     if(width===1440){
       const immersive=await page.evaluate(()=>({
