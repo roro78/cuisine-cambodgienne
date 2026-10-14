@@ -42,12 +42,16 @@ export function initV17AccueilMotion() {
     sceneMotion('.v17r-market-visual > img', { scale: 1.075, yPercent: -2 }, { scale: 1.015, yPercent: 2 });
     // A second documented fruit photograph brings depth without fabricating one scene.
     sceneMotion('.v17r-market-postcard img', { scale: 1.11 }, { scale: 1.025 });
+    sceneMotion('.v17r-market-bloom', { yPercent: 14, rotation: -23 }, { yPercent: -12, rotation: -8 });
     // 3. Ingredients: converging from different axes, title stays static.
     sceneMotion('.v17r-palette-a', { xPercent: -17, yPercent: 9 }, { xPercent: 0, yPercent: 0 });
     sceneMotion('.v17r-palette-b', { xPercent: 16, yPercent: -7 }, { xPercent: 0, yPercent: 0 });
     sceneMotion('.v17r-lemongrass', { xPercent: -16 }, { xPercent: 0 });
     sceneMotion('.v17r-palette-lime', { xPercent: 13, yPercent: 10 }, { xPercent: 0, yPercent: 0 });
     sceneMotion('.v17r-spice-bowls', { xPercent: 13, yPercent: 8 }, { xPercent: 0, yPercent: 0 });
+    // Decorative botanical framing floats behind the static ingredient heading.
+    sceneMotion('.v17r-palette-foliage-left', { xPercent: -16, yPercent: 10, rotation: -42 }, { xPercent: 0, yPercent: -3, rotation: -34 });
+    sceneMotion('.v17r-palette-foliage-right', { xPercent: 13, yPercent: -10, rotation: 138 }, { xPercent: 0, yPercent: 4, rotation: 128 });
     // 4. Mortar: the hands remain real; the prepared kroeung is a second image.
     sceneMotion('.v17r-gestures-main img', { scale: 1.07 }, { scale: 1.015 });
     sceneMotion('.v17r-gestures-kroeung', { yPercent: 12, xPercent: 7 }, { yPercent: 0, xPercent: 0 });
