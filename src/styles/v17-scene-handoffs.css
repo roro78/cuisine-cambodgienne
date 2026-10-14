@@ -65,3 +65,26 @@
     transition: none !important;
   }
 }
+
+/* D16 keyboard focus stays discoverable even while surrounding story copy
+   is travelling in/out with the mouse or touch scroll. No JS requirement. */
+.v17r :is(.v17r-market,.v17r-palette,.v17r-table,.v17r-dessert,.v17r-finale,.v17r-gestures) a:focus-visible {
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: none !important;
+}
+.v17r .v17r-finale-actions:focus-within {
+  opacity: 1 !important;
+  transform: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .v17r .v17r-market h2,
+  .v17r .v17r-palette h2,
+  .v17r .v17r-table h2,
+  .v17r .v17r-dessert h2,
+  .v17r .v17r-finale h2,
+  .v17r .v17r-gesture-word {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
