@@ -35,42 +35,112 @@ export function initV17AccueilMotion() {
   };
 
   /**
-   * Each chapter resolves in three beats: heading, supporting line, invitation.
-   * Only transforms and gentle opacity; essential content always stays visible.
-   * No pin, no takeover of the browser's native scroll.
+   * D15 — A readable editorial performance, NOT a static layout with fades.
+   * For each chapter: lead-in -> full readable hold -> physical exit.
+   * Only GSAP transforms, opacity and temporary clip masks touch copy.
+   * HTML/CSS remains complete with JS off or reduced motion requested.
    */
-  const copyEntrance = (
-    sceneSelector: string,
-    selectors: string[],
-    horizontal = 0,
-    distance = 25,
+  const chapterPerformance = (
+    chapterSelector: string,
+    direction: -1 | 1,
+    mobile: boolean,
   ) => {
-    const scene = root.querySelector<HTMLElement>(sceneSelector);
-    if (!scene) return;
-    const nodes = selectors
-      .map((selector) => scene.querySelector<HTMLElement>(selector))
-      .filter((node): node is HTMLElement => node !== null);
-    if (!nodes.length) return;
+    const chapter = root.querySelector<HTMLElement>(chapterSelector);
+    if (!chapter) return;
+    const heading = chapter.querySelector<HTMLElement>('h2');
+    if (!heading) return;
+    const kicker = chapter.querySelector<HTMLElement>('.v17r-kicker');
+    const copy = chapter.querySelector<HTMLElement>(
+      chapterSelector === '.v17r-palette' ? '.v17r-palette-intro' :
+      chapterSelector === '.v17r-market' ? '.v17r-market-copy > p:not(.v17r-kicker)' :
+      chapterSelector === '.v17r-table' ? '.v17r-table-copy > p:not(.v17r-kicker)' :
+      chapterSelector === '.v17r-dessert' ? '.v17r-dessert-copy > p:not(.v17r-kicker)' :
+      '.v17r-finale-copy > p:not(.v17r-kicker)',
+    );
+    const actions = gsap.utils.toArray<HTMLElement>(
+      chapterSelector === '.v17r-finale' ? '.v17r-finale-actions' : '.v17r-pill', chapter,
+    ).filter((node) => node.closest('section') === chapter);
+    // One chapter timeline: enter visibly while in view, dwell long enough
+    // to read, then retreat before the next full-screen act replaces it.
     const timeline = gsap.timeline({
       scrollTrigger: {
-        // On stacked mobile scenes, the heading enters long after the photo.
-        // Trigger from the heading itself so motion is actually perceived.
-        trigger: distance <= 11 ? nodes[0] : scene,
-        start: 'top 90%',
-        end: 'top 30%',
-        scrub: .75,
+        trigger: mobile ? heading : chapter,
+        start: mobile ? 'top 93%' : 'top 91%',
+        endTrigger: chapter,
+        end: mobile ? 'bottom 11%' : 'bottom 12%',
+        scrub: mobile ? .48 : .72,
         invalidateOnRefresh: true,
       },
     });
-    nodes.forEach((node, index) => {
-      timeline.fromTo(node,
-        { x: horizontal, y: horizontal ? 9 : distance, opacity: .86 },
-        { x: 0, y: 0, opacity: 1, duration: .8, ease: 'power2.out', immediateRender: false },
-        index * .13,
-      );
+    if (kicker) {
+      timeline.fromTo(kicker,
+        { y: mobile ? -12 : -24, opacity: .4 },
+        { y: 0, opacity: 1, duration: .68, ease: 'power2.out', immediateRender: false }, 0);
+      timeline.to(kicker,
+        { y: mobile ? -8 : -20, opacity: .4, duration: .55, ease: 'power2.in' }, 3.7);
+    }
+    timeline.fromTo(heading,
+      {
+        x: direction * (mobile ? 26 : 98),
+        y: mobile ? 12 : 24,
+        clipPath: 'inset(0% 0% 72% 0%)',
+        opacity: .28,
+      },
+      {
+        x: 0, y: 0,
+        clipPath: 'inset(0% 0% 0% 0%)',
+        opacity: 1,
+        duration: 1.1, ease: 'power3.out', immediateRender: false,
+      }, .12);
+    // Typographic exit is deliberate and perceptible: it exits in the
+    // opposite direction, after a generous static reading interval.
+    timeline.to(heading, {
+      x: -direction * (mobile ? 20 : 66),
+      y: mobile ? -9 : -19,
+      clipPath: 'inset(0% 0% 67% 0%)',
+      opacity: .26,
+      duration: .78, ease: 'power2.in',
+    }, 3.7);
+    if (copy) {
+      timeline.fromTo(copy,
+        { x: direction * (mobile ? 12 : 34), y: mobile ? 14 : 30, opacity: .38 },
+        { x: 0, y: 0, opacity: 1, duration: .88, ease: 'power2.out', immediateRender: false }, .55);
+      timeline.to(copy,
+        { y: mobile ? -8 : -21, opacity: .48, duration: .62, ease: 'power2.in' }, 3.82);
+    }
+    actions.forEach((action, index) => {
+      timeline.fromTo(action,
+        { x: direction * (mobile ? 12 : 40), y: mobile ? 8 : 17, opacity: .48 },
+        { x: 0, y: 0, opacity: 1, duration: .72, ease: 'power2.out', immediateRender: false },
+        .85 + index * .12);
+      timeline.to(action,
+        { x: -direction * (mobile ? 8 : 30), opacity: .55,
+          duration: .65, ease: 'power2.in' }, 3.94 + index * .1);
     });
+    // Guarantees a proper reading beat even in chapters with fewer elements.
+    timeline.set({}, {}, 4.7);
   };
 
+  const heroDeparture = (mobile: boolean) => {
+    const hero = root.querySelector<HTMLElement>('.v17r-hero');
+    const headline = hero?.querySelector<HTMLElement>('h1');
+    const intro = hero?.querySelector<HTMLElement>('.v17r-hero-copy > p:not(.v17r-eyebrow):not(.v17r-hero-disclosure)');
+    if (!hero || !headline) return;
+    const departure = gsap.timeline({
+      scrollTrigger: {
+        trigger: hero,
+        start: 'top top',
+        end: 'bottom 20%',
+        scrub: mobile ? .4 : .65,
+        invalidateOnRefresh: true,
+      },
+    });
+    departure.to(headline,
+      { x: mobile ? -20 : -75, y: mobile ? -8 : -24,
+        opacity: .43, ease: 'power2.in', duration: 1 }, .15);
+    if (intro) departure.to(intro,
+      { x: mobile ? -9 : -35, opacity: .5, duration: .8, ease: 'power2.in' }, .35);
+  };
 
   /**
    * Mortar film: one full-bleed continuous photographic gesture, three
@@ -214,13 +284,13 @@ export function initV17AccueilMotion() {
     // 6–7. Desserts and Angkor: restraint and varied composition.
     sceneMotion('.v17r-dessert-generated img', { scale: 1.075, yPercent: -1 }, { scale: 1.005, yPercent: 2 });
     sceneMotion('.v17r-finale-landscape img', { scale: 1.09, yPercent: -3 }, { scale: 1.01, yPercent: 2 });
-    // Every scene has its own visual entrance; the static palette is preserved.
-    copyEntrance('.v17r-market', ['.v17r-market h2', '.v17r-market-copy > p:not(.v17r-kicker)', '.v17r-market .v17r-pill'], 22);
-    copyEntrance('.v17r-palette', ['.v17r-palette h2', '.v17r-palette-intro', '.v17r-palette > .v17r-pill']);
-
-    copyEntrance('.v17r-table', ['.v17r-table h2', '.v17r-table-copy > p:not(.v17r-kicker)', '.v17r-table .v17r-pill']);
-    copyEntrance('.v17r-dessert', ['.v17r-dessert h2', '.v17r-dessert-copy > p:not(.v17r-kicker)', '.v17r-dessert .v17r-pill'], -19);
-    copyEntrance('.v17r-finale', ['.v17r-finale h2', '.v17r-finale-copy > p:not(.v17r-kicker)', '.v17r-finale-actions'], 0, 32);
+    // D15 editorial choreography: visible arrival, reading beat, exit.
+    heroDeparture(false);
+    chapterPerformance('.v17r-market', 1, false);
+    chapterPerformance('.v17r-palette', -1, false);
+    chapterPerformance('.v17r-table', 1, false);
+    chapterPerformance('.v17r-dessert', -1, false);
+    chapterPerformance('.v17r-finale', 1, false);
     sceneHandoffs(false);
     // Organic seams move gently as chapter boundaries, without pinning.
     sceneMotion('.v17r-wave-green svg', { scaleX: 1.05, xPercent: -1 }, { scaleX: 1.05, xPercent: 1 });
@@ -240,11 +310,13 @@ export function initV17AccueilMotion() {
     sceneMotion('.v17r-finale-landscape img', { scale: 1.04 }, { scale: 1.005 });
     mortarCinema(true);
     sceneHandoffs(true);
-    // Native touch scrolling with lower motion amplitude than on desktop.
-    copyEntrance('.v17r-market', ['.v17r-market h2', '.v17r-market .v17r-pill'], 0, 11);
-
-    copyEntrance('.v17r-dessert', ['.v17r-dessert h2', '.v17r-dessert .v17r-pill'], 0, 11);
-    copyEntrance('.v17r-finale', ['.v17r-finale h2', '.v17r-finale-actions'], 0, 11);
+    // D15 mobile uses heading-driven movement, not offscreen scene entrances.
+    heroDeparture(true);
+    chapterPerformance('.v17r-market', 1, true);
+    chapterPerformance('.v17r-palette', -1, true);
+    chapterPerformance('.v17r-table', 1, true);
+    chapterPerformance('.v17r-dessert', -1, true);
+    chapterPerformance('.v17r-finale', 1, true);
   });
 
   return () => mm.revert();
