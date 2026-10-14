@@ -25,10 +25,8 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
   const captureVideo=screenshot && !noJs && !reduced && [390,1440].includes(width);
   if(captureVideo)await fs.mkdir('artifacts',{recursive:true});
   const page=await browser.newPage({viewport:{width,height},isMobile:width<=430,hasTouch:width<=430,
-    javaScriptEnabled:!noJs,reducedMotion:reduced?'reduce':'no-preference',
-    ...(captureVideo?{recordVideo:{dir:'artifacts',size:width===1440?{width:720,height:450}:{width:390,height:844}}}:{})
+    javaScriptEnabled:!noJs,reducedMotion:reduced?'reduce':'no-preference'
   });
-  const video=page.video();
   // Lab telemetry only. Not a substitute for Lighthouse or real-user Core Web Vitals.
   if(!noJs && !reduced && [390,1440].includes(width)){
     await page.addInitScript(() => {
@@ -522,18 +520,6 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         JSON.stringify(metrics,null,2)+String.fromCharCode(10));
       console.log('V17 D7 lab metrics '+width+'px '+JSON.stringify(metrics));
     }
-    // Record the actual browser while it scrolls through the complete preview.
-    // Video is evidence, not a visual comparison against the approved PNG.
-    if(captureVideo){
-      const total=await page.evaluate(()=>document.documentElement.scrollHeight-innerHeight);
-      const step=height*.28;
-      for(let offset=0;offset<=total;offset+=step){
-        await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),offset);
-        await page.waitForTimeout(110);
-      }
-      await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),total);
-      await page.waitForTimeout(450);
-    }
     // D8: the public / is the real V17 site, with indexable canonical SEO.
     // The preview stays noindex and has its own /v17-accueil-preview/ canonical.
     if(width===390||width===1440){
@@ -552,9 +538,36 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     console.log('V17 D2 preview '+width+' × '+height+(noJs?' noJS':'')+(reduced?' reduced':'')+' PASS');
   }finally{
     await page.close();
+  }
+  // Video comes from an untouched page: full-page screenshots temporarily
+  // resize CDP capture surfaces and distort recordings made on that page.
+  if(captureVideo)await recordCleanScroll(width,height);
+}
+async function recordCleanScroll(width,height){
+  const page=await browser.newPage({
+    viewport:{width,height},
+    isMobile:width<=430,
+    hasTouch:width<=430,
+    reducedMotion:'no-preference',
+    recordVideo:{dir:'artifacts',size:width===1440?{width:720,height:450}:{width:390,height:844}}
+  });
+  const video=page.video();
+  try{
+    const response=await page.goto(base+'/v17-accueil-preview/',{waitUntil:'networkidle',timeout:30000});
+    assert.equal(response?.status(),200);
+    const total=await page.evaluate(()=>document.documentElement.scrollHeight-innerHeight);
+    const step=height*.20;
+    for(let offset=0;offset<=total;offset+=step){
+      await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),offset);
+      await page.waitForTimeout(120);
+    }
+    await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),total);
+    await page.waitForTimeout(500);
+  }finally{
+    await page.close();
     if(video){
       await video.saveAs('artifacts/v17-accueil-'+width+'-scroll.webm');
-      console.log('V17 D7 browser video recorded: '+width+'px');
+      console.log('V17 D13 clean scroll video recorded: '+width+'px');
     }
   }
 }
