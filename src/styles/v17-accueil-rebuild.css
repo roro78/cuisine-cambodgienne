@@ -1397,3 +1397,47 @@
     line-height:1.35;
   }
 }
+
+
+/* V17 320px glyph visibility — the earlier generic 350px font reduction was
+   overridden later by several mobile clamp(min=3rem) rules. Those headlines
+   looked fine at 390px yet clipped individual letters inside overflow:clip at
+   320px. Keep desktop full-screen scenes; alter mobile text flow only. */
+@media (max-width: 420px) {
+  .v17r-palette,
+  .v17r-table,
+  .v17r-table-copy,
+  .v17r-market-copy {
+    min-width: 0;
+  }
+  .v17r-palette h2 {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    font-size: clamp(1.65rem, 7.9vw, 2.1rem);
+    line-height: 1.04;
+    letter-spacing: -.045em;
+    overflow-wrap: break-word;
+  }
+  .v17r-table-copy {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    margin-inline: auto;
+  }
+  .v17r-table h2 {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    font-size: clamp(1.8rem, 8.3vw, 2.35rem);
+    line-height: 1.03;
+    letter-spacing: -.045em;
+    overflow-wrap: break-word;
+  }
+  .v17r-table-copy > p:not(.v17r-kicker) {
+    width: 100%;
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+}
