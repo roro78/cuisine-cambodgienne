@@ -14,7 +14,7 @@ const SUMMARY='artifacts/v17-lighthouse-mobile-summary.json';
 const astroCli=fileURLToPath(new URL('../node_modules/astro/astro.js',import.meta.url));
 fs.mkdirSync('artifacts',{recursive:true});
 const server=spawn(process.execPath,[astroCli,'preview','--host','127.0.0.1','--port',String(PORT)],{
-  stdio:['ignore','pipe','pipe'],detached:process.platform!=='win32
+  stdio:['ignore','pipe','pipe'],detached:process.platform!=='win32'
 });
 let serverLogs='';
 for(const stream of [server.stdout,server.stderr]){
