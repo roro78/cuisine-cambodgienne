@@ -542,6 +542,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
   // Video comes from an untouched page: full-page screenshots temporarily
   // resize CDP capture surfaces and distort recordings made on that page.
   if(captureVideo)await recordCleanScroll(width,height);
+  if(captureVideo)await recordMortarSequence(width,height);
 }
 async function recordCleanScroll(width,height){
   const page=await browser.newPage({
@@ -568,6 +569,49 @@ async function recordCleanScroll(width,height){
     if(video){
       await video.saveAs('artifacts/v17-accueil-'+width+'-scroll.webm');
       console.log('V17 D13 clean scroll video recorded: '+width+'px');
+    }
+  }
+}
+/**
+ * Human-review evidence: an actual slow, uninterrupted scroll of ONLY the
+ * mortar chapter. Browser-generated footage, not a video of real Khmer cooking.
+ * This runs independently of full-page screenshot and regression assertions.
+ */
+async function recordMortarSequence(width,height){
+  const page=await browser.newPage({
+    viewport:{width,height},
+    isMobile:width<=430,
+    hasTouch:width<=430,
+    reducedMotion:'no-preference',
+    recordVideo:{dir:'artifacts',size:width===1440?{width:960,height:600}:{width:390,height:844}}
+  });
+  const video=page.video();
+  try{
+    const response=await page.goto(base+'/v17-accueil-preview/',{waitUntil:'networkidle',timeout:30000});
+    assert.equal(response?.status(),200);
+    const bounds=await page.locator('[data-v17-mortar-scene]').evaluate(el=>{
+      const box=el.getBoundingClientRect();
+      return {start:scrollY+box.top,height:box.height};
+    });
+    const max=await page.evaluate(()=>document.documentElement.scrollHeight-innerHeight);
+    const from=Math.min(max,Math.max(0,bounds.start-height*.92));
+    const to=Math.min(max,Math.max(from,bounds.start+bounds.height-height*.12));
+    await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),from);
+    await page.waitForTimeout(450);
+    const steps=70;
+    for(let i=0;i<=steps;i++){
+      const ratio=i/steps;
+      // Slow in/out makes the three typographic beats visibly distinct.
+      const eased=ratio<.5?2*ratio*ratio:1-((-2*ratio+2)**2)/2;
+      await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),from+(to-from)*eased);
+      await page.waitForTimeout(110);
+    }
+    await page.waitForTimeout(500);
+  }finally{
+    await page.close();
+    if(video){
+      await video.saveAs('artifacts/v17-mortier-cinema-'+width+'.webm');
+      console.log('V17 D13 dedicated mortar scroll recorded: '+width+'px');
     }
   }
 }
