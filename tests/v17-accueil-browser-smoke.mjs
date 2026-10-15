@@ -371,8 +371,8 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         const lok=section.querySelector('.v17r-table-dish--loklak .v17r-table-dish-photo');
         const noodles=section.querySelector('.v17r-table-dish--nombanhchok .v17r-table-dish-photo');
         const ripple=section.querySelector('.v17r-table-ripple');
-        const start=scrollY+section.getBoundingClientRect().top-innerHeight*.76;
-        const end=scrollY+section.getBoundingClientRect().bottom-innerHeight*.83;
+        const start=scrollY+section.getBoundingClientRect().top;
+        const end=scrollY+section.getBoundingClientRect().bottom-innerHeight;
         const seen=[];
         for(const p of [.09,.27,.40,.58,.67,.91]){
           scrollTo({top:Math.max(0,start+(end-start)*p),behavior:'instant'});
@@ -397,14 +397,37 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         'D20 final Prahok bowl ripple did not dissipate: '+JSON.stringify(choreography));
       await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
     }
+    if([390,768,1024,1440].includes(width) && !noJs && !reduced){
+      const labels=await page.evaluate(async()=>{
+        const stage=document.querySelector('[data-v17-table-assemble]');
+        const top=scrollY+stage.getBoundingClientRect().top;
+        const bottom=scrollY+stage.getBoundingClientRect().bottom-innerHeight;
+        const names=[...stage.querySelectorAll('.v17r-table-dish-label')];
+        const samples=[];
+        for(const progress of [.04,.93]){
+          scrollTo({top:Math.max(0,top+(bottom-top)*progress),behavior:'instant'});
+          await new Promise(resolve=>setTimeout(resolve,800));
+          samples.push(names.map(el=>Number(getComputedStyle(el).opacity)));
+        }
+        return {
+          samples,
+          stageSticky:getComputedStyle(stage.querySelector('.v17r-table-stage')).position
+        };
+      });
+      assert.equal(labels.stageSticky,'sticky','D20 table must hold a full viewport');
+      assert.ok(labels.samples[0].every(v=>v<.15)&&
+        labels.samples[1].every(v=>v>.95),
+        'D20 linked recipe labels must show only when real dishes arrive: '+JSON.stringify(labels));
+      await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
+    }
     // D18: distinct dishes should arrive progressively as the table settles.
     if([390,1440].includes(width) && !noJs && !reduced){
       const plates=await page.evaluate(async()=>{
         const section=document.querySelector('[data-v17-table-assemble]');
         const amok=section.querySelector('.v17r-table-dish--amok');
         const loklak=section.querySelector('.v17r-table-dish--loklak');
-        const start=scrollY+section.getBoundingClientRect().top-innerHeight*.77;
-        const end=scrollY+section.getBoundingClientRect().bottom-innerHeight*.84;
+        const start=scrollY+section.getBoundingClientRect().top;
+        const end=scrollY+section.getBoundingClientRect().bottom-innerHeight;
         const samples=[];
         for(const progress of [.10,.59,.88]){
           scrollTo({top:Math.max(0,start+(end-start)*progress),behavior:'instant'});
@@ -1025,8 +1048,8 @@ async function recordD18TableStory(width,height){
       const bottom=scrollY+section.getBoundingClientRect().bottom;
       const max=document.documentElement.scrollHeight-innerHeight;
       return {
-        start:Math.max(0,top-innerHeight*.96),
-        end:Math.min(max,bottom-innerHeight*.70),
+        start:Math.max(0,top-innerHeight*.06),
+        end:Math.min(max,bottom-innerHeight*.94),
         links:[...section.querySelectorAll('a.v17r-table-dish')].map(a=>a.getAttribute('href'))
       };
     });
