@@ -149,9 +149,13 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       assert.equal(await page.evaluate(()=>location.hash),'#v17r-main',
         'Skip link should navigate directly to main content');
     }
-    const photo=await page.evaluate(()=>{
+    const photo=await page.evaluate(async()=>{
       const section=document.querySelector('[data-v17-table-editorial]');
       const img=section.querySelector('.v17r-table-fullbleed img');
+      // This scene is lazy-loaded several viewports below the fold. Decode the
+      // actual responsive picture before reading currentSrc/naturalWidth.
+      img.loading='eager';
+      await img.decode().catch(()=>{});
       const copy=section.querySelector('.v17r-table-copy');
       const h=copy.querySelector('h2');
       return {img:img?.getAttribute('src'),fit:getComputedStyle(img).objectFit,
