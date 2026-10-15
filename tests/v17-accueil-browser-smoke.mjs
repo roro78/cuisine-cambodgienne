@@ -159,6 +159,9 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         links:[...section.querySelectorAll('.v17r-table-recipe-link')].map(a=>a.getAttribute('href')),
         culture:section.querySelector('.v17r-table-culture')?.getAttribute('href'),
         recipes:section.querySelectorAll('[data-v17-table-recipe]').length,
+        source:section.querySelector('.v17r-table-fullbleed picture source')?.getAttribute('srcset'),
+        activeImage:img?.currentSrc?.split('/').pop(),
+        imageWidth:img?.naturalWidth,
         mobileImages:[...section.querySelectorAll('.v17r-table-recipe-image')]
           .every(i=>i.complete&&i.naturalWidth>0),
         headingOverflow:h.scrollWidth-h.clientWidth};
@@ -166,6 +169,9 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     assert.ok(photo.count===1&&photo.fit==='cover'&&
       photo.img==='/images/cuisine/v17-tablee-khmere-generee.webp'&&
       photo.headingOverflow<=2&&photo.recipes===4&&
+      photo.source==='/images/cuisine/v17-tablee-khmere-mobile.webp'&&
+      photo.activeImage===(width<=760?'v17-tablee-khmere-mobile.webp':'v17-tablee-khmere-generee.webp')&&
+      photo.imageWidth===(width<=760?941:1672)&&
       JSON.stringify(photo.links)===JSON.stringify([
         '/recettes/amok-trey/','/recettes/lok-lak/',
         '/recettes/num-banh-chok/','/recettes/prahok-ktis/'])&&
@@ -417,7 +423,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
             actions:Number(getComputedStyle(actions[0]).opacity),
             photoTransform:getComputedStyle(img).transform});
         }
-        return {points,loaded:img.naturalWidth===1600,
+        return {points,loaded:img.naturalWidth===(width<=760?941:1672),
           stagePosition:getComputedStyle(section.querySelector('.v17r-table-stage')).position};
       },width);
       assert.ok(motion.loaded&&motion.stagePosition===(width===390?'relative':'sticky')&&
