@@ -689,6 +689,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
   if(captureVideo)await recordHandoffReel(width,height);
   if(captureVideo)await recordContinuousStory(width,height);
   if(captureVideo)await recordTextArrivalEvidence(width,height);
+  if(captureVideo)await recordD17CinematicProof(width,height);
 }
 async function recordCleanScroll(width,height){
   const page=await browser.newPage({
@@ -891,6 +892,55 @@ async function recordTextArrivalEvidence(width,height){
     }
   }finally{
     await page.close();
+  }
+}
+/**
+ * D17 editorial evidence: an uninterrupted slow scroll over the immersive
+ * dessert, plus desktop-only market -> palette -> mortar travelling motif.
+ * Do not present these clips as proof of finished seven-act art direction.
+ */
+async function recordD17CinematicProof(width,height){
+  const mobile=width<=760;
+  const kinds=mobile?['dessert']:['aromatic','dessert'];
+  for(const kind of kinds){
+    const page=await browser.newPage({
+      viewport:{width,height},isMobile:mobile,hasTouch:mobile,
+      reducedMotion:'no-preference',
+      recordVideo:{dir:'artifacts',
+        size:mobile?{width:390,height:844}:{width:960,height:600}}
+    });
+    const video=page.video();
+    try{
+      const response=await page.goto(base+'/v17-accueil-preview/',
+        {waitUntil:'networkidle',timeout:30000});
+      assert.equal(response?.status(),200);
+      const range=await page.evaluate(kind=>{
+        const first=document.querySelector(kind==='dessert'?'.v17r-dessert':'.v17r-market');
+        const last=document.querySelector(kind==='dessert'?'.v17r-dessert':'[data-v17-mortar-scene]');
+        const a=scrollY+first.getBoundingClientRect().top;
+        const b=scrollY+last.getBoundingClientRect().bottom;
+        const max=document.documentElement.scrollHeight-innerHeight;
+        return {start:Math.min(max,Math.max(0,a-innerHeight*.85)),
+          end:Math.min(max,Math.max(0,b-innerHeight*.25))};
+      },kind);
+      await page.evaluate(v=>scrollTo({top:v,behavior:'instant'}),range.start);
+      await page.waitForTimeout(850);
+      const frames=kind==='dessert'?105:170;
+      for(let frame=0;frame<=frames;frame++){
+        const ratio=frame/frames;
+        const eased=ratio<.5?2*ratio*ratio:1-((-2*ratio+2)**2)/2;
+        const y=range.start+(range.end-range.start)*eased;
+        await page.evaluate(v=>scrollTo({top:v,behavior:'instant'}),y);
+        await page.waitForTimeout(105);
+      }
+      await page.waitForTimeout(650);
+    }finally{
+      await page.close();
+      if(video){
+        await video.saveAs('artifacts/v17-accueil-d17-'+kind+'-'+width+'.webm');
+        console.log('V17 D17 authored visual proof: '+kind+' '+width);
+      }
+    }
   }
 }
 /* Generated recipe artwork must also work on the real V16 recipe routes.
