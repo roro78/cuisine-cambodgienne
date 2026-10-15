@@ -442,6 +442,20 @@ export function initV17AccueilMotion() {
       tl.to(recipes,{autoAlpha:1,y:0,stagger:.32,duration:.55,ease:'power2.out'},1.20);
       tl.to(culture,{autoAlpha:1,y:0,duration:.45,ease:'power2.out'},2.65);
       tl.to({}, {duration:1.25},3.1);
+    } else {
+      // Four natural-scroll mobile scenes: reveal only the editorial copy as
+      // each independent food photograph arrives; no image movement.
+      recipes.forEach((recipe)=>{
+        const words=recipe.querySelector<HTMLElement>('.v17r-table-recipe-text');
+        if(!words)return;
+        gsap.fromTo(words,
+          {autoAlpha:.88,y:14},
+          {autoAlpha:1,y:0,ease:'none',
+            scrollTrigger:{
+              trigger:recipe,start:'top 85%',end:'top 44%',
+              scrub:.38,invalidateOnRefresh:true
+            }});
+      });
     }
   };
 
