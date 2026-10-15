@@ -133,7 +133,7 @@ assert.ok(!page.includes('v17-d18-table-assemble.css') &&
 assert.ok(script.includes('const tableEditorial =') &&
   script.includes('tableEditorial(false, window.matchMedia(') &&
   script.includes('tableEditorial(true)') && !script.includes('const assembleTable =') &&
-  script.includes('x:tablet?(i===0?-36:36):0'),
+  script.includes('y:tablet?(i===0?-18:22)'),
   'D21 only typography must animate, with a distinct tablet variant');
 assert.ok(editorialCss.includes('object-fit:cover') &&
   editorialCss.includes('position:sticky') &&
