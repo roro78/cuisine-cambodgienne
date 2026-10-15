@@ -361,6 +361,42 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         bridge.from.includes(from) && bridge.to.includes(to),
         'D14 bridge must not add scroll space or block actions: '+JSON.stringify(bridge));
     }
+    // D20: don't accept four tweens that all look like slide entrances.
+    // The actual photograph of each dish must use independent compositing:
+    // focus pull, lateral matte, rising cloth, and a final contact ripple.
+    if([390,768,1024,1440].includes(width) && !noJs && !reduced){
+      const choreography=await page.evaluate(async()=>{
+        const section=document.querySelector('[data-v17-table-assemble]');
+        const amok=section.querySelector('.v17r-table-dish--amok img');
+        const lok=section.querySelector('.v17r-table-dish--loklak .v17r-table-dish-photo');
+        const noodles=section.querySelector('.v17r-table-dish--nombanhchok .v17r-table-dish-photo');
+        const ripple=section.querySelector('.v17r-table-ripple');
+        const start=scrollY+section.getBoundingClientRect().top-innerHeight*.76;
+        const end=scrollY+section.getBoundingClientRect().bottom-innerHeight*.83;
+        const seen=[];
+        for(const p of [.09,.27,.40,.58,.67,.91]){
+          scrollTo({top:Math.max(0,start+(end-start)*p),behavior:'instant'});
+          await new Promise(resolve=>setTimeout(resolve,720));
+          seen.push({
+            amokFilter:getComputedStyle(amok).filter,
+            amokTransform:getComputedStyle(amok).transform,
+            lokMatte:getComputedStyle(lok).clipPath,
+            noodleMatte:getComputedStyle(noodles).clipPath,
+            rippleOpacity:Number(getComputedStyle(ripple).opacity)
+          });
+        }
+        return seen;
+      });
+      assert.ok(choreography[0].amokFilter!==choreography[3].amokFilter,
+        'D20 macro-to-table Amok must refocus during scrolling: '+JSON.stringify(choreography));
+      assert.ok(choreography[0].lokMatte!==choreography[3].lokMatte,
+        'D20 Lok Lak lateral photographic reveal did not happen: '+JSON.stringify(choreography));
+      assert.ok(choreography[0].noodleMatte!==choreography[5].noodleMatte,
+        'D20 noodles linen reveal did not happen: '+JSON.stringify(choreography));
+      assert.ok(choreography[4].rippleOpacity>choreography[5].rippleOpacity,
+        'D20 final Prahok bowl ripple did not dissipate: '+JSON.stringify(choreography));
+      await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
+    }
     // D18: distinct dishes should arrive progressively as the table settles.
     if([390,1440].includes(width) && !noJs && !reduced){
       const plates=await page.evaluate(async()=>{
@@ -998,8 +1034,9 @@ async function recordD18TableStory(width,height){
       '/recettes/amok-trey/','/recettes/lok-lak/',
       '/recettes/num-banh-chok/','/recettes/prahok-ktis/'
     ],'D18 filmed dish links must lead to actual local recipes');
-    const marks=[{ratio:.11,name:'arrival'},{ratio:.41,name:'two-dishes'},
-      {ratio:.72,name:'three-dishes'},{ratio:.97,name:'complete'}];
+    const marks=[{ratio:.17,name:'amok-focus'},
+      {ratio:.35,name:'lok-lak-matte'},{ratio:.57,name:'noodles-unveiled'},
+      {ratio:.73,name:'prahok-ripple'},{ratio:.97,name:'complete'}];
     const captures=new Set();
     for(let frame=0;frame<=160;frame++){
       const ratio=frame/160;
