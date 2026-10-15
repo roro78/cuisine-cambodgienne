@@ -158,11 +158,12 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       return {backgroundZ:Number(getComputedStyle(atmosphere).zIndex),
         dishesZ:Number(getComputedStyle(dishes).zIndex),
         copyZ:Number(getComputedStyle(copy).zIndex),
-        titleOverflow:title.scrollWidth-title.clientWidth};
+        titleOverflow:title.scrollWidth-title.clientWidth,
+        legacyShade:getComputedStyle(scene,'::before').display};
     });
     assert.ok(tableContrast.copyZ>tableContrast.dishesZ &&
       tableContrast.dishesZ>tableContrast.backgroundZ &&
-      tableContrast.titleOverflow<=2,
+      tableContrast.titleOverflow<=2 && tableContrast.legacyShade==='none',
       'D18 readable tabletop requires foreground title: '+JSON.stringify(tableContrast));
     const dimension=await page.evaluate(()=>({
       html:document.documentElement.scrollWidth,client:document.documentElement.clientWidth,
