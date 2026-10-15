@@ -122,7 +122,14 @@ assert.equal(script.split("chapterPerformance('.v17r-").length-1,6,
 // D21: abandon the four-cutout prototype in favor of one static generated photograph.
 const editorialCss=fs.readFileSync('src/styles/v17-d21-editorial-table.css','utf8');
 assert.ok(page.includes('v17-d21-editorial-table.css') && page.includes('data-v17-table-editorial') &&
-  page.includes('v17-tablee-khmere-generee.webp'), 'D21 editorial photo section missing');
+  page.includes('v17-tablee-khmere-generee.webp'), 'D22 feast photography missing');
+for (const slug of ['amok-trey','lok-lak','num-banh-chok','prahok-ktis']) {
+  assert.ok(page.includes("slug: '"+slug+"'"), 'D22 featured recipe not connected to catalogue: '+slug);
+}
+assert.match(page,/href=\{dish\.url\}/,'D22 each recipe must have its own dynamic anchor');
+assert.match(page,/<ol class="v17r-table-recipes"/,'D22 four food story chapters required');
+assert.match(page,/data-v17-table-recipe/,'D22 recipes must be individually animatable');
+assert.match(page,/v17r-table-recipe-image/,'D22 mobile chapter must use its own food photograph');
 assert.equal((page.match(/class="v17r-table-fullbleed"/g)||[]).length,1,
   'D21 requires exactly one full-bleed photo');
 assert.doesNotMatch(page,/v17r-table-dish|v17r-table-ripple|data-v17-table-assemble/,
@@ -133,8 +140,10 @@ assert.ok(!page.includes('v17-d18-table-assemble.css') &&
 assert.ok(script.includes('const tableEditorial =') &&
   script.includes('tableEditorial(false, window.matchMedia(') &&
   script.includes('tableEditorial(true)') && !script.includes('const assembleTable =') &&
-  script.includes('y:tablet?(i===0?-18:22)'),
-  'D21 only typography must animate, with a distinct tablet variant');
+  script.includes('y:tablet?(i===0?-18:22)') &&
+  script.includes('recipes.length!==4') &&
+  script.includes('gsap.set(recipes,{autoAlpha:.78,y:14})'),
+  'D22 four readable interactive recipe labels, photography remains static');
 assert.ok(editorialCss.includes('object-fit:cover') &&
   editorialCss.includes('position:sticky') &&
   editorialCss.includes('min-width:761px') &&
