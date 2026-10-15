@@ -380,8 +380,10 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           seen.push({
             amokFilter:getComputedStyle(amok).filter,
             amokTransform:getComputedStyle(amok).transform,
-            lokMatte:getComputedStyle(lok).clipPath,
-            noodleMatte:getComputedStyle(noodles).clipPath,
+            lokMatte:getComputedStyle(lok).getPropertyValue('--d20-lok-progress').trim(),
+            noodleMatte:getComputedStyle(noodles).getPropertyValue('--d20-noodle-progress').trim(),
+            lokMask:getComputedStyle(lok).maskImage,
+            noodleMask:getComputedStyle(noodles).maskImage,
             rippleOpacity:Number(getComputedStyle(ripple).opacity)
           });
         }
@@ -393,6 +395,9 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         'D20 Lok Lak lateral photographic reveal did not happen: '+JSON.stringify(choreography));
       assert.ok(choreography[0].noodleMatte!==choreography[5].noodleMatte,
         'D20 noodles linen reveal did not happen: '+JSON.stringify(choreography));
+      assert.ok(choreography[3].lokMask.startsWith('linear-gradient(') &&
+        choreography[3].noodleMask.startsWith('linear-gradient('),
+        'D20 plate reveals must be photographic feathered masks rather than hard clip paths');
       assert.ok(choreography[4].rippleOpacity>choreography[5].rippleOpacity,
         'D20 final Prahok bowl ripple did not dissipate: '+JSON.stringify(choreography));
       await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
