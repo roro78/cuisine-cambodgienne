@@ -1,0 +1,386 @@
+/*
+ * V17 D18 — LA TABLÉE SE COMPOSE
+ * Four real recipe routes; four independently animated photoreal dishes.
+ * An ambient full-viewport tabletop, never an e-commerce grid or a gallery.
+ *
+ * Deliberate static fallback: with JS off / reduced motion, every dish and
+ * every direct recipe link is fully present. A stage becomes sticky only when
+ * the motion script explicitly marks the section data-v17-table-ready.
+ */
+.v17r .v17r-table.v17r-table--assembled{
+  display:block;
+  position:relative;
+  isolation:isolate;
+  width:100%;
+  min-height:100svh;
+  padding:0;
+  margin:0;
+  overflow:visible;
+  background:#482d22;
+  color:#fff9ec;
+}
+.v17r .v17r-table.v17r-table--assembled[data-v17-table-ready]{
+  min-height:184svh;
+}
+.v17r .v17r-table--assembled .v17r-table-stage{
+  position:relative;
+  display:block;
+  isolation:isolate;
+  width:100%;
+  height:100svh;
+  min-height:690px;
+  overflow:clip;
+  background:
+    radial-gradient(ellipse at 74% 34%,rgba(243,183,111,.29) 0%,transparent 49%),
+    radial-gradient(ellipse at 13% 94%,rgba(13,35,27,.39) 0%,transparent 70%),
+    repeating-linear-gradient(0deg,rgba(247,194,120,.025) 0 2px,transparent 2px 9px),
+    linear-gradient(120deg,#785039 0%,#583425 43%,#3a241e 100%);
+}
+.v17r .v17r-table--assembled[data-v17-table-ready] .v17r-table-stage{
+  position:sticky;
+  top:0;
+}
+.v17r .v17r-table--assembled .v17r-table-atmosphere,
+.v17r .v17r-table--assembled .v17r-table-atmosphere::before,
+.v17r .v17r-table--assembled .v17r-table-atmosphere::after{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+.v17r .v17r-table--assembled .v17r-table-atmosphere{
+  z-index:0;
+  background:repeating-linear-gradient(88deg,
+    transparent 0 68px,rgba(251,199,124,.027) 70px 72px,
+    rgba(33,19,14,.046) 75px 77px,transparent 79px 161px);
+}
+.v17r .v17r-table--assembled .v17r-table-atmosphere::before{
+  content:'';
+  background:radial-gradient(ellipse at 60% 50%,transparent 37%,rgba(19,22,16,.33) 100%);
+}
+.v17r .v17r-table--assembled .v17r-table-linen{
+  position:absolute;
+  z-index:1;
+  width:52vw;
+  max-width:870px;
+  height:128vh;
+  top:-14vh;
+  right:9vw;
+  transform:rotate(-17deg);
+  border-left:1px solid rgba(255,254,224,.15);
+  border-right:1px solid rgba(255,254,224,.13);
+  background:
+    repeating-linear-gradient(0deg,rgba(62,89,65,.13) 0 1px,transparent 1px 8px),
+    linear-gradient(100deg,rgba(239,232,197,.22),rgba(240,223,178,.05));
+  box-shadow:20px 0 62px rgba(23,17,11,.14);
+}
+.v17r .v17r-table--assembled .v17r-table-light{
+  position:absolute;
+  inset:-30%;
+  z-index:0;
+  background:radial-gradient(ellipse at 67% 39%,rgba(253,203,130,.21),transparent 56%);
+  opacity:.8;
+  pointer-events:none;
+}
+.v17r .v17r-table--assembled .v17r-table-copy{
+  position:absolute;
+  z-index:8;
+  top:clamp(5.8rem,12svh,9.2rem);
+  left:clamp(1.4rem,6.2vw,7rem);
+  width:min(41%,36rem);
+  max-width:36rem;
+  margin:0;
+  padding:0;
+  color:#fff9ec;
+  pointer-events:none;
+}
+.v17r .v17r-table--assembled .v17r-table-copy :is(a){
+  pointer-events:auto;
+}
+.v17r .v17r-table--assembled .v17r-table-copy .v17r-kicker{
+  color:#f6d67f;
+}
+.v17r .v17r-table--assembled .v17r-table-copy h2{
+  color:#fff9ec;
+  max-width:11ch;
+  margin:clamp(.9rem,1.5vh,1.3rem) 0 1.1rem;
+  font-size:clamp(3.3rem,5.1vw,6.5rem);
+  line-height:1.025;
+  letter-spacing:-.045em;
+  text-shadow:0 4px 26px rgba(33,21,14,.20);
+}
+.v17r .v17r-table--assembled .v17r-table-copy h2 em{
+  color:#f5d078;
+  font-style:normal;
+}
+.v17r .v17r-table--assembled .v17r-table-copy>p:not(.v17r-kicker){
+  color:#fff9ec;
+  max-width:30rem;
+  font-size:clamp(.98rem,1.2vw,1.13rem);
+  line-height:1.5;
+  text-shadow:0 2px 9px rgba(30,21,17,.30);
+}
+.v17r .v17r-table--assembled .v17r-table-copy .v17r-pill{
+  margin-top:1rem;
+}
+.v17r .v17r-table--assembled .v17r-table-sub{
+  display:block;
+  width:max-content;
+  max-width:100%;
+  margin-top:1rem;
+  color:#fff9ec;
+  text-underline-offset:.25em;
+}
+.v17r .v17r-table--assembled .v17r-table-dishes{
+  position:absolute;
+  z-index:3;
+  inset:0;
+  pointer-events:none;
+}
+.v17r .v17r-table--assembled .v17r-table-dish{
+  --dish-size:clamp(12rem,24vw,23rem);
+  display:block;
+  position:absolute;
+  z-index:3;
+  width:var(--dish-size);
+  aspect-ratio:1;
+  transform-origin:50% 50%;
+  text-decoration:none;
+  color:#183328;
+  isolation:isolate;
+  pointer-events:auto;
+  -webkit-tap-highlight-color:transparent;
+  filter:drop-shadow(0 1.9rem 1.4rem rgba(21,14,10,.38));
+}
+.v17r .v17r-table--assembled .v17r-table-dish--amok{
+  --dish-size:clamp(15rem,28vw,27rem);
+  left:42%;
+  top:27%;
+  z-index:5;
+}
+.v17r .v17r-table--assembled .v17r-table-dish--loklak{
+  --dish-size:clamp(12rem,22vw,21rem);
+  left:73%;
+  top:9%;
+  z-index:4;
+}
+.v17r .v17r-table--assembled .v17r-table-dish--nombanhchok{
+  --dish-size:clamp(13rem,23vw,23rem);
+  left:73%;
+  top:57%;
+  z-index:6;
+}
+.v17r .v17r-table--assembled .v17r-table-dish--prahok{
+  --dish-size:clamp(10rem,17vw,16rem);
+  left:28%;
+  top:68%;
+  z-index:6;
+}
+.v17r .v17r-table--assembled .v17r-table-dish-photo{
+  position:absolute;
+  inset:0;
+  display:block;
+  overflow:hidden;
+  border-radius:49% 51% 47% 53% / 48% 47% 53% 52%;
+  background:rgba(235,216,166,.52);
+  box-shadow:
+    inset 0 0 0 7px rgba(255,238,199,.33),
+    0 2px 0 1px rgba(250,229,194,.25),
+    0 12px 19px rgba(16,17,13,.29);
+  transform:rotate(-5deg);
+  transition:filter .27s ease,box-shadow .27s ease;
+}
+.v17r .v17r-table--assembled .v17r-table-dish--loklak .v17r-table-dish-photo{
+  border-radius:53% 47% 51% 49% / 51% 46% 54% 49%;
+  transform:rotate(8deg);
+}
+.v17r .v17r-table--assembled .v17r-table-dish--nombanhchok .v17r-table-dish-photo{
+  transform:rotate(-9deg);
+}
+.v17r .v17r-table--assembled .v17r-table-dish--prahok .v17r-table-dish-photo{
+  transform:rotate(13deg);
+}
+.v17r .v17r-table--assembled .v17r-table-dish-photo img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  border-radius:inherit;
+  aspect-ratio:1;
+  transition:transform .42s cubic-bezier(.2,.8,.2,1),filter .42s ease;
+}
+.v17r .v17r-table--assembled .v17r-table-dish-label{
+  position:absolute;
+  z-index:7;
+  left:50%;
+  bottom:5%;
+  transform:translateX(-50%);
+  width:max-content;
+  max-width:calc(100% - 14px);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:.4rem;
+  padding:.56rem .85rem;
+  border:1px solid rgba(244,232,200,.92);
+  border-radius:100px;
+  background:rgba(255,249,236,.96);
+  color:#193c28;
+  box-shadow:0 6px 20px rgba(18,28,20,.2);
+  font-family:system-ui,sans-serif;
+  font-size:clamp(.73rem,.92vw,.94rem);
+  font-weight:800;
+  letter-spacing:0;
+  text-align:center;
+  white-space:nowrap;
+  line-height:1.2;
+  pointer-events:none;
+}
+.v17r .v17r-table--assembled .v17r-table-dish-label span{
+  font-weight:900;
+  color:#b55224;
+}
+@media (hover:hover) and (pointer:fine){
+  .v17r .v17r-table--assembled .v17r-table-dish:hover{
+    z-index:10;
+  }
+  .v17r .v17r-table--assembled .v17r-table-dish:hover img{
+    transform:scale(1.075);
+    filter:saturate(1.14) contrast(1.04);
+  }
+  .v17r .v17r-table--assembled .v17r-table-dish:hover .v17r-table-dish-photo{
+    box-shadow:0 12px 24px rgba(23,20,14,.42),inset 0 0 0 7px rgba(255,238,199,.33);
+  }
+}
+.v17r .v17r-table--assembled .v17r-table-dish:focus-visible{
+  outline:4px solid #f6d67f;
+  outline-offset:6px;
+  z-index:12;
+}
+.v17r .v17r-table--assembled .v17r-table-recipe-hint{
+  position:absolute;
+  z-index:8;
+  bottom:clamp(1.2rem,3.5svh,2.6rem);
+  left:clamp(1.4rem,6.2vw,7rem);
+  padding:0;
+  color:rgba(255,249,236,.86);
+  font-size:.85rem;
+  line-height:1.4;
+  letter-spacing:.01em;
+  pointer-events:none;
+}
+@media(min-width:761px) and (max-width:1100px){
+  .v17r .v17r-table--assembled .v17r-table-copy{width:46%;}
+  .v17r .v17r-table--assembled .v17r-table-dish--amok{left:43%;top:34%}
+  .v17r .v17r-table--assembled .v17r-table-dish--loklak{left:74%;top:15%}
+  .v17r .v17r-table--assembled .v17r-table-dish--nombanhchok{left:71%;top:62%}
+  .v17r .v17r-table--assembled .v17r-table-dish--prahok{left:29%;top:74%}
+}
+@media(max-width:760px){
+  .v17r .v17r-table.v17r-table--assembled{
+    min-height:100svh;
+    overflow:visible;
+  }
+  .v17r .v17r-table.v17r-table--assembled[data-v17-table-ready]{
+    min-height:146svh;
+  }
+  .v17r .v17r-table--assembled .v17r-table-stage{
+    height:100svh;
+    min-height:700px;
+  }
+  .v17r .v17r-table--assembled .v17r-table-linen{
+    top:25%;
+    right:-35%;
+    height:85%;
+    width:130%;
+    transform:rotate(-31deg);
+  }
+  .v17r .v17r-table--assembled .v17r-table-copy{
+    top:clamp(5.1rem,10.3svh,6.6rem);
+    left:1.25rem;
+    width:calc(100% - 2.5rem);
+    max-width:29rem;
+  }
+  .v17r .v17r-table--assembled .v17r-table-copy h2{
+    max-width:12ch;
+    font-size:clamp(2.5rem,10.2vw,4.6rem);
+    line-height:1.02;
+    margin:.65rem 0 .65rem;
+  }
+  .v17r .v17r-table--assembled .v17r-table-copy>p:not(.v17r-kicker){
+    max-width:28rem;
+    font-size:clamp(.87rem,3.3vw,1rem);
+    line-height:1.4;
+    margin:.5rem 0;
+  }
+  .v17r .v17r-table--assembled .v17r-table-copy .v17r-pill{
+    margin-top:.65rem;
+    padding:.7rem 1.05rem;
+    font-size:.88rem;
+  }
+  .v17r .v17r-table--assembled .v17r-table-sub{
+    font-size:.79rem;
+    margin-top:.55rem;
+  }
+  .v17r .v17r-table--assembled .v17r-table-dish{
+    --dish-size:clamp(9rem,39vw,13rem);
+  }
+  .v17r .v17r-table--assembled .v17r-table-dish--amok{
+    --dish-size:clamp(10.6rem,47vw,15rem);
+    left:6%;top:45%;
+  }
+  .v17r .v17r-table--assembled .v17r-table-dish--loklak{
+    --dish-size:clamp(9rem,37vw,12rem);
+    left:59%;top:42%;
+  }
+  .v17r .v17r-table--assembled .v17r-table-dish--nombanhchok{
+    --dish-size:clamp(9.7rem,41vw,13.5rem);
+    left:51%;top:68%;
+  }
+  .v17r .v17r-table--assembled .v17r-table-dish--prahok{
+    --dish-size:clamp(7.6rem,31vw,10rem);
+    left:3%;top:75%;
+  }
+  .v17r .v17r-table--assembled .v17r-table-dish-label{
+    font-size:clamp(.66rem,2.45vw,.78rem);
+    padding:.46rem .57rem;
+    bottom:2%;
+    gap:.24rem;
+  }
+  .v17r .v17r-table--assembled .v17r-table-recipe-hint{
+    left:1.25rem;
+    bottom:.6rem;
+    font-size:.75rem;
+    color:#fff9ec;
+  }
+}
+@media(max-width:370px){
+  .v17r .v17r-table--assembled .v17r-table-copy{
+    top:4.7rem;
+  }
+  .v17r .v17r-table--assembled .v17r-table-copy h2{
+    font-size:clamp(2.25rem,10.2vw,3.1rem);
+  }
+  .v17r .v17r-table--assembled .v17r-table-copy>p:not(.v17r-kicker){
+    font-size:.82rem;
+  }
+  .v17r .v17r-table--assembled .v17r-table-dish--amok{top:48%}
+  .v17r .v17r-table--assembled .v17r-table-dish--loklak{top:44%}
+  .v17r .v17r-table--assembled .v17r-table-dish--nombanhchok{top:69%}
+  .v17r .v17r-table--assembled .v17r-table-dish--prahok{top:75%}
+}
+/* Hidden animation machinery must never hide recipe links for reduced
+   motion users, keyboard users, or disabled JavaScript. */
+@media(prefers-reduced-motion:reduce){
+  .v17r .v17r-table.v17r-table--assembled{
+    min-height:100svh !important;
+  }
+  .v17r .v17r-table--assembled .v17r-table-stage{
+    position:relative !important;
+  }
+  .v17r .v17r-table--assembled .v17r-table-dish,
+  .v17r .v17r-table--assembled .v17r-table-copy{
+    opacity:1 !important;
+    transform:none !important;
+  }
+}
