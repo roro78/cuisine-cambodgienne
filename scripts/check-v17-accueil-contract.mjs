@@ -130,9 +130,11 @@ assert.doesNotMatch(page,/v17r-table-dish|v17r-table-ripple|data-v17-table-assem
 assert.ok(!page.includes('v17-d18-table-assemble.css') &&
   !page.includes('v18-table-cutout-dishes.css'),
   'Abandoned plate styles must not load');
-assert.ok(script.includes('const tableEditorial =') && script.includes('tableEditorial(false)') &&
-  script.includes('tableEditorial(true)') && !script.includes('const assembleTable ='),
-  'D21 only typography must animate, on desktop and mobile');
+assert.ok(script.includes('const tableEditorial =') &&
+  script.includes('tableEditorial(false, window.matchMedia(') &&
+  script.includes('tableEditorial(true)') && !script.includes('const assembleTable =') &&
+  script.includes('x:tablet?(i===0?-36:36):0'),
+  'D21 only typography must animate, with a distinct tablet variant');
 assert.ok(editorialCss.includes('object-fit:cover') &&
   editorialCss.includes('position:sticky') &&
   editorialCss.includes('min-width:761px') &&
