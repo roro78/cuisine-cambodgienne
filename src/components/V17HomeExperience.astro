@@ -140,9 +140,13 @@ interface Props { preview?: boolean; }
       <section class="v17r-table v17r-table--editorial" aria-labelledby="v17r-table-title" data-v17-table-editorial>
         <div class="v17r-table-stage">
           <figure class="v17r-table-fullbleed">
-            <img src="/images/cuisine/v17-tablee-khmere-generee.webp"
-                 width="1600" height="900" loading="lazy" decoding="async"
-                 alt="Tablée cambodgienne entourée de feuilles tropicales, avec amok, bœuf sauté, nouilles de riz, crudités et condiments."/>
+            <picture>
+              <source media="(max-width: 760px)" type="image/webp"
+                      srcset="/images/cuisine/v17-tablee-khmere-mobile.webp" />
+              <img src="/images/cuisine/v17-tablee-khmere-generee.webp"
+                   width="1672" height="941" loading="lazy" decoding="async"
+                   alt="Tablée khmère illustrée : Amok Trey dans une feuille de bananier, Lok Lak au riz, Num Banh Chok aux herbes et Prahok Ktis avec ses légumes."/>
+            </picture>
           </figure>
           <div class="v17r-table-shade" aria-hidden="true"></div>
           <header class="v17r-table-copy">
