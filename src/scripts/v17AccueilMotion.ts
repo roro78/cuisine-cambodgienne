@@ -394,60 +394,93 @@ export function initV17AccueilMotion() {
    * The DOM/CSS is complete without JS and in reduced motion. No external
    * network, no duplicate plate overlays, no click interception.
    */
+  /**
+   * D20 - Four different visual mechanisms instead of four flying slides:
+   * 1 Amok: macro-to-table focus pull and controlled placement.
+   * 2 Lok Lak: lateral reveal with a photographic matte (not a slide in).
+   * 3 Num Banh Chok: unveiled upwards like lifting table linen.
+   * 4 Prahok Ktis: a short circular ripple and bowl tilt to complete the table.
+   *
+   * The real image cutouts keep their link anchors; only the media is masked.
+   * All plates remain static and clickable with no JS / reduced motion.
+   */
   const assembleTable = (mobile: boolean) => {
-    const section=root.querySelector<HTMLElement>('[data-v17-table-assemble]');
-    if(!section) return;
-    const stage=section.querySelector<HTMLElement>('.v17r-table-stage');
-    const lighting=section.querySelector<HTMLElement>('.v17r-table-light');
-    const linen=section.querySelector<HTMLElement>('.v17r-table-linen');
-    const dishes=[
-      section.querySelector<HTMLElement>('.v17r-table-dish--amok'),
-      section.querySelector<HTMLElement>('.v17r-table-dish--loklak'),
-      section.querySelector<HTMLElement>('.v17r-table-dish--nombanhchok'),
-      section.querySelector<HTMLElement>('.v17r-table-dish--prahok'),
-    ];
-    if(!stage || dishes.some(d=>!d)) return;
+    const section = root.querySelector<HTMLElement>('[data-v17-table-assemble]');
+    const stage = section?.querySelector<HTMLElement>('.v17r-table-stage');
+    const lighting = section?.querySelector<HTMLElement>('.v17r-table-light');
+    const linen = section?.querySelector<HTMLElement>('.v17r-table-linen');
+    const amok = section?.querySelector<HTMLElement>('.v17r-table-dish--amok');
+    const lok = section?.querySelector<HTMLElement>('.v17r-table-dish--loklak');
+    const noodles = section?.querySelector<HTMLElement>('.v17r-table-dish--nombanhchok');
+    const prahok = section?.querySelector<HTMLElement>('.v17r-table-dish--prahok');
+    if (!section || !stage || !amok || !lok || !noodles || !prahok) return;
+    const image = (dish: HTMLElement) => dish.querySelector<HTMLElement>('.v17r-table-dish-photo img');
+    const amokImage=image(amok), lokImage=image(lok), noodleImage=image(noodles);
+    const lokMatte=lok.querySelector<HTMLElement>('.v17r-table-dish-photo');
+    const noodleMatte=noodles.querySelector<HTMLElement>('.v17r-table-dish-photo');
+    const ripple=prahok.querySelector<HTMLElement>('.v17r-table-ripple');
+    if (!amokImage || !lokImage || !noodleImage || !lokMatte || !noodleMatte || !ripple) return;
+
     section.dataset.v17TableReady='';
+    // Stage all four real links before ScrollTrigger renders its first frame.
+    gsap.set(amok,{autoAlpha:0,scale:1.12,yPercent:mobile?28:52,rotation:-8});
+    gsap.set(amokImage,{scale:mobile?1.38:1.86,filter:'blur(10px) saturate(.8)'});
+    gsap.set(lok,{autoAlpha:0,rotation:-4,scale:.96});
+    gsap.set(lokImage,{xPercent:23,scale:1.13});
+    gsap.set(lokMatte,{clipPath:'inset(0 100% 0 0)'});
+    gsap.set(noodles,{autoAlpha:0,rotation:3});
+    gsap.set(noodleMatte,{clipPath:'inset(100% 0 0 0)'});
+    gsap.set(noodleImage,{scale:1.13,yPercent:13});
+    gsap.set(prahok,{autoAlpha:0,scale:.63,rotation:-48});
+    gsap.set(ripple,{opacity:0,scale:.45,transformOrigin:'50% 50%'});
+
     const timeline=gsap.timeline({
       scrollTrigger:{
-        trigger:section,
-        start:'top 77%',
-        end:'bottom 84%',
-        scrub:mobile?.3:.52,
-        invalidateOnRefresh:true
+        trigger:section,start:'top 76%',end:'bottom 83%',
+        scrub:mobile?.27:.5,invalidateOnRefresh:true
       }
     });
     if(linen) timeline.fromTo(linen,
-      {xPercent:mobile?14:18,rotation:-27,opacity:.36},
-      {xPercent:0,rotation:mobile?-31:-17,opacity:1,
-        duration:2.1,ease:'power2.out',immediateRender:false},0);
+      {xPercent:mobile?11:14,rotation:-25,opacity:.55},
+      {xPercent:0,rotation:mobile?-31:-17,opacity:1,duration:2.9,ease:'none',
+        immediateRender:false},0);
     if(lighting)timeline.fromTo(lighting,
-      {opacity:.38,xPercent:-7},
-      {opacity:1,xPercent:2,duration:3.1,ease:'none',immediateRender:false},0);
-    const arrivals=[
-      {at:.55,from:{scale:.38,yPercent:mobile?78:110,rotation:-28,opacity:0},
-        duration:.96},
-      {at:1.20,from:{scale:.70,xPercent:mobile?90:145,rotation:24,opacity:0},
-        duration:.83},
-      {at:1.91,from:{scale:.66,xPercent:mobile?-67:-92,yPercent:mobile?90:125,
-          rotation:-23,opacity:0},duration:.91},
-      {at:2.68,from:{scale:.18,yPercent:mobile?55:70,rotation:-52,opacity:0},
-        duration:.70}
-    ] as const;
-    dishes.forEach((dish,index)=>{
-      if(!dish)return;
-      const beat=arrivals[index];
-      // Explicitly stage the plate before ScrollTrigger is active: the
-      // prior fromTo(immediateRender:false) left it fully visible until its
-      // delayed tween began. That made the arrivals invisible to visitors.
-      gsap.set(dish,{...beat.from,autoAlpha:0});
-      timeline.to(dish,
-        {scale:1,xPercent:0,yPercent:0,rotation:0,autoAlpha:1,
-          duration:beat.duration,ease:index===3?'back.out(1.18)':'power3.out'},
-        beat.at);
-    });
-    // Photo composition holds fully assembled for a significant scroll span.
-    timeline.to({}, {duration:1.05},3.48);
+      {opacity:.23,xPercent:-10,yPercent:4},
+      {opacity:1,xPercent:3,yPercent:0,duration:4.3,ease:'none',
+        immediateRender:false},0);
+
+    // 1. A close-up Amok comes into focus and rests on the dining surface.
+    timeline.to(amok,
+      {autoAlpha:1,scale:1,yPercent:0,rotation:0,duration:1.2,ease:'power3.out'},.32);
+    timeline.to(amokImage,
+      {scale:1,filter:'blur(0px) saturate(1)',duration:1.16,ease:'power2.out'},.32);
+
+    // 2. Lok Lak is uncovered by a travelling edge while its photo shifts
+    // inside the matte. This is a reveal, not moving the whole linked plate.
+    timeline.to(lok,{autoAlpha:1,rotation:0,scale:1,duration:.18},1.43);
+    timeline.to(lokMatte,{clipPath:'inset(0 0% 0 0)',duration:.85,ease:'power2.inOut'},1.43);
+    timeline.to(lokImage,{xPercent:0,scale:1,duration:.9,ease:'power2.out'},1.43);
+
+    // 3. The rice noodles uncover vertically, as though linen moves away;
+    // only the photograph is masked, never the clickable label.
+    timeline.to(noodles,{autoAlpha:1,rotation:0,duration:.18},2.36);
+    timeline.to(noodleMatte,
+      {clipPath:'inset(0% 0 0 0)',duration:.96,ease:'power2.inOut'},2.36);
+    timeline.to(noodleImage,
+      {scale:1,yPercent:0,duration:1,ease:'power3.out'},2.36);
+
+    // 4. A last small dipping bowl comes into focus with a restrained ripple,
+    // replacing the previous cartoon-like pop-and-spin entrance.
+    timeline.to(prahok,
+      {autoAlpha:1,scale:1,rotation:0,duration:.85,ease:'back.out(1.06)'},3.24);
+    timeline.to(ripple,
+      {opacity:.68,scale:1.24,duration:.48,ease:'sine.out'},3.27);
+    timeline.to(ripple,
+      {opacity:0,scale:1.82,duration:.58,ease:'sine.out'},3.75);
+
+    // Food rests in one generous shared composition, enough time to choose
+    // a linked recipe with native scrolling and without scroll interception.
+    timeline.to({}, {duration:1.15},4.36);
   };
 
   mm.add('(min-width: 761px) and (prefers-reduced-motion: no-preference)', () => {
