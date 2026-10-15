@@ -130,6 +130,18 @@ assert.match(page,/href=\{dish\.url\}/,'D22 each recipe must have its own dynami
 assert.match(page,/<ol class="v17r-table-recipes"/,'D22 four food story chapters required');
 assert.match(page,/data-v17-table-recipe/,'D22 recipes must be individually animatable');
 assert.match(page,/v17r-table-recipe-image/,'D22 mobile chapter must use its own food photograph');
+assert.match(page,/<picture>/,'D22 responsive picture wrapper missing');
+assert.match(page,/v17-tablee-khmere-mobile\.webp/,'D22 mobile-generated portrait missing');
+for(const [name,sha] of [
+  ['v17-tablee-khmere-generee.webp','c646b700c2e48847007c8a10a6341943a7c951e2335881c3e78a3f34c8f942b8'],
+  ['v17-tablee-khmere-mobile.webp','c19fb1580062cf689e28dae46ffdc3c3f473a503718408ed0b0821c534edbf05'],
+]){
+  const bytes=fs.readFileSync('public/images/cuisine/'+name);
+  assert.equal(bytes.subarray(0,4).toString(),'RIFF','D22 generated photo must be a WebP: '+name);
+  assert.equal(bytes.subarray(8,12).toString(),'WEBP','D22 generated photo must be a WebP: '+name);
+  assert.equal(createHash('sha256').update(bytes).digest('hex'),sha,
+    'D22 photo changed unexpectedly: '+name);
+}
 assert.equal((page.match(/class="v17r-table-fullbleed"/g)||[]).length,1,
   'D21 requires exactly one full-bleed photo');
 assert.doesNotMatch(page,/v17r-table-dish|v17r-table-ripple|data-v17-table-assemble/,
