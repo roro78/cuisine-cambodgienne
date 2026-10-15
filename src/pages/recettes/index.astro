@@ -100,7 +100,7 @@ const toneMap: Record<string,string> = {
                 loading="lazy"
                 decoding="async"
               />
-              {recipe.image.includes('-genere.webp') && <figcaption class="recipe-generated-note">Illustration créée par IA</figcaption>}
+              {(recipe.image.includes('-genere.webp') || recipe.image.includes('/v18-')) && <figcaption class="recipe-generated-note">Illustration créée par IA</figcaption>}
             </figure>
           ) : (
             <div class="recipe-v15-card-fallback" style={toneMap[recipe.visualTone ?? 'market']}>
