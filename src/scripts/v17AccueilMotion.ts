@@ -404,38 +404,45 @@ export function initV17AccueilMotion() {
     const rule=section.querySelector<HTMLElement>('.v17r-table-rule');
     const lines=gsap.utils.toArray<HTMLElement>('.v17r-table-copy h2 > *',section);
     const intro=section.querySelector<HTMLElement>('.v17r-table-intro');
-    const links=section.querySelector<HTMLElement>('.v17r-table-links');
-    if(!kicker||!rule||lines.length!==2||!intro||!links)return;
+    const recipes=gsap.utils.toArray<HTMLElement>('[data-v17-table-recipe]',section);
+    const culture=section.querySelector<HTMLElement>('.v17r-table-culture');
+    if(!kicker||!rule||lines.length!==2||!intro||recipes.length!==4||!culture)return;
     section.dataset.v17TableReady='';
-    // Keep copy readable before the scroll animation fires. Fully hidden
-    // headings created blank screens in fast-scroll and full-page captures.
-    // Tablet title lines converge vertically from opposite directions; the photograph stays still.
-    gsap.set(kicker,{autoAlpha:.86,y:mobile?8:12});
-    gsap.set(rule,{scaleX:.45,transformOrigin:'left center'});
+    // Make everything usable without JavaScript, on fast scroll and while the
+    // timeline begins. Mobile recipe cards follow normal document flow.
+    gsap.set(kicker,{autoAlpha:.9,y:mobile?7:12});
+    gsap.set(rule,{scaleX:.50,transformOrigin:'left center'});
     lines.forEach((line,i)=>gsap.set(line,{
-      autoAlpha:.74,
+      autoAlpha:.80,
       x:0,
-      y:tablet?(i===0?-18:22):(mobile?15+i*4:23+i*7),
+      y:tablet?(i===0?-18:22):(mobile?10+i*4:18+i*8),
     }));
-    gsap.set(intro,{autoAlpha:.84,y:mobile?11:16});
-    gsap.set(links,{autoAlpha:.82,y:mobile?8:12});
+    gsap.set(intro,{autoAlpha:.9,y:mobile?6:12});
+    if(!mobile){
+      gsap.set(recipes,{autoAlpha:.78,y:14});
+      gsap.set(culture,{autoAlpha:.86,y:7});
+    }
     const tl=gsap.timeline({
       scrollTrigger:{
         trigger:section,
         start:'top 81%',
-        end:'bottom 91%',
-        scrub:mobile?.28:.42,
+        end:mobile?'top 16%':'bottom 91%',
+        scrub:mobile?.3:.42,
         invalidateOnRefresh:true
       }
     });
-    tl.to(kicker,{autoAlpha:1,y:0,duration:.64,ease:'power2.out'},.1);
-    tl.to(rule,{scaleX:1,duration:.88,ease:'power2.inOut'},.20);
-    tl.to(lines[0],{autoAlpha:1,x:0,y:0,duration:.88,ease:'power3.out'},.35);
-    tl.to(lines[1],{autoAlpha:1,x:0,y:0,duration:.92,ease:'power3.out'},.65);
-    tl.to(intro,{autoAlpha:1,y:0,duration:.75,ease:'power2.out'},1.00);
-    tl.to(links,{autoAlpha:1,y:0,duration:.70,ease:'power2.out'},1.23);
-    // Let the complete photographic composition breathe while visitors read.
-    tl.to({}, {duration:1.50},1.92);
+    tl.to(kicker,{autoAlpha:1,y:0,duration:.42,ease:'power2.out'},.05);
+    tl.to(rule,{scaleX:1,duration:.55,ease:'power2.out'},.16);
+    tl.to(lines[0],{autoAlpha:1,x:0,y:0,duration:.65,ease:'power3.out'},.26);
+    tl.to(lines[1],{autoAlpha:1,x:0,y:0,duration:.65,ease:'power3.out'},.5);
+    tl.to(intro,{autoAlpha:1,y:0,duration:.6,ease:'power2.out'},.8);
+    if(!mobile){
+      // The four recipes reveal in reading order; photographic dishes do not
+      // translate, scale or move. All four anchors remain always interactive.
+      tl.to(recipes,{autoAlpha:1,y:0,stagger:.32,duration:.55,ease:'power2.out'},1.20);
+      tl.to(culture,{autoAlpha:1,y:0,duration:.45,ease:'power2.out'},2.65);
+      tl.to({}, {duration:1.25},3.1);
+    }
   };
 
   mm.add('(min-width: 761px) and (prefers-reduced-motion: no-preference)', () => {
