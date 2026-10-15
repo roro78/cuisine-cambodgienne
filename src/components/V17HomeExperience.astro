@@ -1,6 +1,7 @@
 ---
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import { recipes } from '../data/recipes';
 import '../styles/v17-accueil-rebuild.css';
 import '../styles/v17-generated-media.css';
 import '../styles/v17-finition-editoriale.css';
@@ -16,6 +17,18 @@ const kampot = '/images/cuisine/kampot-1600.webp';
 const dessertGenerated = '/images/cuisine/v17-desserts-khmers-generes.webp';
 const galangal = '/images/cuisine/v17-galangal-1000.jpg';
 const chili = '/images/cuisine/v17-chili-450.png';
+// D22: link labels to real recipe slugs. The mobile story uses each recipe's own
+// existing artwork, instead of squeezing a desktop four-column overlay onto a phone.
+const tableRecipes = [
+  { slug: 'amok-trey', short: 'Poisson, coco et kroeung', story: 'Une douceur parfumée, enveloppée dans la feuille de bananier.' },
+  { slug: 'lok-lak', short: 'Bœuf saisi au poivre', story: 'Le poivre et le citron vert réveillent le bœuf juste saisi.' },
+  { slug: 'num-banh-chok', short: 'Nouilles de riz et herbes fraîches', story: 'Des nouilles souples, une sauce chaude, des herbes croquantes.' },
+  { slug: 'prahok-ktis', short: 'Crème de prahok et crudités', story: 'Une bouchée pleine de caractère, adoucie par le coco.' }
+].map((item) => {
+  const recipe = recipes.find((r) => r.slug === item.slug);
+  if (!recipe || !recipe.image) throw new Error(`Recette de la tablée introuvable : ${item.slug}`);
+  return { ...item, title: recipe.title, image: recipe.image, url: `/recettes/${recipe.slug}/` };
+});
 
 interface Props { preview?: boolean; }
 // Le paramètre preview reste typé pour la route de prévisualisation, sans texte de debug.
@@ -123,25 +136,37 @@ interface Props { preview?: boolean; }
       </section>
       <div class="v17r-wave v17r-wave-cream" aria-hidden="true"><svg viewBox="0 0 1440 95" preserveAspectRatio="none"><path d="M0 12C135 89 327 7 495 45S839 65 1010 26 1241 79 1440 38v57H0Z" fill="#69361e"/></svg></div>
 
-      <!-- D21 — one authored culinary photograph instead of assembled plate cutouts. -->
+      <!-- D22 — one still culinary tableau on desktop, four legible recipe chapters on mobile. -->
       <section class="v17r-table v17r-table--editorial" aria-labelledby="v17r-table-title" data-v17-table-editorial>
         <div class="v17r-table-stage">
           <figure class="v17r-table-fullbleed">
             <img src="/images/cuisine/v17-tablee-khmere-generee.webp"
                  width="1600" height="900" loading="lazy" decoding="async"
-                 alt="Repas cambodgien à partager : amok de poisson dans sa feuille de bananier, nouilles de riz, bœuf sauté, légumes et accompagnements traditionnels."/>
+                 alt="Tablée cambodgienne entourée de feuilles tropicales, avec amok, bœuf sauté, nouilles de riz, crudités et condiments."/>
           </figure>
           <div class="v17r-table-shade" aria-hidden="true"></div>
-          <div class="v17r-table-copy">
+          <header class="v17r-table-copy">
             <p class="v17r-kicker">03 — Le partage</p>
             <span class="v17r-table-rule" aria-hidden="true"></span>
-            <h2 id="v17r-table-title"><span>DES PLATS</span><em>À PARTAGER.</em></h2>
-            <p class="v17r-table-intro">Au Cambodge, les saveurs se découvrent ensemble. Une table, mille histoires à goûter.</p>
-            <div class="v17r-table-links">
-              <a class="v17r-pill" href="/recettes/">Explorer les recettes <span aria-hidden="true">↗</span></a>
-              <a class="v17r-table-sub" href="/culture/construire-repas-cambodgien/">L’art du repas cambodgien <span aria-hidden="true">↗</span></a>
-            </div>
-          </div>
+            <h2 id="v17r-table-title"><span>UNE TABLÉE</span><em>KHMÈRE.</em></h2>
+            <p class="v17r-table-intro">Quatre recettes, quatre histoires. Au Cambodge, le plaisir de manger commence quand les plats se partagent.</p>
+          </header>
+          <ol class="v17r-table-recipes" aria-label="Quatre recettes de la tablée khmère">
+            {tableRecipes.map((dish, index) => (
+              <li class="v17r-table-recipe" data-v17-table-recipe>
+                <img class="v17r-table-recipe-image" src={dish.image} width="800" height="600"
+                     loading="lazy" decoding="async" alt="" aria-hidden="true" />
+                <div class="v17r-table-recipe-text">
+                  <span class="v17r-table-recipe-number" aria-hidden="true">{String(index + 1).padStart(2,'0')}</span>
+                  <h3>{dish.title}</h3>
+                  <p class="v17r-table-recipe-short">{dish.short}</p>
+                  <p class="v17r-table-recipe-story">{dish.story}</p>
+                  <a href={dish.url} class="v17r-table-recipe-link" aria-label={`Voir la recette de ${dish.title}`}>Voir la recette <span aria-hidden="true">↗</span></a>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <a class="v17r-table-culture" href="/culture/construire-repas-cambodgien/">Découvrir l’art du repas cambodgien <span aria-hidden="true">↗</span></a>
         </div>
       </section>
 
