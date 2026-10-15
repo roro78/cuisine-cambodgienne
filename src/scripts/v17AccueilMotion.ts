@@ -246,13 +246,11 @@ export function initV17AccueilMotion() {
         });
     }
 
-    // Progressive photographic reveal: left at market, top at the table,
-    // right for the desserts, bottom at Angkor. Underlying scene background
-    // deliberately stays visible during the handoff.
+    // The market and desserts must remain edge-to-edge at every scroll offset.
+    // Their old 7–13% inset masks exposed green side strips on screenshots and
+    // during slow scrolling. Desserts already have their own organic iris.
+    // Preserve the restrained vertical reveal only for the Angkor finale.
     const photographs = [
-      {section: '.v17r-market', frame: '.v17r-market-visual', edge: 'left', crop: mobile ? 7 : 13},
-      {section: '.v17r-table', frame: '.v17r-table-media', edge: 'top', crop: mobile ? 6 : 11},
-      {section: '.v17r-dessert', frame: '.v17r-dessert-art', edge: 'right', crop: mobile ? 7 : 13},
       {section: '.v17r-finale', frame: '.v17r-finale-landscape', edge: 'bottom', crop: mobile ? 6 : 12},
     ] as const;
     for (const {section, frame, edge, crop} of photographs) {
