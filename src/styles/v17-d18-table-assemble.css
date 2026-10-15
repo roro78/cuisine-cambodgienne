@@ -19,6 +19,13 @@
   background:#482d22;
   color:#fff9ec;
 }
+/* The previous full-photo table used a strong ::before black veil. It sat
+   ABOVE this new tabletop stage and washed out every dish and all typography.
+   Remove it completely; the new stage owns its light and shadows. */
+.v17r .v17r-table.v17r-table--assembled::before {
+  content:none;
+  display:none;
+}
 .v17r .v17r-table.v17r-table--assembled[data-v17-table-ready]{
   min-height:184svh;
 }
