@@ -437,10 +437,14 @@ export function initV17AccueilMotion() {
     dishes.forEach((dish,index)=>{
       if(!dish)return;
       const beat=arrivals[index];
-      timeline.fromTo(dish,beat.from,
-        {scale:1,xPercent:0,yPercent:0,rotation:0,opacity:1,
-          duration:beat.duration,ease:index===3?'back.out(1.18)':'power3.out',
-          immediateRender:false},beat.at);
+      // Explicitly stage the plate before ScrollTrigger is active: the
+      // prior fromTo(immediateRender:false) left it fully visible until its
+      // delayed tween began. That made the arrivals invisible to visitors.
+      gsap.set(dish,{...beat.from,autoAlpha:0});
+      timeline.to(dish,
+        {scale:1,xPercent:0,yPercent:0,rotation:0,autoAlpha:1,
+          duration:beat.duration,ease:index===3?'back.out(1.18)':'power3.out'},
+        beat.at);
     });
     // Photo composition holds fully assembled for a significant scroll span.
     timeline.to({}, {duration:1.05},3.48);
