@@ -269,6 +269,8 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           photoWidth:photo.width,
           photoHeight:photo.height,
           marketHeight:market.height,
+          marketClip:getComputedStyle(document.querySelector('.v17r-market-visual')).clipPath,
+          dessertClip:getComputedStyle(document.querySelector('.v17r-dessert-art')).clipPath,
           copyBackground:getComputedStyle(copy).backgroundColor,
           gestureCols:getComputedStyle(gesture).gridTemplateColumns,
           duplicateGestures:document.querySelectorAll('.v17r-gestures-steps li').length,
@@ -280,6 +282,10 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         'Market artwork must span the WHOLE scene, not end at a green side panel: '+JSON.stringify(stage));
       assert.equal(stage.copyBackground,'rgba(0, 0, 0, 0)',
         'Market text must overlay photography without a solid green card');
+      assert.equal(stage.marketClip,'none',
+        'Market image must stay full-bleed without an animated green left strip');
+      assert.equal(stage.dessertClip,'none',
+        'Dessert frame must not reveal a green right strip before its own iris effect');
       assert.equal(stage.duplicateGestures,0,'No repeated Couper Piler Sentir pictograms');
       assert.equal(stage.decorativeNotes,0,'No micro decorative text overlapping headlines');
     }
