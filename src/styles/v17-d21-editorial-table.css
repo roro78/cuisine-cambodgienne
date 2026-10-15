@@ -117,26 +117,30 @@
   .v17r .v17r-table--editorial .v17r-table-fullbleed img{object-position:50% center}
 }
 @media(max-width:760px){
+  /* Full-screen food-led mobile story: each recipe is a photographic chapter,
+     never a squeezed replica of the four-column desktop table. */
   .v17r .v17r-table--editorial,
-  .v17r .v17r-table--editorial[data-v17-table-ready]{min-height:0;overflow:hidden}
+  .v17r .v17r-table--editorial[data-v17-table-ready]{
+    min-height:0;overflow:hidden;
+  }
   .v17r .v17r-table--editorial .v17r-table-stage,
   .v17r .v17r-table--editorial[data-v17-table-ready] .v17r-table-stage{
     position:relative;top:auto;display:block;
     width:100%;height:auto;min-height:0;overflow:visible;
-    padding:clamp(26rem,66svh,36rem) 0 3rem;
+    padding:clamp(31rem,74svh,43rem) 0 0;
     background:#18251c;
   }
   .v17r .v17r-table--editorial .v17r-table-fullbleed{
-    top:0;right:0;left:0;bottom:auto;height:clamp(31rem,82svh,47rem);
+    top:0;right:0;left:0;bottom:auto;height:clamp(37rem,96svh,55rem);
   }
   .v17r .v17r-table--editorial .v17r-table-fullbleed img{
-    object-position:52% 44%;
+    object-position:50% 44%;
   }
   .v17r .v17r-table--editorial .v17r-table-shade{
-    height:clamp(32rem,91svh,52rem);bottom:auto;
+    height:clamp(37rem,99svh,56rem);bottom:auto;
     background:linear-gradient(180deg,
-      rgba(15,25,17,.68) 0%,rgba(15,25,17,.38) 28%,
-      rgba(15,25,17,.34) 54%,rgba(24,37,28,.94) 84%,#18251c 100%);
+      rgba(15,25,17,.58) 0%,rgba(15,25,17,.26) 32%,
+      rgba(15,25,17,.15) 56%,rgba(24,37,28,.9) 87%,#18251c 100%);
   }
   .v17r .v17r-table--editorial .v17r-table-copy{
     left:clamp(1rem,5vw,2rem);right:clamp(1rem,5vw,2rem);
@@ -154,62 +158,75 @@
     line-height:1.55;margin:.85rem auto 0;
   }
   .v17r .v17r-table--editorial .v17r-table-recipes{
-    position:relative;left:auto;right:auto;bottom:auto;
+    position:relative;z-index:3;left:auto;right:auto;bottom:auto;
     display:grid;grid-template-columns:minmax(0,1fr);
-    gap:1rem;margin:0 clamp(.85rem,4vw,1.5rem);padding:0;
+    gap:0;margin:0;padding:0;
   }
   .v17r .v17r-table--editorial .v17r-table-recipe{
     position:relative;isolation:isolate;overflow:hidden;
-    display:grid;grid-template-columns:39% minmax(0,1fr);
-    min-height:clamp(13.5rem,51vw,18rem);padding:0;
-    border:1px solid rgba(247,217,155,.27);
-    border-radius:1.15rem;
-    background:#26392a;
-    box-shadow:0 15px 40px rgba(0,0,0,.18);
+    display:block;width:100%;height:clamp(31rem,82svh,46rem);
+    min-height:0;padding:0;margin:0;
+    border:0;border-top:1px solid rgba(247,217,155,.23);
+    border-radius:0;background:#18251c;box-shadow:none;
   }
   .v17r .v17r-table--editorial .v17r-table-recipe:first-child{
-    border-left:1px solid rgba(247,217,155,.27)
+    border-left:0;
+  }
+  .v17r .v17r-table--editorial .v17r-table-recipe::before{
+    content:"";position:absolute;z-index:1;inset:0;pointer-events:none;
+    background:linear-gradient(180deg,
+      rgba(13,21,14,.06) 0%,rgba(13,21,14,.12) 40%,
+      rgba(11,20,14,.72) 72%,rgba(11,20,14,.96) 100%);
   }
   .v17r .v17r-table--editorial .v17r-table-recipe-image{
-    display:block;width:100%;height:100%;object-fit:cover;
-    align-self:stretch;min-height:0;filter:saturate(1.04);
+    display:block;position:absolute;inset:0;
+    width:100%;height:100%;object-fit:cover;
+    object-position:center center;filter:saturate(1.06) contrast(1.04);
   }
   .v17r .v17r-table--editorial .v17r-table-recipe-text{
-    padding:clamp(.7rem,3.3vw,1.2rem);
-    display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
-    min-width:0;
+    position:absolute;z-index:2;left:clamp(1.35rem,7vw,2.8rem);
+    right:clamp(1.35rem,7vw,2.8rem);bottom:clamp(2.6rem,7svh,5rem);
+    display:flex;flex-direction:column;align-items:flex-start;
+    justify-content:flex-end;min-width:0;margin:0;padding:0;
+    color:#fff9ec;text-shadow:0 2px 22px rgba(0,0,0,.5);
   }
   .v17r .v17r-table--editorial .v17r-table-recipe-number{
-    display:block;font:600 .68rem/1.3 system-ui,sans-serif;
-    letter-spacing:.18em;color:#f0c778;margin-bottom:.3rem;
+    display:block;font:650 .73rem/1.4 system-ui,sans-serif;
+    letter-spacing:.21em;color:#f0c778;margin-bottom:.6rem;
   }
   .v17r .v17r-table--editorial .v17r-table-recipe h3{
-    font-size:clamp(1.28rem,5vw,2rem);margin:0 0 .3rem;
+    font-size:clamp(2.35rem,9.4vw,3.8rem);line-height:1.07;
+    max-width:16ch;margin:0 0 .55rem;
   }
   .v17r .v17r-table--editorial .v17r-table-recipe-short{
-    font-size:clamp(.73rem,3vw,.95rem);line-height:1.4;margin:0 0 .5rem;
+    font-size:clamp(.95rem,3.7vw,1.15rem);
+    line-height:1.45;margin:0 0 .6rem;color:#f4dbad;
   }
   .v17r .v17r-table--editorial .v17r-table-recipe-story{
-    display:block;font:400 clamp(.72rem,2.85vw,.92rem)/1.45 system-ui,sans-serif;
-    margin:0 0 .8rem;color:#eee3d1;
+    display:block;max-width:26rem;
+    font:400 clamp(.9rem,3.3vw,1.07rem)/1.55 system-ui,sans-serif;
+    margin:0 0 1.15rem;color:#fff8e9;
   }
   .v17r .v17r-table--editorial .v17r-table-recipe-link{
-    min-height:44px;max-width:100%;padding:.64rem .83rem;
-    font-size:clamp(.73rem,2.8vw,.9rem);
+    min-height:48px;max-width:100%;padding:.76rem 1.2rem;
+    font-size:clamp(.84rem,3.2vw,1rem);text-shadow:none;
   }
   .v17r .v17r-table--editorial .v17r-table-culture{
-    position:relative;display:block;bottom:auto;left:auto;transform:none;
-    margin:1.8rem 1rem 0;max-width:none;width:auto;
-    font-size:.91rem;min-height:44px;
+    position:relative;display:flex;align-items:center;justify-content:center;
+    min-height:6.5rem;bottom:auto;left:auto;transform:none;
+    margin:0;padding:1.5rem 1rem;max-width:none;width:auto;
+    font-size:.91rem;line-height:1.55;
+    background:#18251c;
   }
 }
 @media(max-width:390px){
   .v17r .v17r-table--editorial h2{font-size:clamp(2rem,9vw,2.65rem)}
   .v17r .v17r-table--editorial .v17r-table-recipe{
-    grid-template-columns:34% minmax(0,1fr);
-    min-height:15.5rem;
+    height:clamp(29rem,78svh,40rem);
   }
-  .v17r .v17r-table--editorial .v17r-table-recipe-story{font-size:.73rem}
+  .v17r .v17r-table--editorial .v17r-table-recipe h3{
+    font-size:clamp(2.05rem,9vw,3.2rem);
+  }
 }
 @media(prefers-reduced-motion:reduce){
   .v17r .v17r-table--editorial *,
