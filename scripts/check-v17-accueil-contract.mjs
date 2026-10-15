@@ -117,8 +117,20 @@ assert.doesNotMatch(handoffCss,/--vr-(?:ivory|forest|orange|yellow|lime)\s*:/,
 
 assert.match(script,/mortarCinema\(false\)/,'Desktop mortar motion missing');
 assert.match(script,/mortarCinema\(true\)/,'Mobile mortar motion missing');
-assert.equal(script.split("chapterPerformance('.v17r-").length-1,8,
-  'D17: only four chapters use conventional headings, desserts own a unique reveal');
+assert.equal(script.split("chapterPerformance('.v17r-").length-1,6,
+  'D18: table and desserts have individual narratives instead of generic heading flights');
+const tableStyle=fs.readFileSync('src/styles/v17-d18-table-assemble.css','utf8');
+assert.ok(page.includes('v17-d18-table-assemble.css') && page.includes('data-v17-table-assemble'),
+  'D18 composed-table stylesheet or DOM scene missing');
+assert.ok(script.includes('const assembleTable =') && script.includes('assembleTable(false)') &&
+  script.includes('assembleTable(true)') && tableStyle.includes('position:sticky'),
+  'D18 all dishes must assemble during native scrolling, desktop and mobile');
+for(const slug of ['amok-trey','lok-lak','num-banh-chok','prahok-ktis']){
+  assert.ok(page.includes('href="/recettes/'+slug+'/"'),
+    'D18 interactive real recipe route missing '+slug);
+}
+assert.equal((page.match(/class="v17r-table-dish v17r-table-dish--/g)||[]).length,4,
+  'D18 four independent plated recipe links required');
 assert.ok(script.includes('const dessertBloom =') && script.includes('dessertBloom(true)') &&
   script.includes('dessertBloom(false)'),'D17: photo iris reveal must work desktop and mobile');
 assert.ok(script.includes('const travellingAromatic =') &&
@@ -168,7 +180,8 @@ for(const name of [
   'v17-nom-banh-chok-genere.webp'
 ]) assert.ok(fs.existsSync('public/images/cuisine/'+name), 'Missing generated image '+name);
 assert.match(page, /images\/cuisine\/v17-hero-amok-genere\.webp/);
-assert.match(page, /images\/cuisine\/v17-tablee-khmere-generee\.webp/);
+assert.match(page, /images\/cuisine\/v17-lok-lak-genere\.webp/);
+assert.match(page, /images\/cuisine\/v17-nom-banh-chok-genere\.webp/);
 assert.match(page, /images\/cuisine\/v17-desserts-khmers-generes\.webp/);
 assert.doesNotMatch(css,/ScrollSmoother|scroll-snap-type|position:\s*fixed/);
 console.log('V17 D8: PASS — public / reuses 7 V17 scenes, preview remains noindex, assets and links verified');
