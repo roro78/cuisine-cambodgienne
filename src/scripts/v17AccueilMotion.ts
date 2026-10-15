@@ -430,9 +430,11 @@ export function initV17AccueilMotion() {
     gsap.set(amokImage,{scale:mobile?1.38:1.86,filter:'blur(10px) saturate(.8)'});
     gsap.set(lok,{autoAlpha:0,rotation:-4,scale:.96});
     gsap.set(lokImage,{xPercent:23,scale:1.13});
-    gsap.set(lokMatte,{'--d20-lok-progress':'0%'});
+    const lokReveal={progress:0};
+    lokMatte.style.setProperty('--d20-lok-progress','0%');
     gsap.set(noodles,{autoAlpha:0,rotation:3});
-    gsap.set(noodleMatte,{'--d20-noodle-progress':'0%'});
+    const noodleReveal={progress:0};
+    noodleMatte.style.setProperty('--d20-noodle-progress','0%');
     gsap.set(noodleImage,{scale:1.13,yPercent:13});
     gsap.set(prahok,{autoAlpha:0,scale:.63,rotation:-48});
     gsap.set(ripple,{opacity:0,scale:.45,transformOrigin:'50% 50%'});
@@ -462,14 +464,16 @@ export function initV17AccueilMotion() {
     // 2. Lok Lak is uncovered by a soft photographic light edge while its photo shifts
     // inside the matte. This is a reveal, not moving the whole linked plate.
     timeline.to(lok,{autoAlpha:1,rotation:0,scale:1,duration:.18},1.43);
-    timeline.to(lokMatte,{'--d20-lok-progress':'140%',duration:.96,ease:'power2.inOut'},1.43);
+    timeline.to(lokReveal,{progress:140,duration:.96,ease:'power2.inOut',
+      onUpdate:()=>lokMatte.style.setProperty('--d20-lok-progress',lokReveal.progress+'%')},1.43);
     timeline.to(lokImage,{xPercent:0,scale:1,duration:.9,ease:'power2.out'},1.43);
 
     // 3. The rice noodles uncover vertically, as though linen moves away;
     // only the photograph is softly masked, never the clickable label.
     timeline.to(noodles,{autoAlpha:1,rotation:0,duration:.18},2.36);
-    timeline.to(noodleMatte,
-      {'--d20-noodle-progress':'140%',duration:1.05,ease:'power2.inOut'},2.36);
+    timeline.to(noodleReveal,
+      {progress:140,duration:1.05,ease:'power2.inOut',
+        onUpdate:()=>noodleMatte.style.setProperty('--d20-noodle-progress',noodleReveal.progress+'%')},2.36);
     timeline.to(noodleImage,
       {scale:1,yPercent:0,duration:1,ease:'power3.out'},2.36);
 
