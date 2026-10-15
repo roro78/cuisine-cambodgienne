@@ -119,43 +119,29 @@ assert.match(script,/mortarCinema\(false\)/,'Desktop mortar motion missing');
 assert.match(script,/mortarCinema\(true\)/,'Mobile mortar motion missing');
 assert.equal(script.split("chapterPerformance('.v17r-").length-1,6,
   'D18: table and desserts have individual narratives instead of generic heading flights');
-const tableStyle=fs.readFileSync('src/styles/v17-d18-table-assemble.css','utf8');
-assert.ok(page.includes('v17-d18-table-assemble.css') && page.includes('data-v17-table-assemble'),
-  'D18 composed-table stylesheet or DOM scene missing');
-assert.ok(script.includes('const assembleTable =') && script.includes('assembleTable(false)') &&
-  script.includes('assembleTable(true)') && tableStyle.includes('position:sticky'),
-  'D18 all dishes must assemble during native scrolling, desktop and mobile');
-for(const slug of ['amok-trey','lok-lak','num-banh-chok','prahok-ktis']){
-  assert.ok(page.includes('href="/recettes/'+slug+'/"'),
-    'D18 interactive real recipe route missing '+slug);
+// D21: abandon the four-cutout prototype in favor of one static generated photograph.
+const editorialCss=fs.readFileSync('src/styles/v17-d21-editorial-table.css','utf8');
+assert.ok(page.includes('v17-d21-editorial-table.css') && page.includes('data-v17-table-editorial') &&
+  page.includes('v17-tablee-khmere-generee.webp'), 'D21 editorial photo section missing');
+assert.equal((page.match(/class="v17r-table-fullbleed"/g)||[]).length,1,
+  'D21 requires exactly one full-bleed photo');
+assert.doesNotMatch(page,/v17r-table-dish|v17r-table-ripple|data-v17-table-assemble/,
+  'Old individual moving plates must be removed');
+assert.ok(!page.includes('v17-d18-table-assemble.css') &&
+  !page.includes('v18-table-cutout-dishes.css'),
+  'Abandoned plate styles must not load');
+assert.ok(script.includes('const tableEditorial =') && script.includes('tableEditorial(false)') &&
+  script.includes('tableEditorial(true)') && !script.includes('const assembleTable ='),
+  'D21 only typography must animate, on desktop and mobile');
+assert.ok(editorialCss.includes('object-fit:cover') &&
+  editorialCss.includes('position:sticky') &&
+  editorialCss.includes('min-width:761px') &&
+  editorialCss.includes('max-width:1100px') &&
+  editorialCss.includes('prefers-reduced-motion:reduce'),
+  'D21 cinematic image, tablet layout, reduced-motion fallback');
+for(const url of ['/recettes/','/culture/construire-repas-cambodgien/']){
+  assert.ok(page.includes('href="'+url+'"'),'Missing editorial navigation '+url);
 }
-assert.ok(page.includes('v18-table-cutout-dishes.css'),'Photoreal plate stylesheet missing');
-assert.ok(script.includes('focus pull') || script.includes('comes into focus'),
-  'D20 macro-to-table Amok sequence missing');
-for(const token of ['lokMatte','noodleMatte','v17r-table-ripple',
-  '--d20-lok-progress','--d20-noodle-progress','blur(10px)']){
-  assert.ok(script.includes(token)||page.includes(token),
-    'D20 four distinct table choreography techniques missing: '+token);
-}
-assert.ok(page.includes('class="v17r-table-ripple" aria-hidden="true"'),
-  'D20 final bowl contact ripple must be decorative and inaccessible to assistive tech');
-const d20Styles=fs.readFileSync('src/styles/v18-table-cutout-dishes.css','utf8');
-assert.ok(d20Styles.includes('min-width:761px') && d20Styles.includes('max-width:1100px'),
-  'D20 independent tablet (761–1100px) treatment required');
-assert.ok(d20Styles.includes('linear-gradient(to right') &&
-  d20Styles.includes('linear-gradient(to top') &&
-  d20Styles.includes('mask-image:none!important'),
-  'D20 feathered photo reveal must not create harsh crop edges or reduce accessibility');
-assert.ok(d20Styles.includes('prefers-reduced-motion:reduce'),
-  'D20 must preserve static reduced-motion table');
-
-for(const name of ['amok-trey','lok-lak','num-banh-chok','prahok-ktis']){
-  const path='public/images/cuisine/v18-home-'+name+'-cutout.webp';
-  assert.ok(fs.existsSync(path),'D19 genuine WebP transparent cutout missing '+path);
-  assert.ok(page.includes('/images/cuisine/v18-home-'+name+'-cutout.webp'),'D19 plate image not wired '+name);
-}
-assert.equal((page.match(/class="v17r-table-dish v17r-table-dish--/g)||[]).length,4,
-  'D18 four independent plated recipe links required');
 assert.ok(script.includes('const dessertBloom =') && script.includes('dessertBloom(true)') &&
   script.includes('dessertBloom(false)'),'D17: photo iris reveal must work desktop and mobile');
 assert.ok(script.includes('const travellingAromatic =') &&
@@ -205,8 +191,7 @@ for(const name of [
   'v17-nom-banh-chok-genere.webp'
 ]) assert.ok(fs.existsSync('public/images/cuisine/'+name), 'Missing generated image '+name);
 assert.match(page, /images\/cuisine\/v17-hero-amok-genere\.webp/);
-assert.match(page, /images\/cuisine\/v18-home-lok-lak-cutout\.webp/);
-assert.match(page, /images\/cuisine\/v18-home-num-banh-chok-cutout\.webp/);
+assert.match(page, /images\/cuisine\/v17-tablee-khmere-generee\.webp/);
 assert.match(page, /images\/cuisine\/v17-desserts-khmers-generes\.webp/);
 assert.doesNotMatch(css,/ScrollSmoother|scroll-snap-type|position:\s*fixed/);
 console.log('V17 D8: PASS — public / reuses 7 V17 scenes, preview remains noindex, assets and links verified');

@@ -149,22 +149,20 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       assert.equal(await page.evaluate(()=>location.hash),'#v17r-main',
         'Skip link should navigate directly to main content');
     }
-    const tableContrast=await page.evaluate(()=>{
-      const scene=document.querySelector('.v17r-table');
-      const atmosphere=scene.querySelector('.v17r-table-atmosphere');
-      const dishes=scene.querySelector('.v17r-table-dishes');
-      const copy=scene.querySelector('.v17r-table-copy');
-      const title=copy.querySelector('h2');
-      return {backgroundZ:Number(getComputedStyle(atmosphere).zIndex),
-        dishesZ:Number(getComputedStyle(dishes).zIndex),
-        copyZ:Number(getComputedStyle(copy).zIndex),
-        titleOverflow:title.scrollWidth-title.clientWidth,
-        legacyShade:getComputedStyle(scene,'::before').display};
+    const photo=await page.evaluate(()=>{
+      const section=document.querySelector('[data-v17-table-editorial]');
+      const img=section.querySelector('.v17r-table-fullbleed img');
+      const copy=section.querySelector('.v17r-table-copy');
+      const h=copy.querySelector('h2');
+      return {img:img?.getAttribute('src'),fit:getComputedStyle(img).objectFit,
+        count:section.querySelectorAll('.v17r-table-fullbleed img').length,
+        links:[...section.querySelectorAll('.v17r-table-links a')].map(a=>a.getAttribute('href')),
+        headingOverflow:h.scrollWidth-h.clientWidth};
     });
-    assert.ok(tableContrast.copyZ>tableContrast.dishesZ &&
-      tableContrast.dishesZ>tableContrast.backgroundZ &&
-      tableContrast.titleOverflow<=2 && tableContrast.legacyShade==='none',
-      'D18 readable tabletop requires foreground title: '+JSON.stringify(tableContrast));
+    assert.ok(photo.count===1&&photo.fit==='cover'&&
+      photo.img==='/images/cuisine/v17-tablee-khmere-generee.webp'&&
+      photo.headingOverflow<=2&&photo.links.includes('/recettes/'),
+      'D21 single still photograph and readable links: '+JSON.stringify(photo));
     const dimension=await page.evaluate(()=>({
       html:document.documentElement.scrollWidth,client:document.documentElement.clientWidth,
       w:innerWidth
@@ -219,7 +217,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       assert.deepEqual(clippedWords,[],
         'Visible text glyphs must not be cut off-screen at '+width+'px: '+JSON.stringify(clippedWords));
     }
-    for(const selector of ['.v17r-hero-dish img','.v17r-market-visual > img','.v17r-palette-a img','.v17r-palette-b img','.v17r-gestures-main img','.v17r-table-dish--amok img','.v17r-dessert-generated img','.v17r-finale-landscape img']){
+    for(const selector of ['.v17r-hero-dish img','.v17r-market-visual > img','.v17r-palette-a img','.v17r-palette-b img','.v17r-gestures-main img','.v17r-table-fullbleed img','.v17r-dessert-generated img','.v17r-finale-landscape img']){
       if(!(await page.locator(selector).isVisible()))continue;
       await page.locator(selector).scrollIntoViewIfNeeded();
       await page.waitForFunction(s=>{const img=document.querySelector(s);return img?.complete&&img.naturalWidth>0},selector,{timeout:10000});
@@ -361,95 +359,32 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         bridge.from.includes(from) && bridge.to.includes(to),
         'D14 bridge must not add scroll space or block actions: '+JSON.stringify(bridge));
     }
-    // D20: don't accept four tweens that all look like slide entrances.
-    // The actual photograph of each dish must use independent compositing:
-    // focus pull, lateral matte, rising cloth, and a final contact ripple.
-    if([390,768,1024,1440].includes(width) && !noJs && !reduced){
-      const choreography=await page.evaluate(async()=>{
-        const section=document.querySelector('[data-v17-table-assemble]');
-        const amok=section.querySelector('.v17r-table-dish--amok img');
-        const lok=section.querySelector('.v17r-table-dish--loklak .v17r-table-dish-photo');
-        const noodles=section.querySelector('.v17r-table-dish--nombanhchok .v17r-table-dish-photo');
-        const ripple=section.querySelector('.v17r-table-ripple');
-        const start=scrollY+section.getBoundingClientRect().top;
+    if([390,768,1024,1440].includes(width)&&!noJs&&!reduced){
+      const motion=await page.evaluate(async()=>{
+        const section=document.querySelector('[data-v17-table-editorial]');
+        const heading=section.querySelector('h2 em');
+        const actions=section.querySelector('.v17r-table-links');
+        const img=section.querySelector('.v17r-table-fullbleed img');
+        const top=scrollY+section.getBoundingClientRect().top;
         const end=scrollY+section.getBoundingClientRect().bottom-innerHeight;
-        const seen=[];
-        for(const p of [.09,.27,.40,.58,.67,.91]){
-          scrollTo({top:Math.max(0,start+(end-start)*p),behavior:'instant'});
-          await new Promise(resolve=>setTimeout(resolve,720));
-          seen.push({
-            amokFilter:getComputedStyle(amok).filter,
-            amokTransform:getComputedStyle(amok).transform,
-            lokMatte:getComputedStyle(lok).getPropertyValue('--d20-lok-progress').trim(),
-            noodleMatte:getComputedStyle(noodles).getPropertyValue('--d20-noodle-progress').trim(),
-            lokMask:getComputedStyle(lok).maskImage,
-            noodleMask:getComputedStyle(noodles).maskImage,
-            rippleOpacity:Number(getComputedStyle(ripple).opacity)
-          });
+        const points=[];
+        for(const t of [.04,.45,.92]){
+          scrollTo({top:Math.max(0,top+(end-top)*t),behavior:'instant'});
+          await new Promise(r=>setTimeout(r,850));
+          points.push({heading:Number(getComputedStyle(heading).opacity),
+            actions:Number(getComputedStyle(actions).opacity),
+            photoTransform:getComputedStyle(img).transform});
         }
-        return seen;
+        return {points,loaded:img.naturalWidth===1600,
+          sticky:getComputedStyle(section.querySelector('.v17r-table-stage')).position};
       });
-      assert.ok(choreography[0].amokFilter!==choreography[3].amokFilter,
-        'D20 macro-to-table Amok must refocus during scrolling: '+JSON.stringify(choreography));
-      assert.ok(choreography[0].lokMatte!==choreography[3].lokMatte,
-        'D20 Lok Lak lateral photographic reveal did not happen: '+JSON.stringify(choreography));
-      assert.ok(choreography[0].noodleMatte!==choreography[5].noodleMatte,
-        'D20 noodles linen reveal did not happen: '+JSON.stringify(choreography));
-      assert.ok(choreography[3].lokMask.startsWith('linear-gradient(') &&
-        choreography[3].noodleMask.startsWith('linear-gradient('),
-        'D20 plate reveals must be photographic feathered masks rather than hard clip paths');
-      assert.ok(choreography[4].rippleOpacity>choreography[5].rippleOpacity,
-        'D20 final Prahok bowl ripple did not dissipate: '+JSON.stringify(choreography));
-      await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
-    }
-    if([390,768,1024,1440].includes(width) && !noJs && !reduced){
-      const labels=await page.evaluate(async()=>{
-        const stage=document.querySelector('[data-v17-table-assemble]');
-        const top=scrollY+stage.getBoundingClientRect().top;
-        const bottom=scrollY+stage.getBoundingClientRect().bottom-innerHeight;
-        const names=[...stage.querySelectorAll('.v17r-table-dish-label')];
-        const samples=[];
-        for(const progress of [.04,.93]){
-          scrollTo({top:Math.max(0,top+(bottom-top)*progress),behavior:'instant'});
-          await new Promise(resolve=>setTimeout(resolve,800));
-          samples.push(names.map(el=>Number(getComputedStyle(el).opacity)));
-        }
-        return {
-          samples,
-          stageSticky:getComputedStyle(stage.querySelector('.v17r-table-stage')).position
-        };
-      });
-      assert.equal(labels.stageSticky,'sticky','D20 table must hold a full viewport');
-      assert.ok(labels.samples[0].every(v=>v<.15)&&
-        labels.samples[1].every(v=>v>.95),
-        'D20 linked recipe labels must show only when real dishes arrive: '+JSON.stringify(labels));
-      await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
-    }
-    // D18: distinct dishes should arrive progressively as the table settles.
-    if([390,1440].includes(width) && !noJs && !reduced){
-      const plates=await page.evaluate(async()=>{
-        const section=document.querySelector('[data-v17-table-assemble]');
-        const amok=section.querySelector('.v17r-table-dish--amok');
-        const loklak=section.querySelector('.v17r-table-dish--loklak');
-        const start=scrollY+section.getBoundingClientRect().top;
-        const end=scrollY+section.getBoundingClientRect().bottom-innerHeight;
-        const samples=[];
-        for(const progress of [.10,.59,.88]){
-          scrollTo({top:Math.max(0,start+(end-start)*progress),behavior:'instant'});
-          await new Promise(r=>setTimeout(r,900));
-          samples.push({first:Number(getComputedStyle(amok).opacity),
-            second:Number(getComputedStyle(loklak).opacity),
-            firstTransform:getComputedStyle(amok).transform,
-            secondTransform:getComputedStyle(loklak).transform});
-        }
-        return {ready:section.hasAttribute('data-v17-table-ready'),
-          sticky:getComputedStyle(section.querySelector('.v17r-table-stage')).position,samples};
-      });
-      assert.ok(plates.ready && plates.sticky==='sticky' &&
-        plates.samples[0].first<plates.samples[2].first &&
-        plates.samples[0].second<plates.samples[2].second &&
-        plates.samples[0].firstTransform!==plates.samples[2].firstTransform,
-        'D18 four plates must assemble progressively: '+JSON.stringify(plates));
+      assert.ok(motion.loaded&&motion.sticky==='sticky'&&
+        motion.points[0].heading<motion.points[2].heading&&
+        motion.points[2].heading>.9&&
+        motion.points[0].actions<motion.points[2].actions&&
+        motion.points[2].actions>.9&&
+        motion.points.every(x=>x.photoTransform==='none'),
+        'D21 editorial type reveals over unmoving photo: '+JSON.stringify(motion));
       await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
     }
     // D16: measure TRANSLATION IN PIXELS, rather than mere CSS inequality.
@@ -619,29 +554,6 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         'Desserts must use one premium full-width generated composition: '+JSON.stringify(dessertComposition));
     }
     if(width===1440 && !noJs && !reduced){
-      const tableScene=await page.evaluate(()=>{
-        const table=document.querySelector('.v17r-table');
-        const links=[...table.querySelectorAll('a.v17r-table-dish')];
-        return {links:links.map(a=>({
-          href:a.getAttribute('href'),
-          loaded:!!a.querySelector('img')?.naturalWidth,
-          label:a.querySelector('.v17r-table-dish-label')?.textContent?.trim(),
-          size:Math.round(a.getBoundingClientRect().width)})),
-          legacyImage:!!table.querySelector('.v17r-table-amok')};
-      });
-      const cutouts=await page.evaluate(()=>[...document.querySelectorAll('.v17r-table-dish')].map(a=>{
-        const img=a.querySelector('img');
-        const shell=a.querySelector('.v17r-table-dish-photo');
-        return {src:img?.getAttribute('src'),objectFit:getComputedStyle(img).objectFit,
-          radius:getComputedStyle(shell).borderTopLeftRadius,
-          loaded:!!img?.naturalWidth,width:img?.naturalWidth};
-      }));
-      assert.ok(cutouts.length===4 && cutouts.every(p=>p.loaded && p.width===1448 &&
-        p.objectFit==='contain' && p.radius==='0px' && p.src.includes('-cutout.webp')),
-        'D19 plate photography should be actual cutouts, not rounded image frames: '+JSON.stringify(cutouts));
-      assert.ok(tableScene.links.length===4 && !tableScene.legacyImage &&
-        tableScene.links.every(l=>l.loaded && l.label && l.size>=100),
-        'D18 four navigable recipe dishes required: '+JSON.stringify(tableScene));
       const anim=await page.evaluate(async()=>{
         const scene=document.querySelector('.v17r-palette');
         const node=scene.querySelector('.v17r-palette-a');
@@ -775,7 +687,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
   if(captureVideo)await recordContinuousStory(width,height);
   if(captureVideo)await recordTextArrivalEvidence(width,height);
   if(captureVideo)await recordD17CinematicProof(width,height);
-  if(captureVideo)await recordD18TableStory(width,height);
+  if(captureVideo)await recordD21TableStory(width,height);
 }
 async function recordCleanScroll(width,height){
   const page=await browser.newPage({
@@ -1034,61 +946,41 @@ async function recordD17CinematicProof(width,height){
  * It captures four different arrivals, reading pauses, and the final four
  * genuinely interactive recipe anchors. Both desktop and mobile.
  */
-async function recordD18TableStory(width,height){
+async function recordD21TableStory(width,height){
   const mobile=width<=760;
   const page=await browser.newPage({
     viewport:{width,height},isMobile:mobile,hasTouch:mobile,
     reducedMotion:'no-preference',
-    recordVideo:{dir:'artifacts',
-      size:mobile?{width:390,height:844}:{width:960,height:600}}
+    recordVideo:{dir:'artifacts',size:mobile?{width:390,height:844}:{width:960,height:600}}
   });
   const video=page.video();
   try{
-    const response=await page.goto(base+'/v17-accueil-preview/',
-      {waitUntil:'networkidle',timeout:30000});
+    const response=await page.goto(base+'/v17-accueil-preview/',{waitUntil:'networkidle',timeout:30000});
     assert.equal(response?.status(),200);
-    const journey=await page.evaluate(()=>{
-      const section=document.querySelector('[data-v17-table-assemble]');
-      const top=scrollY+section.getBoundingClientRect().top;
-      const bottom=scrollY+section.getBoundingClientRect().bottom;
+    const range=await page.evaluate(()=>{
+      const section=document.querySelector('[data-v17-table-editorial]');
+      const a=scrollY+section.getBoundingClientRect().top;
+      const b=scrollY+section.getBoundingClientRect().bottom;
       const max=document.documentElement.scrollHeight-innerHeight;
-      return {
-        start:Math.max(0,top-innerHeight*.06),
-        end:Math.min(max,bottom-innerHeight*.94),
-        links:[...section.querySelectorAll('a.v17r-table-dish')].map(a=>a.getAttribute('href'))
-      };
+      return {a:Math.max(0,a-innerHeight*.12),b:Math.min(max,b-innerHeight*.87)};
     });
-    assert.deepEqual(journey.links,[
-      '/recettes/amok-trey/','/recettes/lok-lak/',
-      '/recettes/num-banh-chok/','/recettes/prahok-ktis/'
-    ],'D18 filmed dish links must lead to actual local recipes');
-    const marks=[{ratio:.17,name:'amok-focus'},
-      {ratio:.35,name:'lok-lak-matte'},{ratio:.57,name:'noodles-unveiled'},
-      {ratio:.73,name:'prahok-ripple'},{ratio:.97,name:'complete'}];
-    const captures=new Set();
-    for(let frame=0;frame<=160;frame++){
-      const ratio=frame/160;
-      const y=journey.start+(journey.end-journey.start)*ratio;
-      await page.evaluate(v=>scrollTo({top:v,behavior:'instant'}),y);
-      await page.waitForTimeout(84);
-      for(const m of marks){
-        if(ratio>=m.ratio && !captures.has(m.name)){
-          captures.add(m.name);
-          await page.waitForTimeout(620);
-          await page.screenshot({
-            path:'artifacts/v17-accueil-d18-table-'+width+'-'+m.name+'.png',
-            animations:'allow'
-          });
+    const captures=[{r:.2,name:'entry'},{r:.5,name:'title'},{r:.8,name:'read'},{r:.95,name:'complete'}];
+    const seen=new Set();
+    for(let frame=0;frame<=100;frame++){
+      const t=frame/100;
+      await page.evaluate(v=>scrollTo({top:v,behavior:'instant'}),range.a+(range.b-range.a)*t);
+      await page.waitForTimeout(94);
+      for(const c of captures){
+        if(t>=c.r&&!seen.has(c.name)){
+          seen.add(c.name);
+          await page.waitForTimeout(350);
+          await page.screenshot({path:'artifacts/v17-accueil-d21-table-'+width+'-'+c.name+'.png',animations:'allow'});
         }
       }
     }
-    await page.waitForTimeout(1200);
   }finally{
     await page.close();
-    if(video){
-      await video.saveAs('artifacts/v17-accueil-d18-table-'+width+'.webm');
-      console.log('V17 D18 four-plate assembly video recorded: '+width+'px');
-    }
+    if(video)await video.saveAs('artifacts/v17-accueil-d21-table-'+width+'.webm');
   }
 }
 /* Generated recipe artwork must also work on the real V16 recipe routes.
