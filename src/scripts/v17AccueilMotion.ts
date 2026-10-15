@@ -326,6 +326,64 @@ export function initV17AccueilMotion() {
     }
   };
 
+
+  /**
+   * D17-A: one physical aromatic traverses three successive chapters.
+   * A single fixed decorative DOM node, not a fresh entrance per section.
+   * Disabled on mobile, in reduced motion and without JS.
+   */
+  const travellingAromatic = () => {
+    const traveller = root.querySelector<HTMLElement>('[data-v17-aromatic-traveller]');
+    const market = root.querySelector<HTMLElement>('.v17r-market');
+    const mortar = root.querySelector<HTMLElement>('[data-v17-mortar-scene]');
+    if (!traveller || !market || !mortar) return;
+    gsap.set(traveller,{display:'block',autoAlpha:0,transformOrigin:'42% 55%'});
+    const W = () => window.innerWidth;
+    const H = () => window.innerHeight;
+    const journey = gsap.timeline({
+      scrollTrigger: {
+        trigger: market, start:'top 80%',
+        endTrigger: mortar, end:'top 20%',
+        scrub:.65, invalidateOnRefresh:true,
+      }
+    });
+    journey.fromTo(traveller,
+      { x:()=>W()*.06, y:()=>H()*.65, rotation:-45,scale:.53,autoAlpha:0 },
+      { x:()=>W()*.18, y:()=>H()*.54, rotation:-22,scale:.91,autoAlpha:.92,
+        duration:1,ease:'none',immediateRender:false },0);
+    journey.to(traveller,
+      { x:()=>W()*.44,y:()=>H()*.29,rotation:5,scale:1.11,autoAlpha:1,
+        duration:1.15,ease:'none' },1);
+    journey.to(traveller,
+      { x:()=>W()*.54,y:()=>H()*.39,rotation:41,scale:.81,autoAlpha:.92,
+        duration:1.05,ease:'none' },2.15);
+    journey.to(traveller,
+      { x:()=>W()*.31,y:()=>H()*.54,rotation:118,scale:.28,autoAlpha:0,
+        duration:1.05,ease:'none' },3.2);
+  };
+
+  /**
+   * D17-A: the sweets fill the stage. The photograph blooms open under the
+   * copy through a radial mask, instead of sitting in a rectangular card.
+   * Copy stays legible; this scene deliberately does NOT share the generic
+   * lateral heading entrance used in earlier acts.
+   */
+  const dessertBloom = (mobile:boolean) => {
+    const stage=root.querySelector<HTMLElement>('.v17r-dessert');
+    const art=stage?.querySelector<HTMLElement>('.v17r-dessert-generated');
+    if(!stage || !art) return;
+    gsap.fromTo(art,
+      { clipPath:mobile?'circle(22% at 58% 33%)':'circle(14% at 69% 52%)',
+        scale:mobile?1.08:1.18 },
+      { clipPath:mobile?'circle(132% at 58% 33%)':'circle(133% at 69% 52%)',
+        scale:1, ease:'none',immediateRender:false,
+        scrollTrigger:{
+          trigger:stage,start:'top 90%',end:'top 28%',
+          scrub:mobile?.42:.68,invalidateOnRefresh:true
+        }
+      });
+  };
+
   mm.add('(min-width: 761px) and (prefers-reduced-motion: no-preference)', () => {
     // 1. Hero: quiet depth, never displacing the headline or CTA.
     sceneMotion('.v17r-hero-dish img', { scale: 1.09, yPercent: 2 }, { scale: 1.005, yPercent: -2 });
@@ -354,7 +412,8 @@ export function initV17AccueilMotion() {
     chapterPerformance('.v17r-market', 1, false);
     chapterPerformance('.v17r-palette', -1, false);
     chapterPerformance('.v17r-table', 1, false);
-    chapterPerformance('.v17r-dessert', -1, false);
+    dessertBloom(false);
+    travellingAromatic();
     chapterPerformance('.v17r-finale', 1, false);
     sceneHandoffs(false);
     // Organic seams move gently as chapter boundaries, without pinning.
@@ -381,7 +440,7 @@ export function initV17AccueilMotion() {
     chapterPerformance('.v17r-market', 1, true);
     chapterPerformance('.v17r-palette', -1, true);
     chapterPerformance('.v17r-table', 1, true);
-    chapterPerformance('.v17r-dessert', -1, true);
+    dessertBloom(true);
     chapterPerformance('.v17r-finale', 1, true);
   });
 
