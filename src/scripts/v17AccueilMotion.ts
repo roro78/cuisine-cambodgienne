@@ -419,6 +419,9 @@ export function initV17AccueilMotion() {
     const lokMatte=lok.querySelector<HTMLElement>('.v17r-table-dish-photo');
     const noodleMatte=noodles.querySelector<HTMLElement>('.v17r-table-dish-photo');
     const ripple=prahok.querySelector<HTMLElement>('.v17r-table-ripple');
+    const labels=[amok,lok,noodles,prahok].map(dish =>
+      dish.querySelector<HTMLElement>('.v17r-table-dish-label'));
+
     if (!amokImage || !lokImage || !noodleImage || !lokMatte || !noodleMatte || !ripple) return;
 
     section.dataset.v17TableReady='';
@@ -433,10 +436,11 @@ export function initV17AccueilMotion() {
     gsap.set(noodleImage,{scale:1.13,yPercent:13});
     gsap.set(prahok,{autoAlpha:0,scale:.63,rotation:-48});
     gsap.set(ripple,{opacity:0,scale:.45,transformOrigin:'50% 50%'});
+    labels.forEach(label=>{ if(label) gsap.set(label,{autoAlpha:0,y:13}); });
 
     const timeline=gsap.timeline({
       scrollTrigger:{
-        trigger:section,start:'top 76%',end:'bottom 83%',
+        trigger:section,start:'top top',end:'bottom bottom',
         scrub:mobile?.27:.5,invalidateOnRefresh:true
       }
     });
@@ -478,6 +482,12 @@ export function initV17AccueilMotion() {
     timeline.to(ripple,
       {opacity:0,scale:1.82,duration:.58,ease:'sine.out'},3.75);
 
+    // Each editorial link label appears only when its real plate is readable,
+    // never as a disembodied badge before its photographic reveal.
+    const labelBeats=[1.03,2.10,3.15,3.98];
+    labels.forEach((label,index)=>{
+      if(label)timeline.to(label,{autoAlpha:1,y:0,duration:.24,ease:'power2.out'},labelBeats[index]);
+    });
     // Food rests in one generous shared composition, enough time to choose
     // a linked recipe with native scrolling and without scroll interception.
     timeline.to({}, {duration:1.15},4.36);
