@@ -130,6 +130,21 @@ for(const slug of ['amok-trey','lok-lak','num-banh-chok','prahok-ktis']){
     'D18 interactive real recipe route missing '+slug);
 }
 assert.ok(page.includes('v18-table-cutout-dishes.css'),'Photoreal plate stylesheet missing');
+assert.ok(script.includes('focus pull') || script.includes('comes into focus'),
+  'D20 macro-to-table Amok sequence missing');
+for(const token of ['lokMatte','noodleMatte','v17r-table-ripple','clipPath:',
+  'blur(10px)','inset(0 100% 0 0)','inset(100% 0 0 0)']){
+  assert.ok(script.includes(token)||page.includes(token),
+    'D20 four distinct table choreography techniques missing: '+token);
+}
+assert.ok(page.includes('class="v17r-table-ripple" aria-hidden="true"'),
+  'D20 final bowl contact ripple must be decorative and inaccessible to assistive tech');
+const d20Styles=fs.readFileSync('src/styles/v18-table-cutout-dishes.css','utf8');
+assert.ok(d20Styles.includes('min-width:761px') && d20Styles.includes('max-width:1100px'),
+  'D20 independent tablet (761–1100px) treatment required');
+assert.ok(d20Styles.includes('prefers-reduced-motion:reduce'),
+  'D20 must preserve static reduced-motion table');
+
 for(const name of ['amok-trey','lok-lak','num-banh-chok','prahok-ktis']){
   const path='public/images/cuisine/v18-home-'+name+'-cutout.webp';
   assert.ok(fs.existsSync(path),'D19 genuine WebP transparent cutout missing '+path);
