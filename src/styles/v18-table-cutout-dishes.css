@@ -94,3 +94,58 @@
     transition:none!important;
   }
 }
+
+/* D20 motion language: camera optics, matte, unveiling and a contact ripple.
+   The base CSS remains complete without JS; GSAP only stages these effects
+   when motion is explicitly permitted. */
+.v17r .v17r-table--assembled .v17r-table-ripple{
+  position:absolute;
+  left:10%;right:10%;
+  top:9%;bottom:9%;
+  border:2px solid rgba(248,204,132,.78);
+  border-radius:50%;
+  opacity:0;
+  pointer-events:none;
+  box-shadow:0 0 1.2rem rgba(243,188,97,.25),inset 0 0 .8rem rgba(243,188,97,.18);
+  background:radial-gradient(ellipse at 50% 50%,rgba(255,229,174,.15),transparent 65%);
+  z-index:-1;
+}
+.v17r .v17r-table--assembled .v17r-table-dish-photo{
+  clip-path:none;
+  -webkit-clip-path:none;
+}
+.v17r .v17r-table--assembled .v17r-table-dish-label{
+  transition:background .25s ease,transform .25s ease;
+}
+@media (hover:hover) and (pointer:fine){
+  .v17r .v17r-table--assembled .v17r-table-dish:hover .v17r-table-dish-label{
+    transform:translateX(-50%) translateY(-4px);
+    background:#fff9ef;
+  }
+}
+@media (min-width:761px) and (max-width:1100px){
+  /* In tablet layouts plates must not be clipped by the right stage edge.
+     Keep distinct graphic hierarchy with an untouched reading column. */
+  .v17r .v17r-table--assembled .v17r-table-dish--loklak{left:70%;top:15%}
+  .v17r .v17r-table--assembled .v17r-table-dish--nombanhchok{left:69%;top:61%}
+  .v17r .v17r-table--assembled .v17r-table-dish--amok{left:43%;top:34%}
+  .v17r .v17r-table--assembled .v17r-table-dish--prahok{left:30%;top:74%}
+  .v17r .v17r-table--assembled .v17r-table-copy h2{
+    font-size:clamp(3rem,4.6vw,4.9rem);
+  }
+}
+@media(max-width:760px){
+  .v17r .v17r-table--assembled .v17r-table-ripple{
+    border-width:1.5px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .v17r .v17r-table--assembled .v17r-table-ripple{display:none!important}
+  .v17r .v17r-table--assembled .v17r-table-dish-photo{
+    clip-path:none!important;
+    -webkit-clip-path:none!important;
+  }
+  .v17r .v17r-table--assembled .v17r-table-dish-photo img{
+    filter:drop-shadow(0 10px 11px rgba(26,15,9,.34))!important;
+  }
+}
