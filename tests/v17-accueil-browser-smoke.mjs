@@ -701,6 +701,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
   if(captureVideo)await recordContinuousStory(width,height);
   if(captureVideo)await recordTextArrivalEvidence(width,height);
   if(captureVideo)await recordD17CinematicProof(width,height);
+  if(captureVideo)await recordD18TableStory(width,height);
 }
 async function recordCleanScroll(width,height){
   const page=await browser.newPage({
@@ -951,6 +952,67 @@ async function recordD17CinematicProof(width,height){
         await video.saveAs('artifacts/v17-accueil-d17-'+kind+'-'+width+'.webm');
         console.log('V17 D17 authored visual proof: '+kind+' '+width);
       }
+    }
+  }
+}
+/**
+ * D18: a focused, uncut table assembly (not a 2-second slideshow).
+ * It captures four different arrivals, reading pauses, and the final four
+ * genuinely interactive recipe anchors. Both desktop and mobile.
+ */
+async function recordD18TableStory(width,height){
+  const mobile=width<=760;
+  const page=await browser.newPage({
+    viewport:{width,height},isMobile:mobile,hasTouch:mobile,
+    reducedMotion:'no-preference',
+    recordVideo:{dir:'artifacts',
+      size:mobile?{width:390,height:844}:{width:960,height:600}}
+  });
+  const video=page.video();
+  try{
+    const response=await page.goto(base+'/v17-accueil-preview/',
+      {waitUntil:'networkidle',timeout:30000});
+    assert.equal(response?.status(),200);
+    const journey=await page.evaluate(()=>{
+      const section=document.querySelector('[data-v17-table-assemble]');
+      const top=scrollY+section.getBoundingClientRect().top;
+      const bottom=scrollY+section.getBoundingClientRect().bottom;
+      const max=document.documentElement.scrollHeight-innerHeight;
+      return {
+        start:Math.max(0,top-innerHeight*.96),
+        end:Math.min(max,bottom-innerHeight*.70),
+        links:[...section.querySelectorAll('a.v17r-table-dish')].map(a=>a.getAttribute('href'))
+      };
+    });
+    assert.deepEqual(journey.links,[
+      '/recettes/amok-trey/','/recettes/lok-lak/',
+      '/recettes/num-banh-chok/','/recettes/prahok-ktis/'
+    ],'D18 filmed dish links must lead to actual local recipes');
+    const marks=[{ratio:.11,name:'arrival'},{ratio:.41,name:'two-dishes'},
+      {ratio:.72,name:'three-dishes'},{ratio:.97,name:'complete'}];
+    const captures=new Set();
+    for(let frame=0;frame<=160;frame++){
+      const ratio=frame/160;
+      const y=journey.start+(journey.end-journey.start)*ratio;
+      await page.evaluate(v=>scrollTo({top:v,behavior:'instant'}),y);
+      await page.waitForTimeout(84);
+      for(const m of marks){
+        if(ratio>=m.ratio && !captures.has(m.name)){
+          captures.add(m.name);
+          await page.waitForTimeout(620);
+          await page.screenshot({
+            path:'artifacts/v17-accueil-d18-table-'+width+'-'+m.name+'.png',
+            animations:'allow'
+          });
+        }
+      }
+    }
+    await page.waitForTimeout(1200);
+  }finally{
+    await page.close();
+    if(video){
+      await video.saveAs('artifacts/v17-accueil-d18-table-'+width+'.webm');
+      console.log('V17 D18 four-plate assembly video recorded: '+width+'px');
     }
   }
 }
