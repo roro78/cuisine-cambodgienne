@@ -399,7 +399,7 @@ export function initV17AccueilMotion() {
    * Cambodian food photograph. No plate travel, masks, particles or steam.
    * Native scrolling, no pin; complete content remains in HTML without JS.
    */
-  const tableEditorial = (mobile: boolean) => {
+  const tableEditorial = (mobile: boolean, tablet = false) => {
     const section=root.querySelector<HTMLElement>('[data-v17-table-editorial]');
     if(!section)return;
     const kicker=section.querySelector<HTMLElement>('.v17r-table-copy .v17r-kicker');
@@ -409,12 +409,18 @@ export function initV17AccueilMotion() {
     const links=section.querySelector<HTMLElement>('.v17r-table-links');
     if(!kicker||!rule||lines.length!==2||!intro||!links)return;
     section.dataset.v17TableReady='';
-    // Stage typography only; the food photograph is intentionally still.
-    gsap.set(kicker,{autoAlpha:0,y:mobile?10:16});
-    gsap.set(rule,{scaleX:0,transformOrigin:'left center'});
-    lines.forEach((line,i)=>gsap.set(line,{autoAlpha:0,y:mobile?18+i*5:26+i*8}));
-    gsap.set(intro,{autoAlpha:0,y:mobile?13:20});
-    gsap.set(links,{autoAlpha:0,y:mobile?10:16});
+    // Keep copy readable before the scroll animation fires. Fully hidden
+    // headings created blank screens in fast-scroll and full-page captures.
+    // Tablet title lines converge horizontally; the photograph stays still.
+    gsap.set(kicker,{autoAlpha:.86,y:mobile?8:12});
+    gsap.set(rule,{scaleX:.45,transformOrigin:'left center'});
+    lines.forEach((line,i)=>gsap.set(line,{
+      autoAlpha:.74,
+      x:tablet?(i===0?-36:36):0,
+      y:tablet?0:(mobile?15+i*4:23+i*7),
+    }));
+    gsap.set(intro,{autoAlpha:.84,y:mobile?11:16});
+    gsap.set(links,{autoAlpha:.82,y:mobile?8:12});
     const tl=gsap.timeline({
       scrollTrigger:{
         trigger:section,
@@ -426,8 +432,8 @@ export function initV17AccueilMotion() {
     });
     tl.to(kicker,{autoAlpha:1,y:0,duration:.64,ease:'power2.out'},.1);
     tl.to(rule,{scaleX:1,duration:.88,ease:'power2.inOut'},.20);
-    tl.to(lines[0],{autoAlpha:1,y:0,duration:.88,ease:'power3.out'},.35);
-    tl.to(lines[1],{autoAlpha:1,y:0,duration:.92,ease:'power3.out'},.65);
+    tl.to(lines[0],{autoAlpha:1,x:0,y:0,duration:.88,ease:'power3.out'},.35);
+    tl.to(lines[1],{autoAlpha:1,x:0,y:0,duration:.92,ease:'power3.out'},.65);
     tl.to(intro,{autoAlpha:1,y:0,duration:.75,ease:'power2.out'},1.00);
     tl.to(links,{autoAlpha:1,y:0,duration:.70,ease:'power2.out'},1.23);
     // Let the complete photographic composition breathe while visitors read.
@@ -451,8 +457,8 @@ export function initV17AccueilMotion() {
     // 4. Mortar: the hands remain real; the prepared kroeung is a second image.
 
     mortarCinema(false);
-    // 5. The table is built plate by plate, not a single static tableau.
-    tableEditorial(false);
+    // 5. One full-bleed photograph; dedicated editorial motion on tablets.
+    tableEditorial(false, window.matchMedia('(max-width: 1100px)').matches);
     // 6–7. Desserts and Angkor: restraint and varied composition.
     sceneMotion('.v17r-dessert-generated img', { scale: 1.075, yPercent: -1 }, { scale: 1.005, yPercent: 2 });
     sceneMotion('.v17r-finale-landscape img', { scale: 1.09, yPercent: -3 }, { scale: 1.01, yPercent: 2 });
