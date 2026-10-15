@@ -27,7 +27,7 @@ const tableRecipes = [
 ].map((item) => {
   const recipe = recipes.find((r) => r.slug === item.slug);
   if (!recipe || !recipe.image) throw new Error(`Recette de la tablée introuvable : ${item.slug}`);
-  return { ...item, title: recipe.title, image: recipe.image, url: `/recettes/${recipe.slug}/` };
+  return { ...item, title: recipe.title, image: item.slug === 'prahok-ktis' ? '/images/cuisine/v17-prahok-ktis-section5-mobile.webp' : recipe.image, url: `/recettes/${recipe.slug}/` };
 });
 
 interface Props { preview?: boolean; }
