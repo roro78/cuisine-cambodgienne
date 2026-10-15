@@ -1,0 +1,96 @@
+/* V18 D19: actual transparent food photography instead of a circular CSS
+   imitation of a plate. Independent recipe links and GSAP stages unchanged. */
+.v17r .v17r-table--assembled .v17r-table-dish{
+  aspect-ratio:4 / 3;
+  filter:none;
+  overflow:visible;
+  isolation:isolate;
+}
+.v17r .v17r-table--assembled .v17r-table-dish::before{
+  content:'';
+  position:absolute;
+  z-index:-1;
+  pointer-events:none;
+  width:75%;
+  height:17%;
+  left:12.5%;
+  bottom:7%;
+  border-radius:50%;
+  background:rgba(22,13,9,.28);
+  filter:blur(clamp(9px,1.3vw,20px));
+  transform:scale(.86);
+  transition:transform .3s ease,opacity .3s ease;
+}
+.v17r .v17r-table--assembled .v17r-table-dish-photo,
+.v17r .v17r-table--assembled .v17r-table-dish--loklak .v17r-table-dish-photo,
+.v17r .v17r-table--assembled .v17r-table-dish--nombanhchok .v17r-table-dish-photo,
+.v17r .v17r-table--assembled .v17r-table-dish--prahok .v17r-table-dish-photo{
+  display:block;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:0;
+  border-radius:0;
+  overflow:visible;
+  background:transparent;
+  box-shadow:none;
+  transform:none;
+  pointer-events:none;
+}
+.v17r .v17r-table--assembled .v17r-table-dish-photo img{
+  display:block;
+  width:100%;
+  height:100%;
+  max-width:none;
+  object-fit:contain;
+  object-position:center;
+  aspect-ratio:auto;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  filter:drop-shadow(0 10px 11px rgba(26,15,9,.34));
+  transition:transform .36s cubic-bezier(.22,.7,.24,1),filter .36s ease;
+}
+.v17r .v17r-table--assembled .v17r-table-dish-label{
+  z-index:9;
+  bottom:-.45rem;
+  border:1px solid rgba(246,225,172,.85);
+  background:rgba(255,248,230,.98);
+  color:#173b29;
+  box-shadow:0 7px 20px rgba(25,16,10,.28);
+  white-space:nowrap;
+}
+@media(hover:hover) and (pointer:fine){
+  .v17r .v17r-table--assembled .v17r-table-dish:hover::before{
+    transform:scale(1.08);opacity:.9;
+  }
+  .v17r .v17r-table--assembled .v17r-table-dish:hover img{
+    transform:translateY(-6px) scale(1.052);
+    filter:drop-shadow(0 19px 15px rgba(26,15,9,.42)) saturate(1.06);
+  }
+  .v17r .v17r-table--assembled .v17r-table-dish:hover .v17r-table-dish-photo{
+    box-shadow:none;
+  }
+}
+@media(max-width:760px){
+  .v17r .v17r-table--assembled .v17r-table-dish--amok{left:3%;top:45%}
+  .v17r .v17r-table--assembled .v17r-table-dish--loklak{left:57%;top:43%}
+  .v17r .v17r-table--assembled .v17r-table-dish--nombanhchok{left:52%;top:67%}
+  .v17r .v17r-table--assembled .v17r-table-dish--prahok{left:4%;top:74%}
+  .v17r .v17r-table--assembled .v17r-table-dish-label{
+    bottom:-.38rem;
+    padding:.43rem .46rem;
+    font-size:clamp(.64rem,2.3vw,.8rem);
+  }
+}
+@media(max-width:370px){
+  .v17r .v17r-table--assembled .v17r-table-dish--amok{top:48%}
+  .v17r .v17r-table--assembled .v17r-table-dish--loklak{top:44%}
+  .v17r .v17r-table--assembled .v17r-table-dish--nombanhchok{top:70%}
+  .v17r .v17r-table--assembled .v17r-table-dish--prahok{top:76%}
+}
+@media(prefers-reduced-motion:reduce){
+  .v17r .v17r-table--assembled .v17r-table-dish-photo img{
+    transition:none!important;
+  }
+}

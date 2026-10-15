@@ -565,6 +565,16 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           size:Math.round(a.getBoundingClientRect().width)})),
           legacyImage:!!table.querySelector('.v17r-table-amok')};
       });
+      const cutouts=await page.evaluate(()=>[...document.querySelectorAll('.v17r-table-dish')].map(a=>{
+        const img=a.querySelector('img');
+        const shell=a.querySelector('.v17r-table-dish-photo');
+        return {src:img?.getAttribute('src'),objectFit:getComputedStyle(img).objectFit,
+          radius:getComputedStyle(shell).borderTopLeftRadius,
+          loaded:!!img?.naturalWidth,width:img?.naturalWidth};
+      }));
+      assert.ok(cutouts.length===4 && cutouts.every(p=>p.loaded && p.width===1448 &&
+        p.objectFit==='contain' && p.radius==='0px' && p.src.includes('-cutout.webp')),
+        'D19 plate photography should be actual cutouts, not rounded image frames: '+JSON.stringify(cutouts));
       assert.ok(tableScene.links.length===4 && !tableScene.legacyImage &&
         tableScene.links.every(l=>l.loaded && l.label && l.size>=100),
         'D18 four navigable recipe dishes required: '+JSON.stringify(tableScene));

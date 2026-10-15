@@ -129,6 +129,12 @@ for(const slug of ['amok-trey','lok-lak','num-banh-chok','prahok-ktis']){
   assert.ok(page.includes('href="/recettes/'+slug+'/"'),
     'D18 interactive real recipe route missing '+slug);
 }
+assert.ok(page.includes('v18-table-cutout-dishes.css'),'Photoreal plate stylesheet missing');
+for(const name of ['amok-trey','lok-lak','num-banh-chok','prahok-ktis']){
+  const path='public/images/cuisine/v18-home-'+name+'-cutout.webp';
+  assert.ok(fs.existsSync(path),'D19 genuine WebP transparent cutout missing '+path);
+  assert.ok(page.includes('/images/cuisine/v18-home-'+name+'-cutout.webp'),'D19 plate image not wired '+name);
+}
 assert.equal((page.match(/class="v17r-table-dish v17r-table-dish--/g)||[]).length,4,
   'D18 four independent plated recipe links required');
 assert.ok(script.includes('const dessertBloom =') && script.includes('dessertBloom(true)') &&
@@ -180,8 +186,8 @@ for(const name of [
   'v17-nom-banh-chok-genere.webp'
 ]) assert.ok(fs.existsSync('public/images/cuisine/'+name), 'Missing generated image '+name);
 assert.match(page, /images\/cuisine\/v17-hero-amok-genere\.webp/);
-assert.match(page, /images\/cuisine\/v17-lok-lak-genere\.webp/);
-assert.match(page, /images\/cuisine\/v17-nom-banh-chok-genere\.webp/);
+assert.match(page, /images\/cuisine\/v18-home-lok-lak-cutout\.webp/);
+assert.match(page, /images\/cuisine\/v18-home-num-banh-chok-cutout\.webp/);
 assert.match(page, /images\/cuisine\/v17-desserts-khmers-generes\.webp/);
 assert.doesNotMatch(css,/ScrollSmoother|scroll-snap-type|position:\s*fixed/);
 console.log('V17 D8: PASS — public / reuses 7 V17 scenes, preview remains noindex, assets and links verified');
