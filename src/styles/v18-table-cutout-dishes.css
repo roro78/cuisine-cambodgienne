@@ -95,6 +95,34 @@
   }
 }
 
+/* Cinematic feathered photo reveals. The default 140% is a completely
+   visible image with JavaScript disabled. GSAP only adjusts the CSS variable
+   during active scrolling; no square crops or hard PowerPoint wipe edges. */
+.v17r .v17r-table--assembled .v17r-table-dish--loklak .v17r-table-dish-photo{
+  --d20-lok-progress:140%;
+  -webkit-mask-image:linear-gradient(to right,#000 0%,
+    #000 calc(var(--d20-lok-progress) - 30%),
+    transparent var(--d20-lok-progress));
+  mask-image:linear-gradient(to right,#000 0%,
+    #000 calc(var(--d20-lok-progress) - 30%),
+    transparent var(--d20-lok-progress));
+}
+.v17r .v17r-table--assembled .v17r-table-dish--nombanhchok .v17r-table-dish-photo{
+  --d20-noodle-progress:140%;
+  -webkit-mask-image:linear-gradient(to top,#000 0%,
+    #000 calc(var(--d20-noodle-progress) - 28%),
+    transparent var(--d20-noodle-progress));
+  mask-image:linear-gradient(to top,#000 0%,
+    #000 calc(var(--d20-noodle-progress) - 28%),
+    transparent var(--d20-noodle-progress));
+}
+@media(prefers-reduced-motion:reduce){
+  .v17r .v17r-table--assembled .v17r-table-dish-photo{
+    -webkit-mask-image:none!important;
+    mask-image:none!important;
+  }
+}
+
 /* D20 motion language: camera optics, matte, unveiling and a contact ripple.
    The base CSS remains complete without JS; GSAP only stages these effects
    when motion is explicitly permitted. */
