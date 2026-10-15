@@ -365,10 +365,12 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         const heading=section.querySelector('h2 em');
         const actions=section.querySelector('.v17r-table-links');
         const img=section.querySelector('.v17r-table-fullbleed img');
-        const top=scrollY+section.getBoundingClientRect().top;
-        const end=scrollY+section.getBoundingClientRect().bottom-innerHeight;
+        // Match the ScrollTrigger range; sampling after section.top is too late:
+        // typography has already reached its reading state at that point.
+        const top=scrollY+section.getBoundingClientRect().top-innerHeight*.81;
+        const end=scrollY+section.getBoundingClientRect().bottom-innerHeight*.91;
         const points=[];
-        for(const t of [.04,.45,.92]){
+        for(const t of [.025,.42,.92]){
           scrollTo({top:Math.max(0,top+(end-top)*t),behavior:'instant'});
           await new Promise(r=>setTimeout(r,850));
           points.push({heading:Number(getComputedStyle(heading).opacity),
