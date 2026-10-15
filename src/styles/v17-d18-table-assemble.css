@@ -27,7 +27,8 @@
   display:none;
 }
 .v17r .v17r-table.v17r-table--assembled[data-v17-table-ready]{
-  min-height:184svh;
+  /* D20: enough travel for four separate reveals inside a FULL viewport. */
+  min-height:225svh;
 }
 .v17r .v17r-table--assembled .v17r-table-stage{
   position:relative;
@@ -289,7 +290,8 @@
     overflow:visible;
   }
   .v17r .v17r-table.v17r-table--assembled[data-v17-table-ready]{
-    min-height:146svh;
+    /* Native touch scrolling, with the composition occupying the screen. */
+    min-height:205svh;
   }
   .v17r .v17r-table--assembled .v17r-table-stage{
     height:100svh;
