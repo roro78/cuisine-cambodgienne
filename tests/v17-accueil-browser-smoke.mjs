@@ -156,13 +156,21 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       const h=copy.querySelector('h2');
       return {img:img?.getAttribute('src'),fit:getComputedStyle(img).objectFit,
         count:section.querySelectorAll('.v17r-table-fullbleed img').length,
-        links:[...section.querySelectorAll('.v17r-table-links a')].map(a=>a.getAttribute('href')),
+        links:[...section.querySelectorAll('.v17r-table-recipe-link')].map(a=>a.getAttribute('href')),
+        culture:section.querySelector('.v17r-table-culture')?.getAttribute('href'),
+        recipes:section.querySelectorAll('[data-v17-table-recipe]').length,
+        mobileImages:[...section.querySelectorAll('.v17r-table-recipe-image')]
+          .every(i=>i.complete&&i.naturalWidth>0),
         headingOverflow:h.scrollWidth-h.clientWidth};
     });
     assert.ok(photo.count===1&&photo.fit==='cover'&&
       photo.img==='/images/cuisine/v17-tablee-khmere-generee.webp'&&
-      photo.headingOverflow<=2&&photo.links.includes('/recettes/'),
-      'D21 single still photograph and readable links: '+JSON.stringify(photo));
+      photo.headingOverflow<=2&&photo.recipes===4&&
+      JSON.stringify(photo.links)===JSON.stringify([
+        '/recettes/amok-trey/','/recettes/lok-lak/',
+        '/recettes/num-banh-chok/','/recettes/prahok-ktis/'])&&
+      photo.culture==='/culture/construire-repas-cambodgien/',
+      'D22 still tabletop, four REAL linked recipes and cultural link: '+JSON.stringify(photo));
     const dimension=await page.evaluate(()=>({
       html:document.documentElement.scrollWidth,client:document.documentElement.clientWidth,
       w:innerWidth
@@ -375,11 +383,11 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         await new Promise(resolve=>setTimeout(resolve,750));
         const first=section.querySelector('.v17r-table-copy h2 span');
         const second=section.querySelector('.v17r-table-copy h2 em');
-        const links=section.querySelector('.v17r-table-links');
+        const firstRecipe=section.querySelector('[data-v17-table-recipe]');
         return {
           firstOpacity:Number(getComputedStyle(first).opacity),
           secondOpacity:Number(getComputedStyle(second).opacity),
-          linksOpacity:Number(getComputedStyle(links).opacity),
+          linksOpacity:Number(getComputedStyle(firstRecipe).opacity),
           firstY:new DOMMatrixReadOnly(getComputedStyle(first).transform).m42,
           secondY:new DOMMatrixReadOnly(getComputedStyle(second).transform).m42
         };
@@ -393,30 +401,32 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       const motion=await page.evaluate(async()=>{
         const section=document.querySelector('[data-v17-table-editorial]');
         const heading=section.querySelector('h2 em');
-        const actions=section.querySelector('.v17r-table-links');
+        const actions=section.querySelectorAll('[data-v17-table-recipe]');
         const img=section.querySelector('.v17r-table-fullbleed img');
         // Match the ScrollTrigger range; sampling after section.top is too late:
         // typography has already reached its reading state at that point.
         const top=scrollY+section.getBoundingClientRect().top-innerHeight*.81;
-        const end=scrollY+section.getBoundingClientRect().bottom-innerHeight*.91;
+        const end=width===390?
+          scrollY+section.getBoundingClientRect().top-innerHeight*.16:
+          scrollY+section.getBoundingClientRect().bottom-innerHeight*.91;
         const points=[];
         for(const t of [.025,.42,.92]){
           scrollTo({top:Math.max(0,top+(end-top)*t),behavior:'instant'});
           await new Promise(r=>setTimeout(r,850));
           points.push({heading:Number(getComputedStyle(heading).opacity),
-            actions:Number(getComputedStyle(actions).opacity),
+            actions:Number(getComputedStyle(actions[0]).opacity),
             photoTransform:getComputedStyle(img).transform});
         }
         return {points,loaded:img.naturalWidth===1600,
-          sticky:getComputedStyle(section.querySelector('.v17r-table-stage')).position};
+          stagePosition:getComputedStyle(section.querySelector('.v17r-table-stage')).position};
       });
-      assert.ok(motion.loaded&&motion.sticky==='sticky'&&
+      assert.ok(motion.loaded&&motion.stagePosition===(width===390?'relative':'sticky')&&
         motion.points[0].heading<motion.points[2].heading&&
         motion.points[2].heading>.9&&
-        motion.points[0].actions<motion.points[2].actions&&
-        motion.points[2].actions>.9&&
+        (width===390 || (motion.points[0].actions<motion.points[2].actions &&
+          motion.points[2].actions>.9))&&
         motion.points.every(x=>x.photoTransform==='none'),
-        'D21 editorial type reveals over unmoving photo: '+JSON.stringify(motion));
+        'D22 four linked recipe chapters over an unmoving feast: '+JSON.stringify(motion));
       await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
     }
     // D16: measure TRANSLATION IN PIXELS, rather than mere CSS inequality.
