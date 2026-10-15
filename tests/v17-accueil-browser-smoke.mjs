@@ -218,7 +218,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       assert.deepEqual(clippedWords,[],
         'Visible text glyphs must not be cut off-screen at '+width+'px: '+JSON.stringify(clippedWords));
     }
-    for(const selector of ['.v17r-hero-dish img','.v17r-market-visual > img','.v17r-palette-a img','.v17r-palette-b img','.v17r-gestures-main img','.v17r-table-dish-photo img','.v17r-dessert-generated img','.v17r-finale-landscape img']){
+    for(const selector of ['.v17r-hero-dish img','.v17r-market-visual > img','.v17r-palette-a img','.v17r-palette-b img','.v17r-gestures-main img','.v17r-table-dish--amok img','.v17r-dessert-generated img','.v17r-finale-landscape img']){
       if(!(await page.locator(selector).isVisible()))continue;
       await page.locator(selector).scrollIntoViewIfNeeded();
       await page.waitForFunction(s=>{const img=document.querySelector(s);return img?.complete&&img.naturalWidth>0},selector,{timeout:10000});
