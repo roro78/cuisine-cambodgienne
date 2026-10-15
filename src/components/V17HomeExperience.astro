@@ -6,6 +6,7 @@ import '../styles/v17-generated-media.css';
 import '../styles/v17-finition-editoriale.css';
 import '../styles/v17-mortar-cinema.css';
 import '../styles/v17-scene-handoffs.css';
+import '../styles/v17-d17-cinematic-scenes.css';
 const hero = '/images/cuisine/v17-hero-amok-genere.webp';
 // Approved binary is committed; the CI verifies its SHA-256. Never silently
 // replace the approved market scene with unrelated documentary photographs.
@@ -23,6 +24,11 @@ interface Props { preview?: boolean; }
   <div class="v17r-wrap" data-v17r-preview>
     <SiteHeader />
     <main class="v17r" id="v17r-main">
+      <!-- D17: one continuous aromatic motif across the market, ingredients
+           and mortar; entirely decorative and absent without JS. -->
+      <div class="v17r-aromatic-traveller" data-v17-aromatic-traveller aria-hidden="true">
+        <img src="/images/brand/v17-lemongrass.svg" alt="" width="670" height="420" decoding="async"/>
+      </div>
       <section class="v17r-hero v17r-hero--generated" aria-labelledby="v17r-hero-title">
         <div class="v17r-hero-art" aria-hidden="true">
           <svg class="v17r-temple-illustration" viewBox="0 0 900 430" xmlns="http://www.w3.org/2000/svg" fill="none">
