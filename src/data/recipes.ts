@@ -487,7 +487,7 @@ export const recipes: Recipe[] = [
     imageWidth: 960,
     imageHeight: 640,
     visualTone: 'coconut'
-  }
+  },
 
   {
     slug: 'samlor-kako',
