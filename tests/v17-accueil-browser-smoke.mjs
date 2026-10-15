@@ -149,22 +149,21 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       assert.equal(await page.evaluate(()=>location.hash),'#v17r-main',
         'Skip link should navigate directly to main content');
     }
-    const photoContrast=await page.evaluate(()=>{
+    const tableContrast=await page.evaluate(()=>{
       const scene=document.querySelector('.v17r-table');
-      const media=document.querySelector('.v17r-table-media');
-      const shade=getComputedStyle(scene,'::before');
-      const heroText=scene.querySelector('h2');
-      return {
-        photoZ:Number(getComputedStyle(media).zIndex),
-        shadeZ:Number(shade.zIndex),
-        titleZ:Number(getComputedStyle(scene.querySelector('.v17r-table-copy')).zIndex),
-        titleOverflow:heroText.scrollWidth-heroText.clientWidth
-      };
+      const atmosphere=scene.querySelector('.v17r-table-atmosphere');
+      const dishes=scene.querySelector('.v17r-table-dishes');
+      const copy=scene.querySelector('.v17r-table-copy');
+      const title=copy.querySelector('h2');
+      return {backgroundZ:Number(getComputedStyle(atmosphere).zIndex),
+        dishesZ:Number(getComputedStyle(dishes).zIndex),
+        copyZ:Number(getComputedStyle(copy).zIndex),
+        titleOverflow:title.scrollWidth-title.clientWidth};
     });
-    assert.ok(photoContrast.photoZ>=0 && photoContrast.shadeZ>photoContrast.photoZ &&
-      photoContrast.titleZ>photoContrast.shadeZ,
-      'Photo under a readable overlay, not behind the scene background: '+JSON.stringify(photoContrast));
-    assert.ok(photoContrast.titleOverflow<=2,'Table title must fit even on small screens: '+JSON.stringify(photoContrast));
+    assert.ok(tableContrast.copyZ>tableContrast.dishesZ &&
+      tableContrast.dishesZ>tableContrast.backgroundZ &&
+      tableContrast.titleOverflow<=2,
+      'D18 readable tabletop requires foreground title: '+JSON.stringify(tableContrast));
     const dimension=await page.evaluate(()=>({
       html:document.documentElement.scrollWidth,client:document.documentElement.clientWidth,
       w:innerWidth
@@ -219,7 +218,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       assert.deepEqual(clippedWords,[],
         'Visible text glyphs must not be cut off-screen at '+width+'px: '+JSON.stringify(clippedWords));
     }
-    for(const selector of ['.v17r-hero-dish img','.v17r-market-visual > img','.v17r-palette-a img','.v17r-palette-b img','.v17r-gestures-main img','.v17r-table-amok img','.v17r-dessert-generated img','.v17r-finale-landscape img']){
+    for(const selector of ['.v17r-hero-dish img','.v17r-market-visual > img','.v17r-palette-a img','.v17r-palette-b img','.v17r-gestures-main img','.v17r-table-dish-photo img','.v17r-dessert-generated img','.v17r-finale-landscape img']){
       if(!(await page.locator(selector).isVisible()))continue;
       await page.locator(selector).scrollIntoViewIfNeeded();
       await page.waitForFunction(s=>{const img=document.querySelector(s);return img?.complete&&img.naturalWidth>0},selector,{timeout:10000});
@@ -361,22 +360,32 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         bridge.from.includes(from) && bridge.to.includes(to),
         'D14 bridge must not add scroll space or block actions: '+JSON.stringify(bridge));
     }
-    if(width===1440 && !noJs && !reduced){
-      const photoOpen=await page.evaluate(async()=>{
-        const scene=document.querySelector('.v17r-table');
-        const media=scene.querySelector('.v17r-table-media');
-        const top=scrollY+scene.getBoundingClientRect().top;
-        scrollTo({top:Math.max(0,top-innerHeight*.96),behavior:'instant'});
-        await new Promise(r=>setTimeout(r,650));
-        const start=getComputedStyle(media).clipPath;
-        scrollTo({top:Math.max(0,top-innerHeight*.30),behavior:'instant'});
-        await new Promise(r=>setTimeout(r,1000));
-        const end=getComputedStyle(media).clipPath;
-        return {start,end};
+    // D18: distinct dishes should arrive progressively as the table settles.
+    if([390,1440].includes(width) && !noJs && !reduced){
+      const plates=await page.evaluate(async()=>{
+        const section=document.querySelector('[data-v17-table-assemble]');
+        const amok=section.querySelector('.v17r-table-dish--amok');
+        const loklak=section.querySelector('.v17r-table-dish--loklak');
+        const start=scrollY+section.getBoundingClientRect().top-innerHeight*.77;
+        const end=scrollY+section.getBoundingClientRect().bottom-innerHeight*.84;
+        const samples=[];
+        for(const progress of [.10,.59,.88]){
+          scrollTo({top:Math.max(0,start+(end-start)*progress),behavior:'instant'});
+          await new Promise(r=>setTimeout(r,900));
+          samples.push({first:Number(getComputedStyle(amok).opacity),
+            second:Number(getComputedStyle(loklak).opacity),
+            firstTransform:getComputedStyle(amok).transform,
+            secondTransform:getComputedStyle(loklak).transform});
+        }
+        return {ready:section.hasAttribute('data-v17-table-ready'),
+          sticky:getComputedStyle(section.querySelector('.v17r-table-stage')).position,samples};
       });
-      assert.ok(photoOpen.start!==photoOpen.end &&
-        photoOpen.start.includes('inset(') && photoOpen.end.includes('inset('),
-        'D14 table photograph must genuinely open while scrolling: '+JSON.stringify(photoOpen));
+      assert.ok(plates.ready && plates.sticky==='sticky' &&
+        plates.samples[0].first<plates.samples[2].first &&
+        plates.samples[0].second<plates.samples[2].second &&
+        plates.samples[0].firstTransform!==plates.samples[2].firstTransform,
+        'D18 four plates must assemble progressively: '+JSON.stringify(plates));
+      await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
     }
     // D16: measure TRANSLATION IN PIXELS, rather than mere CSS inequality.
     // Source trigger follows the heading itself, so entry/exit occur while
@@ -385,7 +394,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       const stageMotion=await page.evaluate(async(width)=>{
         scrollTo({top:0,behavior:'instant'});
         await new Promise(r=>setTimeout(r,550));
-        const scene=document.querySelector(width<=760?'.v17r-market':'.v17r-table');
+        const scene=document.querySelector('.v17r-market');
         const title=scene.querySelector('h2');
         const startMatrix=new DOMMatrixReadOnly(getComputedStyle(title).transform);
         const naturalTop=scrollY+title.getBoundingClientRect().top-startMatrix.m42;
@@ -546,19 +555,18 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     }
     if(width===1440 && !noJs && !reduced){
       const tableScene=await page.evaluate(()=>{
-        const frame=document.querySelector('.v17r-table');
-        const main=document.querySelector('.v17r-table-amok img');
-        const inset=document.querySelector('.v17r-table-detail');
-        return {
-          frameWidth:frame?.getBoundingClientRect().width,
-          mainWidth:main?.getBoundingClientRect().width,
-          insetCount:inset?1:0,
-          mainLoaded:!!main?.complete&&main.naturalWidth>0
-        };
+        const table=document.querySelector('.v17r-table');
+        const links=[...table.querySelectorAll('a.v17r-table-dish')];
+        return {links:links.map(a=>({
+          href:a.getAttribute('href'),
+          loaded:!!a.querySelector('img')?.naturalWidth,
+          label:a.querySelector('.v17r-table-dish-label')?.textContent?.trim(),
+          size:Math.round(a.getBoundingClientRect().width)})),
+          legacyImage:!!table.querySelector('.v17r-table-amok')};
       });
-      assert.ok(tableScene.mainLoaded&&tableScene.insetCount===0&&
-        tableScene.mainWidth>=tableScene.frameWidth*.98,
-        'Table must be immersive, with one editorial image and no oval collage: '+JSON.stringify(tableScene));
+      assert.ok(tableScene.links.length===4 && !tableScene.legacyImage &&
+        tableScene.links.every(l=>l.loaded && l.label && l.size>=100),
+        'D18 four navigable recipe dishes required: '+JSON.stringify(tableScene));
       const anim=await page.evaluate(async()=>{
         const scene=document.querySelector('.v17r-palette');
         const node=scene.querySelector('.v17r-palette-a');
