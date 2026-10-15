@@ -101,7 +101,7 @@ const recipeSchema = {
 <BaseLayout title={`${recipe.title} — Recette cambodgienne | Cuisine du Cambodge`} description={recipe.description} image={recipe.image} imageAlt={recipe.imageAlt}>
   <SiteHeader />
 
-  <main class="recipe-v15 recipe-v16" data-generated-artwork={recipe.image?.includes('-genere.webp') ? 'true' : undefined}>
+  <main class="recipe-v15 recipe-v16" data-generated-artwork={(recipe.image?.includes('-genere.webp') || recipe.image?.includes('/v18-')) ? 'true' : undefined}>
     <section class="recipe-v15-hero">
       <div class="recipe-v15-hero-copy" data-reveal="up">
         <p class="eyebrow">Recette cambodgienne · {recipe.category}</p>
@@ -134,7 +134,7 @@ const recipeSchema = {
             height={recipe.imageHeight ?? 1067}
             decoding="async"
           />
-          {recipe.image.includes('-genere.webp') && <figcaption class="recipe-generated-note">Illustration culinaire créée par IA</figcaption>}
+          {(recipe.image.includes('-genere.webp') || recipe.image.includes('/v18-')) && <figcaption class="recipe-generated-note">Illustration culinaire créée par IA</figcaption>}
         </figure>
       ) : (
         <div class="recipe-v15-cover recipe-v15-cover-fallback" aria-label={`Illustration typographique de ${recipe.title}`}>
