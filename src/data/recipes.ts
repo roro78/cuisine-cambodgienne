@@ -482,6 +482,10 @@ export const recipes: Recipe[] = [
     equipment: ['Petite casserole'],
     faqs: [{ question: 'Peut-on le servir froid ?', answer: 'Oui, mais la texture du coco est souvent plus agréable tiède.' }],
     tags: ['dessert', 'banane', 'coco', 'facile'],
+    image: '/images/cuisine/v17-chek-ktis-960.jpg',
+    imageAlt: 'Chek Ktis, bananes tendres servies dans un lait de coco parfumé',
+    imageWidth: 960,
+    imageHeight: 640,
     visualTone: 'coconut'
   }
 
