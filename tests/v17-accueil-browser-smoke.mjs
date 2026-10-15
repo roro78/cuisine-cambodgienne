@@ -359,6 +359,30 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         bridge.from.includes(from) && bridge.to.includes(to),
         'D14 bridge must not add scroll space or block actions: '+JSON.stringify(bridge));
     }
+    if([768,1024].includes(width)&&!noJs&&!reduced){
+      // Tablet should display readable copy even before ScrollTrigger animates.
+      // The two lines use opposite horizontal entrance vectors, unlike desktop.
+      const tablet=await page.evaluate(async()=>{
+        const section=document.querySelector('[data-v17-table-editorial]');
+        const top=scrollY+section.getBoundingClientRect().top-innerHeight*1.15;
+        scrollTo({top:Math.max(0,top),behavior:'instant'});
+        await new Promise(resolve=>setTimeout(resolve,750));
+        const first=section.querySelector('.v17r-table-copy h2 span');
+        const second=section.querySelector('.v17r-table-copy h2 em');
+        const links=section.querySelector('.v17r-table-links');
+        return {
+          firstOpacity:Number(getComputedStyle(first).opacity),
+          secondOpacity:Number(getComputedStyle(second).opacity),
+          linksOpacity:Number(getComputedStyle(links).opacity),
+          firstX:new DOMMatrixReadOnly(getComputedStyle(first).transform).m41,
+          secondX:new DOMMatrixReadOnly(getComputedStyle(second).transform).m41
+        };
+      });
+      assert.ok(tablet.firstOpacity>=.65&&tablet.secondOpacity>=.65&&
+        tablet.linksOpacity>=.7&&tablet.firstX< -12&&tablet.secondX>12,
+        'D21 tablet text must remain readable and converge from opposite sides: '+
+        JSON.stringify(tablet));
+    }
     if([390,768,1024,1440].includes(width)&&!noJs&&!reduced){
       const motion=await page.evaluate(async()=>{
         const section=document.querySelector('[data-v17-table-editorial]');
