@@ -244,8 +244,8 @@ export const recipes: Recipe[] = [
     tags: ['porc', 'riz', 'facile', 'petit-déjeuner'],
     image: '/images/cuisine/v18-bai-sach-chrouk.webp',
     imageAlt: 'Bai Sach Chrouk, porc grillé servi sur du riz avec crudités, illustration culinaire créée par IA',
-    imageWidth: 954,
-    imageHeight: 560,
+    imageWidth: 1120,
+    imageHeight: 462,
     visualTone: 'rice'
   },
   {
@@ -552,8 +552,8 @@ export const recipes: Recipe[] = [
     tags: ['soupe', 'poisson', 'légumes', 'kroeung', 'repas familial'],
     image: '/images/cuisine/v18-samlor-kako.webp',
     imageAlt: 'Samlor Kako, soupe cambodgienne de poisson et légumes dans un bol en terre, illustration culinaire créée par IA',
-    imageWidth: 1006,
-    imageHeight: 564,
+    imageWidth: 1120,
+    imageHeight: 462,
     visualTone: 'herbs'
   },
   {
@@ -603,8 +603,8 @@ export const recipes: Recipe[] = [
     tags: ['poulet', 'sauté', 'kroeung', 'citronnelle', 'facile'],
     image: '/images/cuisine/v18-cha-kroeung.webp',
     imageAlt: 'Cha Kroeung, sauté de poulet aux herbes et aux aromates dans une assiette, illustration culinaire créée par IA',
-    imageWidth: 950,
-    imageHeight: 558,
+    imageWidth: 1120,
+    imageHeight: 462,
     visualTone: 'fire'
   },
   {
