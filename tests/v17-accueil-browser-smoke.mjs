@@ -385,7 +385,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       const stageMotion=await page.evaluate(async(width)=>{
         scrollTo({top:0,behavior:'instant'});
         await new Promise(r=>setTimeout(r,550));
-        const scene=document.querySelector(width<=760?'.v17r-dessert':'.v17r-table');
+        const scene=document.querySelector(width<=760?'.v17r-market':'.v17r-table');
         const title=scene.querySelector('h2');
         const startMatrix=new DOMMatrixReadOnly(getComputedStyle(title).transform);
         const naturalTop=scrollY+title.getBoundingClientRect().top-startMatrix.m42;
@@ -420,6 +420,56 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         JSON.stringify(stageMotion));
       console.log('V17 D16 MEASURED ONSCREEN TITLE MOTION '+width+'px '+
         JSON.stringify(stageMotion));
+      await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
+    }
+    // D17: dessert must fill the entire photographic stage without any
+    // rounded rectangular "card", in JS / no-JS / reduced-motion states.
+    if([390,1440].includes(width)){
+      const dessertStage=await page.evaluate(()=>{
+        const scene=document.querySelector('.v17r-dessert');
+        const art=scene?.querySelector('.v17r-dessert-art');
+        const figure=scene?.querySelector('.v17r-dessert-generated');
+        const image=figure?.querySelector('img');
+        const a=scene?.getBoundingClientRect();
+        const b=art?.getBoundingClientRect();
+        const c=figure?.getBoundingClientRect();
+        return {
+          sceneWidth:a?.width, sceneHeight:a?.height,
+          artWidth:b?.width, artHeight:b?.height,
+          figureWidth:c?.width, figureHeight:c?.height,
+          borderRadius:image?getComputedStyle(image).borderTopLeftRadius:'',
+          imageFit:image?getComputedStyle(image).objectFit:'',
+          loaded:!!image?.naturalWidth,
+          link:!!scene?.querySelector('a[href="/recettes/chek-ktis/"]'),
+        };
+      });
+      assert.ok(dessertStage.sceneWidth>0 &&
+        Math.abs(dessertStage.sceneWidth-dessertStage.artWidth)<3 &&
+        Math.abs(dessertStage.sceneHeight-dessertStage.artHeight)<3 &&
+        Math.abs(dessertStage.figureWidth-dessertStage.artWidth)<3 &&
+        Math.abs(dessertStage.figureHeight-dessertStage.artHeight)<3 &&
+        dessertStage.borderRadius==='0px' && dessertStage.imageFit==='cover' &&
+        dessertStage.loaded && dessertStage.link,
+        'D17 desserts must be a full-bleed cinematic scene, not a photo card: '+
+        JSON.stringify(dessertStage));
+    }
+    if([390,1440].includes(width) && !noJs && !reduced){
+      const flower=await page.evaluate(async()=>{
+        const scene=document.querySelector('.v17r-dessert');
+        const figure=scene.querySelector('.v17r-dessert-generated');
+        const top=scrollY+scene.getBoundingClientRect().top;
+        const samples=[];
+        for(const diff of [.84,.30]){
+          scrollTo({top:Math.max(0,top-innerHeight*diff),behavior:'instant'});
+          await new Promise(resolve=>setTimeout(resolve,950));
+          samples.push(getComputedStyle(figure).clipPath);
+        }
+        return samples;
+      });
+      assert.ok(flower[0].startsWith('circle(') && flower[1].startsWith('circle(') &&
+        flower[0]!==flower[1],
+        'D17 dessert photograph must visibly blossom open under scrolling: '+
+        JSON.stringify(flower));
       await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
     }
     if(width===1440){
