@@ -384,6 +384,68 @@ export function initV17AccueilMotion() {
       });
   };
 
+
+  /**
+   * D18 — La tablée se compose. Four independent illustrated recipe links,
+   * each entering via a different physical gesture, settle on one table.
+   * CSS sticky (not a forced GSAP pin) gives the visitor enough native-scroll
+   * time to read, explore and select each actual recipe.
+   *
+   * The DOM/CSS is complete without JS and in reduced motion. No external
+   * network, no duplicate plate overlays, no click interception.
+   */
+  const assembleTable = (mobile: boolean) => {
+    const section=root.querySelector<HTMLElement>('[data-v17-table-assemble]');
+    if(!section) return;
+    const stage=section.querySelector<HTMLElement>('.v17r-table-stage');
+    const lighting=section.querySelector<HTMLElement>('.v17r-table-light');
+    const linen=section.querySelector<HTMLElement>('.v17r-table-linen');
+    const dishes=[
+      section.querySelector<HTMLElement>('.v17r-table-dish--amok'),
+      section.querySelector<HTMLElement>('.v17r-table-dish--loklak'),
+      section.querySelector<HTMLElement>('.v17r-table-dish--nombanhchok'),
+      section.querySelector<HTMLElement>('.v17r-table-dish--prahok'),
+    ];
+    if(!stage || dishes.some(d=>!d)) return;
+    section.dataset.v17TableReady='';
+    const timeline=gsap.timeline({
+      scrollTrigger:{
+        trigger:section,
+        start:'top 77%',
+        end:'bottom 84%',
+        scrub:mobile?.3:.52,
+        invalidateOnRefresh:true
+      }
+    });
+    if(linen) timeline.fromTo(linen,
+      {xPercent:mobile?14:18,rotation:-27,opacity:.36},
+      {xPercent:0,rotation:mobile?-31:-17,opacity:1,
+        duration:2.1,ease:'power2.out',immediateRender:false},0);
+    if(lighting)timeline.fromTo(lighting,
+      {opacity:.38,xPercent:-7},
+      {opacity:1,xPercent:2,duration:3.1,ease:'none',immediateRender:false},0);
+    const arrivals=[
+      {at:.55,from:{scale:.38,yPercent:mobile?78:110,rotation:-28,opacity:0},
+        duration:.96},
+      {at:1.20,from:{scale:.70,xPercent:mobile?90:145,rotation:24,opacity:0},
+        duration:.83},
+      {at:1.91,from:{scale:.66,xPercent:mobile?-67:-92,yPercent:mobile?90:125,
+          rotation:-23,opacity:0},duration:.91},
+      {at:2.68,from:{scale:.18,yPercent:mobile?55:70,rotation:-52,opacity:0},
+        duration:.70}
+    ] as const;
+    dishes.forEach((dish,index)=>{
+      if(!dish)return;
+      const beat=arrivals[index];
+      timeline.fromTo(dish,beat.from,
+        {scale:1,xPercent:0,yPercent:0,rotation:0,opacity:1,
+          duration:beat.duration,ease:index===3?'back.out(1.18)':'power3.out',
+          immediateRender:false},beat.at);
+    });
+    // Photo composition holds fully assembled for a significant scroll span.
+    timeline.to({}, {duration:1.05},3.48);
+  };
+
   mm.add('(min-width: 761px) and (prefers-reduced-motion: no-preference)', () => {
     // 1. Hero: quiet depth, never displacing the headline or CTA.
     sceneMotion('.v17r-hero-dish img', { scale: 1.09, yPercent: 2 }, { scale: 1.005, yPercent: -2 });
@@ -401,8 +463,8 @@ export function initV17AccueilMotion() {
     // 4. Mortar: the hands remain real; the prepared kroeung is a second image.
 
     mortarCinema(false);
-    // 5. Table: a single AI-generated culinary tableau creates immersive depth.
-    sceneMotion('.v17r-table-amok img', { scale: 1.10, xPercent: -2 }, { scale: 1.01, xPercent: 1 });
+    // 5. The table is built plate by plate, not a single static tableau.
+    assembleTable(false);
     // 6–7. Desserts and Angkor: restraint and varied composition.
     sceneMotion('.v17r-dessert-generated img', { scale: 1.075, yPercent: -1 }, { scale: 1.005, yPercent: 2 });
     sceneMotion('.v17r-finale-landscape img', { scale: 1.09, yPercent: -3 }, { scale: 1.01, yPercent: 2 });
@@ -411,7 +473,7 @@ export function initV17AccueilMotion() {
     objectPerformance(false);
     chapterPerformance('.v17r-market', 1, false);
     chapterPerformance('.v17r-palette', -1, false);
-    chapterPerformance('.v17r-table', 1, false);
+    // No generic heading exit in the table: the dishes are the protagonists.
     dessertBloom(false);
     travellingAromatic();
     chapterPerformance('.v17r-finale', 1, false);
@@ -430,7 +492,7 @@ export function initV17AccueilMotion() {
     sceneMotion('.v17r-palette-a', { xPercent: -5 }, { xPercent: 0 });
     sceneMotion('.v17r-palette-b', { xPercent: 5 }, { xPercent: 0 });
 
-    sceneMotion('.v17r-table-amok img', { scale: 1.035 }, { scale: 1.005 });
+    assembleTable(true);
     sceneMotion('.v17r-finale-landscape img', { scale: 1.04 }, { scale: 1.005 });
     mortarCinema(true);
     sceneHandoffs(true);
@@ -439,7 +501,7 @@ export function initV17AccueilMotion() {
     objectPerformance(true);
     chapterPerformance('.v17r-market', 1, true);
     chapterPerformance('.v17r-palette', -1, true);
-    chapterPerformance('.v17r-table', 1, true);
+    // No generic heading exit in the table: the dishes are the protagonists.
     dessertBloom(true);
     chapterPerformance('.v17r-finale', 1, true);
   });
