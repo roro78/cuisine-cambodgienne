@@ -7,6 +7,7 @@ import '../styles/v17-finition-editoriale.css';
 import '../styles/v17-mortar-cinema.css';
 import '../styles/v17-scene-handoffs.css';
 import '../styles/v17-d17-cinematic-scenes.css';
+import '../styles/v17-d18-table-assemble.css';
 const hero = '/images/cuisine/v17-hero-amok-genere.webp';
 // Approved binary is committed; the CI verifies its SHA-256. Never silently
 // replace the approved market scene with unrelated documentary photographs.
@@ -123,17 +124,54 @@ interface Props { preview?: boolean; }
       </section>
       <div class="v17r-wave v17r-wave-cream" aria-hidden="true"><svg viewBox="0 0 1440 95" preserveAspectRatio="none"><path d="M0 12C135 89 327 7 495 45S839 65 1010 26 1241 79 1440 38v57H0Z" fill="#69361e"/></svg></div>
 
-      <section class="v17r-table v17r-table--generated" aria-labelledby="v17r-table-title">
-        <div class="v17r-table-media">
-          <figure class="v17r-table-amok"><img src={table} srcset="/images/cuisine/v17-tablee-khmere-generee-960.webp 960w, /images/cuisine/v17-tablee-khmere-generee-1280.webp 1280w, /images/cuisine/v17-tablee-khmere-generee.webp 1600w" sizes="100vw" width="1600" height="900" loading="lazy" decoding="async" alt="Illustration éditoriale générée d’une table conviviale d’inspiration cambodgienne, avec différents plats, currys, nouilles, riz et aromates" /></figure>
-        </div>
-        <div class="v17r-table-copy">
-          <img class="v17r-botanic v17r-table-flower" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
-          <p class="v17r-kicker">03 — À table</p>
-          <h2 id="v17r-table-title">DES PLATS<br/><em>QUI RASSEMBLENT.</em></h2>
-          <p>Poissons, currys, salades, soupes… Des plats généreux que l’on aime retrouver et partager.</p>
-          <a class="v17r-pill" href="/recettes/">Découvrir les recettes <span aria-hidden="true">↗</span></a>
-          <a class="v17r-table-sub" href="/culture/construire-repas-cambodgien/">Comprendre le repas cambodgien →</a>
+      <section class="v17r-table v17r-table--assembled" aria-labelledby="v17r-table-title" data-v17-table-assemble>
+        <div class="v17r-table-stage">
+          <div class="v17r-table-atmosphere" aria-hidden="true">
+            <span class="v17r-table-linen"></span>
+            <span class="v17r-table-light"></span>
+          </div>
+          <div class="v17r-table-copy">
+            <p class="v17r-kicker">03 — À table</p>
+            <h2 id="v17r-table-title">DES PLATS<br/><em>À PARTAGER.</em></h2>
+            <p>Quatre saveurs, mille façons de se retrouver. Composez votre tablée et découvrez les recettes du Cambodge.</p>
+            <a class="v17r-pill" href="/recettes/">Explorer toutes les recettes <span aria-hidden="true">↗</span></a>
+            <a class="v17r-table-sub" href="/culture/construire-repas-cambodgien/">L’art du repas cambodgien →</a>
+          </div>
+          <div class="v17r-table-dishes" aria-label="Découvrez les recettes présentées à table">
+            <a class="v17r-table-dish v17r-table-dish--amok" href="/recettes/amok-trey/"
+               aria-label="Amok Trey — découvrir la recette">
+              <span class="v17r-table-dish-photo">
+                <img src="/images/cuisine/amok-800.webp" width="800" height="533" loading="lazy" decoding="async"
+                     alt="Amok Trey, curry de poisson cambodgien parfumé au lait de coco"/>
+              </span>
+              <span class="v17r-table-dish-label">Amok Trey <span aria-hidden="true">↗</span></span>
+            </a>
+            <a class="v17r-table-dish v17r-table-dish--loklak" href="/recettes/lok-lak/"
+               aria-label="Lok Lak — découvrir la recette">
+              <span class="v17r-table-dish-photo">
+                <img src="/images/cuisine/v17-lok-lak-genere.webp" width="1200" height="900" loading="lazy" decoding="async"
+                     alt="Lok Lak, bœuf sauté accompagné de crudités"/>
+              </span>
+              <span class="v17r-table-dish-label">Lok Lak <span aria-hidden="true">↗</span></span>
+            </a>
+            <a class="v17r-table-dish v17r-table-dish--nombanhchok" href="/recettes/num-banh-chok/"
+               aria-label="Num Banh Chok — découvrir la recette">
+              <span class="v17r-table-dish-photo">
+                <img src="/images/cuisine/v17-nom-banh-chok-genere.webp" width="1200" height="900" loading="lazy" decoding="async"
+                     alt="Num Banh Chok, nouilles de riz aux herbes et sauce khmère"/>
+              </span>
+              <span class="v17r-table-dish-label">Num Banh Chok <span aria-hidden="true">↗</span></span>
+            </a>
+            <a class="v17r-table-dish v17r-table-dish--prahok" href="/recettes/prahok-ktis/"
+               aria-label="Prahok Ktis — découvrir la recette">
+              <span class="v17r-table-dish-photo">
+                <img src="/images/cuisine/prahok-800.webp" width="800" height="533" loading="lazy" decoding="async"
+                     alt="Prahok Ktis, préparation à partager avec des crudités"/>
+              </span>
+              <span class="v17r-table-dish-label">Prahok Ktis <span aria-hidden="true">↗</span></span>
+            </a>
+          </div>
+          <p class="v17r-table-recipe-hint">Touchez un plat pour découvrir sa recette <span aria-hidden="true">↗</span></p>
         </div>
       </section>
 
