@@ -361,7 +361,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     }
     if([768,1024].includes(width)&&!noJs&&!reduced){
       // Tablet should display readable copy even before ScrollTrigger animates.
-      // The two lines use opposite horizontal entrance vectors, unlike desktop.
+      // The two lines use opposite vertical entrance vectors, unlike desktop.
       const tablet=await page.evaluate(async()=>{
         const section=document.querySelector('[data-v17-table-editorial]');
         const top=scrollY+section.getBoundingClientRect().top-innerHeight*1.15;
@@ -374,13 +374,13 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           firstOpacity:Number(getComputedStyle(first).opacity),
           secondOpacity:Number(getComputedStyle(second).opacity),
           linksOpacity:Number(getComputedStyle(links).opacity),
-          firstX:new DOMMatrixReadOnly(getComputedStyle(first).transform).m41,
-          secondX:new DOMMatrixReadOnly(getComputedStyle(second).transform).m41
+          firstY:new DOMMatrixReadOnly(getComputedStyle(first).transform).m42,
+          secondY:new DOMMatrixReadOnly(getComputedStyle(second).transform).m42
         };
       });
       assert.ok(tablet.firstOpacity>=.65&&tablet.secondOpacity>=.65&&
-        tablet.linksOpacity>=.7&&tablet.firstX< -12&&tablet.secondX>12,
-        'D21 tablet text must remain readable and converge from opposite sides: '+
+        tablet.linksOpacity>=.7&&tablet.firstY< -12&&tablet.secondY>12,
+        'D21 tablet text must remain readable and converge vertically from opposite directions: '+
         JSON.stringify(tablet));
     }
     if([390,768,1024,1440].includes(width)&&!noJs&&!reduced){
