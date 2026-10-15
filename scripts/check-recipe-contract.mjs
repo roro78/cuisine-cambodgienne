@@ -12,6 +12,25 @@ const failures = [];
 const slugs = [...recipes.matchAll(/slug:\s*'([^']+)'/g)].map((match) => match[1]);
 if (slugs.length < 10) failures.push(`Expected at least 10 structured recipes, found ${slugs.length}`);
 
+/* V18: every public Khmer recipe must have a real local image, including the
+ * three additional dishes and the five cards that previously had placeholders.
+ * The actual file must exist in Git; referencing a future URL is not enough. */
+const blocks=[...recipes.matchAll(/^    slug:\s*'([^']+)'/gm)].map((m,i,a)=>
+  ({slug:m[1],source:recipes.slice(m.index,a[i+1]?.index ?? recipes.length)}));
+if(blocks.length!==13) failures.push(`V18 expects 13 recipe sheets, found ${blocks.length}`);
+for(const {slug,source} of blocks){
+  const image=source.match(/^    image:\s*'([^']+)'/m)?.[1];
+  if(!image) failures.push(`Recipe ${slug} has no photographic illustration`);
+  else if(!fs.existsSync('public'+image)) failures.push(`Recipe ${slug} references missing image ${image}`);
+  if(!/^    imageWidth:\s*\d+/m.test(source) || !/^    imageHeight:\s*\d+/m.test(source))
+    failures.push(`Recipe ${slug} is missing intrinsic photo dimensions`);
+}
+for(const slug of ['samlor-kako','cha-kroeung','num-plae-ai'])
+  if(!slugs.includes(slug)) failures.push(`V18 new Khmer recipe missing: ${slug}`);
+if(!detail.includes('recipe-v18-more-card') || !detail.includes('relatedRecipes.map'))
+  failures.push('V18 recipe sheets must cross-link additional photographed recipes');
+
+
 if (!recipes.includes('baseServings: number')) failures.push('Recipe model must expose baseServings');
 if (!recipes.includes('quantity?: number')) failures.push('Recipe ingredients must expose numeric quantities');
 if (!recipes.includes('cue?: string') || !recipes.includes('mistake?: string')) failures.push('Guided recipe steps must expose cue and mistake fields');
