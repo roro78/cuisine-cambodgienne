@@ -436,7 +436,9 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         return {
           sceneWidth:a?.width, sceneHeight:a?.height,
           artWidth:b?.width, artHeight:b?.height,
-          figureWidth:c?.width, figureHeight:c?.height,
+          // Offset geometry is stable while GSAP intentionally scales the
+          // reveal image; boundingClientRect includes the animation scale.
+          figureWidth:figure?.offsetWidth, figureHeight:figure?.offsetHeight,
           borderRadius:image?getComputedStyle(image).borderTopLeftRadius:'',
           imageFit:image?getComputedStyle(image).objectFit:'',
           loaded:!!image?.naturalWidth,
