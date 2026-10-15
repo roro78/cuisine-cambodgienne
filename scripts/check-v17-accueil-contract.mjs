@@ -117,8 +117,19 @@ assert.doesNotMatch(handoffCss,/--vr-(?:ivory|forest|orange|yellow|lime)\s*:/,
 
 assert.match(script,/mortarCinema\(false\)/,'Desktop mortar motion missing');
 assert.match(script,/mortarCinema\(true\)/,'Mobile mortar motion missing');
-assert.equal(script.split("chapterPerformance('.v17r-").length-1,10,
-  'D15: five storyboard chapters animated on both mobile and desktop');
+assert.equal(script.split("chapterPerformance('.v17r-").length-1,8,
+  'D17: only four chapters use conventional headings, desserts own a unique reveal');
+assert.ok(script.includes('const dessertBloom =') && script.includes('dessertBloom(true)') &&
+  script.includes('dessertBloom(false)'),'D17: photo iris reveal must work desktop and mobile');
+assert.ok(script.includes('const travellingAromatic =') &&
+  script.includes('travellingAromatic();'),'D17: continuous market-to-mortar object missing');
+const d17Styles=fs.readFileSync('src/styles/v17-d17-cinematic-scenes.css','utf8');
+assert.ok(page.includes('v17-d17-cinematic-scenes.css'),'D17 final art-direction styles not loaded');
+assert.ok(page.includes('data-v17-aromatic-traveller'),'D17 one travelling aromatic node missing');
+assert.ok(d17Styles.includes('object-fit: cover') && d17Styles.includes('border-radius: 0'),
+  'D17 desserts must fill the entire photographic chapter, never a rectangular card');
+assert.ok(d17Styles.includes('prefers-reduced-motion: reduce'),
+  'D17 must honor reduced motion');
 assert.ok(script.includes('mobile ? 145 : 170'),
   'D16: horizontal titles must travel more than their own width');
 assert.ok(script.includes('mobile ? -110 : -165') &&
