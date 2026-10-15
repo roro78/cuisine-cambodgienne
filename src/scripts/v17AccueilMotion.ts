@@ -411,13 +411,13 @@ export function initV17AccueilMotion() {
     section.dataset.v17TableReady='';
     // Keep copy readable before the scroll animation fires. Fully hidden
     // headings created blank screens in fast-scroll and full-page captures.
-    // Tablet title lines converge horizontally; the photograph stays still.
+    // Tablet title lines converge vertically from opposite directions; the photograph stays still.
     gsap.set(kicker,{autoAlpha:.86,y:mobile?8:12});
     gsap.set(rule,{scaleX:.45,transformOrigin:'left center'});
     lines.forEach((line,i)=>gsap.set(line,{
       autoAlpha:.74,
-      x:tablet?(i===0?-36:36):0,
-      y:tablet?0:(mobile?15+i*4:23+i*7),
+      x:0,
+      y:tablet?(i===0?-18:22):(mobile?15+i*4:23+i*7),
     }));
     gsap.set(intro,{autoAlpha:.84,y:mobile?11:16});
     gsap.set(links,{autoAlpha:.82,y:mobile?8:12});
