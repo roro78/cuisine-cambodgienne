@@ -13,6 +13,7 @@ import '../../styles/recipe-v15.css';
 import '../../styles/v16-editorial.css';
 import '../../styles/v17-recipe-generated.css';
 import '../../styles/v17-generated-recipes.css';
+import '../../styles/v18-recipe-crosslinks.css';
 
 export function getStaticPaths() {
   return recipes.map((recipe: Recipe) => ({
@@ -30,6 +31,14 @@ const faqs = recipe.faqs ?? [];
 const relatedIngredients = ingredientGuides.filter((item) => (recipe.relatedIngredients ?? []).includes(item.slug));
 const glossary = getGlossaryEntries(recipe.glossarySlugs ?? recipe.relatedIngredients ?? []);
 const relatedWorkshops = getWorkshopsForRecipe(recipe.slug);
+const relatedRecipes = recipes
+  .filter((other) => other.slug !== recipe.slug && Boolean(other.image))
+  .sort((a, b) => {
+    const score = (other: Recipe) => other.tags.filter(tag => recipe.tags.includes(tag)).length * 3 +
+      (other.category === recipe.category ? 2 : 0);
+    return score(b) - score(a);
+  })
+  .slice(0, 3);
 
 const groupedIngredients = recipe.ingredients.reduce<Record<string, RecipeIngredient[]>>((groups, ingredient) => {
   const key = ingredient.group ?? 'Ingrédients';
@@ -324,6 +333,26 @@ const recipeSchema = {
             <a href={`/ingredients/${item.slug}/`}>
               <strong>{item.title}</strong>
               <span>{item.intro}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {relatedRecipes.length > 0 && (
+      <section class="recipe-v18-more" aria-labelledby="recipe-v18-more-title">
+        <div class="recipe-v18-more-heading">
+          <p class="eyebrow">Prolongez le voyage</p>
+          <h2 id="recipe-v18-more-title">À découvrir aussi.</h2>
+          <p>Trois autres idées gourmandes à cuisiner chez vous.</p>
+        </div>
+        <div class="recipe-v18-more-grid">
+          {relatedRecipes.map((other) => (
+            <a class="recipe-v18-more-card" href={`/recettes/${other.slug}/`}>
+              <img src={other.image} alt={other.imageAlt ?? other.title}
+                   width={other.imageWidth ?? 1600} height={other.imageHeight ?? 1067}
+                   loading="lazy" decoding="async" />
+              <span><strong>{other.title}</strong><small>Découvrir la recette <span aria-hidden="true">↗</span></small></span>
             </a>
           ))}
         </div>
