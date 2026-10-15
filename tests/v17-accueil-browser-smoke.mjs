@@ -398,7 +398,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         JSON.stringify(tablet));
     }
     if([390,768,1024,1440].includes(width)&&!noJs&&!reduced){
-      const motion=await page.evaluate(async()=>{
+      const motion=await page.evaluate(async(width)=>{
         const section=document.querySelector('[data-v17-table-editorial]');
         const heading=section.querySelector('h2 em');
         const actions=section.querySelectorAll('[data-v17-table-recipe]');
@@ -419,7 +419,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         }
         return {points,loaded:img.naturalWidth===1600,
           stagePosition:getComputedStyle(section.querySelector('.v17r-table-stage')).position};
-      });
+      },width);
       assert.ok(motion.loaded&&motion.stagePosition===(width===390?'relative':'sticky')&&
         motion.points[0].heading<motion.points[2].heading&&
         motion.points[2].heading>.9&&
