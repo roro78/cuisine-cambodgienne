@@ -285,6 +285,10 @@ export const recipes: Recipe[] = [
     equipment: ['Grande casserole', 'Passoire'],
     faqs: [{ question: 'Pourquoi mes nouilles deviennent-elles molles ?', answer: 'Elles ont trop attendu dans l’eau chaude. Cuisez-les juste avant de monter les bols.' }],
     tags: ['soupe', 'nouilles', 'bouillon', 'street food'],
+    image: '/images/cuisine/v18-kuy-teav.webp',
+    imageAlt: 'Kuy Teav, soupe de nouilles khmère servie avec des tranches de viande et de la coriandre',
+    imageWidth: 717,
+    imageHeight: 724,
     visualTone: 'river'
   },
   {
@@ -366,6 +370,10 @@ export const recipes: Recipe[] = [
     equipment: ['Four ou grille-pain'],
     faqs: [{ question: 'Peut-on préparer les sandwichs à l’avance ?', answer: 'Mieux vaut préparer les éléments à l’avance et assembler juste avant de manger.' }],
     tags: ['street food', 'rapide', 'sandwich', 'porc'],
+    image: '/images/cuisine/v18-num-pang.webp',
+    imageAlt: 'Num Pang, sandwich cambodgien garni de viande, crudités et coriandre',
+    imageWidth: 710,
+    imageHeight: 724,
     visualTone: 'market'
   },
   {
@@ -406,6 +414,10 @@ export const recipes: Recipe[] = [
     faqs: [{ question: 'Ma soupe est trop acide, que faire ?', answer: 'Ajoutez un peu de bouillon puis corrigez avec une petite quantité de sucre et de sauce de poisson.' }],
     relatedIngredients: ['tamarin'],
     tags: ['soupe', 'tamarin', 'poisson', 'familial'],
+    image: '/images/cuisine/v18-samlor-machu.webp',
+    imageAlt: 'Samlor Machu, soupe cambodgienne acidulée au poisson, ananas, tomate et herbes',
+    imageWidth: 717,
+    imageHeight: 724,
     visualTone: 'sunset'
   },
   {
