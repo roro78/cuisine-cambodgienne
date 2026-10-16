@@ -114,6 +114,8 @@ jobs:
             artifacts/v17-d25-*.webm
             artifacts/v17-d25-*.png
             artifacts/v17-d25-*.json
+            artifacts/v17-d27-*.png
+            artifacts/v17-d27-*.json
           retention-days: 7
           if-no-files-found: ignore
 
