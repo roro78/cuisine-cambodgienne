@@ -916,12 +916,18 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     if([320,390,430].includes(width)){
       // D23 text-enlargement regression. This simulates 200% text sizing;
       // an actual 200% browser zoom and a physical phone still require QA.
-      const enlarged=await page.evaluate(async()=>{
+      const enlarged=await page.evaluate(async(disableJavaScript)=>{
         const root=document.documentElement;
         const previous=root.style.fontSize;
         root.style.fontSize='200%';
         try {
-          await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+          // requestAnimationFrame never runs on a scripting-disabled page.
+          // A synchronous layout read is enough to measure 200% text sizing.
+          if(!disableJavaScript){
+            await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+          }else{
+            void root.offsetHeight;
+          }
           const scene=document.querySelector('[data-v17-table-editorial]');
           const copy=scene.querySelector('.v17r-table-copy').getBoundingClientRect();
           const grid=scene.querySelector('.v17r-table-recipes').getBoundingClientRect();
@@ -943,7 +949,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           return {copyBottom:copy.bottom,gridTop:grid.top,
             scrollWidth:scene.scrollWidth,clientWidth:scene.clientWidth,cards};
         } finally {root.style.fontSize=previous;}
-      });
+      },noJs);
       assert.ok(enlarged.cards.length===4 &&
         enlarged.copyBottom<=enlarged.gridTop+2 &&
         enlarged.scrollWidth<=enlarged.clientWidth+2 &&
