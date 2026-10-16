@@ -150,9 +150,9 @@
   }
   .v17r .v17r-table--editorial .v17r-table-stage,
   .v17r .v17r-table--editorial[data-v17-table-ready] .v17r-table-stage{
-    position:relative;top:auto;display:block;
+    position:relative;top:auto;display:flex;flex-direction:column;
     width:100%;height:auto;min-height:0;overflow:visible;
-    padding:clamp(18rem,53svh,30rem) 0 0;
+    padding:0;
     background:#18251c;
   }
   .v17r .v17r-table--editorial .v17r-table-fullbleed{
@@ -168,9 +168,13 @@
       rgba(15,25,17,.15) 56%,rgba(24,37,28,.9) 87%,#18251c 100%);
   }
   .v17r .v17r-table--editorial .v17r-table-copy{
-    left:clamp(1rem,5vw,2rem);right:clamp(1rem,5vw,2rem);
-    top:clamp(2.2rem,6svh,4.5rem);bottom:auto;
-    width:auto;max-width:none;padding:0;transform:none;text-align:center;
+    /* Natural flow prevents 200% text from overlapping the carousel. */
+    position:relative;box-sizing:border-box;flex:0 0 auto;
+    left:auto;right:auto;top:auto;bottom:auto;
+    width:100%;min-height:clamp(18rem,53svh,30rem);max-width:none;
+    margin:0 auto;
+    padding:clamp(2.2rem,6svh,4.5rem) clamp(1rem,5vw,2rem) 2rem;
+    transform:none;text-align:center;
   }
   .v17r .v17r-table--editorial .v17r-table-rule{margin:0 auto 1rem}
   .v17r .v17r-table--editorial h2{
