@@ -5,12 +5,13 @@ import SiteFooter from '../../components/SiteFooter.astro';
 import { cultureArticles } from '../../data/culture';
 import { imageSrcSet } from '../../utils/images';
 import '../../styles/v16-editorial.css';
+import '../../styles/v19-premium-pages.css';
 
 const moments = [
-  { moment:'Au réveil', title:'Un bol de kuy teav pour commencer la journée', text:'Nouilles, bouillon parfumé et herbes fraîches : découvrez comment préparer ce bol chez vous.', href:'/recettes/kuy-teav/', cta:'Voir la recette →' },
-  { moment:'Au marché', title:'Le marché inspire le repas', text:'Poissons, herbes, légumes, fruits : on cuisine d’abord avec ce qui est frais et disponible.', href:'/culture/kep-marche-crabe-poivre/', cta:'Lire le carnet →' },
-  { moment:'Au mortier', title:'Au mortier, les aromates prennent forme', text:'Le kroeung se prépare patiemment : on coupe, on pile, on sent, jusqu’à obtenir une pâte bien parfumée.', href:'/culture/comprendre-le-kroeung/', cta:'Lire le carnet →' },
-  { moment:'À table', title:'À table, chacun compose sa bouchée', text:'Riz, plat chaud, légumes, herbes, soupe ou condiment se mangent ensemble et se complètent.', href:'/culture/construire-repas-cambodgien/', cta:'Lire le carnet →' }
+  { image:'/images/cuisine/v18-kuy-teav.webp', moment:'Au réveil', title:'Un bol de kuy teav pour commencer la journée', text:'Nouilles, bouillon parfumé et herbes fraîches : découvrez comment préparer ce bol chez vous.', href:'/recettes/kuy-teav/', cta:'Voir la recette →' },
+  { image:'/images/cuisine/kep-market-1600.webp', moment:'Au marché', title:'Le marché inspire le repas', text:'Poissons, herbes, légumes, fruits : on cuisine d’abord avec ce qui est frais et disponible.', href:'/culture/kep-marche-crabe-poivre/', cta:'Lire le carnet →' },
+  { image:'/images/cuisine/v17-mortar-hands-1600.jpg', moment:'Au mortier', title:'Au mortier, les aromates prennent forme', text:'Le kroeung se prépare patiemment : on coupe, on pile, on sent, jusqu’à obtenir une pâte bien parfumée.', href:'/culture/comprendre-le-kroeung/', cta:'Lire le carnet →' },
+  { image:'/images/cuisine/v17-table-meal-1600.jpg', moment:'À table', title:'À table, chacun compose sa bouchée', text:'Riz, plat chaud, légumes, herbes, soupe ou condiment se mangent ensemble et se complètent.', href:'/culture/construire-repas-cambodgien/', cta:'Lire le carnet →' }
 ];
 
 // Select the featured journal by its stable slug, not its position in the catalogue.
@@ -66,6 +67,7 @@ const collectionSchema = {
       <p class="v16-page-kicker">Carnets du Cambodge</p>
       <h1>Des marchés animés aux repas partagés.</h1>
       <p>Ces carnets racontent les marchés, les produits, les gestes et les habitudes qui donnent toute sa saveur à la cuisine cambodgienne.</p>
+      <figure class="v19-hero-photo" aria-hidden="true"><img src="/images/cuisine/v17-market-live-1800.jpg" alt="" width="1800" height="1200" decoding="async" fetchpriority="high" /></figure>
       <div class="v16-journal-stamp" aria-hidden="true">marchés · gestes · produits · table · transmission</div>
     </header>
 
@@ -77,6 +79,7 @@ const collectionSchema = {
       <div>
         {moments.map((moment) => (
           <a href={moment.href} class="v16-day-note">
+            <img class="v19-note-image" src={moment.image} alt="" loading="lazy" decoding="async" width="320" height="240" />
             <span>{moment.moment}</span>
             <h3>{moment.title}</h3>
             <p>{moment.text}</p>

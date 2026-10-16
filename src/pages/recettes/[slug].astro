@@ -11,6 +11,7 @@ import { imageSrcSet } from '../../utils/images';
 import { getWorkshopsForRecipe } from '../../data/workshops';
 import '../../styles/recipe-v15.css';
 import '../../styles/v16-editorial.css';
+import '../../styles/v19-premium-pages.css';
 import '../../styles/v17-recipe-generated.css';
 import '../../styles/v17-generated-recipes.css';
 import '../../styles/v18-recipe-crosslinks.css';
@@ -124,7 +125,7 @@ const recipeSchema = {
       </div>
 
       {recipe.image ? (
-        <figure class="recipe-v15-cover" data-parallax="0.045">
+        <figure class="recipe-v15-cover">
           <img
             src={recipe.image}
             srcset={recipe.imageWidths?.length ? imageSrcSet(recipe.image, recipe.imageWidths) : undefined}
@@ -134,7 +135,6 @@ const recipeSchema = {
             height={recipe.imageHeight ?? 1067}
             decoding="async"
           />
-          {(recipe.image.includes('-genere.webp') || recipe.image.includes('/v18-')) && <figcaption class="recipe-generated-note">Illustration culinaire créée par IA</figcaption>}
         </figure>
       ) : (
         <div class="recipe-v15-cover recipe-v15-cover-fallback" aria-label={`Illustration typographique de ${recipe.title}`}>
