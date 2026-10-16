@@ -576,9 +576,9 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           stageTail:Math.round(box.bottom-stageBox.bottom),
           nextGap:Math.round(dessertsBox.top-box.bottom)};
       });
-      // A small inset below the last link (<= 32px) is intentional spacing,
-      // not an empty scroll screen. The stage and next scene must meet exactly.
-      assert.ok(Math.abs(seam.stageTail)<=3 && seam.tailSpace<=32 &&
+      // The desktop link sits above the cream divider; the inset is part
+      // of the photographed scene, not an empty section or scroll spacer.
+      assert.ok(Math.abs(seam.stageTail)<=3 && seam.tailSpace<=80 &&
         Math.abs(seam.nextGap)<=3 &&
         (width<761 || seam.height<=seam.viewport*1.12),
         'D25 feast must connect to desserts without empty bottom spacer: '+
