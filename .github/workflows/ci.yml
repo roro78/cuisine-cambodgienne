@@ -91,6 +91,7 @@ jobs:
         env:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
           V17_FULL_EVIDENCE: '0'
+          V17_ONLY_NOJS: ${{ github.ref == 'refs/heads/feat/v17-finition-artistique-d11' && '1' || '0' }}
         run: node tests/v17-accueil-browser-smoke.mjs
 
       - name: V17 D25 focused mobile and desktop section 5 videos

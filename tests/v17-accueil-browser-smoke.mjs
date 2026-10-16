@@ -9,6 +9,9 @@ const base='http://127.0.0.1:'+port;
 // Keep the full responsive assertions in CI while avoiding 20-minute
 // cinematic recordings. Detailed screenshots/videos remain opt-in locally.
 const detailedEvidence=process.env.V17_FULL_EVIDENCE==='1';
+// On this already-tested D27 PR, run the previously blocked no-JS gate
+// alone. Main always runs all nine responsive widths plus no-JS.
+const onlyNoJs=process.env.V17_ONLY_NOJS==='1';
 const astroCli=fileURLToPath(new URL('../node_modules/astro/astro.js',import.meta.url));
 const server=spawn(process.execPath,[astroCli,'preview','--host','127.0.0.1','--port',String(port)],{
   stdio:['ignore','pipe','pipe'],detached:process.platform!=='win32',env:process.env
@@ -330,7 +333,19 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     for(const selector of ['.v17r-hero-dish img','.v17r-market-visual > img','.v17r-palette-a img','.v17r-palette-b img','.v17r-gestures-main img','.v17r-table-fullbleed img','.v17r-dessert-generated img','.v17r-finale-landscape img']){
       if(!(await page.locator(selector).isVisible()))continue;
       await page.locator(selector).scrollIntoViewIfNeeded();
-      await page.waitForFunction(s=>{const img=document.querySelector(s);return img?.complete&&img.naturalWidth>0},selector,{timeout:10000});
+      if(noJs){
+        // Playwright waitForFunction needs an in-page timer, which never fires
+        // when scripting is disabled; poll the image from Node instead.
+        let loaded=false;
+        for(let attempt=0;attempt<50;attempt++){
+          loaded=await page.locator(selector).evaluate(img=>img.complete&&img.naturalWidth>0);
+          if(loaded)break;
+          await new Promise(resolve=>setTimeout(resolve,150));
+        }
+        assert.ok(loaded,'No-JS photo did not load: '+selector);
+      }else{
+        await page.waitForFunction(s=>{const img=document.querySelector(s);return img?.complete&&img.naturalWidth>0},selector,{timeout:10000});
+      }
     }
     const decorativeAssets=await page.evaluate(()=>{
       const selected=['.v17r-hero-green-corner','.v17r-hero-flower-dish',
@@ -1327,17 +1342,23 @@ try{
     args:['--no-sandbox','--disable-dev-shm-usage']});
   // 1920 = wide desktop. 640 = responsive layout reflow corresponding to
   // 1280 CSS px at 200% browser zoom; this is not a substitute for actual zoom QA.
-  for(const [w,h] of [[390,844],[430,932],[360,800],[320,640],[768,1024],[1024,768],[640,720],[1440,900],[1920,1080]]){
-    await run(w,h,{screenshot:detailedEvidence});
-  }
-  await run(390,844,{reduced:true});
-  await run(390,844,{noJs:true});
-  for(const [slug,file] of [
-    ['lok-lak','v17-lok-lak-genere.webp'],
-    ['num-banh-chok','v17-nom-banh-chok-genere.webp']
-  ]){
-    await checkGeneratedRecipe(slug,file,1440,900);
-    await checkGeneratedRecipe(slug,file,390,844);
+  if(onlyNoJs){
+    // Previously captured: all 9 widths and reduced motion PASS on the
+    // immediate parent. This run isolates the no-JS gate that hung in CI.
+    await run(390,844,{noJs:true});
+  }else{
+    for(const [w,h] of [[390,844],[430,932],[360,800],[320,640],[768,1024],[1024,768],[640,720],[1440,900],[1920,1080]]){
+      await run(w,h,{screenshot:detailedEvidence});
+    }
+    await run(390,844,{reduced:true});
+    await run(390,844,{noJs:true});
+    for(const [slug,file] of [
+      ['lok-lak','v17-lok-lak-genere.webp'],
+      ['num-banh-chok','v17-nom-banh-chok-genere.webp']
+    ]){
+      await checkGeneratedRecipe(slug,file,1440,900);
+      await checkGeneratedRecipe(slug,file,390,844);
+    }
   }
   assert.deepEqual(errors,[],'No browser JS errors');
   console.log('V17 D2 browser gate: PASS');
