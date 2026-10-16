@@ -403,7 +403,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           };
         });
         return {
-          tracks:getComputedStyle(grid).gridTemplateColumns.split(/\\s+/).filter(Boolean).length,
+          tracks:getComputedStyle(grid).gridTemplateColumns.split(/\s+/).filter(Boolean).length,
           headingBottom:heading.bottom,gridTop:box.top,gridBottom:box.bottom,
           cultureTop:culture.top,stageTop:stage.top,stageBottom:stage.bottom,
           cards,viewport:innerWidth
