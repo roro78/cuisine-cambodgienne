@@ -931,12 +931,9 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
   }
   // Video comes from an untouched page: full-page screenshots temporarily
   // resize CDP capture surfaces and distort recordings made on that page.
-  if(captureVideo)await recordCleanScroll(width,height);
-  if(captureVideo)await recordMortarSequence(width,height);
-  if(captureVideo)await recordHandoffReel(width,height);
-  if(captureVideo)await recordContinuousStory(width,height);
-  if(captureVideo)await recordTextArrivalEvidence(width,height);
-  if(captureVideo)await recordD17CinematicProof(width,height);
+  // D25: requested evidence is ONE focused movie per device.
+  // Avoid re-recording six legacy reels on every minor V17 correction:
+  // they consume CI minutes and are not needed to validate the feast.
   if(captureVideo)await recordD21TableStory(width,height);
 }
 async function recordCleanScroll(width,height){
