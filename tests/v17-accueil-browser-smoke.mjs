@@ -255,6 +255,13 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         await page.waitForTimeout(650);
       }
     }
+    // D25: navigation in the horizontal carousel scrolls the document.
+    // Restore the initial viewport before the global on-screen glyph audit,
+    // or legitimate GSAP hero exits would be counted as clipped text.
+    if(width===390&&!noJs&&!reduced){
+      await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
+      await page.waitForTimeout(1000);
+    }
     const dimension=await page.evaluate(()=>({
       html:document.documentElement.scrollWidth,client:document.documentElement.clientWidth,
       w:innerWidth
@@ -1315,7 +1322,7 @@ try{
     args:['--no-sandbox','--disable-dev-shm-usage']});
   // 1920 = wide desktop. 640 = responsive layout reflow corresponding to
   // 1280 CSS px at 200% browser zoom; this is not a substitute for actual zoom QA.
-  for(const [w,h] of [[1920,1080],[1440,900],[1024,768],[768,1024],[640,720],[430,932],[390,844],[360,800],[320,640]]){
+  for(const [w,h] of [[390,844],[430,932],[360,800],[320,640],[768,1024],[1024,768],[640,720],[1440,900],[1920,1080]]){
     await run(w,h,{screenshot:true});
   }
   await run(390,844,{reduced:true});
