@@ -383,6 +383,45 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         bridge.from.includes(from) && bridge.to.includes(to),
         'D14 bridge must not add scroll space or block actions: '+JSON.stringify(bridge));
     }
+    if([768,1024].includes(width)){
+      // D23: a two-by-two tablet layout must leave real reading room between
+      // the heading, the linked recipes and the culture link (not four columns).
+      const tabletLayout=await page.evaluate(()=>{
+        const scene=document.querySelector('[data-v17-table-editorial]');
+        const stage=scene.querySelector('.v17r-table-stage').getBoundingClientRect();
+        const heading=scene.querySelector('.v17r-table-copy').getBoundingClientRect();
+        const grid=scene.querySelector('.v17r-table-recipes');
+        const box=grid.getBoundingClientRect();
+        const culture=scene.querySelector('.v17r-table-culture').getBoundingClientRect();
+        const cards=[...scene.querySelectorAll('[data-v17-table-recipe]')].map(card=>{
+          const rect=card.getBoundingClientRect();
+          const link=card.querySelector('a').getBoundingClientRect();
+          return {
+            cardLeft:rect.left,cardRight:rect.right,
+            linkWidth:link.width,linkHeight:link.height,
+            linkRight:link.right,linkLeft:link.left
+          };
+        });
+        return {
+          tracks:getComputedStyle(grid).gridTemplateColumns.split(/\\s+/).filter(Boolean).length,
+          headingBottom:heading.bottom,gridTop:box.top,gridBottom:box.bottom,
+          cultureTop:culture.top,stageTop:stage.top,stageBottom:stage.bottom,
+          cards,viewport:innerWidth
+        };
+      });
+      assert.ok(tabletLayout.tracks===2 &&
+        tabletLayout.gridTop>=tabletLayout.headingBottom+6 &&
+        tabletLayout.gridBottom<=tabletLayout.cultureTop-6 &&
+        tabletLayout.gridBottom<=tabletLayout.stageBottom &&
+        tabletLayout.cards.length===4 &&
+        tabletLayout.cards.every(card=>card.cardLeft>=-2 &&
+          card.cardRight<=tabletLayout.viewport+2 &&
+          card.linkLeft>=card.cardLeft-2 &&
+          card.linkRight<=card.cardRight+2 &&
+          card.linkWidth>=44&&card.linkHeight>=44),
+        'D23 tablet feast must be a readable two-column grid with 44px links: '+
+        JSON.stringify(tabletLayout));
+    }
     if([768,1024].includes(width)&&!noJs&&!reduced){
       // Tablet should display readable copy even before ScrollTrigger animates.
       // The two lines use opposite vertical entrance vectors, unlike desktop.
@@ -438,6 +477,51 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         motion.points.every(x=>x.photoTransform==='none'),
         'D22 four linked recipe chapters over an unmoving feast: '+JSON.stringify(motion));
       await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
+    }
+    if([320,390,430].includes(width)){
+      // D23 text-enlargement regression. This simulates 200% text sizing;
+      // an actual 200% browser zoom and a physical phone still require QA.
+      const enlarged=await page.evaluate(async()=>{
+        const root=document.documentElement;
+        const previous=root.style.fontSize;
+        root.style.fontSize='200%';
+        try {
+          await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+          const scene=document.querySelector('[data-v17-table-editorial]');
+          const copy=scene.querySelector('.v17r-table-copy').getBoundingClientRect();
+          const grid=scene.querySelector('.v17r-table-recipes').getBoundingClientRect();
+          const cards=[...scene.querySelectorAll('[data-v17-table-recipe]')].map(card=>{
+            const parent=card.getBoundingClientRect();
+            const text=card.querySelector('.v17r-table-recipe-text');
+            const words=text.getBoundingClientRect();
+            const anchor=card.querySelector('.v17r-table-recipe-link').getBoundingClientRect();
+            return {
+              top:parent.top,bottom:parent.bottom,left:parent.left,right:parent.right,
+              textTop:words.top,textBottom:words.bottom,
+              textLeft:words.left,textRight:words.right,
+              anchorTop:anchor.top,anchorBottom:anchor.bottom,
+              anchorLeft:anchor.left,anchorRight:anchor.right,
+              anchorWidth:anchor.width,anchorHeight:anchor.height,
+              overflow:text.scrollHeight-text.clientHeight
+            };
+          });
+          return {copyBottom:copy.bottom,gridTop:grid.top,
+            scrollWidth:document.documentElement.scrollWidth,
+            clientWidth:document.documentElement.clientWidth,cards};
+        } finally {root.style.fontSize=previous;}
+      });
+      assert.ok(enlarged.cards.length===4 &&
+        enlarged.copyBottom<=enlarged.gridTop+2 &&
+        enlarged.scrollWidth<=enlarged.clientWidth+2 &&
+        enlarged.cards.every(card=>
+          card.textTop>=card.top-2 && card.textBottom<=card.bottom+2 &&
+          card.textLeft>=card.left-2 && card.textRight<=card.right+2 &&
+          card.anchorTop>=card.top-2 && card.anchorBottom<=card.bottom+2 &&
+          card.anchorLeft>=card.left-2 && card.anchorRight<=card.right+2 &&
+          card.anchorWidth>=44 && card.anchorHeight>=44 &&
+          card.overflow<=2),
+        'D23 mobile recipe copy and touch targets must remain within fluid panels at enlarged text: '+
+        JSON.stringify(enlarged));
     }
     // D16: measure TRANSLATION IN PIXELS, rather than mere CSS inequality.
     // Source trigger follows the heading itself, so entry/exit occur while
