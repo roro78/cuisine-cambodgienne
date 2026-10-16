@@ -87,10 +87,10 @@ jobs:
       - name: Install Playwright video encoder
         run: node ./node_modules/playwright-core/cli.js install ffmpeg
 
-      - name: V17 preview browser responsive regression
-        if: github.ref != 'refs/heads/feat/v17-finition-artistique-d11'
+      - name: V17 complete responsive browser regression (no video)
         env:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+          V17_FULL_EVIDENCE: '0'
         run: node tests/v17-accueil-browser-smoke.mjs
 
       - name: V17 D25 focused mobile and desktop section 5 videos

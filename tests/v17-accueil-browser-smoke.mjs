@@ -6,6 +6,9 @@ import {chromium} from 'playwright-core';
 
 const port=4341;
 const base='http://127.0.0.1:'+port;
+// Keep the full responsive assertions in CI while avoiding 20-minute
+// cinematic recordings. Detailed screenshots/videos remain opt-in locally.
+const detailedEvidence=process.env.V17_FULL_EVIDENCE==='1';
 const astroCli=fileURLToPath(new URL('../node_modules/astro/astro.js',import.meta.url));
 const server=spawn(process.execPath,[astroCli,'preview','--host','127.0.0.1','--port',String(port)],{
   stdio:['ignore','pipe','pipe'],detached:process.platform!=='win32',env:process.env
@@ -1295,23 +1298,25 @@ async function checkGeneratedRecipe(slug,filename,width,height){
       client:document.documentElement.clientWidth
     }));
     assert.ok(dimension.html-dimension.client<=2,'Recipe horizontal overflow: '+slug+' '+width+'px '+JSON.stringify(dimension));
-    await fs.mkdir('artifacts',{recursive:true});
+    if(detailedEvidence)await fs.mkdir('artifacts',{recursive:true});
     // At the top of the real page, the sticky header must not artificially
     // obscure the heading in the screenshot. Full page for mobile is also
     // useful to spot defects below the fold in guided recipe steps.
     await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
     await page.waitForTimeout(220);
-    if(width<=430){
-      await page.screenshot({
-        path:'artifacts/v17-recipe-'+slug+'-'+width+'.png',
-        fullPage:true,
-        animations:'disabled'
-      });
-    }else{
-      await page.locator('.recipe-v15-hero').screenshot({
-        path:'artifacts/v17-recipe-'+slug+'-'+width+'.png',
-        animations:'disabled'
-      });
+    if(detailedEvidence){
+      if(width<=430){
+        await page.screenshot({
+          path:'artifacts/v17-recipe-'+slug+'-'+width+'.png',
+          fullPage:true,
+          animations:'disabled'
+        });
+      }else{
+        await page.locator('.recipe-v15-hero').screenshot({
+          path:'artifacts/v17-recipe-'+slug+'-'+width+'.png',
+          animations:'disabled'
+        });
+      }
     }
     console.log('V17 generated recipe '+slug+' '+width+'px PASS');
   }finally{await page.close()}
@@ -1323,7 +1328,7 @@ try{
   // 1920 = wide desktop. 640 = responsive layout reflow corresponding to
   // 1280 CSS px at 200% browser zoom; this is not a substitute for actual zoom QA.
   for(const [w,h] of [[390,844],[430,932],[360,800],[320,640],[768,1024],[1024,768],[640,720],[1440,900],[1920,1080]]){
-    await run(w,h,{screenshot:true});
+    await run(w,h,{screenshot:detailedEvidence});
   }
   await run(390,844,{reduced:true});
   await run(390,844,{noJs:true});
