@@ -583,12 +583,13 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         return {height:box.height,viewport:innerHeight,
           tailSpace:Math.round(box.bottom-finalBox.bottom),
           stageTail:Math.round(box.bottom-stageBox.bottom),
-          nextGap:Math.round(dessertsBox.top-box.bottom)};
+          nextGap:Math.round(dessertsBox.top-box.bottom),
+          dessertMargin:Math.round(parseFloat(getComputedStyle(desserts).marginTop))};
       });
       // The desktop link sits above the cream divider; the inset is part
       // of the photographed scene, not an empty section or scroll spacer.
       assert.ok(Math.abs(seam.stageTail)<=3 && seam.tailSpace<=80 &&
-        Math.abs(seam.nextGap + parseFloat(getComputedStyle(document.querySelector('.v17r')).getPropertyValue('--v17-boundary-depth')))<=3 &&
+        Math.abs(seam.nextGap-seam.dessertMargin)<=3 &&
         (width<761 || seam.height<=seam.viewport*1.12),
         'D25 feast must connect to desserts without empty bottom spacer: '+
         JSON.stringify(seam));

@@ -59,6 +59,7 @@ async function capture(browser,width,height){
       const cultureTextBottom=range.getBoundingClientRect().bottom;
       const wave=root.nextElementSibling?.querySelector('svg');
       const waveBox=wave?.getBoundingClientRect();
+      const waveGone=wave?getComputedStyle(wave.closest('.v17r-handoff,.v17r-wave')).display==='none':false;
       const photo=root.querySelector('.v17r-table-fullbleed').getBoundingClientRect();
       const heading=root.querySelector('#v17r-table-title');
       return {
@@ -73,6 +74,7 @@ async function capture(browser,width,height){
         photoFullHeight:Math.abs(photo.height-stageBox.height)<=2,
         waveLeft:waveBox?Math.round(waveBox.left):null,
         waveRight:waveBox?Math.round(waveBox.right):null,
+        waveGone,
         titleChanged:heading?.querySelector('span')?.textContent?.trim()==='LE GOÛT' &&
           heading?.querySelector('em')?.textContent?.trim()==='DU PARTAGE.',
         horizontalOverflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,
@@ -86,8 +88,8 @@ async function capture(browser,width,height){
     assert.equal(geometry.slides,4,'All four real recipes required');
     assert.ok(geometry.titleChanged,'Updated feast heading should render on mobile and desktop');
     assert.ok(geometry.backdropSeamless,'Stage/background shades must not differ: '+JSON.stringify(geometry));
-    assert.ok(Math.abs(geometry.waveLeft)<=2 && Math.abs(geometry.waveRight-width)<=2,
-      'Organic cream wave must cover viewport horizontally, without a rectangular exposed edge: '+JSON.stringify(geometry));
+    assert.ok(geometry.waveGone,
+      'D27 opaque SVG backing sheet must stay hidden: '+JSON.stringify(geometry));
     assert.ok(Math.abs(geometry.stageGap)<=3,'No spacer beneath stage: '+JSON.stringify(geometry));
     assert.ok(geometry.nextGap < -30 && geometry.nextGap > -95,
       'D27 next photographic chapter must overlap the feast, not leave a gap: '+JSON.stringify(geometry));
