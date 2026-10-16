@@ -136,7 +136,7 @@ interface Props { preview?: boolean; }
       </section>
       <div class="v17r-wave v17r-wave-cream" aria-hidden="true"><svg viewBox="0 0 1440 95" preserveAspectRatio="none"><path d="M0 12C135 89 327 7 495 45S839 65 1010 26 1241 79 1440 38v57H0Z" fill="#69361e"/></svg></div>
 
-      <!-- D22 — one still culinary tableau on desktop, four legible recipe chapters on mobile. -->
+      <!-- D24 — static feast desktop, compact swipeable native-snap recipe carousel on mobile. -->
       <section class="v17r-table v17r-table--editorial" aria-labelledby="v17r-table-title" data-v17-table-editorial>
         <div class="v17r-table-stage">
           <figure class="v17r-table-fullbleed">
@@ -155,7 +155,7 @@ interface Props { preview?: boolean; }
             <h2 id="v17r-table-title"><span>UNE TABLÉE</span><em>KHMÈRE.</em></h2>
             <p class="v17r-table-intro">Quatre recettes, quatre histoires. Au Cambodge, le plaisir de manger commence quand les plats se partagent.</p>
           </header>
-          <ol class="v17r-table-recipes" aria-label="Quatre recettes de la tablée khmère">
+          <ol class="v17r-table-recipes" aria-label="Quatre recettes de la tablée khmère, défilement horizontal sur mobile" data-v17-table-carousel tabindex="0">
             {tableRecipes.map((dish, index) => (
               <li class="v17r-table-recipe" data-v17-table-recipe>
                 <img class="v17r-table-recipe-image" src={dish.image} width="800" height="600"
@@ -170,6 +170,21 @@ interface Props { preview?: boolean; }
               </li>
             ))}
           </ol>
+          <div class="v17r-table-mobile-controls" data-v17-carousel-controls aria-label="Parcourir les quatre recettes">
+            <button type="button" class="v17r-table-mobile-arrow" data-v17-carousel-prev aria-label="Recette précédente" disabled><span aria-hidden="true">←</span></button>
+            <div class="v17r-table-mobile-dots" aria-label="Choisir une recette">
+              {tableRecipes.map((dish, index) => (
+                <button type="button" class="v17r-table-mobile-dot" data-v17-carousel-dot={index}
+                        aria-label={`Afficher la recette ${index + 1} sur 4 : ${dish.title}`}
+                        aria-current={index === 0 ? 'true' : 'false'}>
+                  <span aria-hidden="true"></span>
+                </button>
+              ))}
+            </div>
+            <span class="v17r-table-mobile-page" data-v17-carousel-page aria-live="polite">1 / 4</span>
+            <button type="button" class="v17r-table-mobile-arrow" data-v17-carousel-next aria-label="Recette suivante"><span aria-hidden="true">→</span></button>
+          </div>
+          <p class="v17r-table-mobile-hint">Faites glisser pour découvrir les quatre recettes.</p>
           <a class="v17r-table-culture" href="/culture/construire-repas-cambodgien/">Découvrir l’art du repas cambodgien <span aria-hidden="true">↗</span></a>
         </div>
       </section>
@@ -220,5 +235,7 @@ interface Props { preview?: boolean; }
   </div>
   <script>
     import { initV17AccueilMotion } from '../scripts/v17AccueilMotion';
+    import { initV17TableCarousel } from '../scripts/v17TableCarousel';
     initV17AccueilMotion();
+    initV17TableCarousel();
   </script>
