@@ -1322,10 +1322,25 @@ async function checkGeneratedRecipe(slug,filename,width,height){
     assert.match(await cover.getAttribute('alt'),/Illustration culinaire générée/);
     const recipeHero=page.locator('.recipe-v16[data-generated-artwork="true"] .recipe-v15-hero');
     assert.equal(await recipeHero.count(),1,'Generated recipe must have a scoped style variant');
-    const background=await recipeHero.evaluate(el=>getComputedStyle(el).backgroundImage);
-    if(width>=901)assert.match(background,/linear-gradient\(90deg/i,
-      'Generated recipe desktop text must not be crossed by a diagonal background');
-    else assert.equal(background,'none','Mobile recipe keeps one cream background');
+    const composition=await recipeHero.evaluate(el=>{
+      const media=el.querySelector('.recipe-v15-cover')?.getBoundingClientRect();
+      const copy=el.querySelector('.recipe-v15-hero-copy')?.getBoundingClientRect();
+      return {
+        background:getComputedStyle(el).backgroundImage,
+        copy:copy?.toJSON(),media:media?.toJSON()
+      };
+    });
+    if(width>=901){
+      assert.match(composition.background,/linear-gradient\\(90deg/i,
+        'Desktop recipe must keep a straight, readable text background');
+      assert.ok(composition.copy&&composition.media&&
+        composition.media.left>=composition.copy.right+4,
+        'Desktop recipe photograph must not enter the reading column: '+JSON.stringify(composition));
+    }else{
+      assert.equal(composition.background,'none','Mobile recipe keeps one cream background');
+      assert.ok(composition.media.top>=composition.copy.bottom-2,
+        'Mobile recipe photograph must flow below its text: '+JSON.stringify(composition));
+    }
     const dimension=await page.evaluate(()=>({
       html:document.documentElement.scrollWidth,
       client:document.documentElement.clientWidth
