@@ -97,7 +97,7 @@
   background:#f0c778;transform:translateY(-2px);
 }
 .v17r .v17r-table--editorial .v17r-table-culture{
-  position:absolute;z-index:3;bottom:clamp(1.1rem,3.2svh,2rem);
+  position:absolute;z-index:3;bottom:clamp(3.7rem,6.5svh,4.8rem);
   left:50%;transform:translateX(-50%);
   width:max-content;max-width:calc(100% - 2rem);
   color:#fff5db;text-decoration:underline;text-decoration-color:#e5b966;
