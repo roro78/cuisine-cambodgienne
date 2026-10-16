@@ -181,6 +181,80 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         '/recettes/num-banh-chok/','/recettes/prahok-ktis/'])&&
       photo.culture==='/culture/construire-repas-cambodgien/',
       'D22 still tabletop, four REAL linked recipes and cultural link: '+JSON.stringify(photo));
+    if(width<=760){
+      // D24: genuine compact native mobile scroll-snap, not four vertically
+      // stacked photographic screens. Swipe works even without JavaScript.
+      const carousel=await page.evaluate(()=>{
+        const section=document.querySelector('[data-v17-table-editorial]');
+        const track=section.querySelector('[data-v17-table-carousel]');
+        const controls=section.querySelector('[data-v17-carousel-controls]');
+        const cards=[...track.querySelectorAll('[data-v17-table-recipe]')];
+        const first=cards[0].getBoundingClientRect();
+        const second=cards[1].getBoundingClientRect();
+        const cs=getComputedStyle(track);
+        return {
+          display:cs.display,overflow:cs.overflowX,snap:cs.scrollSnapType,
+          tracks:cards.length,hasHorizontalOverflow:track.scrollWidth>track.clientWidth+100,
+          firstLeft:first.left,secondLeft:second.left,
+          sidePeek:second.left<innerWidth,
+          photoStill:getComputedStyle(section.querySelector('.v17r-table-fullbleed img')).transform,
+          controls:getComputedStyle(controls).display,
+          ready:section.hasAttribute('data-v17-carousel-ready'),
+          sectionHeight:section.getBoundingClientRect().height,
+          viewportHeight:innerHeight,
+          tabStop:track.getAttribute('tabindex')
+        };
+      });
+      assert.ok(carousel.display==='flex' && carousel.overflow==='auto' ||
+        carousel.display==='flex' && carousel.overflow==='scroll',
+        'D24 mobile recipes must use a native horizontal scroller: '+JSON.stringify(carousel));
+      assert.ok(carousel.snap.includes('mandatory')&&
+        carousel.tracks===4&&carousel.hasHorizontalOverflow&&
+        carousel.firstLeft<carousel.secondLeft&&carousel.sidePeek&&
+        carousel.photoStill==='none'&&
+        carousel.controls===(noJs?'none':'grid')&&
+        carousel.ready!==noJs &&
+        carousel.tabStop==='0'&&
+        carousel.sectionHeight<carousel.viewportHeight*3,
+        'D24 native carousel must stay compact, visible and no-JS safe: '+JSON.stringify(carousel));
+      if(width===390&&!noJs&&!reduced){
+        const nav=page.locator('[data-v17-carousel-controls]');
+        const dots=nav.locator('[data-v17-carousel-dot]');
+        assert.equal(await dots.count(),4);
+        assert.equal(await nav.locator('[data-v17-carousel-prev]').isDisabled(),true);
+        await nav.locator('[data-v17-carousel-next]').click();
+        await page.waitForFunction(()=>{
+          const scene=document.querySelector('[data-v17-table-editorial]');
+          return scene.querySelector('[data-v17-carousel-page]').textContent.trim()==='2 / 4';
+        });
+        await page.waitForTimeout(600);
+        assert.equal(await dots.nth(1).getAttribute('aria-current'),'true');
+        await dots.nth(3).click();
+        await page.waitForTimeout(650);
+        assert.equal(await nav.locator('[data-v17-carousel-page]').innerText(),'4 / 4');
+        assert.equal(await nav.locator('[data-v17-carousel-next]').isDisabled(),true);
+        const advanced=await page.locator('[data-v17-table-carousel]').evaluate(el=>({
+          left:el.scrollLeft,width:el.clientWidth,
+          visibleLinks:[...el.querySelectorAll('.v17r-table-recipe-link')]
+            .filter(a=>{const r=a.getBoundingClientRect(),t=el.getBoundingClientRect();
+              return r.left>=t.left-4&&r.right<=t.right+4}).length
+        }));
+        assert.ok(advanced.left>advanced.width*2 && advanced.visibleLinks>=1,
+          'D24 swipe must reveal a real linked fourth card: '+JSON.stringify(advanced));
+        // Keyboard navigation from the focused scroller, not only touch.
+        const track=page.locator('[data-v17-table-carousel]');
+        await track.focus();
+        await page.keyboard.press('Home');
+        await page.waitForTimeout(650);
+        assert.equal(await nav.locator('[data-v17-carousel-page]').innerText(),'1 / 4');
+        // Real user-like scroll gesture via the native horizontal scroll API.
+        await track.evaluate(el=>el.scrollBy({left:el.clientWidth,behavior:'instant'}));
+        await page.waitForTimeout(650);
+        assert.equal(await nav.locator('[data-v17-carousel-page]').innerText(),'2 / 4');
+        await dots.nth(0).click();
+        await page.waitForTimeout(650);
+      }
+    }
     const dimension=await page.evaluate(()=>({
       html:document.documentElement.scrollWidth,client:document.documentElement.clientWidth,
       w:innerWidth
