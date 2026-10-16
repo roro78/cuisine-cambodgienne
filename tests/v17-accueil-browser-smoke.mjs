@@ -30,6 +30,12 @@ async function waitForServer(){
 async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
   const captureVideo=screenshot && !noJs && !reduced && [390,1440].includes(width);
   if(captureVideo)await fs.mkdir('artifacts',{recursive:true});
+  // Native Node watchdog keeps no-JS tests from silently hanging in CI.
+  const watchdog=noJs?setTimeout(()=>{
+    console.error('V17 NOJS WATCHDOG: no-JavaScript test exceeded 110 seconds');
+    process.exit(2);
+  },110000):null;
+  if(noJs)console.log('V17 NOJS CHECKPOINT: create browser page');
   const page=await browser.newPage({viewport:{width,height},isMobile:width<=430,hasTouch:width<=430,
     javaScriptEnabled:!noJs,reducedMotion:reduced?'reduce':'no-preference'
   });
@@ -57,6 +63,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
   try{
     const res=await page.goto(base+'/v17-accueil-preview/',{waitUntil:'networkidle',timeout:30000});
     assert.equal(res?.status(),200);
+    if(noJs)console.log('V17 NOJS CHECKPOINT: preview loaded');
     // Snapshot before the scripted full-page scroll. LCP measured after scrolling
     // would describe the test journey rather than the page's initial render.
     const initialLoad=(!noJs && !reduced && [390,1440].includes(width))
@@ -330,10 +337,12 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       assert.deepEqual(clippedWords,[],
         'Visible text glyphs must not be cut off-screen at '+width+'px: '+JSON.stringify(clippedWords));
     }
+    if(noJs)console.log('V17 NOJS CHECKPOINT: start image readiness');
     for(const selector of ['.v17r-hero-dish img','.v17r-market-visual > img','.v17r-palette-a img','.v17r-palette-b img','.v17r-gestures-main img','.v17r-table-fullbleed img','.v17r-dessert-generated img','.v17r-finale-landscape img']){
       if(!(await page.locator(selector).isVisible()))continue;
       await page.locator(selector).scrollIntoViewIfNeeded();
       if(noJs){
+        console.log('V17 NOJS IMAGE: '+selector);
         // Playwright waitForFunction needs an in-page timer, which never fires
         // when scripting is disabled; poll the image from Node instead.
         let loaded=false;
@@ -347,6 +356,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         await page.waitForFunction(s=>{const img=document.querySelector(s);return img?.complete&&img.naturalWidth>0},selector,{timeout:10000});
       }
     }
+    if(noJs)console.log('V17 NOJS CHECKPOINT: images ready');
     const decorativeAssets=await page.evaluate(()=>{
       const selected=['.v17r-hero-green-corner','.v17r-hero-flower-dish',
         '.v17r-lemongrass','.v17r-palette-lime',
@@ -843,6 +853,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       assert.equal(await menu.evaluate(el=>el.open),false);
     }
     if(noJs){
+      console.log('V17 NOJS CHECKPOINT: final static headings');
       assert.ok(await page.locator('.v17r-gestures h2').isVisible());
       assert.ok(await page.locator('.v17r-dessert h2').isVisible());
     }
@@ -948,6 +959,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     }
     console.log('V17 D2 preview '+width+' × '+height+(noJs?' noJS':'')+(reduced?' reduced':'')+' PASS');
   }finally{
+    if(watchdog)clearTimeout(watchdog);
     await page.close();
   }
   // Video comes from an untouched page: full-page screenshots temporarily
