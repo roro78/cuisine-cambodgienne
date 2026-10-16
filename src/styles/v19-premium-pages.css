@@ -1,5 +1,5 @@
 
-/* V19 – Immersive photography and legible editorial layout. All assets used here exist in Git. */
+/* V19 – Immersive photography and legible editorial layout. Images in this PR are provisional. */
 /* Listing and detail: the picture becomes the actual diagonal panel, not a rounded floating card. */
 .recipes-v16 .recipes-journey-hero,
 .recipe-v16 .recipe-v15-hero{
@@ -8,16 +8,16 @@
   min-height:clamp(40rem,86svh,62rem);
   padding:clamp(7rem,12svh,9rem) var(--page-pad) clamp(3rem,5svh,5rem);
 }
-.recipes-v16 .recipes-journey-hero{background:linear-gradient(100deg,#18382a 0 46%,#dfcbaf 46%)}
+.recipes-v16 .recipes-journey-hero{background:linear-gradient(90deg,#18382a 0 52%,#dfcbaf 52%)}
 .recipe-v16 .recipe-v15-hero,
-.recipe-v16[data-generated-artwork="true"] .recipe-v15-hero{background:linear-gradient(100deg,#f3e7d5 0 46%,#23402d 46%)}
+.recipe-v16[data-generated-artwork="true"] .recipe-v15-hero{background:linear-gradient(90deg,#f3e7d5 0 52%,#23402d 52%)}
 .recipes-v16 .recipes-journey-copy,
 .recipe-v16 .recipe-v15-hero-copy{position:relative;z-index:2;align-self:center;max-width:39rem;padding-right:clamp(1rem,2vw,3rem);padding-bottom:0}
 .recipes-v16 .recipes-journey-copy h1,
 .recipe-v16 .recipe-v15-hero-copy h1{letter-spacing:-.015em;line-height:1.04}
 .recipes-v16 .recipes-journey-visual,
 .recipe-v16 .recipe-v15-cover{
-  position:absolute;z-index:1;inset:0 0 0 43%;width:57%;height:100%;
+  position:absolute;z-index:1;inset:0 0 0 52%;width:48%;height:100%;
   min-height:0;margin:0;border:0;border-radius:0;
   overflow:hidden;clip-path:polygon(16% 0,100% 0,100% 100%,0 100%);
   box-shadow:none;transform:none;
@@ -42,7 +42,7 @@
 
 /* Distinct immersive hero layouts on workshops, journals, about and glossary. */
 .v19-hero-photo{
-  position:absolute;z-index:0;inset:0 0 0 auto;width:57%;
+  position:absolute;z-index:0;inset:0 0 0 auto;width:52%;
   margin:0;overflow:hidden;
   clip-path:polygon(16% 0,100% 0,100% 100%,0 100%);
   pointer-events:none;
