@@ -273,6 +273,14 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           if(el.closest('[aria-hidden="true"]')||el.getClientRects().length===0)continue;
           const st=getComputedStyle(el);
           if(st.display==='none'||st.visibility==='hidden')continue;
+          // D24: the other three recipe slides are intentionally offscreen
+          // inside a horizontal scroller. Check the active slide text here;
+          // the dedicated carousel assertions test links on every slide.
+          const rail=el.closest('[data-v17-table-carousel]');
+          if(rail){
+            const card=el.closest('[data-v17-table-recipe]');
+            if(card && card!==rail.querySelector('[data-v17-table-recipe]'))continue;
+          }
           // Accessibility-only figcaptions deliberately use a 1px clipped box.
           // Their DOM text extends beyond that box, but no glyph is painted.
           const elBox=el.getBoundingClientRect();
@@ -543,7 +551,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         return {points,loaded:img.naturalWidth===(width<=760?941:1672),
           stagePosition:getComputedStyle(section.querySelector('.v17r-table-stage')).position};
       },width);
-      assert.ok(motion.loaded&&motion.stagePosition===(width===390?'relative':'sticky')&&
+      assert.ok(motion.loaded&&motion.stagePosition==='relative'&&
         motion.points[0].heading<motion.points[2].heading&&
         motion.points[2].heading>.9&&
         (width===390 || (motion.points[0].actions<motion.points[2].actions &&
@@ -551,6 +559,28 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         motion.points.every(x=>x.photoTransform==='none'),
         'D22 four linked recipe chapters over an unmoving feast: '+JSON.stringify(motion));
       await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
+    }
+    // D25: no artificial blank continuation below the feast scene.
+    if([390,768,1024,1440].includes(width)){
+      const seam=await page.evaluate(()=>{
+        const section=document.querySelector('[data-v17-table-editorial]');
+        const stage=section.querySelector('.v17r-table-stage');
+        const final=section.querySelector('.v17r-table-culture');
+        const desserts=document.querySelector('.v17r-dessert');
+        const box=section.getBoundingClientRect();
+        const stageBox=stage.getBoundingClientRect();
+        const finalBox=final.getBoundingClientRect();
+        const dessertsBox=desserts.getBoundingClientRect();
+        return {height:box.height,viewport:innerHeight,
+          tailSpace:Math.round(box.bottom-finalBox.bottom),
+          stageTail:Math.round(box.bottom-stageBox.bottom),
+          nextGap:Math.round(dessertsBox.top-box.bottom)};
+      });
+      assert.ok(Math.abs(seam.stageTail)<=3 && seam.tailSpace<=4 &&
+        Math.abs(seam.nextGap)<=3 &&
+        (width<761 || seam.height<=seam.viewport*1.12),
+        'D25 feast must connect to desserts without empty bottom spacer: '+
+        JSON.stringify(seam));
     }
     // D16: measure TRANSLATION IN PIXELS, rather than mere CSS inequality.
     // Source trigger follows the heading itself, so entry/exit occur while
