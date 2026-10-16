@@ -1,0 +1,179 @@
+/* V18 D19: actual transparent food photography instead of a circular CSS
+   imitation of a plate. Independent recipe links and GSAP stages unchanged. */
+.v17r .v17r-table--assembled .v17r-table-dish{
+  aspect-ratio:4 / 3;
+  filter:none;
+  overflow:visible;
+  isolation:isolate;
+}
+.v17r .v17r-table--assembled .v17r-table-dish::before{
+  content:'';
+  position:absolute;
+  z-index:-1;
+  pointer-events:none;
+  width:75%;
+  height:17%;
+  left:12.5%;
+  bottom:7%;
+  border-radius:50%;
+  background:rgba(22,13,9,.28);
+  filter:blur(clamp(9px,1.3vw,20px));
+  transform:scale(.86);
+  transition:transform .3s ease,opacity .3s ease;
+}
+.v17r .v17r-table--assembled .v17r-table-dish-photo,
+.v17r .v17r-table--assembled .v17r-table-dish--loklak .v17r-table-dish-photo,
+.v17r .v17r-table--assembled .v17r-table-dish--nombanhchok .v17r-table-dish-photo,
+.v17r .v17r-table--assembled .v17r-table-dish--prahok .v17r-table-dish-photo{
+  display:block;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:0;
+  border-radius:0;
+  overflow:visible;
+  background:transparent;
+  box-shadow:none;
+  transform:none;
+  pointer-events:none;
+}
+.v17r .v17r-table--assembled .v17r-table-dish-photo img{
+  display:block;
+  width:100%;
+  height:100%;
+  max-width:none;
+  object-fit:contain;
+  object-position:center;
+  aspect-ratio:auto;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  filter:drop-shadow(0 10px 11px rgba(26,15,9,.34));
+  transition:transform .36s cubic-bezier(.22,.7,.24,1),filter .36s ease;
+}
+.v17r .v17r-table--assembled .v17r-table-dish-label{
+  z-index:9;
+  bottom:-.45rem;
+  border:1px solid rgba(246,225,172,.85);
+  background:rgba(255,248,230,.98);
+  color:#173b29;
+  box-shadow:0 7px 20px rgba(25,16,10,.28);
+  white-space:nowrap;
+}
+@media(hover:hover) and (pointer:fine){
+  .v17r .v17r-table--assembled .v17r-table-dish:hover::before{
+    transform:scale(1.08);opacity:.9;
+  }
+  .v17r .v17r-table--assembled .v17r-table-dish:hover img{
+    transform:translateY(-6px) scale(1.052);
+    filter:drop-shadow(0 19px 15px rgba(26,15,9,.42)) saturate(1.06);
+  }
+  .v17r .v17r-table--assembled .v17r-table-dish:hover .v17r-table-dish-photo{
+    box-shadow:none;
+  }
+}
+@media(max-width:760px){
+  .v17r .v17r-table--assembled .v17r-table-dish--amok{left:3%;top:45%}
+  .v17r .v17r-table--assembled .v17r-table-dish--loklak{left:57%;top:43%}
+  .v17r .v17r-table--assembled .v17r-table-dish--nombanhchok{left:52%;top:67%}
+  .v17r .v17r-table--assembled .v17r-table-dish--prahok{left:4%;top:74%}
+  .v17r .v17r-table--assembled .v17r-table-dish-label{
+    bottom:-.38rem;
+    padding:.43rem .46rem;
+    font-size:clamp(.64rem,2.3vw,.8rem);
+  }
+}
+@media(max-width:370px){
+  .v17r .v17r-table--assembled .v17r-table-dish--amok{top:48%}
+  .v17r .v17r-table--assembled .v17r-table-dish--loklak{top:44%}
+  .v17r .v17r-table--assembled .v17r-table-dish--nombanhchok{top:70%}
+  .v17r .v17r-table--assembled .v17r-table-dish--prahok{top:76%}
+}
+@media(prefers-reduced-motion:reduce){
+  .v17r .v17r-table--assembled .v17r-table-dish-photo img{
+    transition:none!important;
+  }
+}
+
+/* Cinematic feathered photo reveals. The default 140% is a completely
+   visible image with JavaScript disabled. GSAP only adjusts the CSS variable
+   during active scrolling; no square crops or hard PowerPoint wipe edges. */
+.v17r .v17r-table--assembled .v17r-table-dish--loklak .v17r-table-dish-photo{
+  --d20-lok-progress:140%;
+  -webkit-mask-image:linear-gradient(to right,#000 0%,
+    #000 calc(var(--d20-lok-progress) - 30%),
+    transparent var(--d20-lok-progress));
+  mask-image:linear-gradient(to right,#000 0%,
+    #000 calc(var(--d20-lok-progress) - 30%),
+    transparent var(--d20-lok-progress));
+}
+.v17r .v17r-table--assembled .v17r-table-dish--nombanhchok .v17r-table-dish-photo{
+  --d20-noodle-progress:140%;
+  -webkit-mask-image:linear-gradient(to top,#000 0%,
+    #000 calc(var(--d20-noodle-progress) - 28%),
+    transparent var(--d20-noodle-progress));
+  mask-image:linear-gradient(to top,#000 0%,
+    #000 calc(var(--d20-noodle-progress) - 28%),
+    transparent var(--d20-noodle-progress));
+}
+@media(prefers-reduced-motion:reduce){
+  .v17r .v17r-table--assembled .v17r-table-dish-photo{
+    -webkit-mask-image:none!important;
+    mask-image:none!important;
+  }
+}
+
+/* D20 motion language: camera optics, matte, unveiling and a contact ripple.
+   The base CSS remains complete without JS; GSAP only stages these effects
+   when motion is explicitly permitted. */
+.v17r .v17r-table--assembled .v17r-table-ripple{
+  position:absolute;
+  left:10%;right:10%;
+  top:9%;bottom:9%;
+  border:2px solid rgba(248,204,132,.78);
+  border-radius:50%;
+  opacity:0;
+  pointer-events:none;
+  box-shadow:0 0 1.2rem rgba(243,188,97,.25),inset 0 0 .8rem rgba(243,188,97,.18);
+  background:radial-gradient(ellipse at 50% 50%,rgba(255,229,174,.15),transparent 65%);
+  z-index:-1;
+}
+.v17r .v17r-table--assembled .v17r-table-dish-photo{
+  clip-path:none;
+  -webkit-clip-path:none;
+}
+.v17r .v17r-table--assembled .v17r-table-dish-label{
+  transition:background .25s ease,transform .25s ease;
+}
+@media (hover:hover) and (pointer:fine){
+  .v17r .v17r-table--assembled .v17r-table-dish:hover .v17r-table-dish-label{
+    transform:translateX(-50%) translateY(-4px);
+    background:#fff9ef;
+  }
+}
+@media (min-width:761px) and (max-width:1100px){
+  /* In tablet layouts plates must not be clipped by the right stage edge.
+     Keep distinct graphic hierarchy with an untouched reading column. */
+  .v17r .v17r-table--assembled .v17r-table-dish--loklak{left:70%;top:15%}
+  .v17r .v17r-table--assembled .v17r-table-dish--nombanhchok{left:69%;top:61%}
+  .v17r .v17r-table--assembled .v17r-table-dish--amok{left:43%;top:34%}
+  .v17r .v17r-table--assembled .v17r-table-dish--prahok{left:30%;top:74%}
+  .v17r .v17r-table--assembled .v17r-table-copy h2{
+    font-size:clamp(3rem,4.6vw,4.9rem);
+  }
+}
+@media(max-width:760px){
+  .v17r .v17r-table--assembled .v17r-table-ripple{
+    border-width:1.5px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .v17r .v17r-table--assembled .v17r-table-ripple{display:none!important}
+  .v17r .v17r-table--assembled .v17r-table-dish-photo{
+    clip-path:none!important;
+    -webkit-clip-path:none!important;
+  }
+  .v17r .v17r-table--assembled .v17r-table-dish-photo img{
+    filter:drop-shadow(0 10px 11px rgba(26,15,9,.34))!important;
+  }
+}

@@ -34,15 +34,409 @@ export function initV17AccueilMotion() {
     });
   };
 
+  /**
+   * D16 — Actual kinetic typography. D15 only moved titles 26–98 pixels,
+   * which was technically measurable but artistically invisible. Here the
+   * headline travels across a meaningful fraction of the viewport, settles
+   * for reading, then exits with an unmistakable opposing movement.
+   * All content is complete in HTML/CSS when JS is off or reduced motion.
+   */
+  const chapterPerformance = (
+    chapterSelector: string,
+    direction: -1 | 1,
+    mobile: boolean,
+  ) => {
+    const chapter = root.querySelector<HTMLElement>(chapterSelector);
+    if (!chapter) return;
+    const heading = chapter.querySelector<HTMLElement>('h2');
+    if (!heading) return;
+    const kicker = chapter.querySelector<HTMLElement>('.v17r-kicker');
+    const contentSelector: Record<string, string> = {
+      '.v17r-market': '.v17r-market-copy > p:not(.v17r-kicker)',
+      '.v17r-palette': '.v17r-palette-intro',
+      '.v17r-table': '.v17r-table-copy > p:not(.v17r-kicker)',
+      '.v17r-dessert': '.v17r-dessert-copy > p:not(.v17r-kicker)',
+      '.v17r-finale': '.v17r-finale-copy > p:not(.v17r-kicker)',
+    };
+    const copy = chapter.querySelector<HTMLElement>(contentSelector[chapterSelector]);
+    const actions = gsap.utils.toArray<HTMLElement>(
+      chapterSelector === '.v17r-finale' ? '.v17r-finale-actions' : '.v17r-pill',
+      chapter,
+    ).filter((node) => node.closest('section') === chapter);
+    const isPalette = chapterSelector === '.v17r-palette';
+    const isTable = chapterSelector === '.v17r-table';
+    const isFinale = chapterSelector === '.v17r-finale';
+    const entrance: gsap.TweenVars = isPalette ? {
+      yPercent: mobile ? -110 : -165, scale: 1.21, opacity: 0,
+    } : isTable ? {
+      yPercent: mobile ? 110 : 155, scale: .87, opacity: 0,
+    } : isFinale ? {
+      yPercent: mobile ? 115 : 170, scale: 1.22, opacity: 0,
+    } : {
+      xPercent: direction * (mobile ? 145 : 170), opacity: 0,
+    };
+    const departure: gsap.TweenVars = isPalette ? {
+      // The earlier downward departure crossed the explanatory copy.
+      // Exit laterally into the botanical still life, not through body text.
+      xPercent: mobile ? 145 : 165, yPercent: 0, scale: .92, opacity: 0,
+    } : isTable ? {
+      yPercent: mobile ? -90 : -125, scale: 1.06, opacity: 0,
+    } : isFinale ? {
+      yPercent: mobile ? -110 : -150, scale: .80, opacity: 0,
+    } : {
+      xPercent: -direction * (mobile ? 140 : 165), opacity: 0,
+    };
+    const timeline = gsap.timeline({
+      scrollTrigger: {
+        // The heading travels naturally through the viewport. A stage-level
+        // trigger previously completed the exit after text was invisible.
+        trigger: heading,
+        start: 'top 96%',
+        end: 'top 8%',
+        scrub: mobile ? .25 : .36,
+        invalidateOnRefresh: true,
+      },
+    });
+    // Kicker leads, headline occupies the entire stage, supporting content
+    // and invitation follow, leaving a full, readable middle beat.
+    if (kicker) {
+      timeline.fromTo(kicker,
+        { y: mobile ? -45 : -95, opacity: 0 },
+        { y: 0, opacity: 1, duration: .58, ease: 'power2.out',
+          immediateRender: false }, 0);
+    }
+    timeline.fromTo(heading, entrance,
+      { xPercent: 0, yPercent: 0, scale: 1, opacity: 1,
+        duration: 1.05, ease: 'power3.out', immediateRender: false }, .16);
+    if (copy) timeline.fromTo(copy,
+      { xPercent: direction * (mobile ? 90 : 115),
+        y: mobile ? 25 : 64, opacity: 0 },
+      { xPercent: 0, y: 0, opacity: 1, duration: .85,
+        ease: 'power3.out', immediateRender: false }, .58);
+    actions.forEach((action, index) => timeline.fromTo(action,
+      { y: mobile ? 80 : 120, scale: .85, opacity: 0 },
+      { y: 0, scale: 1, opacity: 1, duration: .73,
+        ease: 'back.out(1.25)', immediateRender: false }, .90+index*.12));
+    // Entry finishes around the first third of the onscreen passage,
+    // then the words rest before exiting while still visibly on stage.
+    timeline.to(heading, { ...departure, duration: .95,
+      ease: 'power2.in' }, 2.25);
+    if (copy) timeline.to(copy, {
+      xPercent: -direction * (mobile ? 70 : 110),
+      y: mobile ? -22 : -55,
+      opacity: 0, duration: .87, ease: 'power2.in',
+    }, 2.40);
+    actions.forEach((action,index) => timeline.to(action, {
+      y: mobile ? -70 : -110, scale: .88, opacity: 0,
+      duration: .73, ease: 'power2.in',
+    },2.48+index*.07));
+    if (kicker) timeline.to(kicker,
+      { y: mobile ? -36 : -82, opacity: 0, duration: .64 }, 2.53);
+  };
+
+  const heroDeparture = (mobile: boolean) => {
+    const hero = root.querySelector<HTMLElement>('.v17r-hero');
+    const headline = hero?.querySelector<HTMLElement>('h1');
+    const intro = hero?.querySelector<HTMLElement>('.v17r-hero-copy > p:not(.v17r-eyebrow):not(.v17r-hero-disclosure)');
+    if (!hero || !headline) return;
+    const departure = gsap.timeline({
+      scrollTrigger: {
+        trigger: hero,
+        start: 'top top',
+        end: 'bottom 20%',
+        scrub: mobile ? .4 : .65,
+        invalidateOnRefresh: true,
+      },
+    });
+    departure.to(headline,
+      { xPercent: mobile ? -115 : -150, yPercent: -20,
+        opacity: 0, ease: 'power2.in', duration: 1 }, .15);
+    if (intro) departure.to(intro,
+      { xPercent: mobile ? -85 : -120, opacity: 0,
+        duration: .9, ease: 'power2.in' }, .24);
+  };
+
+  /**
+   * Mortar film: one full-bleed continuous photographic gesture, three
+   * typographic beats and an organic preparation close-up. This is not video
+   * footage; it is an animated still composition driven by native scrolling.
+   * Every element is fully readable and visible in no-JS/reduced motion.
+   */
+  const mortarCinema = (mobile: boolean) => {
+    const scene = root.querySelector<HTMLElement>('[data-v17-mortar-scene]');
+    if (!scene) return;
+    const image = scene.querySelector<HTMLElement>('.v17r-gestures-main img');
+    const closeup = scene.querySelector<HTMLElement>('.v17r-gestures-kroeung');
+    const words = gsap.utils.toArray<HTMLElement>('.v17r-gesture-word', scene);
+    const kicker = scene.querySelector<HTMLElement>('.v17r-kicker');
+    const description = scene.querySelector<HTMLElement>('.v17r-gestures-copy > p:not(.v17r-kicker)');
+    const action = scene.querySelector<HTMLElement>('.v17r-pill');
+    const progress = scene.querySelector<HTMLElement>('.v17r-gestures-progress span');
+    const timeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: words[0] ?? scene,
+        start: 'top 96%',
+        end: 'top 8%',
+        scrub: mobile ? .25 : .38,
+        invalidateOnRefresh: true,
+      },
+    });
+    if (image) timeline.fromTo(image,
+      { scale: mobile ? 1.045 : 1.14, xPercent: mobile ? -1 : -2 },
+      { scale: 1.005, xPercent: 0, ease: 'none', duration: 2.8, immediateRender: false }, 0);
+    // Alternate directions: real offstage arrival, not the D15 9–26px shift.
+    words.forEach((word,index) => timeline.fromTo(word,
+      { xPercent: (index===1?-1:1) * (mobile ? 155 : 190),
+        yPercent: mobile ? 27 : 37, rotation: index===1?-7:7, opacity: 0 },
+      { xPercent: 0, yPercent: 0, rotation: 0, opacity: 1,
+        ease: 'power3.out', duration: 1.00, immediateRender: false },
+      .18 + index*.37));
+    for (const [node, at] of [[kicker,.20],[description,.96],[action,1.34]] as const) {
+      if (node) timeline.fromTo(node,
+        { xPercent: mobile ? 63 : 90, y: mobile ? 16 : 48, opacity: 0 },
+        { xPercent: 0, y: 0, opacity: 1, ease: 'power3.out',
+          duration: .88, immediateRender: false }, at);
+    }
+    if (closeup) timeline.fromTo(closeup,
+      { scale: mobile ? .90 : .78, rotation: mobile ? -3 : -7, opacity: .65 },
+      { scale: 1, rotation: 0, opacity: 1, ease: 'power2.out', duration: 1.45, immediateRender: false }, 1.1);
+    if (progress) timeline.fromTo(progress,
+      { scaleX: .08 }, { scaleX: 1, ease: 'none', duration: 2.7, immediateRender: false }, 0);
+    // D15: words leave individually, as the photograph gives way to the table.
+    words.forEach((word,index) => timeline.to(word, {
+      xPercent: (index===1?1:-1) * (mobile ? 140 : 185),
+      yPercent: mobile ? -25 : -45, rotation: index===1?8:-8,
+      opacity: 0, duration: .88, ease: 'power2.in',
+    }, 2.42 + index*.10));
+    if (closeup) timeline.to(closeup,
+      { xPercent: mobile ? 6 : 18, rotation: mobile ? 2 : 8,
+        scale: .91, opacity: .55, duration: .9, ease: 'power2.in' }, 2.45);
+    if (description) timeline.to(description,
+      { y: mobile ? -9 : -23, opacity: .52, duration: .66, ease: 'power2.in' }, 2.67);
+    if (action) timeline.to(action,
+      { x: mobile ? -9 : -29, opacity: .55, duration: .58, ease: 'power2.in' }, 2.76);
+  };
+
+
+  /**
+   * D14 — chapter-to-chapter animation, never a page transition or scroll
+   * replacement. Decorative bridges and photo frames only; real content
+   * remains usable at every point, without JS and with reduced motion.
+   */
+  const sceneHandoffs = (mobile: boolean) => {
+    // D27: all five chapter boundaries use a native CSS wave-shaped clip of
+    // the incoming chapter. Do not animate flat-colour SVG handoff sheets:
+    // their opaque lower rectangles exposed a visible background panel.
+    const scrub = mobile ? .45 : .8;
+
+    // The market and desserts must remain edge-to-edge at every scroll offset.
+    // Their old 7–13% inset masks exposed green side strips on screenshots and
+    // during slow scrolling. Desserts already have their own organic iris.
+    // Preserve the restrained vertical reveal only for the Angkor finale.
+    const photographs = [
+      {section: '.v17r-finale', frame: '.v17r-finale-landscape', edge: 'bottom', crop: mobile ? 6 : 12},
+    ] as const;
+    for (const {section, frame, edge, crop} of photographs) {
+      const chapter = root.querySelector<HTMLElement>(section);
+      const artwork = root.querySelector<HTMLElement>(frame);
+      if (!chapter || !artwork) continue;
+      const cropped = {
+        left: 'inset(0% 0% 0% ' + crop + '%)',
+        right: 'inset(0% ' + crop + '% 0% 0%)',
+        top: 'inset(' + crop + '% 0% 0% 0%)',
+        bottom: 'inset(0% 0% ' + crop + '% 0%)',
+      }[edge];
+      gsap.fromTo(artwork, {clipPath: cropped}, {
+        clipPath: 'inset(0% 0% 0% 0%)',
+        ease: 'none', overwrite: 'auto',
+        scrollTrigger: {
+          trigger: chapter,
+          start: 'top 94%', end: 'top 37%',
+          scrub, invalidateOnRefresh: true,
+        },
+      });
+    }
+
+    // The market-to-ingredients bridge has a softer botanical approach,
+    // rather than yet another cropped photograph.
+    if (!mobile) {
+      const palette = root.querySelector<HTMLElement>('.v17r-palette');
+      const stillLife = root.querySelector<HTMLElement>('.v17r-palette-media');
+      if (palette && stillLife) gsap.fromTo(stillLife, {yPercent: 4}, {
+        yPercent: 0, ease: 'none', overwrite: 'auto',
+        scrollTrigger: {
+          trigger: palette, start: 'top 93%', end: 'top 36%',
+          scrub: .7, invalidateOnRefresh: true,
+        },
+      });
+    }
+  };
+
+  /** An ingredient, flower or seal travels in and leaves with the chapter. */
+  const objectPerformance = (mobile: boolean) => {
+    const objects = [
+      {chapter: '.v17r-hero', item: '.v17r-hero-flower-dish', direction: 1},
+      {chapter: '.v17r-palette', item: '.v17r-palette-flower', direction: -1},
+      {chapter: '.v17r-palette', item: '.v17r-palette-chili', direction: 1},
+      {chapter: '.v17r-table', item: '.v17r-table-flower', direction: -1},
+      {chapter: '.v17r-finale', item: '.v17r-finale-stamp', direction: 1},
+    ];
+    for (const {chapter, item, direction} of objects) {
+      const frame = root.querySelector<HTMLElement>(chapter);
+      const detail = frame?.querySelector<HTMLElement>(item);
+      if (!frame || !detail || getComputedStyle(detail).display === 'none') continue;
+      const motion = gsap.timeline({
+        scrollTrigger: {
+          trigger: frame,
+          start: 'top 93%', end: 'bottom 18%',
+          scrub: mobile ? .55 : .85,
+          invalidateOnRefresh: true,
+        },
+      });
+      motion.fromTo(detail,
+        { xPercent: direction * (mobile ? 180 : 290),
+          yPercent: mobile ? 80 : 130,
+          rotation: direction * (mobile ? 22 : 38), scale: .66, opacity: 0 },
+        { xPercent: 0, yPercent: 0, rotation: 0, scale: 1, opacity: 1,
+          duration: 1.12, ease: 'power3.out', immediateRender: false }, .18);
+      motion.to(detail,
+        { xPercent: -direction * (mobile ? 145 : 240),
+          yPercent: mobile ? -90 : -145,
+          rotation: -direction * 24, scale: .72, opacity: 0,
+          duration: .88, ease: 'power2.in' }, 3.05);
+    }
+  };
+
+
+  /**
+   * D17-A: one physical aromatic traverses three successive chapters.
+   * A single fixed decorative DOM node, not a fresh entrance per section.
+   * Disabled on mobile, in reduced motion and without JS.
+   */
+  const travellingAromatic = () => {
+    const traveller = root.querySelector<HTMLElement>('[data-v17-aromatic-traveller]');
+    const market = root.querySelector<HTMLElement>('.v17r-market');
+    const mortar = root.querySelector<HTMLElement>('[data-v17-mortar-scene]');
+    if (!traveller || !market || !mortar) return;
+    gsap.set(traveller,{display:'block',autoAlpha:0,transformOrigin:'42% 55%'});
+    const W = () => window.innerWidth;
+    const H = () => window.innerHeight;
+    const journey = gsap.timeline({
+      scrollTrigger: {
+        trigger: market, start:'top 80%',
+        endTrigger: mortar, end:'top 20%',
+        scrub:.65, invalidateOnRefresh:true,
+      }
+    });
+    journey.fromTo(traveller,
+      { x:()=>W()*.06, y:()=>H()*.65, rotation:-45,scale:.53,autoAlpha:0 },
+      { x:()=>W()*.18, y:()=>H()*.54, rotation:-22,scale:.91,autoAlpha:.92,
+        duration:1,ease:'none',immediateRender:false },0);
+    journey.to(traveller,
+      { x:()=>W()*.44,y:()=>H()*.29,rotation:5,scale:1.11,autoAlpha:1,
+        duration:1.15,ease:'none' },1);
+    journey.to(traveller,
+      { x:()=>W()*.54,y:()=>H()*.39,rotation:41,scale:.81,autoAlpha:.92,
+        duration:1.05,ease:'none' },2.15);
+    journey.to(traveller,
+      { x:()=>W()*.31,y:()=>H()*.54,rotation:118,scale:.28,autoAlpha:0,
+        duration:1.05,ease:'none' },3.2);
+  };
+
+  /**
+   * D17-A: the sweets fill the stage. The photograph blooms open under the
+   * copy through a radial mask, instead of sitting in a rectangular card.
+   * Copy stays legible; this scene deliberately does NOT share the generic
+   * lateral heading entrance used in earlier acts.
+   */
+  const dessertBloom = (mobile:boolean) => {
+    const stage=root.querySelector<HTMLElement>('.v17r-dessert');
+    const art=stage?.querySelector<HTMLElement>('.v17r-dessert-generated');
+    if(!stage || !art) return;
+    gsap.fromTo(art,
+      { clipPath:mobile?'circle(22% at 58% 33%)':'circle(14% at 69% 52%)',
+        scale:mobile?1.08:1.18 },
+      { clipPath:mobile?'circle(132% at 58% 33%)':'circle(133% at 69% 52%)',
+        scale:1, ease:'none',immediateRender:false,
+        scrollTrigger:{
+          trigger:stage,start:'top 90%',end:'top 28%',
+          scrub:mobile?.42:.68,invalidateOnRefresh:true
+        }
+      });
+  };
+
+
+  /**
+   * D18 — La tablée se compose. Four independent illustrated recipe links,
+   * each entering via a different physical gesture, settle on one table.
+   * CSS sticky (not a forced GSAP pin) gives the visitor enough native-scroll
+   * time to read, explore and select each actual recipe.
+   *
+   * The DOM/CSS is complete without JS and in reduced motion. No external
+   * network, no duplicate plate overlays, no click interception.
+   */
+  /**
+   * D21: quiet editorial typography over a single, unmoving, full-bleed
+   * Cambodian food photograph. No plate travel, masks, particles or steam.
+   * Native scrolling, no pin; complete content remains in HTML without JS.
+   */
+  const tableEditorial = (mobile: boolean, tablet = false) => {
+    const section=root.querySelector<HTMLElement>('[data-v17-table-editorial]');
+    if(!section)return;
+    const kicker=section.querySelector<HTMLElement>('.v17r-table-copy .v17r-kicker');
+    const rule=section.querySelector<HTMLElement>('.v17r-table-rule');
+    const lines=gsap.utils.toArray<HTMLElement>('.v17r-table-copy h2 > *',section);
+    const intro=section.querySelector<HTMLElement>('.v17r-table-intro');
+    const recipes=gsap.utils.toArray<HTMLElement>('[data-v17-table-recipe]',section);
+    const culture=section.querySelector<HTMLElement>('.v17r-table-culture');
+    if(!kicker||!rule||lines.length!==2||!intro||recipes.length!==4||!culture)return;
+    section.dataset.v17TableReady='';
+    // Make everything usable without JavaScript, on fast scroll and while the
+    // timeline begins. Mobile recipe cards follow normal document flow.
+    gsap.set(kicker,{autoAlpha:.9,y:mobile?7:12});
+    gsap.set(rule,{scaleX:.50,transformOrigin:'left center'});
+    lines.forEach((line,i)=>gsap.set(line,{
+      autoAlpha:.80,
+      x:0,
+      y:tablet?(i===0?-18:22):(mobile?10+i*4:18+i*8),
+    }));
+    gsap.set(intro,{autoAlpha:.9,y:mobile?6:12});
+    if(!mobile){
+      gsap.set(recipes,{autoAlpha:.78,y:14});
+      gsap.set(culture,{autoAlpha:.86,y:7});
+    }
+    const tl=gsap.timeline({
+      scrollTrigger:{
+        trigger:section,
+        start:'top 81%',
+        end:mobile?'top 16%':'bottom 91%',
+        scrub:mobile?.3:.42,
+        invalidateOnRefresh:true
+      }
+    });
+    tl.to(kicker,{autoAlpha:1,y:0,duration:.42,ease:'power2.out'},.05);
+    tl.to(rule,{scaleX:1,duration:.55,ease:'power2.out'},.16);
+    tl.to(lines[0],{autoAlpha:1,x:0,y:0,duration:.65,ease:'power3.out'},.26);
+    tl.to(lines[1],{autoAlpha:1,x:0,y:0,duration:.65,ease:'power3.out'},.5);
+    tl.to(intro,{autoAlpha:1,y:0,duration:.6,ease:'power2.out'},.8);
+    if(!mobile){
+      // The four recipes reveal in reading order; photographic dishes do not
+      // translate, scale or move. All four anchors remain always interactive.
+      tl.to(recipes,{autoAlpha:1,y:0,stagger:.32,duration:.55,ease:'power2.out'},1.20);
+      tl.to(culture,{autoAlpha:1,y:0,duration:.45,ease:'power2.out'},2.65);
+      tl.to({}, {duration:1.25},3.1);
+    } else {
+      // D24: recipe slides live in a native horizontal scroller.
+      // Their captions must stay fully visible while swiping; do not attach
+      // vertical ScrollTriggers to individual cards.
+    }
+  };
+
   mm.add('(min-width: 761px) and (prefers-reduced-motion: no-preference)', () => {
     // 1. Hero: quiet depth, never displacing the headline or CTA.
-    sceneMotion('.v17r-hero-dish img', { scale: 1.04, yPercent: 1 }, { scale: 1.005, yPercent: -1 });
-    sceneMotion('.v17r-hero-flower-dish', { yPercent: 12 }, { yPercent: -8 });
+    sceneMotion('.v17r-hero-dish img', { scale: 1.09, yPercent: 2 }, { scale: 1.005, yPercent: -2 });
     // 2. Market: photographic parallax, no artificial scroll velocity.
-    sceneMotion('.v17r-market-visual > img', { scale: 1.075, yPercent: -2 }, { scale: 1.015, yPercent: 2 });
-    // A second documented fruit photograph brings depth without fabricating one scene.
-    sceneMotion('.v17r-market-postcard img', { scale: 1.11 }, { scale: 1.025 });
-    sceneMotion('.v17r-market-bloom', { yPercent: 14, rotation: -23 }, { yPercent: -12, rotation: -8 });
+    sceneMotion('.v17r-market-visual > img', { scale: 1.12, yPercent: -3 }, { scale: 1.025, yPercent: 3 });
     // 3. Ingredients: converging from different axes, title stays static.
     sceneMotion('.v17r-palette-a', { xPercent: -17, yPercent: 9 }, { xPercent: 0, yPercent: 0 });
     sceneMotion('.v17r-palette-b', { xPercent: 16, yPercent: -7 }, { xPercent: 0, yPercent: 0 });
@@ -53,14 +447,24 @@ export function initV17AccueilMotion() {
     sceneMotion('.v17r-palette-foliage-left', { xPercent: -16, yPercent: 10, rotation: -25 }, { xPercent: 0, yPercent: -3, rotation: -17 });
     sceneMotion('.v17r-palette-foliage-right', { xPercent: 13, yPercent: -10, rotation: 168 }, { xPercent: 0, yPercent: 4, rotation: 157 });
     // 4. Mortar: the hands remain real; the prepared kroeung is a second image.
-    sceneMotion('.v17r-gestures-main img', { scale: 1.07 }, { scale: 1.015 });
-    sceneMotion('.v17r-gestures-kroeung', { yPercent: 12, xPercent: 7 }, { yPercent: 0, xPercent: 0 });
-    sceneMotion('.v17r-gestures-steps', { yPercent: 3 }, { yPercent: -1 });
-    // 5. Table: a single AI-generated culinary tableau creates immersive depth.
-    sceneMotion('.v17r-table-amok img', { scale: 1.07, xPercent: -2 }, { scale: 1.01, xPercent: 0 });
+
+    mortarCinema(false);
+    // 5. One full-bleed photograph; dedicated editorial motion on tablets.
+    tableEditorial(false, window.matchMedia('(max-width: 1100px)').matches);
     // 6–7. Desserts and Angkor: restraint and varied composition.
-    sceneMotion('.v17r-dessert-generated img', { scale: 1.035 }, { scale: 1.005 });
-    sceneMotion('.v17r-finale-landscape img', { scale: 1.065, yPercent: -2 }, { scale: 1, yPercent: 1 });
+    sceneMotion('.v17r-dessert-generated img', { scale: 1.075, yPercent: -1 }, { scale: 1.005, yPercent: 2 });
+    sceneMotion('.v17r-finale-landscape img', { scale: 1.09, yPercent: -3 }, { scale: 1.01, yPercent: 2 });
+    // D15 editorial choreography: visible arrival, reading beat, exit.
+    heroDeparture(false);
+    objectPerformance(false);
+    chapterPerformance('.v17r-market', 1, false);
+    chapterPerformance('.v17r-palette', -1, false);
+    // No generic heading exit in the table: the dishes are the protagonists.
+    dessertBloom(false);
+    travellingAromatic();
+    chapterPerformance('.v17r-finale', 1, false);
+    sceneHandoffs(false);
+    // D27 native organic chapter masks remain still and truly full bleed.
   });
 
   mm.add('(max-width: 760px) and (prefers-reduced-motion: no-preference)', () => {
@@ -69,12 +473,21 @@ export function initV17AccueilMotion() {
     // visually composed by CSS without a late compositor animation.
     // Mobile: movements < 14px in practice, never hide content or block gestures.
     sceneMotion('.v17r-market-visual > img', { scale: 1.045, yPercent: -1 }, { scale: 1.01, yPercent: 1 });
-    sceneMotion('.v17r-market-postcard img', { scale: 1.04 }, { scale: 1.015 });
     sceneMotion('.v17r-palette-a', { xPercent: -5 }, { xPercent: 0 });
     sceneMotion('.v17r-palette-b', { xPercent: 5 }, { xPercent: 0 });
-    sceneMotion('.v17r-gestures-main img', { scale: 1.035 }, { scale: 1.005 });
-    sceneMotion('.v17r-table-amok img', { scale: 1.035 }, { scale: 1.005 });
+
+    tableEditorial(true);
     sceneMotion('.v17r-finale-landscape img', { scale: 1.04 }, { scale: 1.005 });
+    mortarCinema(true);
+    sceneHandoffs(true);
+    // D15 mobile uses heading-driven movement, not offscreen scene entrances.
+    heroDeparture(true);
+    objectPerformance(true);
+    chapterPerformance('.v17r-market', 1, true);
+    chapterPerformance('.v17r-palette', -1, true);
+    // No generic heading exit in the table: the dishes are the protagonists.
+    dessertBloom(true);
+    chapterPerformance('.v17r-finale', 1, true);
   });
 
   return () => mm.revert();

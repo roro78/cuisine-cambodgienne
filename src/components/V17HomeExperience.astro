@@ -1,17 +1,35 @@
 ---
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import { recipes } from '../data/recipes';
 import '../styles/v17-accueil-rebuild.css';
 import '../styles/v17-generated-media.css';
+import '../styles/v17-finition-editoriale.css';
+import '../styles/v17-mortar-cinema.css';
+import '../styles/v17-scene-handoffs.css';
+import '../styles/v17-d17-cinematic-scenes.css';
+import '../styles/v17-d21-editorial-table.css';
+import '../styles/v17-d27-seamless-boundaries.css';
 const hero = '/images/cuisine/v17-hero-amok-genere.webp';
 // Approved binary is committed; the CI verifies its SHA-256. Never silently
 // replace the approved market scene with unrelated documentary photographs.
 const market = '/images/cuisine/v17-marche-cambodgien-ia.webp';
 const kampot = '/images/cuisine/kampot-1600.webp';
-const table = '/images/cuisine/v17-tablee-khmere-generee.webp';
 const dessertGenerated = '/images/cuisine/v17-desserts-khmers-generes.webp';
 const galangal = '/images/cuisine/v17-galangal-1000.jpg';
 const chili = '/images/cuisine/v17-chili-450.png';
+// D22: link labels to real recipe slugs. The mobile story uses each recipe's own
+// existing artwork, instead of squeezing a desktop four-column overlay onto a phone.
+const tableRecipes = [
+  { slug: 'amok-trey', short: 'Poisson, coco et kroeung', story: 'Une douceur parfumée, enveloppée dans la feuille de bananier.' },
+  { slug: 'lok-lak', short: 'Bœuf saisi au poivre', story: 'Le poivre et le citron vert réveillent le bœuf juste saisi.' },
+  { slug: 'num-banh-chok', short: 'Nouilles de riz et herbes fraîches', story: 'Des nouilles souples, une sauce chaude, des herbes croquantes.' },
+  { slug: 'prahok-ktis', short: 'Crème de prahok et crudités', story: 'Une bouchée pleine de caractère, adoucie par le coco.' }
+].map((item) => {
+  const recipe = recipes.find((r) => r.slug === item.slug);
+  if (!recipe || !recipe.image) throw new Error(`Recette de la tablée introuvable : ${item.slug}`);
+  return { ...item, title: recipe.title, image: item.slug === 'prahok-ktis' ? '/images/cuisine/v17-prahok-ktis-section5-mobile.webp' : recipe.image, url: `/recettes/${recipe.slug}/` };
+});
 
 interface Props { preview?: boolean; }
 // Le paramètre preview reste typé pour la route de prévisualisation, sans texte de debug.
@@ -20,6 +38,11 @@ interface Props { preview?: boolean; }
   <div class="v17r-wrap" data-v17r-preview>
     <SiteHeader />
     <main class="v17r" id="v17r-main">
+      <!-- D17: one continuous aromatic motif across the market, ingredients
+           and mortar; entirely decorative and absent without JS. -->
+      <div class="v17r-aromatic-traveller" data-v17-aromatic-traveller aria-hidden="true">
+        <img src="/images/brand/v17-lemongrass.svg" alt="" width="670" height="420" decoding="async"/>
+      </div>
       <section class="v17r-hero v17r-hero--generated" aria-labelledby="v17r-hero-title">
         <div class="v17r-hero-art" aria-hidden="true">
           <svg class="v17r-temple-illustration" viewBox="0 0 900 430" xmlns="http://www.w3.org/2000/svg" fill="none">
@@ -28,7 +51,6 @@ interface Props { preview?: boolean; }
           </svg>
           <img class="v17r-botanic v17r-hero-green-corner" src="/images/brand/v17-banana-leaves.svg" alt="" width="560" height="690" />
           <img class="v17r-botanic v17r-hero-bloom-left" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
-          <span class="v17r-calligraphy v17r-hero-sidebar" aria-hidden="true">Des saveurs vraies,<br/>un voyage gourmand.</span>
         </div>
         <div class="v17r-hero-copy">
           <p class="v17r-eyebrow">Des saveurs vraies, un voyage gourmand.</p>
@@ -42,11 +64,8 @@ interface Props { preview?: boolean; }
             <img src={hero} srcset="/images/cuisine/v17-hero-amok-genere-640.webp 640w, /images/cuisine/v17-hero-amok-genere-1120.webp 1120w, /images/cuisine/v17-hero-amok-genere.webp 1448w" sizes="(max-width: 760px) 96vw, 54vw" width="1448" height="1086" fetchpriority="high" decoding="async" alt="Illustration générée d’un Amok Trey au poisson, à la noix de coco, aux aromates et aux piments, dans des feuilles de bananier" />
             <figcaption>Amok Trey <span>Poisson, coco et aromates</span></figcaption>
           </figure>
-          <span class="v17r-label" aria-hidden="true">DES SAVEURS<br/>VRAIES ✳</span>
-          <span class="v17r-handnote v17r-note-amok" aria-hidden="true">Amok Trey ↘</span>
           <img class="v17r-botanic v17r-hero-flower-dish" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
           <img class="v17r-botanic v17r-hero-lime" src="/images/brand/v17-lime.svg" alt="" width="420" height="360" />
-          <span class="v17r-calligraphy v17r-hero-aromatics" aria-hidden="true">Coco<br/>Citronnelle<br/>Piment<br/>Poivre…<br/>et bien plus !</span>
           <svg class="v17r-decoration v17r-leaf" viewBox="0 0 150 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M20 178C38 87 94 32 133 13C147 92 112 166 20 178Z" fill="#54873F"/><path d="M20 178C69 123 101 81 133 13M68 115L54 66M93 88L116 97" stroke="#24432A" stroke-width="5" stroke-linecap="round"/></svg>
         </div>
       </section>
@@ -59,12 +78,9 @@ interface Props { preview?: boolean; }
             width="1672" height="941"
             loading="lazy" decoding="async"
             alt="Illustration générée par IA d’un marché terrestre imaginaire d’inspiration cambodgienne, avec vendeuses, étals, citronnelle, piments et légumes" />
-          <div class="v17r-market-bloom" aria-hidden="true"><img src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" loading="lazy" decoding="async" /></div>
           <figcaption>Marché imaginaire inspiré du Cambodge</figcaption>
         </figure>
         <div class="v17r-market-copy">
-          <img class="v17r-botanic v17r-market-flower" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
-          <span class="v17r-handnote v17r-market-note" aria-hidden="true">Des marchés<br/>pleins de vie ↙</span>
           <p class="v17r-kicker">01 — Les produits</p>
           <h2 id="v17r-market-title">TOUT PART DES <em>BONS PRODUITS.</em></h2>
           <p>Les marchés, les épices, les herbes fraîches : autant de parfums à apprivoiser.</p>
@@ -81,13 +97,10 @@ interface Props { preview?: boolean; }
         <div class="v17r-palette-media">
           <img class="v17r-botanic v17r-palette-foliage-left" src="/images/brand/v17-banana-leaves.svg" alt="" aria-hidden="true" width="560" height="690" loading="lazy" decoding="async" />
           <img class="v17r-botanic v17r-palette-foliage-right" src="/images/brand/v17-banana-leaves.svg" alt="" aria-hidden="true" width="560" height="690" loading="lazy" decoding="async" />
-          <span class="v17r-calligraphy v17r-palette-note-left" aria-hidden="true">Citronnelle<br/>fraîche ↙</span>
-          <span class="v17r-calligraphy v17r-palette-note-right" aria-hidden="true">Des parfums<br/>à découvrir ↘</span>
           <img class="v17r-botanic v17r-lemongrass" src="/images/brand/v17-lemongrass.svg" alt="" width="670" height="420" />
           <img class="v17r-botanic v17r-palette-lime" src="/images/brand/v17-lime.svg" alt="" width="420" height="360" />
           <img class="v17r-botanic v17r-palette-flower" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
           <img class="v17r-spice-bowls" src="/images/brand/v17-spice-bowls.svg" alt="" aria-hidden="true" width="840" height="500" loading="lazy" decoding="async" />
-          <span class="v17r-calligraphy v17r-palette-spice-label" aria-hidden="true">Poivre de Kampot<br/>et curcuma</span>
           <figure class="v17r-palette-a">
             <img src={galangal} srcset="/images/cuisine/v17-galangal-1000-480.webp 480w, /images/cuisine/v17-galangal-1000.jpg 691w" sizes="(max-width: 760px) 42vw, 24vw" width="1000" height="538" loading="lazy" decoding="async" alt="Rhizomes de galanga, photographie botanique générique" />
             <figcaption>Le galanga</figcaption>
@@ -101,49 +114,83 @@ interface Props { preview?: boolean; }
         <a class="v17r-pill" href="/glossaire/">En savoir plus <span aria-hidden="true">↗</span></a>
       </section>
 
-      <section class="v17r-gestures" aria-labelledby="v17r-gestures-title">
+      <div class="v17r-handoff v17r-handoff--aroma" aria-hidden="true"><svg viewBox="0 0 1440 180" preserveAspectRatio="none" focusable="false"><path d="M0 128C206 139 303 53 476 74S755 170 972 94 1298 39 1440 70V180H0Z" fill="#143929"/></svg></div>
+      <section class="v17r-gestures v17r-gestures--cinematic" aria-labelledby="v17r-gestures-title" data-v17-mortar-scene>
         <div class="v17r-gestures-visual" data-media-status="photographie-geste-generique">
           <figure class="v17r-gestures-main">
-            <img src="/images/cuisine/v17-mortar-hands-1600.jpg" srcset="/images/cuisine/v17-mortar-hands-1600-800.webp 800w, /images/cuisine/v17-mortar-hands-1600-1200.webp 1200w, /images/cuisine/v17-mortar-hands-1600.jpg 1600w" sizes="(max-width:760px) 96vw, 44vw" width="1600" height="1067" loading="lazy" decoding="async" alt="Mains tenant un pilon au-dessus d’un mortier en pierre, photographie illustrative du geste" />
-            <figcaption>Au mortier · photo d’illustration</figcaption>
+            <img src="/images/cuisine/v17-mortar-hands-1600.jpg" srcset="/images/cuisine/v17-mortar-hands-1600-800.webp 800w, /images/cuisine/v17-mortar-hands-1600-1200.webp 1200w, /images/cuisine/v17-mortar-hands-1600.jpg 1600w" sizes="100vw" width="1600" height="1067" loading="lazy" decoding="async" alt="Mains tenant un pilon au-dessus d’un mortier en pierre, photographie illustrative du geste" />
+            <figcaption>Le geste du mortier · photographie d’illustration</figcaption>
           </figure>
           <figure class="v17r-gestures-kroeung">
-            <img src="/images/cuisine/v17-kroeung-final.jpg" srcset="/images/cuisine/v17-kroeung-final-360.webp 360w, /images/cuisine/v17-kroeung-final.jpg 522w" sizes="(max-width:760px) 34vw, 22vw" alt="Pâte de kroeung rouge après préparation, photographie distincte" width="800" height="600" loading="lazy" decoding="async" />
-            <figcaption>Kroeung préparé</figcaption>
+            <img src="/images/cuisine/v17-kroeung-final.jpg" srcset="/images/cuisine/v17-kroeung-final-360.webp 360w, /images/cuisine/v17-kroeung-final.jpg 522w" sizes="(max-width:760px) 40vw, 24vw" alt="Pâte de kroeung rouge après préparation, photographie distincte" width="800" height="600" loading="lazy" decoding="async" />
+            <figcaption>Kroeung préparé · le résultat du geste</figcaption>
           </figure>
-          <img class="v17r-botanic v17r-gestures-flower" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
-          <span class="v17r-calligraphy v17r-gestures-handnote" aria-hidden="true">Le geste et<br/>les arômes</span>
-          <span class="v17r-image-warning">Photo illustrative : le geste n’est pas documenté comme une préparation khmère.</span>
+          <div class="v17r-gestures-shade" aria-hidden="true"></div>
         </div>
         <div class="v17r-gestures-copy">
-          <p class="v17r-kicker">02 — Les gestes</p>
-          <h2 id="v17r-gestures-title">COUPER.<br/><em>PILER.</em><br/>SENTIR.</h2>
-          <p>Des gestes simples pour libérer les arômes : la préparation compte autant que les ingrédients.</p>
-          <a class="v17r-pill" href="/apprendre/piler-aromates-au-mortier/">Voir les étapes <span aria-hidden="true">↗</span></a>
+          <p class="v17r-kicker">02 — Le savoir-faire</p>
+          <h2 id="v17r-gestures-title"><span class="v17r-gesture-word">COUPER.</span><span class="v17r-gesture-word v17r-gesture-word--accent"><em>PILER.</em></span><span class="v17r-gesture-word">SENTIR.</span></h2>
+          <p>Au mortier, les aromates s’écrasent, se mêlent et libèrent leurs parfums. Découvrez le geste qui donne vie au kroeung.</p>
+          <a class="v17r-pill" href="/apprendre/piler-aromates-au-mortier/">Découvrir le geste <span aria-hidden="true">↗</span></a>
         </div>
-        <ol class="v17r-gestures-steps" aria-label="Les trois gestes">
-          <li><span aria-hidden="true">✎</span><div><strong>COUPER</strong><small>Préparer les aromates</small></div></li>
-          <li><span aria-hidden="true">◉</span><div><strong>PILER</strong><small>Travailler la texture</small></div></li>
-          <li><span aria-hidden="true">✳</span><div><strong>SENTIR</strong><small>Reconnaître les parfums</small></div></li>
-        </ol>
+        <div class="v17r-gestures-progress" aria-hidden="true"><span></span></div>
       </section>
       <div class="v17r-wave v17r-wave-cream" aria-hidden="true"><svg viewBox="0 0 1440 95" preserveAspectRatio="none"><path d="M0 12C135 89 327 7 495 45S839 65 1010 26 1241 79 1440 38v57H0Z" fill="#69361e"/></svg></div>
 
-      <section class="v17r-table v17r-table--generated" aria-labelledby="v17r-table-title">
-        <div class="v17r-table-media">
-          <figure class="v17r-table-amok"><img src={table} srcset="/images/cuisine/v17-tablee-khmere-generee-960.webp 960w, /images/cuisine/v17-tablee-khmere-generee-1280.webp 1280w, /images/cuisine/v17-tablee-khmere-generee.webp 1600w" sizes="100vw" width="1600" height="900" loading="lazy" decoding="async" alt="Illustration éditoriale générée d’une table conviviale d’inspiration cambodgienne, avec différents plats, currys, nouilles, riz et aromates" /></figure>
+      <!-- D24 — static feast desktop, compact swipeable native-snap recipe carousel on mobile. -->
+      <section class="v17r-table v17r-table--editorial" aria-labelledby="v17r-table-title" data-v17-table-editorial>
+        <div class="v17r-table-stage">
+          <figure class="v17r-table-fullbleed">
+            <picture>
+              <source media="(max-width: 760px)" type="image/webp"
+                      srcset="/images/cuisine/v17-tablee-khmere-mobile.webp" />
+              <img src="/images/cuisine/v17-tablee-khmere-generee.webp"
+                   width="1672" height="941" loading="lazy" decoding="async"
+                   alt="Tablée khmère illustrée : Amok Trey dans une feuille de bananier, Lok Lak au riz, Num Banh Chok aux herbes et Prahok Ktis avec ses légumes."/>
+            </picture>
+          </figure>
+          <div class="v17r-table-shade" aria-hidden="true"></div>
+          <header class="v17r-table-copy">
+            <p class="v17r-kicker">03 — À table</p>
+            <span class="v17r-table-rule" aria-hidden="true"></span>
+            <h2 id="v17r-table-title"><span>LE GOÛT</span><em>DU PARTAGE.</em></h2>
+            <p class="v17r-table-intro">Quatre recettes, quatre histoires. Au Cambodge, le plaisir de manger commence quand les plats se partagent.</p>
+          </header>
+          <ol class="v17r-table-recipes" aria-label="Quatre recettes de la tablée khmère, défilement horizontal sur mobile" data-v17-table-carousel tabindex="0">
+            {tableRecipes.map((dish, index) => (
+              <li class="v17r-table-recipe" data-v17-table-recipe>
+                <img class="v17r-table-recipe-image" src={dish.image} width="800" height="600"
+                     loading="lazy" decoding="async" alt="" aria-hidden="true" />
+                <div class="v17r-table-recipe-text">
+                  <span class="v17r-table-recipe-number" aria-hidden="true">{String(index + 1).padStart(2,'0')}</span>
+                  <h3>{dish.title}</h3>
+                  <p class="v17r-table-recipe-short">{dish.short}</p>
+                  <p class="v17r-table-recipe-story">{dish.story}</p>
+                  <a href={dish.url} class="v17r-table-recipe-link" aria-label={`Voir la recette de ${dish.title}`}>Voir la recette <span aria-hidden="true">↗</span></a>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <div class="v17r-table-mobile-controls" data-v17-carousel-controls aria-label="Parcourir les quatre recettes">
+            <button type="button" class="v17r-table-mobile-arrow" data-v17-carousel-prev aria-label="Recette précédente" disabled><span aria-hidden="true">←</span></button>
+            <div class="v17r-table-mobile-dots" aria-label="Choisir une recette">
+              {tableRecipes.map((dish, index) => (
+                <button type="button" class="v17r-table-mobile-dot" data-v17-carousel-dot={index}
+                        aria-label={`Afficher la recette ${index + 1} sur 4 : ${dish.title}`}
+                        aria-current={index === 0 ? 'true' : 'false'}>
+                  <span aria-hidden="true"></span>
+                </button>
+              ))}
+            </div>
+            <span class="v17r-table-mobile-page" data-v17-carousel-page aria-live="polite">1 / 4</span>
+            <button type="button" class="v17r-table-mobile-arrow" data-v17-carousel-next aria-label="Recette suivante"><span aria-hidden="true">→</span></button>
+          </div>
+          <p class="v17r-table-mobile-hint">Faites glisser pour découvrir les quatre recettes.</p>
+          <a class="v17r-table-culture" href="/culture/construire-repas-cambodgien/">Découvrir l’art du repas cambodgien <span aria-hidden="true">↗</span></a>
         </div>
-        <div class="v17r-table-copy">
-          <img class="v17r-botanic v17r-table-flower" src="/images/brand/v17-plumeria.svg" alt="" width="340" height="340" />
-          <p class="v17r-kicker">03 — À table</p>
-          <h2 id="v17r-table-title">DES PLATS<br/><em>QUI RASSEMBLENT.</em></h2>
-          <p>Poissons, currys, salades, soupes… Des plats généreux que l’on aime retrouver et partager.</p>
-          <a class="v17r-pill" href="/recettes/">Découvrir les recettes <span aria-hidden="true">↗</span></a>
-          <a class="v17r-table-sub" href="/culture/construire-repas-cambodgien/">Comprendre le repas cambodgien →</a>
-        </div>
-        <span class="v17r-calligraphy v17r-table-handnote" aria-hidden="true">Frais<br/>Coloré<br/>Généreux</span>
       </section>
 
+      <div class="v17r-handoff v17r-handoff--sweet" aria-hidden="true"><svg viewBox="0 0 1440 180" preserveAspectRatio="none" focusable="false"><path d="M0 88C239 31 409 141 638 100S1025 27 1221 95 1347 131 1440 79V180H0Z" fill="#fff8eb"/></svg></div>
       <section class="v17r-dessert" aria-labelledby="v17r-dessert-title">
         <div class="v17r-dessert-copy">
           <p class="v17r-kicker">04 — Les douceurs</p>
@@ -159,6 +206,7 @@ interface Props { preview?: boolean; }
         </div>
       </section>
 
+      <div class="v17r-handoff v17r-handoff--journey" aria-hidden="true"><svg viewBox="0 0 1440 180" preserveAspectRatio="none" focusable="false"><path d="M0 134C182 63 335 151 501 102S863 33 1030 90 1297 156 1440 92V180H0Z" fill="#df825c"/></svg></div>
       <section class="v17r-finale" aria-labelledby="v17r-finale-title">
         <div class="v17r-finale-landscape">
           <img src="/images/cuisine/v17-angkor-sunset-1600.jpg" width="1600" height="900" loading="lazy" decoding="async" alt="Angkor Wat éclairé par le soleil couchant et reflété dans l’eau, photographie documentaire" />
@@ -181,7 +229,6 @@ interface Props { preview?: boolean; }
             <a class="v17r-pill v17r-pill-outline" href="/recettes/">Toutes les recettes <span aria-hidden="true">↗</span></a>
           </div>
         </div>
-        <p class="v17r-finale-credit">Angkor au coucher du soleil : photo <a href="https://commons.wikimedia.org/wiki/File:Angkor_Wat_Reflection_(46810498612).jpg" target="_blank" rel="noopener noreferrer">Radek Kucharski</a>, <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener noreferrer">CC BY 2.0</a> ; version réduite et cadrage CSS.</p>
       </section>
 
     </main>
@@ -189,5 +236,7 @@ interface Props { preview?: boolean; }
   </div>
   <script>
     import { initV17AccueilMotion } from '../scripts/v17AccueilMotion';
+    import { initV17TableCarousel } from '../scripts/v17TableCarousel';
     initV17AccueilMotion();
+    initV17TableCarousel();
   </script>

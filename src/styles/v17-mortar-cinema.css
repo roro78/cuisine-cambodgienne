@@ -1,0 +1,247 @@
+/*
+ * V17 D13 — Le geste du mortier.
+ * A cinematic editorial stage rather than a photo/text split.
+ * The existing brand tokens are reused unchanged. Static HTML/CSS is the
+ * complete accessible state: JS only lends depth and progressive emphasis.
+ */
+.v17r .v17r-gestures--cinematic {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  justify-items: end;
+  min-height: max(48rem, 100svh);
+  padding: clamp(5rem, 9svh, 8rem) clamp(1.25rem, 7vw, 8rem);
+  overflow: clip;
+  background: var(--vr-forest);
+  color: var(--vr-ivory);
+}
+.v17r .v17r-gestures--cinematic .v17r-gestures-visual {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  min-height: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.v17r .v17r-gestures--cinematic .v17r-gestures-main {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--vr-forest);
+  transform: none;
+  clip-path: none;
+}
+.v17r .v17r-gestures--cinematic .v17r-gestures-main img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 37% 50%;
+  filter: saturate(.85) contrast(1.08);
+}
+.v17r .v17r-gestures--cinematic .v17r-gestures-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(11, 30, 20, .05) 0%, rgba(11, 30, 20, .11) 29%, rgba(11, 30, 20, .66) 53%, rgba(11, 30, 20, .96) 100%),
+    linear-gradient(0deg, rgba(12, 33, 23, .49), transparent 34%);
+}
+.v17r .v17r-gestures--cinematic .v17r-gestures-kroeung {
+  position: absolute;
+  z-index: 3;
+  bottom: clamp(1.4rem, 5svh, 3.5rem);
+  left: clamp(1rem, 5vw, 5rem);
+  right: auto;
+  top: auto;
+  width: clamp(11rem, 23vw, 21rem);
+  height: clamp(10rem, 24vw, 21rem);
+  max-width: 38%;
+  margin: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  transform: none;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 42%, rgba(0,0,0,.98) 55%, transparent 74%);
+  mask-image: radial-gradient(ellipse at center, #000 42%, rgba(0,0,0,.98) 55%, transparent 74%);
+}
+.v17r .v17r-gestures--cinematic .v17r-gestures-kroeung img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 45% center;
+  border: 0;
+  border-radius: 0;
+  filter: saturate(1.12) contrast(1.04);
+}
+.v17r .v17r-gestures--cinematic .v17r-gestures-copy {
+  position: relative;
+  z-index: 4;
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
+  justify-self: end;
+  width: min(100%, 43rem);
+  min-width: 0;
+  max-width: 53%;
+  margin: 0;
+  padding: clamp(1rem, 2vw, 2rem) 0;
+  text-align: left;
+}
+.v17r .v17r-gestures--cinematic .v17r-kicker {
+  margin: 0 0 clamp(1.25rem, 2.5vw, 2.4rem);
+  color: var(--vr-yellow);
+  font-weight: 850;
+}
+.v17r .v17r-gestures--cinematic h2 {
+  margin: 0 0 clamp(1.5rem, 3vw, 3rem);
+  max-width: none;
+  font-size: clamp(4.1rem, 7.5vw, 9rem);
+  line-height: .93;
+  letter-spacing: -.035em;
+  text-align: left;
+  text-wrap: nowrap;
+  color: var(--vr-ivory);
+}
+.v17r .v17r-gestures--cinematic .v17r-gesture-word {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  color: var(--vr-ivory);
+}
+.v17r .v17r-gestures--cinematic .v17r-gesture-word--accent,
+.v17r .v17r-gestures--cinematic h2 em {
+  color: var(--vr-orange);
+  font-style: normal;
+}
+.v17r .v17r-gestures--cinematic .v17r-gestures-copy > p:not(.v17r-kicker) {
+  max-width: 31rem;
+  margin: 0 0 2rem;
+  color: var(--vr-ivory);
+  font-size: clamp(1rem, 1.25vw, 1.24rem);
+  line-height: 1.65;
+  text-shadow: 0 1px 8px rgba(11, 30, 20, .24);
+}
+.v17r .v17r-gestures--cinematic .v17r-pill {
+  position: relative;
+  margin: 0;
+  text-shadow: none;
+}
+.v17r .v17r-gestures--cinematic .v17r-gestures-progress {
+  position: absolute;
+  z-index: 4;
+  right: clamp(1.25rem, 7vw, 8rem);
+  bottom: clamp(1.3rem, 4svh, 3rem);
+  width: clamp(4.25rem, 11vw, 9rem);
+  height: 2px;
+  background: rgba(255, 249, 236, .45);
+  pointer-events: none;
+}
+.v17r .v17r-gestures--cinematic .v17r-gestures-progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--vr-yellow);
+  transform-origin: left center;
+}
+@media (max-width: 1100px) and (min-width: 761px) {
+  .v17r .v17r-gestures--cinematic { padding-inline: clamp(1.6rem, 5vw, 5rem); }
+  .v17r .v17r-gestures--cinematic .v17r-gestures-copy { max-width: 55%; }
+  .v17r .v17r-gestures--cinematic h2 { font-size: clamp(3.2rem, 7vw, 6rem); }
+  .v17r .v17r-gestures--cinematic .v17r-gestures-main img { object-position: 34% 50%; }
+}
+@media (max-width: 760px) {
+  .v17r .v17r-gestures--cinematic {
+    display: block;
+    min-height: max(43rem, 98svh);
+    padding: clamp(21rem, 55svh, 35rem) 1.3rem clamp(4.75rem, 10svh, 7rem);
+  }
+  .v17r .v17r-gestures--cinematic .v17r-gestures-visual {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    order: initial;
+  }
+  .v17r .v17r-gestures--cinematic .v17r-gestures-main {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+  .v17r .v17r-gestures--cinematic .v17r-gestures-main img {
+    object-position: 39% 30%;
+  }
+  .v17r .v17r-gestures--cinematic .v17r-gestures-shade {
+    background: linear-gradient(180deg,
+      rgba(12, 33, 23, .03) 0%,
+      rgba(12, 33, 23, .04) 26%,
+      rgba(12, 33, 23, .75) 54%,
+      rgba(12, 33, 23, .98) 79%,
+      var(--vr-forest) 100%);
+  }
+  .v17r .v17r-gestures--cinematic .v17r-gestures-copy {
+    display: block;
+    position: relative;
+    z-index: 4;
+    max-width: 100%;
+    width: 100%;
+    order: initial;
+    padding: 0;
+    margin: 0;
+  }
+  .v17r .v17r-gestures--cinematic h2 {
+    font-size: clamp(3.8rem, 14.4vw, 6rem);
+    line-height: .97;
+    margin: 1rem 0 1.5rem;
+  }
+  .v17r .v17r-gestures--cinematic .v17r-gestures-copy > p:not(.v17r-kicker) {
+    max-width: 32rem;
+    margin-bottom: 1.5rem;
+    font-size: clamp(.98rem, 3.5vw, 1.15rem);
+  }
+  .v17r .v17r-gestures--cinematic .v17r-gestures-kroeung {
+    top: clamp(11rem, 23svh, 19rem);
+    right: -.8rem;
+    bottom: auto;
+    left: auto;
+    width: clamp(9rem, 39vw, 14rem);
+    height: clamp(9rem, 39vw, 14rem);
+    max-width: 44%;
+  }
+  .v17r .v17r-gestures--cinematic .v17r-gestures-progress {
+    right: 1.3rem;
+    bottom: 2.75rem;
+    width: 5rem;
+  }
+}
+@media (max-width: 375px) {
+  .v17r .v17r-gestures--cinematic { padding-top: clamp(20rem, 49svh, 27rem); }
+  .v17r .v17r-gestures--cinematic h2 { font-size: clamp(3rem, 14vw, 4.5rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v17r .v17r-gestures--cinematic .v17r-gesture-word,
+  .v17r .v17r-gestures--cinematic .v17r-gestures-main img,
+  .v17r .v17r-gestures--cinematic .v17r-gestures-kroeung,
+  .v17r .v17r-gestures--cinematic .v17r-gestures-progress span {
+    animation: none !important;
+    transition: none !important;
+  }
+}

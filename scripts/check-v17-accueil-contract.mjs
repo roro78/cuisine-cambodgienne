@@ -57,8 +57,9 @@ assert.doesNotMatch(page,/marketIsIllustrated|v17-market-live-1800/,
   'No silent return to the obsolete documentary market');
 assert.match(credits,/Filipp Romanovski/);
 assert.match(credits,/composition éditoriale d’un repas/);
-assert.match(page,/Radek Kucharski/);
-assert.match(page,/Angkor_Wat_Reflection_\(46810498612\)\.jpg/);
+assert.match(credits,/Radek Kucharski/);
+assert.match(credits,/Angkor_Wat_Reflection_\(46810498612\)\.jpg/);
+assert.doesNotMatch(page,/v17r-finale-credit/,'Long author license line belongs to dedicated credits page');
 assert.match(page,/v17r-gestures-main/);
 assert.doesNotMatch(page,/v17r-table-detail/,'No detached bowl inset in the immersive table scene');
 assert.ok(fs.existsSync('public/images/cuisine/v17-num-plae-ai-641.jpg'),'Num Plae Ai approved real photograph missing');
@@ -72,7 +73,10 @@ for(const media of [
 assert.ok(fs.existsSync('public/images/cuisine/v17-kroeung-final.jpg'));
 assert.ok(fs.existsSync('public/images/brand/v17-spice-bowls.svg'),'Missing original pepper/turmeric illustration');
 assert.match(page,/v17r-finale-stamp/,'Missing Angkor finale illustration');
-assert.match(page,/v17r-hero-sidebar/,'Missing storyboard side annotation');
+assert.doesNotMatch(page,/v17r-hero-sidebar|v17r-table-handnote|v17r-market-note/,'Decorative microcopy must not clutter or overlap premium headlines');
+assert.doesNotMatch(page,/v17r-gestures-steps/,'Gesture icon list must not duplicate the large three-line heading');
+assert.doesNotMatch(page,/v17r-image-warning/,'Generic mortar photography caveat belongs to the credits page');
+assert.match(credits,/Illustration générique du geste/,'Mortar caveat remains transparently credited');
 assert.match(page,/v17r-spice-bowls/,'Missing spice bowl visual');
 assert.match(page,/v17r-gestures-kroeung/);
 assert.doesNotMatch(page,/v17r-preview-notice|v17r-table-clarity/,'No disruptive repeated credit blocks on the homepage');
@@ -85,6 +89,155 @@ assert.match(script,/prefers-reduced-motion: no-preference/);
 assert.match(script,/\.v17r-palette-a/);
 assert.match(script,/\.v17r-palette-b/);
 assert.match(script,/scrub: \.75/);
+assert.match(script,/const chapterPerformance =/,'D15: named chapter arrival and exit choreography required');
+assert.match(script,/const heroDeparture =/,'D15: hero departure choreography required');
+assert.match(page,/v17r-gestures--cinematic/,'Mortar cinematic composition missing');
+assert.match(page,/data-v17-mortar-scene/,'Mortar scroll trigger missing');
+assert.equal((page.match(/v17r-gesture-word/g)||[]).length,4,
+  'Mortar requires three independent animated words and accent class');
+assert.match(page,/v17-mortar-cinema\.css/,'Mortar last-scene stylesheet must be loaded');
+assert.match(script,/const mortarCinema =/,'Dedicated mortar storyboard missing');
+
+const handoffCss=fs.readFileSync('src/styles/v17-scene-handoffs.css','utf8');
+assert.ok(page.includes('v17-scene-handoffs.css') &&
+  page.includes('v17-d27-seamless-boundaries.css'),
+  'D27 seamless section masks must load after legacy styles');
+const seamCss=fs.readFileSync('src/styles/v17-d27-seamless-boundaries.css','utf8');
+assert.ok(seamCss.includes('margin-block-start: calc(-1 * var(--v17-boundary-depth))') &&
+  seamCss.includes('clip-path: polygon(') &&
+  seamCss.includes('.v17r-dessert,') &&
+  seamCss.includes('.v17r-finale') &&
+  seamCss.includes('.v17r-table--editorial,') &&
+  seamCss.includes('display: none !important'),
+  'D27 each incoming scene must reveal its own image, never a solid SVG panel');
+for(const name of ['aroma','sweet','journey']){
+  assert.ok(page.includes('v17r-handoff--'+name),'D14 bridge missing: '+name);
+}
+assert.equal((page.match(/class="v17r-handoff /g)||[]).length,3,
+  'Only three new editorial bridges; original seam count remains unchanged');
+assert.ok(script.includes('const sceneHandoffs ='),'D14 transition choreography missing');
+assert.ok(script.includes('sceneHandoffs(false)') && script.includes('sceneHandoffs(true)'),
+  'D14 motion must support desktop and mobile');
+assert.ok(script.includes("clipPath: 'inset(0% 0% 0% 0%)'"),
+  'D14 photo masks must fully reveal the artworks');
+assert.match(handoffCss,/height: 0;/,'D14 bridges cannot create empty scroll space');
+assert.match(handoffCss,/pointer-events: none;/,'D14 bridges cannot block input');
+assert.doesNotMatch(handoffCss,/--vr-(?:ivory|forest|orange|yellow|lime)\s*:/,
+  'D14 must not override approved brand colors');
+
+assert.match(script,/mortarCinema\(false\)/,'Desktop mortar motion missing');
+assert.match(script,/mortarCinema\(true\)/,'Mobile mortar motion missing');
+assert.equal(script.split("chapterPerformance('.v17r-").length-1,6,
+  'D18: table and desserts have individual narratives instead of generic heading flights');
+// D21: abandon the four-cutout prototype in favor of one static generated photograph.
+const editorialCss=fs.readFileSync('src/styles/v17-d21-editorial-table.css','utf8');
+assert.ok(page.includes('v17-d21-editorial-table.css') && page.includes('data-v17-table-editorial') &&
+  page.includes('v17-tablee-khmere-generee.webp'), 'D22 feast photography missing');
+for (const slug of ['amok-trey','lok-lak','num-banh-chok','prahok-ktis']) {
+  assert.ok(page.includes("slug: '"+slug+"'"), 'D22 featured recipe not connected to catalogue: '+slug);
+}
+assert.match(page,/href=\{dish\.url\}/,'D22 each recipe must have its own dynamic anchor');
+assert.match(page,/<ol class="v17r-table-recipes"/,'D22 four food story chapters required');
+assert.match(page,/data-v17-table-recipe/,'D22 recipes must be individually animatable');
+assert.match(page,/v17r-table-recipe-image/,'D22 mobile chapter must use its own food photograph');
+assert.match(page,/<picture>/,'D22 responsive picture wrapper missing');
+assert.match(page,/v17-tablee-khmere-mobile\.webp/,'D22 mobile-generated portrait missing');
+for(const [name,sha] of [
+  ['v17-tablee-khmere-generee.webp','c646b700c2e48847007c8a10a6341943a7c951e2335881c3e78a3f34c8f942b8'],
+  ['v17-tablee-khmere-mobile.webp','c19fb1580062cf689e28dae46ffdc3c3f473a503718408ed0b0821c534edbf05'],
+  ['v17-prahok-ktis-section5-mobile.webp','46be40fc7dcc3ec658303e8c1951a20da7ed9dc1c74f7c61d91f6c875894d196'],
+]){
+  const bytes=fs.readFileSync('public/images/cuisine/'+name);
+  assert.equal(bytes.subarray(0,4).toString(),'RIFF','D22 generated photo must be a WebP: '+name);
+  assert.equal(bytes.subarray(8,12).toString(),'WEBP','D22 generated photo must be a WebP: '+name);
+  assert.equal(createHash('sha256').update(bytes).digest('hex'),sha,
+    'D22 photo changed unexpectedly: '+name);
+}
+// D26: new storytelling headline and backdrop are part of the visual contract.
+assert.ok(page.includes('<span>LE GOÛT</span><em>DU PARTAGE.</em>') &&
+  page.includes('03 — À table'),'D26 new section 5 title and chapter label missing');
+// D24: mobile uses a real native-scroll carousel without changing desktop
+// imagery, links or adding any carousel dependency/autoplay.
+const carouselTs=fs.readFileSync('src/scripts/v17TableCarousel.ts','utf8');
+for(const needle of [
+  'data-v17-table-carousel','data-v17-carousel-controls',
+  'data-v17-carousel-prev','data-v17-carousel-next',
+  'data-v17-carousel-dot','data-v17-carousel-page'
+]){
+  assert.ok(page.includes(needle),'D24 missing progressive carousel markup: '+needle);
+}
+assert.ok(page.includes('initV17TableCarousel();') &&
+  page.includes("import { initV17TableCarousel } from '../scripts/v17TableCarousel'"),
+  'D24 controller must be mounted from the homepage component');
+assert.ok(editorialCss.includes('background:transparent;') &&
+  editorialCss.includes('top:0;right:0;left:0;bottom:0;height:100%;') &&
+  !script.includes("selector: '.v17r-handoff--sweet svg'"),
+  'D26 photographic background and full-width wave required');
+assert.ok(editorialCss.includes('scroll-snap-type:x mandatory') &&
+  editorialCss.includes('overflow-x:auto') &&
+  editorialCss.includes('flex-flow:row nowrap') &&
+  editorialCss.includes('data-v17-carousel-ready') &&
+  editorialCss.includes('min-height:clamp(23rem,53svh,30rem)') &&
+  !editorialCss.includes('grid-template-columns:minmax(0,1fr)'),
+  'D24 four recipes must scroll horizontally and stay compact on mobile');
+assert.ok(carouselTs.includes("track.addEventListener('scroll'") &&
+  carouselTs.includes("track.addEventListener('keydown'") &&
+  carouselTs.includes("reduced.matches?'instant':'smooth'") &&
+  !carouselTs.includes('setInterval(') && !carouselTs.includes('data-autoplay'),
+  'D24 carousel must support manual controls, keyboard and reduced motion without autoplay');
+assert.ok(!script.includes('trigger:recipe,start:') &&
+  script.includes('tableEditorial(true)') &&
+  script.includes('tableEditorial(false, window.matchMedia('),
+  'D24 must not animate horizontal slides with vertical ScrollTriggers');
+assert.equal((page.match(/class="v17r-table-fullbleed"/g)||[]).length,1,
+  'D21 requires exactly one full-bleed photo');
+assert.doesNotMatch(page,/v17r-table-dish|v17r-table-ripple|data-v17-table-assemble/,
+  'Old individual moving plates must be removed');
+assert.ok(!page.includes('v17-d18-table-assemble.css') &&
+  !page.includes('v18-table-cutout-dishes.css'),
+  'Abandoned plate styles must not load');
+assert.ok(script.includes('const tableEditorial =') &&
+  script.includes('tableEditorial(false, window.matchMedia(') &&
+  script.includes('tableEditorial(true)') && !script.includes('const assembleTable =') &&
+  script.includes('y:tablet?(i===0?-18:22)') &&
+  script.includes('recipes.length!==4') &&
+  script.includes('gsap.set(recipes,{autoAlpha:.78,y:14})'),
+  'D22 four readable interactive recipe labels, photography remains static');
+assert.ok(editorialCss.includes('object-fit:cover') &&
+  editorialCss.includes('min-height:100svh') &&
+  !editorialCss.includes('position:sticky') &&
+  editorialCss.includes('min-width:761px') &&
+  editorialCss.includes('max-width:1100px') &&
+  editorialCss.includes('prefers-reduced-motion:reduce'),
+  'D21 cinematic image, tablet layout, reduced-motion fallback');
+for(const url of ['/recettes/','/culture/construire-repas-cambodgien/']){
+  assert.ok(page.includes('href="'+url+'"'),'Missing editorial navigation '+url);
+}
+assert.ok(script.includes('const dessertBloom =') && script.includes('dessertBloom(true)') &&
+  script.includes('dessertBloom(false)'),'D17: photo iris reveal must work desktop and mobile');
+assert.ok(script.includes('const travellingAromatic =') &&
+  script.includes('travellingAromatic();'),'D17: continuous market-to-mortar object missing');
+const d17Styles=fs.readFileSync('src/styles/v17-d17-cinematic-scenes.css','utf8');
+assert.ok(page.includes('v17-d17-cinematic-scenes.css'),'D17 final art-direction styles not loaded');
+assert.ok(page.includes('data-v17-aromatic-traveller'),'D17 one travelling aromatic node missing');
+assert.ok(d17Styles.includes('object-fit: cover') && d17Styles.includes('border-radius: 0'),
+  'D17 desserts must fill the entire photographic chapter, never a rectangular card');
+assert.ok(d17Styles.includes('prefers-reduced-motion: reduce'),
+  'D17 must honor reduced motion');
+assert.ok(script.includes('mobile ? 145 : 170'),
+  'D16: horizontal titles must travel more than their own width');
+assert.ok(script.includes('mobile ? -110 : -165') &&
+          script.includes('mobile ? 110 : 155'),
+  'D16: ingredients and table titles must enter from opposing vertical directions');
+assert.ok(script.includes('timeline.to(heading, { ...departure'),
+  'D16: chapter title must exit after a reading hold');
+assert.ok(script.includes('mobile ? 155 : 190'),
+  'D16: individual mortar words require cinematic lateral trajectories');
+assert.ok(script.includes('trigger: heading') &&
+          script.includes("end: 'top 8%'"),
+  'D16: heading entrance and exit must stay synchronized with visible viewport position');
+assert.match(script,/scrub: mobile/,
+  'D15: motion must respond to native scrolling on both form factors');
 assert.doesNotMatch(script,/pin:\s*true|ScrollSmoother|window\.scrollTo/);
 
 

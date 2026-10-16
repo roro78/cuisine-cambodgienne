@@ -1,0 +1,86 @@
+
+/*
+ * V17 D27 — Seamless, genuinely photographic chapter boundaries.
+ *
+ * Legacy SVG handoffs filled their entire lower rectangles with flat forest,
+ * cream, brown or coral. They appeared as coloured panels whenever the next
+ * chapter was a full-bleed photograph. Instead, clip each incoming chapter:
+ * its *actual* photographic artwork appears above the fold in an organic wave.
+ * The incoming section overlaps the end of the previous chapter; there is no
+ * separate wave background, panel, seam spacer or extra scroll height.
+ *
+ * Keep the 5 original SVG handoff nodes in the DOM for historical page
+ * contracts, but do not render/animate them. They are aria-hidden.
+ */
+.v17r {
+  --v17-boundary-depth: clamp(3.5rem, 8svh, 5.5rem);
+}
+.v17r > .v17r-wave,
+.v17r > .v17r-handoff {
+  display: none !important;
+}
+
+/*
+ * A gently irregular wave (~ 27 samples) with depth measured in CSS length,
+ * not a percentage of section height. It therefore remains stable with
+ * enlarged text, taller mobile chapters and viewport resizing.
+ */
+.v17r > :is(
+  .v17r-palette,
+  .v17r-gestures--cinematic,
+  .v17r-table--editorial,
+  .v17r-dessert,
+  .v17r-finale
+) {
+  position: relative;
+  z-index: 2;
+  margin-block-start: calc(-1 * var(--v17-boundary-depth));
+  clip-path: polygon(
+     0% calc(var(--v17-boundary-depth) * .62),
+     4% calc(var(--v17-boundary-depth) * .54),
+     8% calc(var(--v17-boundary-depth) * .47),
+    12% calc(var(--v17-boundary-depth) * .40),
+    16% calc(var(--v17-boundary-depth) * .36),
+    20% calc(var(--v17-boundary-depth) * .38),
+    24% calc(var(--v17-boundary-depth) * .45),
+    28% calc(var(--v17-boundary-depth) * .55),
+    32% calc(var(--v17-boundary-depth) * .64),
+    36% calc(var(--v17-boundary-depth) * .69),
+    40% calc(var(--v17-boundary-depth) * .70),
+    44% calc(var(--v17-boundary-depth) * .66),
+    48% calc(var(--v17-boundary-depth) * .58),
+    52% calc(var(--v17-boundary-depth) * .48),
+    56% calc(var(--v17-boundary-depth) * .37),
+    60% calc(var(--v17-boundary-depth) * .30),
+    64% calc(var(--v17-boundary-depth) * .27),
+    68% calc(var(--v17-boundary-depth) * .32),
+    72% calc(var(--v17-boundary-depth) * .41),
+    76% calc(var(--v17-boundary-depth) * .51),
+    80% calc(var(--v17-boundary-depth) * .60),
+    84% calc(var(--v17-boundary-depth) * .66),
+    88% calc(var(--v17-boundary-depth) * .66),
+    92% calc(var(--v17-boundary-depth) * .61),
+    96% calc(var(--v17-boundary-depth) * .54),
+   100% calc(var(--v17-boundary-depth) * .47),
+   100% 100%,
+     0% 100%
+  );
+}
+
+/* The first label in the clipped feast must sit below the new cut edge. */
+@media (min-width: 761px) {
+  .v17r .v17r-table--editorial .v17r-table-copy {
+    top: calc(var(--v17-boundary-depth) + clamp(2rem,6svh,5rem));
+  }
+}
+@media (min-width: 761px) and (max-width: 1100px) {
+  .v17r .v17r-table--editorial .v17r-table-copy {
+    top: calc(var(--v17-boundary-depth) + clamp(2.5rem,5svh,4rem));
+  }
+}
+@media (max-width: 760px) {
+  .v17r { --v17-boundary-depth: clamp(2.7rem, 7svh, 4rem); }
+  .v17r .v17r-table--editorial .v17r-table-copy {
+    padding-top: calc(var(--v17-boundary-depth) + clamp(2rem,5svh,3.25rem));
+  }
+}

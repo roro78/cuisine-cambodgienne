@@ -242,6 +242,10 @@ export const recipes: Recipe[] = [
     equipment: ['Poêle, plancha ou gril'],
     faqs: [{ question: 'Peut-on préparer le porc la veille ?', answer: 'Oui, vous pouvez le mariner la veille et le cuire au dernier moment.' }],
     tags: ['porc', 'riz', 'facile', 'petit-déjeuner'],
+    image: '/images/cuisine/v18-bai-sach-chrouk-premium.webp',
+    imageAlt: 'Bai Sach Chrouk, porc mariné grillé sur riz jasmin, pickles et herbes fraîches',
+    imageWidth: 1448,
+    imageHeight: 1086,
     visualTone: 'rice'
   },
   {
@@ -281,6 +285,10 @@ export const recipes: Recipe[] = [
     equipment: ['Grande casserole', 'Passoire'],
     faqs: [{ question: 'Pourquoi mes nouilles deviennent-elles molles ?', answer: 'Elles ont trop attendu dans l’eau chaude. Cuisez-les juste avant de monter les bols.' }],
     tags: ['soupe', 'nouilles', 'bouillon', 'street food'],
+    image: '/images/cuisine/v18-kuy-teav.webp',
+    imageAlt: 'Kuy Teav, soupe de nouilles khmère servie avec des tranches de viande et de la coriandre',
+    imageWidth: 717,
+    imageHeight: 724,
     visualTone: 'river'
   },
   {
@@ -362,6 +370,10 @@ export const recipes: Recipe[] = [
     equipment: ['Four ou grille-pain'],
     faqs: [{ question: 'Peut-on préparer les sandwichs à l’avance ?', answer: 'Mieux vaut préparer les éléments à l’avance et assembler juste avant de manger.' }],
     tags: ['street food', 'rapide', 'sandwich', 'porc'],
+    image: '/images/cuisine/v18-num-pang.webp',
+    imageAlt: 'Num Pang, sandwich cambodgien garni de viande, crudités et coriandre',
+    imageWidth: 710,
+    imageHeight: 724,
     visualTone: 'market'
   },
   {
@@ -402,6 +414,10 @@ export const recipes: Recipe[] = [
     faqs: [{ question: 'Ma soupe est trop acide, que faire ?', answer: 'Ajoutez un peu de bouillon puis corrigez avec une petite quantité de sucre et de sauce de poisson.' }],
     relatedIngredients: ['tamarin'],
     tags: ['soupe', 'tamarin', 'poisson', 'familial'],
+    image: '/images/cuisine/v18-samlor-machu.webp',
+    imageAlt: 'Samlor Machu, soupe cambodgienne acidulée au poisson, ananas, tomate et herbes',
+    imageWidth: 717,
+    imageHeight: 724,
     visualTone: 'sunset'
   },
   {
@@ -482,8 +498,162 @@ export const recipes: Recipe[] = [
     equipment: ['Petite casserole'],
     faqs: [{ question: 'Peut-on le servir froid ?', answer: 'Oui, mais la texture du coco est souvent plus agréable tiède.' }],
     tags: ['dessert', 'banane', 'coco', 'facile'],
+    image: '/images/cuisine/v17-chek-ktis-960.jpg',
+    imageAlt: 'Chek Ktis, bananes tendres servies dans un lait de coco parfumé',
+    imageWidth: 960,
+    imageHeight: 640,
     visualTone: 'coconut'
-  }
+  },
+
+  {
+    slug: 'samlor-kako',
+    title: 'Samlor Kako',
+    khmerName: 'សម្លកកូរ',
+    intro: 'Une soupe khmère généreuse où les légumes, le poisson, le riz grillé et les aromates mijotent ensemble.',
+    description: 'Samlor Kako : une soupe cambodgienne traditionnelle au poisson, légumes variés, kroeung et riz grillé, expliquée étape par étape.',
+    context: 'La composition du samlor kako varie d’une famille à l’autre. Cette version accessible met à l’honneur le poisson, des légumes de saison, la pâte kroeung et le riz grillé qui donne de la tenue au bouillon.',
+    beforeYouStart: 'Lavez et découpez tous les légumes avant d’allumer le feu. Gardez le poisson au froid jusqu’au moment de l’incorporer.',
+    prepHeading: 'Préparer les légumes avant le bouillon',
+    servingTip: 'Servez bien chaud dans de grands bols, avec du riz jasmin. Le poisson doit être entièrement cuit et se détacher facilement.',
+    servingHeading: 'Une soupe généreuse à partager',
+    baseServings: 4,
+    prepTime: '30 min',
+    cookTime: '35 min',
+    difficulty: 'Intermédiaire',
+    category: 'Soupe',
+    moment: 'Repas familial',
+    ingredients: [
+      { quantity: 500, unit: 'g', name: 'poisson blanc ferme sans arêtes, en gros morceaux', group: 'Protéine' },
+      { quantity: 250, unit: 'g', name: 'potiron ou courge, en cubes', group: 'Légumes' },
+      { quantity: 150, unit: 'g', name: 'haricots longs ou haricots verts', group: 'Légumes' },
+      { quantity: 150, unit: 'g', name: 'aubergine asiatique ou aubergine classique', group: 'Légumes' },
+      { quantity: 100, unit: 'g', name: 'épinards ou feuilles vertes tendres', group: 'Légumes' },
+      { quantity: 3, unit: 'c. à soupe', name: 'kroeung jaune', group: 'Bouillon' },
+      { quantity: 2, unit: 'c. à soupe', name: 'riz cru', group: 'Bouillon' },
+      { quantity: 1.2, unit: 'l', name: 'eau ou bouillon léger non salé', group: 'Bouillon' },
+      { quantity: 1, unit: 'c. à soupe', name: 'sauce de poisson, à ajuster', group: 'Assaisonnement' },
+      { name: 'Feuilles de basilic asiatique ou coriandre', group: 'Finition', scalable: false }
+    ],
+    steps: [
+      { title: 'Griller le riz', text: 'Dans une poêle sèche, faites blondir le riz en remuant puis laissez refroidir et réduisez en poudre assez fine.', duration: '5–7 min', cue: 'Le riz sent légèrement la noisette et ne doit pas brûler.', mistake: 'Un riz noirci apporte de l’amertume.' },
+      { title: 'Réveiller les aromates', text: 'Faites chauffer le kroeung dans une grande casserole avec quelques cuillerées d’eau pendant une minute.', cue: 'Les aromates parfument la vapeur sans attacher au fond.' },
+      { title: 'Construire le bouillon', text: 'Versez l’eau ou le bouillon, ajoutez la courge, l’aubergine et les haricots puis laissez frémir.', duration: '15 min', cue: 'Les légumes commencent à s’attendrir mais gardent leur forme.' },
+      { title: 'Cuire le poisson', text: 'Ajoutez le poisson, laissez frémir doucement jusqu’à cuisson complète, puis incorporez le riz grillé moulu.', duration: '8–12 min', cue: 'Le poisson est opaque et se détache facilement.', mistake: 'Une forte ébullition casse les morceaux de poisson.' },
+      { title: 'Finir les légumes et assaisonner', text: 'Ajoutez les feuilles vertes pour deux minutes, assaisonnez à la sauce de poisson et servez avec les herbes.', cue: 'Le bouillon est légèrement lié et les légumes restent distincts.' }
+    ],
+    keyPoints: ['Riz grillé pour lier le bouillon', 'Légumes ajoutés selon leur temps de cuisson', 'Poisson entièrement cuit'],
+    substitutions: ['Le potiron peut être remplacé par de la courgette, ajoutée plus tard pour ne pas fondre.', 'Un bouillon de légumes léger convient si vous n’avez pas de bouillon de poisson.'],
+    equipment: ['Grande casserole', 'Poêle sèche', 'Mortier ou petit moulin'],
+    faqs: [
+      { question: 'Peut-on préparer le samlor kako à l’avance ?', answer: 'Oui, préparez le bouillon et les légumes à l’avance, puis cuisez le poisson au dernier moment pour préserver sa texture.' },
+      { question: 'Pourquoi ajouter du riz grillé ?', answer: 'Le riz grillé moulu parfume légèrement la soupe et donne de la consistance au bouillon.' }
+    ],
+    relatedIngredients: ['kroeung', 'citronnelle'],
+    tags: ['soupe', 'poisson', 'légumes', 'kroeung', 'repas familial'],
+    image: '/images/cuisine/v18-samlor-kako-premium.webp',
+    imageAlt: 'Samlor Kako, soupe khmère au poisson, courge, aubergines et légumes verts',
+    imageWidth: 1448,
+    imageHeight: 1086,
+    visualTone: 'herbs'
+  },
+  {
+    slug: 'cha-kroeung',
+    title: 'Cha Kroeung',
+    khmerName: 'ឆាគ្រឿង',
+    intro: 'Un sauté khmer vif et parfumé où le kroeung dore autour de fines tranches de poulet et de haricots croquants.',
+    description: 'Cha Kroeung : poulet sauté aux aromates khmers, citronnelle, galanga, curcuma et haricots, avec les bons gestes de cuisson.',
+    context: 'Cha signifie sauté et kroeung désigne un mélange d’aromates pilés. Cette version au poulet privilégie une poêle bien chaude et une pâte aromatique préparée avant la cuisson.',
+    beforeYouStart: 'Émincez le poulet et préparez les haricots. Assaisonnez et mesurez tous les ingrédients avant de chauffer le wok.',
+    prepHeading: 'Tout préparer avant de saisir',
+    servingTip: 'Servez aussitôt avec du riz jasmin. Le poulet doit être entièrement cuit, sans centre rosé.',
+    servingHeading: 'Un sauté chaud et parfumé',
+    baseServings: 4,
+    prepTime: '25 min',
+    cookTime: '15 min',
+    difficulty: 'Facile',
+    category: 'Plat principal',
+    moment: 'Repas rapide',
+    ingredients: [
+      { quantity: 600, unit: 'g', name: 'blanc ou haut de cuisse de poulet désossé, émincé', group: 'Poulet' },
+      { quantity: 4, unit: 'c. à soupe', name: 'kroeung jaune', group: 'Aromates' },
+      { quantity: 200, unit: 'g', name: 'haricots longs ou haricots verts', group: 'Légumes' },
+      { quantity: 1, name: 'oignon émincé', group: 'Légumes' },
+      { quantity: 2, unit: 'c. à soupe', name: 'huile neutre', group: 'Cuisson' },
+      { quantity: 1, unit: 'c. à soupe', name: 'sauce de poisson', group: 'Assaisonnement' },
+      { quantity: 1, unit: 'c. à café', name: 'sucre de palme ou sucre roux', group: 'Assaisonnement' },
+      { quantity: 2, unit: 'c. à soupe', name: 'eau', group: 'Assaisonnement' },
+      { name: 'Feuilles de combava finement ciselées, facultatif', group: 'Finition', scalable: false },
+      { name: 'Riz jasmin cuit pour accompagner', group: 'Service', scalable: false }
+    ],
+    steps: [
+      { title: 'Préparer la mise en place', text: 'Émincez le poulet de manière régulière, coupez les haricots et mélangez sauce de poisson, sucre et eau.', cue: 'Tous les ingrédients sont prêts : la cuisson sera rapide.' },
+      { title: 'Faire parfumer le kroeung', text: 'Chauffez une grande poêle ou un wok avec l’huile, ajoutez le kroeung et remuez brièvement.', duration: '1–2 min', cue: 'La pâte dégage son parfum sans brunir fortement.', mistake: 'Une pâte brûlée devient amère : réduisez le feu si elle accroche.' },
+      { title: 'Saisir le poulet', text: 'Ajoutez le poulet en deux fournées si nécessaire et faites sauter jusqu’à ce que la surface soit colorée.', duration: '5–7 min', cue: 'Les morceaux sont saisis sans rendre trop de jus.' },
+      { title: 'Ajouter les légumes', text: 'Ajoutez l’oignon et les haricots puis versez le mélange d’assaisonnement. Continuez jusqu’à ce que le poulet soit entièrement cuit.', duration: '5–6 min', cue: 'Les haricots restent légèrement croquants ; aucune chair rosée ne subsiste.' },
+      { title: 'Servir', text: 'Parsemez éventuellement de feuilles de combava et servez immédiatement avec le riz.', cue: 'La sauce nappe légèrement le poulet sans noyer le sauté.' }
+    ],
+    keyPoints: ['Kroeung parfumé sans brûler', 'Cuisson vive en petites fournées', 'Poulet entièrement cuit'],
+    substitutions: ['Du tofu ferme peut remplacer le poulet : faites-le bien dorer avant de l’enrober de kroeung.', 'Utilisez des haricots verts classiques si les haricots longs sont introuvables.'],
+    equipment: ['Wok ou grande poêle', 'Spatule'],
+    faqs: [
+      { question: 'Faut-il ajouter du lait de coco ?', answer: 'Pas dans cette version sautée : le kroeung, la sauce de poisson et le jus de cuisson suffisent à enrober les ingrédients.' },
+      { question: 'Peut-on préparer le kroeung à l’avance ?', answer: 'Oui, la pâte aromatique peut être préparée à l’avance et conservée au frais selon les règles habituelles d’hygiène.' }
+    ],
+    relatedIngredients: ['kroeung', 'citronnelle', 'galanga'],
+    tags: ['poulet', 'sauté', 'kroeung', 'citronnelle', 'facile'],
+    image: '/images/cuisine/v18-cha-kroeung-premium.webp',
+    imageAlt: 'Cha Kroeung, poulet sauté aux épices khmères, haricots verts et citronnelle',
+    imageWidth: 1448,
+    imageHeight: 1086,
+    visualTone: 'fire'
+  },
+  {
+    slug: 'num-plae-ai',
+    title: 'Num Plae Ai',
+    khmerName: 'នំផ្លែអាយ',
+    intro: 'De petites boulettes de riz gluant au cœur de sucre de palme fondu, roulées dans la noix de coco.',
+    description: 'Num Plae Ai : douceur traditionnelle khmère à base de farine de riz gluant, sucre de palme et noix de coco, avec méthode pas à pas.',
+    context: 'Ces bouchées très appréciées se préparent avec une pâte souple de riz gluant qui enveloppe un petit morceau de sucre de palme. Cette recette privilégie une petite taille pour une cuisson homogène.',
+    beforeYouStart: 'Coupez le sucre de palme en tout petits morceaux, préparez le coco râpé et une grande assiette propre avant de façonner les boulettes.',
+    prepHeading: 'Former de petites bouchées régulières',
+    servingTip: 'Laissez tiédir quelques minutes : le cœur de sucre peut être très chaud à la sortie de l’eau. Servez le jour même.',
+    servingHeading: 'Un cœur fondant sous la noix de coco',
+    baseServings: 4,
+    servingsLabel: '16 à 20 bouchées',
+    prepTime: '25 min',
+    cookTime: '10 min',
+    difficulty: 'Intermédiaire',
+    category: 'Dessert',
+    moment: 'Douceurs à partager',
+    ingredients: [
+      { quantity: 220, unit: 'g', name: 'farine de riz gluant', group: 'Pâte' },
+      { quantity: 160, unit: 'ml', name: 'eau tiède environ, à ajuster', group: 'Pâte' },
+      { quantity: 1, unit: 'pincée', name: 'sel fin', group: 'Pâte' },
+      { quantity: 90, unit: 'g', name: 'sucre de palme en petits morceaux', group: 'Cœur' },
+      { quantity: 120, unit: 'g', name: 'noix de coco fraîche râpée ou coco râpé réhydraté', group: 'Enrobage' },
+      { name: 'Quelques gouttes d’extrait de pandan, facultatif', group: 'Pâte', scalable: false }
+    ],
+    steps: [
+      { title: 'Pétrir une pâte souple', text: 'Mélangez farine de riz gluant, sel et eau progressivement. Pétrissez jusqu’à obtenir une pâte souple qui ne craquelle presque pas.', cue: 'Elle se roule facilement sans coller excessivement.' },
+      { title: 'Former les boulettes', text: 'Divisez la pâte en 16 à 20 portions. Aplatissez chaque portion, glissez au centre un petit cube de sucre de palme et refermez parfaitement.', cue: 'Le sucre est totalement enveloppé, sans fissure.', mistake: 'Une fermeture imparfaite laisse fuir le sucre dans l’eau de cuisson.' },
+      { title: 'Pocher', text: 'Plongez les boulettes par petites quantités dans une grande casserole d’eau frémissante. Attendez qu’elles remontent, puis prolongez légèrement la cuisson.', duration: '5–7 min par fournée', cue: 'Les boulettes flottent et la pâte paraît cuite et souple.' },
+      { title: 'Enrober de coco', text: 'Égouttez-les avec une écumoire puis roulez délicatement les bouchées dans la noix de coco râpée.', cue: 'Le coco adhère à une surface encore légèrement humide.' },
+      { title: 'Laisser tiédir', text: 'Laissez reposer quelques minutes avant de déguster pour éviter de vous brûler avec le cœur sucré.', cue: 'Les bouchées sont tièdes et se tiennent bien.' }
+    ],
+    keyPoints: ['Farine de riz gluant, et non farine de riz ordinaire', 'Bien fermer chaque boulette', 'Laisser refroidir le sucre fondu avant de croquer'],
+    substitutions: ['Du sucre de canne brun compact peut dépanner, même si le goût sera différent.', 'La noix de coco sèche peut être légèrement humidifiée si elle est trop friable.'],
+    equipment: ['Casserole', 'Écumoire', 'Grand saladier'],
+    faqs: [
+      { question: 'Peut-on utiliser de la farine de riz classique ?', answer: 'Non : seule la farine de riz gluant apporte la texture souple et élastique nécessaire.' },
+      { question: 'Pourquoi les boulettes se percent-elles ?', answer: 'La pâte est parfois trop sèche ou le sucre est trop gros. Assouplissez la pâte et formez des boulettes bien fermées.' }
+    ],
+    tags: ['dessert', 'riz gluant', 'sucre de palme', 'coco', 'bouchées'],
+    image: '/images/cuisine/v17-num-plae-ai-641.jpg',
+    imageAlt: 'Num Plae Ai, boulettes de riz gluant cambodgiennes roulées dans la noix de coco',
+    imageWidth: 641,
+    imageHeight: 427,
+    visualTone: 'coconut'
+  },
 ];
 
 export function getRecipe(slug: string) {

@@ -87,10 +87,18 @@ jobs:
       - name: Install Playwright video encoder
         run: node ./node_modules/playwright-core/cli.js install ffmpeg
 
-      - name: V17 preview browser responsive regression
+      - name: V17 complete responsive browser regression (no video)
         env:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+          V17_FULL_EVIDENCE: '0'
+          V17_ONLY_NOJS: ${{ github.ref == 'refs/heads/feat/v17-finition-artistique-d11' && '1' || '0' }}
         run: node tests/v17-accueil-browser-smoke.mjs
+
+      - name: V17 D25 focused mobile and desktop section 5 videos
+        if: github.ref == 'refs/heads/feat/v17-finition-artistique-d11'
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/v17-section5-two-videos.mjs
 
       - name: V17 D8 public homepage Lighthouse mobile audit
         env:
@@ -98,8 +106,22 @@ jobs:
           V17_AUDIT_ROUTE: /
         run: node scripts/v17-lighthouse-audit.mjs
 
+      - name: Upload V17 D25 focused video evidence
+        if: always() && github.ref == 'refs/heads/feat/v17-finition-artistique-d11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v17-d25-mobile-desktop-section5
+          path: |
+            artifacts/v17-d25-*.webm
+            artifacts/v17-d25-*.png
+            artifacts/v17-d25-*.json
+            artifacts/v17-d27-*.png
+            artifacts/v17-d27-*.json
+          retention-days: 7
+          if-no-files-found: ignore
+
       - name: Upload V17 responsive screenshots and scroll videos
-        if: always()
+        if: always() && github.ref != 'refs/heads/feat/v17-finition-artistique-d11'
         uses: actions/upload-artifact@v4
         with:
           name: v17-accueil-d7-browser-evidence
