@@ -506,8 +506,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
             };
           });
           return {copyBottom:copy.bottom,gridTop:grid.top,
-            scrollWidth:document.documentElement.scrollWidth,
-            clientWidth:document.documentElement.clientWidth,cards};
+            scrollWidth:scene.scrollWidth,clientWidth:scene.clientWidth,cards};
         } finally {root.style.fontSize=previous;}
       });
       assert.ok(enlarged.cards.length===4 &&
