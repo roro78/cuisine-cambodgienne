@@ -227,7 +227,9 @@ export function initV17AccueilMotion() {
     const scrub = mobile ? .45 : .8;
     const bridges = [
       {selector: '.v17r-handoff--aroma svg', x: mobile ? -2 : -7, scale: .76},
-      {selector: '.v17r-handoff--sweet svg', x: mobile ? 2 : 6, scale: .83},
+      // D26: the feast-to-dessert wave must stay edge-to-edge. Earlier
+      // xPercent:6 desktop / xPercent:2 mobile exposed rectangular dark strips
+      // outside the cream wave. The native SVG remains centered and still.
       {selector: '.v17r-handoff--journey svg', x: mobile ? -2 : -5, scale: .78},
     ];
     for (const {selector, x, scale} of bridges) {

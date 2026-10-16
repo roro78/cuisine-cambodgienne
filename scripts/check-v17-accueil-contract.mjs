@@ -143,6 +143,9 @@ for(const [name,sha] of [
   assert.equal(createHash('sha256').update(bytes).digest('hex'),sha,
     'D22 photo changed unexpectedly: '+name);
 }
+// D26: new storytelling headline and backdrop are part of the visual contract.
+assert.ok(page.includes('<span>LE GOÛT</span><em>DU PARTAGE.</em>') &&
+  page.includes('03 — À table'),'D26 new section 5 title and chapter label missing');
 // D24: mobile uses a real native-scroll carousel without changing desktop
 // imagery, links or adding any carousel dependency/autoplay.
 const carouselTs=fs.readFileSync('src/scripts/v17TableCarousel.ts','utf8');
@@ -156,6 +159,10 @@ for(const needle of [
 assert.ok(page.includes('initV17TableCarousel();') &&
   page.includes("import { initV17TableCarousel } from '../scripts/v17TableCarousel'"),
   'D24 controller must be mounted from the homepage component');
+assert.ok(editorialCss.includes('background:transparent;') &&
+  editorialCss.includes('top:0;right:0;left:0;bottom:0;height:100%;') &&
+  !script.includes("selector: '.v17r-handoff--sweet svg'"),
+  'D26 photographic background and full-width wave required');
 assert.ok(editorialCss.includes('scroll-snap-type:x mandatory') &&
   editorialCss.includes('overflow-x:auto') &&
   editorialCss.includes('flex-flow:row nowrap') &&

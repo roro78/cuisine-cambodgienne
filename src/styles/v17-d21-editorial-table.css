@@ -1,16 +1,16 @@
-/* V17 D22 — single still dining scene on desktop, vertical culinary narrative on mobile.
-   Food photography is never transformed; only typographic elements move. */
+/* V17 D26 — one photographic feast, no off-colour rectangular backdrop.
+   Desktop tableau and compact mobile slider preserve a seamless organic boundary. */
 .v17r .v17r-table--editorial{
   position:relative;display:block;isolation:isolate;
   min-height:100svh;padding:0;margin:0;
-  overflow:clip;background:#1b261c;color:#fff9ec;text-align:left;
+  overflow:clip;background:#18251c;color:#fff9ec;text-align:left;
 }
 .v17r .v17r-table--editorial::before{content:none;display:none}
 .v17r .v17r-table--editorial[data-v17-table-ready]{min-height:100svh}
 .v17r .v17r-table--editorial .v17r-table-stage{
   position:relative;isolation:isolate;
   width:100%;height:100svh;min-height:650px;
-  overflow:clip;background:#1b261c;
+  overflow:clip;background:#18251c;
 }
 .v17r .v17r-table--editorial[data-v17-table-ready] .v17r-table-stage{
   /* No empty 105svh continuation beneath the feast: one visual scene. */
@@ -156,24 +156,27 @@
     background:#18251c;
   }
   .v17r .v17r-table--editorial .v17r-table-fullbleed{
-    top:0;right:0;left:0;bottom:auto;height:clamp(25rem,63svh,37rem);
+    /* Underlying photo continues behind the carousel and cultural CTA.
+       The fade is continuous; no flat-colour rectangle begins mid-section. */
+    top:0;right:0;left:0;bottom:0;height:100%;
   }
   .v17r .v17r-table--editorial .v17r-table-fullbleed img{
     object-position:50% 44%;
   }
   .v17r .v17r-table--editorial .v17r-table-shade{
-    height:clamp(25rem,65svh,38rem);bottom:auto;
+    height:100%;bottom:0;
     background:linear-gradient(180deg,
-      rgba(15,25,17,.58) 0%,rgba(15,25,17,.26) 32%,
-      rgba(15,25,17,.15) 56%,rgba(24,37,28,.9) 87%,#18251c 100%);
+      rgba(12,23,16,.68) 0%,rgba(12,23,16,.45) 21%,
+      rgba(12,23,16,.65) 39%,rgba(12,23,16,.85) 62%,
+      rgba(12,23,16,.91) 84%,rgba(12,23,16,.94) 100%);
   }
   .v17r .v17r-table--editorial .v17r-table-copy{
     /* Natural flow prevents 200% text from overlapping the carousel. */
     position:relative;box-sizing:border-box;flex:0 0 auto;
     left:auto;right:auto;top:auto;bottom:auto;
-    width:100%;min-height:clamp(18rem,53svh,30rem);max-width:none;
+    width:100%;min-height:clamp(14rem,39svh,23rem);max-width:none;
     margin:0 auto;
-    padding:clamp(2.2rem,6svh,4.5rem) clamp(1rem,5vw,2rem) 2rem;
+    padding:clamp(2rem,5svh,3.25rem) clamp(1rem,5vw,2rem) clamp(1.5rem,4svh,3rem);
     transform:none;text-align:center;
   }
   .v17r .v17r-table--editorial .v17r-table-rule{margin:0 auto 1rem}
@@ -303,10 +306,10 @@
     position:relative;display:flex;align-items:center;justify-content:center;
     /* Reserve space for the decorative wave over the section boundary:
        text remains above the wave, without adding an empty scrolling scene. */
-    min-height:8.5rem;bottom:auto;left:auto;transform:none;
-    margin:0;padding:1rem 1rem 4.25rem;max-width:none;width:auto;
+    min-height:7.5rem;bottom:auto;left:auto;transform:none;
+    margin:0;padding:.75rem 1rem 3.9rem;max-width:none;width:auto;
     font-size:.91rem;line-height:1.55;
-    background:#18251c;
+    background:transparent;
   }
 }
 @media(max-width:390px){

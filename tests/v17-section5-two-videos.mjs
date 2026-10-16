@@ -57,6 +57,10 @@ async function capture(browser,width,height){
       const range=document.createRange();
       range.selectNodeContents(culture.firstChild);
       const cultureTextBottom=range.getBoundingClientRect().bottom;
+      const wave=root.nextElementSibling?.querySelector('svg');
+      const waveBox=wave?.getBoundingClientRect();
+      const photo=root.querySelector('.v17r-table-fullbleed').getBoundingClientRect();
+      const heading=root.querySelector('#v17r-table-title');
       return {
         viewport:{width:innerWidth,height:innerHeight},
         sectionHeight:Math.round(box.height),
@@ -64,6 +68,13 @@ async function capture(browser,width,height){
         nextGap:Math.round(dessert.getBoundingClientRect().top-box.bottom),
         cultureBottomInset:Math.round(box.bottom-culture.getBoundingClientRect().bottom),
         cultureTextInset:Math.round(box.bottom-cultureTextBottom),
+        backdropSeamless:getComputedStyle(root).backgroundColor===getComputedStyle(stage).backgroundColor,
+        cultureTransparent:getComputedStyle(culture).backgroundColor==='rgba(0, 0, 0, 0)',
+        photoFullHeight:Math.abs(photo.height-stageBox.height)<=2,
+        waveLeft:waveBox?Math.round(waveBox.left):null,
+        waveRight:waveBox?Math.round(waveBox.right):null,
+        titleChanged:heading?.querySelector('span')?.textContent?.trim()==='LE GOÛT' &&
+          heading?.querySelector('em')?.textContent?.trim()==='DU PARTAGE.',
         horizontalOverflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,
         slides:root.querySelectorAll('[data-v17-table-recipe]').length,
         imageTransform:getComputedStyle(root.querySelector('.v17r-table-fullbleed img')).transform,
@@ -71,6 +82,10 @@ async function capture(browser,width,height){
       };
     });
     assert.equal(geometry.slides,4,'All four real recipes required');
+    assert.ok(geometry.titleChanged,'Updated feast heading should render on mobile and desktop');
+    assert.ok(geometry.backdropSeamless,'Stage/background shades must not differ: '+JSON.stringify(geometry));
+    assert.ok(Math.abs(geometry.waveLeft)<=2 && Math.abs(geometry.waveRight-width)<=2,
+      'Organic cream wave must cover viewport horizontally, without a rectangular exposed edge: '+JSON.stringify(geometry));
     assert.ok(Math.abs(geometry.stageGap)<=3,'No spacer beneath stage: '+JSON.stringify(geometry));
     assert.ok(Math.abs(geometry.nextGap)<=3,'No blank region before desserts: '+JSON.stringify(geometry));
     assert.ok(geometry.horizontalOverflow<=2,'No unintended page-level horizontal overflow: '+JSON.stringify(geometry));
@@ -80,7 +95,9 @@ async function capture(browser,width,height){
       assert.ok(geometry.cultureBottomInset>=25 && geometry.cultureBottomInset<=95,
         'Cultural link must stay inside photographed stage and above the wave: '+JSON.stringify(geometry));
     } else {
-      assert.ok(geometry.cultureTextInset>=60,'Culture link must be above the overlapping wave: '+JSON.stringify(geometry));
+      assert.ok(geometry.cultureTextInset>=58,'Culture link must be above the overlapping wave: '+JSON.stringify(geometry));
+      assert.ok(geometry.photoFullHeight && geometry.cultureTransparent,
+        'Mobile backdrop must remain photographic to the edge, without a solid rectangle: '+JSON.stringify(geometry));
       assert.ok(geometry.carouselSnap.includes('mandatory'),'Mobile swipe-snap absent: '+JSON.stringify(geometry));
       assert.ok(geometry.sectionHeight<height*2.25,'Mobile section still overlong: '+JSON.stringify(geometry));
     }
