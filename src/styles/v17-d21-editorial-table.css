@@ -108,12 +108,32 @@
   outline:3px solid #f5d689;outline-offset:4px;
 }
 @media(min-width:761px) and (max-width:1100px){
+  /* D23: two readable editorial rows, not four squeezed PowerPoint columns. */
+  .v17r .v17r-table--editorial .v17r-table-stage{min-height:750px}
   .v17r .v17r-table--editorial .v17r-table-copy{top:clamp(2.5rem,5svh,4rem)}
   .v17r .v17r-table--editorial h2{font-size:clamp(2.6rem,4.8vw,4.2rem)}
-  .v17r .v17r-table--editorial .v17r-table-recipes{left:1.6%;right:1.6%;bottom:5rem}
-  .v17r .v17r-table--editorial .v17r-table-recipe{padding:.65rem .7rem}
-  .v17r .v17r-table--editorial .v17r-table-recipe h3{font-size:clamp(1.22rem,2vw,1.65rem)}
-  .v17r .v17r-table--editorial .v17r-table-recipe-link{padding:.6rem .8rem}
+  .v17r .v17r-table--editorial .v17r-table-recipes{
+    left:4%;right:4%;bottom:4.6rem;
+    grid-template-columns:repeat(2,minmax(0,1fr));gap:.25rem 1rem;
+  }
+  .v17r .v17r-table--editorial .v17r-table-recipe{
+    display:flex;flex-direction:column;align-items:flex-start;
+    justify-content:center;min-height:7.1rem;padding:.5rem .9rem;
+    border-left:0;
+  }
+  .v17r .v17r-table--editorial .v17r-table-recipe:nth-child(even){
+    border-left:1px solid rgba(248,216,157,.5);
+  }
+  .v17r .v17r-table--editorial .v17r-table-recipe:nth-child(n+3){
+    border-top:1px solid rgba(248,216,157,.4);
+  }
+  .v17r .v17r-table--editorial .v17r-table-recipe h3{
+    font-size:clamp(1.22rem,2.1vw,1.7rem);
+  }
+  .v17r .v17r-table--editorial .v17r-table-recipe-short{margin-bottom:.45rem}
+  .v17r .v17r-table--editorial .v17r-table-recipe-link{
+    min-height:44px;padding:.5rem .9rem;
+  }
   .v17r .v17r-table--editorial .v17r-table-fullbleed img{object-position:50% center}
 }
 @media(max-width:760px){
@@ -164,8 +184,9 @@
   }
   .v17r .v17r-table--editorial .v17r-table-recipe{
     position:relative;isolation:isolate;overflow:hidden;
-    display:block;width:100%;height:clamp(31rem,82svh,46rem);
-    min-height:0;padding:0;margin:0;
+    display:flex;align-items:flex-end;width:100%;
+    height:auto;min-height:clamp(31rem,82svh,46rem);
+    padding:clamp(14rem,46svh,25rem) 0 0;margin:0;
     border:0;border-top:1px solid rgba(247,217,155,.23);
     border-radius:0;background:#18251c;box-shadow:none;
   }
@@ -175,8 +196,8 @@
   .v17r .v17r-table--editorial .v17r-table-recipe::before{
     content:"";position:absolute;z-index:1;inset:0;pointer-events:none;
     background:linear-gradient(180deg,
-      rgba(13,21,14,.06) 0%,rgba(13,21,14,.12) 40%,
-      rgba(11,20,14,.72) 72%,rgba(11,20,14,.96) 100%);
+      rgba(13,21,14,.08) 0%,rgba(13,21,14,.43) 34%,
+      rgba(11,20,14,.86) 70%,rgba(11,20,14,.97) 100%);
   }
   .v17r .v17r-table--editorial .v17r-table-recipe-image{
     display:block;position:absolute;inset:0;
@@ -184,10 +205,11 @@
     object-position:center center;filter:saturate(1.06) contrast(1.04);
   }
   .v17r .v17r-table--editorial .v17r-table-recipe-text{
-    position:absolute;z-index:2;left:clamp(1.35rem,7vw,2.8rem);
-    right:clamp(1.35rem,7vw,2.8rem);bottom:clamp(2.6rem,7svh,5rem);
+    position:relative;z-index:2;left:auto;right:auto;bottom:auto;
     display:flex;flex-direction:column;align-items:flex-start;
-    justify-content:flex-end;min-width:0;margin:0;padding:0;
+    justify-content:flex-end;box-sizing:border-box;min-width:0;
+    width:100%;margin:0;
+    padding:0 clamp(1.35rem,7vw,2.8rem) clamp(2.6rem,7svh,5rem);
     color:#fff9ec;text-shadow:0 2px 22px rgba(0,0,0,.5);
   }
   .v17r .v17r-table--editorial .v17r-table-recipe-number{
@@ -209,6 +231,7 @@
   }
   .v17r .v17r-table--editorial .v17r-table-recipe-link{
     min-height:48px;max-width:100%;padding:.76rem 1.2rem;
+    box-sizing:border-box;white-space:normal;text-align:center;
     font-size:clamp(.84rem,3.2vw,1rem);text-shadow:none;
   }
   .v17r .v17r-table--editorial .v17r-table-culture{
@@ -222,7 +245,7 @@
 @media(max-width:390px){
   .v17r .v17r-table--editorial h2{font-size:clamp(2rem,9vw,2.65rem)}
   .v17r .v17r-table--editorial .v17r-table-recipe{
-    height:clamp(29rem,78svh,40rem);
+    min-height:clamp(29rem,78svh,40rem);
   }
   .v17r .v17r-table--editorial .v17r-table-recipe h3{
     font-size:clamp(2.05rem,9vw,3.2rem);
