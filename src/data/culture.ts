@@ -248,6 +248,7 @@ export const cultureArticles: CultureArticle[] = [
     imageAlt: 'Table cambodgienne composée de plusieurs plats, riz, herbes et accompagnements',
     imageWidth: 1600,
     imageHeight: 1067,
+    imageWidths: [1600],
     sources: [
       { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: tourismGuide }
     ]
