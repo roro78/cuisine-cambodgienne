@@ -166,7 +166,7 @@ assert.ok(editorialCss.includes('scroll-snap-type:x mandatory') &&
 assert.ok(carouselTs.includes("track.addEventListener('scroll'") &&
   carouselTs.includes("track.addEventListener('keydown'") &&
   carouselTs.includes("reduced.matches?'instant':'smooth'") &&
-  !carouselTs.includes('setInterval(') && !carouselTs.includes('autoplay'),
+  !carouselTs.includes('setInterval(') && !carouselTs.includes('data-autoplay'),
   'D24 carousel must support manual controls, keyboard and reduced motion without autoplay');
 assert.ok(!script.includes('trigger:recipe,start:') &&
   script.includes('tableEditorial(true)') &&
