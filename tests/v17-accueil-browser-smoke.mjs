@@ -456,6 +456,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           cls:node.className,
           height:rect.height,
           svgHeight:svg?.getBoundingClientRect().height??0,
+          display:getComputedStyle(node).display,
           hidden:node.getAttribute('aria-hidden'),
           events:getComputedStyle(node).pointerEvents,
           from:node.previousElementSibling?.className??'',
@@ -467,7 +468,8 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     for(const [index,from,to] of [[0,'v17r-palette','v17r-gestures'],
       [1,'v17r-table','v17r-dessert'],[2,'v17r-dessert','v17r-finale']]){
       const bridge=handoffs[index];
-      assert.ok(bridge.height===0 && bridge.svgHeight>0 &&
+      assert.ok(bridge.height===0 && bridge.svgHeight===0 &&
+        bridge.display==='none' &&
         bridge.hidden==='true' && bridge.events==='none' &&
         bridge.from.includes(from) && bridge.to.includes(to),
         'D14 bridge must not add scroll space or block actions: '+JSON.stringify(bridge));
@@ -586,7 +588,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       // The desktop link sits above the cream divider; the inset is part
       // of the photographed scene, not an empty section or scroll spacer.
       assert.ok(Math.abs(seam.stageTail)<=3 && seam.tailSpace<=80 &&
-        Math.abs(seam.nextGap)<=3 &&
+        Math.abs(seam.nextGap + parseFloat(getComputedStyle(document.querySelector('.v17r')).getPropertyValue('--v17-boundary-depth')))<=3 &&
         (width<761 || seam.height<=seam.viewport*1.12),
         'D25 feast must connect to desserts without empty bottom spacer: '+
         JSON.stringify(seam));

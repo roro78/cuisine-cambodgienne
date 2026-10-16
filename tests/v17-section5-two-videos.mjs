@@ -78,7 +78,9 @@ async function capture(browser,width,height){
         horizontalOverflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,
         slides:root.querySelectorAll('[data-v17-table-recipe]').length,
         imageTransform:getComputedStyle(root.querySelector('.v17r-table-fullbleed img')).transform,
-        carouselSnap:getComputedStyle(root.querySelector('[data-v17-table-carousel]')).scrollSnapType
+        carouselSnap:getComputedStyle(root.querySelector('[data-v17-table-carousel]')).scrollSnapType,
+        boundaryDepth:parseFloat(getComputedStyle(document.querySelector('.v17r')).getPropertyValue('--v17-boundary-depth')) || 0,
+        dessertClip:getComputedStyle(dessert).clipPath
       };
     });
     assert.equal(geometry.slides,4,'All four real recipes required');
@@ -87,7 +89,10 @@ async function capture(browser,width,height){
     assert.ok(Math.abs(geometry.waveLeft)<=2 && Math.abs(geometry.waveRight-width)<=2,
       'Organic cream wave must cover viewport horizontally, without a rectangular exposed edge: '+JSON.stringify(geometry));
     assert.ok(Math.abs(geometry.stageGap)<=3,'No spacer beneath stage: '+JSON.stringify(geometry));
-    assert.ok(Math.abs(geometry.nextGap)<=3,'No blank region before desserts: '+JSON.stringify(geometry));
+    assert.ok(geometry.nextGap < -30 && geometry.nextGap > -95,
+      'D27 next photographic chapter must overlap the feast, not leave a gap: '+JSON.stringify(geometry));
+    assert.ok(geometry.dessertClip.startsWith('polygon('),
+      'D27 dessert image must receive the curved clip edge: '+JSON.stringify(geometry));
     assert.ok(geometry.horizontalOverflow<=2,'No unintended page-level horizontal overflow: '+JSON.stringify(geometry));
     assert.equal(geometry.imageTransform,'none','Feast background is still photography');
     if(!mobile){
@@ -100,6 +105,44 @@ async function capture(browser,width,height){
         'Mobile backdrop must remain photographic to the edge, without a solid rectangle: '+JSON.stringify(geometry));
       assert.ok(geometry.carouselSnap.includes('mandatory'),'Mobile swipe-snap absent: '+JSON.stringify(geometry));
       assert.ok(geometry.sectionHeight<height*2.25,'Mobile section still overlong: '+JSON.stringify(geometry));
+    }
+    // D27: inspect ALL five scene boundaries, not just the feast.
+    // The incoming scene must overlap the outgoing one, with its OWN
+    // clipped photographic/solid content instead of an opaque SVG sheet.
+    const boundaries=await page.evaluate(()=>{
+      const pairs=[
+        ['.v17r-market','.v17r-palette'],
+        ['.v17r-palette','.v17r-gestures--cinematic'],
+        ['.v17r-gestures--cinematic','.v17r-table--editorial'],
+        ['.v17r-table--editorial','.v17r-dessert'],
+        ['.v17r-dessert','.v17r-finale']
+      ];
+      return pairs.map(([previous,next])=>{
+        const left=document.querySelector(previous),right=document.querySelector(next);
+        const rect=left.getBoundingClientRect(),nextRect=right.getBoundingClientRect();
+        return {previous,next,overlap:Math.round(rect.bottom-nextRect.top),
+          clip:getComputedStyle(right).clipPath,
+          margin:getComputedStyle(right).marginTop,
+          wave:document.querySelector(previous)?.nextElementSibling?.className||''};
+      });
+    });
+    for(const item of boundaries){
+      assert.ok(item.overlap>=30&&item.overlap<=95&&item.clip.startsWith('polygon('),
+        'D27 wave must be formed by next chapter itself: '+JSON.stringify(item));
+    }
+    await fs.writeFile(dir+'/v17-d27-'+name+'-boundaries.json',JSON.stringify(boundaries,null,2)+'\n');
+    for(let i=0;i<boundaries.length;i++){
+      const pair=boundaries[i];
+      await page.evaluate(selector=>{
+        const from=document.querySelector(selector);
+        const at=window.scrollY+from.getBoundingClientRect().bottom-innerHeight*.53;
+        window.scrollTo({top:Math.max(0,at),behavior:'instant'});
+      },pair.previous);
+      await page.waitForTimeout(250);
+      await page.screenshot({
+        path:dir+'/v17-d27-'+name+'-boundary-'+(i+1)+'.png',
+        animations:'disabled'
+      });
     }
     await fs.writeFile(dir+'/v17-d25-'+name+'-geometry.json',JSON.stringify(geometry,null,2)+'\n');
     const bounds=await page.evaluate(()=>{

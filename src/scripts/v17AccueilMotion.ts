@@ -224,29 +224,10 @@ export function initV17AccueilMotion() {
    * remains usable at every point, without JS and with reduced motion.
    */
   const sceneHandoffs = (mobile: boolean) => {
+    // D27: all five chapter boundaries use a native CSS wave-shaped clip of
+    // the incoming chapter. Do not animate flat-colour SVG handoff sheets:
+    // their opaque lower rectangles exposed a visible background panel.
     const scrub = mobile ? .45 : .8;
-    const bridges = [
-      {selector: '.v17r-handoff--aroma svg', x: mobile ? -2 : -7, scale: .76},
-      // D26: the feast-to-dessert wave must stay edge-to-edge. Earlier
-      // xPercent:6 desktop / xPercent:2 mobile exposed rectangular dark strips
-      // outside the cream wave. The native SVG remains centered and still.
-      {selector: '.v17r-handoff--journey svg', x: mobile ? -2 : -5, scale: .78},
-    ];
-    for (const {selector, x, scale} of bridges) {
-      const sheet = root.querySelector<SVGSVGElement>(selector);
-      if (!sheet) continue;
-      gsap.fromTo(sheet,
-        { xPercent: x, yPercent: -50, scaleY: scale },
-        {
-          xPercent: 0, yPercent: -50, scaleY: 1,
-          ease: 'none', overwrite: 'auto',
-          scrollTrigger: {
-            trigger: sheet.parentElement ?? sheet,
-            start: 'top 95%', end: 'top 35%',
-            scrub, invalidateOnRefresh: true,
-          },
-        });
-    }
 
     // The market and desserts must remain edge-to-edge at every scroll offset.
     // Their old 7–13% inset masks exposed green side strips on screenshots and
@@ -483,9 +464,7 @@ export function initV17AccueilMotion() {
     travellingAromatic();
     chapterPerformance('.v17r-finale', 1, false);
     sceneHandoffs(false);
-    // Organic seams move gently as chapter boundaries, without pinning.
-    sceneMotion('.v17r-wave-green svg', { scaleX: 1.05, xPercent: -1 }, { scaleX: 1.05, xPercent: 1 });
-    sceneMotion('.v17r-wave-cream svg', { scaleX: 1.05, xPercent: 1 }, { scaleX: 1.05, xPercent: -1 });
+    // D27 native organic chapter masks remain still and truly full bleed.
   });
 
   mm.add('(max-width: 760px) and (prefers-reduced-motion: no-preference)', () => {

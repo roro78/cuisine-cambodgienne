@@ -99,7 +99,17 @@ assert.match(page,/v17-mortar-cinema\.css/,'Mortar last-scene stylesheet must be
 assert.match(script,/const mortarCinema =/,'Dedicated mortar storyboard missing');
 
 const handoffCss=fs.readFileSync('src/styles/v17-scene-handoffs.css','utf8');
-assert.ok(page.includes('v17-scene-handoffs.css'),'D14 transition styles missing');
+assert.ok(page.includes('v17-scene-handoffs.css') &&
+  page.includes('v17-d27-seamless-boundaries.css'),
+  'D27 seamless section masks must load after legacy styles');
+const seamCss=fs.readFileSync('src/styles/v17-d27-seamless-boundaries.css','utf8');
+assert.ok(seamCss.includes('margin-block-start: calc(-1 * var(--v17-boundary-depth))') &&
+  seamCss.includes('clip-path: polygon(') &&
+  seamCss.includes('.v17r-dessert,') &&
+  seamCss.includes('.v17r-finale') &&
+  seamCss.includes('.v17r-table--editorial,') &&
+  seamCss.includes('display: none !important'),
+  'D27 each incoming scene must reveal its own image, never a solid SVG panel');
 for(const name of ['aroma','sweet','journey']){
   assert.ok(page.includes('v17r-handoff--'+name),'D14 bridge missing: '+name);
 }
