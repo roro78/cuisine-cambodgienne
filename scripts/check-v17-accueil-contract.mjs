@@ -187,7 +187,8 @@ assert.ok(script.includes('const tableEditorial =') &&
   script.includes('gsap.set(recipes,{autoAlpha:.78,y:14})'),
   'D22 four readable interactive recipe labels, photography remains static');
 assert.ok(editorialCss.includes('object-fit:cover') &&
-  editorialCss.includes('position:sticky') &&
+  editorialCss.includes('min-height:100svh') &&
+  !editorialCss.includes('position:sticky') &&
   editorialCss.includes('min-width:761px') &&
   editorialCss.includes('max-width:1100px') &&
   editorialCss.includes('prefers-reduced-motion:reduce'),
