@@ -1331,7 +1331,7 @@ async function checkGeneratedRecipe(slug,filename,width,height){
       };
     });
     if(width>=901){
-      assert.match(composition.background,/linear-gradient\\(90deg/i,
+      assert.match(composition.background,/linear-gradient\(90deg/i,
         'Desktop recipe must keep a straight, readable text background');
       assert.ok(composition.copy&&composition.media&&
         composition.media.left>=composition.copy.right+4,
