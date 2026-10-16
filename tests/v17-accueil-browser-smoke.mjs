@@ -478,50 +478,6 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         'D22 four linked recipe chapters over an unmoving feast: '+JSON.stringify(motion));
       await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
     }
-    if([320,390,430].includes(width)){
-      // D23 text-enlargement regression. This simulates 200% text sizing;
-      // an actual 200% browser zoom and a physical phone still require QA.
-      const enlarged=await page.evaluate(async()=>{
-        const root=document.documentElement;
-        const previous=root.style.fontSize;
-        root.style.fontSize='200%';
-        try {
-          await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-          const scene=document.querySelector('[data-v17-table-editorial]');
-          const copy=scene.querySelector('.v17r-table-copy').getBoundingClientRect();
-          const grid=scene.querySelector('.v17r-table-recipes').getBoundingClientRect();
-          const cards=[...scene.querySelectorAll('[data-v17-table-recipe]')].map(card=>{
-            const parent=card.getBoundingClientRect();
-            const text=card.querySelector('.v17r-table-recipe-text');
-            const words=text.getBoundingClientRect();
-            const anchor=card.querySelector('.v17r-table-recipe-link').getBoundingClientRect();
-            return {
-              top:parent.top,bottom:parent.bottom,left:parent.left,right:parent.right,
-              textTop:words.top,textBottom:words.bottom,
-              textLeft:words.left,textRight:words.right,
-              anchorTop:anchor.top,anchorBottom:anchor.bottom,
-              anchorLeft:anchor.left,anchorRight:anchor.right,
-              anchorWidth:anchor.width,anchorHeight:anchor.height,
-              overflow:text.scrollHeight-text.clientHeight
-            };
-          });
-          return {copyBottom:copy.bottom,gridTop:grid.top,
-            scrollWidth:scene.scrollWidth,clientWidth:scene.clientWidth,cards};
-        } finally {root.style.fontSize=previous;}
-      });
-      assert.ok(enlarged.cards.length===4 &&
-        enlarged.copyBottom<=enlarged.gridTop+2 &&
-        enlarged.scrollWidth<=enlarged.clientWidth+2 &&
-        enlarged.cards.every(card=>
-          card.textTop>=card.top-2 && card.textBottom<=card.bottom+2 &&
-          card.textLeft>=card.left-2 && card.textRight<=card.right+2 &&
-          card.anchorTop>=card.top-2 && card.anchorBottom<=card.bottom+2 &&
-          card.anchorLeft>=card.left-2 && card.anchorRight<=card.right+2 &&
-          card.anchorWidth>=44 && card.anchorHeight>=44 &&
-          card.overflow<=2),
-        'D23 mobile recipe copy and touch targets must remain within fluid panels at enlarged text: '+
-        JSON.stringify(enlarged));
-    }
     // D16: measure TRANSLATION IN PIXELS, rather than mere CSS inequality.
     // Source trigger follows the heading itself, so entry/exit occur while
     // it is inside the viewport, unlike the previous offscreen fake pass.
@@ -809,6 +765,52 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       assert.equal(new URL(canonical).pathname,'/');
       const ogUrl=html.match(/<meta[^>]+property="og:url"[^>]+content="([^"]+)"/)?.[1];
       assert.equal(new URL(ogUrl).pathname,'/');
+    }
+    // The text-scale probe belongs after all ScrollTrigger movement and screenshot
+    // checks; temporary reflow must not alter later scroll range assertions.
+    if([320,390,430].includes(width)){
+      // D23 text-enlargement regression. This simulates 200% text sizing;
+      // an actual 200% browser zoom and a physical phone still require QA.
+      const enlarged=await page.evaluate(async()=>{
+        const root=document.documentElement;
+        const previous=root.style.fontSize;
+        root.style.fontSize='200%';
+        try {
+          await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+          const scene=document.querySelector('[data-v17-table-editorial]');
+          const copy=scene.querySelector('.v17r-table-copy').getBoundingClientRect();
+          const grid=scene.querySelector('.v17r-table-recipes').getBoundingClientRect();
+          const cards=[...scene.querySelectorAll('[data-v17-table-recipe]')].map(card=>{
+            const parent=card.getBoundingClientRect();
+            const text=card.querySelector('.v17r-table-recipe-text');
+            const words=text.getBoundingClientRect();
+            const anchor=card.querySelector('.v17r-table-recipe-link').getBoundingClientRect();
+            return {
+              top:parent.top,bottom:parent.bottom,left:parent.left,right:parent.right,
+              textTop:words.top,textBottom:words.bottom,
+              textLeft:words.left,textRight:words.right,
+              anchorTop:anchor.top,anchorBottom:anchor.bottom,
+              anchorLeft:anchor.left,anchorRight:anchor.right,
+              anchorWidth:anchor.width,anchorHeight:anchor.height,
+              overflow:text.scrollHeight-text.clientHeight
+            };
+          });
+          return {copyBottom:copy.bottom,gridTop:grid.top,
+            scrollWidth:scene.scrollWidth,clientWidth:scene.clientWidth,cards};
+        } finally {root.style.fontSize=previous;}
+      });
+      assert.ok(enlarged.cards.length===4 &&
+        enlarged.copyBottom<=enlarged.gridTop+2 &&
+        enlarged.scrollWidth<=enlarged.clientWidth+2 &&
+        enlarged.cards.every(card=>
+          card.textTop>=card.top-2 && card.textBottom<=card.bottom+2 &&
+          card.textLeft>=card.left-2 && card.textRight<=card.right+2 &&
+          card.anchorTop>=card.top-2 && card.anchorBottom<=card.bottom+2 &&
+          card.anchorLeft>=card.left-2 && card.anchorRight<=card.right+2 &&
+          card.anchorWidth>=44 && card.anchorHeight>=44 &&
+          card.overflow<=2),
+        'D23 mobile recipe copy and touch targets must remain within fluid panels at enlarged text: '+
+        JSON.stringify(enlarged));
     }
     console.log('V17 D2 preview '+width+' × '+height+(noJs?' noJS':'')+(reduced?' reduced':'')+' PASS');
   }finally{
