@@ -6,14 +6,15 @@
   overflow:clip;background:#1b261c;color:#fff9ec;text-align:left;
 }
 .v17r .v17r-table--editorial::before{content:none;display:none}
-.v17r .v17r-table--editorial[data-v17-table-ready]{min-height:205svh}
+.v17r .v17r-table--editorial[data-v17-table-ready]{min-height:100svh}
 .v17r .v17r-table--editorial .v17r-table-stage{
   position:relative;isolation:isolate;
   width:100%;height:100svh;min-height:650px;
   overflow:clip;background:#1b261c;
 }
 .v17r .v17r-table--editorial[data-v17-table-ready] .v17r-table-stage{
-  position:sticky;top:0;
+  /* No empty 105svh continuation beneath the feast: one visual scene. */
+  position:relative;top:auto;
 }
 .v17r .v17r-table--editorial .v17r-table-fullbleed{
   position:absolute;z-index:0;inset:0;margin:0;overflow:hidden;
