@@ -1189,6 +1189,24 @@ async function recordD21TableStory(width,height){
         }
       }
     }
+    if(mobile){
+      // D24 visual evidence must ACTUALLY show four horizontal recipe slides.
+      // The continuous vertical scroll alone cannot demonstrate a carousel.
+      await page.evaluate(()=>{
+        const scroller=document.querySelector('[data-v17-table-carousel]');
+        const top=scrollY+scroller.getBoundingClientRect().top-innerHeight*.19;
+        scrollTo({top:Math.max(0,top),behavior:'instant'});
+      });
+      await page.waitForTimeout(700);
+      for(let slide=0;slide<4;slide++){
+        await page.locator('[data-v17-carousel-dot="'+slide+'"]').click();
+        await page.waitForTimeout(950);
+        await page.screenshot({
+          path:'artifacts/v17-accueil-d24-mobile-carousel-'+width+'-slide-'+(slide+1)+'.png',
+          animations:'allow'
+        });
+      }
+    }
   }finally{
     await page.close();
     if(video)await video.saveAs('artifacts/v17-accueil-d21-table-'+width+'.webm');
