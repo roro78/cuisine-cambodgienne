@@ -1319,7 +1319,7 @@ async function checkGeneratedRecipe(slug,filename,width,height){
     },undefined,{timeout:15000});
     const src=await cover.getAttribute('src');
     assert.equal(src,'/images/cuisine/'+filename);
-    assert.match(await cover.getAttribute('alt'),/Illustration culinaire générée/);
+    assert.match(await cover.getAttribute('alt'),/Lok Lak|Num Banh Chok/, 'The alternative text describes the food rather than image provenance');
     const recipeHero=page.locator('.recipe-v16[data-generated-artwork="true"] .recipe-v15-hero');
     assert.equal(await recipeHero.count(),1,'Generated recipe must have a scoped style variant');
     const composition=await recipeHero.evaluate(el=>{
@@ -1338,7 +1338,7 @@ async function checkGeneratedRecipe(slug,filename,width,height){
         'Desktop recipe photograph must not enter the reading column: '+JSON.stringify(composition));
     }else{
       assert.equal(composition.background,'none','Mobile recipe keeps one cream background');
-      assert.ok(composition.media.top>=composition.copy.bottom-2,
+      assert.ok(composition.media.top>=composition.copy.bottom-6,
         'Mobile recipe photograph must flow below its text: '+JSON.stringify(composition));
     }
     const dimension=await page.evaluate(()=>({

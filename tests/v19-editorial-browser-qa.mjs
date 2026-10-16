@@ -44,6 +44,10 @@ async function capture(width,height){
       assert.equal(await cover.count(),1,label+' expected one hero image');
       const image=cover.locator('img');
       assert.equal(await image.count(),1,label+' hero image missing');
+      await page.waitForFunction(sel=>{
+        const img=document.querySelector(sel+' img');
+        return Boolean(img?.complete&&img.naturalWidth>0);
+      },selector,{timeout:15000});
       const proof=await image.evaluate(img=>{
         const box=img.getBoundingClientRect();
         const panel=img.closest('figure, .recipes-journey-visual')?.getBoundingClientRect();
@@ -58,6 +62,13 @@ async function capture(width,height){
       assert.equal(proof.fit,'cover',label+' image must fill its polygon');
       assert.ok(proof.width>width*(mobile?.85:.38),label+' hero width not immersive '+JSON.stringify(proof));
       assert.ok(proof.overflow<=3,label+' viewport overflow: '+JSON.stringify(proof));
+      if(!mobile && label!=='repas'){
+        const heading=page.locator('h1').first();
+        const headingBox=await heading.boundingBox();
+        const panelBox=await cover.boundingBox();
+        assert.ok(headingBox&&panelBox&&headingBox.x+headingBox.width<=panelBox.x-4,
+          label+' heading must remain outside photographic panel: '+JSON.stringify({headingBox,panelBox}));
+      }
       if(label==='repas'){
         assert.match(await page.locator('h1').innerText(),/L’art de composer un repas cambodgien/);
         assert.ok((await image.getAttribute('src'))?.includes('table-meal'),'Meal journal must not illustrate only amok');
