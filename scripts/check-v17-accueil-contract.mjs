@@ -143,6 +143,35 @@ for(const [name,sha] of [
   assert.equal(createHash('sha256').update(bytes).digest('hex'),sha,
     'D22 photo changed unexpectedly: '+name);
 }
+// D24: mobile uses a real native-scroll carousel without changing desktop
+// imagery, links or adding any carousel dependency/autoplay.
+const carouselTs=fs.readFileSync('src/scripts/v17TableCarousel.ts','utf8');
+for(const needle of [
+  'data-v17-table-carousel','data-v17-carousel-controls',
+  'data-v17-carousel-prev','data-v17-carousel-next',
+  'data-v17-carousel-dot','data-v17-carousel-page'
+]){
+  assert.ok(page.includes(needle),'D24 missing progressive carousel markup: '+needle);
+}
+assert.ok(page.includes('initV17TableCarousel();') &&
+  page.includes("import { initV17TableCarousel } from '../scripts/v17TableCarousel'"),
+  'D24 controller must be mounted from the homepage component');
+assert.ok(editorialCss.includes('scroll-snap-type:x mandatory') &&
+  editorialCss.includes('overflow-x:auto') &&
+  editorialCss.includes('flex-flow:row nowrap') &&
+  editorialCss.includes('data-v17-carousel-ready') &&
+  editorialCss.includes('min-height:clamp(23rem,53svh,30rem)') &&
+  !editorialCss.includes('grid-template-columns:minmax(0,1fr)'),
+  'D24 four recipes must scroll horizontally and stay compact on mobile');
+assert.ok(carouselTs.includes("track.addEventListener('scroll'") &&
+  carouselTs.includes("track.addEventListener('keydown'") &&
+  carouselTs.includes("reduced.matches?'instant':'smooth'") &&
+  !carouselTs.includes('setInterval(') && !carouselTs.includes('autoplay'),
+  'D24 carousel must support manual controls, keyboard and reduced motion without autoplay');
+assert.ok(!script.includes('trigger:recipe,start:') &&
+  script.includes('tableEditorial(true)') &&
+  script.includes('tableEditorial(false, window.matchMedia('),
+  'D24 must not animate horizontal slides with vertical ScrollTriggers');
 assert.equal((page.match(/class="v17r-table-fullbleed"/g)||[]).length,1,
   'D21 requires exactly one full-bleed photo');
 assert.doesNotMatch(page,/v17r-table-dish|v17r-table-ripple|data-v17-table-assemble/,
