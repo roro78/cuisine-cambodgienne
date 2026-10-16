@@ -17,11 +17,13 @@ export function initV17TableCarousel(): void {
 
   const mobile=window.matchMedia('(max-width: 760px)');
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
-  let current=0;
+  let current=-1;
   let frame=0;
 
   const update=(index:number) => {
-    current=Math.max(0,Math.min(cards.length-1,index));
+    const target=Math.max(0,Math.min(cards.length-1,index));
+    if(current===target)return; // Avoid repeating live-region announcements per scroll frame.
+    current=target;
     page.textContent=(current+1)+' / '+cards.length;
     prev.disabled=current===0;
     next.disabled=current===cards.length-1;
