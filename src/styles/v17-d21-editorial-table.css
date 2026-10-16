@@ -301,8 +301,10 @@
   }
   .v17r .v17r-table--editorial .v17r-table-culture{
     position:relative;display:flex;align-items:center;justify-content:center;
-    min-height:5.5rem;bottom:auto;left:auto;transform:none;
-    margin:0;padding:1rem 1rem 1.25rem;max-width:none;width:auto;
+    /* Reserve space for the decorative wave over the section boundary:
+       text remains above the wave, without adding an empty scrolling scene. */
+    min-height:8.5rem;bottom:auto;left:auto;transform:none;
+    margin:0;padding:1rem 1rem 4.25rem;max-width:none;width:auto;
     font-size:.91rem;line-height:1.55;
     background:#18251c;
   }
