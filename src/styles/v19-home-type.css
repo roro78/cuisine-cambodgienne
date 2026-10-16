@@ -1,0 +1,17 @@
+
+/* V19 – Uniform section heading family and readable spacing. */
+.v17r :is(.v17r-market h2,.v17r-palette h2,.v17r-gestures h2,.v17r-dessert h2,.v17r-finale h2){
+  letter-spacing:-.009em!important;line-height:1.07!important;
+}
+.v17r .v17r-table--editorial h2{
+  font-family:Impact,"Arial Narrow",system-ui,sans-serif!important;
+  font-stretch:normal;font-weight:850!important;
+  font-size:clamp(2.6rem,5.25vw,5.6rem)!important;
+  line-height:1.07!important;letter-spacing:-.009em!important;
+  text-transform:uppercase!important;
+}
+.v17r .v17r-table--editorial h2 em{color:#f7dcaf}
+@media(max-width:760px){
+  .v17r .v17r-table--editorial h2{font-size:clamp(2.25rem,9vw,4rem)!important}
+  .v17r :is(.v17r-market h2,.v17r-palette h2,.v17r-gestures h2,.v17r-dessert h2){letter-spacing:0!important;line-height:1.09!important}
+}
