@@ -54,12 +54,16 @@ async function capture(browser,width,height){
       const dessert=document.querySelector('.v17r-dessert');
       const box=root.getBoundingClientRect();
       const stageBox=stage.getBoundingClientRect();
+      const range=document.createRange();
+      range.selectNodeContents(culture.firstChild);
+      const cultureTextBottom=range.getBoundingClientRect().bottom;
       return {
         viewport:{width:innerWidth,height:innerHeight},
         sectionHeight:Math.round(box.height),
         stageGap:Math.round(box.bottom-stageBox.bottom),
         nextGap:Math.round(dessert.getBoundingClientRect().top-box.bottom),
         cultureBottomInset:Math.round(box.bottom-culture.getBoundingClientRect().bottom),
+        cultureTextInset:Math.round(box.bottom-cultureTextBottom),
         horizontalOverflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,
         slides:root.querySelectorAll('[data-v17-table-recipe]').length,
         imageTransform:getComputedStyle(root.querySelector('.v17r-table-fullbleed img')).transform,
@@ -76,6 +80,7 @@ async function capture(browser,width,height){
       assert.ok(geometry.cultureBottomInset>=25 && geometry.cultureBottomInset<=95,
         'Cultural link must stay inside photographed stage and above the wave: '+JSON.stringify(geometry));
     } else {
+      assert.ok(geometry.cultureTextInset>=60,'Culture link must be above the overlapping wave: '+JSON.stringify(geometry));
       assert.ok(geometry.carouselSnap.includes('mandatory'),'Mobile swipe-snap absent: '+JSON.stringify(geometry));
       assert.ok(geometry.sectionHeight<height*2.25,'Mobile section still overlong: '+JSON.stringify(geometry));
     }
