@@ -119,7 +119,7 @@
   .v17r .v17r-table--editorial .v17r-table-copy{top:clamp(2.5rem,5svh,4rem)}
   .v17r .v17r-table--editorial h2{font-size:clamp(2.6rem,4.8vw,4.2rem)}
   .v17r .v17r-table--editorial .v17r-table-recipes{
-    left:4%;right:4%;bottom:4.6rem;
+    left:4%;right:4%;bottom:clamp(7.4rem,13svh,8rem);
     grid-template-columns:repeat(2,minmax(0,1fr));gap:.25rem 1rem;
   }
   .v17r .v17r-table--editorial .v17r-table-recipe{
