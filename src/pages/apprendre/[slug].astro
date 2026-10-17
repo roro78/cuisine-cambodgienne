@@ -222,7 +222,7 @@ const howToSchema = {
                   <figcaption>Illustration pédagogique générée par IA · Étape {stepIndex + 1}. Vérifiez sur votre propre préparation.</figcaption>
                 </figure>
               ) : (
-                <WorkshopInfographic learning={learning} />
+                <WorkshopInfographic learning={learning} stageIndex={stepIndex} />
               )}
               {illustratedMortar && (
                 <p class="workshop-tutorial-visual-note"><span>Repère essentiel</span>{learning.stages[stepIndex].criterion}</p>
