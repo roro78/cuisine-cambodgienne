@@ -1,0 +1,60 @@
+---
+import '../styles/workshop-audio-player.css';
+
+interface AudioChapter {
+  title: string;
+  start: number;
+  duration: number;
+  text: string;
+}
+interface WorkshopAudio {
+  slug: string;
+  title: string;
+  voice: string;
+  audio: string;
+  duration: number;
+  chapters: AudioChapter[];
+}
+const { data } = Astro.props as { data: WorkshopAudio };
+---
+<section class="workshop-audio-player" data-workshop-audio data-workshop-audio-manifest={JSON.stringify(data)} aria-labelledby="atelier-narration-title">
+  <div class="workshop-audio-heading">
+    <div>
+      <span class="workshop-audio-eyebrow">Atelier à écouter · Voix Coral</span>
+      <h3 id="atelier-narration-title">Cuisine guidée, à votre rythme</h3>
+      <p>Écoutez l'atelier d'une traite, ou retrouvez directement un geste.</p>
+    </div>
+    <label class="workshop-audio-follow"><input type="checkbox" data-audio-follow /> Suivre la narration</label>
+  </div>
+  <audio data-audio-element preload="metadata" src={data.audio} aria-label={`Narration de l'atelier ${data.title}`}></audio>
+  <div class="workshop-audio-controls" role="group" aria-label="Commandes de la narration">
+    <button type="button" data-audio-previous aria-label="Chapitre précédent" title="Chapitre précédent">↤</button>
+    <button type="button" data-audio-toggle class="workshop-audio-play" aria-label="Lire la narration">▶ <span>Écouter</span></button>
+    <button type="button" data-audio-next aria-label="Chapitre suivant" title="Chapitre suivant">↦</button>
+    <div class="workshop-audio-timeline">
+      <label for="workshop-audio-progress" class="sr-only">Position dans la narration</label>
+      <input id="workshop-audio-progress" data-audio-progress type="range" min="0" max={data.duration} value="0" step="0.1" />
+      <div class="workshop-audio-time"><time data-audio-time>0:00</time><time>{Math.floor(data.duration / 60)}:{String(Math.round(data.duration % 60)).padStart(2, '0')}</time></div>
+    </div>
+  </div>
+  <ol class="workshop-audio-chapters" aria-label="Chapitres audio">
+    {data.chapters.map((chapter, index) => (
+      <li>
+        <button type="button" data-audio-chapter={index} aria-current={index === 0 ? 'true' : undefined}>
+          <span class="workshop-audio-chapter-number">{String(index).padStart(2,'0')}</span>
+          <span>{chapter.title}</span>
+        </button>
+      </li>
+    ))}
+  </ol>
+  <details class="workshop-audio-transcript">
+    <summary>Lire les paroles de la narratrice</summary>
+    <p data-audio-transcript>{data.chapters[0]?.text}</p>
+  </details>
+  <p class="workshop-audio-status" data-audio-status aria-live="polite">Prêt à écouter.</p>
+  <p class="workshop-audio-credit">Narration générée par intelligence artificielle · Voix Coral · Sans musique.</p>
+</section>
+<script>
+  import { initWorkshopNarrator } from '../scripts/workshopNarrator';
+  initWorkshopNarrator();
+</script>
