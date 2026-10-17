@@ -145,6 +145,21 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
+      - name: Shared glossary-style editorial hero browser QA
+        if: github.ref == 'refs/heads/feat/unified-editorial-heroes-glossary-template-20261017'
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/shared-editorial-hero-browser-qa.mjs
+
+      - name: Upload seven shared-page mobile and desktop screenshots
+        if: always() && github.ref == 'refs/heads/feat/unified-editorial-heroes-glossary-template-20261017'
+        uses: actions/upload-artifact@v4
+        with:
+          name: shared-glossary-page-frames
+          path: artifacts/shared-hero-*.png
+          retention-days: 7
+          if-no-files-found: ignore
+
       - name: V17 D8 public homepage Lighthouse mobile audit
         env:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
