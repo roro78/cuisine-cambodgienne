@@ -98,6 +98,8 @@ const howToSchema = {
       </div>
     </section>
 
+    <aside class="workshop-voice-dock" data-voice-dock hidden aria-label="Lecture vocale en cours"><span data-voice-dock-label>Guide audio</span><button type="button" data-voice-dock-pause aria-label="Mettre en pause">Ⅱ</button><button type="button" data-voice-dock-stop aria-label="Arrêter la narration">■</button></aside>
+
     <nav class="workshop-progress" aria-label="Progression de l’atelier" data-workshop-progress>
       {workshop.steps.map((step, stepIndex) => (
         <a href={`#etape-${stepIndex + 1}`} data-workshop-progress-link={stepIndex + 1}>
