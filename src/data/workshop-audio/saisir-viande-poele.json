@@ -1,0 +1,39 @@
+{
+  "slug": "saisir-viande-poele",
+  "title": "Bien saisir la viande à la poêle",
+  "voice": "coral",
+  "audio": "/audio/workshops/saisir-viande-poele/atelier-coral.mp3",
+  "duration": 109.152,
+  "chapters": [
+    {
+      "title": "Présentation",
+      "text": "Bonjour et bienvenue ! Aujourd'hui, on écoute le grésillement d'une poêle bien chaude. Nous allons découvrir comment dorer la viande sans la laisser cuire dans son jus. Préparez une poêle adaptée, des morceaux de taille régulière, et votre sauce à ajouter seulement à la fin.",
+      "start": 0,
+      "duration": 21.096
+    },
+    {
+      "title": "Chauffer avant de charger",
+      "text": "Commencez par faire chauffer la poêle selon son revêtement. Séchez un peu la surface de la viande, puis déposez quelques morceaux avec précaution. Vous entendez ce grésillement ? Regardez si la première face commence à dorer, sans que le fond de la poêle se remplisse aussitôt de liquide.",
+      "start": 21.096,
+      "duration": 20.952
+    },
+    {
+      "title": "Comparer avec une poêle trop pleine",
+      "text": "Pour le deuxième essai, mettez davantage de morceaux dans la poêle. Regardez : il y a souvent plus de jus et de vapeur. La viande dore moins vite. Essayez de ne pas la remuer sans arrêt. Vous voyez pourquoi il vaut mieux cuisiner en petites fournées ? Chaque morceau garde sa place pour bien colorer.",
+      "start": 42.048,
+      "duration": 21.936
+    },
+    {
+      "title": "Laisser colorer avant la sauce",
+      "text": "On revient à une petite fournée. Laissez une face devenir dorée, puis retournez les morceaux au bon moment. La sauce attend encore ! Quand la viande a pris une belle couleur, ajoutez-en juste assez pour l'enrober. Vous obtenez cette surface brillante et appétissante, sans perdre toute la coloration.",
+      "start": 63.984,
+      "duration": 23.472
+    },
+    {
+      "title": "Arrêter au bon moment",
+      "text": "Pour terminer, retirez la viande quand sa cuisson est adaptée au morceau utilisé. Attention, une belle couleur à l'extérieur ne prouve pas qu'elle est cuite à cœur : vérifiez toujours la cuisson. Bravo ! Vous savez maintenant reconnaître le bon son, la bonne chaleur et le bon moment pour ajouter la sauce.",
+      "start": 87.456,
+      "duration": 21.696
+    }
+  ]
+}
