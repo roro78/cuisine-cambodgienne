@@ -53,14 +53,39 @@ async function verify(width, height) {
       } else {
         assert.equal(await page.locator('.workshop-infographic:visible').count(), 1, slug + ' bespoke educational graphic');
       }
+      if (slug !== 'piler-aromates-au-mortier') {
+        const firstGraphic = page.locator('.workshop-stage-graphic:visible');
+        assert.equal(await firstGraphic.getAttribute('data-stage-number'), '1',
+          slug + ' first stage visual must be unique');
+        const clip = firstGraphic.locator('.workshop-stage-photo-clip img');
+        assert.equal(await clip.count(), 1, slug + ' first lesson has a photo crop');
+        await page.waitForFunction(() => {
+          const image = document.querySelector('.workshop-stage-graphic:not([hidden]) .workshop-stage-photo-clip img');
+          return image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0;
+        }, { timeout: 14000 });
+      }
       await page.locator('[data-tutorial-next]').click();
       assert.equal(await page.locator('.workshop-tutorial-step:visible').count(), 1, slug + ' after next');
       assert.equal(await page.locator('[data-workshop-progress-link="2"]').getAttribute('aria-current'), 'step');
       assert.equal(await page.locator('[data-tutorial-counter]').innerText(), 'Étape 2 sur 4');
+      if (slug !== 'piler-aromates-au-mortier') {
+        assert.equal(await page.locator('.workshop-stage-graphic:visible').getAttribute('data-stage-number'), '2',
+          slug + ' second lesson graphic differs from first');
+        assert.equal(await page.locator('.workshop-stage-photo-clip:visible').count(), 0,
+          slug + ' stage 2 should not merely repeat the stage 1 photograph');
+      }
+
       await page.locator('.workshop-tutorial-step:visible .workshop-tutorial-answer summary').click();
       assert.equal(await page.locator('.workshop-tutorial-step:visible .workshop-tutorial-answer[open]').count(), 1);
+      if (slug !== 'piler-aromates-au-mortier') {
+        await page.locator('[data-workshop-progress-link="3"]').click();
+        assert.equal(await page.locator('.workshop-stage-graphic:visible').getAttribute('data-stage-number'), '3');
+      }
       await page.locator('[data-workshop-progress-link="4"]').click();
       assert.equal(await page.locator('[data-workshop-progress-link="4"]').getAttribute('aria-current'), 'step');
+      if (slug !== 'piler-aromates-au-mortier') {
+        assert.equal(await page.locator('.workshop-stage-graphic:visible').getAttribute('data-stage-number'), '4');
+      }
       await page.locator('[data-tutorial-next]').click();
       assert.equal(await page.locator('[data-tutorial-counter]').innerText(), 'Étape 1 sur 4', 'last -> restart');
       if (slug === 'piler-aromates-au-mortier') {
