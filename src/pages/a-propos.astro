@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import EditorialSectionHero from '../components/EditorialSectionHero.astro';
 import '../styles/v16-editorial.css';
 import '../styles/v19-premium-pages.css';
 ---
@@ -11,12 +12,14 @@ import '../styles/v19-premium-pages.css';
 >
   <SiteHeader />
   <main class="v16-editorial v16-about">
-    <header class="v16-page-hero v16-page-hero--about">
-      <p class="v16-page-kicker">À propos</p>
-      <h1>Le Cambodge se transmet aussi à table.</h1>
-      <p>Ce site est né d’une envie simple : faire découvrir une cuisine généreuse, parfumée et encore trop peu connue en français, avec des recettes que l’on a vraiment envie de préparer chez soi.</p>
-      <figure class="v19-hero-photo" aria-hidden="true"><img src="/images/cuisine/v17-fruit-market-1920.jpg" width="1920" height="1280" alt="" decoding="async" fetchpriority="high" /></figure>
-    </header>
+    <EditorialSectionHero
+      kicker="À propos"
+      title="Le Cambodge se transmet aussi à table."
+      description="Ce site est né d’une envie simple : faire découvrir une cuisine généreuse, parfumée et encore trop peu connue en français, avec des recettes que l’on a vraiment envie de préparer chez soi."
+      image="/images/cuisine/v17-fruit-market-1920.jpg"
+      imageWidth={1920}
+      imageHeight={1280}
+    />
 
     <section class="v16-about-opening">
       <p class="v16-page-kicker">Le point de départ</p>
