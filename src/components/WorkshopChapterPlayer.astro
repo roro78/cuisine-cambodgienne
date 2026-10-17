@@ -1,0 +1,75 @@
+---
+import type { WorkshopAudioInfo } from '../data/workshop-audio';
+import '../styles/workshop-chapter-player.css';
+
+interface Props { info: WorkshopAudioInfo }
+const { info } = Astro.props;
+const formatTime = (value: number) => {
+  const seconds = Math.floor(value);
+  return Math.floor(seconds / 60) + ':' + String(seconds % 60).padStart(2, '0');
+};
+---
+<section
+  class="workshop-chapter-player"
+  aria-label="Lecteur audio de l’atelier"
+  data-workshop-chapter-player
+  data-chapters={JSON.stringify(info.chapters)}
+  data-audio-duration={info.duration}
+>
+  <div class="workshop-player-heading">
+    <div>
+      <p class="workshop-player-kicker">L’atelier à écouter</p>
+      <h3>À vos oreilles, à votre rythme.</h3>
+      <p>Une voix vous accompagne pendant les gestes. Vous pouvez écouter et faire défiler la page séparément.</p>
+    </div>
+    <span class="workshop-player-voice">Voix Coral · sans musique</span>
+  </div>
+
+  <audio data-player-audio src={info.audio} preload="metadata" aria-label={"Narration : " + info.title}></audio>
+
+  <div class="workshop-player-main-controls">
+    <button class="workshop-player-primary" type="button" data-player-play aria-label="Écouter l’atelier">▶ <span>Écouter</span></button>
+    <div class="workshop-player-seek-area">
+      <label class="workshop-player-seek-label" for={"workshop-seek-" + info.slug}>Avancement de l’atelier</label>
+      <input id={"workshop-seek-" + info.slug} data-player-seek type="range" min="0" max={info.duration} step="0.1" value="0" aria-label="Avancer ou reculer dans la narration" />
+      <span class="workshop-player-time" data-player-time>0:00 / {formatTime(info.duration)}</span>
+    </div>
+  </div>
+
+  <div class="workshop-player-secondary-controls">
+    <div class="workshop-player-skip-controls">
+      <button type="button" data-player-previous aria-label="Revenir au chapitre précédent">← Chapitre précédent</button>
+      <button type="button" data-player-next aria-label="Passer au chapitre suivant">Chapitre suivant →</button>
+    </div>
+    <button class="workshop-player-follow" type="button" data-player-follow aria-pressed="false">
+      <span aria-hidden="true">◉</span> Suivre la narration <span class="workshop-follow-state" data-follow-state>Désactivé</span>
+    </button>
+  </div>
+
+  <div class="workshop-player-chapters">
+    <p>Aller à un chapitre</p>
+    <ol>
+      {info.chapters.map((chapter, index) => (
+        <li>
+          <button type="button" data-player-chapter={index} aria-current={index === 0 ? 'step' : undefined}>
+            <span>{index === 0 ? 'Intro' : String(index).padStart(2, '0')}</span>
+            <strong>{chapter.title}</strong>
+            <small>{formatTime(chapter.start)}</small>
+          </button>
+        </li>
+      ))}
+    </ol>
+  </div>
+
+  <details class="workshop-player-transcript">
+    <summary>Lire la narration du chapitre <span aria-hidden="true">+</span></summary>
+    <p data-player-transcript>{info.chapters[0]?.text}</p>
+  </details>
+  <p class="workshop-player-status" data-player-status aria-live="polite">Prêt à écouter. Le défilement de la page est libre.</p>
+  <p class="workshop-player-notice">Le suivi automatique est facultatif. Faites défiler la page vous-même à tout moment : le son continuera.</p>
+</section>
+
+<script>
+  import { initWorkshopChapterPlayers } from '../scripts/workshopChapterPlayer';
+  initWorkshopChapterPlayers();
+</script>
