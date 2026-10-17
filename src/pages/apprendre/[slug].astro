@@ -1,4 +1,6 @@
 ---
+import fs from 'node:fs';
+import path from 'node:path';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
@@ -25,6 +27,13 @@ const nextWorkshop = workshops[(index + 1) % workshops.length];
 const relatedRecipes = recipes.filter((recipe) => workshop.relatedRecipes.includes(recipe.slug));
 const glossary = getGlossaryEntries(workshop.glossarySlugs ?? []);
 const narration = workshopNarration(workshop);
+const audioPrefix = `/audio/workshops/${workshop.slug}/`;
+const trackPaths = ['intro.mp3', ...workshop.steps.map((_, i) => `etape-${String(i + 1).padStart(2, '0')}.mp3`)].map((name) => audioPrefix + name);
+const audioReady = trackPaths.every((url) => {
+  try { return fs.statSync(path.join(process.cwd(), 'public', url.slice(1))).size > 1024; }
+  catch { return false; }
+});
+const narrationPayload = { ...narration, audio: audioReady ? trackPaths : [] };
 const hasPilotPhotos = workshop.slug === 'piler-aromates-au-mortier' && mortarImagePackReady;
 const pilotAlt = [
   'Aromates cambodgiens émincés avant le travail au mortier.',
@@ -88,7 +97,7 @@ const howToSchema = {
           </div>
           <p data-voice-status role="status" aria-live="polite">Présentation — prêt à écouter (voix de votre appareil)</p>
           <details><summary>Lire la transcription de la narration</summary><p data-voice-transcript>{narration.intro}</p></details>
-          <small>Prévisualisation gratuite avec la voix française disponible sur votre appareil. La voix signature à légère coloration cambodgienne reste à enregistrer et à valider.</small>
+          <small>{audioReady ? 'Narration préenregistrée et générée par IA. Elle ne représente pas la voix d’une véritable cuisinière.' : 'Prévisualisation gratuite avec la voix française de votre appareil. La voix signature reste à enregistrer et à valider.'}</small>
         </section>
       </div>
       <div class="workshop-detail-orbit" aria-hidden="true">
@@ -212,7 +221,7 @@ const howToSchema = {
     </section>
   </main>
 
-  <script type="application/json" data-workshop-narration set:html={JSON.stringify(narration).replace(/</g, "\\u003c")} />
+  <script type="application/json" data-workshop-narration set:html={JSON.stringify(narrationPayload).replace(/</g, "\\u003c")} />
   <script>
     import { initWorkshopAudio } from "../../scripts/workshopAudio";
     initWorkshopAudio();
