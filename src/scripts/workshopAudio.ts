@@ -25,6 +25,10 @@ export function initWorkshopAudio(): void {
   const buttonStop = root.querySelector<HTMLButtonElement>('[data-voice-stop]')!;
   const buttonNext = root.querySelector<HTMLButtonElement>('[data-voice-next]')!;
   const status = root.querySelector<HTMLElement>('[data-voice-status]')!;
+  const dock = document.querySelector<HTMLElement>('[data-voice-dock]');
+  const dockLabel = dock?.querySelector<HTMLElement>('[data-voice-dock-label]');
+  const dockPause = dock?.querySelector<HTMLButtonElement>('[data-voice-dock-pause]');
+  const dockStop = dock?.querySelector<HTMLButtonElement>('[data-voice-dock-stop]');
   const text = root.querySelector<HTMLElement>('[data-voice-transcript]')!;
   const stepButtons = document.querySelectorAll<HTMLButtonElement>('[data-voice-step]');
   const state: PlayerState = { index: -1, utterance: null, active: false, paused: false };
@@ -46,6 +50,12 @@ export function initWorkshopAudio(): void {
     buttonStop.disabled = !state.active;
     buttonNext.disabled = state.index >= tracks.length - 2;
     text.textContent = tracks[state.index + 1] ?? payload.intro;
+    if (dock) dock.hidden = !state.active;
+    if (dockLabel) dockLabel.textContent = `${label} — ${state.paused ? 'pause' : 'en cours'}`;
+    if (dockPause) {
+      dockPause.textContent = state.paused ? '▶' : 'Ⅱ';
+      dockPause.setAttribute('aria-label', state.paused ? 'Reprendre la narration' : 'Mettre la narration en pause');
+    }
     stepButtons.forEach((btn) => {
       btn.setAttribute('aria-pressed', String(Number(btn.dataset.voiceStep) === state.index));
     });
@@ -92,11 +102,17 @@ export function initWorkshopAudio(): void {
     if (state.active) { synth.pause(); state.paused = true; render(); }
   });
   buttonStop.addEventListener('click', () => { cancel(); render(); });
+  dockPause?.addEventListener('click', () => {
+    if (!state.active) return;
+    if (state.paused) synth.resume(); else synth.pause();
+    state.paused = !state.paused;
+    render();
+  });
+  dockStop?.addEventListener('click', () => { cancel(); render(); });
   buttonNext.addEventListener('click', () => { speak(state.index + 1); });
   stepButtons.forEach((btn) => btn.addEventListener('click', () => {
     const index = Number(btn.dataset.voiceStep);
     if (Number.isInteger(index) && index >= 0 && index < payload.steps.length) {
-      root.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'center' });
       speak(index);
     }
   }));
