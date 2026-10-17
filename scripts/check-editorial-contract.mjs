@@ -33,7 +33,7 @@ if (!header.includes('href="/glossaire/"') || !header.includes('href="/apprendre
   failures.push('V16 navigation routes are incomplete');
 }
 
-if (!learn.includes('Les ateliers') || !learn.includes('Apprendre les bons gestes, simplement.')) {
+if (!learn.includes('Les ateliers') || !learn.includes('Les gestes qui donnent du goût.')) {
   failures.push('Learning page must remain workshop-led, not recipe-led');
 }
 const workshopCount = (workshopData.match(/\bn: '\d{2}'/g) ?? []).length;

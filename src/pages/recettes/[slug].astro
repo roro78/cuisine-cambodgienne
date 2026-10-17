@@ -14,6 +14,7 @@ import '../../styles/v16-editorial.css';
 import '../../styles/v17-recipe-generated.css';
 import '../../styles/v17-generated-recipes.css';
 import '../../styles/v18-recipe-crosslinks.css';
+import '../../styles/v19-premium-pages.css';
 
 export function getStaticPaths() {
   return recipes.map((recipe: Recipe) => ({
@@ -101,7 +102,7 @@ const recipeSchema = {
 <BaseLayout title={`${recipe.title} — Recette cambodgienne | Cuisine du Cambodge`} description={recipe.description} image={recipe.image} imageAlt={recipe.imageAlt}>
   <SiteHeader />
 
-  <main class="recipe-v15 recipe-v16" data-generated-artwork={(recipe.image?.includes('-genere.webp') || recipe.image?.includes('/v18-')) ? 'true' : undefined}>
+  <main class="recipe-v15 recipe-v16" data-generated-artwork={(recipe.image?.includes('-genere.webp') || (recipe.image?.includes('/v18-') || recipe.image?.includes('/v19-'))) ? 'true' : undefined}>
     <section class="recipe-v15-hero">
       <div class="recipe-v15-hero-copy" data-reveal="up">
         <p class="eyebrow">Recette cambodgienne · {recipe.category}</p>
@@ -124,7 +125,7 @@ const recipeSchema = {
       </div>
 
       {recipe.image ? (
-        <figure class="recipe-v15-cover" data-parallax="0.045">
+        <figure class="recipe-v15-cover">
           <img
             src={recipe.image}
             srcset={recipe.imageWidths?.length ? imageSrcSet(recipe.image, recipe.imageWidths) : undefined}
@@ -134,7 +135,6 @@ const recipeSchema = {
             height={recipe.imageHeight ?? 1067}
             decoding="async"
           />
-          {(recipe.image.includes('-genere.webp') || recipe.image.includes('/v18-')) && <figcaption class="recipe-generated-note">Illustration culinaire créée par IA</figcaption>}
         </figure>
       ) : (
         <div class="recipe-v15-cover recipe-v15-cover-fallback" aria-label={`Illustration typographique de ${recipe.title}`}>

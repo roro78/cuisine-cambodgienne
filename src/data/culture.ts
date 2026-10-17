@@ -216,7 +216,7 @@ export const cultureArticles: CultureArticle[] = [
   },
   {
     slug: 'construire-repas-cambodgien',
-    title: 'Comment se construit un repas cambodgien',
+    title: 'L’art de composer un repas cambodgien',
     eyebrow: 'À table',
     intro: 'Riz, plat principal, légumes, herbes, sauces et condiments : comprendre la table aide à cuisiner des recettes qui fonctionnent ensemble.',
     seoDescription: 'Comment composer un repas cambodgien : rôle du riz, plats chauds, légumes, herbes, sauces et condiments pour préparer une table équilibrée et gourmande.',
@@ -244,11 +244,11 @@ export const cultureArticles: CultureArticle[] = [
         ]
       }
     ],
-    image: '/images/cuisine/amok-1600.webp',
-    imageAlt: 'Repas cambodgien avec amok, riz et feuilles de bananier',
-    imageWidth: 3888,
-    imageHeight: 2592,
-    imageWidths: [480, 800, 1200, 1600],
+    image: '/images/cuisine/v17-table-meal-1600.jpg',
+    imageAlt: 'Table cambodgienne composée de plusieurs plats, riz, herbes et accompagnements',
+    imageWidth: 1600,
+    imageHeight: 1067,
+    imageWidths: [1600],
     sources: [
       { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: tourismGuide }
     ]

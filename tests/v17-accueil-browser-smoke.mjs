@@ -1306,7 +1306,7 @@ async function recordD21TableStory(width,height){
 }
 /* Generated recipe artwork must also work on the real V16 recipe routes.
  * This is a read-only browser check; the V17 preview remains isolated. */
-async function checkGeneratedRecipe(slug,filename,width,height){
+async function checkGeneratedRecipe(slug,filename,altLabel,width,height){
   const page=await browser.newPage({viewport:{width,height},isMobile:width<=430,hasTouch:width<=430});
   try{
     const response=await page.goto(base+'/recettes/'+slug+'/',{waitUntil:'networkidle',timeout:30000});
@@ -1315,17 +1315,47 @@ async function checkGeneratedRecipe(slug,filename,width,height){
     await cover.scrollIntoViewIfNeeded();
     await page.waitForFunction(()=>{
       const img=document.querySelector('.recipe-v15-cover img');
-      return img?.complete && img.naturalWidth>1000 && img.naturalHeight>700;
+      return Boolean(img?.complete && img.naturalWidth>0 && img.naturalHeight>0);
     },undefined,{timeout:15000});
     const src=await cover.getAttribute('src');
     assert.equal(src,'/images/cuisine/'+filename);
-    assert.match(await cover.getAttribute('alt'),/Illustration culinaire générée/);
+    // Browsers may load a smaller actual WebP from srcset: this is expected
+    // responsive behavior, not a missing high-resolution image.
+    const selected=await cover.evaluate(img=>({
+      currentSrc:new URL(img.currentSrc).pathname,
+      naturalWidth:img.naturalWidth,
+      naturalHeight:img.naturalHeight,
+      srcset:img.getAttribute('srcset') ?? ''
+    }));
+    const baseName=filename.slice(0,-'-1440.webp'.length);
+    const widths=[480,800,1200,1440];
+    assert.ok(widths.some(size=>selected.currentSrc==='/images/cuisine/'+baseName+'-'+size+'.webp'),
+      'Recipe must load a valid responsive V19 WebP: '+JSON.stringify(selected));
+    for(const size of widths)assert.ok(
+      selected.srcset.includes(baseName+'-'+size+'.webp '+size+'w'),
+      'Missing responsive recipe width '+size+': '+slug);
+    assert.match(await cover.getAttribute('alt'),new RegExp(altLabel), 'The alternative text describes the food rather than image provenance');
     const recipeHero=page.locator('.recipe-v16[data-generated-artwork="true"] .recipe-v15-hero');
     assert.equal(await recipeHero.count(),1,'Generated recipe must have a scoped style variant');
-    const background=await recipeHero.evaluate(el=>getComputedStyle(el).backgroundImage);
-    if(width>=901)assert.match(background,/linear-gradient\(90deg/i,
-      'Generated recipe desktop text must not be crossed by a diagonal background');
-    else assert.equal(background,'none','Mobile recipe keeps one cream background');
+    const composition=await recipeHero.evaluate(el=>{
+      const media=el.querySelector('.recipe-v15-cover')?.getBoundingClientRect();
+      const copy=el.querySelector('.recipe-v15-hero-copy')?.getBoundingClientRect();
+      return {
+        background:getComputedStyle(el).backgroundImage,
+        copy:copy?.toJSON(),media:media?.toJSON()
+      };
+    });
+    if(width>=901){
+      assert.match(composition.background,/linear-gradient\(90deg/i,
+        'Desktop recipe must keep a straight, readable text background');
+      assert.ok(composition.copy&&composition.media&&
+        composition.media.left>=composition.copy.right+4,
+        'Desktop recipe photograph must not enter the reading column: '+JSON.stringify(composition));
+    }else{
+      assert.equal(composition.background,'none','Mobile recipe keeps one cream background');
+      assert.ok(composition.media.top>=composition.copy.bottom-6,
+        'Mobile recipe photograph must flow below its text: '+JSON.stringify(composition));
+    }
     const dimension=await page.evaluate(()=>({
       html:document.documentElement.scrollWidth,
       client:document.documentElement.clientWidth
@@ -1370,12 +1400,14 @@ try{
     }
     await run(390,844,{reduced:true});
     await run(390,844,{noJs:true});
-    for(const [slug,file] of [
-      ['lok-lak','v17-lok-lak-genere.webp'],
-      ['num-banh-chok','v17-nom-banh-chok-genere.webp']
+    for(const [slug,file,alt] of [
+      ['amok-trey','v19-amok-trey-1440.webp','Amok Trey'],
+      ['lok-lak','v19-lok-lak-1440.webp','Lok Lak'],
+      ['num-banh-chok','v19-num-banh-chok-1440.webp','Num Banh Chok'],
+      ['bai-sach-chrouk','v19-bai-sach-chrouk-1440.webp','Bai Sach Chrouk']
     ]){
-      await checkGeneratedRecipe(slug,file,1440,900);
-      await checkGeneratedRecipe(slug,file,390,844);
+      await checkGeneratedRecipe(slug,file,alt,1440,900);
+      await checkGeneratedRecipe(slug,file,alt,390,844);
     }
   }
   assert.deepEqual(errors,[],'No browser JS errors');

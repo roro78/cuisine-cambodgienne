@@ -7,6 +7,7 @@ import { imageSrcSet } from '../../utils/images';
 import '../../styles/recipe-v15.css';
 import '../../styles/v16-editorial.css';
 import '../../styles/v17-generated-recipes.css';
+import '../../styles/v19-premium-pages.css';
 
 const minutes = (value: string) => Number(value.match(/\d+/)?.[0] ?? 0);
 const collectionSchema = {
@@ -59,7 +60,7 @@ const toneMap: Record<string,string> = {
       </div>
 
       <div class="recipes-journey-visual" aria-hidden="true">
-        <figure><img src="/images/cuisine/kroeung-1600.webp" srcset={imageSrcSet('/images/cuisine/kroeung-1600.webp',[480,800,1200,1600])} sizes="(max-width: 900px) 100vw, 55vw" alt="" width="1600" height="1067" decoding="async" /></figure>
+        <figure><img src="/images/cuisine/kroeung-1600.webp" srcset={imageSrcSet('/images/cuisine/kroeung-1600.webp',[480,800,1200,1600])} sizes="(max-width: 900px) 100vw, 60vw" alt="" width="1600" height="1067" decoding="async" fetchpriority="high" /></figure>
       </div>
     </section>
 
@@ -100,7 +101,6 @@ const toneMap: Record<string,string> = {
                 loading="lazy"
                 decoding="async"
               />
-              {(recipe.image.includes('-genere.webp') || recipe.image.includes('/v18-')) && <figcaption class="recipe-generated-note">Illustration créée par IA</figcaption>}
             </figure>
           ) : (
             <div class="recipe-v15-card-fallback" style={toneMap[recipe.visualTone ?? 'market']}>
