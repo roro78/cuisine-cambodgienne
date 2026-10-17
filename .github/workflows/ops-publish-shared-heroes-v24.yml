@@ -1,0 +1,93 @@
+name: One-time validated shared glossary-section release
+on:
+  push:
+    branches:
+      - ops/publish-shared-heroes-v24-20261017
+    paths:
+      - .github/workflows/ops-publish-shared-heroes-v24.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ovh-production
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish pinned main to ovh-production
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check exact approved main and current static branch
+        env:
+          EXPECTED_MAIN: 3f75a21acf33871c0549d2966a501281f38d8529
+          EXPECTED_STATIC: 86774a594f9838a5c4a0679b04bc23d52b8bb40c
+        run: |
+          set -euo pipefail
+          MAIN_SHA="$(git ls-remote https://github.com/roro78/cuisine-cambodgienne.git refs/heads/main | cut -f1)"
+          STATIC_SHA="$(git ls-remote https://github.com/roro78/cuisine-cambodgienne.git refs/heads/ovh-production | cut -f1)"
+          test "$MAIN_SHA" = "$EXPECTED_MAIN"
+          test "$STATIC_SHA" = "$EXPECTED_STATIC"
+      - name: Checkout approved source from main
+        uses: actions/checkout@v4
+        with:
+          ref: 3f75a21acf33871c0549d2966a501281f38d8529
+          persist-credentials: true
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Verify required release contracts
+        run: |
+          set -euo pipefail
+          npm run check
+          npm run test:motion
+          npm run test:recipes
+          npm run test:editorial
+          node scripts/audit-photo-coverage.mjs
+          npm run test:experiences
+      - name: Build approved static release
+        run: npm run build
+      - name: Assert six compiled tutoriels and required assets
+        run: |
+          set -euo pipefail
+          for slug in piler-aromates-au-mortier equilibrer-une-sauce saisir-viande-poele fraicheur-herbes-agrumes bouillon-leger-savoureux composer-repas-cambodgien; do
+            test -s "dist/apprendre/$slug/index.html"
+            grep -q "workshop-tutorial" "dist/apprendre/$slug/index.html"
+          done
+          test -s dist/images/workshops/mortier-etape-01.webp
+          test -s dist/images/workshops/mortier-etape-04.webp
+          test -s dist/gestion-visuels/index.php
+          test -s dist/gestion-visuels/.htaccess
+          for route in glossaire recettes apprendre culture ingredients a-propos experiences; do
+            test -s "dist/$route/index.html"
+            grep -q 'data-editorial-hero="glossary-template"' "dist/$route/index.html"
+          done
+      - name: Publish dist to static branch, fast-forward only
+        env:
+          EXPECTED_STATIC: 86774a594f9838a5c4a0679b04bc23d52b8bb40c
+        run: |
+          set -euo pipefail
+          cp -a dist /tmp/cuisine-du-cambodge-v24-dist
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin ovh-production
+          test "$(git rev-parse origin/ovh-production)" = "$EXPECTED_STATIC"
+          git switch -C ovh-production origin/ovh-production
+          git rm -rf . > /dev/null 2>&1 || true
+          git clean -fdx
+          cp -a /tmp/cuisine-du-cambodge-v24-dist/. .
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Static branch already identical to validated build"
+            exit 0
+          fi
+          git commit -m "deploy: 3f75a21acf33871c0549d2966a501281f38d8529"
+          git push origin HEAD:ovh-production
+      - name: Confirm published static branch commit
+        run: |
+          set -euo pipefail
+          echo "Verified: ovh-production static branch updated. Server synchronization and live URLs are separate checks."
