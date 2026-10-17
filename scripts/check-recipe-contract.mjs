@@ -54,7 +54,7 @@ if (!servings.includes('currentEls.forEach')) failures.push('All visible serving
 if (!servings.includes('original * factor')) failures.push('Ingredient quantities must scale from base servings');
 if (!servings.includes("data.scalable !== 'false'") && !servings.includes("dataset.scalable !== 'false'")) failures.push('Non-scalable ingredients must stay fixed');
 
-if (!listing.includes('Portions ajustables') || !listing.includes('Étapes guidées')) failures.push('Recipe listing must advertise guided/scalable recipe value');
+if (!listing.includes('Quantités pour chaque plat') || !listing.includes('Préparation pas à pas')) failures.push('Recipe listing must clearly present quantities and step-by-step cooking');
 if (!listing.includes('data-recipe-filter="soupe"') || !listing.includes('data-recipe-filter="dessert"')) failures.push('Recipe catalog must expose broader discovery filters');
 
 const heroVisual = listing.match(/<div class="recipes-journey-visual"[\s\S]*?<\/div>/)?.[0] ?? '';
@@ -100,7 +100,7 @@ if (!prahok.includes('Ne goûtez jamais une préparation contenant du porc cru o
   failures.push('Prahok Ktis must warn against tasting raw pork');
 }
 
-if (!detail.includes('Les étapes, les gestes et les bons repères.') || detail.includes('Prenez votre temps, goûtez et ajustez.')) {
+if (!detail.includes('Ne goûtez jamais une préparation contenant de la viande, du poisson ou des œufs crus.') || detail.includes('Prenez votre temps, goûtez et ajustez.')) {
   failures.push('Guided method must not use a generic invitation to taste potentially raw food');
 }
 if (!amok.includes('poisson et les œufs sont complètement cuits avant de servir')) {
