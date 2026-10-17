@@ -112,7 +112,7 @@ if (!recipeFilters.includes("visible === 0 ? 'Aucune recette trouvée'")) {
   failures.push('Recipe filters must announce empty filter results correctly');
 }
 
-if (!recipes.includes('recipe-v15 recipe-v16') || !recipes.includes('Les étapes, les gestes et les bons repères.')) {
+if (!recipes.includes('recipe-v15 recipe-v16') || !recipes.includes('La recette, étape par étape.')) {
   failures.push('Recipe detail must keep the V16 culinary editorial layer');
 }
 
@@ -120,7 +120,7 @@ if (about.includes('Et si le goût ou la texture seront différents') || !about.
   failures.push('About ingredient substitutions must use natural, accurate French');
 }
 if (recipes.includes('Prenez votre temps, goûtez et ajustez.') ||
-    !recipes.includes('Ne goûtez les préparations que lorsque leur composition le permet.')) {
+    !recipes.includes('Ne goûtez jamais une préparation contenant de la viande, du poisson ou des œufs crus.')) {
   failures.push('Guided recipe headings cannot invite tasting raw ingredients');
 }
 
