@@ -115,6 +115,21 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
+      - name: V21 atelier tutorial responsive QA
+        if: github.ref == 'refs/heads/feat/v20-ateliers-hero-pedagogie-20261017'
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/v21-atelier-browser-qa.mjs
+
+      - name: Upload V21 workshop tutorial screenshots
+        if: always() && github.ref == 'refs/heads/feat/v20-ateliers-hero-pedagogie-20261017'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v21-workshop-tutorial-visual-review
+          path: artifacts/v21-*.png
+          retention-days: 7
+          if-no-files-found: ignore
+
       - name: V17 D8 public homepage Lighthouse mobile audit
         env:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
