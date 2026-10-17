@@ -105,6 +105,12 @@ async function verify(width, height) {
         });
         assert.ok(visibility.visible, slug + ' first stage tab must be visible after restart');
       }
+      if (await page.locator('.glossary-strip').count()) {
+        assert.equal(await page.locator('.glossary-strip').getAttribute('data-reveal'), null,
+          slug + ' glossary must not depend on animation to render');
+        const glossaryOpacity = await page.locator('.glossary-strip').evaluate((el) => getComputedStyle(el).opacity);
+        assert.ok(Number(glossaryOpacity) > .98, slug + ' glossary must remain visible');
+      }
       for (const cls of ['.workshop-takeaway','.workshop-practice','.workshop-next']) {
         assert.equal(await page.locator(cls).count(), 1, slug + ' expected final section '+cls);
         const visible = await page.locator(cls).evaluate((el) => {
