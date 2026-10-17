@@ -217,7 +217,7 @@ const howToSchema = {
                       <div><img src={mortarPhotos[3]} width="1240" height="930" loading="lazy" decoding="async" alt="Pâte finale : texture plus fine et liée" /><span>Pâte finale</span></div>
                     </div>
                   ) : (
-                    <img src={mortarPhotos[stepIndex]} width="1240" height={stepIndex === 0 ? 827 : 930} loading="lazy" decoding="async" alt={mortarAlt[stepIndex]} />
+                    <img src={mortarPhotos[stepIndex]} width="1240" height={stepIndex === 0 ? 827 : 930} loading={stepIndex === 0 ? "eager" : "lazy"} decoding="async" alt={mortarAlt[stepIndex]} />
                   )}
                   <figcaption>Illustration pédagogique générée par IA · Étape {stepIndex + 1}. Vérifiez sur votre propre préparation.</figcaption>
                 </figure>
@@ -317,6 +317,7 @@ const howToSchema = {
       const previous = tutorial.querySelector<HTMLButtonElement>('[data-tutorial-previous]');
       const next = tutorial.querySelector<HTMLButtonElement>('[data-tutorial-next]');
       const counter = tutorial.querySelector<HTMLElement>('[data-tutorial-counter]');
+      const stepNavigation = tutorial.querySelector<HTMLElement>('[data-workshop-progress]');
       let active = 0;
 
       function showStage(index: number, moveFocus = false) {
@@ -329,6 +330,18 @@ const howToSchema = {
           if (linkIndex === active) link.setAttribute('aria-current', 'step');
           else link.removeAttribute('aria-current');
         });
+        // Load media for the selected stage even when it was previously hidden.
+        stages[active].querySelectorAll<HTMLImageElement>('img').forEach((img) => {
+          if (img.loading === 'lazy') img.loading = 'eager';
+        });
+        // Keep the active tab visible in the horizontal mobile stage navigation.
+        const activeLink = links[active];
+        if (stepNavigation && activeLink && stepNavigation.scrollWidth > stepNavigation.clientWidth) {
+          const navBox = stepNavigation.getBoundingClientRect();
+          const linkBox = activeLink.getBoundingClientRect();
+          const left = stepNavigation.scrollLeft + linkBox.left - navBox.left - (navBox.width - linkBox.width) / 2;
+          stepNavigation.scrollTo({ left: Math.max(0, left), behavior: 'auto' });
+        }
         if (previous) previous.disabled = active === 0;
         if (next) {
           next.textContent = active === stages.length - 1 ? 'Revoir depuis le début ↺' : 'Suivant →';
