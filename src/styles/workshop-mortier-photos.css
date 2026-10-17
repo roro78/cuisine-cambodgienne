@@ -1,0 +1,44 @@
+/* Mortar workshop photo release: affects no other workshop or V17 homepage. */
+.workshop-step-list .workshop-step--illustrated{
+  display:grid;grid-template-columns:3.5rem minmax(0,.93fr) minmax(0,1.07fr);
+  align-items:start;gap:clamp(1rem,3vw,3rem);
+}
+.workshop-step--illustrated .workshop-step-media{
+  margin:0;min-width:0;position:relative;
+}
+.workshop-step--illustrated .workshop-step-media>img,
+.workshop-step--illustrated .workshop-step-compare img{
+  display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;
+  border-radius:1rem;background:#e7dbc8;
+  box-shadow:0 14px 36px rgba(40,32,20,.12);
+}
+.workshop-step--illustrated .workshop-step-media figcaption{
+  padding:.7rem .15rem 0;font-size:.72rem;line-height:1.5;color:#725f4b;
+}
+.workshop-step--illustrated .workshop-step-copy{min-width:0}
+.workshop-step--illustrated .workshop-step-copy>h2{font-size:clamp(2.3rem,4vw,4.5rem)}
+.workshop-step--illustrated .workshop-learning-grid{margin-top:1.5rem;gap:.7rem}
+.workshop-step--illustrated .workshop-learning-grid section{padding:1rem}
+.workshop-step-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}
+.workshop-step-compare>div{position:relative;min-width:0}
+.workshop-step--illustrated .workshop-step-compare img{aspect-ratio:3/4}
+.workshop-step-compare span{
+  position:absolute;bottom:.6rem;left:.6rem;padding:.35rem .6rem;
+  border-radius:3rem;background:#fff7e6;color:#2c2418;
+  font-size:.7rem;font-weight:700;
+}
+@media(max-width:1100px){
+  .workshop-step-list .workshop-step--illustrated{
+    grid-template-columns:2.6rem minmax(0,1fr) minmax(0,1fr);gap:1.4rem;
+  }
+  .workshop-step--illustrated .workshop-learning-grid{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .workshop-step-list .workshop-step--illustrated{
+    grid-template-columns:2rem minmax(0,1fr);gap:.75rem 1rem;
+  }
+  .workshop-step--illustrated .workshop-step-media,
+  .workshop-step--illustrated .workshop-step-copy{grid-column:2}
+  .workshop-step--illustrated .workshop-step-copy>h2{font-size:clamp(2.3rem,9vw,3.6rem)}
+  .workshop-step--illustrated .workshop-learning-grid{grid-template-columns:1fr}
+}

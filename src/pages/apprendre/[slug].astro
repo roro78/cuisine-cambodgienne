@@ -9,6 +9,7 @@ import type { Workshop } from '../../data/workshops';
 import { recipes } from '../../data/recipes';
 import { getGlossaryEntries } from '../../data/glossary';
 import '../../styles/v16-editorial.css';
+import '../../styles/workshop-mortier-photos.css';
 
 export function getStaticPaths() {
   return workshops.map((workshop: Workshop) => ({
@@ -22,6 +23,19 @@ const index = workshops.findIndex((item) => item.slug === workshop.slug);
 const nextWorkshop = workshops[(index + 1) % workshops.length];
 const relatedRecipes = recipes.filter((recipe) => workshop.relatedRecipes.includes(recipe.slug));
 const glossary = getGlossaryEntries(workshop.glossarySlugs ?? []);
+const illustratedMortar = workshop.slug === 'piler-aromates-au-mortier';
+const mortarPhotos = [
+  '/images/workshops/mortier-etape-01.webp',
+  '/images/workshops/mortier-etape-02.webp',
+  '/images/workshops/mortier-etape-03.webp',
+  '/images/workshops/mortier-etape-04.webp'
+];
+const mortarAlt = [
+  'Citronnelle, galanga et curcuma émincés finement avant le pilage.',
+  'Aromates travaillés avec un pilon dans un mortier en pierre.',
+  'Pâte de kroeung en cours de pilage, texture encore irrégulière.',
+  'Pâte aromatique de kroeung plus fine et homogène après le pilage.'
+];
 
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
@@ -104,8 +118,21 @@ const howToSchema = {
 
     <section class="workshop-step-list" aria-label="Étapes de l’atelier">
       {workshop.steps.map((step, stepIndex) => (
-        <article id={`etape-${stepIndex + 1}`} class="workshop-step" data-workshop-step={stepIndex + 1} data-reveal="up">
+        <article id={`etape-${stepIndex + 1}`} class:list={["workshop-step", {"workshop-step--illustrated": illustratedMortar}]} data-workshop-step={stepIndex + 1} data-reveal="up">
           <div class="workshop-step-index">{String(stepIndex + 1).padStart(2, '0')}</div>
+          {illustratedMortar && (
+            <figure class="workshop-step-media">
+              {stepIndex === 3 ? (
+                <div class="workshop-step-compare">
+                  <div><img src={mortarPhotos[1]} width="1240" height="930" loading="lazy" decoding="async" alt="Pâte de kroeung en cours de pilage, texture grossière" /><span>Avant</span></div>
+                  <div><img src={mortarPhotos[3]} width="1240" height="930" loading="lazy" decoding="async" alt="Pâte de kroeung fine et homogène après le pilage" /><span>Après</span></div>
+                </div>
+              ) : (
+                <img src={mortarPhotos[stepIndex]} width="1240" height={stepIndex === 0 ? 827 : 930} loading="lazy" decoding="async" alt={mortarAlt[stepIndex]} />
+              )}
+              <figcaption>Illustration pédagogique générée par IA · Étape {stepIndex + 1}</figcaption>
+            </figure>
+          )}
           <div class="workshop-step-copy">
             <p class="v16-mini-label">Étape {stepIndex + 1}</p>
             <h2>{step.title}</h2>
