@@ -173,3 +173,12 @@
   .workshop-stage-heat-order>div{min-height:10rem}
   .workshop-stage-heat-order>div strong{font-size:1.2rem}
 }
+
+/* Compact, permanently readable glossary: workshop users should never scroll through an empty reserved section. */
+.workshop-detail .glossary-strip{
+  margin:0;
+  padding:clamp(2.7rem,5vw,5rem) var(--page-pad);
+}
+@media(max-width:620px){
+  .workshop-detail .glossary-strip{margin:0;padding:3rem 1rem}
+}
