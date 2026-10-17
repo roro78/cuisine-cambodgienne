@@ -39,3 +39,39 @@ L'interface des étapes illustrées est déjà codée, mais **son activation est
 2. Vérifier le rendu réel de l'interface et le lecteur sur plusieurs navigateurs.
 3. Choisir, enregistrer ou générer avec consentement la vraie narration française à légère coloration khmère (pas de clonage sans autorisation).
 4. Remplacer si souhaité le moteur vocal natif par des fichiers audio statiques contrôlés, sans requête de génération au moment de l'écoute.
+
+
+## Livraison du pilote — photos
+
+Le pack WebP créé dans ChatGPT n'est pas encore ajouté comme fichiers binaires à GitHub. La PR #57 contient maintenant un importeur reproductible.
+
+1. Télécharger le fichier \`atelier-pilote-mortier-pack.zip\` fourni dans ChatGPT.
+2. Dans un clone local de la branche \`feat/atelier-immersif-audio-guide-20261017\`, extraire le contenu de l'archive dans \`atelier-pilote-mortier/\` (l'archive contient déjà le répertoire \`public/images/workshops/\`).
+3. \`npm install --no-audit --no-fund\`
+4. \`node scripts/apply-workshop-mortier-pack.mjs --source=atelier-pilote-mortier\` (vérification seule, aucun changement).
+5. \`node scripts/apply-workshop-mortier-pack.mjs --source=atelier-pilote-mortier --apply\` (copie des quatre binaires approuvés et activation du rendu).
+6. \`npm run test:workshop && npm run check && npm run test:editorial && npm run build\`, inspection du résultat en navigateur mobile et desktop.
+7. Ajouter puis pousser les quatre fichiers WebP et \`src/data/workshopAudio.ts\` sur **cette branche uniquement** ; ne pas publier sur OVH avant validation.
+
+L'importeur vérifie les empreintes SHA-256 des images réelles et leurs dimensions via Sharp ; une image modifiée est refusée. Aucun autre asset n'est accepté silencieusement.
+
+## Livraison du pilote — narration MP3 préenregistrée
+
+Le script \`scripts/generate-workshop-audio.mjs\` utilise l'API OpenAI depuis une machine autorisée, uniquement sur option explicite. **Ne jamais placer la clé API dans une conversation, un fichier source, une PR ou un secret GitHub Actions si ce n'est pas nécessaire.**
+
+- \`node scripts/generate-workshop-audio.mjs --dry-run --track=all\` : inventaire des cinq segments (aucun appel, aucune facturation).
+- Configurer \`OPENAI_API_KEY\` en variable d'environnement **localement** à partir du compte API qui sera facturé. Le script n'enregistre jamais la clé.
+- \`node scripts/generate-workshop-audio.mjs --generate --track=intro --voice=shimmer\` : produit **un seul exemple de voix** pour validation humaine.
+- Une fois la voix approuvée : \`node scripts/generate-workshop-audio.mjs --generate --track=all --voice=shimmer\`. Un MP3 existant est conservé, sauf \`--force\`.
+- Les fichiers arrivent dans \`public/audio/workshops/piler-aromates-au-mortier/intro.mp3\` et \`etape-01.mp3\` à \`etape-04.mp3\`.
+- Dès que les **cinq** pistes sont présentes au build, Astro utilise les MP3 dans le lecteur. Sinon, synthèse française gratuite de l'appareil avec transcription. Le lecteur **ne fait aucun appel API depuis le navigateur**.
+
+L'API prend en charge les instructions d'accent et de ton, mais le rendu **francophone avec légère coloration cambodgienne** reste une hypothèse à tester. Valider chaque extrait, la prononciation khmère, le rythme et les droits d'utilisation avant diffusion. Les voix standards OpenAI sont encore optimisées avant tout pour l'anglais : ne pas présenter une voix quelconque comme une vraie cuisinière cambodgienne. Le site mentionne explicitement « générée par IA » si les MP3 sont activés.
+
+## État au 17 octobre 2026
+
+- Code distant GitHub : présent, PR #57 toujours en brouillon.
+- Contrôles statiques des références et de la préparation audio : validés depuis le connecteur GitHub (sans exécuter de build).
+- Import WebP dans GitHub : **à exécuter depuis un environnement disposant du clone Git et de l'archive locale** ; non effectué par le connecteur disponible.
+- Appels TTS payants : **aucun effectué** ; la clé du second compte n'est pas accessible ici.
+- Test navigateur, build intégral, CI : **non validés**.
