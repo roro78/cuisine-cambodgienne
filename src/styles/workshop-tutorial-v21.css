@@ -1,0 +1,260 @@
+/* V21 — ateliers: teaching interface, not a recipe layout.
+   Only scoped to /apprendre/[slug].astro; preserves V17 homepage and recipes. */
+.workshop-detail .workshop-detail-hero.workshop-experience-hero{min-height:clamp(36rem,78svh,52rem)}
+.workshop-detail .workshop-detail-hero.workshop-experience-hero h1{font-size:clamp(3.5rem,6.1vw,7.05rem)}
+.workshop-experience-visual{min-height:25rem}
+.workshop-learning-lab{gap:clamp(2rem,5vw,6rem);padding-top:clamp(3.2rem,5vw,5rem);padding-bottom:clamp(3.2rem,5vw,5rem)}
+.workshop-lab-introduction h2{font-size:clamp(2.7rem,4.2vw,4.5rem);max-width:14ch}
+.workshop-lab-result{margin-top:1.2rem;padding-top:1.1rem}
+.workshop-lab-result p{margin:0;line-height:1.55;color:#524635;max-width:33rem}
+.workshop-lab-activities{padding:clamp(1.25rem,2.5vw,2.1rem)}
+.workshop-lab-experiments li{padding:.8rem 0}
+.workshop-lab-activities-heading{margin-bottom:.5rem}
+.workshop-lab-experiments p{font-size:clamp(.95rem,1.16vw,1.06rem)}
+.workshop-tutorial{
+  scroll-margin-top:5.5rem;padding:clamp(3.6rem,6vw,6rem) var(--page-pad) clamp(4rem,7vw,7rem);
+  background:#f3ebde;color:#2d2b23;
+}
+.workshop-tutorial-heading{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(17rem,.55fr);
+  gap:2rem;align-items:end;margin-bottom:2rem;
+}
+.workshop-tutorial-heading .v16-page-kicker{color:#985633}
+.workshop-tutorial-heading h2{
+  margin:.45rem 0 0;font:400 clamp(3rem,5.3vw,5.8rem)/.96 var(--serif);
+  letter-spacing:-.055em;
+}
+.workshop-tutorial-heading>p{margin:0;max-width:29rem;line-height:1.65;color:#675949}
+.workshop-tutorial .workshop-progress{
+  position:sticky;top:4.25rem;z-index:23;
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  overflow:visible;margin-bottom:clamp(1.5rem,3vw,2.5rem);
+  border:1px solid #d2c4ad;background:rgba(248,240,228,.97);
+}
+.workshop-tutorial .workshop-progress a{
+  min-width:0;padding:1.05rem .8rem;gap:.7rem;min-height:4.25rem;
+  transition:background .2s,color .2s;outline-offset:-3px;
+}
+.workshop-tutorial .workshop-progress a:hover{background:#ead9bf}
+.workshop-tutorial .workshop-progress a[aria-current="step"]{background:#303f33;color:#fff9ed}
+.workshop-tutorial .workshop-progress a[aria-current="step"]:hover{background:#303f33}
+.workshop-tutorial .workshop-progress span{font-size:.8rem;font-weight:700}
+.workshop-tutorial .workshop-progress em{font-size:.72rem;line-height:1.3}
+.workshop-tutorial-steps{min-height:0}
+.workshop-tutorial-step{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.93fr);
+  align-items:start;gap:clamp(2rem,5vw,5.75rem);
+  padding:clamp(1.4rem,2vw,2rem) 0;
+  border-top:0;scroll-margin-top:9rem;
+}
+.workshop-tutorial-step+.workshop-tutorial-step{border-top:1px solid #d7c9b4;margin-top:3rem;padding-top:3rem}
+.workshop-tutorial[data-enhanced="true"] .workshop-tutorial-step[hidden]{display:none!important}
+.workshop-tutorial-media{min-width:0;position:relative}
+.workshop-tutorial-photo{margin:0}
+.workshop-tutorial-photo>img,.workshop-tutorial-photo .workshop-step-compare img{
+  display:block;width:100%;max-height:34rem;aspect-ratio:4/3;object-fit:cover;
+  border-radius:.3rem;background:#e0d0b7;
+  box-shadow:0 15px 30px rgba(51,39,27,.13);
+}
+.workshop-tutorial-photo .workshop-step-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}
+.workshop-tutorial-photo .workshop-step-compare img{aspect-ratio:3/4}
+.workshop-tutorial-photo .workshop-step-compare>div{position:relative}
+.workshop-tutorial-photo .workshop-step-compare span{
+  position:absolute;bottom:.7rem;left:.6rem;
+  background:#fff8e9;padding:.45rem .7rem;font-size:.66rem;font-weight:700;
+}
+.workshop-tutorial-photo figcaption{
+  padding:.7rem 0;color:#745e49;font-size:.72rem;line-height:1.5;
+}
+.workshop-tutorial-visual-note{
+  display:grid;grid-template-columns:1fr;gap:.35rem;
+  background:#fff9ed;border-left:3px solid #d3a450;margin:.7rem 0 0;
+  padding:1.1rem 1.35rem;line-height:1.55;color:#493e32;
+}
+.workshop-tutorial-visual-note span{
+  font-size:.59rem;letter-spacing:.12em;text-transform:uppercase;
+  color:#9a5838;font-weight:700;
+}
+.workshop-tutorial-instructions{min-width:0}
+.workshop-tutorial-step-number{
+  display:flex;align-items:center;gap:.7rem;margin:0 0 1rem;
+  color:#a15d3c;font-size:.69rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;
+}
+.workshop-tutorial-step-number span{color:#7d6f5b}
+.workshop-tutorial-instructions h3{
+  max-width:13ch;margin:0 0 1.4rem;
+  font:400 clamp(2.7rem,4.1vw,4.65rem)/.95 var(--serif);letter-spacing:-.052em;
+  text-wrap:balance;
+}
+.workshop-tutorial-instructions h3:focus{outline:none}
+.workshop-tutorial-do,.workshop-tutorial-question{
+  margin-top:1rem;padding:1.3rem 1.5rem;border:1px solid #d5c8b4;
+  background:#faf6ed;
+}
+.workshop-tutorial-do{border-left:4px solid #d6a749}
+.workshop-tutorial-question{background:#e8e7dc;border-color:#d0d2c2}
+.workshop-tutorial-do>span,.workshop-tutorial-question>span{
+  display:block;color:#8e583b;font-size:.62rem;
+  font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin-bottom:.7rem;
+}
+.workshop-tutorial-do p,.workshop-tutorial-question p{
+  margin:0;font-size:clamp(1.03rem,1.35vw,1.16rem);line-height:1.55;
+}
+.workshop-tutorial-question p{font:400 clamp(1.32rem,2vw,1.85rem)/1.25 var(--serif)}
+.workshop-tutorial-answer{
+  margin-top:1.25rem;border:1px solid #baae9a;background:#f6f0e5;
+}
+.workshop-tutorial-answer summary{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  cursor:pointer;list-style:none;padding:1.25rem 1.4rem;
+  font-size:.77rem;font-weight:700;letter-spacing:.02em;
+}
+.workshop-tutorial-answer summary::-webkit-details-marker{display:none}
+.workshop-tutorial-answer summary span{font:400 1.4rem/1 var(--serif)}
+.workshop-tutorial-answer[open] summary span{transform:rotate(45deg)}
+.workshop-tutorial-answer>div{padding:0 1.4rem 1.3rem}
+.workshop-tutorial-answer p{margin:0;padding:.55rem 0;border-top:1px solid #e0d4c4;line-height:1.55;color:#574a3a}
+.workshop-tutorial-answer strong{color:#33362c;font-weight:700}
+.workshop-tutorial-controls{display:none}
+.workshop-tutorial[data-enhanced="true"] .workshop-tutorial-controls{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  margin-top:clamp(1.5rem,3vw,3rem);padding:1.3rem 0 0;border-top:1px solid #d5c9b5;
+}
+.workshop-tutorial-controls button{
+  min-width:9rem;min-height:3rem;padding:.75rem 1.15rem;
+  border:1px solid #464839;background:transparent;color:#31362c;
+  cursor:pointer;font-size:.75rem;font-weight:700;letter-spacing:.03em;
+}
+.workshop-tutorial-controls button[data-tutorial-next]{background:#e8b548;color:#2d2a21;border-color:#e8b548}
+.workshop-tutorial-controls button:disabled{opacity:.35;cursor:not-allowed}
+.workshop-tutorial-controls button:not(:disabled):hover{background:#d9ccb8}
+.workshop-tutorial-controls button[data-tutorial-next]:hover{background:#f1c460}
+.workshop-tutorial-controls button:focus-visible,.workshop-tutorial-answer summary:focus-visible{
+  outline:3px solid #9c593c;outline-offset:3px;
+}
+.workshop-tutorial-controls [data-tutorial-counter]{
+  text-align:center;font-size:.74rem;color:#6a5c47;
+}
+.workshop-tutorial-recap{
+  display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,7vw,7rem);
+  padding:clamp(3.75rem,7vw,7rem) var(--page-pad);
+  background:#e6e5d9;color:#2f372c;
+}
+.workshop-tutorial-recap h2{max-width:14ch;font:400 clamp(2.7rem,4.6vw,5rem)/.95 var(--serif);letter-spacing:-.05em;margin:1rem 0}
+.workshop-tutorial-recap>div>p:last-child{max-width:33rem;line-height:1.65;color:#536050}
+.workshop-tutorial-recap-list{align-self:center;border-top:1px solid #b8c1b1}
+.workshop-tutorial-recap-list>p{font-size:.67rem;text-transform:uppercase;letter-spacing:.11em;font-weight:700}
+.workshop-tutorial-recap-list ul{list-style:none;margin:0;padding:0}
+.workshop-tutorial-recap-list li{position:relative;border-top:1px solid #b8c1b1;padding:1.1rem 0 1.1rem 1.5rem;line-height:1.45}
+.workshop-tutorial-recap-list li:before{content:"✓";position:absolute;left:0;color:#356349}
+/* Shared teaching illustration shell, six deliberately different visual models. */
+.workshop-infographic{margin:0;min-height:28rem;padding:clamp(1.2rem,2.5vw,2rem);background:#fffaf0;border:1px solid #d9cbb5}
+.workshop-infographic-heading h3{font:400 clamp(1.7rem,2.7vw,2.5rem)/1 var(--serif);margin:.5rem 0 1rem;letter-spacing:-.035em}
+.workshop-infographic-heading>p:last-child{margin:0 0 1.5rem;color:#6b5c48;font-size:.9rem;line-height:1.55}
+.workshop-infographic>figcaption{margin:1.1rem 0 0;padding-top:1rem;border-top:1px solid #dfd3bf;font-size:.66rem;line-height:1.5;color:#897b67}
+.workshop-diagram-compare{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.workshop-diagram-compare>div{min-width:0}
+.workshop-diagram-compare img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover}
+.workshop-diagram-compare span{display:block;padding:.8rem 0;font-size:.74rem;line-height:1.4}
+.workshop-diagram-taste{padding:.25rem 0}
+.workshop-diagram-base{
+  width:70%;margin:0 auto;text-align:center;padding:1.3rem 1rem;
+  border:2px solid #7b6b56;border-radius:5rem;background:#f7e6d1;
+  font:400 1.5rem/1 var(--serif);
+}
+.workshop-diagram-base small{display:block;margin-top:.4rem;font:400 .69rem/1.5 system-ui,sans-serif}
+.workshop-diagram-branches{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.6rem;
+  padding-top:2.25rem;position:relative;
+}
+.workshop-diagram-branches:before{
+  content:"";position:absolute;top:.4rem;left:16%;right:16%;height:1px;
+  border-top:2px dashed #bea887;
+}
+.workshop-diagram-branches>div{display:flex;align-items:center;flex-direction:column;gap:.6rem;padding:1.2rem .3rem;background:#ecddc4}
+.workshop-diagram-branches b{font:400 clamp(1rem,2vw,1.35rem)/1.15 var(--serif)}
+.workshop-diagram-branches span{font-size:.7rem}
+.workshop-diagram-caption{font-size:.77rem;line-height:1.6;color:#6b5843}
+.workshop-diagram-pans{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}
+.workshop-diagram-pans>div>span{display:block;font-size:.78rem;font-weight:700;margin-bottom:.6rem}
+.workshop-pan{
+  display:grid;grid-template-columns:repeat(4,1fr);align-content:center;justify-items:center;
+  gap:.6rem;padding:1rem;aspect-ratio:1;border:8px solid #484944;border-radius:50%;
+  background:radial-gradient(circle,#e8c48c 0%,#b9a07f 100%);box-shadow:0 8px 0 #c0b39e;
+}
+.workshop-pan i{width:100%;aspect-ratio:1;background:#a85634;border-radius:40% 60% 55% 50%;box-shadow:inset 1px 2px 2px #c7824c}
+.workshop-pan--crowded{gap:.13rem;background:radial-gradient(circle,#b9aca0 0%,#927e70 100%)}
+.workshop-pan--crowded i{background:#977366}
+.workshop-diagram-pans p{font-size:.76rem;line-height:1.5;color:#625542}
+.workshop-diagram-timeline{list-style:none;display:grid;gap:0;padding:0;margin:1rem 0}
+.workshop-diagram-timeline li{
+  display:grid;grid-template-columns:3.2rem 1fr;gap:.2rem 1rem;align-items:start;
+  padding:1.2rem .3rem;border-left:3px solid #c78f4c;border-bottom:1px solid #d8cbb4;
+}
+.workshop-diagram-timeline li>span{grid-row:1/3;font:400 1.75rem/1 var(--serif);color:#a05e3d;padding-left:.4rem}
+.workshop-diagram-timeline strong{font:400 1.25rem/1.1 var(--serif)}
+.workshop-diagram-timeline small{font-size:.78rem;line-height:1.4;color:#655744}
+.workshop-diagram-broth{display:grid;grid-template-columns:1fr 2rem 1fr;gap:.6rem;align-items:center;text-align:center}
+.workshop-diagram-broth>div>span{display:block;font-size:.77rem;min-height:2.5rem;font-weight:700}
+.workshop-cup{
+  height:8.5rem;margin:.8rem auto 1rem;width:85%;border:3px solid #756450;
+  border-radius:.6rem .6rem 2.5rem 2.5rem;position:relative;overflow:hidden;
+  background:#faf3e9;
+}
+.workshop-cup>i{display:block;position:absolute;bottom:0;left:0;right:0;height:68%;background:#c28f54}
+.workshop-cup--after>i{height:40%;background:#ae753e}
+.workshop-diagram-broth b{font:400 1.8rem/1 var(--serif)}
+.workshop-diagram-broth small{display:block;font-size:.7rem;color:#655847}
+.workshop-diagram-broth>p{grid-column:1/-1;font-size:.74rem;color:#685945}
+.workshop-diagram-table{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.9rem;
+  padding:1rem;border-radius:49%;background:#dbc4a2;
+}
+.workshop-table-plate{
+  min-width:0;aspect-ratio:1;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  border:4px double #bbaa91;border-radius:50%;background:#fbf3df;text-align:center;
+}
+.workshop-table-plate span{font-size:.6rem;color:#925936}
+.workshop-table-plate strong{font:400 clamp(1.1rem,2vw,1.7rem)/1.1 var(--serif)}
+.workshop-table-plate small{font-size:.7rem;margin-top:.4rem}
+.workshop-table-plate--hot{background:#f7dfcb}
+.workshop-table-plate--fresh{background:#e2ead5}
+.workshop-table-plate--condiment{background:#eddfc9}
+@media(max-width:1100px){
+  .workshop-tutorial-step{grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:2.5rem}
+  .workshop-diagram-pans{gap:.7rem}
+  .workshop-pan{border-width:5px;padding:.65rem;gap:.4rem}
+}
+@media(max-width:780px){
+  .workshop-detail .workshop-detail-hero.workshop-experience-hero{min-height:0}
+  .workshop-tutorial-heading,.workshop-tutorial-step,.workshop-tutorial-recap{grid-template-columns:1fr}
+  .workshop-tutorial-heading{gap:.8rem}
+  .workshop-tutorial .workshop-progress{display:flex;overflow-x:auto;scrollbar-width:thin}
+  .workshop-tutorial .workshop-progress a{flex:0 0 13rem}
+  .workshop-tutorial-steps{min-height:0}
+  .workshop-tutorial-instructions h3{max-width:20ch}
+  .workshop-tutorial-photo>img{max-height:30rem}
+}
+@media(max-width:620px){
+  .workshop-tutorial{padding:3.5rem 1rem 4rem;scroll-margin-top:4.8rem}
+  .workshop-tutorial-heading h2{font-size:clamp(2.7rem,10vw,4rem)}
+  .workshop-tutorial .workshop-progress{margin:0 -1rem 1.4rem;top:4.2rem}
+  .workshop-tutorial .workshop-progress a{flex-basis:11rem;min-height:3.75rem;padding:.7rem}
+  .workshop-tutorial-step{gap:1.4rem}
+  .workshop-tutorial-instructions h3{font-size:clamp(2.55rem,9.5vw,3.8rem)}
+  .workshop-tutorial-do,.workshop-tutorial-question{padding:1.1rem}
+  .workshop-tutorial-controls button{min-width:0;flex:0 1 auto;padding:.7rem;font-size:.68rem}
+  .workshop-tutorial-controls [data-tutorial-counter]{font-size:.65rem}
+  .workshop-tutorial-recap{padding:3.5rem 1rem;gap:1rem}
+  .workshop-tutorial-recap h2{font-size:clamp(2.6rem,10vw,4rem)}
+  .workshop-infographic{min-height:0;padding:1.1rem}
+  .workshop-diagram-pans{gap:.6rem}
+  .workshop-pan{border-width:4px;padding:.4rem;gap:.2rem}
+  .workshop-diagram-base{width:85%}
+  .workshop-diagram-branches{gap:.25rem}
+  .workshop-diagram-branches>div{padding:.9rem .15rem}
+  .workshop-diagram-branches b{font-size:1rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .workshop-tutorial .workshop-progress a{transition:none}
+}
