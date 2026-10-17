@@ -19,7 +19,8 @@
     "test:built-experiences": "node scripts/check-experiences-build.mjs",
     "test:browser-experiences": "node tests/experiences-browser-smoke.mjs",
     "prebuild": "node scripts/v17-responsive-images.mjs",
-    "predev": "node scripts/v17-responsive-images.mjs"
+    "predev": "node scripts/v17-responsive-images.mjs",
+    "test:workshop": "node --test tests/workshop-voice-contract.test.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
