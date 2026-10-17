@@ -54,12 +54,26 @@ if (!servings.includes('currentEls.forEach')) failures.push('All visible serving
 if (!servings.includes('original * factor')) failures.push('Ingredient quantities must scale from base servings');
 if (!servings.includes("data.scalable !== 'false'") && !servings.includes("dataset.scalable !== 'false'")) failures.push('Non-scalable ingredients must stay fixed');
 
-if (!listing.includes('Quantités pour chaque plat') || !listing.includes('Préparation pas à pas')) failures.push('Recipe listing must clearly present quantities and step-by-step cooking');
+const sharedHeroUsed = listing.includes('<EditorialSectionHero');
+const culinaryIntro = listing.includes('les ingrédients, les quantités et les gestes');
+if (!(culinaryIntro || (listing.includes('Quantités pour chaque plat') && listing.includes('Préparation pas à pas')))) {
+  failures.push('Recipe listing must clearly explain ingredients, quantities and cooking steps');
+}
 if (!listing.includes('data-recipe-filter="soupe"') || !listing.includes('data-recipe-filter="dessert"')) failures.push('Recipe catalog must expose broader discovery filters');
 
 const heroVisual = listing.match(/<div class="recipes-journey-visual"[\s\S]*?<\/div>/)?.[0] ?? '';
 const heroFigures = (heroVisual.match(/<figure>/g) ?? []).length;
-if (heroFigures !== 1) failures.push(`V16 recipe hero must render exactly one primary image, found ${heroFigures}`);
+if (sharedHeroUsed) {
+  const sharedHero = fs.readFileSync('src/components/EditorialSectionHero.astro','utf8');
+  if ((listing.match(/<EditorialSectionHero/g) ?? []).length !== 1 ||
+      !listing.includes('image="/images/cuisine/kroeung-1600.webp"') ||
+      (sharedHero.match(/<figure\b/g) ?? []).length !== 1 ||
+      !sharedHero.includes('fetchpriority="high"')) {
+    failures.push('Shared glossary-style recipe introduction must render one meaningful, eagerly loaded photograph');
+  }
+} else if (heroFigures !== 1) {
+  failures.push(`V16 recipe hero must render exactly one primary image, found ${heroFigures}`);
+}
 if (heroVisual.includes('amok-1600.webp')) failures.push('V16 recipe hero must not preload the hidden/repeated Amok image');
 
 if (!/@media\(max-width:900px\)[\s\S]*?\.recipes-v16 \.recipe-v15-card:nth-child\(1\)[\s\S]*?grid-column:auto/.test(v16Css)) failures.push('V16 recipe cards must reset editorial column spans below 900px');
