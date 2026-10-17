@@ -241,7 +241,7 @@
   }
   .v17r .v17r-table--editorial .v17r-table-recipe-number{
     display:block;font:650 .73rem/1.4 system-ui,sans-serif;
-    letter-spacing:.21em;color:#ffe575;margin-bottom:.6rem;
+    letter-spacing:.21em;color:var(--vr-yellow);margin-bottom:.6rem;
   }
   .v17r .v17r-table--editorial .v17r-table-recipe h3{
     font-size:clamp(2.35rem,9.4vw,3.8rem);line-height:1.07;
@@ -291,7 +291,7 @@
     opacity:.45;transition:width .2s ease,opacity .2s ease,background-color .2s ease;
   }
   .v17r .v17r-table--editorial .v17r-table-mobile-dot[aria-current="true"] span{
-    width:19px;border-radius:99px;background:#ffe575;opacity:1;
+    width:19px;border-radius:99px;background:var(--vr-yellow);opacity:1;
   }
   .v17r .v17r-table--editorial .v17r-table-mobile-page{
     grid-area:page;font:600 .75rem/1.5 system-ui,sans-serif;
