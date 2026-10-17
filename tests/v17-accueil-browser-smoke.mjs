@@ -194,6 +194,38 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         '/recettes/num-banh-chok/','/recettes/prahok-ktis/'])&&
       photo.culture==='/culture/construire-repas-cambodgien/',
       'D22 still tabletop, four REAL linked recipes and cultural link: '+JSON.stringify(photo));
+    if(!noJs && !reduced && [390,1440].includes(width)){
+      const visual=await page.evaluate(async()=>{
+        const section=document.querySelector('[data-v17-table-editorial]');
+        const heading=getComputedStyle(section.querySelector('h2'));
+        const cards=[...section.querySelectorAll('[data-v17-table-recipe]')];
+        const images=await Promise.all(cards.map(async card=>{
+          const href=card.querySelector('.v17r-table-recipe-link')?.getAttribute('href');
+          const response=await fetch(href);
+          if(!response.ok)throw new Error('Recipe route unavailable: '+href);
+          const recipeDocument=new DOMParser().parseFromString(await response.text(),'text/html');
+          const cover=recipeDocument.querySelector('.recipe-v15-cover img');
+          const cardImage=card.querySelector('.v17r-table-recipe-image');
+          return {href,cardSrc:cardImage?.getAttribute('src'),recipeSrc:cover?.getAttribute('src'),
+            srcset:cardImage?.getAttribute('srcset') ?? '',
+            detailSrcset:cover?.getAttribute('srcset') ?? ''};
+        }));
+        return {titleFont:heading.fontFamily,titleWeight:heading.fontWeight,
+          titleTransform:heading.textTransform,images};
+      });
+      assert.match(visual.titleFont,/Impact/i,'Section 5 heading must match other V17 headings');
+      assert.ok(Number(visual.titleWeight)>=800 && visual.titleTransform==='uppercase',
+        'Section 5 must use the same bold uppercase typographic family: '+JSON.stringify(visual));
+      assert.equal(visual.images.length,4,'Four recipe images in section 5');
+      for(const item of visual.images){
+        assert.ok(item.recipeSrc && item.recipeSrc===item.cardSrc,
+          'Section 5 and recipe page photographs disagree: '+JSON.stringify(item));
+        assert.equal(item.srcset,item.detailSrcset,
+          'Section 5 and recipe page responsive photo sets disagree: '+item.href);
+      }
+      assert.equal(await page.locator('.v17r-hero-disclosure').count(),0,
+        'Do not display photo credits under the hero CTA');
+    }
     if(width<=760){
       // D24: genuine compact native mobile scroll-snap, not four vertically
       // stacked photographic screens. Swipe works even without JavaScript.

@@ -22,7 +22,7 @@ assert.equal((page.match(/<h2\b/g)||[]).length,6);
 for(const selector of ['v17r-hero','v17r-market','v17r-palette','v17r-gestures','v17r-table','v17r-dessert','v17r-finale']){
   assert.match(page,new RegExp('class="'+selector+'(?:\\s|\")'));
 }
-const requiredLinks=['/recettes/','/ingredients/','/glossaire/','/apprendre/','/culture/construire-repas-cambodgien/','/recettes/chek-ktis/','/apprendre/piler-aromates-au-mortier/','/credits-photos/#illustrations-ia'];
+const requiredLinks=['/recettes/','/ingredients/','/glossaire/','/apprendre/','/culture/construire-repas-cambodgien/','/recettes/chek-ktis/','/apprendre/piler-aromates-au-mortier/'];
 for(const href of requiredLinks)assert.ok(page.includes('href="'+href+'"'),'Missing genuine CTA '+href);
 for(const href of ['/recettes/','/glossaire/','/apprendre/','/culture/','/a-propos/'])assert.ok(header.includes('href="'+href+'"'),'Existing header changed '+href);
 for(const href of ['/ingredients/','/credits-photos/'])assert.ok(footer.includes('href="'+href+'"'),'Existing footer changed '+href);
@@ -49,8 +49,8 @@ assert.equal(createHash('sha256').update(aiMarketBytes).digest('hex'),
 assert.ok(page.includes('v17-marche-cambodgien-ia.webp'),'Approved market source required');
 assert.match(page,/v17r-market-visual--generated/);
 assert.match(page,/Marché imaginaire inspiré du Cambodge/);
-assert.match(page,/v17r-hero-disclosure/);
-assert.match(page,/Certaines scènes sont des illustrations créées avec l’IA/);
+assert.doesNotMatch(page,/v17r-hero-disclosure|Certaines scènes sont des illustrations créées avec l’IA/,
+  'Visible homepage artwork disclosure belongs on the dedicated credits page');
 assert.match(credits,/id="illustrations-ia"/);
 assert.match(credits,/marché terrestre imaginaire inspiré du Cambodge/);
 assert.doesNotMatch(page,/marketIsIllustrated|v17-market-live-1800/,
@@ -140,6 +140,12 @@ assert.match(page,/href=\{dish\.url\}/,'D22 each recipe must have its own dynami
 assert.match(page,/<ol class="v17r-table-recipes"/,'D22 four food story chapters required');
 assert.match(page,/data-v17-table-recipe/,'D22 recipes must be individually animatable');
 assert.match(page,/v17r-table-recipe-image/,'D22 mobile chapter must use its own food photograph');
+assert.match(page,/image: recipe\.image, imageWidth: recipe\.imageWidth/,
+  'Each section 5 card must reuse the exact source photograph of its recipe detail page');
+assert.doesNotMatch(page,/v17-prahok-ktis-section5-mobile\.webp/,
+  'Prahok Ktis must not override its recipe image');
+assert.match(page,/imageSrcSet\(dish\.image, dish\.imageWidths\)/,
+  'Section 5 mobile cards must offer optimized responsive image candidates');
 assert.match(page,/<picture>/,'D22 responsive picture wrapper missing');
 assert.match(page,/v17-tablee-khmere-mobile\.webp/,'D22 mobile-generated portrait missing');
 for(const [name,sha] of [

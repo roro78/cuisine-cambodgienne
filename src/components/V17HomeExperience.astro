@@ -2,6 +2,7 @@
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { recipes } from '../data/recipes';
+import { imageSrcSet } from '../utils/images';
 import '../styles/v17-accueil-rebuild.css';
 import '../styles/v17-generated-media.css';
 import '../styles/v17-finition-editoriale.css';
@@ -28,7 +29,7 @@ const tableRecipes = [
 ].map((item) => {
   const recipe = recipes.find((r) => r.slug === item.slug);
   if (!recipe || !recipe.image) throw new Error(`Recette de la tablée introuvable : ${item.slug}`);
-  return { ...item, title: recipe.title, image: item.slug === 'prahok-ktis' ? '/images/cuisine/v17-prahok-ktis-section5-mobile.webp' : recipe.image, url: `/recettes/${recipe.slug}/` };
+  return { ...item, title: recipe.title, image: recipe.image, imageWidth: recipe.imageWidth ?? 800, imageHeight: recipe.imageHeight ?? 600, imageWidths: recipe.imageWidths ?? [], url: `/recettes/${recipe.slug}/` };
 });
 
 interface Props { preview?: boolean; }
@@ -57,7 +58,6 @@ interface Props { preview?: boolean; }
           <h1 id="v17r-hero-title">LE CAMBODGE<br/>DANS VOTRE <span>ASSIETTE</span></h1>
           <p>Des recettes parfumées, des ingrédients à découvrir et des gestes pour cuisiner le Cambodge chez soi.</p>
           <a class="v17r-pill" href="/recettes/">Découvrir les recettes <span aria-hidden="true">↗</span></a>
-          <p class="v17r-hero-disclosure">Certaines scènes sont des illustrations créées avec l’IA. <a href="/credits-photos/#illustrations-ia">Voir les crédits</a>.</p>
         </div>
         <div class="v17r-hero-media">
           <figure class="v17r-hero-dish">
@@ -159,7 +159,10 @@ interface Props { preview?: boolean; }
           <ol class="v17r-table-recipes" aria-label="Quatre recettes de la tablée khmère, défilement horizontal sur mobile" data-v17-table-carousel tabindex="0">
             {tableRecipes.map((dish, index) => (
               <li class="v17r-table-recipe" data-v17-table-recipe>
-                <img class="v17r-table-recipe-image" src={dish.image} width="800" height="600"
+                <img class="v17r-table-recipe-image" src={dish.image}
+                     srcset={dish.imageWidths.length ? imageSrcSet(dish.image, dish.imageWidths) : undefined}
+                     sizes="(max-width: 760px) 82vw, 24vw"
+                     width={dish.imageWidth} height={dish.imageHeight}
                      loading="lazy" decoding="async" alt="" aria-hidden="true" />
                 <div class="v17r-table-recipe-text">
                   <span class="v17r-table-recipe-number" aria-hidden="true">{String(index + 1).padStart(2,'0')}</span>
