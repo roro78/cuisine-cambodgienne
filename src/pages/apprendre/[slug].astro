@@ -164,7 +164,7 @@ const howToSchema = {
 
     <section class="workshop-learning-lab" id="experience-atelier" aria-labelledby="workshop-lab-title">
       <div class="workshop-lab-introduction">
-        <p class="v16-page-kicker">01 — Le laboratoire des sens</p>
+        <p class="v16-page-kicker">Avant la pratique · Le laboratoire des sens</p>
         <h2 id="workshop-lab-title">D’abord observer. Ensuite comprendre.</h2>
         <p class="workshop-lab-lede">{workshop.intro}</p>
         <div class="workshop-lab-result">
@@ -175,7 +175,7 @@ const howToSchema = {
       </div>
       <div class="workshop-lab-activities">
         <div class="workshop-lab-activities-heading">
-          <span class="workshop-lab-count">03</span>
+          <span class="workshop-lab-count">{String(workshop.experiments.length).padStart(2, "0")}</span>
           <div>
             <p class="v16-page-kicker">Expériences guidées</p>
             <h3>Essayez, comparez, décidez.</h3>
