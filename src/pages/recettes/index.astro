@@ -14,7 +14,7 @@ const collectionSchema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
   name: 'Recettes cambodgiennes',
-  description: 'Recettes cambodgiennes guidées, ajustables et pensées pour cuisiner chez soi.',
+  description: 'Des recettes cambodgiennes à préparer chez soi, de l’amok de poisson aux soupes parfumées.',
   url: 'https://www.cuisine-du-cambodge.com/recettes/',
   inLanguage: 'fr-FR',
   mainEntity: {
@@ -40,22 +40,21 @@ const toneMap: Record<string,string> = {
 };
 ---
 <BaseLayout
-  title="Recettes cambodgiennes guidées | Cuisine du Cambodge"
-  description="Découvrez des recettes cambodgiennes guidées pas à pas : portions ajustables, repères de cuisson, substitutions et conseils pour cuisiner chez soi."
+  title="Recettes cambodgiennes à cuisiner chez soi | Cuisine du Cambodge"
+  description="Découvrez la cuisine cambodgienne chez vous : les ingrédients, les quantités et chaque étape pour réussir vos plats."
 >
   <SiteHeader />
 
   <main class="recipes-v15 recipes-v16">
     <section class="recipes-journey-hero">
-      <div class="recipes-journey-copy" data-reveal="up">
+      <div class="recipes-journey-copy">
         <p class="eyebrow">Cuisiner le Cambodge</p>
-        <h1>Des recettes qui donnent envie de passer en cuisine.</h1>
-        <p>Amok, lok lak, soupes, nouilles, desserts… choisissez ce qui vous fait envie. Les portions s’adaptent et chaque recette vous accompagne avec des conseils simples au bon moment.</p>
+        <h1>Les saveurs du Cambodge, chez vous.</h1>
+        <p>Amok de poisson, lok lak au bœuf, soupes parfumées, nouilles et desserts… Retrouvez les plats cambodgiens à cuisiner chez vous. Chaque recette explique les ingrédients, les quantités et les gestes, de la préparation jusqu’au service.</p>
         <div class="recipes-journey-stamp" aria-label="Atouts des recettes">
           <span>{recipes.length} recettes</span>
-          <span>Portions ajustables</span>
-          <span>Étapes guidées</span>
-          <span>Ingrédients faciles à remplacer</span>
+          <span>Quantités pour chaque plat</span>
+          <span>Préparation pas à pas</span>
         </div>
       </div>
 

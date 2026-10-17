@@ -246,8 +246,8 @@ const recipeSchema = {
       <article class="recipe-guided-method" id="etapes">
         <header>
           <p class="eyebrow">En cuisine</p>
-          <h2>Les étapes, les gestes et les bons repères.</h2>
-          <p>Suivez les étapes à votre rythme : les textures, les parfums et les repères de cuisson vous aident à avancer. Ne goûtez les préparations que lorsque leur composition le permet.</p>
+          <h2>La recette, étape par étape.</h2>
+          <p>Prenez le temps de préparer les ingrédients et de surveiller la cuisson. Ne goûtez jamais une préparation contenant de la viande, du poisson ou des œufs crus.</p>
         </header>
 
         <div class="recipe-guided-steps">
@@ -275,14 +275,14 @@ const recipeSchema = {
         {keyPoints.length > 0 && (
           <section>
             <p class="eyebrow">Les points clés</p>
-            <h2>À garder en tête.</h2>
+            <h2>Les gestes qui font la différence.</h2>
             <ul>{keyPoints.map((point) => <li>{point}</li>)}</ul>
           </section>
         )}
         {notes.length > 0 && (
           <section>
             <p class="eyebrow">Mémo</p>
-            <h2>À noter pour la prochaine fois.</h2>
+            <h2>Quelques astuces pour la prochaine fois.</h2>
             <ul>{notes.map((note) => <li>{note}</li>)}</ul>
           </section>
         )}
@@ -293,7 +293,7 @@ const recipeSchema = {
       <section class="recipe-v15-faq" aria-labelledby="recipe-faq-title">
         <header>
           <p class="eyebrow">Questions de cuisine</p>
-          <h2 id="recipe-faq-title">Les questions qu’on se pose souvent en cuisinant.</h2>
+          <h2 id="recipe-faq-title">Vos questions sur la recette.</h2>
         </header>
         <div>
           {faqs.map((item) => (
@@ -309,7 +309,7 @@ const recipeSchema = {
     {relatedWorkshops.length > 0 && (
       <section class="recipe-workshops" data-reveal="up">
         <p class="eyebrow">Envie de comprendre le geste ?</p>
-        <h2>Apprenez la technique avant de la refaire ici.</h2>
+        <h2>Apprenez le geste, puis essayez-le dans cette recette.</h2>
         <div class="recipe-workshop-links">
           {relatedWorkshops.map((workshop) => (
             <a href={`/apprendre/${workshop.slug}/`}>
@@ -344,7 +344,7 @@ const recipeSchema = {
         <div class="recipe-v18-more-heading">
           <p class="eyebrow">Prolongez le voyage</p>
           <h2 id="recipe-v18-more-title">À découvrir aussi.</h2>
-          <p>Trois autres idées gourmandes à cuisiner chez vous.</p>
+          <p>D’autres plats cambodgiens à préparer chez vous.</p>
         </div>
         <div class="recipe-v18-more-grid">
           {relatedRecipes.map((other) => (

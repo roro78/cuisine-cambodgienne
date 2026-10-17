@@ -130,6 +130,21 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
+      - name: Editorial French and mobile green contrast QA
+        if: github.ref == 'refs/heads/fix/editorial-fr-food-copy-mobile-contrast-20261017'
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/editorial-cuisine-contrast-qa.mjs
+
+      - name: Upload recipe mobile contrast screenshots
+        if: always() && github.ref == 'refs/heads/fix/editorial-fr-food-copy-mobile-contrast-20261017'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-recettes-contrast-visual-review
+          path: artifacts/editorial-recettes-*.png
+          retention-days: 7
+          if-no-files-found: ignore
+
       - name: V17 D8 public homepage Lighthouse mobile audit
         env:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
