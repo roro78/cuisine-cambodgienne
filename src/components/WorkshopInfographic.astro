@@ -1,0 +1,73 @@
+---
+import type { WorkshopLearning } from '../data/workshopLearning';
+interface Props { learning: WorkshopLearning; }
+const { learning } = Astro.props;
+---
+<figure class:list={['workshop-infographic', `workshop-infographic--${learning.kind}`]}>
+  <div class="workshop-infographic-heading">
+    <p class="v16-mini-label">Schéma d’observation · {learning.kind === 'taste' ? 'Goût' : learning.kind === 'heat' ? 'Saisie' : learning.kind === 'timing' ? 'Fraîcheur' : learning.kind === 'broth' ? 'Bouillon' : learning.kind === 'table' ? 'Composition' : 'Texture'}</p>
+    <h3>{learning.evidenceTitle}</h3>
+    <p>{learning.evidenceIntro}</p>
+  </div>
+  {learning.kind === 'texture' && (
+    <div class="workshop-diagram-compare">
+      <div>
+        <img src="/images/workshops/mortier-etape-02.webp" alt="Pâte à mi-parcours : les fibres restent visibles" width="1240" height="930" loading="lazy" />
+        <span>Avant · fibres encore perceptibles</span>
+      </div>
+      <div>
+        <img src="/images/workshops/mortier-etape-04.webp" alt="Pâte après pilage : texture plus liée et régulière" width="1240" height="930" loading="lazy" />
+        <span>Après · pâte plus homogène</span>
+      </div>
+    </div>
+  )}
+  {learning.kind === 'taste' && (
+    <div class="workshop-diagram-taste">
+      <div class="workshop-diagram-base">Base témoin <small>Ne pas modifier</small></div>
+      <div class="workshop-diagram-branches" aria-label="Trois variantes indépendantes">
+        <div><b>+ acide</b><span>Vif</span></div>
+        <div><b>+ doux</b><span>Rond</span></div>
+        <div><b>+ salé</b><span>Relevé</span></div>
+      </div>
+      <p class="workshop-diagram-caption">Goûter séparément, puis comparer à la base témoin. Les mots décrivent des pistes, pas des mesures.</p>
+    </div>
+  )}
+  {learning.kind === 'heat' && (
+    <div class="workshop-diagram-pans" aria-label="Schéma conceptuel de l’occupation d’une poêle">
+      <div>
+        <span>Poêle peu chargée</span>
+        <div class="workshop-pan workshop-pan--free" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <p>Contact et espace pour évacuer l’humidité.</p>
+      </div>
+      <div>
+        <span>Poêle surchargée</span>
+        <div class="workshop-pan workshop-pan--crowded" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <p>Plus de jus et de vapeur peuvent freiner la coloration.</p>
+      </div>
+    </div>
+  )}
+  {learning.kind === 'timing' && (
+    <ol class="workshop-diagram-timeline">
+      <li><span>01</span><strong>Goûter la base</strong><small>Une référence sans finition</small></li>
+      <li><span>02</span><strong>Tester séparément</strong><small>Herbe · jus · zeste</small></li>
+      <li><span>03</span><strong>Ajouter au dernier moment</strong><small>Préserver les notes fraîches délicates</small></li>
+    </ol>
+  )}
+  {learning.kind === 'broth' && (
+    <div class="workshop-diagram-broth">
+      <div><span>Avant réduction</span><div class="workshop-cup workshop-cup--before" aria-hidden="true"><i></i></div><small>Noter sel et parfum</small></div>
+      <b aria-hidden="true">→</b>
+      <div><span>Après légère réduction</span><div class="workshop-cup workshop-cup--after" aria-hidden="true"><i></i></div><small>Regouter avant de saler</small></div>
+      <p>Illustration du changement de volume, sans valeur de concentration mesurée.</p>
+    </div>
+  )}
+  {learning.kind === 'table' && (
+    <div class="workshop-diagram-table">
+      <div class="workshop-table-plate workshop-table-plate--base"><span>01</span><strong>Base</strong><small>Riz</small></div>
+      <div class="workshop-table-plate workshop-table-plate--hot"><span>02</span><strong>Plat chaud</strong><small>Richesse</small></div>
+      <div class="workshop-table-plate workshop-table-plate--fresh"><span>03</span><strong>Fraîcheur</strong><small>Contraste</small></div>
+      <div class="workshop-table-plate workshop-table-plate--condiment"><span>04</span><strong>Condiment</strong><small>À part</small></div>
+    </div>
+  )}
+  <figcaption>Illustration pédagogique schématique — les sensations se vérifient pendant votre propre essai.</figcaption>
+</figure>
