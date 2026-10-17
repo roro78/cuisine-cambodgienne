@@ -1,54 +1,40 @@
-# Cuisine du Cambodge — voix signature des six ateliers
+# Cuisine du Cambodge — voix féminine des six ateliers
 
-Statut : prototype logiciel prêt à l'essai. Aucun MP3 produit, aucune voix validée, aucun déploiement.
+**Décision du 17 octobre 2026** : commencer avec une voix féminine française naturelle. Pas d'accent cambodgien recherché, pas de voix de référence externe, pas de clonage, pas d'ElevenLabs. Utiliser le moteur OpenAI déjà employé pour Squaia, mais isoler le chantier et son quota.
 
-## Voix recherchée
+**Statut** : prototype de génération courte préparé. Aucun MP3 enregistré ou écouté dans le cadre de cette PR. Aucun déploiement.
 
-Une narratrice originale : adulte, féminine, chaleureuse, français immédiatement compréhensible, débit naturel et éventuelle coloration bilingue franco-cambodgienne, si l'outil y parvient naturellement. La voix d'une personne connue n'est ni téléchargée ni clonée. Ne pas prétendre avoir obtenu un accent authentique sans l'avoir écouté.
+## Prototype sans facturation implicite
 
-## Essai principal : ElevenLabs Voice Design
+Le script `scripts/preview-workshop-voice.mjs` propose la voix OpenAI `shimmer` par défaut. Possibilité d'évaluer ensuite `coral`, `nova` ou `marin` sans présumer qu'elles sonneront toutes également féminines. La sélection finale dépend de l'écoute.
 
-Commande sans coût : node scripts/preview-workshop-voice.mjs
+Simulation, sans API ni frais :
+- `node scripts/preview-workshop-voice.mjs`
+- `node scripts/preview-workshop-voice.mjs --voice=coral`
 
-Commande à ne lancer qu'avec un compte ElevenLabs et ELEVENLABS_API_KEY configurée dans l'environnement sécurisé : node scripts/preview-workshop-voice.mjs --generate
+Une seule piste d'essai (appel payant **uniquement** avec `--generate`) :
+- `node scripts/preview-workshop-voice.mjs --generate --voice=shimmer`
 
-Un seul appel au point de terminaison /v1/text-to-voice/design. Réponses et identifiants des aperçus conservés uniquement en local, dans qa-artifacts/workshop-voices/ (ignoré par Git). La limite --max-previews concerne les fichiers enregistrés, pas nécessairement les crédits consommés. Le prototype ne crée aucune voix persistante.
+La variable `OPENAI_API_KEY` doit exister dans l'environnement d'exécution. Ne pas placer la clé dans le dépôt, GitHub Actions, un message ou le frontend. Le script n'essaie pas de la récupérer sur Render ou dans Squaia. Son prix relève de la facturation API OpenAI : on ne doit pas le confondre avec le quota GitHub Actions.
 
-IMPORTANT : la clé OpenAI existante n'est pas utilisable auprès d'ElevenLabs ; ce sont des fournisseurs et facturations différents.
+Sortie locale seulement : `qa-artifacts/workshop-voices/essai-shimmer.mp3` (ignorée par Git). Refus d'écraser un essai préexistant. Aucun MP3 de recette, aucun MP3 des six ateliers, aucun déploiement backend ou OVH.
 
-## Essai alternatif : clé OpenAI existante
+## Réception de la voix
 
-Simulation : node scripts/preview-workshop-voice.mjs --provider=openai --voice=shimmer
-Génération demandée expressément, avec OPENAI_API_KEY sécurisée : node scripts/preview-workshop-voice.mjs --generate --provider=openai --voice=shimmer
+Écouter le passage pilote du mortier sur mobile et ordinateur : voix féminine perceptible, français clair, débit calme, chaleur humaine, vocabulaire culinaire bien prononcé (« kroeung », « galanga », « citronnelle »). Aucun accent artificiel, ni effet publicitaire.
 
-Une seule piste courte est générée à partir de l'extrait du mortier. Cette solution utilise une voix OpenAI prédéfinie, pas une voix originale persistante.
+## Architecture du lecteur validée, non intégrée par ce prototype
 
-## Vérifications humaines avant génération des ateliers
+Un seul MP3 final par atelier, soit six. Au montage : introduction et quatre étapes générées séparément, puis réunies ; durées mesurées et chapitres calculés. Les segments sources sont conservés pour éviter de régénérer inutilement l'ensemble après correction d'une seule étape.
 
-- Français naturel, débit pédagogique et timbre agréable.
-- Prononciation des mots « kroeung », « citronnelle », « galanga ».
-- Ni caricature d'accent ni imitation d'une personne identifiable.
-- Test sur mobile/ordinateur, écoute complète, absence de saturation.
-- Refuser la voix si la coloration franco-cambodgienne n'est pas convaincante ; préférer le français naturel plutôt qu'un accent forcé.
+Mode libre par défaut. Bouton « Suivre la narration » activant le défilement doux à chaque changement de chapitre. Si l'utilisateur défile à la main, désactiver l'auto-scroll sans interrompre la voix. Prévoir boutons lecture, pause, timeline et navigation par chapitres, en tenant compte du tutoriel actuel (une étape visible à la fois avec JS), du clavier et de prefers-reduced-motion.
 
-## Architecture du lecteur retenue, hors périmètre de cette PR
+## Étapes restantes
 
-- Six MP3 finaux : un par atelier. Chaque fichier est assemblé à partir de cinq segments (introduction et quatre étapes).
-- Chapitres construits à partir des durées réelles de ces segments, possibilité de remplacer un seul segment au montage.
-- Navigation libre par défaut. Bouton « Suivre la narration » pour synchroniser le scroll sur les changements de chapitre.
-- Si la personne fait défiler manuellement : arrêt du scroll automatique, sans stopper l'audio.
-- Lecteur lecture/pause, chapitres, curseur temporel, prise en compte du mobile et de prefers-reduced-motion.
-- Rester compatible avec les quatre étapes qui sont actuellement affichées une à une par le tutoriel V22.
+1. Tester le générateur localement avec Node ; le rendu vocal réel n'est pas encore vérifié.
+2. Produire un seul MP3 d'essai explicite, écouter et approuver la voix.
+3. Relire les six narrations avant toute génération en lot.
+4. Générer, assembler et mesurer les six MP3 finaux ; vérifier la synchronisation.
+5. Intégrer et tester le lecteur ; fusion / OVH seulement après validation.
 
-## Gates
-
-1. Écouter au plus trois aperçus et choisir/refuser une voix.
-2. Relire les textes complets des six ateliers et les prononciations.
-3. Générer les segments de manière plafonnée, vérifier durées et assembler les six MP3.
-4. Intégrer le lecteur au V22 actuel, QA mobile/desktop, sans JavaScript et accessibilité.
-5. Valider avant fusion et déploiement OVH.
-
-Documentation des APIs :
-- https://elevenlabs.io/docs/api-reference/text-to-voice/design
-- https://developers.openai.com/api/docs/guides/text-to-speech
-- https://developers.openai.com/api/docs/guides/custom-voices
+Documentation du moteur : https://developers.openai.com/api/docs/guides/text-to-speech
