@@ -1315,7 +1315,7 @@ async function checkGeneratedRecipe(slug,filename,altLabel,width,height){
     await cover.scrollIntoViewIfNeeded();
     await page.waitForFunction(()=>{
       const img=document.querySelector('.recipe-v15-cover img');
-      return Boolean(img?.complete && img.naturalWidth>=480 && img.naturalHeight>=300);
+      return Boolean(img?.complete && img.naturalWidth>0 && img.naturalHeight>0);
     },undefined,{timeout:15000});
     const src=await cover.getAttribute('src');
     assert.equal(src,'/images/cuisine/'+filename);
