@@ -419,8 +419,10 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     const marketCaption=await page.locator('.v17r-market-visual figcaption').innerText();
     assert.match(marketCaption,/marché imaginaire/i);
     assert.match(marketCaption,/inspiré du Cambodge/i);
-    assert.equal(await page.locator('.v17r-hero-disclosure a[href="/credits-photos/#illustrations-ia"]').count(),1,
-      'AI disclosure should link to existing credits without repeated scene labels');
+    assert.equal(await page.locator('.v17r-hero-disclosure').count(),0,
+      'Inline homepage AI credit should not appear below the primary CTA');
+    assert.equal(await page.locator('.site-footer a[href="/credits-photos/"]').count(),1,
+      'Photo attribution must remain accessible through the site footer');
     assert.equal(await page.locator('.v17r-table-clarity').count(),0,
       'Remove the intrusive source note on the table illustration');
     assert.equal(await page.locator('.v17r-market-postcard').count(),0,
