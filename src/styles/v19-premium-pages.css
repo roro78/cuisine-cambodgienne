@@ -152,6 +152,12 @@
   .recipes-v16 .recipes-journey-copy>p:last-of-type{color:#f1e5d2}
   .recipes-v16 .recipes-journey-stamp span{border-color:rgba(255,249,238,.53);background:rgba(0,0,0,.09)}
 
+  /* The food photo should appear earlier on phones, not after a long text wall. */
+  .recipes-v16 .recipes-journey-hero{padding-top:clamp(2.5rem,7vw,3.5rem)}
+  .recipes-v16 .recipes-journey-copy h1{max-width:14ch;line-height:1.02}
+  .recipes-v16 .recipes-journey-stamp{gap:.45rem;margin-top:1rem}
+  .recipes-v16 .recipes-journey-stamp span{font-size:.64rem;letter-spacing:.025em}
+
   .recipes-v16 .recipes-journey-visual,
   .recipe-v16 .recipe-v15-cover{
     position:relative;inset:auto;width:100%;height:clamp(20rem,64vw,35rem);
