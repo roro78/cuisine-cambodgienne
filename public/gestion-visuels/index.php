@@ -148,7 +148,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             $version = filter_var($_POST['version'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 99]]);
             if ($step === false || $version === false) throw new RuntimeException('Étape ou version invalide.');
             $note = trim((string)($_POST['note'] ?? ''));
-            if (mb_strlen($note) > 450) throw new RuntimeException('Les indications sont trop longues.');
+            if (strlen($note) > 1500) throw new RuntimeException('Les indications sont trop longues.');
             if (!isset($_FILES['photos']) || !is_array($_FILES['photos']['name'])) throw new RuntimeException('Sélectionnez au moins une image.');
             $files = $_FILES['photos'];
             $count = count($files['name']);
