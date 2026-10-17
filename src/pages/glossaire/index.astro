@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
+import EditorialSectionHero from '../../components/EditorialSectionHero.astro';
 import { glossaryEntries } from '../../data/glossary';
 import '../../styles/v16-editorial.css';
 import '../../styles/v19-premium-pages.css';
@@ -29,17 +30,19 @@ const glossarySchema = {
 >
   <SiteHeader />
   <main class="v16-editorial v16-glossary-page">
-    <header class="v16-page-hero v16-page-hero--glossary">
-      <p class="v16-page-kicker">Le glossaire</p>
-      <h1>Les mots derrière les saveurs.</h1>
-      <p>Ingrédients, condiments, plats et gestes : découvrez ce que chaque mot signifie, quel goût attendre et comment l’utiliser en cuisine.</p>
-
-      <figure class="v19-hero-photo" aria-hidden="true"><img src="/images/cuisine/v17-galangal-1000.jpg" alt="" width="1000" height="667" decoding="async" fetchpriority="high" /></figure>
+    <EditorialSectionHero
+      kicker="Le glossaire"
+      title="Les mots derrière les saveurs."
+      description="Ingrédients, condiments, plats et gestes : découvrez ce que chaque mot signifie, quel goût attendre et comment l’utiliser en cuisine."
+      image="/images/cuisine/v17-galangal-1000.jpg"
+      imageWidth={1000}
+      imageHeight={667}
+    >
       <label class="v16-glossary-search">
         <span>Rechercher dans le glossaire</span>
         <input type="search" placeholder="Ex. combava, prahok, galanga…" autocomplete="off" data-glossary-search />
       </label>
-    </header>
+    </EditorialSectionHero>
 
     <section class="v16-glossary-tools" aria-label="Filtrer le glossaire">
       <div role="group" aria-label="Famille">
