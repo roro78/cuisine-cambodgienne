@@ -48,3 +48,8 @@
 .workshop-voice-dock button{min-width:44px;min-height:44px;border:0;border-radius:50%;background:#f0c545;color:#2c2418;font-size:1rem;cursor:pointer}
 .workshop-voice-dock button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 @media(max-width:740px){.workshop-voice-dock{left:.6rem;right:.6rem;justify-content:space-between;border-radius:1rem}}
+
+.workshop-texture-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}
+.workshop-texture-compare>div{min-width:0;position:relative}
+.workshop-texture-compare img{aspect-ratio:3/4;object-fit:cover;object-position:center;border-radius:.8rem}
+.workshop-texture-compare span{position:absolute;left:.55rem;bottom:.55rem;padding:.4rem .7rem;border-radius:99px;background:#fff7e9;color:#2e271d;font-size:.7rem;font-weight:700}
