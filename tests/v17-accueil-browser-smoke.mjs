@@ -225,7 +225,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       }
       assert.equal(await page.locator('.v17r-hero-disclosure').count(),0,
         'Do not display photo credits under the hero CTA');
-      const visual=await page.evaluate(()=>{
+      const sectionVisual=await page.evaluate(()=>{
         const root=document.querySelector('.v17r-wrap');
         const section=document.querySelector('.v17r-table--editorial');
         const stage=section.querySelector('.v17r-table-stage');
@@ -255,22 +255,22 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           indicator:dot?getComputedStyle(dot).backgroundColor:null
         };
       });
-      assert.equal(visual.brandYellow,'#ffd342');
-      assert.equal(visual.sectionBackground,'rgba(0, 0, 0, 0)',
+      assert.equal(sectionVisual.brandYellow,'#ffd342');
+      assert.equal(sectionVisual.sectionBackground,'rgba(0, 0, 0, 0)',
         'Section 5 must have no colored background behind its full-bleed photograph');
-      assert.equal(visual.stageBackground,'rgba(0, 0, 0, 0)');
-      assert.equal(visual.veilDisplay,'none','Do not tint the feast photograph');
-      assert.equal(visual.imageFilter,'none','Do not filter the feast photograph');
-      assert.equal(visual.cardImageFilter,'none','Keep the recipe images unfiltered');
-      assert.ok(visual.cardVeilContent==='none'||visual.cardVeilDisplay==='none',
+      assert.equal(sectionVisual.stageBackground,'rgba(0, 0, 0, 0)');
+      assert.equal(sectionVisual.veilDisplay,'none','Do not tint the feast photograph');
+      assert.equal(sectionVisual.imageFilter,'none','Do not filter the feast photograph');
+      assert.equal(sectionVisual.cardImageFilter,'none','Keep the recipe images unfiltered');
+      assert.ok(sectionVisual.cardVeilContent==='none'||sectionVisual.cardVeilDisplay==='none',
         'Mobile carousel images must be free of gradient overlays: '+JSON.stringify(visual));
-      assert.equal(visual.buttonBackground,'rgb(255, 211, 66)');
-      assert.equal(visual.buttonColor,'rgb(23, 26, 20)');
-      assert.ok(Number(visual.buttonWeight)>=800 && visual.buttonCase==='uppercase',
+      assert.equal(sectionVisual.buttonBackground,'rgb(255, 211, 66)');
+      assert.equal(sectionVisual.buttonColor,'rgb(23, 26, 20)');
+      assert.ok(Number(sectionVisual.buttonWeight)>=800 && sectionVisual.buttonCase==='uppercase',
         'Yellow section 5 CTA must match V17 pill CTAs: '+JSON.stringify(visual));
-      assert.equal(visual.accent,'rgb(255, 211, 66)');
-      assert.equal(visual.kicker,'rgb(255, 211, 66)');
-      if(width<=760)assert.equal(visual.indicator,'rgb(255, 211, 66)',
+      assert.equal(sectionVisual.accent,'rgb(255, 211, 66)');
+      assert.equal(sectionVisual.kicker,'rgb(255, 211, 66)');
+      if(width<=760)assert.equal(sectionVisual.indicator,'rgb(255, 211, 66)',
         'Mobile carousel active dot must retain V17 yellow');
     }
     if(width<=760){
