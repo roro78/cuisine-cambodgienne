@@ -5,10 +5,12 @@ import SiteFooter from '../../components/SiteFooter.astro';
 import CulinaryIcon from '../../components/CulinaryIcon.astro';
 import GlossaryStrip from '../../components/GlossaryStrip.astro';
 import { workshops } from '../../data/workshops';
+import { workshopNarration, mortarStepImages, mortarImagePackReady } from '../../data/workshopAudio';
 import type { Workshop } from '../../data/workshops';
 import { recipes } from '../../data/recipes';
 import { getGlossaryEntries } from '../../data/glossary';
 import '../../styles/v16-editorial.css';
+import '../../styles/workshop-immersive.css';
 
 export function getStaticPaths() {
   return workshops.map((workshop: Workshop) => ({
@@ -22,6 +24,14 @@ const index = workshops.findIndex((item) => item.slug === workshop.slug);
 const nextWorkshop = workshops[(index + 1) % workshops.length];
 const relatedRecipes = recipes.filter((recipe) => workshop.relatedRecipes.includes(recipe.slug));
 const glossary = getGlossaryEntries(workshop.glossarySlugs ?? []);
+const narration = workshopNarration(workshop);
+const hasPilotPhotos = workshop.slug === 'piler-aromates-au-mortier' && mortarImagePackReady;
+const pilotAlt = [
+  'Aromates cambodgiens émincés avant le travail au mortier.',
+  'Les ingrédients fermes commencent à être pilés dans un mortier en pierre.',
+  'La pâte aromatique se transforme progressivement en mélange plus homogène.',
+  'La pâte de kroeung liée et parfumée après le pilage.'
+];
 
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
@@ -67,6 +77,19 @@ const howToSchema = {
           <div><dt>Niveau</dt><dd>{workshop.level}</dd></div>
           <div><dt>Étapes</dt><dd>{workshop.steps.length}</dd></div>
         </dl>
+        <section class="workshop-voice" data-workshop-voice aria-label="Guide audio de l’atelier">
+          <div class="workshop-voice-title"><span class="workshop-voice-icon" aria-hidden="true">♫</span><strong>Écouter le guide de cuisine</strong></div>
+          <p>Un récit à une seule voix pour accompagner vos gestes, étape après étape.</p>
+          <div class="workshop-voice-controls" role="group" aria-label="Commandes audio">
+            <button data-voice-play type="button">▶ Écouter</button>
+            <button data-voice-pause type="button" disabled>Ⅱ Pause</button>
+            <button data-voice-next type="button">Étape suivante →</button>
+            <button data-voice-stop type="button" disabled>■ Arrêter</button>
+          </div>
+          <p data-voice-status role="status" aria-live="polite">Présentation — prêt à écouter (voix de votre appareil)</p>
+          <details><summary>Lire la transcription de la narration</summary><p data-voice-transcript>{narration.intro}</p></details>
+          <small>Prévisualisation gratuite avec la voix française disponible sur votre appareil. La voix signature à légère coloration cambodgienne reste à enregistrer et à valider.</small>
+        </section>
       </div>
       <div class="workshop-detail-orbit" aria-hidden="true">
         <span>{workshop.n}</span>
@@ -104,12 +127,19 @@ const howToSchema = {
 
     <section class="workshop-step-list" aria-label="Étapes de l’atelier">
       {workshop.steps.map((step, stepIndex) => (
-        <article id={`etape-${stepIndex + 1}`} class="workshop-step" data-workshop-step={stepIndex + 1} data-reveal="up">
+        <article id={`etape-${stepIndex + 1}`} class:list={["workshop-step", { "workshop-step--illustrated": hasPilotPhotos }]} data-workshop-step={stepIndex + 1} data-reveal="up">
           <div class="workshop-step-index">{String(stepIndex + 1).padStart(2, '0')}</div>
+          {hasPilotPhotos && (
+            <figure class="workshop-step-media">
+              <img src={mortarStepImages[stepIndex]} alt={pilotAlt[stepIndex]} width="1240" height="930" loading="lazy" decoding="async" />
+              <figcaption>Illustration pédagogique générée par IA · Étape {stepIndex + 1}</figcaption>
+            </figure>
+          )}
           <div class="workshop-step-copy">
             <p class="v16-mini-label">Étape {stepIndex + 1}</p>
             <h2>{step.title}</h2>
             <p class="workshop-step-action">{step.action}</p>
+            <button type="button" class="workshop-step-listen" data-voice-step={stepIndex} aria-pressed="false">♫ Écouter cette étape</button>
 
             <div class="workshop-learning-grid">
               <section>
@@ -173,7 +203,10 @@ const howToSchema = {
     </section>
   </main>
 
+  <script type="application/json" data-workshop-narration set:html={JSON.stringify(narration).replace(/</g, "\\u003c")} />
   <script>
+    import { initWorkshopAudio } from "../../scripts/workshopAudio";
+    initWorkshopAudio();
     const progress = document.querySelector('[data-workshop-progress]');
     const links = Array.from(document.querySelectorAll('[data-workshop-progress-link]'));
     const steps = Array.from(document.querySelectorAll('[data-workshop-step]'));
