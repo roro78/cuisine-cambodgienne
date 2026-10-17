@@ -1,0 +1,39 @@
+{
+  "slug": "equilibrer-une-sauce",
+  "title": "Trouver le bon équilibre en goûtant",
+  "voice": "coral",
+  "audio": "/audio/workshops/equilibrer-une-sauce/atelier-coral.mp3",
+  "duration": 104.784,
+  "chapters": [
+    {
+      "title": "Présentation",
+      "start": 0,
+      "duration": 20.352,
+      "text": "Bonjour ! Aujourd'hui, nous allons jouer avec les saveurs d'une sauce. Salé, sucré, acidulé : quelques gouttes suffisent parfois à tout changer. Préparez quatre petits bols contenant la même sauce de départ, et gardez votre cuillère à portée de main. Nous allons goûter et comparer, tranquillement."
+    },
+    {
+      "title": "Créer un point de départ",
+      "start": 20.352,
+      "duration": 20.52,
+      "text": "Tout d'abord, versez la même quantité de sauce dans chacun de vos bols. Goûtez la sauce nature, avant d'ajouter quoi que ce soit. Est-elle déjà salée ? Un peu douce ? Peut-être manque-t-elle de fraîcheur ? Gardez bien ce goût en mémoire : ce sera notre point de comparaison pour la suite."
+    },
+    {
+      "title": "Changer une seule chose",
+      "start": 40.872,
+      "duration": 21.6,
+      "text": "Maintenant, ajoutons un peu de tamarin ou de jus acidulé dans un bol, une touche de sucre dans un autre, et un peu de sel dans le troisième. Le dernier reste nature. Goûtez après chaque ajout. Vous sentez ? Chaque bol raconte une histoire différente. Le secret, c'est de ne changer qu'une seule chose à la fois."
+    },
+    {
+      "title": "Corriger par petites touches",
+      "start": 62.472,
+      "duration": 20.616,
+      "text": "Choisissez le bol dont le goût vous plaît le plus. Ajoutez-en très peu à la fois, puis regoûtez. On ne veut pas que le sucre, le sel ou l'acidité prennent toute la place. Si vous hésitez avant d'ajouter encore quelque chose, c'est peut-être que la sauce est déjà équilibrée. Faites confiance à votre palais !"
+    },
+    {
+      "title": "Refaire sans regarder les bols",
+      "start": 83.088,
+      "duration": 21.696,
+      "text": "Pour finir, changez les bols de place et regoûtez-les sans regarder les ajouts. Retrouvez-vous votre préféré ? C'est un petit jeu tout simple qui apprend beaucoup. Bravo ! Vous savez maintenant corriger une sauce pas à pas, sans tout mélanger d'un coup. Vous pourrez essayer ce geste avec une sauce de lok lak."
+    }
+  ]
+}
