@@ -1,0 +1,120 @@
+name: Sync approved static release to OVH
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "preflight or deploy"
+        required: true
+        type: choice
+        options: [preflight, deploy]
+      expected_static_sha:
+        description: "Full 40-character SHA of ovh-production"
+        required: true
+        type: string
+      public_root_confirmed:
+        description: "OVH control panel confirms ~/www/cdc2017 is the served root (required for deploy)"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ovh-server-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Validate exact approved artifact
+        shell: bash
+        env:
+          EXPECTED: ${{ inputs.expected_static_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED" =~ ^[0-9a-f]{40}$ ]] || exit 1
+          actual="$(git ls-remote https://github.com/roro78/cuisine-cambodgienne.git refs/heads/ovh-production | cut -f1)"
+          [[ "$actual" == "$EXPECTED" ]] || { echo 'Static branch changed'; exit 1; }
+          echo "Approved static SHA: $actual"
+
+      - name: Configure SSH with pinned host key
+        shell: bash
+        env:
+          SSH_KEY: ${{ secrets.OVH_DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.OVH_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          [[ -n "$SSH_KEY" && -n "$KNOWN_HOSTS" ]] || { echo 'OVH SSH secrets are not configured'; exit 1; }
+          umask 077
+          mkdir -p "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/ovh_deploy_key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          ssh-keygen -y -f "$HOME/.ssh/ovh_deploy_key" >/dev/null
+          ssh-keygen -F ssh.cluster102.hosting.ovh.net -f "$HOME/.ssh/known_hosts" >/dev/null
+
+      - name: Check OVH and optionally deploy
+        shell: bash
+        env:
+          EXPECTED: ${{ inputs.expected_static_sha }}
+          MODE: ${{ inputs.mode }}
+          ROOT_CONFIRMED: ${{ inputs.public_root_confirmed }}
+        run: |
+          set -euo pipefail
+          if [[ "$MODE" == deploy && "$ROOT_CONFIRMED" != true ]]; then
+            echo 'Public root must be confirmed in OVH before deployment'
+            exit 1
+          fi
+          ssh -F /dev/null -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
+            -i "$HOME/.ssh/ovh_deploy_key" -p 22 \
+            cuisinedh@ssh.cluster102.hosting.ovh.net \
+            bash -se -- "$EXPECTED" "$MODE" <<'REMOTE'
+          set -euo pipefail
+          expected="$1"
+          mode="$2"
+          [[ "$expected" =~ ^[0-9a-f]{40}$ ]] || exit 1
+          [[ "$mode" == preflight || "$mode" == deploy ]] || exit 1
+          target="$HOME/www/cdc2017"
+          [[ -d "$target" && ! -L "$target" && -f "$target/index.html" ]] || { echo 'Target directory or index missing'; exit 1; }
+          [[ "$(realpath "$target")" == "$(realpath "$HOME")/www/cdc2017" ]] || exit 1
+          cd "$target"
+          [[ "$(git rev-parse --show-toplevel)" == "$PWD" ]] || { echo 'Wrong Git root'; exit 1; }
+          [[ -z "$(git status --porcelain --untracked-files=all)" ]] || { echo 'Working tree is not clean'; exit 1; }
+          [[ "$(git branch --show-current)" == ovh-production ]] || { echo 'Wrong branch'; exit 1; }
+          remote="$(git remote get-url origin)"
+          case "$remote" in
+            https://github.com/roro78/cuisine-cambodgienne.git|git@github.com:roro78/cuisine-cambodgienne.git) ;;
+            *) echo 'Unexpected Git remote'; exit 1 ;;
+          esac
+          current="$(git rev-parse HEAD)"
+          available="$(git ls-remote origin refs/heads/ovh-production | cut -f1)"
+          [[ "$available" == "$expected" ]] || { echo 'OVH cannot fetch the approved artifact'; exit 1; }
+          [[ -w "$HOME" && -w "$target" ]] || { echo 'No write access'; exit 1; }
+          free_kb="$(df -Pk "$HOME" | awk 'NR==2 {print $4}')"
+          size_kb="$(du -sk "$target" | cut -f1)"
+          [[ "$free_kb" -gt "$((size_kb * 2))" ]] || { echo 'Insufficient room for backup'; exit 1; }
+          echo "Target: $PWD"
+          echo "Current SHA: $current"
+          echo "Approved SHA: $expected"
+          echo "Backup estimate (KiB): $size_kb; free (KiB): $free_kb"
+          if [[ "$mode" == preflight ]]; then exit 0; fi
+          backup_dir="$HOME/backup-cdc"
+          mkdir -p "$backup_dir"
+          backup="$backup_dir/cdc-$(date -u +%Y%m%d-%H%M%S)-${current:0:12}.tar.gz"
+          tar -czf "$backup" -C "$HOME/www" cdc2017
+          tar -tzf "$backup" >/dev/null
+          [[ -s "$backup" ]] || { echo 'Backup invalid'; exit 1; }
+          echo "Backup: $backup"
+          git fetch origin ovh-production
+          [[ "$(git rev-parse FETCH_HEAD)" == "$expected" ]] || { echo 'Fetched SHA changed'; exit 1; }
+          git merge-base --is-ancestor HEAD FETCH_HEAD || { echo 'Non fast-forward update'; exit 1; }
+          git merge --ff-only "$expected"
+          [[ "$(git rev-parse HEAD)" == "$expected" ]] || { echo 'Unexpected deployed SHA'; exit 1; }
+          [[ -z "$(git status --porcelain --untracked-files=all)" ]] || { echo 'Working tree changed'; exit 1; }
+          echo "Deployed SHA: $(git rev-parse HEAD)"
+          REMOTE
