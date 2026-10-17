@@ -4,6 +4,8 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import CulinaryIcon from '../../components/CulinaryIcon.astro';
 import GlossaryStrip from '../../components/GlossaryStrip.astro';
+import WorkshopInfographic from '../../components/WorkshopInfographic.astro';
+import { getWorkshopLearning } from '../../data/workshopLearning';
 import { workshops } from '../../data/workshops';
 import type { Workshop } from '../../data/workshops';
 import { recipes } from '../../data/recipes';
@@ -11,6 +13,7 @@ import { getGlossaryEntries } from '../../data/glossary';
 import '../../styles/v16-editorial.css';
 import '../../styles/workshop-mortier-photos.css';
 import '../../styles/workshop-experience-v20.css';
+import '../../styles/workshop-tutorial-v21.css';
 
 export function getStaticPaths() {
   return workshops.map((workshop: Workshop) => ({
@@ -83,6 +86,8 @@ const workshopExperiences: Record<string, { image: string; imageAlt: string; que
   }
 };
 const workshopExperience = workshopExperiences[workshop.slug];
+const learning = getWorkshopLearning(workshop.slug);
+if (!learning) throw new Error(`Missing instructional module: ${workshop.slug}`);
 
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
@@ -153,43 +158,30 @@ const howToSchema = {
       </div>
     </section>
 
-    <nav class="workshop-progress" aria-label="Progression de l’atelier" data-workshop-progress>
-      {workshop.steps.map((step, stepIndex) => (
-        <a href={`#etape-${stepIndex + 1}`} data-workshop-progress-link={stepIndex + 1}>
-          <span>{String(stepIndex + 1).padStart(2, '0')}</span>
-          <em>{step.title}</em>
-        </a>
-      ))}
-    </nav>
-
     <section class="workshop-learning-lab" id="experience-atelier" aria-labelledby="workshop-lab-title">
       <div class="workshop-lab-introduction">
-        <p class="v16-page-kicker">Avant la pratique · Le laboratoire des sens</p>
-        <h2 id="workshop-lab-title">D’abord observer. Ensuite comprendre.</h2>
-        <p class="workshop-lab-lede">{workshop.intro}</p>
+        <p class="v16-page-kicker">Avant de commencer · Le laboratoire des sens</p>
+        <h2 id="workshop-lab-title">Essayez. Observez. Comprenez.</h2>
+        <p class="workshop-lab-lede">{learning.insight}</p>
         <div class="workshop-lab-result">
-          <span>À la fin de cet atelier, vous saurez…</span>
-          <ul>{workshop.outcomes.map((item) => <li>{item}</li>)}</ul>
+          <span>Le geste à maîtriser</span>
+          <p>{workshop.objective}</p>
         </div>
-        <a class="workshop-lab-start" href="#etape-1">Passer au premier geste <span aria-hidden="true">→</span></a>
+        <a class="workshop-lab-start" href="#tutoriel-atelier">Commencer le pas-à-pas <span aria-hidden="true">→</span></a>
       </div>
       <div class="workshop-lab-activities">
         <div class="workshop-lab-activities-heading">
-          <span class="workshop-lab-count">{String(workshop.experiments.length).padStart(2, "0")}</span>
+          <span class="workshop-lab-count">{String(learning.experiments.length).padStart(2, '0')}</span>
           <div>
-            <p class="v16-page-kicker">Expériences guidées</p>
-            <h3>Essayez, comparez, décidez.</h3>
+            <p class="v16-page-kicker">Mini-expériences</p>
+            <h3>Apprenez par comparaison.</h3>
           </div>
         </div>
         <ol class="workshop-lab-experiments">
-          {workshop.experiments.map((experiment, experimentIndex) => (
+          {learning.experiments.map((experiment, experimentIndex) => (
             <li><span aria-hidden="true">{String(experimentIndex + 1).padStart(2, '0')}</span><p>{experiment}</p></li>
           ))}
         </ol>
-        <details class="workshop-lab-discovery">
-          <summary>Un indice pour guider votre observation <span aria-hidden="true">+</span></summary>
-          <p>{workshopExperience.answer}</p>
-        </details>
         <details class="workshop-lab-kit">
           <summary>Le matériel à préparer ({workshop.prepare.length}) <span aria-hidden="true">+</span></summary>
           <ul>{workshop.prepare.map((item) => <li>{item}</li>)}</ul>
@@ -197,51 +189,86 @@ const howToSchema = {
       </div>
     </section>
 
-    <section class="workshop-step-list" aria-label="Étapes de l’atelier">
-      {workshop.steps.map((step, stepIndex) => (
-        <article id={`etape-${stepIndex + 1}`} class:list={["workshop-step", {"workshop-step--illustrated": illustratedMortar}]} data-workshop-step={stepIndex + 1} data-reveal="up">
-          <div class="workshop-step-index">{String(stepIndex + 1).padStart(2, '0')}</div>
-          {illustratedMortar && (
-            <figure class="workshop-step-media">
-              {stepIndex === 3 ? (
-                <div class="workshop-step-compare">
-                  <div><img src={mortarPhotos[1]} width="1240" height="930" loading="lazy" decoding="async" alt="Pâte de kroeung en cours de pilage, texture grossière" /><span>Avant</span></div>
-                  <div><img src={mortarPhotos[3]} width="1240" height="930" loading="lazy" decoding="async" alt="Pâte de kroeung fine et homogène après le pilage" /><span>Après</span></div>
-                </div>
+    <section class="workshop-tutorial" id="tutoriel-atelier" aria-labelledby="workshop-tutorial-title" data-workshop-tutorial>
+      <header class="workshop-tutorial-heading">
+        <div>
+          <p class="v16-page-kicker">Votre tutoriel guidé</p>
+          <h2 id="workshop-tutorial-title">Le geste, pas à pas.</h2>
+        </div>
+        <p>Une action à la fois. Observez d’abord, puis révélez les repères de réussite.</p>
+      </header>
+      <nav class="workshop-progress" aria-label="Choisir une étape de l’atelier" data-workshop-progress>
+        {workshop.steps.map((step, stepIndex) => (
+          <a href={`#etape-${stepIndex + 1}`} data-workshop-progress-link={stepIndex + 1} aria-controls={`etape-${stepIndex + 1}`}>
+            <span>{String(stepIndex + 1).padStart(2, '0')}</span>
+            <em>{step.title}</em>
+          </a>
+        ))}
+      </nav>
+      <div class="workshop-tutorial-steps">
+        {workshop.steps.map((step, stepIndex) => (
+          <article class="workshop-tutorial-step" id={`etape-${stepIndex + 1}`} data-tutorial-step={stepIndex + 1} aria-labelledby={`atelier-etape-titre-${stepIndex + 1}`}>
+            <div class="workshop-tutorial-media">
+              {illustratedMortar ? (
+                <figure class="workshop-tutorial-photo">
+                  {stepIndex === 3 ? (
+                    <div class="workshop-step-compare">
+                      <div><img src={mortarPhotos[1]} width="1240" height="930" loading="lazy" decoding="async" alt="Pâte à mi-parcours : fibres encore visibles" /><span>Mi-parcours</span></div>
+                      <div><img src={mortarPhotos[3]} width="1240" height="930" loading="lazy" decoding="async" alt="Pâte finale : texture plus fine et liée" /><span>Pâte finale</span></div>
+                    </div>
+                  ) : (
+                    <img src={mortarPhotos[stepIndex]} width="1240" height={stepIndex === 0 ? 827 : 930} loading="lazy" decoding="async" alt={mortarAlt[stepIndex]} />
+                  )}
+                  <figcaption>Illustration pédagogique générée par IA · Étape {stepIndex + 1}. Vérifiez sur votre propre préparation.</figcaption>
+                </figure>
               ) : (
-                <img src={mortarPhotos[stepIndex]} width="1240" height={stepIndex === 0 ? 827 : 930} loading="lazy" decoding="async" alt={mortarAlt[stepIndex]} />
+                <WorkshopInfographic learning={learning} />
               )}
-              <figcaption>Illustration pédagogique générée par IA · Étape {stepIndex + 1}</figcaption>
-            </figure>
-          )}
-          <div class="workshop-step-copy">
-            <p class="v16-mini-label">Étape {stepIndex + 1}</p>
-            <h2>{step.title}</h2>
-            <p class="workshop-step-action">{step.action}</p>
-
-            <div class="workshop-learning-grid">
-              <section>
-                <span>À observer</span>
-                <p>{step.observe}</p>
-              </section>
-              <section>
-                <span>Le bon repère</span>
-                <p>{step.cue}</p>
-              </section>
-              {step.mistake && (
-                <section>
-                  <span>À éviter</span>
-                  <p>{step.mistake}</p>
-                </section>
+              {illustratedMortar && (
+                <p class="workshop-tutorial-visual-note"><span>Repère essentiel</span>{learning.stages[stepIndex].criterion}</p>
               )}
-              <section class="workshop-success">
-                <span>Vous avez réussi si…</span>
-                <p>{step.success}</p>
-              </section>
             </div>
-          </div>
-        </article>
-      ))}
+            <div class="workshop-tutorial-instructions">
+              <p class="workshop-tutorial-step-number">Geste {String(stepIndex + 1).padStart(2, '0')} <span>sur {String(workshop.steps.length).padStart(2, '0')}</span></p>
+              <h3 id={`atelier-etape-titre-${stepIndex + 1}`} tabindex="-1">{step.title}</h3>
+              <div class="workshop-tutorial-do">
+                <span>À vous de jouer</span>
+                <p>{learning.stages[stepIndex].mission}</p>
+              </div>
+              <div class="workshop-tutorial-question">
+                <span>La question à se poser</span>
+                <p>{learning.stages[stepIndex].question}</p>
+              </div>
+              <details class="workshop-tutorial-answer">
+                <summary>Vérifier mon observation <span aria-hidden="true">+</span></summary>
+                <div>
+                  <p><strong>Ce qu’il faut remarquer :</strong> {step.observe}</p>
+                  <p><strong>Le bon repère :</strong> {learning.stages[stepIndex].criterion}</p>
+                  {step.mistake && <p><strong>Le piège à éviter :</strong> {step.mistake}</p>}
+                  <p><strong>Validation :</strong> {step.success}</p>
+                </div>
+              </details>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div class="workshop-tutorial-controls" aria-label="Parcours du tutoriel">
+        <button type="button" data-tutorial-previous aria-label="Étape précédente">← Précédent</button>
+        <span data-tutorial-counter aria-live="polite">Étape 1 sur {workshop.steps.length}</span>
+        <button type="button" data-tutorial-next>Suivant →</button>
+      </div>
+    </section>
+
+    <section class="workshop-tutorial-recap" aria-labelledby="workshop-recap-title">
+      <div>
+        <p class="v16-page-kicker">La compétence acquise</p>
+        <h2 id="workshop-recap-title">Saurez-vous le refaire sans la fiche ?</h2>
+        <p>{learning.transfer}</p>
+      </div>
+      <div class="workshop-tutorial-recap-list">
+        <p>Votre grille d’autoévaluation</p>
+        <ul>{workshop.outcomes.map((outcome) => <li>{outcome}</li>)}</ul>
+      </div>
     </section>
 
     <section class="workshop-takeaway" data-reveal="up">
@@ -282,28 +309,59 @@ const howToSchema = {
   </main>
 
   <script>
-    const progress = document.querySelector('[data-workshop-progress]');
-    const links = Array.from(document.querySelectorAll('[data-workshop-progress-link]'));
-    const steps = Array.from(document.querySelectorAll('[data-workshop-step]'));
+    // Progressive enhancement: without JavaScript, all four steps remain readable.
+    const tutorial = document.querySelector<HTMLElement>('[data-workshop-tutorial]');
+    if (tutorial) {
+      const stages = Array.from(tutorial.querySelectorAll<HTMLElement>('[data-tutorial-step]'));
+      const links = Array.from(tutorial.querySelectorAll<HTMLAnchorElement>('[data-workshop-progress-link]'));
+      const previous = tutorial.querySelector<HTMLButtonElement>('[data-tutorial-previous]');
+      const next = tutorial.querySelector<HTMLButtonElement>('[data-tutorial-next]');
+      const counter = tutorial.querySelector<HTMLElement>('[data-tutorial-counter]');
+      let active = 0;
 
-    if (progress && links.length && steps.length && 'IntersectionObserver' in window) {
-      const observer = new IntersectionObserver((entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-        if (!visible) return;
-        const active = visible.target.getAttribute('data-workshop-step');
-        links.forEach((link) => {
-          if (link.getAttribute('data-workshop-progress-link') === active) {
-            link.setAttribute('aria-current', 'step');
-          } else {
-            link.removeAttribute('aria-current');
-          }
+      function showStage(index: number, moveFocus = false) {
+        if (index < 0 || index >= stages.length) return;
+        active = index;
+        stages.forEach((stage, stageIndex) => {
+          stage.hidden = stageIndex !== active;
         });
-      }, { rootMargin: '-30% 0px -55% 0px', threshold: [0, 0.25, 0.6] });
+        links.forEach((link, linkIndex) => {
+          if (linkIndex === active) link.setAttribute('aria-current', 'step');
+          else link.removeAttribute('aria-current');
+        });
+        if (previous) previous.disabled = active === 0;
+        if (next) {
+          next.textContent = active === stages.length - 1 ? 'Revoir depuis le début ↺' : 'Suivant →';
+          next.setAttribute('aria-label', active === stages.length - 1 ? 'Revenir à la première étape' : 'Étape suivante');
+        }
+        if (counter) counter.textContent = `Étape ${active + 1} sur ${stages.length}`;
+        if (moveFocus) {
+          history.replaceState(null, '', `#etape-${active + 1}`);
+          stages[active].querySelector<HTMLElement>('h3')?.focus({ preventScroll: true });
+          tutorial.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
+        }
+      }
 
-      steps.forEach((step) => observer.observe(step));
+      function getHashStage() {
+        const match = location.hash.match(/^#etape-(\d+)$/);
+        if (!match) return 0;
+        const number = Number(match[1]);
+        return Number.isInteger(number) && number > 0 && number <= stages.length ? number - 1 : 0;
+      }
+
+      if (stages.length) {
+        tutorial.dataset.enhanced = 'true';
+        showStage(getHashStage());
+        links.forEach((link, index) => link.addEventListener('click', (event) => {
+          event.preventDefault();
+          showStage(index, true);
+        }));
+        previous?.addEventListener('click', () => showStage(active - 1, true));
+        next?.addEventListener('click', () => showStage(active === stages.length - 1 ? 0 : active + 1, true));
+        window.addEventListener('hashchange', () => {
+          if (/^#etape-\d+$/.test(location.hash)) showStage(getHashStage());
+        });
+      }
     }
   </script>
 
