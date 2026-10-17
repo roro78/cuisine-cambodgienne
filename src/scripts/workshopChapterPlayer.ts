@@ -49,6 +49,7 @@ export function initWorkshopChapterPlayers(): void {
     const plannedDuration = Number(root.dataset.audioDuration) || chapters.at(-1)?.start || 0;
     let currentChapter = -1;
     let following = false;
+    let automaticScrollUntil = 0;
 
     function duration(): number {
       return audio && Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : plannedDuration;
@@ -64,6 +65,7 @@ export function initWorkshopChapterPlayers(): void {
       }));
       if (scroll) {
         const target = document.querySelector<HTMLElement>('[data-tutorial-step="' + index + '"]');
+        automaticScrollUntil = Date.now() + 1800;
         target?.scrollIntoView({
           behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
           block: 'start'
@@ -157,8 +159,9 @@ export function initWorkshopChapterPlayers(): void {
     window.addEventListener('wheel', stopFollowing, { passive: true });
     window.addEventListener('touchmove', stopFollowing, { passive: true });
     window.addEventListener('scroll', () => {
-      // Scroll events also fire from the optional follow scrollIntoView:
-      // we only disable on user-originated wheel/touch/keyboard/pointer actions.
+      // A mouse drag of the page scrollbar should also disable follow.
+      // Ignore scroll events emitted by our own smooth scrollIntoView.
+      if (following && Date.now() > automaticScrollUntil) stopFollowing();
     }, { passive: true });
     window.addEventListener('keydown', (event) => {
       if (['PageDown', 'PageUp', 'ArrowDown', 'ArrowUp', 'Home', 'End', ' '].includes(event.key)
