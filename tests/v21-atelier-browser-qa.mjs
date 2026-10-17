@@ -105,7 +105,15 @@ async function verify(width, height) {
         });
         assert.ok(visibility.visible, slug + ' first stage tab must be visible after restart');
       }
-      if (['piler-aromates-au-mortier', 'equilibrer-une-sauce'].includes(slug)) {
+      for (const cls of ['.workshop-takeaway','.workshop-practice','.workshop-next']) {
+        assert.equal(await page.locator(cls).count(), 1, slug + ' expected final section '+cls);
+        const visible = await page.locator(cls).evaluate((el) => {
+          const style = getComputedStyle(el);
+          return style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity) > .98;
+        });
+        assert.ok(visible, slug + ' final section must be visible without scroll-trigger animation: '+cls);
+      }
+      if (true) {
         await page.evaluate(() => window.scrollTo(0, 0));
         await page.screenshot({
           path: 'artifacts/v21-' + slug + '-' + width + '.png',
