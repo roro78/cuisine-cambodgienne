@@ -4,11 +4,11 @@ interface Props { learning: WorkshopLearning; stageIndex: number; }
 const { learning, stageIndex } = Astro.props;
 const kinds: Record<string,string> = {texture:'Texture',taste:'Goût',heat:'Saisie',timing:'Fraîcheur',broth:'Bouillon',table:'Composition'};
 const labels: Record<string, string[]> = {
- taste: ['Un point de départ', 'Trois corrections isolées', 'Ajuster sans surcorriger', 'Retrouver le goût à l’aveugle'],
- heat: ['Le contact avec la chaleur', 'L’espace fait la différence', 'La sauce vient après', 'Coloration et cuisson : deux questions'],
- timing: ['La bouchée témoin', 'Isoler l’effet des herbes', 'Jus et zeste, deux effets', 'La finition au dernier moment'],
- broth: ['Le bouillon témoin', 'Observer la réduction', 'Diagnostiquer avant d’ajouter', 'Préserver une note fraîche'],
- table: ['Le point de départ', 'Le rôle du plat chaud', 'Ajouter un contraste', 'Laisser chacun doser']
+ taste: ['Goûter la sauce nature', 'Sel, sucre ou citron ?', 'Rectifier petit à petit', 'Choisir sa sauce préférée'],
+ heat: ['La viande touche la poêle', 'L’espace fait la différence', 'La sauce vient après', 'Dorée dehors, cuite dedans ?'],
+ timing: ['Goûter avant d’ajouter', 'Ce que changent les herbes', 'Jus et zeste, deux effets', 'Ajouter juste avant de servir'],
+ broth: ['Goûter le bouillon nature', 'Quand le bouillon réduit', 'Que manque-t-il au bouillon ?', 'Ajouter les herbes hors du feu'],
+ table: ['Commencer avec du riz', 'Choisir le plat principal', 'Apporter un peu de fraîcheur', 'Laisser chacun doser']
 };
 const visuals: Record<string,string> = {
  taste:'/images/cuisine/tamarind-1600.webp',
@@ -29,7 +29,7 @@ const sourceImage = visuals[learning.kind];
 ---
 <figure class:list={['workshop-infographic', 'workshop-stage-graphic', `workshop-stage-graphic--${learning.kind}`, `workshop-stage-graphic--${stageIndex + 1}`]} data-stage-graphic={learning.kind} data-stage-number={stageIndex + 1}>
   <header class="workshop-stage-graphic-heading">
-    <p class="v16-mini-label">Repère visuel · {kinds[learning.kind]}</p>
+    <p class="v16-mini-label">En images · {kinds[learning.kind]}</p>
     <h4>{label}</h4>
     <span>{String(stageIndex + 1).padStart(2,'0')} / 04</span>
   </header>
@@ -40,36 +40,36 @@ const sourceImage = visuals[learning.kind];
         <img src={sourceImage} width="1200" height="900" loading="eager" decoding="async" alt={photoAlts[learning.kind]} />
       </div>
       <div class="workshop-stage-photo-tag">
-        {learning.kind === 'taste' && <><strong>Le témoin</strong><p>Goûtez la sauce sans rien changer. C’est votre référence.</p></>}
-        {learning.kind === 'heat' && <><strong>La surface</strong><p>Une belle coloration se construit au contact de la poêle. Le plat fini n’en montre pas toutes les étapes.</p></>}
-        {learning.kind === 'timing' && <><strong>La référence</strong><p>Commencez par une bouchée sans finition. C’est elle qui rend la différence perceptible.</p></>}
-        {learning.kind === 'broth' && <><strong>Avant réduction</strong><p>Réservez un échantillon témoin. Laissez refroidir avant de goûter.</p></>}
-        {learning.kind === 'table' && <><strong>Le point d’ancrage</strong><p>Choisissez la base autour de laquelle construire plusieurs bouchées.</p></>}
+        {learning.kind === 'taste' && <><strong>La sauce nature</strong><p>Goûtez la sauce sans rien changer. Gardez ce premier goût en mémoire.</p></>}
+        {learning.kind === 'heat' && <><strong>La surface</strong><p>Pour dorer la viande, il faut une poêle chaude. Cette photo montre le plat prêt à servir.</p></>}
+        {learning.kind === 'timing' && <><strong>La bouchée nature</strong><p>Goûtez une bouchée sans herbes ni citron, puis comparez.</p></>}
+        {learning.kind === 'broth' && <><strong>Avant réduction</strong><p>Gardez une petite portion du bouillon. Laissez refroidir avant de goûter.</p></>}
+        {learning.kind === 'table' && <><strong>Le riz à partager</strong><p>Commencez par le riz : chaque convive pourra y ajouter les autres plats.</p></>}
       </div>
     </div>
   )}
 
   {learning.kind === 'taste' && stageIndex === 1 && (
     <div class="workshop-diagram-taste workshop-stage-taste">
-      <div class="workshop-diagram-base">Bol témoin<small>On n’y touche pas.</small></div>
-      <div class="workshop-diagram-branches" aria-label="Trois variantes indépendantes de la sauce">
-        <div><b>Acide</b><span>une variante</span></div>
+      <div class="workshop-diagram-base">Sauce nature<small>On n’y touche pas.</small></div>
+      <div class="workshop-diagram-branches" aria-label="Trois petits bols avec des assaisonnements différents">
+        <div><b>Acide</b><span>un petit ajout</span></div>
         <div><b>Doux</b><span>une variante</span></div>
         <div><b>Salé</b><span>une variante</span></div>
       </div>
-      <p class="workshop-diagram-caption">Une seule modification par bol. Le témoin reste identique pour comparer.</p>
+      <p class="workshop-diagram-caption">Ajoutez un seul ingrédient dans chaque bol. Gardez la sauce nature pour comparer.</p>
     </div>
   )}
   {learning.kind === 'taste' && stageIndex === 2 && (
-    <ol class="workshop-stage-rounds" aria-label="Boucle courte de correction">
-      <li><span>1</span><strong>Choisir</strong><small>Une variante prometteuse</small></li>
-      <li><span>2</span><strong>Ajouter très peu</strong><small>Une seule correction</small></li>
-      <li><span>3</span><strong>Regoûter</strong><small>Décider si l’on s’arrête</small></li>
+    <ol class="workshop-stage-rounds" aria-label="Comment rectifier une sauce">
+      <li><span>1</span><strong>Choisir</strong><small>Le bol que vous préférez</small></li>
+      <li><span>2</span><strong>Ajouter très peu</strong><small>Un peu de sel, de sucre ou de citron</small></li>
+      <li><span>3</span><strong>Regoûter</strong><small>Goûter avant d’en rajouter</small></li>
     </ol>
   )}
   {learning.kind === 'taste' && stageIndex === 3 && (
     <div class="workshop-stage-blind">
-      <p>Placez les bols dans un ordre inconnu.</p>
+      <p>Demandez à quelqu’un de mélanger les bols sans vous dire lequel est lequel.</p>
       <div aria-label="Trois bols à goûter sans connaître leur correction"><span>A</span><span>B</span><span>C</span></div>
       <strong>Lequel préférez-vous sans connaître l’ajout ?</strong>
     </div>
@@ -78,7 +78,7 @@ const sourceImage = visuals[learning.kind];
   {learning.kind === 'heat' && stageIndex === 1 && (
     <div class="workshop-diagram-pans" aria-label="Schéma conceptuel de l’occupation d’une poêle">
       <div><span>Peu chargée</span><div class="workshop-pan workshop-pan--free" aria-hidden="true"><i></i><i></i><i></i><i></i></div><p>De l’espace et moins de jus accumulé.</p></div>
-      <div><span>Surchargée</span><div class="workshop-pan workshop-pan--crowded" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><p>La vapeur et les jus freinent la coloration.</p></div>
+      <div><span>Surchargée</span><div class="workshop-pan workshop-pan--crowded" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><p>La viande a plus de mal à dorer quand elle baigne dans son jus.</p></div>
     </div>
   )}
   {learning.kind === 'heat' && stageIndex === 2 && (
@@ -86,13 +86,13 @@ const sourceImage = visuals[learning.kind];
       <div><b>01</b><strong>Colorer</strong><span>Surface au contact de la poêle</span></div>
       <i aria-hidden="true">→</i>
       <div><b>02</b><strong>Enrober</strong><span>Ajouter la sauce ensuite</span></div>
-      <p>Ce schéma décrit l’ordre du geste, pas une durée de cuisson.</p>
+      <p>Dorez d’abord la viande. Ajoutez ensuite la sauce.</p>
     </div>
   )}
   {learning.kind === 'heat' && stageIndex === 3 && (
     <div class="workshop-stage-dual-check">
-      <div><span>À l’œil</span><strong>Coloration</strong><p>Une surface dorée vous renseigne sur la saisie.</p></div>
-      <div><span>Pour la sécurité</span><strong>Cuisson à cœur</strong><p>À vérifier selon la viande : la couleur de surface ne suffit pas.</p></div>
+      <div><span>À l’œil</span><strong>Coloration</strong><p>La viande a pris une belle couleur dorée.</p></div>
+      <div><span>Pour la sécurité</span><strong>Cuisson à cœur</strong><p>Vérifiez que la viande est bien cuite à cœur lorsque c’est nécessaire.</p></div>
     </div>
   )}
 
@@ -101,13 +101,13 @@ const sourceImage = visuals[learning.kind];
       <div class="workshop-stage-herb-crop">
         <img src={sourceImage} width="1200" height="900" alt="Herbes fraîches en garniture d’un num banh chok, photo d’illustration" loading="lazy" />
       </div>
-      <div><span>Sans herbe</span><strong>Goût de base</strong><i aria-hidden="true">↓</i><span>Avec herbe</span><strong>Parfum ajouté</strong></div>
+      <div><span>Sans herbe</span><strong>Sans herbes</strong><i aria-hidden="true">↓</i><span>Avec herbe</span><strong>Avec des herbes</strong></div>
     </div>
   )}
   {learning.kind === 'timing' && stageIndex === 2 && (
     <div class="workshop-stage-acid">
-      <div><b>Jus</b><strong>Acidité</strong><span>Change la sensation en bouche</span></div>
-      <div><b>Zeste</b><strong>Arômes</strong><span>Libère les huiles parfumées</span></div>
+      <div><b>Jus</b><strong>Acidité</strong><span>Apporte de l’acidité</span></div>
+      <div><b>Zeste</b><strong>Arômes</strong><span>Apporte surtout du parfum</span></div>
       <p>Tester séparément pour sentir la différence.</p>
     </div>
   )}
@@ -115,30 +115,30 @@ const sourceImage = visuals[learning.kind];
     <ol class="workshop-diagram-timeline">
       <li><span>01</span><strong>Plat prêt</strong><small>Goûter sans finition</small></li>
       <li><span>02</span><strong>Choix de la fraîcheur</strong><small>Herbe, jus ou zeste, selon le plat</small></li>
-      <li><span>03</span><strong>Juste avant de servir</strong><small>Ajouter les notes fraîches délicates</small></li>
+      <li><span>03</span><strong>Juste avant de servir</strong><small>Ajouter herbes et citron</small></li>
     </ol>
   )}
 
   {learning.kind === 'broth' && stageIndex === 1 && (
     <div class="workshop-diagram-broth">
-      <div><span>Avant</span><div class="workshop-cup workshop-cup--before" aria-hidden="true"><i></i></div><small>Goûter le témoin refroidi</small></div>
+      <div><span>Avant</span><div class="workshop-cup workshop-cup--before" aria-hidden="true"><i></i></div><small>Goûter le premier bol refroidi</small></div>
       <b aria-hidden="true">→</b>
       <div><span>Après réduction</span><div class="workshop-cup workshop-cup--after" aria-hidden="true"><i></i></div><small>Comparer, avant de saler</small></div>
-      <p>Variation de volume illustrative : aucune mesure de concentration n’est suggérée.</p>
+      <p>Le bouillon baisse de volume à la cuisson. Le dessin est une illustration, pas une mesure.</p>
     </div>
   )}
   {learning.kind === 'broth' && stageIndex === 2 && (
     <div class="workshop-stage-diagnostic">
       <strong>Quel est le vrai manque ?</strong>
       <div><span>Sel ?</span><span>Parfum ?</span><span>Fraîcheur ?</span></div>
-      <p>Identifier la cause, puis essayer une seule correction sur une portion.</p>
+      <p>Goûtez avant d’ajouter du sel, des herbes ou du citron.</p>
     </div>
   )}
   {learning.kind === 'broth' && stageIndex === 3 && (
     <div class="workshop-stage-broth-finish">
       <div class="workshop-stage-broth-disc" aria-hidden="true"><span>○</span></div>
       <div><b>Feu coupé</b><span>Ajouter les herbes ou agrumes choisis.</span></div>
-      <p>Le parfum se juge en sentant le bouillon refroidi, pas en suivant un chronomètre.</p>
+      <p>Goûtez le bouillon tiède avant de servir pour vérifier son parfum.</p>
     </div>
   )}
 
@@ -146,8 +146,8 @@ const sourceImage = visuals[learning.kind];
     <div class="workshop-stage-menu">
       <div><span>La base</span><strong>Riz</strong></div>
       <span aria-hidden="true">+</span>
-      <div><span>Le caractère</span><strong>Plat chaud</strong></div>
-      <p>Deux fonctions complémentaires, plutôt que deux plats riches concurrents.</p>
+      <div><span>Le plat chaud</span><strong>Plat chaud</strong></div>
+      <p>Le riz accompagne le plat chaud : inutile de multiplier les préparations.</p>
     </div>
   )}
   {learning.kind === 'table' && stageIndex === 2 && (
@@ -155,7 +155,7 @@ const sourceImage = visuals[learning.kind];
       <div><strong>Riche</strong><span>Plat chaud</span></div>
       <span aria-hidden="true">↔</span>
       <div><strong>Frais</strong><span>Herbes · légumes · acidité</span></div>
-      <p>Composer deux bouchées puis décrire le contraste.</p>
+      <p>Goûtez une bouchée avec, puis sans légumes frais : sentez la différence.</p>
     </div>
   )}
   {learning.kind === 'table' && stageIndex === 3 && (
@@ -166,5 +166,5 @@ const sourceImage = visuals[learning.kind];
       <div class="workshop-table-plate workshop-table-plate--condiment"><span>04</span><strong>Condiment</strong><small>À part</small></div>
     </div>
   )}
-  <figcaption>Schéma pédagogique ou photographie de contexte, non une démonstration photographiée du geste. Vérifiez les repères sur votre propre préparation.</figcaption>
+  <figcaption>Les dessins expliquent le geste. Les photos montrent les ingrédients ou le plat terminé : observez surtout ce qui se passe dans votre propre cuisine.</figcaption>
 </figure>
