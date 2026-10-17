@@ -10,6 +10,7 @@ import { recipes } from '../../data/recipes';
 import { getGlossaryEntries } from '../../data/glossary';
 import '../../styles/v16-editorial.css';
 import '../../styles/workshop-mortier-photos.css';
+import '../../styles/workshop-experience-v20.css';
 
 export function getStaticPaths() {
   return workshops.map((workshop: Workshop) => ({
@@ -36,6 +37,52 @@ const mortarAlt = [
   'Pâte de kroeung en cours de pilage, texture encore irrégulière.',
   'Pâte aromatique de kroeung plus fine et homogène après le pilage.'
 ];
+
+const workshopExperiences: Record<string, { image: string; imageAlt: string; question: string; answer: string; focus: string }> = {
+  'piler-aromates-au-mortier': {
+    image: '/images/cuisine/v19-mortier-kroeung-1440.webp',
+    imageAlt: 'Mortier en pierre et pâte de kroeung cambodgienne, aux aromates frais.',
+    question: 'À quel moment des morceaux deviennent-ils une vraie pâte ?',
+    answer: 'La pâte se tient, les fibres longues disparaissent et le parfum devient plus intense.',
+    focus: 'Texture · Parfum · Transformation'
+  },
+  'equilibrer-une-sauce': {
+    image: '/images/cuisine/tamarind-1600.webp',
+    imageAlt: 'Tamarin, ingrédient acidulé employé pour équilibrer une sauce cambodgienne.',
+    question: 'Comment savoir ce qui manque, sans tout ajouter ?',
+    answer: 'Modifiez un seul goût à la fois, puis comparez systématiquement avec la base initiale.',
+    focus: 'Goûter · Comparer · Ajuster'
+  },
+  'saisir-viande-poele': {
+    image: '/images/cuisine/v19-lok-lak-1440.webp',
+    imageAlt: 'Lok lak cambodgien, viande dorée et accompagnement, pour évoquer la saisie.',
+    question: 'Pourquoi une petite fournée dore-t-elle mieux ?',
+    answer: 'Une poêle moins chargée garde mieux sa chaleur et laisse moins de liquide s’accumuler.',
+    focus: 'Chaleur · Son · Coloration'
+  },
+  'fraicheur-herbes-agrumes': {
+    image: '/images/cuisine/v19-num-banh-chok-1440.webp',
+    imageAlt: 'Num banh chok servi avec des herbes fraîches et des légumes.',
+    question: 'Comment réveiller une bouchée sans masquer le plat ?',
+    answer: 'Testez séparément herbes, jus et zeste ; cherchez le contraste, pas la domination.',
+    focus: 'Parfum · Acidité · Contraste'
+  },
+  'bouillon-leger-savoureux': {
+    image: '/images/cuisine/v18-kuy-teav.webp',
+    imageAlt: 'Bol de kuy teav cambodgien, bouillon et garnitures aromatiques.',
+    question: 'Comment gagner en goût sans rendre le bouillon trop salé ?',
+    answer: 'Comparez le goût avant et après réduction, puis ajustez l’assaisonnement progressivement.',
+    focus: 'Réduction · Équilibre · Fraîcheur'
+  },
+  'composer-repas-cambodgien': {
+    image: '/images/cuisine/v19-table-partage-desktop-1440.webp',
+    imageAlt: 'Table cambodgienne dressée pour partager plusieurs plats et accompagnements.',
+    question: 'Comment faire un repas généreux sans multiplier les plats ?',
+    answer: 'Associez une base, un plat chaud, un contraste frais et un condiment à part.',
+    focus: 'Contrastes · Partage · Équilibre'
+  }
+};
+const workshopExperience = workshopExperiences[workshop.slug];
 
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
@@ -70,22 +117,39 @@ const howToSchema = {
   <SiteHeader />
 
   <main class="v16-editorial workshop-detail">
-    <section class="workshop-detail-hero">
+    <section class="workshop-detail-hero workshop-experience-hero" aria-labelledby="workshop-title">
       <div class="workshop-detail-hero-copy" data-reveal="up">
         <a class="workshop-detail-back" href="/apprendre/">← Tous les ateliers</a>
-        <p class="v16-page-kicker"><CulinaryIcon name={workshop.icon} size={18} /> Atelier {workshop.n} · {workshop.eyebrow}</p>
-        <h1>{workshop.title}</h1>
-        <p class="workshop-detail-intro">{workshop.intro}</p>
+        <p class="v16-page-kicker"><CulinaryIcon name={workshop.icon} size={18} /> Leçon vivante · Atelier {workshop.n}</p>
+        <h1 id="workshop-title">{workshop.title}</h1>
+        <p class="workshop-experience-promise">{workshop.objective}</p>
+        <div class="workshop-experience-actions">
+          <a class="workshop-experience-button" href="#experience-atelier">Entrer dans l’expérience <span aria-hidden="true">↘</span></a>
+          <span class="workshop-experience-focus">{workshopExperience.focus}</span>
+        </div>
         <dl class="workshop-detail-facts">
           <div><dt>Durée</dt><dd>{workshop.duration}</dd></div>
           <div><dt>Niveau</dt><dd>{workshop.level}</dd></div>
-          <div><dt>Étapes</dt><dd>{workshop.steps.length}</dd></div>
+          <div><dt>Expériences</dt><dd>{workshop.experiments.length}</dd></div>
         </dl>
       </div>
-      <div class="workshop-detail-orbit" aria-hidden="true">
-        <span>{workshop.n}</span>
-        <i></i>
-        <b>{workshop.eyebrow}</b>
+      <div class="workshop-experience-visual">
+        <figure class="workshop-experience-photo">
+          <img
+            src={workshopExperience.image}
+            alt={workshopExperience.imageAlt}
+            width="1440"
+            height="1080"
+            loading="eager"
+            decoding="async"
+            fetchpriority="high"
+          />
+          <figcaption><span>À explorer</span><strong>{workshop.eyebrow}</strong></figcaption>
+        </figure>
+        <aside class="workshop-experience-question" aria-label="Question de départ">
+          <span>La question de l’atelier</span>
+          <p>{workshopExperience.question}</p>
+        </aside>
       </div>
     </section>
 
@@ -98,22 +162,39 @@ const howToSchema = {
       ))}
     </nav>
 
-    <section class="workshop-detail-opening">
-      <div>
-        <p class="v16-page-kicker">Ce que vous allez apprendre</p>
-        <h2>Un geste à comprendre, pas une recette à recopier.</h2>
+    <section class="workshop-learning-lab" id="experience-atelier" aria-labelledby="workshop-lab-title">
+      <div class="workshop-lab-introduction">
+        <p class="v16-page-kicker">01 — Le laboratoire des sens</p>
+        <h2 id="workshop-lab-title">D’abord observer. Ensuite comprendre.</h2>
+        <p class="workshop-lab-lede">{workshop.intro}</p>
+        <div class="workshop-lab-result">
+          <span>À la fin de cet atelier, vous saurez…</span>
+          <ul>{workshop.outcomes.map((item) => <li>{item}</li>)}</ul>
+        </div>
+        <a class="workshop-lab-start" href="#etape-1">Passer au premier geste <span aria-hidden="true">→</span></a>
       </div>
-      <ul class="workshop-outcomes">
-        {workshop.outcomes.map((item) => <li>{item}</li>)}
-      </ul>
-    </section>
-
-    <section class="workshop-prepare">
-      <div>
-        <p class="v16-page-kicker">Avant de commencer</p>
-        <h2>Préparez juste ce qu’il faut pour observer.</h2>
+      <div class="workshop-lab-activities">
+        <div class="workshop-lab-activities-heading">
+          <span class="workshop-lab-count">03</span>
+          <div>
+            <p class="v16-page-kicker">Expériences guidées</p>
+            <h3>Essayez, comparez, décidez.</h3>
+          </div>
+        </div>
+        <ol class="workshop-lab-experiments">
+          {workshop.experiments.map((experiment, experimentIndex) => (
+            <li><span aria-hidden="true">{String(experimentIndex + 1).padStart(2, '0')}</span><p>{experiment}</p></li>
+          ))}
+        </ol>
+        <details class="workshop-lab-discovery">
+          <summary>Un indice pour guider votre observation <span aria-hidden="true">+</span></summary>
+          <p>{workshopExperience.answer}</p>
+        </details>
+        <details class="workshop-lab-kit">
+          <summary>Le matériel à préparer ({workshop.prepare.length}) <span aria-hidden="true">+</span></summary>
+          <ul>{workshop.prepare.map((item) => <li>{item}</li>)}</ul>
+        </details>
       </div>
-      <ul>{workshop.prepare.map((item) => <li>{item}</li>)}</ul>
     </section>
 
     <section class="workshop-step-list" aria-label="Étapes de l’atelier">
