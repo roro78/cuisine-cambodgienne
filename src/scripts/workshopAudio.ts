@@ -57,7 +57,7 @@ export function initWorkshopAudio(): void {
       dockPause.setAttribute('aria-label', state.paused ? 'Reprendre la narration' : 'Mettre la narration en pause');
     }
     stepButtons.forEach((btn) => {
-      btn.setAttribute('aria-pressed', String(Number(btn.dataset.voiceStep) === state.index));
+      btn.setAttribute('aria-pressed', String(state.active && Number(btn.dataset.voiceStep) === state.index));
     });
   };
   const cancel = () => {
