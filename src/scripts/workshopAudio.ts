@@ -6,12 +6,6 @@ export function initWorkshopAudio(): void {
   const data = document.querySelector<HTMLScriptElement>('[data-workshop-narration]');
   if (!root || !data) return;
   const speechAvailable = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
-  if (!speechAvailable && !(data.textContent || '').includes('"audio":')) {
-    const message = root?.querySelector<HTMLElement>('[data-voice-status]');
-    if (message) message.textContent = 'La lecture vocale n’est pas disponible sur cet appareil. Le texte reste accessible.';
-    root?.querySelectorAll<HTMLButtonElement>('[data-voice-play], [data-voice-pause], [data-voice-next]').forEach((button) => { button.disabled = true; });
-    return;
-  }
   let payload: NarrationPayload;
   try {
     payload = JSON.parse(data.textContent || '');
@@ -24,6 +18,13 @@ export function initWorkshopAudio(): void {
   const urls = Array.isArray(payload.audio) && payload.audio.length === payload.steps.length + 1 && payload.audio.every((url) => typeof url === 'string' && url.startsWith('/audio/workshops/') && url.endsWith('.mp3')) ? payload.audio : [];
   const media = urls.length ? new Audio() : null;
   if (media) media.preload = 'none';
+  if (!media && !speechAvailable) {
+    const message = root.querySelector<HTMLElement>('[data-voice-status]');
+    if (message) message.textContent = 'La lecture vocale n’est pas disponible sur cet appareil. Le texte reste accessible.';
+    root.querySelectorAll<HTMLButtonElement>('[data-voice-play], [data-voice-pause], [data-voice-next]').forEach((button) => { button.disabled = true; });
+    document.querySelectorAll<HTMLButtonElement>('[data-voice-step]').forEach((button) => { button.disabled = true; });
+    return;
+  }
   const synth = speechAvailable ? window.speechSynthesis : null;
   const buttonPlay = root.querySelector<HTMLButtonElement>('[data-voice-play]')!;
   const buttonPause = root.querySelector<HTMLButtonElement>('[data-voice-pause]')!;
