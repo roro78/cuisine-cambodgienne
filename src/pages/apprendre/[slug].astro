@@ -126,11 +126,11 @@ const howToSchema = {
     <section class="workshop-detail-hero workshop-experience-hero" aria-labelledby="workshop-title">
       <div class="workshop-detail-hero-copy" data-reveal="up">
         <a class="workshop-detail-back" href="/apprendre/">← Tous les ateliers</a>
-        <p class="v16-page-kicker"><CulinaryIcon name={workshop.icon} size={18} /> Leçon vivante · Atelier {workshop.n}</p>
+        <p class="v16-page-kicker"><CulinaryIcon name={workshop.icon} size={18} /> Atelier cuisine {workshop.n}</p>
         <h1 id="workshop-title">{workshop.title}</h1>
         <p class="workshop-experience-promise">{workshop.objective}</p>
         <div class="workshop-experience-actions">
-          <a class="workshop-experience-button" href="#experience-atelier">Entrer dans l’expérience <span aria-hidden="true">↘</span></a>
+          <a class="workshop-experience-button" href="#experience-atelier">Découvrir l’atelier <span aria-hidden="true">↘</span></a>
           <span class="workshop-experience-focus">{workshopExperience.focus}</span>
         </div>
         <dl class="workshop-detail-facts">
@@ -161,21 +161,21 @@ const howToSchema = {
 
     <section class="workshop-learning-lab" id="experience-atelier" aria-labelledby="workshop-lab-title">
       <div class="workshop-lab-introduction">
-        <p class="v16-page-kicker">Avant de commencer · Le laboratoire des sens</p>
-        <h2 id="workshop-lab-title">Essayez. Observez. Comprenez.</h2>
+        <p class="v16-page-kicker">Avant de commencer</p>
+        <h2 id="workshop-lab-title">Essayez le geste, puis comparez.</h2>
         <p class="workshop-lab-lede">{learning.insight}</p>
         <div class="workshop-lab-result">
-          <span>Le geste à maîtriser</span>
+          <span>Ce que vous allez apprendre</span>
           <p>{workshop.objective}</p>
         </div>
-        <a class="workshop-lab-start" href="#tutoriel-atelier">Commencer le pas-à-pas <span aria-hidden="true">→</span></a>
+        <a class="workshop-lab-start" href="#tutoriel-atelier">Passer aux étapes <span aria-hidden="true">→</span></a>
       </div>
       <div class="workshop-lab-activities">
         <div class="workshop-lab-activities-heading">
           <span class="workshop-lab-count">{String(learning.experiments.length).padStart(2, '0')}</span>
           <div>
-            <p class="v16-page-kicker">Mini-expériences</p>
-            <h3>Apprenez par comparaison.</h3>
+            <p class="v16-page-kicker">À essayer chez vous</p>
+            <h3>Faites le test vous-même.</h3>
           </div>
         </div>
         <ol class="workshop-lab-experiments">
@@ -193,10 +193,10 @@ const howToSchema = {
     <section class="workshop-tutorial" id="tutoriel-atelier" aria-labelledby="workshop-tutorial-title" data-workshop-tutorial>
       <header class="workshop-tutorial-heading">
         <div>
-          <p class="v16-page-kicker">Votre tutoriel guidé</p>
-          <h2 id="workshop-tutorial-title">Le geste, pas à pas.</h2>
+          <p class="v16-page-kicker">L’atelier, étape par étape</p>
+          <h2 id="workshop-tutorial-title">À vous de cuisiner !</h2>
         </div>
-        <p>Une action à la fois. Observez d’abord, puis révélez les repères de réussite.</p>
+        <p>Suivez les étapes dans l’ordre. Essayez chaque geste, puis découvrez comment vérifier le résultat.</p>
       </header>
       <nav class="workshop-progress" aria-label="Choisir une étape de l’atelier" data-workshop-progress>
         {workshop.steps.map((step, stepIndex) => (
@@ -220,13 +220,13 @@ const howToSchema = {
                   ) : (
                     <img src={mortarPhotos[stepIndex]} width="1240" height={stepIndex === 0 ? 827 : 930} loading={stepIndex === 0 ? "eager" : "lazy"} decoding="async" alt={mortarAlt[stepIndex]} />
                   )}
-                  <figcaption>Illustration pédagogique générée par IA · Étape {stepIndex + 1}. Vérifiez sur votre propre préparation.</figcaption>
+                  <figcaption>Image illustrative générée par IA · Étape {stepIndex + 1}. Vérifiez sur votre propre préparation.</figcaption>
                 </figure>
               ) : (
                 <WorkshopInfographic learning={learning} stageIndex={stepIndex} />
               )}
               {illustratedMortar && (
-                <p class="workshop-tutorial-visual-note"><span>Repère essentiel</span>{learning.stages[stepIndex].criterion}</p>
+                <p class="workshop-tutorial-visual-note"><span>À regarder</span>{learning.stages[stepIndex].criterion}</p>
               )}
             </div>
             <div class="workshop-tutorial-instructions">
@@ -237,15 +237,15 @@ const howToSchema = {
                 <p>{learning.stages[stepIndex].mission}</p>
               </div>
               <div class="workshop-tutorial-question">
-                <span>La question à se poser</span>
+                <span>Ce qu’il faut regarder</span>
                 <p>{learning.stages[stepIndex].question}</p>
               </div>
               <details class="workshop-tutorial-answer">
-                <summary>Vérifier mon observation <span aria-hidden="true">+</span></summary>
+                <summary>Voir les conseils <span aria-hidden="true">+</span></summary>
                 <div>
-                  <p><strong>Ce qu’il faut remarquer :</strong> {step.observe}</p>
-                  <p><strong>Le bon repère :</strong> {learning.stages[stepIndex].criterion}</p>
-                  {step.mistake && <p><strong>Le piège à éviter :</strong> {step.mistake}</p>}
+                  <p><strong>À observer :</strong> {step.observe}</p>
+                  <p><strong>Comment reconnaître le bon résultat :</strong> {learning.stages[stepIndex].criterion}</p>
+                  {step.mistake && <p><strong>À éviter :</strong> {step.mistake}</p>}
                   <p><strong>Vous avez réussi si…</strong> {step.success}</p>
                 </div>
               </details>
@@ -262,12 +262,12 @@ const howToSchema = {
 
     <section class="workshop-tutorial-recap" aria-labelledby="workshop-recap-title">
       <div>
-        <p class="v16-page-kicker">La compétence acquise</p>
-        <h2 id="workshop-recap-title">Saurez-vous le refaire sans la fiche ?</h2>
+        <p class="v16-page-kicker">À refaire chez vous</p>
+        <h2 id="workshop-recap-title">Vous saurez refaire ce geste.</h2>
         <p>{learning.transfer}</p>
       </div>
       <div class="workshop-tutorial-recap-list">
-        <p>Votre grille d’autoévaluation</p>
+        <p>Ce que vous avez appris</p>
         <ul>{workshop.outcomes.map((outcome) => <li>{outcome}</li>)}</ul>
       </div>
     </section>
