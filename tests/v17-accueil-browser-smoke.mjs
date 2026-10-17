@@ -225,6 +225,44 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       }
       assert.equal(await page.locator('.v17r-hero-disclosure').count(),0,
         'Do not display photo credits under the hero CTA');
+      const palette=await page.evaluate(()=>{
+        const root=document.querySelector('.v17r-wrap');
+        const section=document.querySelector('.v17r-table--editorial');
+        const stage=section.querySelector('.v17r-table-stage');
+        const button=section.querySelector('.v17r-table-recipe-link');
+        const titleAccent=section.querySelector('h2 em');
+        const kicker=section.querySelector('.v17r-kicker');
+        const shade=section.querySelector('.v17r-table-shade');
+        const indicator=section.querySelector('.v17r-table-mobile-dot[aria-current="true"] span');
+        return {
+          brandForest:getComputedStyle(root).getPropertyValue('--vr-forest').trim(),
+          brandYellow:getComputedStyle(root).getPropertyValue('--vr-yellow').trim(),
+          sectionBackground:getComputedStyle(section).backgroundColor,
+          stageBackground:getComputedStyle(stage).backgroundColor,
+          buttonBackground:getComputedStyle(button).backgroundColor,
+          buttonColor:getComputedStyle(button).color,
+          buttonWeight:getComputedStyle(button).fontWeight,
+          buttonCase:getComputedStyle(button).textTransform,
+          accent:getComputedStyle(titleAccent).color,
+          kicker:getComputedStyle(kicker).color,
+          overlay:getComputedStyle(shade).backgroundImage,
+          indicator:indicator?getComputedStyle(indicator).backgroundColor:null
+        };
+      });
+      assert.equal(palette.brandForest,'#143929');
+      assert.equal(palette.brandYellow,'#ffd342');
+      assert.equal(palette.sectionBackground,'rgb(20, 57, 41)');
+      assert.equal(palette.stageBackground,'rgb(20, 57, 41)');
+      assert.equal(palette.buttonBackground,'rgb(255, 211, 66)');
+      assert.equal(palette.buttonColor,'rgb(23, 26, 20)');
+      assert.ok(Number(palette.buttonWeight)>=800 && palette.buttonCase==='uppercase',
+        'Recipe CTA must match the other V17 pill CTAs: '+JSON.stringify(palette));
+      assert.equal(palette.accent,'rgb(255, 211, 66)');
+      assert.equal(palette.kicker,'rgb(255, 211, 66)');
+      assert.match(palette.overlay,/20, 57, 41/,
+        'Section 5 image shading must use the same forest palette as V17: '+JSON.stringify(palette));
+      if(width<=760)assert.equal(palette.indicator,'rgb(255, 211, 66)',
+        'Mobile carousel active dot must use V17 yellow');
     }
     if(width<=760){
       // D24: genuine compact native mobile scroll-snap, not four vertically
