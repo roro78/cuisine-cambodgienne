@@ -1,0 +1,57 @@
+/*
+ * Shared editorial page openings: precisely the /glossaire/ composition.
+ * Same beige diagonal, typography, photograph and mobile stacking.
+ * Content below each hero remains specific to that section.
+ *
+ * Do not style the V17 home or individual recipe/workshop tutorials here.
+ */
+.v16-editorial .v16-page-hero[data-editorial-hero="glossary-template"] {
+  background:linear-gradient(105deg,#f6ebd9 0 46%,#d6b88f 46%);
+  color:#1e1a15;
+}
+.v16-editorial .v16-page-hero[data-editorial-hero="glossary-template"]>.v16-page-kicker{
+  color:#8e543e;
+}
+.v16-editorial .v16-page-hero[data-editorial-hero="glossary-template"]>p:not(.v16-page-kicker){
+  color:#625548;
+}
+/* Ingredient catalog keeps lateral gutters for its cards; only the opener goes edge-to-edge. */
+.ingredients-listing > .v16-page-hero[data-editorial-hero="glossary-template"] {
+  margin-inline:calc(var(--page-pad) * -1);
+}
+.ingredients-listing>.ingredient-editorial-list{padding-top:clamp(2.5rem,5vw,4rem)}
+/* Prelaunch page retains a truthful availability note but not the old giant dark hero. */
+.exp-prelaunch-banner {
+  display:flex;
+  gap:1rem 2rem;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  padding:1.2rem var(--page-pad);
+  border-bottom:1px solid rgba(49,39,29,.17);
+  background:#eee2ce;
+}
+.exp-prelaunch-banner .exp-status{
+  max-width:43rem;
+  color:#544637;
+}
+.exp-prelaunch-banner .exp-status span{background:#916134}
+.exp-prelaunch-banner .exp-hero-link{
+  color:#3a342a;
+  border-color:#856f53;
+  margin:0;
+}
+@media(max-width:900px){
+  /* The shared hero must use the same cream panel even on the pages
+     whose retired introductions previously had a dark mobile background. */
+  .v16-editorial .v16-page-hero[data-editorial-hero="glossary-template"] {
+    background:linear-gradient(105deg,#f6ebd9 0 46%,#d6b88f 46%);
+  }
+  .ingredients-listing > .v16-page-hero[data-editorial-hero="glossary-template"]{
+    margin-inline:calc(var(--page-pad) * -1);
+  }
+}
+@media(max-width:620px){
+  .exp-prelaunch-banner{padding:1.1rem 1rem}
+  .exp-prelaunch-banner .exp-hero-link{font-size:.74rem}
+}
