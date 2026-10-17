@@ -1,0 +1,38 @@
+---
+interface Props {
+  kicker: string;
+  title: string;
+  description: string;
+  image: string;
+  imageWidth: number;
+  imageHeight: number;
+  imageAlt?: string;
+  imageSrcSet?: string;
+  imageSizes?: string;
+  titleId?: string;
+}
+const {
+  kicker, title, description, image, imageWidth, imageHeight,
+  imageAlt = '', imageSrcSet, imageSizes, titleId
+} = Astro.props;
+---
+<!-- A single, shared page-opening frame. Visual source: /glossaire/.
+     Topic-specific copy and photography remain unique for each section. -->
+<header class="v16-page-hero v16-page-hero--glossary" data-editorial-hero="glossary-template">
+  <p class="v16-page-kicker">{kicker}</p>
+  <h1 id={titleId}>{title}</h1>
+  <p>{description}</p>
+  <figure class="v19-hero-photo" aria-hidden="true">
+    <img
+      src={image}
+      srcset={imageSrcSet}
+      sizes={imageSizes}
+      alt={imageAlt}
+      width={imageWidth}
+      height={imageHeight}
+      decoding="async"
+      fetchpriority="high"
+    />
+  </figure>
+  <slot />
+</header>
