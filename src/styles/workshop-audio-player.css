@@ -1,0 +1,33 @@
+/* Audio des ateliers — joueur discret, en accord avec la palette ivoire / ocre du site. */
+.workshop-audio-player{position:relative;max-width:100%;margin:0 0 clamp(1.7rem,3vw,2.7rem);padding:clamp(1.15rem,2.7vw,2rem);background:#fffaf0;border:1px solid #d9cbb5;box-shadow:0 14px 35px rgba(48,35,22,.07);color:#29271f}
+.workshop-audio-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem 2rem;margin-bottom:1.35rem}
+.workshop-audio-eyebrow{display:block;font-size:.69rem;letter-spacing:.12em;text-transform:uppercase;color:#9a5a34;font-weight:700}
+.workshop-audio-heading h3{margin:.35rem 0;font:400 clamp(1.8rem,3vw,2.6rem)/1.1 var(--serif,Georgia,serif);letter-spacing:-.032em}
+.workshop-audio-heading p{margin:.4rem 0 0;color:#6a5746;line-height:1.5;font-size:.9rem}
+.workshop-audio-follow{display:inline-flex;gap:.6rem;align-items:center;cursor:pointer;white-space:nowrap;padding:.65rem .85rem;border:1px solid #b6a78d;background:#fff;font-size:.78rem;font-weight:700}
+.workshop-audio-follow input{width:1.1rem;height:1.1rem;accent-color:#a46b2a}
+.workshop-audio-controls{display:flex;align-items:center;gap:.7rem;padding:.85rem;background:#302d28;color:#fff9e9;border-radius:.4rem}
+.workshop-audio-controls button{display:inline-flex;justify-content:center;align-items:center;gap:.5rem;flex:0 0 auto;min-height:2.9rem;min-width:2.9rem;padding:.55rem .85rem;border:1px solid #8a8275;border-radius:.25rem;background:#494238;color:#fff6e2;cursor:pointer;font-size:1.05rem}
+.workshop-audio-controls button:hover:not(:disabled){background:#685a45}
+.workshop-audio-controls button:disabled{opacity:.38;cursor:not-allowed}
+.workshop-audio-controls .workshop-audio-play{background:#e8b548;color:#2e261a;border-color:#e8b548;font-size:.8rem;font-weight:800;min-width:7.8rem}
+.workshop-audio-controls .workshop-audio-play:hover:not(:disabled){background:#f5c764}
+.workshop-audio-timeline{display:grid;gap:.2rem;flex:1 1 10rem;min-width:6rem;margin:0 .45rem}
+.workshop-audio-timeline input{display:block;width:100%;height:1.15rem;cursor:pointer;accent-color:#e8b548}
+.workshop-audio-time{display:flex;justify-content:space-between;font-size:.68rem;color:#e5d8bc;font-variant-numeric:tabular-nums}
+.workshop-audio-chapters{list-style:none;margin:1rem 0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.45rem}
+.workshop-audio-chapters li{min-width:0}
+.workshop-audio-chapters button{display:flex;width:100%;height:100%;gap:.65rem;align-items:center;text-align:left;min-height:3.7rem;padding:.65rem .75rem;border:1px solid #dfd0ba;background:#f4ebdd;color:#4d3d2d;cursor:pointer;font-size:.74rem;line-height:1.35}
+.workshop-audio-chapter-number{flex:0 0 auto;font-size:.7rem;font-weight:800;color:#8e5637}
+.workshop-audio-chapters button:hover{border-color:#aa8451;background:#f8e6c8}
+.workshop-audio-chapters button[aria-current="true"]{background:#f0c66a;border-color:#9f752e;color:#302614;font-weight:750}
+.workshop-audio-transcript{border-top:1px solid #e2d4c3;margin-top:1rem;padding:.8rem 0 0}
+.workshop-audio-transcript summary{font-weight:700;font-size:.8rem;cursor:pointer;color:#594531;list-style:inside}
+.workshop-audio-transcript p{margin:.8rem 0 0;max-width:75ch;color:#4c4234;line-height:1.65;font-size:.9rem}
+.workshop-audio-status{font-size:.76rem;margin:.85rem 0 0;color:#66523d}
+.workshop-audio-credit{font-size:.65rem;line-height:1.5;margin:.65rem 0 0;color:#736653}
+.workshop-audio-player .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.workshop-audio-player button:focus-visible,.workshop-audio-player input:focus-visible,.workshop-audio-player summary:focus-visible{outline:3px solid #a75b2c;outline-offset:3px}
+@media(max-width:850px){.workshop-audio-chapters{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:620px){.workshop-audio-player{padding:1rem;margin:0 0 1.2rem}.workshop-audio-heading h3{font-size:1.9rem}.workshop-audio-follow{width:100%;justify-content:flex-start}.workshop-audio-controls{gap:.4rem;flex-wrap:wrap}.workshop-audio-controls button{min-height:2.55rem;min-width:2.4rem;padding:.45rem}.workshop-audio-controls .workshop-audio-play{min-width:6.5rem}.workshop-audio-timeline{flex-basis:100%;margin:.25rem .15rem 0;order:2}.workshop-audio-chapters{grid-template-columns:repeat(2,minmax(0,1fr))}.workshop-audio-chapters button{min-height:3.3rem;padding:.7rem .55rem}}
+@media(prefers-reduced-motion:reduce){.workshop-audio-player *{scroll-behavior:auto}}
