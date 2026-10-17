@@ -48,10 +48,10 @@
 }
 .v17r .v17r-table--editorial h2{
   display:block;max-width:none;overflow:visible;
-  margin:0;font-family:Georgia,'Times New Roman',serif;
+  margin:0;font-family:Impact,'Arial Narrow',system-ui,sans-serif;
   font-size:clamp(2.7rem,5.3vw,5.8rem);
-  font-weight:400;letter-spacing:-.04em;line-height:1.08;
-  text-transform:none;color:#fffaf1;
+  font-stretch:condensed;font-weight:900;letter-spacing:-.04em;line-height:1.02;
+  text-transform:uppercase;color:#fffaf1;
   text-shadow:0 2px 28px rgba(0,0,0,.5);
 }
 .v17r .v17r-table--editorial h2 > *{display:inline-block}
@@ -181,7 +181,7 @@
   }
   .v17r .v17r-table--editorial .v17r-table-rule{margin:0 auto 1rem}
   .v17r .v17r-table--editorial h2{
-    font-size:clamp(2.25rem,9.1vw,3.9rem);line-height:1.06;
+    font-size:clamp(2rem,8.8vw,3.9rem);line-height:1.02;
   }
   .v17r .v17r-table--editorial h2>*{display:block}
   .v17r .v17r-table--editorial h2 em{margin-left:0}
@@ -313,7 +313,7 @@
   }
 }
 @media(max-width:390px){
-  .v17r .v17r-table--editorial h2{font-size:clamp(2rem,9vw,2.65rem)}
+  .v17r .v17r-table--editorial h2{font-size:clamp(2rem,8.8vw,2.65rem)}
   .v17r .v17r-table--editorial .v17r-table-recipe{
     min-height:clamp(22rem,53svh,29rem);
   }
