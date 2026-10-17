@@ -1306,7 +1306,7 @@ async function recordD21TableStory(width,height){
 }
 /* Generated recipe artwork must also work on the real V16 recipe routes.
  * This is a read-only browser check; the V17 preview remains isolated. */
-async function checkGeneratedRecipe(slug,filename,width,height){
+async function checkGeneratedRecipe(slug,filename,altLabel,width,height){
   const page=await browser.newPage({viewport:{width,height},isMobile:width<=430,hasTouch:width<=430});
   try{
     const response=await page.goto(base+'/recettes/'+slug+'/',{waitUntil:'networkidle',timeout:30000});
@@ -1319,7 +1319,7 @@ async function checkGeneratedRecipe(slug,filename,width,height){
     },undefined,{timeout:15000});
     const src=await cover.getAttribute('src');
     assert.equal(src,'/images/cuisine/'+filename);
-    assert.match(await cover.getAttribute('alt'),/Lok Lak|Num Banh Chok/, 'The alternative text describes the food rather than image provenance');
+    assert.match(await cover.getAttribute('alt'),new RegExp(altLabel), 'The alternative text describes the food rather than image provenance');
     const recipeHero=page.locator('.recipe-v16[data-generated-artwork="true"] .recipe-v15-hero');
     assert.equal(await recipeHero.count(),1,'Generated recipe must have a scoped style variant');
     const composition=await recipeHero.evaluate(el=>{
@@ -1385,12 +1385,14 @@ try{
     }
     await run(390,844,{reduced:true});
     await run(390,844,{noJs:true});
-    for(const [slug,file] of [
-      ['lok-lak','v17-lok-lak-genere.webp'],
-      ['num-banh-chok','v17-nom-banh-chok-genere.webp']
+    for(const [slug,file,alt] of [
+      ['amok-trey','v19-amok-trey-1440.webp','Amok Trey'],
+      ['lok-lak','v19-lok-lak-1440.webp','Lok Lak'],
+      ['num-banh-chok','v19-num-banh-chok-1440.webp','Num Banh Chok'],
+      ['bai-sach-chrouk','v19-bai-sach-chrouk-1440.webp','Bai Sach Chrouk']
     ]){
-      await checkGeneratedRecipe(slug,file,1440,900);
-      await checkGeneratedRecipe(slug,file,390,844);
+      await checkGeneratedRecipe(slug,file,alt,1440,900);
+      await checkGeneratedRecipe(slug,file,alt,390,844);
     }
   }
   assert.deepEqual(errors,[],'No browser JS errors');
