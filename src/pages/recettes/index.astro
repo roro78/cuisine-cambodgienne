@@ -2,12 +2,14 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
+import EditorialSectionHero from '../../components/EditorialSectionHero.astro';
 import { recipes } from '../../data/recipes';
 import { imageSrcSet } from '../../utils/images';
 import '../../styles/recipe-v15.css';
 import '../../styles/v16-editorial.css';
 import '../../styles/v17-generated-recipes.css';
 import '../../styles/v19-premium-pages.css';
+import '../../styles/editorial-shared-hero.css';
 
 const minutes = (value: string) => Number(value.match(/\d+/)?.[0] ?? 0);
 const collectionSchema = {
@@ -45,25 +47,19 @@ const toneMap: Record<string,string> = {
 >
   <SiteHeader />
 
-  <main class="recipes-v15 recipes-v16">
-    <section class="recipes-journey-hero">
-      <div class="recipes-journey-copy">
-        <p class="eyebrow">Cuisiner le Cambodge</p>
-        <h1>Les saveurs du Cambodge, chez vous.</h1>
-        <p>Amok de poisson, lok lak au bœuf, soupes parfumées, nouilles et desserts… Retrouvez les plats cambodgiens à cuisiner chez vous. Chaque recette explique les ingrédients, les quantités et les gestes, de la préparation jusqu’au service.</p>
-        <div class="recipes-journey-stamp" aria-label="Atouts des recettes">
-          <span>{recipes.length} recettes</span>
-          <span>Quantités pour chaque plat</span>
-          <span>Préparation pas à pas</span>
-        </div>
-      </div>
+  <main class="recipes-v15 recipes-v16 v16-editorial">
+    <EditorialSectionHero
+      kicker="Cuisiner le Cambodge"
+      title="Les saveurs du Cambodge, chez vous."
+      description="Amok de poisson, lok lak au bœuf, soupes parfumées, nouilles et desserts… Retrouvez les plats cambodgiens à cuisiner chez vous. Chaque recette explique les ingrédients, les quantités et les gestes, de la préparation jusqu’au service."
+      image="/images/cuisine/kroeung-1600.webp"
+      imageWidth={1600}
+      imageHeight={1067}
+      imageSrcSet={imageSrcSet('/images/cuisine/kroeung-1600.webp',[480,800,1200,1600])}
+      imageSizes="(max-width: 900px) 100vw, 52vw"
+    />
 
-      <div class="recipes-journey-visual" aria-hidden="true">
-        <figure><img src="/images/cuisine/kroeung-1600.webp" srcset={imageSrcSet('/images/cuisine/kroeung-1600.webp',[480,800,1200,1600])} sizes="(max-width: 900px) 100vw, 60vw" alt="" width="1600" height="1067" decoding="async" fetchpriority="high" /></figure>
-      </div>
-    </section>
-
-    <section class="recipe-filter-bar" aria-label="Filtrer les recettes" data-reveal="up">
+    <section class="recipe-filter-bar" aria-label="Filtrer les recettes">
       <button type="button" class="is-active" data-recipe-filter="all" aria-pressed="true">Toutes</button>
       <button type="button" data-recipe-filter="rapide" aria-pressed="false">≤ 30 min</button>
       <button type="button" data-recipe-filter="facile" aria-pressed="false">Faciles</button>

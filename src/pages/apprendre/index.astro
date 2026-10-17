@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
+import EditorialSectionHero from '../../components/EditorialSectionHero.astro';
 import CulinaryIcon from '../../components/CulinaryIcon.astro';
 import { workshops } from '../../data/workshops';
 const workshopPhotos: Record<string,string> = {
@@ -14,6 +15,7 @@ const workshopPhotos: Record<string,string> = {
 };
 import '../../styles/v16-editorial.css';
 import '../../styles/v19-premium-pages.css';
+import '../../styles/editorial-shared-hero.css';
 
 const schema = {
   '@context':'https://schema.org',
@@ -30,15 +32,14 @@ const schema = {
 >
   <SiteHeader />
   <main class="v16-editorial v16-workshops">
-    <header class="v16-page-hero v16-page-hero--workshops">
-      <p class="v16-page-kicker">Les ateliers</p>
-      <h1>Les gestes qui donnent du goût.</h1>
-      <p>Un mortier, quelques aromates, une sauce à goûter ou une poêle à surveiller : apprenez les gestes de la cuisine cambodgienne en les essayant vous-même.</p>
-      <figure class="v19-hero-photo" aria-hidden="true"><img src="/images/cuisine/v17-mortar-hands-1600.jpg" alt="" width="1600" height="1067" decoding="async" fetchpriority="high" /></figure>
-      <div class="v16-hero-index" aria-label="Principes des ateliers">
-        <span>sentir</span><span>goûter</span><span>observer</span><span>recommencer</span>
-      </div>
-    </header>
+    <EditorialSectionHero
+      kicker="Les ateliers"
+      title="Les gestes qui donnent du goût."
+      description="Un mortier, quelques aromates, une sauce à goûter ou une poêle à surveiller : apprenez les gestes de la cuisine cambodgienne en les essayant vous-même."
+      image="/images/cuisine/v17-mortar-hands-1600.jpg"
+      imageWidth={1600}
+      imageHeight={1067}
+    />
 
     <section class="v19-workshop-steps" aria-labelledby="v19-workshop-steps-title">
       <div class="v19-section-intro"><p class="v16-page-kicker">Les gestes en images</p><h2 id="v19-workshop-steps-title">Apprendre un geste, étape par étape.</h2></div>

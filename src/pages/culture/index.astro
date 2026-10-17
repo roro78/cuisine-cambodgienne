@@ -2,10 +2,12 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
+import EditorialSectionHero from '../../components/EditorialSectionHero.astro';
 import { cultureArticles } from '../../data/culture';
 import { imageSrcSet } from '../../utils/images';
 import '../../styles/v16-editorial.css';
 import '../../styles/v19-premium-pages.css';
+import '../../styles/editorial-shared-hero.css';
 
 const moments = [
   { image:'/images/cuisine/v18-kuy-teav.webp', moment:'Au réveil', title:'Un bol de kuy teav pour commencer la journée', text:'Nouilles, bouillon parfumé et herbes fraîches : découvrez comment préparer ce bol chez vous.', href:'/recettes/kuy-teav/', cta:'Voir la recette →' },
@@ -63,13 +65,14 @@ const collectionSchema = {
 >
   <SiteHeader />
   <main class="v16-editorial v16-journals">
-    <header class="v16-page-hero v16-page-hero--journals">
-      <p class="v16-page-kicker">Carnets du Cambodge</p>
-      <h1>Des marchés animés aux repas partagés.</h1>
-      <p>Ces carnets racontent les marchés, les produits, les gestes et les habitudes qui donnent toute sa saveur à la cuisine cambodgienne.</p>
-      <figure class="v19-hero-photo" aria-hidden="true"><img src="/images/cuisine/v17-market-live-1800.jpg" alt="" width="1800" height="1200" decoding="async" fetchpriority="high" /></figure>
-      <div class="v16-journal-stamp" aria-hidden="true">marchés · gestes · produits · table · transmission</div>
-    </header>
+    <EditorialSectionHero
+      kicker="Carnets du Cambodge"
+      title="Des marchés animés aux repas partagés."
+      description="Ces carnets racontent les marchés, les produits, les gestes et les habitudes qui donnent toute sa saveur à la cuisine cambodgienne."
+      image="/images/cuisine/v17-market-live-1800.jpg"
+      imageWidth={1800}
+      imageHeight={1200}
+    />
 
     <section class="v16-day-notes" aria-labelledby="v16-day-title">
       <header>

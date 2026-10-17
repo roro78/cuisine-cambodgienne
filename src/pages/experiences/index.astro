@@ -2,6 +2,10 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
+import EditorialSectionHero from '../../components/EditorialSectionHero.astro';
+import '../../styles/v16-editorial.css';
+import '../../styles/v19-premium-pages.css';
+import '../../styles/editorial-shared-hero.css';
 import '../../styles/experiences-prelaunch.css';
 
 const collections = [
@@ -38,20 +42,21 @@ const collections = [
   noindex
 >
   <SiteHeader />
-  <main class="exp-page">
-    <section class="exp-hero" aria-labelledby="exp-hero-title">
-      <div class="exp-hero-image">
-        <img src="/images/cuisine/amok-alt-1600.webp" alt="Amok de poisson cambodgien, parfumé au lait de coco et aux aromates" width="1600" height="1067" fetchpriority="high" />
-      </div>
-      <div class="exp-hero-shade" aria-hidden="true"></div>
-      <div class="exp-hero-content">
-        <p class="exp-eyebrow">Cuisine du Cambodge · Collection à venir</p>
-        <h1 id="exp-hero-title">Le goût du Cambodge.<br /><em>À vivre et à partager.</em></h1>
-        <p class="exp-hero-description">Nous imaginons de nouvelles façons de découvrir la cuisine khmère : un dîner guidé à préparer chez soi, des ateliers à partager et des coffrets gourmands.</p>
-        <p class="exp-status"><span aria-hidden="true"></span> Nos expériences sont en préparation. Les ventes ne sont pas encore ouvertes.</p>
-        <a class="exp-hero-link" href="#collections">Découvrir les projets <span aria-hidden="true">↘</span></a>
-      </div>
-    </section>
+  <main class="exp-page v16-editorial">
+    <EditorialSectionHero
+      kicker="Cuisine du Cambodge · Projets à venir"
+      title="Le goût du Cambodge. À vivre et à partager."
+      description="Nous imaginons de nouvelles façons de découvrir la cuisine khmère : un dîner à préparer chez soi, des ateliers à partager et des coffrets gourmands."
+      image="/images/cuisine/amok-alt-1600.webp"
+      imageWidth={1600}
+      imageHeight={1067}
+      imageAlt="Amok de poisson cambodgien au lait de coco et aux aromates"
+      titleId="exp-hero-title"
+    />
+    <div class="exp-prelaunch-banner">
+      <p class="exp-status"><span aria-hidden="true"></span> Nos expériences sont en préparation. Les ventes ne sont pas encore ouvertes.</p>
+      <a class="exp-hero-link" href="#collections">Découvrir les projets <span aria-hidden="true">↘</span></a>
+    </div>
 
     <section class="exp-intro" aria-labelledby="exp-intro-title">
       <p class="exp-eyebrow">Bientôt à votre table</p>

@@ -2,6 +2,10 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
+import EditorialSectionHero from '../../components/EditorialSectionHero.astro';
+import '../../styles/v16-editorial.css';
+import '../../styles/v19-premium-pages.css';
+import '../../styles/editorial-shared-hero.css';
 import { ingredientGuides } from '../../data/ingredients';
 import { imageSrcSet } from '../../utils/images';
 import { getGlossaryEntries } from '../../data/glossary';
@@ -37,13 +41,18 @@ const collectionSchema = {
 ---
 <BaseLayout title="Ingrédients cuisine cambodgienne : kroeung, prahok, Kampot…" description="Kroeung, prahok, poivre de Kampot, tamarin, citronnelle, galanga, combava : comprendre le goût, l’usage et les accords des ingrédients de la cuisine cambodgienne.">
   <SiteHeader />
-  <main class="listing-page editorial-listing ingredients-listing">
-    <header class="page-intro page-intro-split" data-reveal="up">
-      <p class="eyebrow">Dans le garde-manger</p>
-      <h1>Les ingrédients à connaître</h1>
-      <p>Citronnelle, tamarin, poivre de Kampot, prahok, lait de coco… découvrez leur goût, comment les choisir et la meilleure façon de les utiliser dans vos plats.</p>
-      <div class="page-intro-visual" data-parallax="0.10"><img src={ingredientGuides[0].image} srcset={imageSrcSet(ingredientGuides[0].image, ingredientGuides[0].imageWidths)} sizes="(max-width: 900px) 100vw, 58vw" alt={ingredientGuides[0].imageAlt} width={ingredientGuides[0].imageWidth} height={ingredientGuides[0].imageHeight} fetchpriority="high" decoding="async" /></div>
-    </header>
+  <main class="listing-page editorial-listing ingredients-listing v16-editorial">
+    <EditorialSectionHero
+      kicker="Dans le garde-manger"
+      title="Les ingrédients à connaître"
+      description="Citronnelle, tamarin, poivre de Kampot, prahok, lait de coco… découvrez leur goût, comment les choisir et la meilleure façon de les utiliser dans vos plats."
+      image={ingredientGuides[0].image}
+      imageAlt={ingredientGuides[0].imageAlt}
+      imageWidth={ingredientGuides[0].imageWidth}
+      imageHeight={ingredientGuides[0].imageHeight}
+      imageSrcSet={imageSrcSet(ingredientGuides[0].image,ingredientGuides[0].imageWidths)}
+      imageSizes="(max-width: 900px) 100vw, 52vw"
+    />
 
     <section class="ingredient-editorial-list" aria-label="Guides ingrédients">
       {ingredientGuides.map((item, index) => (
