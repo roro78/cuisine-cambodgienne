@@ -1315,10 +1315,25 @@ async function checkGeneratedRecipe(slug,filename,altLabel,width,height){
     await cover.scrollIntoViewIfNeeded();
     await page.waitForFunction(()=>{
       const img=document.querySelector('.recipe-v15-cover img');
-      return img?.complete && img.naturalWidth>1000 && img.naturalHeight>700;
+      return Boolean(img?.complete && img.naturalWidth>=480 && img.naturalHeight>=300);
     },undefined,{timeout:15000});
     const src=await cover.getAttribute('src');
     assert.equal(src,'/images/cuisine/'+filename);
+    // Browsers may load a smaller actual WebP from srcset: this is expected
+    // responsive behavior, not a missing high-resolution image.
+    const selected=await cover.evaluate(img=>({
+      currentSrc:new URL(img.currentSrc).pathname,
+      naturalWidth:img.naturalWidth,
+      naturalHeight:img.naturalHeight,
+      srcset:img.getAttribute('srcset') ?? ''
+    }));
+    const baseName=filename.slice(0,-'-1440.webp'.length);
+    const widths=[480,800,1200,1440];
+    assert.ok(widths.some(size=>selected.currentSrc==='/images/cuisine/'+baseName+'-'+size+'.webp'),
+      'Recipe must load a valid responsive V19 WebP: '+JSON.stringify(selected));
+    for(const size of widths)assert.ok(
+      selected.srcset.includes(baseName+'-'+size+'.webp '+size+'w'),
+      'Missing responsive recipe width '+size+': '+slug);
     assert.match(await cover.getAttribute('alt'),new RegExp(altLabel), 'The alternative text describes the food rather than image provenance');
     const recipeHero=page.locator('.recipe-v16[data-generated-artwork="true"] .recipe-v15-hero');
     assert.equal(await recipeHero.count(),1,'Generated recipe must have a scoped style variant');
