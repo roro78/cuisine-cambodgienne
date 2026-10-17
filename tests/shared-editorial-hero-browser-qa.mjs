@@ -80,11 +80,14 @@ try{
       }
       await page.goto(base+'/glossaire/',{waitUntil:'domcontentloaded'});
       await page.locator('[data-glossary-search]').fill('combava');
-      assert.ok((await page.locator('[data-glossary-card]:visible').count())>0,'glossary filter still works');
+      const glossaryCards = page.locator('[data-glossary-card]:not([hidden])');
+      assert.ok((await glossaryCards.count())>0,'glossary search keeps matching entries, regardless of scroll animation');
+      const glossaryCount = await page.locator('[data-glossary-card]').count();
+      assert.ok((await glossaryCards.count())<glossaryCount,'glossary search excludes nonmatching entries');
       await page.goto(base+'/recettes/',{waitUntil:'domcontentloaded'});
-      const count=await page.locator('[data-recipe-card]:visible').count();
+      const count=await page.locator('[data-recipe-card]:not([hidden])').count();
       await page.locator('[data-recipe-filter="dessert"]').click();
-      const filtered=await page.locator('[data-recipe-card]:visible').count();
+      const filtered=await page.locator('[data-recipe-card]:not([hidden])').count();
       assert.ok(filtered>0&&filtered<count,'recipe filtering still works');
       assert.deepEqual(pageErrors,[],'browser JS errors '+JSON.stringify(pageErrors));
     }finally{await page.close()}
