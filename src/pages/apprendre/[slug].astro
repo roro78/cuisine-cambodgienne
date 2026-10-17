@@ -338,7 +338,7 @@ const howToSchema = {
         if (moveFocus) {
           history.replaceState(null, '', `#etape-${active + 1}`);
           stages[active].querySelector<HTMLElement>('h3')?.focus({ preventScroll: true });
-          tutorial.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
+          tutorial?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
         }
       }
 
