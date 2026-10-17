@@ -63,7 +63,25 @@ async function verify(width, height) {
       assert.equal(await page.locator('[data-workshop-progress-link="4"]').getAttribute('aria-current'), 'step');
       await page.locator('[data-tutorial-next]').click();
       assert.equal(await page.locator('[data-tutorial-counter]').innerText(), 'Étape 1 sur 4', 'last -> restart');
+      if (slug === 'piler-aromates-au-mortier') {
+        await page.waitForFunction(() => {
+          const image = document.querySelector('.workshop-tutorial-step:not([hidden]) .workshop-tutorial-photo img');
+          return image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0;
+        }, { timeout: 15000 });
+      }
+      if (mobile) {
+        const firstTab = page.locator('[data-workshop-progress-link="1"]');
+        const visibility = await firstTab.evaluate((el) => {
+          const nav = el.closest('[data-workshop-progress]');
+          if (!nav) return { visible: false };
+          const tab = el.getBoundingClientRect();
+          const area = nav.getBoundingClientRect();
+          return { visible: tab.right > area.left && tab.left < area.right && tab.width > 0 };
+        });
+        assert.ok(visibility.visible, slug + ' first stage tab must be visible after restart');
+      }
       if (['piler-aromates-au-mortier', 'equilibrer-une-sauce'].includes(slug)) {
+        await page.evaluate(() => window.scrollTo(0, 0));
         await page.screenshot({
           path: 'artifacts/v21-' + slug + '-' + width + '.png',
           fullPage: true, animations: 'disabled'
