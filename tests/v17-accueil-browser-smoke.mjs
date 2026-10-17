@@ -225,7 +225,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       }
       assert.equal(await page.locator('.v17r-hero-disclosure').count(),0,
         'Do not display photo credits under the hero CTA');
-      const palette=await page.evaluate(()=>{
+      const sectionVisual=await page.evaluate(()=>{
         const root=document.querySelector('.v17r-wrap');
         const section=document.querySelector('.v17r-table--editorial');
         const stage=section.querySelector('.v17r-table-stage');
@@ -233,43 +233,45 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         const titleAccent=section.querySelector('h2 em');
         const kicker=section.querySelector('.v17r-kicker');
         const shade=section.querySelector('.v17r-table-shade');
-        const nextSection=document.querySelector('.v17r-dessert');
-        const indicator=section.querySelector('.v17r-table-mobile-dot[aria-current="true"] span');
+        const fullImage=section.querySelector('.v17r-table-fullbleed img');
+        const card=section.querySelector('.v17r-table-recipe');
+        const cardImage=card.querySelector('.v17r-table-recipe-image');
+        const dot=section.querySelector('.v17r-table-mobile-dot[aria-current="true"] span');
         return {
-          brandForest:getComputedStyle(root).getPropertyValue('--vr-forest').trim(),
           brandYellow:getComputedStyle(root).getPropertyValue('--vr-yellow').trim(),
           sectionBackground:getComputedStyle(section).backgroundColor,
           stageBackground:getComputedStyle(stage).backgroundColor,
-          nextSectionBackground:getComputedStyle(nextSection).backgroundColor,
+          veilDisplay:getComputedStyle(shade).display,
+          imageFilter:getComputedStyle(fullImage).filter,
+          cardImageFilter:getComputedStyle(cardImage).filter,
+          cardVeilContent:getComputedStyle(card,'::before').content,
+          cardVeilDisplay:getComputedStyle(card,'::before').display,
           buttonBackground:getComputedStyle(button).backgroundColor,
           buttonColor:getComputedStyle(button).color,
           buttonWeight:getComputedStyle(button).fontWeight,
           buttonCase:getComputedStyle(button).textTransform,
           accent:getComputedStyle(titleAccent).color,
           kicker:getComputedStyle(kicker).color,
-          overlay:getComputedStyle(shade).backgroundImage,
-          indicator:indicator?getComputedStyle(indicator).backgroundColor:null
+          indicator:dot?getComputedStyle(dot).backgroundColor:null
         };
       });
-      assert.equal(palette.brandForest,'#143929');
-      assert.equal(palette.brandYellow,'#ffd342');
-      assert.equal(palette.sectionBackground,'rgb(155, 59, 39)',
-        'Feast must have a distinct warm chili background');
-      assert.equal(palette.stageBackground,'rgb(155, 59, 39)');
-      assert.equal(palette.nextSectionBackground,'rgb(20, 57, 41)',
-        'Dessert section retains its forest palette');
-      assert.notEqual(palette.sectionBackground,palette.nextSectionBackground,
-        'Adjacent photographic chapters must not be green-on-green');
-      assert.equal(palette.buttonBackground,'rgb(255, 211, 66)');
-      assert.equal(palette.buttonColor,'rgb(23, 26, 20)');
-      assert.ok(Number(palette.buttonWeight)>=800 && palette.buttonCase==='uppercase',
-        'Recipe CTA must match the other V17 pill CTAs: '+JSON.stringify(palette));
-      assert.equal(palette.accent,'rgb(255, 211, 66)');
-      assert.equal(palette.kicker,'rgb(255, 211, 66)');
-      assert.match(palette.overlay,/147, 49, 29/,
-        'Feast overlay must use a branded warm chili grade, not the next section\'s forest: '+JSON.stringify(palette));
-      if(width<=760)assert.equal(palette.indicator,'rgb(255, 211, 66)',
-        'Mobile carousel active dot must use V17 yellow');
+      assert.equal(sectionVisual.brandYellow,'#ffd342');
+      assert.equal(sectionVisual.sectionBackground,'rgba(0, 0, 0, 0)',
+        'Section 5 must have no colored background behind its full-bleed photograph');
+      assert.equal(sectionVisual.stageBackground,'rgba(0, 0, 0, 0)');
+      assert.equal(sectionVisual.veilDisplay,'none','Do not tint the feast photograph');
+      assert.equal(sectionVisual.imageFilter,'none','Do not filter the feast photograph');
+      assert.equal(sectionVisual.cardImageFilter,'none','Keep the recipe images unfiltered');
+      assert.ok(sectionVisual.cardVeilContent==='none'||sectionVisual.cardVeilDisplay==='none',
+        'Mobile carousel images must be free of gradient overlays: '+JSON.stringify(visual));
+      assert.equal(sectionVisual.buttonBackground,'rgb(255, 211, 66)');
+      assert.equal(sectionVisual.buttonColor,'rgb(23, 26, 20)');
+      assert.ok(Number(sectionVisual.buttonWeight)>=800 && sectionVisual.buttonCase==='uppercase',
+        'Yellow section 5 CTA must match V17 pill CTAs: '+JSON.stringify(visual));
+      assert.equal(sectionVisual.accent,'rgb(255, 211, 66)');
+      assert.equal(sectionVisual.kicker,'rgb(255, 211, 66)');
+      if(width<=760)assert.equal(sectionVisual.indicator,'rgb(255, 211, 66)',
+        'Mobile carousel active dot must retain V17 yellow');
     }
     if(width<=760){
       // D24: genuine compact native mobile scroll-snap, not four vertically
