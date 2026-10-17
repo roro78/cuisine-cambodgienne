@@ -1,10 +1,12 @@
-type NarrationPayload = { intro: string; steps: string[] };
+type NarrationPayload = { intro: string; steps: string[]; audio?: string[] };
 type PlayerState = { index: number; utterance: SpeechSynthesisUtterance | null; active: boolean; paused: boolean };
 
 export function initWorkshopAudio(): void {
   const root = document.querySelector<HTMLElement>('[data-workshop-voice]');
   const data = document.querySelector<HTMLScriptElement>('[data-workshop-narration]');
-  if (!root || !data || !('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
+  if (!root || !data) return;
+  const speechAvailable = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+  if (!speechAvailable && !(data.textContent || '').includes('"audio":')) {
     const message = root?.querySelector<HTMLElement>('[data-voice-status]');
     if (message) message.textContent = 'La lecture vocale n’est pas disponible sur cet appareil. Le texte reste accessible.';
     root?.querySelectorAll<HTMLButtonElement>('[data-voice-play], [data-voice-pause], [data-voice-next]').forEach((button) => { button.disabled = true; });
@@ -19,7 +21,10 @@ export function initWorkshopAudio(): void {
     return;
   }
 
-  const synth = window.speechSynthesis;
+  const urls = Array.isArray(payload.audio) && payload.audio.length === payload.steps.length + 1 && payload.audio.every((url) => typeof url === 'string' && url.startsWith('/audio/workshops/') && url.endsWith('.mp3')) ? payload.audio : [];
+  const media = urls.length ? new Audio() : null;
+  if (media) media.preload = 'none';
+  const synth = speechAvailable ? window.speechSynthesis : null;
   const buttonPlay = root.querySelector<HTMLButtonElement>('[data-voice-play]')!;
   const buttonPause = root.querySelector<HTMLButtonElement>('[data-voice-pause]')!;
   const buttonStop = root.querySelector<HTMLButtonElement>('[data-voice-stop]')!;
@@ -35,7 +40,7 @@ export function initWorkshopAudio(): void {
   const tracks = [payload.intro, ...payload.steps];
 
   const pickVoice = () => {
-    const voices = synth.getVoices();
+    const voices = synth?.getVoices() ?? [];
     // Only select a French voice: never claim a Khmer accent if the system has not verified it.
     return voices.find((voice) => voice.lang.toLowerCase() === 'fr-fr' && voice.localService) ??
       voices.find((voice) => voice.lang.toLowerCase().startsWith('fr')) ?? null;
@@ -44,7 +49,7 @@ export function initWorkshopAudio(): void {
     const label = state.index < 0 ? 'Présentation' : `Étape ${state.index + 1}`;
     status.textContent = state.active ?
       `${label} — ${state.paused ? 'en pause' : 'lecture en cours'}` :
-      `${label} — prêt à écouter (voix de votre appareil)`;
+      `${label} — prêt à écouter (${media ? 'audio de l’atelier' : 'voix de votre appareil'})`;
     buttonPlay.textContent = state.active && !state.paused ? '↻ Recommencer' : state.paused ? '▶ Reprendre' : '▶ Écouter';
     buttonPause.disabled = !state.active || state.paused;
     buttonStop.disabled = !state.active;
@@ -64,11 +69,23 @@ export function initWorkshopAudio(): void {
     state.utterance = null;
     state.active = false;
     state.paused = false;
-    synth.cancel();
+    if (media) { media.pause(); media.removeAttribute('src'); media.load(); }
+    synth?.cancel();
   };
   const speak = (index: number) => {
     cancel();
     state.index = Math.max(-1, Math.min(index, tracks.length - 2));
+    if (media) {
+      media.src = urls[state.index + 1];
+      state.active = true;
+      render();
+      media.play().catch(() => {
+        cancel(); render();
+        status.textContent = 'La piste audio ne peut pas être lue. La transcription reste disponible.';
+      });
+      return;
+    }
+    if (!synth) return;
     const utterance = new SpeechSynthesisUtterance(tracks[state.index + 1]);
     utterance.lang = 'fr-FR';
     utterance.rate = 0.91;
@@ -94,20 +111,24 @@ export function initWorkshopAudio(): void {
     render();
     synth.speak(utterance);
   };
-  buttonPlay.addEventListener('click', () => {
-    if (state.active && state.paused) { synth.resume(); state.paused = false; render(); return; }
-    speak(state.index);
-  });
-  buttonPause.addEventListener('click', () => {
-    if (state.active) { synth.pause(); state.paused = true; render(); }
-  });
-  buttonStop.addEventListener('click', () => { cancel(); render(); });
-  dockPause?.addEventListener('click', () => {
+  if (media) {
+    media.onended = () => { if (state.active) { state.active = false; state.paused = false; render(); } };
+    media.onerror = () => { if (state.active) { cancel(); render(); status.textContent = 'Lecture audio interrompue.'; } };
+  }
+  const togglePause = () => {
     if (!state.active) return;
-    if (state.paused) synth.resume(); else synth.pause();
-    state.paused = !state.paused;
-    render();
-  });
+    if (state.paused) {
+      if (media) media.play().then(() => { state.paused = false; render(); }).catch(() => { cancel(); render(); });
+      else { synth?.resume(); state.paused = false; render(); }
+    } else {
+      if (media) media.pause(); else synth?.pause();
+      state.paused = true; render();
+    }
+  };
+  buttonPlay.addEventListener('click', () => { if (state.active && state.paused) togglePause(); else speak(state.index); });
+  buttonPause.addEventListener('click', () => { if (state.active && !state.paused) togglePause(); });
+  buttonStop.addEventListener('click', () => { cancel(); render(); });
+  dockPause?.addEventListener('click', togglePause);
   dockStop?.addEventListener('click', () => { cancel(); render(); });
   buttonNext.addEventListener('click', () => { speak(state.index + 1); });
   stepButtons.forEach((btn) => btn.addEventListener('click', () => {
@@ -116,7 +137,7 @@ export function initWorkshopAudio(): void {
       speak(index);
     }
   }));
-  document.addEventListener('visibilitychange', () => { if (document.hidden && state.active && !state.paused) { synth.pause(); state.paused = true; render(); } });
+  document.addEventListener('visibilitychange', () => { if (!media && document.hidden && state.active && !state.paused) { synth?.pause(); state.paused = true; render(); } });
   window.addEventListener('pagehide', cancel, { once: true });
   render();
 }
