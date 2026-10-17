@@ -35,6 +35,7 @@ const audioReady = trackPaths.every((url) => {
 });
 const narrationPayload = { ...narration, audio: audioReady ? trackPaths : [] };
 const hasPilotPhotos = workshop.slug === 'piler-aromates-au-mortier' && mortarImagePackReady;
+const pilotDims = [{ width: 1240, height: 827 }, { width: 1240, height: 930 }, { width: 1240, height: 930 }, { width: 1240, height: 930 }];
 const pilotAlt = [
   'Aromates cambodgiens émincés avant le travail au mortier.',
   'Les ingrédients fermes commencent à être pilés dans un mortier en pierre.',
@@ -148,7 +149,7 @@ const howToSchema = {
                   <div><img src={mortarStepImages[3]} alt="La pâte plus fine et homogène après le pilage" width="1240" height="930" loading="lazy" decoding="async" /><span>Après</span></div>
                 </div>
               ) : (
-                <img src={mortarStepImages[stepIndex]} alt={pilotAlt[stepIndex]} width="1240" height="930" loading="lazy" decoding="async" />
+                <img src={mortarStepImages[stepIndex]} alt={pilotAlt[stepIndex]} width={pilotDims[stepIndex].width} height={pilotDims[stepIndex].height} loading="lazy" decoding="async" />
               )}
               <figcaption>Illustrations pédagogiques générées par IA · Étape {stepIndex + 1}</figcaption>
             </figure>
