@@ -226,3 +226,14 @@ La validation technique de #24 est acquise sur son HEAD contrôlé ; **la récep
 - Protocole de validation physique : [docs/protocole-validation-grand-diner.md](https://github.com/roro78/cuisine-cambodgienne/blob/68a3e55000f7bba0e39de70d8c84226246443bc4/docs/protocole-validation-grand-diner.md)
 - Plan commercial historique et décisions : [docs/plan-commerce-experiences.md](https://github.com/roro78/cuisine-cambodgienne/blob/68a3e55000f7bba0e39de70d8c84226246443bc4/docs/plan-commerce-experiences.md)
 - Runbook de déploiement : [docs/runbook-ovh-ateliers-release.md](https://github.com/roro78/cuisine-cambodgienne/blob/68a3e55000f7bba0e39de70d8c84226246443bc4/docs/runbook-ovh-ateliers-release.md)
+
+
+---
+
+## V17 — Plan directeur canonique de l'accueil approuvé (13 octobre 2026)
+
+Le plan de mise en œuvre et le **contrat de fidélité à la dernière maquette approuvée** sont désormais documentés dans [docs/v17-plan-directeur-accueil.md](./v17-plan-directeur-accueil.md).
+
+**Règles cardinales :** conserver tout l'existant (routes, menu, footer, recettes, ateliers, culture, glossaire, guides ingrédients, crédits, fonctionnalités), partir de `main` sur une branche d'implémentation neuve, et ne pas fusionner les anciens prototypes de la PR #45. La maquette approuvée est celle du 13 octobre intitulée `voyage_culinaire_au_cambodge.png`, empreinte SHA-256 `f775e6f3a483479f4a2d095406593d3d5dc354213b80d2a99839c6f23f4ddc71` ; elle doit être archivée dans le dépôt avant développement. Aucun merge ou déploiement OVH sans réception artistique desktop/mobile et autorisation explicite.
+
+Cette annexe de pilotage **prévaut sur les anciennes notes V17 créatives expérimentales** lorsque celles-ci contredisent la maquette visuelle retenue ; les historiques des PR et des releases restent conservés pour audit.
