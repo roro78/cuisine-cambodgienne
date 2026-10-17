@@ -4,6 +4,7 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import CulinaryIcon from '../../components/CulinaryIcon.astro';
 import GlossaryStrip from '../../components/GlossaryStrip.astro';
+import WorkshopAudioPlayer from '../../components/WorkshopAudioPlayer.astro';
 import WorkshopInfographic from '../../components/WorkshopInfographic.astro';
 import { getWorkshopLearning } from '../../data/workshopLearning';
 import { workshops } from '../../data/workshops';
@@ -87,6 +88,8 @@ const workshopExperiences: Record<string, { image: string; imageAlt: string; que
   }
 };
 const workshopExperience = workshopExperiences[workshop.slug];
+const audioManifests = import.meta.glob('../../data/workshop-audio/*.json', { eager: true, import: 'default' });
+const workshopAudio = Object.values(audioManifests).find((item) => (item as { slug?: string }).slug === workshop.slug);
 const learning = getWorkshopLearning(workshop.slug);
 if (!learning) throw new Error(`Missing instructional module: ${workshop.slug}`);
 
@@ -198,6 +201,7 @@ const howToSchema = {
         </div>
         <p>Suivez les étapes dans l’ordre. Essayez chaque geste, puis découvrez comment vérifier le résultat.</p>
       </header>
+      {workshopAudio && <WorkshopAudioPlayer data={workshopAudio as any} />}
       <nav class="workshop-progress" aria-label="Choisir une étape de l’atelier" data-workshop-progress>
         {workshop.steps.map((step, stepIndex) => (
           <a href={`#etape-${stepIndex + 1}`} data-workshop-progress-link={stepIndex + 1} aria-controls={`etape-${stepIndex + 1}`}>
@@ -350,6 +354,7 @@ const howToSchema = {
         }
         if (counter) counter.textContent = `Étape ${active + 1} sur ${stages.length}`;
         if (moveFocus) {
+          window.dispatchEvent(new CustomEvent('workshop:step-selected', { detail: { index: active + 1 } }));
           history.replaceState(null, '', `#etape-${active + 1}`);
           stages[active].querySelector<HTMLElement>('h3')?.focus({ preventScroll: true });
           tutorial?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
@@ -372,6 +377,10 @@ const howToSchema = {
         }));
         previous?.addEventListener('click', () => showStage(active - 1, true));
         next?.addEventListener('click', () => showStage(active === stages.length - 1 ? 0 : active + 1, true));
+        window.addEventListener('workshop:narration-chapter', (event) => {
+          const chapter = Number((event as CustomEvent<{ index: number }>).detail?.index);
+          if (Number.isInteger(chapter) && chapter >= 1 && chapter <= stages.length) showStage(chapter - 1);
+        });
         window.addEventListener('hashchange', () => {
           if (/^#etape-\d+$/.test(location.hash)) showStage(getHashStage());
         });
