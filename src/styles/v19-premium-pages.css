@@ -142,6 +142,16 @@
   .recipe-v16 .recipe-v15-hero-copy{
     align-self:stretch;max-width:46rem;padding:0 clamp(1rem,5vw,2.5rem) 2.5rem;
   }
+  /* Mobile hero has a DARK green background. V16 had switched the text to
+     dark ink on a cream background; V19 replaced that background without
+     restoring the text colors. Keep all four hero text levels legible. */
+  .recipes-v16 .recipes-journey-copy,
+  .recipes-v16 .recipes-journey-copy h1,
+  .recipes-v16 .recipes-journey-copy .eyebrow,
+  .recipes-v16 .recipes-journey-stamp span{color:#fff9ee}
+  .recipes-v16 .recipes-journey-copy>p:last-of-type{color:#f1e5d2}
+  .recipes-v16 .recipes-journey-stamp span{border-color:rgba(255,249,238,.53);background:rgba(0,0,0,.09)}
+
   .recipes-v16 .recipes-journey-visual,
   .recipe-v16 .recipe-v15-cover{
     position:relative;inset:auto;width:100%;height:clamp(20rem,64vw,35rem);
