@@ -1,0 +1,170 @@
+---
+import type { WorkshopLearning } from '../data/workshopLearning';
+interface Props { learning: WorkshopLearning; stageIndex: number; }
+const { learning, stageIndex } = Astro.props;
+const kinds: Record<string,string> = {texture:'Texture',taste:'Goût',heat:'Saisie',timing:'Fraîcheur',broth:'Bouillon',table:'Composition'};
+const labels: Record<string, string[]> = {
+ taste: ['Un point de départ', 'Trois corrections isolées', 'Ajuster sans surcorriger', 'Retrouver le goût à l’aveugle'],
+ heat: ['Le contact avec la chaleur', 'L’espace fait la différence', 'La sauce vient après', 'Coloration et cuisson : deux questions'],
+ timing: ['La bouchée témoin', 'Isoler l’effet des herbes', 'Jus et zeste, deux effets', 'La finition au dernier moment'],
+ broth: ['Le bouillon témoin', 'Observer la réduction', 'Diagnostiquer avant d’ajouter', 'Préserver une note fraîche'],
+ table: ['Le point de départ', 'Le rôle du plat chaud', 'Ajouter un contraste', 'Laisser chacun doser']
+};
+const visuals: Record<string,string> = {
+ taste:'/images/cuisine/tamarind-1600.webp',
+ heat:'/images/cuisine/v19-lok-lak-1440.webp',
+ timing:'/images/cuisine/v19-num-banh-chok-1440.webp',
+ broth:'/images/cuisine/v18-kuy-teav.webp',
+ table:'/images/cuisine/v19-table-partage-desktop-1440.webp'
+};
+const photoAlts: Record<string,string> = {
+ taste:'Tamarin, ingrédient acide servant de repère aromatique : photographie illustrative et non sauce en cours de correction.',
+ heat:'Lok lak terminé : photographie culinaire d’illustration, ne montrant pas une saisie dans la poêle.',
+ timing:'Num banh chok garni d’herbes et de légumes frais : illustration du contraste de finition.',
+ broth:'Bol de kuy teav terminé, utilisé pour contextualiser le bouillon, et non illustrer la réduction.',
+ table:'Table de plats cambodgiens à partager : photographie de contexte pour l’exercice de composition.'
+};
+const label = labels[learning.kind]?.[stageIndex] ?? learning.evidenceTitle;
+const sourceImage = visuals[learning.kind];
+---
+<figure class:list={['workshop-infographic', 'workshop-stage-graphic', `workshop-stage-graphic--${learning.kind}`, `workshop-stage-graphic--${stageIndex + 1}`]} data-stage-graphic={learning.kind} data-stage-number={stageIndex + 1}>
+  <header class="workshop-stage-graphic-heading">
+    <p class="v16-mini-label">Repère visuel · {kinds[learning.kind]}</p>
+    <h4>{label}</h4>
+    <span>{String(stageIndex + 1).padStart(2,'0')} / 04</span>
+  </header>
+
+  {stageIndex === 0 && (
+    <div class:list={['workshop-stage-photo-composition', `workshop-stage-photo-composition--${learning.kind}`]}>
+      <div class="workshop-stage-photo-clip">
+        <img src={sourceImage} width="1200" height="900" loading="eager" decoding="async" alt={photoAlts[learning.kind]} />
+      </div>
+      <div class="workshop-stage-photo-tag">
+        {learning.kind === 'taste' && <><strong>Le témoin</strong><p>Goûtez la sauce sans rien changer. C’est votre référence.</p></>}
+        {learning.kind === 'heat' && <><strong>La surface</strong><p>Une belle coloration se construit au contact de la poêle. Le plat fini n’en montre pas toutes les étapes.</p></>}
+        {learning.kind === 'timing' && <><strong>La référence</strong><p>Commencez par une bouchée sans finition. C’est elle qui rend la différence perceptible.</p></>}
+        {learning.kind === 'broth' && <><strong>Avant réduction</strong><p>Réservez un échantillon témoin. Laissez refroidir avant de goûter.</p></>}
+        {learning.kind === 'table' && <><strong>Le point d’ancrage</strong><p>Choisissez la base autour de laquelle construire plusieurs bouchées.</p></>}
+      </div>
+    </div>
+  )}
+
+  {learning.kind === 'taste' && stageIndex === 1 && (
+    <div class="workshop-diagram-taste workshop-stage-taste">
+      <div class="workshop-diagram-base">Bol témoin<small>On n’y touche pas.</small></div>
+      <div class="workshop-diagram-branches" aria-label="Trois variantes indépendantes de la sauce">
+        <div><b>Acide</b><span>une variante</span></div>
+        <div><b>Doux</b><span>une variante</span></div>
+        <div><b>Salé</b><span>une variante</span></div>
+      </div>
+      <p class="workshop-diagram-caption">Une seule modification par bol. Le témoin reste identique pour comparer.</p>
+    </div>
+  )}
+  {learning.kind === 'taste' && stageIndex === 2 && (
+    <ol class="workshop-stage-rounds" aria-label="Boucle courte de correction">
+      <li><span>1</span><strong>Choisir</strong><small>Une variante prometteuse</small></li>
+      <li><span>2</span><strong>Ajouter très peu</strong><small>Une seule correction</small></li>
+      <li><span>3</span><strong>Regoûter</strong><small>Décider si l’on s’arrête</small></li>
+    </ol>
+  )}
+  {learning.kind === 'taste' && stageIndex === 3 && (
+    <div class="workshop-stage-blind">
+      <p>Placez les bols dans un ordre inconnu.</p>
+      <div aria-label="Trois bols à goûter sans connaître leur correction"><span>A</span><span>B</span><span>C</span></div>
+      <strong>Lequel préférez-vous sans connaître l’ajout ?</strong>
+    </div>
+  )}
+
+  {learning.kind === 'heat' && stageIndex === 1 && (
+    <div class="workshop-diagram-pans" aria-label="Schéma conceptuel de l’occupation d’une poêle">
+      <div><span>Peu chargée</span><div class="workshop-pan workshop-pan--free" aria-hidden="true"><i></i><i></i><i></i><i></i></div><p>De l’espace et moins de jus accumulé.</p></div>
+      <div><span>Surchargée</span><div class="workshop-pan workshop-pan--crowded" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><p>La vapeur et les jus freinent la coloration.</p></div>
+    </div>
+  )}
+  {learning.kind === 'heat' && stageIndex === 2 && (
+    <div class="workshop-stage-heat-order">
+      <div><b>01</b><strong>Colorer</strong><span>Surface au contact de la poêle</span></div>
+      <i aria-hidden="true">→</i>
+      <div><b>02</b><strong>Enrober</strong><span>Ajouter la sauce ensuite</span></div>
+      <p>Ce schéma décrit l’ordre du geste, pas une durée de cuisson.</p>
+    </div>
+  )}
+  {learning.kind === 'heat' && stageIndex === 3 && (
+    <div class="workshop-stage-dual-check">
+      <div><span>À l’œil</span><strong>Coloration</strong><p>Une surface dorée vous renseigne sur la saisie.</p></div>
+      <div><span>Pour la sécurité</span><strong>Cuisson à cœur</strong><p>À vérifier selon la viande : la couleur de surface ne suffit pas.</p></div>
+    </div>
+  )}
+
+  {learning.kind === 'timing' && stageIndex === 1 && (
+    <div class="workshop-stage-herb">
+      <div class="workshop-stage-herb-crop">
+        <img src={sourceImage} width="1200" height="900" alt="Herbes fraîches en garniture d’un num banh chok, photo d’illustration" loading="lazy" />
+      </div>
+      <div><span>Sans herbe</span><strong>Goût de base</strong><i aria-hidden="true">↓</i><span>Avec herbe</span><strong>Parfum ajouté</strong></div>
+    </div>
+  )}
+  {learning.kind === 'timing' && stageIndex === 2 && (
+    <div class="workshop-stage-acid">
+      <div><b>Jus</b><strong>Acidité</strong><span>Change la sensation en bouche</span></div>
+      <div><b>Zeste</b><strong>Arômes</strong><span>Libère les huiles parfumées</span></div>
+      <p>Tester séparément pour sentir la différence.</p>
+    </div>
+  )}
+  {learning.kind === 'timing' && stageIndex === 3 && (
+    <ol class="workshop-diagram-timeline">
+      <li><span>01</span><strong>Plat prêt</strong><small>Goûter sans finition</small></li>
+      <li><span>02</span><strong>Choix de la fraîcheur</strong><small>Herbe, jus ou zeste, selon le plat</small></li>
+      <li><span>03</span><strong>Juste avant de servir</strong><small>Ajouter les notes fraîches délicates</small></li>
+    </ol>
+  )}
+
+  {learning.kind === 'broth' && stageIndex === 1 && (
+    <div class="workshop-diagram-broth">
+      <div><span>Avant</span><div class="workshop-cup workshop-cup--before" aria-hidden="true"><i></i></div><small>Goûter le témoin refroidi</small></div>
+      <b aria-hidden="true">→</b>
+      <div><span>Après réduction</span><div class="workshop-cup workshop-cup--after" aria-hidden="true"><i></i></div><small>Comparer, avant de saler</small></div>
+      <p>Variation de volume illustrative : aucune mesure de concentration n’est suggérée.</p>
+    </div>
+  )}
+  {learning.kind === 'broth' && stageIndex === 2 && (
+    <div class="workshop-stage-diagnostic">
+      <strong>Quel est le vrai manque ?</strong>
+      <div><span>Sel ?</span><span>Parfum ?</span><span>Fraîcheur ?</span></div>
+      <p>Identifier la cause, puis essayer une seule correction sur une portion.</p>
+    </div>
+  )}
+  {learning.kind === 'broth' && stageIndex === 3 && (
+    <div class="workshop-stage-broth-finish">
+      <div class="workshop-stage-broth-disc" aria-hidden="true"><span>○</span></div>
+      <div><b>Feu coupé</b><span>Ajouter les herbes ou agrumes choisis.</span></div>
+      <p>Le parfum se juge en sentant le bouillon refroidi, pas en suivant un chronomètre.</p>
+    </div>
+  )}
+
+  {learning.kind === 'table' && stageIndex === 1 && (
+    <div class="workshop-stage-menu">
+      <div><span>La base</span><strong>Riz</strong></div>
+      <span aria-hidden="true">+</span>
+      <div><span>Le caractère</span><strong>Plat chaud</strong></div>
+      <p>Deux fonctions complémentaires, plutôt que deux plats riches concurrents.</p>
+    </div>
+  )}
+  {learning.kind === 'table' && stageIndex === 2 && (
+    <div class="workshop-stage-contrasts">
+      <div><strong>Riche</strong><span>Plat chaud</span></div>
+      <span aria-hidden="true">↔</span>
+      <div><strong>Frais</strong><span>Herbes · légumes · acidité</span></div>
+      <p>Composer deux bouchées puis décrire le contraste.</p>
+    </div>
+  )}
+  {learning.kind === 'table' && stageIndex === 3 && (
+    <div class="workshop-diagram-table">
+      <div class="workshop-table-plate workshop-table-plate--base"><span>01</span><strong>Base</strong><small>Riz</small></div>
+      <div class="workshop-table-plate workshop-table-plate--hot"><span>02</span><strong>Plat chaud</strong><small>Richesse</small></div>
+      <div class="workshop-table-plate workshop-table-plate--fresh"><span>03</span><strong>Fraîcheur</strong><small>Contraste</small></div>
+      <div class="workshop-table-plate workshop-table-plate--condiment"><span>04</span><strong>Condiment</strong><small>À part</small></div>
+    </div>
+  )}
+  <figcaption>Schéma pédagogique ou photographie de contexte, non une démonstration photographiée du geste. Vérifiez les repères sur votre propre préparation.</figcaption>
+</figure>

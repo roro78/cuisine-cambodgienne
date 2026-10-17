@@ -1,10 +1,10 @@
 ---
 import type { GlossaryEntry } from '../data/glossary';
-interface Props { entries: GlossaryEntry[]; }
-const { entries } = Astro.props;
+interface Props { entries: GlossaryEntry[]; alwaysVisible?: boolean; }
+const { entries, alwaysVisible = false } = Astro.props;
 ---
 {entries.length > 0 && (
-  <aside class="glossary-strip" aria-labelledby="glossary-title" data-reveal="up">
+  <aside class="glossary-strip" aria-labelledby="glossary-title" data-reveal={alwaysVisible ? undefined : "up"}>
     <div class="glossary-strip-head">
       <p class="eyebrow">Glossaire express</p>
       <h2 id="glossary-title">Les mots à connaître</h2>

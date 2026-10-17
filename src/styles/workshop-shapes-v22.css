@@ -1,0 +1,184 @@
+/* V22 — photographic masks and lesson-specific stage arrangements.
+ * Real images remain untouched. Non-photographic diagrams are labeled illustrative.
+ * Scoped only to workshop tutorials; desktop first, mobile follows.
+ */
+.workshop-stage-graphic{
+  --panel:#faf5e8;
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;gap:clamp(1.2rem,2vw,2rem);
+  min-height:33rem;padding:clamp(1.2rem,2.4vw,2.3rem);
+  background:var(--panel);border:1px solid #d5c3ac;
+}
+.workshop-stage-graphic--taste{--panel:#f5e9dc}
+.workshop-stage-graphic--heat{--panel:#eee7dc}
+.workshop-stage-graphic--timing{--panel:#edf0e3}
+.workshop-stage-graphic--broth{--panel:#ede8dc}
+.workshop-stage-graphic--table{--panel:#eee5d5}
+.workshop-stage-graphic-heading{
+  display:grid;grid-template-columns:1fr auto;gap:.4rem .7rem;align-items:start;
+  border-bottom:1px solid rgba(80,62,40,.19);padding-bottom:1rem;
+}
+.workshop-stage-graphic-heading p{grid-column:1/-1;margin:0}
+.workshop-stage-graphic-heading h4{
+  margin:0;font:400 clamp(1.8rem,3vw,2.9rem)/1.03 var(--serif);
+  letter-spacing:-.04em;max-width:20ch;
+}
+.workshop-stage-graphic-heading>span{
+  margin-top:.35rem;white-space:nowrap;font-size:.69rem;letter-spacing:.1em;color:#8b5a3b;
+}
+.workshop-stage-graphic>figcaption{
+  margin-top:auto;border-top:1px solid rgba(80,62,40,.18);padding-top:1rem;
+  font-size:.68rem;line-height:1.55;color:#725f4d;
+}
+.workshop-stage-photo-composition{position:relative;min-height:25rem;display:grid;place-items:center;padding:1rem 0 3.7rem}
+.workshop-stage-photo-clip{
+  width:min(84%,24rem);aspect-ratio:1;overflow:hidden;
+  border-radius:50%;background:#e7dac5;
+  box-shadow:0 18px 30px rgba(40,34,26,.15);
+  border:5px solid rgba(255,250,240,.85);
+}
+.workshop-stage-photo-clip img,.workshop-stage-herb-crop img{
+  display:block;width:100%;height:100%;object-fit:cover;object-position:center;
+}
+.workshop-stage-photo-tag{
+  position:absolute;z-index:1;right:0;bottom:.2rem;
+  width:min(78%,19.5rem);padding:1rem 1.2rem;
+  background:#fff9ed;border-left:4px solid #d4a653;
+  box-shadow:0 12px 24px rgba(39,32,22,.13);
+}
+.workshop-stage-photo-tag strong{font:400 clamp(1.3rem,2vw,1.7rem)/1.04 var(--serif)}
+.workshop-stage-photo-tag p{font-size:.84rem;line-height:1.55;margin:.5rem 0 0}
+.workshop-stage-photo-composition--taste .workshop-stage-photo-clip{
+  width:min(82%,25rem);aspect-ratio:1;
+  border-radius:50% 50% 47% 53%;
+}
+.workshop-stage-photo-composition--heat .workshop-stage-photo-clip{
+  width:min(92%,29rem);aspect-ratio:1.22;
+  clip-path:polygon(9% 0,91% 0,100% 16%,100% 84%,91% 100%,9% 100%,0 84%,0 16%);
+  border-radius:0;border:0;
+}
+.workshop-stage-photo-composition--timing .workshop-stage-photo-clip{
+  width:min(78%,23rem);aspect-ratio:1;
+  border-radius:8% 83% 12% 83%;transform:rotate(-6deg);
+}
+.workshop-stage-photo-composition--timing .workshop-stage-photo-clip img{transform:scale(1.09) rotate(6deg)}
+.workshop-stage-photo-composition--broth .workshop-stage-photo-clip{
+  aspect-ratio:1.15;width:min(88%,25rem);border-radius:48% 52% 45% 55%;
+}
+.workshop-stage-photo-composition--table .workshop-stage-photo-clip{
+  width:min(97%,30rem);aspect-ratio:1.4;border-radius:46% 54% 51% 49%;
+}
+.workshop-stage-rounds{list-style:none;display:grid;gap:1.2rem;margin:0;padding:1rem 0}
+.workshop-stage-rounds li{display:grid;grid-template-columns:4rem 1fr;gap:.2rem 1rem;padding:1.1rem;border:1px solid #d9bfa0;background:#fff8ed}
+.workshop-stage-rounds li>span{
+  grid-row:1/3;align-self:center;width:3.8rem;aspect-ratio:1;border:2px solid #9f6c49;
+  border-radius:50%;display:grid;place-items:center;font:400 2.1rem/1 var(--serif);
+}
+.workshop-stage-rounds strong{font:400 1.6rem/1.2 var(--serif)}
+.workshop-stage-rounds small{font-size:.78rem;color:#6f594b}
+.workshop-stage-blind{text-align:center;padding:1rem 0}
+.workshop-stage-blind>p{font-size:1.05rem;line-height:1.6}
+.workshop-stage-blind>div{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin:1.7rem 0}
+.workshop-stage-blind>div>span{
+  display:grid;place-items:center;aspect-ratio:1;border-radius:50%;
+  border:7px double #c7b49b;background:radial-gradient(circle,#c89155 0 40%,#f3e8d9 41%);
+  font:400 clamp(2rem,5vw,3.4rem)/1 var(--serif);color:#362d22;
+}
+.workshop-stage-blind>strong{display:block;font:400 clamp(1.4rem,2.4vw,2.2rem)/1.2 var(--serif)}
+.workshop-stage-heat-order{display:grid;grid-template-columns:1fr 2.5rem 1fr;gap:.6rem;align-items:center}
+.workshop-stage-heat-order>div{
+  display:grid;gap:.7rem;align-content:center;min-height:12rem;padding:1rem;text-align:center;
+  border-radius:50% 50% 38% 38%;background:#e1c49b;
+}
+.workshop-stage-heat-order>div:last-of-type{background:#efe2ce}
+.workshop-stage-heat-order>div b{font:400 1.9rem/1 var(--serif)}
+.workshop-stage-heat-order>div strong{font:400 clamp(1.3rem,2vw,2rem)/1.1 var(--serif)}
+.workshop-stage-heat-order>div span{font-size:.72rem;line-height:1.4}
+.workshop-stage-heat-order>i{font-style:normal;text-align:center;font-size:1.6rem}
+.workshop-stage-heat-order>p{grid-column:1/-1;text-align:center;font-size:.79rem;line-height:1.5}
+.workshop-stage-dual-check{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;align-items:stretch}
+.workshop-stage-dual-check>div{padding:1.5rem 1rem;border:1px solid #c7b7a0;border-radius:45% 45% 10% 10% / 18% 18% 6% 6%;background:#faf1df}
+.workshop-stage-dual-check>div:last-child{background:#e7e6d9}
+.workshop-stage-dual-check span{display:block;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase}
+.workshop-stage-dual-check strong{display:block;font:400 clamp(1.55rem,2.5vw,2.4rem)/1.04 var(--serif);margin:.8rem 0}
+.workshop-stage-dual-check p{font-size:.83rem;line-height:1.5}
+.workshop-stage-herb{display:grid;grid-template-columns:minmax(0,1.2fr) 1fr;gap:1.2rem;align-items:center}
+.workshop-stage-herb-crop{
+  aspect-ratio:3/4;overflow:hidden;border-radius:48% 52% 5% 48%;
+  background:#e0e3cd;
+}
+.workshop-stage-herb>div:last-child{display:flex;flex-direction:column;gap:.65rem;align-items:flex-start}
+.workshop-stage-herb span{font-size:.69rem;letter-spacing:.08em;text-transform:uppercase;color:#557044}
+.workshop-stage-herb strong{font:400 clamp(1.4rem,2.3vw,2.2rem)/1.1 var(--serif)}
+.workshop-stage-herb i{font-size:1.5rem;font-style:normal}
+.workshop-stage-acid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.workshop-stage-acid>div{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;min-height:12rem;padding:1rem;border-radius:50%;text-align:center;background:#dedfc8}
+.workshop-stage-acid>div:nth-child(2){border-radius:10% 70% 10% 70%;background:#e9ddba}
+.workshop-stage-acid b{font:400 1.4rem/1 var(--serif)}
+.workshop-stage-acid strong{font:400 clamp(1.6rem,2.3vw,2.2rem)/1 var(--serif)}
+.workshop-stage-acid span{font-size:.71rem;line-height:1.4}
+.workshop-stage-acid p{grid-column:1/-1;margin:0;text-align:center;font-size:.8rem}
+.workshop-stage-diagnostic{text-align:center}
+.workshop-stage-diagnostic>strong{display:block;font:400 clamp(1.6rem,2.5vw,2.6rem)/1.15 var(--serif);margin-bottom:1.3rem}
+.workshop-stage-diagnostic>div{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center}
+.workshop-stage-diagnostic>div span{
+  display:grid;place-items:center;padding:1rem;min-width:7rem;min-height:7rem;
+  border-radius:50%;background:#e7d5b9;border:1px solid #c9b295;
+  font:400 1.2rem/1 var(--serif);
+}
+.workshop-stage-diagnostic p{line-height:1.6;font-size:.88rem;margin-top:1.3rem}
+.workshop-stage-broth-finish{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:center}
+.workshop-stage-broth-disc{
+  aspect-ratio:1;border-radius:50%;border:12px solid #9d805f;
+  display:grid;place-items:center;background:radial-gradient(circle,#c69b61 0 67%,#9d6c43 68%);
+}
+.workshop-stage-broth-disc span{font-size:5rem;color:#f5e6c9}
+.workshop-stage-broth-finish>div:nth-child(2){display:grid;gap:.7rem}
+.workshop-stage-broth-finish b{font:400 clamp(1.5rem,2.2vw,2rem)/1.1 var(--serif)}
+.workshop-stage-broth-finish>div:nth-child(2)>span{font-size:.86rem;line-height:1.5}
+.workshop-stage-broth-finish>p{grid-column:1/-1;font-size:.81rem;line-height:1.6;margin:.3rem 0}
+.workshop-stage-menu{display:grid;grid-template-columns:1fr 2rem 1fr;align-items:center;gap:.4rem;text-align:center}
+.workshop-stage-menu>div{display:flex;flex-direction:column;justify-content:center;gap:.7rem;aspect-ratio:1;border-radius:50%;background:#fcf0d9;border:6px double #aa9479}
+.workshop-stage-menu>div:last-of-type{background:#edd4bc}
+.workshop-stage-menu>div span{font-size:.7rem;color:#78624e}
+.workshop-stage-menu>div strong{font:400 clamp(1.4rem,2.3vw,2.1rem)/1.1 var(--serif)}
+.workshop-stage-menu>span{font-size:1.6rem}
+.workshop-stage-menu>p{grid-column:1/-1;font-size:.81rem;line-height:1.6}
+.workshop-stage-contrasts{display:grid;grid-template-columns:1fr 1.5rem 1fr;align-items:center;gap:.4rem;text-align:center}
+.workshop-stage-contrasts>div{display:flex;flex-direction:column;gap:.6rem;align-items:center;justify-content:center;aspect-ratio:1;border-radius:48% 52% 40% 60%;background:#dfb994}
+.workshop-stage-contrasts>div:last-of-type{background:#d3ddbf}
+.workshop-stage-contrasts>div strong{font:400 clamp(1.5rem,2.5vw,2.25rem)/1.1 var(--serif)}
+.workshop-stage-contrasts>div span{font-size:.74rem;line-height:1.4}
+.workshop-stage-contrasts>span{font-size:1.3rem}
+.workshop-stage-contrasts>p{grid-column:1/-1;font-size:.81rem;line-height:1.5}
+@media(min-width:781px){
+  .workshop-tutorial-step:nth-child(even){grid-template-columns:minmax(0,.93fr) minmax(0,1fr)}
+  .workshop-tutorial-step:nth-child(even) .workshop-tutorial-media{order:2}
+  .workshop-tutorial-step:nth-child(even) .workshop-tutorial-instructions{order:1}
+}
+@media(max-width:780px){
+  .workshop-stage-graphic{min-height:0}
+  .workshop-stage-photo-composition{min-height:21rem}
+  .workshop-stage-photo-clip{width:80%}
+  .workshop-stage-graphic-heading h4{font-size:clamp(1.65rem,6.2vw,2.4rem)}
+  .workshop-tutorial-step:nth-child(even) .workshop-tutorial-media,
+  .workshop-tutorial-step:nth-child(even) .workshop-tutorial-instructions{order:initial}
+}
+@media(max-width:410px){
+  .workshop-stage-graphic{padding:1rem}
+  .workshop-stage-photo-composition{min-height:19rem;padding-bottom:3rem}
+  .workshop-stage-photo-tag{width:86%}
+  .workshop-stage-dual-check strong{font-size:1.43rem}
+  .workshop-stage-diagnostic>div span{min-width:5.6rem;min-height:5.6rem;padding:.7rem}
+  .workshop-stage-heat-order>div{min-height:10rem}
+  .workshop-stage-heat-order>div strong{font-size:1.2rem}
+}
+
+/* Compact, permanently readable glossary: workshop users should never scroll through an empty reserved section. */
+.workshop-detail .glossary-strip{
+  margin:0;
+  padding:clamp(2.7rem,5vw,5rem) var(--page-pad);
+}
+@media(max-width:620px){
+  .workshop-detail .glossary-strip{margin:0;padding:3rem 1rem}
+}

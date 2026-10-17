@@ -1,0 +1,225 @@
+/* V20 – Six workshops share an experience-first introduction, not a recipe cover.
+   Visuals intentionally preserve the original photography without color overlays.
+   Scoped to workshop pages; the V17 homepage and recipe pages remain unchanged. */
+
+.workshop-detail .workshop-detail-hero.workshop-experience-hero{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);
+  gap:clamp(2rem,5vw,6rem);
+  align-items:center;
+  min-height:min(900px,91svh);
+  padding:clamp(7.25rem,12vh,9.5rem) var(--page-pad) clamp(4.25rem,8vh,7rem);
+  background:radial-gradient(ellipse at 5% 12%,#fff4e2 0,transparent 55%),#efe3d1;
+  isolation:isolate;
+}
+.workshop-experience-hero:before{
+  content:"";position:absolute;inset:auto var(--page-pad) 0;
+  height:1px;background:rgba(79,57,37,.15);pointer-events:none;
+}
+.workshop-experience-hero .workshop-detail-hero-copy{position:relative;z-index:1;min-width:0}
+.workshop-experience-hero .workshop-detail-back{
+  display:inline-flex;align-items:center;
+  margin-bottom:clamp(1.5rem,4vh,3rem);color:#564737;
+  text-decoration:none;transition:color .2s ease;
+}
+.workshop-experience-hero .workshop-detail-back:hover{color:#9c512f}
+.workshop-experience-hero .v16-page-kicker{color:#9b5934}
+.workshop-experience-hero h1{
+  max-width:10.5ch;margin:.8rem 0 1.5rem;
+  font-size:clamp(3.75rem,6.4vw,7.4rem);line-height:.92;letter-spacing:-.055em;
+  text-wrap:balance;
+}
+.workshop-experience-promise{
+  max-width:39rem;margin:0;
+  font-size:clamp(1.05rem,1.5vw,1.3rem);line-height:1.55;color:#53493b;
+}
+.workshop-experience-actions{
+  display:flex;flex-wrap:wrap;gap:1rem 1.2rem;align-items:center;margin-top:1.7rem;
+}
+.workshop-experience-button{
+  display:inline-flex;min-height:3.1rem;align-items:center;justify-content:space-between;
+  gap:1.8rem;padding:.9rem 1.2rem;border-radius:.3rem;
+  background:#e8b548;color:#28251b;text-decoration:none;
+  font-size:.71rem;font-weight:700;letter-spacing:.055em;
+  transition:background .2s ease,transform .2s ease;
+}
+.workshop-experience-button:hover{background:#f0c15c;transform:translateY(-2px)}
+.workshop-experience-button:focus-visible,.workshop-lab-start:focus-visible,
+.workshop-lab-discovery summary:focus-visible,.workshop-lab-kit summary:focus-visible{
+  outline:3px solid #9b5934;outline-offset:4px;
+}
+.workshop-experience-button span{font-size:1rem}
+.workshop-experience-focus{font-size:.7rem;line-height:1.5;letter-spacing:.055em;color:#745f4b}
+.workshop-experience-hero .workshop-detail-facts{
+  gap:.55rem;margin:clamp(1.7rem,4vh,2.9rem) 0 0;
+}
+.workshop-experience-hero .workshop-detail-facts div{
+  min-width:0;flex:0 1 auto;padding:.65rem .95rem;
+  border:1px solid rgba(76,57,37,.15);border-radius:.25rem;
+  background:rgba(255,251,244,.56);
+}
+.workshop-experience-hero .workshop-detail-facts dd{font:500 1rem/1.1 var(--serif)}
+.workshop-experience-visual{
+  position:relative;align-self:stretch;min-width:0;min-height:32rem;
+  display:flex;align-items:stretch;padding-bottom:2.7rem;
+}
+.workshop-experience-photo{
+  position:relative;isolation:isolate;flex:1;margin:0;overflow:hidden;
+  background:#d9c8b2;border-radius:.25rem 5rem .25rem .25rem;
+  box-shadow:0 20px 55px rgba(60,43,27,.16);
+}
+.workshop-experience-photo img{
+  display:block;width:100%;height:100%;object-fit:cover;object-position:center;
+}
+.workshop-experience-photo figcaption{
+  position:absolute;top:1.25rem;left:1.25rem;z-index:1;
+  display:flex;flex-direction:column;gap:.25rem;
+  padding:.8rem 1.1rem;background:rgba(250,244,233,.97);color:#2e2a21;
+  box-shadow:0 7px 18px rgba(30,25,15,.12);
+}
+.workshop-experience-photo figcaption span{font-size:.57rem;letter-spacing:.14em;text-transform:uppercase;color:#8e5438}
+.workshop-experience-photo figcaption strong{font:400 1.35rem/1.05 var(--serif)}
+.workshop-experience-question{
+  position:absolute;z-index:2;right:-1rem;bottom:0;
+  width:min(90%,22rem);padding:1.35rem 1.55rem 1.5rem;
+  color:#2f2920;background:#fffaf1;
+  border-left:4px solid #dbab46;
+  box-shadow:0 16px 30px rgba(60,43,27,.12);
+}
+.workshop-experience-question span{
+  display:block;margin-bottom:.65rem;color:#8b5736;
+  font-size:.59rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;
+}
+.workshop-experience-question p{
+  margin:0;font:400 clamp(1.4rem,2.2vw,2rem)/1.06 var(--serif);letter-spacing:-.025em;
+}
+/* No decorative blank panels: this briefing teaches an observational method. */
+.workshop-learning-lab{
+  scroll-margin-top:7rem;
+  display:grid;grid-template-columns:minmax(0,.87fr) minmax(0,1.13fr);
+  gap:clamp(2.5rem,7vw,9rem);
+  padding:clamp(4.4rem,8vw,8rem) var(--page-pad);
+  background:#fbf6ec;color:#302b22;
+}
+.workshop-lab-introduction{min-width:0}
+.workshop-lab-introduction .v16-page-kicker{color:#9b5934}
+.workshop-lab-introduction h2{
+  max-width:12ch;margin:.8rem 0 1.3rem;
+  font:400 clamp(3rem,5.2vw,6.2rem)/.92 var(--serif);
+  letter-spacing:-.06em;text-wrap:balance;
+}
+.workshop-lab-lede{
+  max-width:38rem;margin:0;font-size:clamp(1rem,1.3vw,1.13rem);
+  line-height:1.7;color:#635747;
+}
+.workshop-lab-result{margin-top:2.2rem;padding-top:1.5rem;border-top:1px solid #ded1bd}
+.workshop-lab-result>span{
+  display:block;margin-bottom:.9rem;
+  font-size:.67rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8e5634;
+}
+.workshop-lab-result ul{list-style:none;margin:0;padding:0}
+.workshop-lab-result li{
+  position:relative;padding:.45rem 0 .45rem 1.4rem;line-height:1.45;color:#564b3d;
+}
+.workshop-lab-result li:before{
+  content:"✓";position:absolute;left:0;top:.4rem;color:#886f4a;font-weight:700;
+}
+.workshop-lab-start{
+  display:inline-flex;gap:1rem;align-items:center;margin-top:1.5rem;
+  border-bottom:1px solid currentColor;padding-bottom:.4rem;
+  font-size:.75rem;font-weight:700;text-decoration:none;letter-spacing:.03em;
+}
+.workshop-lab-start:hover{color:#9b5934}
+.workshop-lab-activities{
+  min-width:0;padding:clamp(1.5rem,3.1vw,3rem);
+  background:#efe3d0;border:1px solid #e3d4bf;
+  border-radius:.35rem;align-self:start;
+}
+.workshop-lab-activities-heading{
+  display:flex;align-items:center;gap:1.2rem;margin-bottom:1.3rem;
+}
+.workshop-lab-count{font:400 clamp(3.3rem,6vw,5.5rem)/.9 var(--serif);letter-spacing:-.055em;color:#aa653d}
+.workshop-lab-activities-heading .v16-page-kicker{margin:0;color:#8e5438}
+.workshop-lab-activities-heading h3{
+  margin:.5rem 0 0;font:400 clamp(1.7rem,2.7vw,2.9rem)/1 var(--serif);letter-spacing:-.035em;
+}
+.workshop-lab-experiments{list-style:none;margin:0;padding:0;border-top:1px solid #cebfa9}
+.workshop-lab-experiments li{
+  display:grid;grid-template-columns:2rem minmax(0,1fr);
+  gap:.8rem;align-items:start;padding:1.25rem 0;border-bottom:1px solid #cebfa9;
+}
+.workshop-lab-experiments li>span{font-size:.66rem;letter-spacing:.1em;color:#9b5934;padding-top:.2rem}
+.workshop-lab-experiments p{margin:0;font-size:clamp(1rem,1.35vw,1.15rem);line-height:1.55}
+.workshop-lab-discovery,.workshop-lab-kit{
+  padding:0;border-bottom:1px solid #cabb9f;
+}
+.workshop-lab-discovery{margin-top:1.15rem;background:#fff9eb;border:1px solid #ddc79d}
+.workshop-lab-discovery summary,.workshop-lab-kit summary{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:1.1rem;cursor:pointer;font-size:.8rem;font-weight:700;line-height:1.5;
+  list-style:none;
+}
+.workshop-lab-discovery summary::-webkit-details-marker,.workshop-lab-kit summary::-webkit-details-marker{display:none}
+.workshop-lab-discovery summary span,.workshop-lab-kit summary span{font-size:1.2rem;font-weight:400;line-height:1}
+.workshop-lab-discovery[open] summary span,.workshop-lab-kit[open] summary span{transform:rotate(45deg)}
+.workshop-lab-discovery p{
+  margin:0;padding:0 1.1rem 1.25rem;line-height:1.65;color:#5d5142;
+}
+.workshop-lab-kit ul{margin:0;padding:0 1.2rem 1.25rem 2.3rem;color:#5d5142;line-height:1.55}
+.workshop-lab-kit li+li{margin-top:.5rem}
+.workshop-learning-lab+.workshop-step-list{padding-top:clamp(2rem,4vw,4rem)}
+@media(max-width:1020px){
+  .workshop-detail .workshop-detail-hero.workshop-experience-hero{
+    grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:2rem;
+  }
+  .workshop-experience-hero h1{font-size:clamp(3.35rem,5.5vw,5.5rem)}
+  .workshop-experience-visual{min-height:27rem}
+  .workshop-learning-lab{gap:3rem}
+}
+@media(max-width:780px){
+  .workshop-detail .workshop-detail-hero.workshop-experience-hero{
+    grid-template-columns:1fr;min-height:0;gap:2.2rem;
+    padding:7rem var(--page-pad) 3rem;
+  }
+  .workshop-experience-hero h1{max-width:13ch;font-size:clamp(3.5rem,9vw,6rem)}
+  .workshop-experience-visual{min-height:0;height:clamp(22rem,65vw,35rem);padding-bottom:2rem}
+  .workshop-experience-question{right:0;width:min(84%,23rem)}
+  .workshop-learning-lab{grid-template-columns:1fr;gap:2.5rem}
+  .workshop-lab-introduction h2{max-width:17ch}
+}
+@media(max-width:620px){
+  .workshop-detail .workshop-detail-hero.workshop-experience-hero{
+    padding:6.25rem 1rem 2.5rem;gap:1.8rem;
+  }
+  .workshop-experience-hero .workshop-detail-back{margin-bottom:1.2rem}
+  .workshop-experience-hero h1{
+    max-width:13ch;margin:.55rem 0 1rem;
+    font-size:clamp(2.95rem,11.5vw,4.4rem);line-height:.95;
+  }
+  .workshop-experience-promise{font-size:1rem;line-height:1.55}
+  .workshop-experience-actions{margin-top:1.25rem;gap:.8rem}
+  .workshop-experience-button{min-height:3rem;width:100%;padding:.75rem 1rem}
+  .workshop-experience-focus{font-size:.66rem}
+  .workshop-experience-hero .workshop-detail-facts{margin-top:1.25rem;gap:.35rem}
+  .workshop-experience-hero .workshop-detail-facts div{flex:1 1 0;padding:.65rem .5rem}
+  .workshop-experience-hero .workshop-detail-facts dt{font-size:.51rem}
+  .workshop-experience-hero .workshop-detail-facts dd{font-size:.95rem}
+  .workshop-experience-visual{height:clamp(22rem,107vw,30rem);padding-bottom:2.8rem}
+  .workshop-experience-photo{border-radius:.25rem 3rem .25rem .25rem}
+  .workshop-experience-photo figcaption{top:.75rem;left:.75rem;padding:.65rem .85rem}
+  .workshop-experience-photo figcaption strong{font-size:1.15rem}
+  .workshop-experience-question{right:0;width:90%;padding:1.05rem 1.1rem}
+  .workshop-experience-question p{font-size:1.36rem}
+  .workshop-learning-lab{padding:3.5rem 1rem;gap:2rem;scroll-margin-top:5rem}
+  .workshop-lab-introduction h2{font-size:clamp(2.8rem,10vw,4.2rem)}
+  .workshop-lab-result{margin-top:1.4rem}
+  .workshop-lab-activities{padding:1.2rem}
+  .workshop-lab-activities-heading{gap:.8rem}
+  .workshop-lab-activities-heading h3{font-size:clamp(1.7rem,7vw,2.4rem)}
+  .workshop-lab-count{font-size:3.6rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .workshop-experience-button{transition:none}
+  .workshop-experience-button:hover{transform:none}
+}
