@@ -46,6 +46,10 @@ try {
       const response=await page.goto(base+'/recettes/',{waitUntil:'domcontentloaded'});
       assert.equal(response?.status(),200);
       assert.match(await page.locator('.recipes-journey-copy h1').innerText(),/saveurs du Cambodge/i);
+      assert.equal(await page.locator('.recipes-journey-copy').getAttribute('data-reveal'),null,
+        'Critical recipe hero text must not be hidden by scroll reveal');
+      const heroOpacity = Number(await page.locator('.recipes-journey-copy').evaluate(el=>getComputedStyle(el).opacity));
+      assert.ok(heroOpacity>.99,'Recipe hero text must be fully opaque at first paint: '+heroOpacity);
       const lead=await page.locator('.recipes-journey-copy>p:last-of-type').innerText();
       assert.match(lead,/amok de poisson/i);
       assert.doesNotMatch(lead,/portions ajustables|conseils simples au bon moment/i);
