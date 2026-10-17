@@ -41,3 +41,10 @@
   .workshop-progress{overflow-x:auto;grid-template-columns:repeat(4,minmax(10rem,1fr));scrollbar-width:thin}
 }
 @media(prefers-reduced-motion:reduce){.workshop-voice button,.workshop-step-list .workshop-step-listen{transition:none}}
+
+/* Petit lecteur flottant pendant l’écoute, sans masquer la lecture du contenu. */
+.workshop-voice-dock[hidden]{display:none}
+.workshop-voice-dock{position:fixed;bottom:clamp(.6rem,2vw,1.1rem);right:clamp(.6rem,2vw,1.1rem);z-index:80;display:flex;align-items:center;gap:.5rem;max-width:calc(100vw - 1.2rem);padding:.55rem .7rem .55rem 1rem;border-radius:99px;background:#29251d;color:#fff6e4;box-shadow:0 14px 42px rgba(0,0,0,.24);font-size:.75rem}
+.workshop-voice-dock button{min-width:44px;min-height:44px;border:0;border-radius:50%;background:#f0c545;color:#2c2418;font-size:1rem;cursor:pointer}
+.workshop-voice-dock button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+@media(max-width:740px){.workshop-voice-dock{left:.6rem;right:.6rem;justify-content:space-between;border-radius:1rem}}
