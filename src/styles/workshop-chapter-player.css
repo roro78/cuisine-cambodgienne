@@ -1,0 +1,42 @@
+/* Lecteur des six ateliers : teintes crème, brun et bouton jaune du site.
+   L'audio joue indépendamment du défilement de la page. */
+.workshop-chapter-player{
+  margin:0 0 clamp(1.8rem,4vw,3rem);padding:clamp(1.15rem,2.8vw,2.3rem);
+  color:#302d27;background:#fffaf1;border:1px solid #cfbea4;box-shadow:0 12px 34px #47351f11;
+}
+.workshop-player-heading{display:flex;gap:2rem;align-items:start;justify-content:space-between}
+.workshop-player-kicker{margin:0;color:#9a603b;font-size:.7rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase}
+.workshop-player-heading h3{font:400 clamp(1.7rem,3vw,2.7rem)/1.06 var(--serif);letter-spacing:-.035em;margin:.5rem 0 .65rem}
+.workshop-player-heading p:last-child{font-size:.9rem;line-height:1.55;color:#685747;max-width:40rem;margin:0}
+.workshop-player-voice{flex:0 0 auto;color:#805f3e;border:1px solid #dfcdae;padding:.55rem .7rem;font-size:.73rem}
+.workshop-player-main-controls{display:flex;align-items:center;gap:1.3rem;margin-top:1.65rem}
+.workshop-player-primary{flex:0 0 auto;min-height:3.4rem;min-width:7.4rem;display:flex;align-items:center;justify-content:center;gap:.55rem;background:#eebd51;border:1px solid #cc9a35;color:#302a1c;font-weight:800;cursor:pointer;padding:.7rem 1rem}
+.workshop-player-primary:focus-visible,.workshop-chapter-player button:focus-visible,.workshop-player-seek-area input:focus-visible,.workshop-player-transcript summary:focus-visible{outline:3px solid #ad693d;outline-offset:3px}
+.workshop-player-seek-area{flex:1;min-width:0;display:grid;gap:.35rem}
+.workshop-player-seek-label{font-size:.7rem;font-weight:700;color:#6e5b46}
+.workshop-player-seek-area input{width:100%;cursor:pointer;accent-color:#b78031}
+.workshop-player-time{font-size:.72rem;text-align:right;color:#715d48;font-variant-numeric:tabular-nums}
+.workshop-player-secondary-controls{display:flex;gap:1.2rem;justify-content:space-between;align-items:center;margin:1.3rem 0 1.55rem}
+.workshop-player-skip-controls{display:flex;flex-wrap:wrap;gap:.55rem}
+.workshop-player-skip-controls button{background:transparent;border:1px solid #cbb79b;padding:.65rem .8rem;font-size:.74rem;color:#453828;cursor:pointer}
+.workshop-player-skip-controls button:disabled{opacity:.35;cursor:not-allowed}
+.workshop-player-follow{display:flex;align-items:center;flex-wrap:wrap;gap:.45rem;background:#f6eee0;border:1px solid #c9b18a;padding:.65rem .8rem;color:#42372b;font-size:.75rem;font-weight:750;cursor:pointer}
+.workshop-player-follow[aria-pressed="true"]{background:#e5bf68;border-color:#bc8b37}
+.workshop-follow-state{font-size:.68rem;color:#715c3e;font-weight:500}
+.workshop-player-chapters{border-top:1px solid #e0d2be;padding-top:1rem}
+.workshop-player-chapters>p{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;font-weight:750;color:#6c533a;margin:0 0 .65rem}
+.workshop-player-chapters ol{list-style:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.5rem;margin:0;padding:0}
+.workshop-player-chapters button{display:flex;flex-direction:column;align-items:flex-start;gap:.45rem;width:100%;min-height:7rem;text-align:left;padding:.9rem .7rem;border:1px solid #ddccb5;background:#f9f0e1;color:#44382a;cursor:pointer}
+.workshop-player-chapters button:hover{background:#f1ddbc}
+.workshop-player-chapters button[aria-current="step"]{border-color:#ad813a;box-shadow:inset 0 0 0 1px #ad813a;background:#f4e0b8}
+.workshop-player-chapters button span{font-size:.71rem;font-weight:800;color:#976337}
+.workshop-player-chapters button strong{font-size:.78rem;line-height:1.34;flex:1}
+.workshop-player-chapters button small{font-size:.72rem;color:#7b6c57;font-variant-numeric:tabular-nums}
+.workshop-player-transcript{border-top:1px solid #dfcfba;margin-top:1rem}
+.workshop-player-transcript summary{cursor:pointer;padding:1rem 0;font-size:.78rem;font-weight:700;display:flex;justify-content:space-between;gap:1rem}
+.workshop-player-transcript p{max-width:65rem;margin:0;padding:.3rem 0 1rem;color:#645341;font-size:.9rem;line-height:1.7}
+.workshop-player-status{font-size:.75rem;color:#65533f;margin:.3rem 0 0}
+.workshop-player-notice{font-size:.73rem;color:#746451;margin:0;padding-top:.45rem;line-height:1.5}
+@media(max-width:800px){.workshop-player-chapters ol{grid-template-columns:repeat(3,minmax(0,1fr))}.workshop-player-heading{flex-direction:column;gap:1rem}.workshop-player-secondary-controls{align-items:stretch;flex-direction:column}}
+@media(max-width:540px){.workshop-chapter-player{padding:1rem;margin-bottom:1.6rem}.workshop-player-main-controls{gap:.7rem}.workshop-player-primary{min-width:5rem;min-height:3.2rem;padding:.5rem}.workshop-player-primary span{font-size:.74rem}.workshop-player-chapters ol{grid-template-columns:repeat(2,minmax(0,1fr))}.workshop-player-chapters button{min-height:6rem}.workshop-player-skip-controls button{flex:1 1 auto}.workshop-player-voice{font-size:.68rem}}
+@media(prefers-reduced-motion:reduce){.workshop-chapter-player *{scroll-behavior:auto!important}}

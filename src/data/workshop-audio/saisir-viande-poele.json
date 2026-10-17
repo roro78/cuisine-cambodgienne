@@ -1,0 +1,39 @@
+{
+  "slug": "saisir-viande-poele",
+  "title": "Bien saisir la viande à la poêle",
+  "voice": "coral",
+  "audio": "/audio/workshops/saisir-viande-poele/atelier-coral.mp3",
+  "duration": 118.248,
+  "chapters": [
+    {
+      "title": "Présentation",
+      "start": 0,
+      "duration": 20.544,
+      "text": "Bienvenue dans l'atelier de la poêle ! Vous avez déjà préparé une viande qui rend beaucoup d'eau au lieu de bien dorer ? Aujourd'hui, on va comprendre pourquoi. Préparez des morceaux réguliers, une poêle adaptée et un peu de sauce pour la fin. Nous allons observer la chaleur, le bruit et la belle coloration."
+    },
+    {
+      "title": "Chauffer avant de charger",
+      "start": 20.544,
+      "duration": 22.92,
+      "text": "Premier geste : séchez la surface des morceaux de viande, puis faites chauffer la poêle avec la matière grasse adaptée. Déposez seulement quelques morceaux, en gardant de la place entre eux. Écoutez ce petit grésillement ! Regardez la première face : elle doit commencer à dorer, sans baigner tout de suite dans le jus. Ajustez le feu si nécessaire."
+    },
+    {
+      "title": "Comparer avec une poêle trop pleine",
+      "start": 43.464,
+      "duration": 25.512,
+      "text": "Pour comprendre la différence, faites un deuxième essai avec davantage de morceaux dans la poêle. Observez sans approcher le visage : voyez-vous plus de vapeur, ou du jus qui s'accumule ? La viande dore alors moins facilement. Et si on la remue sans arrêt, elle colore encore moins. Retenez ce geste simple : mieux vaut plusieurs petites fournées qu'une poêle surchargée."
+    },
+    {
+      "title": "Laisser colorer avant la sauce",
+      "start": 68.976,
+      "duration": 24.168,
+      "text": "Revenons à une petite fournée bien espacée. Laissez la viande prendre une jolie couleur avant d'ajouter votre sauce. Maintenant seulement, versez-en une petite quantité et mélangez pour bien enrober les morceaux. Vous voyez cette surface brillante et dorée ? La sauce souligne la coloration au lieu de la remplacer. Voilà un beau réflexe pour le lok lak !"
+    },
+    {
+      "title": "Arrêter au bon moment",
+      "start": 93.144,
+      "duration": 25.104,
+      "text": "Dernière étape : la cuisson juste. Une belle couleur ne suffit pas à garantir que la viande est cuite à cœur. Vérifiez la cuisson avec une méthode adaptée à la viande choisie, puis retirez-la sans la laisser sécher dans la poêle chaude. Vous avez observé la chaleur, la place et le bon moment pour la sauce. Bravo, vous savez mieux saisir votre viande !"
+    }
+  ]
+}
