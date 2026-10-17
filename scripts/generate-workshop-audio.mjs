@@ -51,9 +51,9 @@ const mortar = JSON.parse(await fs.readFile(path.join(root, 'src/data/workshop-m
 function narrationFor(workshop) {
   if (workshop.slug === 'piler-aromates-au-mortier') return mortar;
   return {
-    intro: 'Bienvenue dans l’atelier « ' + workshop.title + ' ». Nous allons avancer tranquillement, geste apres geste. Preparez votre materiel et gardez les reperes visuels sous les yeux. Vous pouvez ecouter chaque etape separement.',
+    intro: 'Bienvenue dans l’atelier « ' + workshop.title + ' ». Nous allons avancer tranquillement, geste après geste. Préparez votre matériel et gardez les repères visuels sous les yeux. Vous pouvez écouter chaque étape séparément.',
     steps: workshop.steps.map((step, index) =>
-      'Étape ' + (index + 1) + ' : ' + step.title + '. ' + step.action + ' ' + step.observe + ' Votre repere : ' + step.cue + ' Pour savoir si l’etape est reussie : ' + step.success)
+      'Étape ' + (index + 1) + ' : ' + step.title + '. ' + step.action + ' ' + step.observe + ' Votre repère : ' + step.cue + ' Pour savoir si l’étape est réussie : ' + step.success)
   };
 }
 const instructions = [
