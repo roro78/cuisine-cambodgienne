@@ -30,6 +30,7 @@
     "sharp": "^0.34.4"
   },
   "devDependencies": {
+    "@types/node": "^22.15.0",
     "playwright-core": "^1.56.1"
   }
 }
