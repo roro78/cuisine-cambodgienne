@@ -133,8 +133,15 @@ const howToSchema = {
           <div class="workshop-step-index">{String(stepIndex + 1).padStart(2, '0')}</div>
           {hasPilotPhotos && (
             <figure class="workshop-step-media">
-              <img src={mortarStepImages[stepIndex]} alt={pilotAlt[stepIndex]} width="1240" height="930" loading="lazy" decoding="async" />
-              <figcaption>Illustration pédagogique générée par IA · Étape {stepIndex + 1}</figcaption>
+              {stepIndex === 3 ? (
+                <div class="workshop-texture-compare">
+                  <div><img src={mortarStepImages[1]} alt="La pâte aromatique encore grossière en cours de pilage" width="1240" height="930" loading="lazy" decoding="async" /><span>Avant</span></div>
+                  <div><img src={mortarStepImages[3]} alt="La pâte plus fine et homogène après le pilage" width="1240" height="930" loading="lazy" decoding="async" /><span>Après</span></div>
+                </div>
+              ) : (
+                <img src={mortarStepImages[stepIndex]} alt={pilotAlt[stepIndex]} width="1240" height="930" loading="lazy" decoding="async" />
+              )}
+              <figcaption>Illustrations pédagogiques générées par IA · Étape {stepIndex + 1}</figcaption>
             </figure>
           )}
           <div class="workshop-step-copy">
