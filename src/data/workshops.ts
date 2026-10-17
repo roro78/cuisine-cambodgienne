@@ -99,12 +99,12 @@ export const workshops: Workshop[] = [
     title: 'Trouver le bon équilibre en goûtant',
     duration: '30 min',
     level: 'Débutant',
-    objective: 'Apprendre à reconnaître ce qui manque dans une sauce : un peu de sel, d’acidité, de douceur ou d’umami.',
-    intro: 'Cet atelier vous apprend surtout à corriger sans paniquer : une petite modification, une dégustation, puis une nouvelle décision. L’objectif n’est pas de mémoriser une proportion universelle, mais de savoir quoi observer quand le goût paraît déséquilibré.',
+    objective: 'Savoir goûter une sauce et décider si elle a besoin d’un peu de sel, de sucre ou d’acidité.',
+    intro: 'Vous allez comparer plusieurs petits bols de sauce pour comprendre le rôle du sel, du sucre et du tamarin. Le but : apprendre à rectifier l’assaisonnement sans tout ajouter d’un coup.',
     outcomes: [
-      'Modifier un seul axe de goût à la fois.',
+      'Ne changer qu’un seul ingrédient à la fois.',
       'Comparer deux corrections au lieu de tout ajouter ensemble.',
-      'Arrêter les ajustements dès que la sauce devient nette et agréable.'
+      'S’arrêter dès que la sauce est à votre goût.'
     ],
     prepare: [
       'Quatre petits bols identiques.',
@@ -112,8 +112,8 @@ export const workshops: Workshop[] = [
       'Un élément acide, un élément sucré et un assaisonnement salé à ajouter goutte à goutte.'
     ],
     experiments: [
-      'Préparer quatre petites bases identiques et ne modifier qu’un seul axe à la fois.',
-      'Ajouter le tamarin goutte à goutte pour sentir le passage de plat à vif.',
+      'Préparer quatre bols de sauce identiques et ne changer qu’un ingrédient par bol.',
+      'Ajouter le tamarin peu à peu et goûter comment l’acidité réveille la sauce.',
       'Comparer une correction au sucre avec une correction au sel sans toucher au reste.'
     ],
     takeaway: 'Vous apprendrez à corriger une sauce petit à petit, sans tout ajouter en même temps.',
@@ -129,14 +129,14 @@ export const workshops: Workshop[] = [
         title: 'Changer une seule chose',
         action: 'Ajoutez un peu d’acidité dans un bol, un peu de douceur dans un autre et un peu de salé dans un troisième.',
         observe: 'Goûtez immédiatement après chaque ajout.',
-        cue: 'Vous devez pouvoir nommer ce que chaque correction change dans la sensation générale.',
+        cue: 'Vous devez pouvoir dire si chaque ajout rend la sauce plus salée, plus douce ou plus acide.',
         mistake: 'Modifier plusieurs éléments en même temps empêche de savoir ce qui a réellement amélioré la sauce.',
         success: 'Vous identifiez plus facilement le rôle de chaque correction.'
       },
       {
         title: 'Corriger par petites touches',
         action: 'Choisissez le bol le plus prometteur et poursuivez avec de très petites quantités.',
-        observe: 'Le goût doit devenir plus lisible sans qu’un élément prenne toute la place.',
+        observe: 'Le goût doit être agréable, sans excès de sel, de sucre ou d’acidité.',
         cue: 'La correction suivante devient de moins en moins nécessaire.',
         success: 'Vous savez vous arrêter avant de surcorriger.'
       },
@@ -229,11 +229,11 @@ export const workshops: Workshop[] = [
     prepare: [
       'Quelques herbes fraîches disponibles.',
       'Un agrume.',
-      'Une base neutre ou une petite portion de plat déjà cuite pour faire plusieurs essais.'
+      'Une petite portion d’un plat déjà cuit, sans herbes ni citron, pour pouvoir comparer.'
     ],
     experiments: [
       'Goûter une même bouchée sans herbe, puis avec coriandre ou menthe.',
-      'Comparer zeste, jus et feuille aromatique : trois intensités très différentes.',
+      'Comparer le jus de citron vert, son zeste et quelques herbes fraîches : ils n’apportent pas le même parfum.',
       'Ajouter la fraîcheur à la fin pour préserver parfum et croquant.'
     ],
     takeaway: 'Vous saurez quand ajouter les herbes et les agrumes pour garder tout leur parfum.',
@@ -248,7 +248,7 @@ export const workshops: Workshop[] = [
       {
         title: 'Ajouter une herbe seule',
         action: 'Ajoutez une petite quantité d’herbe fraîche à la bouchée suivante.',
-        observe: 'Notez ce qui change dans le parfum et la sensation de fraîcheur.',
+        observe: 'Goûtez et dites si le plat paraît plus frais ou plus acidulé.',
         cue: 'L’herbe doit compléter la bouchée sans devenir le seul goût perceptible.',
         success: 'La bouchée paraît plus fraîche tout en restant reconnaissable.'
       },
@@ -284,7 +284,7 @@ export const workshops: Workshop[] = [
     outcomes: [
       'Comparer un bouillon avant et après concentration.',
       'Assaisonner progressivement plutôt qu’en une seule fois.',
-      'Conserver une finition fraîche et lisible.'
+      'Garder le parfum des herbes jusqu’au moment de servir.'
     ],
     prepare: [
       'Une petite casserole de bouillon simple.',
@@ -301,15 +301,15 @@ export const workshops: Workshop[] = [
       {
         title: 'Goûter avant de réduire',
         action: 'Prélevez une cuillerée de bouillon avant de poursuivre la cuisson.',
-        observe: 'Notez le niveau de sel, l’intensité aromatique et la sensation en bouche.',
-        cue: 'Gardez ce goût en mémoire : la réduction va concentrer ce qui est déjà présent.',
+        observe: 'Goûtez le bouillon : est-il déjà salé et suffisamment parfumé ?',
+        cue: 'Souvenez-vous de ce goût : en réduisant, le bouillon deviendra plus corsé et peut-être plus salé.',
         success: 'Vous avez un point de comparaison fiable.'
       },
       {
-        title: 'Concentrer sans précipiter le sel',
+        title: 'Faire réduire avant de saler',
         action: 'Laissez réduire légèrement avant de faire la correction finale en sel.',
         observe: 'Goûtez régulièrement plutôt que d’attendre la fin.',
-        cue: 'Le bouillon gagne en intensité sans devenir agressivement salé.',
+        cue: 'Le bouillon est plus parfumé sans être trop salé.',
         mistake: 'Saler fortement dès le départ peut devenir difficile à corriger après réduction.',
         success: 'Vous contrôlez la concentration sans perdre l’équilibre.'
       },
@@ -340,9 +340,9 @@ export const workshops: Workshop[] = [
     duration: '20 min',
     level: 'Tous niveaux',
     objective: 'Associer riz, plat chaud, légumes, herbes et condiments pour préparer un repas équilibré à partager.',
-    intro: 'Plutôt que de chercher beaucoup de préparations, cet atelier vous aide à construire un repas lisible avec quelques éléments complémentaires : une base, un plat principal, quelque chose de frais et un condiment.',
+    intro: 'Pas besoin de préparer six plats différents : apprenez à associer du riz, un plat chaud, des légumes frais et un condiment pour un repas cambodgien à partager.',
     outcomes: [
-      'Construire le repas à partir d’une base simple.',
+      'Commencer le repas avec du riz à partager.',
       'Éviter d’accumuler plusieurs éléments très riches.',
       'Créer des bouchées différentes avec les mêmes préparations.'
     ],
@@ -370,14 +370,14 @@ export const workshops: Workshop[] = [
         title: 'Ajouter un plat chaud principal',
         action: 'Choisissez un plat qui apporte l’essentiel de la richesse ou de la sauce.',
         observe: 'Évitez d’ajouter immédiatement un second élément aussi riche.',
-        cue: 'Le repas reste lisible au premier regard.',
+        cue: 'Chaque plat a sa place et le repas n’est pas trop chargé.',
         success: 'Le plat chaud apporte le caractère sans saturer l’ensemble.'
       },
       {
-        title: 'Créer un contraste frais',
+        title: 'Ajouter des légumes ou des herbes fraîches',
         action: 'Ajoutez un élément cru, herbacé, croquant ou acidulé.',
         observe: 'Goûtez une bouchée avec puis sans cet élément.',
-        cue: 'Le contraste doit alléger ou réveiller la bouchée.',
+        cue: 'Les légumes et les herbes apportent de la fraîcheur à la bouchée.',
         success: 'Le repas gagne en variété sans nécessiter un autre plat complet.'
       },
       {
