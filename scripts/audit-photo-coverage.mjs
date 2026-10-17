@@ -116,7 +116,11 @@ for (const source of ['src/data/recipes.ts', 'src/data/culture.ts', 'src/data/in
 }
 
 const recipeListing = fs.readFileSync('src/pages/recettes/index.astro', 'utf8');
-const hero = recipeListing.match(/<figure><img src="(\/images\/cuisine\/[^"]+\.webp)"[^>]*width="(\d+)" height="(\d+)"/);
+// Both the legacy inline hero and the new reusable glossary-style
+// EditorialSectionHero must declare one real photo with testable dimensions.
+const legacyHero = recipeListing.match(/<figure><img src="(\/images\/cuisine\/[^"]+\.webp)"[^>]*width="(\d+)" height="(\d+)"/);
+const sharedHero = recipeListing.match(/<EditorialSectionHero\b[\s\S]*?image="(\/images\/cuisine\/[^"]+\.webp)"\s+imageWidth=\{(\d+)\}\s+imageHeight=\{(\d+)\}/);
+const hero = sharedHero ?? legacyHero;
 if (!hero) {
   missing.push('Recipe listing primary photograph lacks a testable image path and intrinsic dimensions');
 } else {
