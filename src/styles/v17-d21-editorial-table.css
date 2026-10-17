@@ -26,6 +26,17 @@
   display:block;width:100%;height:100%;object-fit:cover;
   object-position:center 48%;border:0;border-radius:0;filter:none;
 }
+/* A neutral, lower-edge readability fade ONLY: no global tint or photo filter.
+   Starts transparently well below the visual center; CTA yellow remains unchanged. */
+.v17r .v17r-table--editorial .v17r-table-fullbleed::after{
+  content:"";position:absolute;z-index:1;pointer-events:none;
+  left:0;right:0;bottom:0;height:44%;
+  background:linear-gradient(to bottom,
+    rgba(26,18,13,0) 0%,
+    rgba(26,18,13,.08) 35%,
+    rgba(26,18,13,.26) 68%,
+    rgba(26,18,13,.56) 100%);
+}
 .v17r .v17r-table--editorial .v17r-table-shade{
   display:none; /* No colored or darkening veil: photograph stays untouched. */
 }
