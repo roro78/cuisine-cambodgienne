@@ -15,6 +15,10 @@
 .v16-editorial .v16-page-hero[data-editorial-hero="glossary-template"]>p:not(.v16-page-kicker){
   color:#625548;
 }
+/* Global mobile `.listing-page` reduces its side padding to 1rem,
+ * while the glossary uses --page-pad (1.25rem). Align those values to
+ * prevent an 8px overflow at 390px and preserve the same full-bleed frame. */
+.ingredients-listing.listing-page{padding-left:var(--page-pad);padding-right:var(--page-pad)}
 /* Ingredient catalog keeps lateral gutters for its cards; only the opener goes edge-to-edge. */
 .ingredients-listing > .v16-page-hero[data-editorial-hero="glossary-template"] {
   margin-inline:calc(var(--page-pad) * -1);
