@@ -233,12 +233,14 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
         const titleAccent=section.querySelector('h2 em');
         const kicker=section.querySelector('.v17r-kicker');
         const shade=section.querySelector('.v17r-table-shade');
+        const nextSection=document.querySelector('.v17r-dessert');
         const indicator=section.querySelector('.v17r-table-mobile-dot[aria-current="true"] span');
         return {
           brandForest:getComputedStyle(root).getPropertyValue('--vr-forest').trim(),
           brandYellow:getComputedStyle(root).getPropertyValue('--vr-yellow').trim(),
           sectionBackground:getComputedStyle(section).backgroundColor,
           stageBackground:getComputedStyle(stage).backgroundColor,
+          nextSectionBackground:getComputedStyle(nextSection).backgroundColor,
           buttonBackground:getComputedStyle(button).backgroundColor,
           buttonColor:getComputedStyle(button).color,
           buttonWeight:getComputedStyle(button).fontWeight,
@@ -251,16 +253,21 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
       });
       assert.equal(palette.brandForest,'#143929');
       assert.equal(palette.brandYellow,'#ffd342');
-      assert.equal(palette.sectionBackground,'rgb(20, 57, 41)');
-      assert.equal(palette.stageBackground,'rgb(20, 57, 41)');
+      assert.equal(palette.sectionBackground,'rgb(155, 59, 39)',
+        'Feast must have a distinct warm chili background');
+      assert.equal(palette.stageBackground,'rgb(155, 59, 39)');
+      assert.equal(palette.nextSectionBackground,'rgb(20, 57, 41)',
+        'Dessert section retains its forest palette');
+      assert.notEqual(palette.sectionBackground,palette.nextSectionBackground,
+        'Adjacent photographic chapters must not be green-on-green');
       assert.equal(palette.buttonBackground,'rgb(255, 211, 66)');
       assert.equal(palette.buttonColor,'rgb(23, 26, 20)');
       assert.ok(Number(palette.buttonWeight)>=800 && palette.buttonCase==='uppercase',
         'Recipe CTA must match the other V17 pill CTAs: '+JSON.stringify(palette));
       assert.equal(palette.accent,'rgb(255, 211, 66)');
       assert.equal(palette.kicker,'rgb(255, 211, 66)');
-      assert.match(palette.overlay,/20, 57, 41/,
-        'Section 5 image shading must use the same forest palette as V17: '+JSON.stringify(palette));
+      assert.match(palette.overlay,/147, 49, 29/,
+        'Feast overlay must use a branded warm chili grade, not the next section\'s forest: '+JSON.stringify(palette));
       if(width<=760)assert.equal(palette.indicator,'rgb(255, 211, 66)',
         'Mobile carousel active dot must use V17 yellow');
     }

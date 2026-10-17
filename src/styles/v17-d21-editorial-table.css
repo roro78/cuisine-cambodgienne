@@ -2,15 +2,16 @@
    Desktop tableau and compact mobile slider preserve a seamless organic boundary. */
 .v17r .v17r-table--editorial{
   position:relative;display:block;isolation:isolate;
+  --v17-feast-spice:#9b3b27; /* warm chili accent already present in V17 */
   min-height:100svh;padding:0;margin:0;
-  overflow:clip;background:var(--vr-forest);color:var(--vr-ivory);text-align:left;
+  overflow:clip;background:var(--v17-feast-spice);color:var(--vr-ivory);text-align:left;
 }
 .v17r .v17r-table--editorial::before{content:none;display:none}
 .v17r .v17r-table--editorial[data-v17-table-ready]{min-height:100svh}
 .v17r .v17r-table--editorial .v17r-table-stage{
   position:relative;isolation:isolate;
   width:100%;height:100svh;min-height:650px;
-  overflow:clip;background:var(--vr-forest);
+  overflow:clip;background:var(--v17-feast-spice);
 }
 .v17r .v17r-table--editorial[data-v17-table-ready] .v17r-table-stage{
   /* No empty 105svh continuation beneath the feast: one visual scene. */
@@ -30,8 +31,8 @@
 .v17r .v17r-table--editorial .v17r-table-shade{
   position:absolute;z-index:1;inset:0;pointer-events:none;
   background:
-    linear-gradient(180deg,rgba(20,57,41,.86) 0%,rgba(20,57,41,.5) 15%,rgba(20,57,41,.12) 38%,rgba(20,57,41,.35) 53%,rgba(20,57,41,.9) 78%,#143929 100%),
-    linear-gradient(90deg,rgba(20,57,41,.28),transparent 18%,transparent 82%,rgba(20,57,41,.28));
+    linear-gradient(180deg,rgba(147,49,29,.9) 0%,rgba(147,49,29,.55) 15%,rgba(147,49,29,.06) 38%,rgba(132,39,25,.34) 53%,rgba(112,34,24,.91) 78%,var(--v17-feast-spice) 100%),
+    linear-gradient(90deg,rgba(237,87,51,.20),transparent 19%,transparent 81%,rgba(237,87,51,.16));
 }
 .v17r .v17r-table--editorial .v17r-table-copy{
   position:absolute;z-index:2;left:4%;right:4%;top:clamp(2rem,6svh,5rem);
@@ -153,7 +154,7 @@
     position:relative;top:auto;display:flex;flex-direction:column;
     width:100%;height:auto;min-height:0;overflow:visible;
     padding:0;
-    background:var(--vr-forest);
+    background:var(--v17-feast-spice);
   }
   .v17r .v17r-table--editorial .v17r-table-fullbleed{
     /* Underlying photo continues behind the carousel and cultural CTA.
@@ -166,9 +167,9 @@
   .v17r .v17r-table--editorial .v17r-table-shade{
     height:100%;bottom:0;
     background:linear-gradient(180deg,
-      rgba(20,57,41,.8) 0%,rgba(20,57,41,.50) 21%,
-      rgba(20,57,41,.66) 39%,rgba(20,57,41,.88) 62%,
-      rgba(20,57,41,.94) 84%,#143929 100%);
+      rgba(147,49,29,.83) 0%,rgba(147,49,29,.50) 21%,
+      rgba(130,39,27,.65) 39%,rgba(114,34,24,.88) 62%,
+      rgba(114,34,24,.94) 84%,var(--v17-feast-spice) 100%);
   }
   .v17r .v17r-table--editorial .v17r-table-copy{
     /* Natural flow prevents 200% text from overlapping the carousel. */
@@ -214,7 +215,7 @@
     padding:clamp(9rem,24svh,12rem) 0 0;margin:0;
     border:1px solid rgba(202,219,80,.43);
     border-radius:clamp(.85rem,3vw,1.25rem);
-    background:var(--vr-forest);box-shadow:none;
+    background:var(--v17-feast-spice);box-shadow:none;
     scroll-snap-align:start;scroll-snap-stop:always;
   }
   .v17r .v17r-table--editorial .v17r-table-recipe:first-child{
@@ -223,8 +224,8 @@
   .v17r .v17r-table--editorial .v17r-table-recipe::before{
     content:"";position:absolute;z-index:1;inset:0;pointer-events:none;
     background:linear-gradient(180deg,
-      rgba(20,57,41,.08) 0%,rgba(20,57,41,.5) 34%,
-      rgba(20,57,41,.88) 70%,#143929 100%);
+      rgba(147,49,29,.08) 0%,rgba(123,37,26,.52) 34%,
+      rgba(112,34,24,.88) 70%,var(--v17-feast-spice) 100%);
   }
   .v17r .v17r-table--editorial .v17r-table-recipe-image{
     display:block;position:absolute;inset:0;
