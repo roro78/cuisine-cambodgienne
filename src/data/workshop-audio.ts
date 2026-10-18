@@ -27,7 +27,8 @@ const bySlug = new Map(all.map((item) => [item.slug, item]));
 // can be shipped ahead of time, but a player is rendered only after that workshop
 // has passed its own production validation.
 const releasedWorkshopAudio = new Set([
-  'piler-aromates-au-mortier'
+  'piler-aromates-au-mortier',
+  'equilibrer-une-sauce'
 ]);
 
 export function getWorkshopAudio(slug: string): WorkshopAudioInfo | undefined {
