@@ -3,6 +3,7 @@ import { recipes } from '../data/recipes';
 import { ingredientGuides } from '../data/ingredients';
 import { cultureArticles } from '../data/culture';
 import { workshops } from '../data/workshops';
+import { recipeTechniqueGuides } from '../data/recipeTechniques';
 
 const staticPaths = ['/', '/recettes/', '/ingredients/', '/culture/', '/apprendre/', '/a-propos/', '/glossaire/', '/credits-photos/'];
 
@@ -13,7 +14,8 @@ export const GET: APIRoute = ({ site }) => {
     ...recipes.map((recipe) => `/recettes/${recipe.slug}/`),
     ...ingredientGuides.map((ingredient) => `/ingredients/${ingredient.slug}/`),
     ...cultureArticles.map((article) => `/culture/${article.slug}/`),
-    ...workshops.map((workshop) => `/apprendre/${workshop.slug}/`)
+    ...workshops.map((workshop) => `/apprendre/${workshop.slug}/`),
+    ...recipeTechniqueGuides.map((guide) => `/techniques/${guide.slug}/`)
   ];
 
   const urls = paths
