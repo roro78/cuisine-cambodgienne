@@ -22,7 +22,7 @@ const formatTime = (value: number) => {
       <h3>À vos oreilles, à votre rythme.</h3>
       <p>Une voix vous accompagne pendant les gestes. Vous pouvez écouter et faire défiler la page séparément.</p>
     </div>
-    <span class="workshop-player-voice">Voix IA Coral · sans musique</span>
+    <span class="workshop-player-voice">Narration audio · sans musique</span>
   </div>
 
   <audio data-player-audio src={info.audio} preload="metadata" aria-label={"Narration : " + info.title}></audio>
@@ -104,7 +104,7 @@ const formatTime = (value: number) => {
         ))}
       </ol>
       <div class="workshop-mobile-transcript">
-        <p class="workshop-mobile-panel-kicker">Ce que raconte Coral</p>
+        <p class="workshop-mobile-panel-kicker">Transcription du chapitre</p>
         <p data-mobile-transcript>{info.chapters[0]?.text}</p>
       </div>
       <p class="workshop-mobile-panel-status" data-mobile-status aria-live="polite">Prêt à écouter.</p>
