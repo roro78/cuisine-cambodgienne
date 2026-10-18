@@ -54,6 +54,14 @@ export function initWorkshopChapterPlayers(): void {
     const mobileTime = root.querySelector<HTMLElement>('[data-mobile-time]');
     const mobileChapterTitle = root.querySelector<HTMLElement>('[data-mobile-chapter-title]');
     const mobileChapterCount = root.querySelector<HTMLElement>('[data-mobile-chapter-count]');
+    const mobileBackdrop = root.querySelector<HTMLElement>('[data-mobile-backdrop]');
+    const mobileSheet = root.querySelector<HTMLElement>('[data-mobile-sheet]');
+    const mobileToggle = root.querySelector<HTMLButtonElement>('[data-mobile-toggle]');
+    const mobileToggleLabel = root.querySelector<HTMLElement>('[data-mobile-toggle-label]');
+    const mobileSheetClose = root.querySelector<HTMLButtonElement>('[data-mobile-sheet-close]');
+    const mobileTranscript = root.querySelector<HTMLElement>('[data-mobile-transcript]');
+    const mobileChapterButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-mobile-chapter]')];
+
     if (!audio || !playButton || !seek || !timer || !previous || !next || !stopButton || !followButton || !status || !transcript) return;
 
     root.dataset.playerEnhanced = 'true';
@@ -62,12 +70,34 @@ export function initWorkshopChapterPlayers(): void {
     let following = false;
     let automaticScrollUntil = 0;
     let tutorialVisible = false;
+    let sheetExpanded = false;
+    let gestureStartY: number | null = null;
+    let lastSwipeAt = 0;
     const mobileViewport = window.matchMedia('(max-width: 760px)');
+
+    function setSheetExpanded(expanded: boolean, restoreFocus = false): void {
+      if (!mobileDock || !mobileSheet || !mobileToggle || !mobileViewport.matches && expanded) return;
+      sheetExpanded = expanded;
+      mobileDock.dataset.dockExpanded = String(expanded);
+      mobileDock.setAttribute('role', expanded ? 'dialog' : 'region');
+      if (expanded) mobileDock.setAttribute('aria-modal', 'true');
+      else mobileDock.removeAttribute('aria-modal');
+      mobileDock.setAttribute('aria-label', expanded ? 'Navigation de la narration' : 'Mini-lecteur de l’atelier');
+      mobileSheet.hidden = !expanded;
+      if (mobileBackdrop) mobileBackdrop.hidden = !expanded;
+      mobileToggle.setAttribute('aria-expanded', String(expanded));
+      mobileToggle.setAttribute('aria-label', expanded ? 'Replier les chapitres et la transcription du lecteur' : 'Déployer les chapitres et la transcription du lecteur');
+      if (mobileToggleLabel) mobileToggleLabel.textContent = expanded ? 'Glisser vers le bas · Réduire' : 'Glisser vers le haut · Chapitres & texte';
+      document.documentElement.classList.toggle('workshop-sheet-open', expanded);
+      if (expanded) mobileSheetClose?.focus({ preventScroll: true });
+      else if (restoreFocus) mobileToggle.focus({ preventScroll: true });
+    }
     function updateMobileDockVisibility(): void {
       if (!mobileDock || !audio) return;
       const visible = mobileViewport.matches && (tutorialVisible || !audio.paused);
       mobileDock.dataset.dockVisible = String(visible);
       document.documentElement.classList.toggle('workshop-dock-open', visible);
+      if (!visible && sheetExpanded) setSheetExpanded(false);
     }
     if (typeof IntersectionObserver !== 'undefined') {
       const observer = new IntersectionObserver((entries) => {
@@ -79,6 +109,53 @@ export function initWorkshopChapterPlayers(): void {
       tutorialVisible = true;
     }
     mobileViewport.addEventListener('change', updateMobileDockVisibility);
+    mobileToggle?.addEventListener('click', () => {
+      // Pointer swipes can emit a click on touch devices; don't undo the gesture.
+      if (Date.now() - lastSwipeAt < 650) return;
+      setSheetExpanded(!sheetExpanded, true);
+    });
+    mobileSheetClose?.addEventListener('click', () => setSheetExpanded(false, true));
+    mobileBackdrop?.addEventListener('click', () => setSheetExpanded(false, true));
+    const grip = root.querySelector<HTMLElement>('[data-mobile-gesture-zone]');
+    const sheetHeader = root.querySelector<HTMLElement>('[data-mobile-sheet-gesture]');
+    for (const zone of [grip, sheetHeader]) {
+      zone?.addEventListener('pointerdown', (event: PointerEvent) => {
+        if (event.target instanceof Element && event.target.closest('button:not([data-mobile-toggle])')) return;
+        gestureStartY = event.clientY;
+      });
+      zone?.addEventListener('pointerup', (event: PointerEvent) => {
+        if (gestureStartY === null) return;
+        const distance = event.clientY - gestureStartY;
+        gestureStartY = null;
+        if (Math.abs(distance) < 38) return;
+        lastSwipeAt = Date.now();
+        if (distance < 0) setSheetExpanded(true);
+        else setSheetExpanded(false, true);
+      });
+      zone?.addEventListener('pointercancel', () => { gestureStartY = null; });
+    }
+    mobileDock?.addEventListener('keydown', (event: KeyboardEvent) => {
+      if (!sheetExpanded) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setSheetExpanded(false, true);
+        return;
+      }
+      // Expanded panel is a modal dialog, so keep keyboard focus in the dock.
+      if (event.key !== 'Tab') return;
+      const controls = [...mobileDock.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), a[href], summary')]
+        .filter((element) => element.getClientRects().length > 0);
+      if (controls.length === 0) return;
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
 
     function duration(): number {
       return audio && Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : plannedDuration;
@@ -119,11 +196,13 @@ export function initWorkshopChapterPlayers(): void {
       const chapter = chapterAt(audio.currentTime, chapters);
       if (!force && chapter === currentChapter) return;
       currentChapter = chapter;
-      chapterButtons.forEach((button, index) => {
+      [...chapterButtons, ...mobileChapterButtons].forEach((button) => {
+        const index = Number(button.dataset.playerChapter ?? button.dataset.mobileChapter);
         if (index === chapter) button.setAttribute('aria-current', 'step');
         else button.removeAttribute('aria-current');
       });
       transcript!.textContent = chapters[chapter].text;
+      if (mobileTranscript) mobileTranscript.textContent = chapters[chapter].text;
       if (mobileChapterTitle) mobileChapterTitle.textContent = chapters[chapter].title;
       if (mobileChapterCount) mobileChapterCount.textContent = chapter === 0 ? 'Introduction' : 'Étape ' + chapter + '/4';
       status!.textContent = (chapter === 0 ? 'Présentation' : 'Étape ' + chapter + ' sur 4')
@@ -221,11 +300,21 @@ export function initWorkshopChapterPlayers(): void {
       const index = Number(button.dataset.playerChapter);
       if (Number.isInteger(index)) jumpTo(index, true);
     }));
+    mobileChapterButtons.forEach((button) => button.addEventListener('click', () => {
+      const index = Number(button.dataset.mobileChapter);
+      if (Number.isInteger(index)) {
+        jumpTo(index, true);
+        // Reveal the selected culinary gesture underneath the sheet.
+        setSheetExpanded(false, true);
+      }
+    }));
     function toggleFollowing(): void {
       following = !following;
       renderFollowing();
-      if (following) syncStage(chapterAt(audio!.currentTime, chapters), true);
-      else status!.textContent = 'Défilement libre activé. Le son continue.';
+      if (following) {
+        setSheetExpanded(false);
+        syncStage(chapterAt(audio!.currentTime, chapters), true);
+      } else status!.textContent = 'Défilement libre activé. Le son continue.';
     }
     followButton.addEventListener('click', toggleFollowing);
     mobileFollow?.addEventListener('click', toggleFollowing);
@@ -259,5 +348,6 @@ export function initWorkshopChapterPlayers(): void {
 
     renderFollowing();
     renderProgress();
+    setSheetExpanded(false);
   });
 }
