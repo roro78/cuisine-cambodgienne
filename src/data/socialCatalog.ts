@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { recipes } from './recipes';
+import { restoredRecipes } from './restoredRecipes';
 import { ingredientGuides } from './ingredients';
 import { cultureArticles } from './culture';
 import { workshops } from './workshops';
@@ -68,6 +69,19 @@ export function getSocialCatalog(): SocialSource[] {
         ...(recipe.keyPoints ?? []).slice(0, 2)
       ],
       recipe.image
+    )),
+    // Restored SEO recipes are visible to the editorial system but deliberately
+    // carry no social visual until a photograph with confirmed reuse rights exists.
+    // This prevents an illustrative or unrelated image from being auto-published.
+    ...restoredRecipes.map(recipe => create(
+      'recette', recipe.slug, recipe.title, `/recettes/${recipe.slug}/`, recipe.intro,
+      [
+        `Préparation : ${recipe.prepTime}. Cuisson : ${recipe.cookTime}.`,
+        `Ingrédients : ${recipe.ingredients.join(', ')}.`,
+        ...recipe.steps.slice(0, 3).map(step => `${step.title} : ${step.text}`),
+        ...recipe.tips.slice(0, 2)
+      ],
+      undefined, 'none', recipe.sources.map(source => source.url)
     )),
     ...ingredientGuides.map(ingredient => create(
       'ingredient', ingredient.slug, ingredient.title, `/ingredients/${ingredient.slug}/`, ingredient.intro,
