@@ -9,6 +9,8 @@ import GlossaryStrip from '../../components/GlossaryStrip.astro';
 import { getGlossaryEntries } from '../../data/glossary';
 import { imageSrcSet } from '../../utils/images';
 import { getWorkshopsForRecipe } from '../../data/workshops';
+import { getTechniqueGuidesForRecipe } from '../../data/recipeTechniques';
+import '../../styles/recipe-techniques.css';
 import '../../styles/recipe-v15.css';
 import '../../styles/v16-editorial.css';
 import '../../styles/v17-recipe-generated.css';
@@ -32,6 +34,7 @@ const faqs = recipe.faqs ?? [];
 const relatedIngredients = ingredientGuides.filter((item) => (recipe.relatedIngredients ?? []).includes(item.slug));
 const glossary = getGlossaryEntries(recipe.glossarySlugs ?? recipe.relatedIngredients ?? []);
 const relatedWorkshops = getWorkshopsForRecipe(recipe.slug);
+const techniqueGuides = getTechniqueGuidesForRecipe(recipe.slug);
 const relatedRecipes = recipes
   .filter((other) => other.slug !== recipe.slug && Boolean(other.image))
   .sort((a, b) => {
@@ -226,6 +229,17 @@ const recipeSchema = {
               </ul>
             </section>
           ))}
+
+          {techniqueGuides.length > 0 && (
+            <section class="recipe-equipment recipe-technique-guides" aria-label="Préparations expliquées">
+              <h3>Une base à préparer ?</h3>
+              <ul>
+                {techniqueGuides.map((guide) => (
+                  <li><a href={`/techniques/${guide.slug}/`}>{guide.slug === 'bouillon-leger-maison' ? 'Comment faire le bouillon ?' : 'Comment faire les pickles ?'} →</a></li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           {equipment.length > 0 && (
             <section class="recipe-equipment">
