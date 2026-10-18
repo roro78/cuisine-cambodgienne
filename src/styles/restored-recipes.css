@@ -1,0 +1,54 @@
+/* Pages de recettes historiques : composants isolés des 13 recettes existantes. */
+.restored-recipe{background:#f5f3ee;color:#20241d;padding-bottom:clamp(4rem,8vw,8rem)}
+.restored-recipe-breadcrumb{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;padding:1rem var(--page-pad);border-bottom:1px solid #d8d1c2;font-size:.8rem;color:#4f5246}
+.restored-recipe-breadcrumb a{text-decoration:underline;text-underline-offset:3px}
+.restored-recipe-hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(2rem,5vw,6rem);align-items:stretch;padding:clamp(3rem,6vw,7rem) var(--page-pad) clamp(2rem,5vw,5rem);background:#f1e6d6}
+.restored-recipe-heading{display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
+.restored-recipe-heading .eyebrow{color:#66533e;font-weight:600}
+.restored-recipe h1{font:400 clamp(2.9rem,5.7vw,6.7rem)/1.06 var(--serif);letter-spacing:-.05em;max-width:16ch;margin:0 0 1.4rem;text-wrap:balance}
+.restored-recipe h2{font:400 clamp(2rem,3.4vw,3.6rem)/1.1 var(--serif);letter-spacing:-.035em;margin:.1rem 0 1.6rem}
+.restored-recipe h3{font:600 clamp(1.12rem,1.6vw,1.35rem)/1.35 var(--sans);margin:0 0 .5rem}
+.restored-recipe-lead{font-size:clamp(1rem,1.5vw,1.24rem);line-height:1.8;max-width:55ch;margin:0}
+.restored-recipe-facts{display:flex;flex-wrap:wrap;gap:1rem 2rem;margin:2rem 0 0}
+.restored-recipe-facts div{border-top:1px solid #b6aa98;padding-top:.7rem;min-width:7rem}
+.restored-recipe-facts dt{font:.65rem/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#6b6a61}
+.restored-recipe-facts dd{margin:.15rem 0 0;font-size:.9rem;font-weight:600}
+.restored-recipe-actions{display:flex;flex-wrap:wrap;gap:.8rem;margin:2rem 0 0}
+.restored-recipe-actions a{display:inline-flex;align-items:center;gap:.8rem;background:#d8a847;color:#171710;border-radius:999px;padding:.8rem 1.2rem;font-weight:650;font-size:.86rem;min-height:44px}
+.restored-recipe-actions a+a{background:transparent;border:1px solid #8d806a}
+.restored-recipe-visual{position:relative;align-self:stretch;min-height:26rem;margin:0;overflow:hidden;background:#ded3c1;border-radius:1.25rem}
+.restored-recipe-visual img{width:100%;height:100%;object-fit:cover;display:block}
+.restored-recipe-visual figcaption{position:absolute;bottom:0;left:0;right:0;padding:2.2rem 1rem .9rem;background:linear-gradient(transparent,rgba(14,15,12,.86));color:#fff;font-size:.74rem;line-height:1.5}
+.restored-recipe-visual--text{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;text-align:center;padding:2rem;background:linear-gradient(145deg,#dac49f,#f2e6d2 45%,#cbb48c);color:#384331}
+.restored-recipe-visual--text strong{font:400 clamp(2.5rem,4vw,4rem)/1.05 var(--serif);max-width:12ch}
+.restored-recipe-visual--text span{font-size:.68rem;letter-spacing:.23em;text-transform:uppercase}
+.restored-recipe-body{display:grid;grid-template-columns:minmax(17rem,.72fr) minmax(0,1.28fr);gap:clamp(3rem,6vw,7rem);max-width:90rem;margin:0 auto;padding:clamp(3rem,6vw,6rem) var(--page-pad)}
+.restored-recipe-ingredients{background:#fffdf8;border:1px solid #e4dbc9;border-radius:1.25rem;padding:clamp(1.5rem,3vw,3rem);align-self:start}
+.restored-recipe-ingredients ul,.restored-recipe-notes ul{padding-left:1.15rem}
+.restored-recipe-ingredients li,.restored-recipe-notes li{line-height:1.65;margin:.7rem 0;padding-left:.2rem}
+.restored-recipe-method>ol{counter-reset:step;list-style:none;padding:0;margin:0}
+.restored-recipe-method>ol>li{position:relative;padding:1.6rem 0 1.8rem 4rem;border-top:1px solid #d8d0be;counter-increment:step}
+.restored-recipe-method>ol>li::before{content:counter(step,decimal-leading-zero);position:absolute;left:0;top:1.6rem;font:400 1.45rem var(--serif);color:#856628}
+.restored-recipe-method p{max-width:66ch;font-size:1rem;line-height:1.82;margin:0}
+.restored-recipe-notes,.restored-recipe-sources{max-width:82rem;margin:0 auto;padding:2rem var(--page-pad)}
+.restored-recipe-notes{border-top:1px solid #d8d0be}
+.restored-recipe-notes li{max-width:80ch}
+.restored-recipe-sources{background:#eae6dc;border-radius:1rem}
+.restored-recipe-sources p{max-width:76ch;line-height:1.7}
+.restored-recipe-sources li{line-height:1.7;margin:.5rem 0}
+.restored-recipe-sources a{text-decoration:underline;text-underline-offset:3px}
+.restored-recipe-back{display:inline-block;margin:3rem var(--page-pad) 0;border-bottom:1px solid #71654d;padding-bottom:.3rem}
+.restored-recipe :focus-visible{outline:3px solid #bb8031;outline-offset:3px}
+@media(max-width:840px){
+  .restored-recipe-hero,.restored-recipe-body{grid-template-columns:1fr}
+  .restored-recipe-hero{gap:2rem}
+  .restored-recipe-visual{min-height:20rem;max-height:31rem}
+  .restored-recipe-body{gap:2rem}
+}
+@media(max-width:520px){
+  .restored-recipe-hero{padding-top:3rem}
+  .restored-recipe h1{font-size:clamp(2.5rem,10vw,4rem)}
+  .restored-recipe-method>ol>li{padding-left:3.1rem}
+  .restored-recipe-method>ol>li::before{font-size:1.1rem}
+  .restored-recipe-sources{border-radius:0}
+}
