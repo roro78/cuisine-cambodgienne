@@ -46,8 +46,8 @@ export const workshops: Workshop[] = [
       'Reconnaître une pâte assez fine sans dépendre d’un minuteur.'
     ],
     prepare: [
-      'Citronnelle, galanga, curcuma, ail et échalote en petites quantités.',
-      'Un mortier et un pilon.',
+      'Pour cet exercice : 1 cœur tendre de citronnelle, 10 g de galanga, 10 g de curcuma frais, 1 gousse d’ail et 1 petite échalote. Réservez un morceau épais de citronnelle et un morceau fin pour la comparaison du premier geste ; émincez ensuite très finement tous les aromates avant de les piler.',
+      'Un mortier, un pilon et une petite cuillère pour ramener la pâte au centre.',
       'Une petite assiette pour comparer les textures au fil de l’atelier.'
     ],
     experiments: [
@@ -108,8 +108,8 @@ export const workshops: Workshop[] = [
     ],
     prepare: [
       'Quatre petits bols identiques.',
-      'Une base simple légèrement salée.',
-      'Un élément acide, un élément sucré et un assaisonnement salé à ajouter goutte à goutte.'
+      'Préparez une base sans produit cru : mélangez 120 ml d’eau avec ½ c. à café de sauce de poisson. Versez 30 ml de cette base dans chacun des quatre bols.',
+      'Prévoyez du jus de citron vert ou de tamarin filtré, 1 c. à café de sucre et ½ c. à café de sel dans de petites coupelles. Pour les trois premiers essais, prélevez seulement quelques gouttes de jus, une pincée de sucre et une pincée de sel, chacune dans un bol différent ; gardez le reste pour ajuster le bol préféré. Le quatrième bol reste nature.'
     ],
     experiments: [
       'Préparer quatre bols de sauce identiques et ne changer qu’un ingrédient par bol.',
@@ -168,8 +168,8 @@ export const workshops: Workshop[] = [
     ],
     prepare: [
       'Une grande poêle ou un wok.',
-      'Quelques morceaux de viande de taille régulière.',
-      'Une petite quantité de sauce prête à être ajoutée en fin de cuisson.'
+      '500 à 700 g de bœuf à poêler selon la taille de la poêle, en morceaux identiques : environ 100 g pour le premier essai, 300 à 500 g pour l’essai surchargé et 100 g pour la dernière fournée. Pour le deuxième essai, les morceaux doivent se toucher ou se chevaucher ; si 300 g tiennent espacés dans votre poêle, augmentez la quantité. Faites cuire entièrement chaque fournée.',
+      '1 c. à soupe d’huile neutre, répartie entre les essais, et 1 c. à café de sauce soja à verser seulement sur la dernière fournée une fois la viande dorée.'
     ],
     experiments: [
       'Comparer une petite quantité et une poêle surchargée.',
@@ -227,8 +227,8 @@ export const workshops: Workshop[] = [
       'Éviter qu’une finition fraîche masque complètement le reste du plat.'
     ],
     prepare: [
-      'Quelques herbes fraîches disponibles.',
-      'Un agrume.',
+      'Quelques feuilles de coriandre et de menthe lavées et bien égouttées.',
+      '1 citron vert lavé : utilisez son jus et un peu de zeste vert, sans la peau blanche amère.',
       'Une petite portion d’un plat déjà cuit, sans herbes ni citron, pour pouvoir comparer.'
     ],
     experiments: [
@@ -280,16 +280,16 @@ export const workshops: Workshop[] = [
     duration: '50 min',
     level: 'Intermédiaire',
     objective: 'Préparer un bouillon clair, parfumé et agréable à boire, sans le charger inutilement.',
-    intro: 'Vous allez apprendre à construire le goût par étapes : goûter avant de réduire, saler progressivement et réserver les notes les plus fraîches pour la fin.',
+    intro: 'Cet atelier de dégustation commence avec un bouillon déjà préparé, et non avec de l’eau ou des os crus. Comparez son goût avant et après une courte réduction, puis assaisonnez progressivement et ajoutez les notes fraîches à la fin.',
     outcomes: [
       'Comparer un bouillon avant et après concentration.',
       'Assaisonner progressivement plutôt qu’en une seule fois.',
       'Garder le parfum des herbes jusqu’au moment de servir.'
     ],
     prepare: [
-      'Une petite casserole de bouillon simple.',
-      'Les assaisonnements salés séparés.',
-      'Quelques herbes ou agrumes pour la finition.'
+      '400 ml de bouillon de volaille ou de légumes déjà préparé, filtré et peu salé, maison ou prêt à l’emploi. La fabrication du bouillon n’est pas comprise dans les 50 minutes de cet exercice.',
+      'Deux petites tasses pour comparer les échantillons tiédis, une cuillère propre et un peu de sauce de poisson ou de sel pour rectifier uniquement après la réduction.',
+      '2 brins de coriandre ou 1 petite ciboule et 1 quartier de citron vert, à ajouter uniquement hors du feu.'
     ],
     experiments: [
       'Goûter le bouillon avant et après réduction pour sentir la concentration.',
@@ -347,10 +347,10 @@ export const workshops: Workshop[] = [
       'Créer des bouchées différentes avec les mêmes préparations.'
     ],
     prepare: [
-      'Du riz ou une autre base déjà prête.',
-      'Un plat chaud.',
-      'Un élément frais ou acidulé.',
-      'Un condiment servi séparément.'
+      'Un bol de riz jasmin déjà cuit et maintenu au chaud, à partager entre deux personnes.',
+      'Un plat chaud déjà entièrement cuit, par exemple un lok lak au bœuf ou un amok de poisson.',
+      'Quelques tranches de concombre lavé et des feuilles de coriandre, ou des pickles de carotte-concombre déjà préparés.',
+      'Un petit bol de condiment citron vert-poivre, ou de sauce de poisson diluée, à doser individuellement.'
     ],
     experiments: [
       'Partir du riz et ajouter un seul élément riche.',
