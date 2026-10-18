@@ -28,7 +28,8 @@ const bySlug = new Map(all.map((item) => [item.slug, item]));
 // has passed its own production validation.
 const releasedWorkshopAudio = new Set([
   'piler-aromates-au-mortier',
-  'equilibrer-une-sauce'
+  'equilibrer-une-sauce',
+  'saisir-viande-poele'
 ]);
 
 export function getWorkshopAudio(slug: string): WorkshopAudioInfo | undefined {
