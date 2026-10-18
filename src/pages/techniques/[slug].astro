@@ -1,0 +1,146 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import EditorialSectionHero from '../../components/EditorialSectionHero.astro';
+import { recipeTechniqueGuides } from '../../data/recipeTechniques';
+import type { RecipeTechniqueGuide } from '../../data/recipeTechniques';
+import { recipes } from '../../data/recipes';
+import '../../styles/v16-editorial.css';
+import '../../styles/v19-premium-pages.css';
+import '../../styles/editorial-shared-hero.css';
+import '../../styles/recipe-techniques.css';
+
+export function getStaticPaths() {
+  return recipeTechniqueGuides.map((guide) => ({
+    params: { slug: guide.slug },
+    props: { guide }
+  }));
+}
+
+const { guide } = Astro.props as { guide: RecipeTechniqueGuide };
+const url = `https://www.cuisine-du-cambodge.com/techniques/${guide.slug}/`;
+const linkedRecipes = recipes.filter((recipe) => guide.recipeSlugs.includes(recipe.slug));
+
+const howToSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: guide.title,
+  description: guide.description,
+  inLanguage: 'fr-FR',
+  url,
+  image: new URL(guide.image, Astro.site ?? new URL('https://www.cuisine-du-cambodge.com')).href,
+  supply: guide.supplies.map((supply) => ({ '@type': 'HowToSupply', name: supply })),
+  step: guide.steps.map((step, index) => ({
+    '@type': 'HowToStep',
+    position: index + 1,
+    name: step.title,
+    text: step.text,
+    url: `${url}#etape-${index + 1}`
+  }))
+};
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://www.cuisine-du-cambodge.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Recettes', item: 'https://www.cuisine-du-cambodge.com/recettes/' },
+    { '@type': 'ListItem', position: 3, name: guide.title, item: url }
+  ]
+};
+---
+<BaseLayout title={`${guide.title} | Cuisine du Cambodge`} description={guide.description} image={guide.image} imageAlt={guide.imageAlt}>
+  <SiteHeader />
+  <main class="v16-editorial v16-glossary-page recipe-technique-page">
+    <EditorialSectionHero
+      kicker="Le carnet des gestes"
+      title={guide.title}
+      description={guide.introduction}
+      image={guide.image}
+      imageWidth={guide.imageWidth}
+      imageHeight={guide.imageHeight}
+    >
+      <nav class="recipe-technique-quicklinks" aria-label="Navigation dans le guide">
+        <a href="#ingredients">Quantités</a>
+        <a href="#preparation">Étapes détaillées</a>
+        <a href="#recettes-associees">Recettes concernées</a>
+      </nav>
+    </EditorialSectionHero>
+
+    <div class="recipe-technique-content">
+      <section class="recipe-technique-facts" aria-label="Informations pratiques">
+        <p><strong>Temps</strong> {guide.preparation}</p>
+        <p><strong>Quantité</strong> {guide.yieldLabel}</p>
+      </section>
+
+      <div class="recipe-technique-layout">
+        <aside id="ingredients" class="recipe-technique-supplies">
+          <p class="eyebrow">Ce qu’il faut</p>
+          <h2>Ingrédients et proportions</h2>
+          <ul>{guide.supplies.map((supply) => <li>{supply}</li>)}</ul>
+        </aside>
+
+        <section id="preparation" class="recipe-technique-method">
+          <p class="eyebrow">À faire chez soi</p>
+          <h2>La préparation, sans étape implicite</h2>
+          <ol>
+            {guide.steps.map((step, index) => (
+              <li id={`etape-${index + 1}`}>
+                <span class="recipe-technique-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                <div>
+                  <h3>{step.title}</h3>
+                  <p>{step.text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </div>
+
+      <section class="recipe-technique-alternatives" aria-labelledby="technique-alternatives-title">
+        <p class="eyebrow">Adapter avec ce que vous avez</p>
+        <h2 id="technique-alternatives-title">Variantes et précautions</h2>
+        <div>
+          {guide.alternatives.map((item) => (
+            <article><h3>{item.title}</h3><p>{item.text}</p></article>
+          ))}
+        </div>
+      </section>
+
+      <section class="recipe-technique-faq" aria-labelledby="technique-faq-title">
+        <p class="eyebrow">Questions fréquentes</p>
+        <h2 id="technique-faq-title">Comprendre ce que vous préparez</h2>
+        {guide.questions.map((item) => (
+          <details><summary>{item.question}</summary><p>{item.answer}</p></details>
+        ))}
+      </section>
+
+      <section id="recettes-associees" class="recipe-technique-related" aria-labelledby="technique-recipes-title">
+        <p class="eyebrow">Passer à table</p>
+        <h2 id="technique-recipes-title">Utiliser cette préparation dans une recette</h2>
+        <div>
+          {linkedRecipes.map((recipe) => (
+            <a href={`/recettes/${recipe.slug}/`}>
+              <span>Recette cambodgienne</span>
+              <strong>{recipe.title}</strong>
+              <p>{recipe.intro}</p>
+              <em>Voir la recette →</em>
+            </a>
+          ))}
+          {guide.workshopSlug && (
+            <a href={`/apprendre/${guide.workshopSlug}/`}>
+              <span>Atelier culinaire</span>
+              <strong>Approfondir la technique</strong>
+              <p>Retrouvez les gestes et les repères de goût dans un atelier guidé.</p>
+              <em>Voir l’atelier →</em>
+            </a>
+          )}
+        </div>
+      </section>
+      <nav class="recipe-technique-back"><a href="/recettes/">← Revenir à toutes les recettes</a></nav>
+    </div>
+  </main>
+  <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <SiteFooter />
+</BaseLayout>
