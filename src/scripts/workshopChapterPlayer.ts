@@ -263,6 +263,7 @@ export function initWorkshopChapterPlayers(): void {
       if (!mobileViewport.matches || !(event.target instanceof Element)) return;
       if (event.target.closest('input, a, [data-mobile-follow], [data-mobile-chapter]')) return;
       swipeStart = { x: event.clientX, y: event.clientY };
+      (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
     }
     function gestureEnd(event: PointerEvent): void {
       if (!swipeStart || !mobileViewport.matches) return;
