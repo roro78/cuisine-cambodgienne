@@ -14,16 +14,16 @@ La restauration SEO n'autorise **pas** des redirections vers des pages de thème
 | `/recettes/recettes_khmeres_poulet_curry.php` | Pays du Sourire, recette de poulet au curry | **En attente** : restaurer une véritable recette de curry khmer, puis 301 vers sa nouvelle URL ; ne pas envoyer vers amok. |
 | `/nom-krob-totim-dessert-cambodgien-tapioca` | Forum du Routard (30 mai 2017) | **En attente** : recette dessert châtaignes d'eau/tapioca à reconstruire et contrôler ; distincte de num plae ai. |
 | `/recette-cambodgienne-samla-mchou-yuan` | Publication Instagram ancienne | **En attente** : la soupe aigre `/recettes/samlor-machu/` ne documente pas nécessairement la variante « yuan » ; comparer la recette avant toute 301. |
-| `/le-riz-symbole-de-vie-au-cambodge/` | Document pédagogique Genially | **En attente** : nouvelle fiche culturelle avec sources, sans redirection vers l'accueil. |
+| `/le-riz-symbole-de-vie-au-cambodge/` | Document pédagogique Genially | **301 programmée** vers `/culture/le-riz-symbole-de-vie-au-cambodge/` ; article culturel original créé avec références FAO et UNESCO. |
 | `/les-marches-cambodgiens-experience-incontournable-du-tourisme` | Wikipédia « Cynophagie » | **En attente** : vérifier le thème et le contexte original ; ne pas publier d'affirmations inexactes ni rediriger hors sujet. |
 
 ## Contrôle de l'implémentation
 
-- `public/.htaccess` contient uniquement les redirections dont la correspondance est vérifiée.
-- `node scripts/check-seo-legacy-redirects.mjs` vérifie la règle exacte, l'existence de la page de destination et (après compilation) que `dist/.htaccess` est réellement présent.
-- CI GitHub effectue ce contrôle après le build ; le workflow de publication contrôlée OVH le répète avant de modifier `ovh-production`.
-- L'existence de `dist/.htaccess` n'atteste **pas** de l'application des règles : vérifier après transfert OVH `curl -I https://www.cuisine-du-cambodge.com/recettes-cambodgiennes/` et attendre **301** avec `Location: https://www.cuisine-du-cambodge.com/recettes/`.
-- Vérifier que `/recettes/` répond **200**, les autres anciennes pages restent **404** tant qu'elles ne sont pas éditorialement restaurées, et que le `sitemap.xml` canonique conserve uniquement les URL définitives.
+- `public/.htaccess` contient uniquement les redirections dont la correspondance est vérifiée (deux à ce stade : catalogue des recettes, article riz restauré).
+- `node scripts/check-seo-legacy-redirects.mjs` vérifie les deux règles exactes, l'existence des pages de destination et (après compilation) que `dist/.htaccess` est réellement présent.
+- CI GitHub effectue ce contrôle après le build ; les workflows CI et publication préservent explicitement `public/.htaccess` vers `dist/.htaccess` avant validation et avant de modifier `ovh-production`.
+- L'existence de `dist/.htaccess` n'atteste **pas** de l'application des règles : vérifier après transfert OVH `curl -I https://www.cuisine-du-cambodge.com/recettes-cambodgiennes/` et attendre **301** avec `Location: https://www.cuisine-du-cambodge.com/recettes/`. Répéter pour l'ancienne URL sur le riz en contrôlant une redirection vers `/culture/le-riz-symbole-de-vie-au-cambodge/`, qui doit répondre **200**.
+- Vérifier que `/recettes/` répond **200**, les quatre autres anciennes pages restent **404** tant qu'elles ne sont pas éditorialement restaurées, et que le `sitemap.xml` canonique conserve uniquement les URL définitives.
 - Ne jamais déployer automatiquement sur une fusion ; respecter le workflow `deploy-ovh.yml` à SHA épinglé puis la synchronisation réelle OVH (cf. `docs/release-runbook-2026-10-12.md`).
 
 ## Sources externes de l'audit
