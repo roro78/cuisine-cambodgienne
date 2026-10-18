@@ -1,0 +1,200 @@
+{
+  "name": "Cuisine du Cambodge - 02 - Publication approuvée Facebook et création Instagram",
+  "nodes": [
+    {
+      "id": "9c638b86-ba0a-5e21-ade6-6df2c39d8ddc",
+      "name": "Tous les jours à 12 h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 12,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "f482d3d8-0da7-5c52-9fc7-7df78e8a309c",
+      "name": "Claim atomique uniquement si validé",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH chosen AS (SELECT id FROM cuisine_social.posts WHERE status='approved' AND scheduled_date <= (NOW() AT TIME ZONE 'Europe/Paris')::date AND fb_state='pending' AND ig_state='pending' ORDER BY scheduled_date,id FOR UPDATE SKIP LOCKED LIMIT 1) UPDATE cuisine_social.posts p SET status='publishing',fb_state='submitting',ig_state='creating',publishing_started_at=NOW(),updated_at=NOW() FROM chosen WHERE p.id=chosen.id RETURNING p.*",
+        "options": {}
+      }
+    },
+    {
+      "id": "f69a14ca-84c0-5d80-89ba-5c806fa21e3a",
+      "name": "Publier la photo Facebook",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v26.0/CONFIGURER_FACEBOOK_PAGE_ID/photos",
+        "options": {},
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{JSON.stringify({url:$json.image_url,caption:$json.facebook_caption})}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      }
+    },
+    {
+      "id": "563b8446-e302-5aa2-90b3-edcefa9136da",
+      "name": "Mémoriser le résultat Facebook",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE cuisine_social.posts SET fb_state='published',facebook_post_id=$1,updated_at=NOW() WHERE id=$2 AND fb_state='submitting' RETURNING *",
+        "options": {
+          "queryReplacement": "={{[String($json.id||$json.post_id||''),$('Claim atomique uniquement si validé').first().json.id]}}"
+        }
+      }
+    },
+    {
+      "id": "5107785c-598d-5aa4-b05a-ea15fc26afc9",
+      "name": "Créer le conteneur Instagram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v26.0/CONFIGURER_INSTAGRAM_USER_ID/media",
+        "options": {},
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{JSON.stringify({image_url:$('Claim atomique uniquement si validé').first().json.image_url,caption:$('Claim atomique uniquement si validé').first().json.instagram_caption})}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      }
+    },
+    {
+      "id": "06dcdbd7-769c-5c38-8105-8270053ab775",
+      "name": "Sauver le conteneur Instagram",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1200,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE cuisine_social.posts SET instagram_container_id=$1,ig_state='container_created',updated_at=NOW() WHERE id=$2 AND ig_state='creating' RETURNING id,fb_state,ig_state",
+        "options": {
+          "queryReplacement": "={{[String($json.id||''),$('Claim atomique uniquement si validé').first().json.id]}}"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Tous les jours à 12 h": {
+      "main": [
+        [
+          {
+            "node": "Claim atomique uniquement si validé",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claim atomique uniquement si validé": {
+      "main": [
+        [
+          {
+            "node": "Publier la photo Facebook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publier la photo Facebook": {
+      "main": [
+        [
+          {
+            "node": "Mémoriser le résultat Facebook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mémoriser le résultat Facebook": {
+      "main": [
+        [
+          {
+            "node": "Créer le conteneur Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Créer le conteneur Instagram": {
+      "main": [
+        [
+          {
+            "node": "Sauver le conteneur Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Paris"
+  },
+  "active": false,
+  "pinData": {},
+  "tags": []
+}
