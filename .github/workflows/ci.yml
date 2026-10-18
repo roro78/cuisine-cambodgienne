@@ -45,6 +45,9 @@ jobs:
       - name: Editorial regression contract
         run: npm run test:editorial
 
+      - name: Validate all six Coral MP3s and actual chapter boundaries (offline)
+        run: node scripts/check-workshop-audio.mjs
+
       - name: Verify photo inventory references
         run: node scripts/audit-photo-coverage.mjs
 
