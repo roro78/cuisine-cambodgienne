@@ -1,0 +1,20 @@
+# Cuisine du Cambodge — restauration SEO des anciennes URL
+# Règles limitées aux équivalences éditoriales vérifiées.
+# Apache/OVH : mod_alias, présent sur l'hébergement mutualisé.
+#
+# Ancienne page de recettes citée par Wikipédia -> catalogue des recettes actuel.
+# Correspondance de rubrique vérifiée ; conserver 301 même si l'ancienne URL
+# n'existe plus sur le disque, afin d'éviter un retour 404.
+RedirectMatch 301 ^/recettes-cambodgiennes/?$ https://www.cuisine-du-cambodge.com/recettes/
+
+# Ancien article « le riz, symbole de vie » -> dossier culturel documenté.
+RedirectMatch 301 ^/le-riz-symbole-de-vie-au-cambodge/?$ https://www.cuisine-du-cambodge.com/culture/le-riz-symbole-de-vie-au-cambodge/
+
+# Ancienne recette de curry de poulet khmer : fiche culinaire réécrite, même plat.
+RedirectMatch 301 ^/recettes/recettes_khmeres_poulet_curry[.]php$ https://www.cuisine-du-cambodge.com/recettes/curry-poulet-khmer/
+
+# Nom Krob Totim : ancienne URL du dessert, recette dédiée reconstituée.
+RedirectMatch 301 ^/nom-krob-totim-dessert-cambodgien-tapioca/?$ https://www.cuisine-du-cambodge.com/recettes/nom-krob-totim/
+
+# Samla M'Chou Yuon : variante poissonneuse reconstituée, distincte du Samlor Machu générique.
+RedirectMatch 301 ^/recette-cambodgienne-samla-mchou-yuan/?$ https://www.cuisine-du-cambodge.com/recettes/samla-mchou-yuon/

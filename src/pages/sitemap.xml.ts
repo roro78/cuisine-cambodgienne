@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { recipes } from '../data/recipes';
+import { restoredRecipes } from '../data/restoredRecipes';
 import { ingredientGuides } from '../data/ingredients';
 import { cultureArticles } from '../data/culture';
 import { workshops } from '../data/workshops';
@@ -12,6 +13,7 @@ export const GET: APIRoute = ({ site }) => {
   const paths = [
     ...staticPaths,
     ...recipes.map((recipe) => `/recettes/${recipe.slug}/`),
+    ...restoredRecipes.map((recipe) => `/recettes/${recipe.slug}/`),
     ...ingredientGuides.map((ingredient) => `/ingredients/${ingredient.slug}/`),
     ...cultureArticles.map((article) => `/culture/${article.slug}/`),
     ...workshops.map((workshop) => `/apprendre/${workshop.slug}/`),

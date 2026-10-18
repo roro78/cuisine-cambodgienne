@@ -75,6 +75,11 @@ jobs:
       - name: Production build
         run: npm run build
 
+      - name: Verify copied Apache SEO redirect file
+        run: |
+          cp public/.htaccess dist/.htaccess
+          node scripts/check-seo-legacy-redirects.mjs
+
       - name: Built pages and deployment boundaries
         run: npm run test:built-experiences
         
