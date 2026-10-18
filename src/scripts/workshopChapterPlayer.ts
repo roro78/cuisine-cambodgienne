@@ -44,9 +44,14 @@ export function initWorkshopChapterPlayers(): void {
     const status = root.querySelector<HTMLElement>('[data-player-status]');
     const transcript = root.querySelector<HTMLElement>('[data-player-transcript]');
     const chapterButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-player-chapter]')];
+    const mobileToggle = root.querySelector<HTMLButtonElement>('[data-player-mobile-toggle]');
+    const mobileExtras = root.querySelector<HTMLElement>('.workshop-player-extras');
+    const mobileChapter = root.querySelector<HTMLElement>('[data-player-mobile-chapter]');
     if (!audio || !playButton || !seek || !timer || !previous || !next || !stopButton || !followButton || !status || !transcript) return;
 
     root.dataset.playerEnhanced = 'true';
+    // The player itself becomes the mobile dock; there is only one audio element.
+    document.body.classList.add('has-workshop-audio-dock');
     const plannedDuration = Number(root.dataset.audioDuration) || chapters.at(-1)?.start || 0;
     let currentChapter = -1;
     let following = false;
@@ -63,7 +68,11 @@ export function initWorkshopChapterPlayers(): void {
       if (index === 0) {
         if (scroll) {
           automaticScrollUntil = Date.now() + 1800;
-          root.scrollIntoView({
+          // A fixed mobile dock cannot be used as a scroll target.
+          const introTarget = window.matchMedia('(max-width: 780px)').matches
+            ? root.closest<HTMLElement>('.workshop-tutorial')?.querySelector<HTMLElement>('.workshop-tutorial-heading') ?? root
+            : root;
+          introTarget.scrollIntoView({
             behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
             block: 'start'
           });
@@ -92,6 +101,9 @@ export function initWorkshopChapterPlayers(): void {
         else button.removeAttribute('aria-current');
       });
       transcript!.textContent = chapters[chapter].text;
+      if (mobileChapter) mobileChapter.textContent = chapter === 0
+        ? 'Présentation de l’atelier'
+        : 'Étape ' + chapter + ' · ' + chapters[chapter].title;
       status!.textContent = (chapter === 0 ? 'Présentation' : 'Étape ' + chapter + ' sur 4')
         + ' — ' + chapters[chapter].title + (audio.paused ? ' · en pause' : ' · en cours');
       previous!.disabled = chapter === 0;
@@ -162,6 +174,18 @@ export function initWorkshopChapterPlayers(): void {
     });
     previous.addEventListener('click', () => jumpTo(Math.max(0, chapterAt(audio.currentTime, chapters) - 1), true));
     next.addEventListener('click', () => jumpTo(Math.min(chapters.length - 1, chapterAt(audio.currentTime, chapters) + 1), true));
+    mobileToggle?.addEventListener('click', () => {
+      if (!mobileExtras) return;
+      const open = !mobileExtras.classList.contains('is-open');
+      mobileExtras.classList.toggle('is-open', open);
+      mobileToggle.setAttribute('aria-expanded', String(open));
+    });
+    root.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || !mobileExtras?.classList.contains('is-open')) return;
+      mobileExtras.classList.remove('is-open');
+      mobileToggle?.setAttribute('aria-expanded', 'false');
+      mobileToggle?.focus();
+    });
     chapterButtons.forEach((button) => button.addEventListener('click', () => {
       const index = Number(button.dataset.playerChapter);
       if (Number.isInteger(index)) jumpTo(index, true);
