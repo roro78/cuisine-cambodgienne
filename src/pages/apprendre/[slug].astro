@@ -91,6 +91,7 @@ const workshopExperiences: Record<string, { image: string; imageAlt: string; que
 const workshopExperience = workshopExperiences[workshop.slug];
 const learning = getWorkshopLearning(workshop.slug);
 const workshopAudio = getWorkshopAudio(workshop.slug);
+const brothGuideHref = workshop.slug === 'bouillon-leger-savoureux' ? '/techniques/bouillon-leger-maison/' : undefined;
 if (!learning) throw new Error(`Missing instructional module: ${workshop.slug}`);
 
 const breadcrumbSchema = {
@@ -189,6 +190,11 @@ const howToSchema = {
         <details class="workshop-lab-kit">
           <summary>Le matériel à préparer ({workshop.prepare.length}) <span aria-hidden="true">+</span></summary>
           <ul>{workshop.prepare.map((item) => <li>{item}</li>)}</ul>
+          {brothGuideHref && (
+            <p class="workshop-lab-preparation-guide">
+              Vous partez de zéro ? <a href={brothGuideHref}>Préparer un bouillon léger maison : ingrédients, quantités et cuisson →</a>
+            </p>
+          )}
         </details>
       </div>
     </section>
