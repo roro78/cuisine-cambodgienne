@@ -98,6 +98,14 @@ jobs:
           node scripts/check-workshop-audio.mjs --slug=equilibrer-une-sauce
           node tests/workshop-sauce-audio-browser.test.mjs
 
+      - name: Atelier viande Coral - MP3 integrity and responsive player
+        if: github.ref == 'refs/heads/feat/atelier3-viande-coral-mobile-20261018'
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: |
+          node scripts/check-workshop-audio.mjs --slug=saisir-viande-poele
+          node tests/workshop-viande-audio-browser.test.mjs
+
       - name: Install Playwright video encoder
         run: node ./node_modules/playwright-core/cli.js install ffmpeg
 
