@@ -43,7 +43,7 @@ try {
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
     try {
-      const response = await page.goto(base + '/apprendre/fraicheur-herbes-agrumes/', { waitUntil: 'domcontentloaded' });
+      const response = await page.goto(base + '/apprendre/saisir-viande-poele/', { waitUntil: 'domcontentloaded' });
       assert.equal(response?.status(), 200);
       const mp3 = await page.request.get(base + '/audio/workshops/saisir-viande-poele/atelier-coral.mp3');
       assert.equal(mp3.status(), 200, 'MP3 must be deployed without TTS regeneration');
@@ -87,7 +87,7 @@ try {
         assert.ok(await page.locator('.workshop-player-main-controls').isVisible(),
           'Desktop keeps full-sized existing player');
       }
-      const other = await page.goto(base + '/apprendre/saisir-viande-poele/', { waitUntil: 'domcontentloaded' });
+      const other = await page.goto(base + '/apprendre/fraicheur-herbes-agrumes/', { waitUntil: 'domcontentloaded' });
       assert.equal(other?.status(), 200);
       assert.equal(await page.locator('[data-workshop-chapter-player]').count(), 0,
         'Fourth workshop remains locked until independently validated');
