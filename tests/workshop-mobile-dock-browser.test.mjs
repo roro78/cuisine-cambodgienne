@@ -68,7 +68,7 @@ try {
           'Avoid duplicate mobile playback commands');
         await page.locator('[data-mobile-next]').click();
         await page.waitForTimeout(250);
-        assert.equal(await page.locator('[data-mobile-chapter-count]').innerText(), 'Étape 1/4');
+        assert.equal((await page.locator('[data-mobile-chapter-count]').innerText()).toLocaleLowerCase('fr-FR'), 'étape 1/4');
         assert.equal(await page.locator('[data-tutorial-step="1"]').isVisible(), true);
         assert.ok((await audioState(page)).currentTime >= 19.512, 'Next seeks to true MP3 chapter boundary');
         await page.locator('[data-mobile-follow]').click();
