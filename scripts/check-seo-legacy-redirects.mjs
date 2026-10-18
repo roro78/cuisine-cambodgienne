@@ -9,12 +9,13 @@ const expected = [
   'RedirectMatch 301 ^/recettes-cambodgiennes/?$ https://www.cuisine-du-cambodge.com/recettes/',
   'RedirectMatch 301 ^/le-riz-symbole-de-vie-au-cambodge/?$ https://www.cuisine-du-cambodge.com/culture/le-riz-symbole-de-vie-au-cambodge/',
   'RedirectMatch 301 ^/recettes/recettes_khmeres_poulet_curry[.]php$ https://www.cuisine-du-cambodge.com/recettes/curry-poulet-khmer/',
-  'RedirectMatch 301 ^/nom-krob-totim-dessert-cambodgien-tapioca/?$ https://www.cuisine-du-cambodge.com/recettes/nom-krob-totim/'
+  'RedirectMatch 301 ^/nom-krob-totim-dessert-cambodgien-tapioca/?$ https://www.cuisine-du-cambodge.com/recettes/nom-krob-totim/',
+  'RedirectMatch 301 ^/recette-cambodgienne-samla-mchou-yuan/?$ https://www.cuisine-du-cambodge.com/recettes/samla-mchou-yuon/'
 ];
 for (const rule of expected) assert.ok(lines.includes(rule), `Missing exact Apache 301: ${rule}`);
 assert.equal(lines.filter((line) => line.startsWith('RedirectMatch 301 ')).length, expected.length,
   'Review any extra historical redirects before releasing');
-assert.ok(!/samla-mchou-yuan|les-marches-cambodgiens/.test(apache),
+assert.ok(!/les-marches-cambodgiens/.test(apache),
   'Undocumented redirect: these old URLs are not yet confirmed editorial matches');
 
 const culture = read('src/data/culture.ts');
@@ -25,7 +26,7 @@ const sitemapSource = read('src/pages/sitemap.xml.ts');
 const index = read('src/pages/recettes/index.astro');
 const template = read('src/components/RestoredRecipe.astro');
 assert.ok(template.includes("recipeJsonLd") && template.includes("schema.org"), 'Recipe schema missing');
-for (const slug of ['curry-poulet-khmer', 'nom-krob-totim']) {
+for (const slug of ['curry-poulet-khmer', 'nom-krob-totim', 'samla-mchou-yuon']) {
   assert.ok(restored.includes(`slug: '${slug}'`), `Recipe data missing: ${slug}`);
   assert.ok(existsSync(`src/pages/recettes/${slug}.astro`), `Recipe route missing: ${slug}`);
 }
@@ -38,6 +39,7 @@ if (existsSync('dist/')) {
   const expectedHtml = [
     'dist/recettes/curry-poulet-khmer/index.html',
     'dist/recettes/nom-krob-totim/index.html',
+    'dist/recettes/samla-mchou-yuon/index.html',
     'dist/culture/le-riz-symbole-de-vie-au-cambodge/index.html'
   ];
   for (const path of expectedHtml) assert.ok(existsSync(path), `Built destination missing: ${path}`);
@@ -46,4 +48,4 @@ if (existsSync('dist/')) {
   for (const slug of ['curry-poulet-khmer', 'nom-krob-totim'])
     assert.ok(sitemap.includes(`/recettes/${slug}/`), `Sitemap missing: ${slug}`);
 }
-console.log('PASS: four relevant 301 rules, historical recipes, sitemap and deployment artefacts.');
+console.log('PASS: five relevant 301 rules, historical recipes, sitemap and deployment artefacts.');
