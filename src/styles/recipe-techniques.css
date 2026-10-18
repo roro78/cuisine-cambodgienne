@@ -1,0 +1,59 @@
+/* Pages techniques : même cadre éditorial que le glossaire, lecture guidée et accessible. */
+.recipe-technique-page{background:#f5efe5;color:#302923}
+.recipe-technique-quicklinks{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.25rem}
+.recipe-technique-quicklinks a{display:inline-flex;align-items:center;padding:.55rem .85rem;border:1px solid #b9a790;border-radius:2rem;color:#44372b;text-decoration:none;background:#f7f0e5;font-size:.92rem}
+.recipe-technique-quicklinks a:hover,.recipe-technique-quicklinks a:focus-visible{background:#e9dbc8;outline-offset:3px}
+.recipe-technique-content{max-width:1320px;margin:auto;padding:2rem var(--page-pad,clamp(1rem,4vw,4rem)) 5rem}
+.recipe-technique-content .eyebrow{color:#795637;font-size:.77rem;letter-spacing:.12em;text-transform:uppercase}
+.recipe-technique-facts{display:flex;flex-wrap:wrap;gap:.5rem 2.5rem;border-bottom:1px solid #cebca5;margin-bottom:2.2rem;padding:.9rem 0 1.1rem}
+.recipe-technique-facts p{margin:0;line-height:1.65}
+.recipe-technique-facts strong{display:block;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:#715440}
+.recipe-technique-layout{display:grid;grid-template-columns:minmax(230px, .85fr) minmax(0,1.65fr);gap:clamp(1.5rem,5vw,5rem);align-items:start}
+.recipe-technique-content h2{font:400 clamp(1.8rem,3vw,2.6rem)/1.12 var(--serif,Georgia,serif);letter-spacing:-.02em;margin:.3rem 0 1.4rem}
+.recipe-technique-content h3{font:500 clamp(1.2rem,1.8vw,1.5rem)/1.3 var(--serif,Georgia,serif);margin:0 0 .45rem}
+.recipe-technique-content p{line-height:1.7}
+.recipe-technique-supplies{background:#eadfcf;border:1px solid #d7c6ae;padding:clamp(1.25rem,3vw,2rem);border-radius:.6rem;scroll-margin-top:7rem}
+.recipe-technique-supplies ul{margin:0;padding-left:1.2rem}
+.recipe-technique-supplies li{margin:.75rem 0;line-height:1.6}
+.recipe-technique-method{min-width:0;scroll-margin-top:7rem}
+.recipe-technique-method ol{margin:0;padding:0;list-style:none}
+.recipe-technique-method li{display:grid;grid-template-columns:2.6rem minmax(0,1fr);gap:1rem;border-top:1px solid #d9cabc;padding:1.25rem 0;scroll-margin-top:7rem}
+.recipe-technique-number{display:grid;place-items:center;border:1px solid #bea182;width:2.4rem;height:2.4rem;border-radius:50%;font-size:.85rem}
+.recipe-technique-method li p{margin:0;color:#554739}
+.recipe-technique-alternatives,.recipe-technique-faq,.recipe-technique-related{border-top:1px solid #d1c0aa;padding-top:2rem;margin-top:3rem}
+.recipe-technique-alternatives>div,.recipe-technique-related>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.recipe-technique-alternatives article,.recipe-technique-related a{border:1px solid #d3c2ad;background:#fffaf2;padding:1.35rem;border-radius:.5rem;min-width:0}
+.recipe-technique-alternatives p,.recipe-technique-related p{margin:0;color:#594d40}
+.recipe-technique-faq details{border-bottom:1px solid #d9cabc;padding:1rem 0}
+.recipe-technique-faq summary{cursor:pointer;font-weight:600;line-height:1.6}
+.recipe-technique-faq details p{max-width:70ch;margin:.7rem 0 0;color:#554739}
+.recipe-technique-related{scroll-margin-top:7rem}
+.recipe-technique-related a{display:block;color:inherit;text-decoration:none;transition:border-color .2s}
+.recipe-technique-related a:hover,.recipe-technique-related a:focus-visible{border-color:#946a3f;outline-offset:3px}
+.recipe-technique-related span{display:block;color:#765236;text-transform:uppercase;letter-spacing:.1em;font-size:.74rem;margin-bottom:.5rem}
+.recipe-technique-related strong{display:block;font:400 1.5rem/1.2 var(--serif,Georgia,serif);margin-bottom:.6rem}
+.recipe-technique-related em{display:block;font-style:normal;margin-top:1rem;color:#714b24}
+.recipe-technique-back{margin-top:2rem}.recipe-technique-back a{color:#714b24;text-underline-offset:.25em}
+.recipe-technique-guides a{color:#714b24;text-underline-offset:.2em}
+@media(max-width:760px){
+ .recipe-technique-content{padding:1.25rem 1rem 3rem}
+ .recipe-technique-layout{grid-template-columns:minmax(0,1fr);gap:1.75rem}
+ .recipe-technique-alternatives>div,.recipe-technique-related>div{grid-template-columns:1fr}
+ .recipe-technique-method li{grid-template-columns:2.3rem minmax(0,1fr);gap:.75rem}
+ .recipe-technique-facts{gap:.75rem 1.5rem}
+}
+
+/* Découverte des bases depuis le catalogue, sans perturber les cartes de recettes. */
+.recipe-technique-explore{padding:3rem var(--page-pad,clamp(1rem,4vw,4rem)) 4rem;background:#e9ddca}
+.recipe-technique-explore h2{font:400 clamp(2rem,3.5vw,3rem)/1.12 var(--serif,Georgia,serif);margin:.5rem 0 1rem}
+.recipe-technique-explore>p{max-width:70ch;line-height:1.65}
+.recipe-technique-explore>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-top:1.5rem}
+.recipe-technique-explore a{display:flex;flex-direction:column;gap:.6rem;padding:1.25rem;border:1px solid #c6b196;border-radius:.5rem;background:#fff8ee;text-decoration:none;color:#392f25}
+.recipe-technique-explore a:hover,.recipe-technique-explore a:focus-visible{border-color:#815b35;outline-offset:3px}
+.recipe-technique-explore strong{font:400 1.45rem/1.25 var(--serif,Georgia,serif)}
+.recipe-technique-explore span{color:#655647;font-size:.94rem}
+.recipe-technique-explore em{font-style:normal;color:#73502e;font-size:.94rem}
+@media(max-width:620px){
+ .recipe-technique-explore{padding:2rem 1rem 3rem}
+ .recipe-technique-explore>div{grid-template-columns:minmax(0,1fr)}
+}

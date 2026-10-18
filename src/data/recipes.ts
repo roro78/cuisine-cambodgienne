@@ -82,15 +82,15 @@ export const recipes: Recipe[] = [
       { quantity: 2, name: 'œufs', group: 'Base' },
       { quantity: 1, unit: 'c. à soupe', name: 'sauce de poisson', group: 'Assaisonnement' },
       { quantity: 1, unit: 'c. à café', name: 'sucre de palme', group: 'Assaisonnement' },
-      { name: 'Feuilles de combava finement émincées', group: 'Finition', scalable: false },
-      { name: 'Basilic thaï ou basilic asiatique', group: 'Finition', scalable: false }
+      { quantity: 2, name: 'feuilles de combava, sans nervure, finement émincées', group: 'Finition', scalable: false },
+      { quantity: 8, name: 'feuilles de basilic thaï ou asiatique', group: 'Finition', scalable: false }
     ],
     steps: [
-      { title: 'Préparer la base', text: 'Mélangez le kroeung avec le lait de coco jusqu’à obtenir une préparation homogène.', cue: 'La base doit être lisse, très parfumée et sans gros morceaux fibreux.' },
+      { title: 'Préparer la base', text: 'Réservez 1 c. à soupe des 250 ml de lait de coco pour la finition. Dans un saladier, mélangez le reste du lait de coco avec les 3 c. à soupe de kroeung jaune jusqu’à obtenir une base homogène.', cue: 'La base doit être lisse, très parfumée et sans gros morceaux fibreux.' },
       { title: 'Assaisonner', text: 'Ajoutez la sauce de poisson et le sucre, mélangez puis goûtez pour rectifier l’assaisonnement. Incorporez ensuite les œufs battus. Ne goûtez plus la préparation après l’ajout des œufs crus ni après celui du poisson cru.', mistake: 'Ne goûtez jamais la préparation après avoir ajouté les œufs ou le poisson crus.' },
       { title: 'Ajouter le poisson', text: 'Coupez le poisson en morceaux réguliers puis incorporez-le délicatement.', cue: 'Les morceaux doivent rester entiers et bien enrobés.' },
-      { title: 'Cuire doucement', text: 'Répartissez dans des ramequins puis cuisez à la vapeur.', duration: '18–25 min', cue: 'Le centre doit être pris mais encore souple.', mistake: 'Une vapeur trop forte resserre la texture et dessèche le poisson.' },
-      { title: 'Finir et servir', text: 'Ajoutez les herbes fraîches et un peu de lait de coco juste avant de servir.' }
+      { title: 'Cuire doucement', text: 'Versez le mélange avec les morceaux de poisson dans quatre ramequins. Placez-les dans un panier vapeur au-dessus d’une eau frémissante, couvrez et laissez cuire 18 à 25 minutes. Vérifiez que les œufs sont pris et que le poisson est entièrement cuit.', duration: '18–25 min', cue: 'Le centre doit être pris mais encore souple.', mistake: 'Une vapeur trop forte resserre la texture et dessèche le poisson.' },
+      { title: 'Finir et servir', text: 'Hors du feu, répartissez les feuilles de combava sans nervure, très finement ciselées, et les feuilles de basilic thaï ou asiatique. Ajoutez la cuillerée de lait de coco réservée, puis servez avec du riz.' }
     ],
     keyPoints: ['Cuisson douce', 'Rectifier l’assaisonnement avant les œufs et le poisson crus', 'Vérifier une cuisson complète avant de servir'],
     substitutions: ['À défaut de sucre de palme, utilisez un peu de sucre roux.', 'Un basilic doux peut dépanner si le basilic asiatique est introuvable.'],
@@ -133,13 +133,13 @@ export const recipes: Recipe[] = [
       { quantity: 1, name: 'gousse d’ail', group: 'Marinade' },
       { quantity: 2, name: 'citrons verts', group: 'Condiment' },
       { quantity: 2, unit: 'c. à café', name: 'poivre noir de Kampot fraîchement moulu', group: 'Condiment' },
-      { name: 'Tomate, concombre et salade', group: 'Service', scalable: false }
+      { name: '1 tomate, ½ concombre et 4 feuilles de salade', group: 'Service', scalable: false }
     ],
     steps: [
-      { title: 'Tout préparer avant la poêle', text: 'Coupez le bœuf en cubes, mélangez la marinade et préparez les crudités.', cue: 'Quand la poêle chauffe, tout doit déjà être à portée de main.' },
-      { title: 'Préparer le condiment', text: 'Mélangez jus de citron vert et poivre fraîchement moulu.', cue: 'Il doit être franchement acidulé et poivré.' },
+      { title: 'Tout préparer avant la poêle', text: 'Coupez le bœuf en cubes réguliers. Hachez la gousse d’ail, puis mélangez dans un bol les 2 c. à soupe de sauce soja, la sauce d’huître, le sucre et l’ail : gardez cette marinade à part pour la fin de cuisson. Coupez la tomate et le demi-concombre, puis lavez et égouttez les feuilles de salade.', cue: 'Quand la poêle chauffe, tout doit déjà être à portée de main.' },
+      { title: 'Préparer le condiment', text: 'Pressez les deux citrons verts. Mélangez leur jus avec les 2 c. à café de poivre noir de Kampot fraîchement moulu, dans un petit bol à servir séparément.', cue: 'Il doit être franchement acidulé et poivré.' },
       { title: 'Saisir le bœuf', text: 'Faites chauffer la poêle très fort puis saisissez le bœuf en deux fournées.', duration: '2–3 min par fournée', cue: 'La viande colore rapidement sans baigner dans son jus.', mistake: 'Surcharger la poêle fait chuter la température et la viande bouillit.' },
-      { title: 'Glacer rapidement', text: 'Ajoutez la marinade en fin de cuisson et mélangez quelques secondes.', cue: 'La sauce enrobe le bœuf sans former une grande quantité de jus dans la poêle.' },
+      { title: 'Glacer rapidement', text: 'Quand tous les morceaux de bœuf sont saisis, réunissez-les dans la poêle. Versez le mélange sauce soja, sauce d’huître, sucre et ail préparé au début ; remuez quelques secondes pour bien enrober la viande.', cue: 'La sauce enrobe le bœuf sans former une grande quantité de jus dans la poêle.' },
       { title: 'Servir immédiatement', text: 'Servez avec crudités et condiment citron-poivre.' }
     ],
     keyPoints: ['Poêle très chaude', 'Deux petites fournées', 'Sauce seulement en fin de cuisson'],
@@ -185,9 +185,9 @@ export const recipes: Recipe[] = [
       { quantity: 2, name: 'échalotes' }
     ],
     steps: [
-      { title: 'Émincer très finement', text: 'Coupez citronnelle, galanga, curcuma, ail et échalotes aussi finement que possible.', cue: 'Plus la coupe est fine, moins le mortier devra lutter contre les fibres.' },
+      { title: 'Émincer très finement', text: 'Ôtez les couches externes dures de la citronnelle et gardez la partie tendre. Pelez galanga, curcuma, ail et échalotes, puis coupez-les très finement. Prélevez 1 c. à café de zeste vert du combava sans la partie blanche amère.', cue: 'Plus la coupe est fine, moins le mortier devra lutter contre les fibres.' },
       { title: 'Commencer par les fibres', text: 'Pilez d’abord citronnelle et galanga.', duration: '5–8 min' },
-      { title: 'Ajouter le reste', text: 'Ajoutez curcuma, combava, ail puis échalotes progressivement.', cue: 'La pâte devient humide, compacte et très parfumée.' },
+      { title: 'Ajouter le reste', text: 'Ajoutez le curcuma émincé, le zeste de combava, l’ail et les échalotes, petit à petit, en pilant entre chaque ajout jusqu’à former une pâte souple et très parfumée.', cue: 'La pâte devient humide, compacte et très parfumée.' },
       { title: 'Finir la texture', text: 'Continuez jusqu’à ne presque plus sentir de gros morceaux sous le pilon.', cue: 'La pâte se tient et les longues fibres deviennent difficiles à distinguer.' }
     ],
     keyPoints: ['Couper fin avant de piler', 'Commencer par les ingrédients les plus fibreux'],
@@ -229,13 +229,13 @@ export const recipes: Recipe[] = [
       { quantity: 1, unit: 'c. à soupe', name: 'sucre roux', group: 'Marinade' },
       { quantity: 2, name: 'gousses d’ail', group: 'Marinade' },
       { quantity: 320, unit: 'g', name: 'riz jasmin cru', group: 'Service' },
-      { name: 'Concombre et carotte en pickles', group: 'Service', scalable: false }
+      { quantity: 200, unit: 'g', name: 'pickles égouttés de concombre et de carotte, préparés à l’avance', group: 'Service', scalable: false }
     ],
     steps: [
-      { title: 'Mariner le porc', text: 'Mélangez les ingrédients de marinade puis enrobez les tranches de porc.', duration: '15 min minimum', cue: 'Les tranches sont enrobées d’une fine couche de marinade.' },
-      { title: 'Cuire le riz', text: 'Rincez puis cuisez le riz pendant que le porc marine.' },
+      { title: 'Mariner le porc', text: 'Hachez les 2 gousses d’ail. Dans un saladier, mélangez la sauce soja, la sauce de poisson, le sucre roux et l’ail, puis enrobez les 600 g de tranches fines de porc. Couvrez, placez au réfrigérateur et laissez mariner au moins 15 minutes.', duration: '15 min minimum', cue: 'Les tranches sont enrobées d’une fine couche de marinade.' },
+      { title: 'Cuire le riz', text: 'Rincez les 320 g de riz jasmin cru à l’eau froide, puis faites-le cuire avec la quantité d’eau indiquée sur l’emballage. Égouttez les pickles de carotte et de concombre pendant la cuisson.' },
       { title: 'Caraméliser', text: 'Grillez ou poêlez le porc à feu vif jusqu’à obtenir des bords bien colorés.', cue: 'Les bords doivent légèrement caraméliser.', mistake: 'Une poêle tiède donne un porc pâle et humide.' },
-      { title: 'Assembler', text: 'Servez porc, riz et pickles ensemble.' }
+      { title: 'Assembler', text: 'Répartissez le riz jasmin chaud dans quatre assiettes. Déposez le porc entièrement cuit et caramélisé dessus, puis ajoutez les 200 g de pickles égouttés sur le côté.' }
     ],
     keyPoints: ['Tranches fines', 'Cuisson vive', 'Toujours ajouter une note fraîche et acidulée'],
     substitutions: ['Le filet de porc fonctionne, mais surveillez davantage la cuisson pour éviter qu’il sèche.'],
@@ -266,20 +266,20 @@ export const recipes: Recipe[] = [
     category: 'Soupe',
     moment: 'Petit-déjeuner ou déjeuner',
     ingredients: [
-      { quantity: 1.4, unit: 'l', name: 'bouillon de volaille ou de porc', group: 'Bouillon' },
+      { quantity: 1.4, unit: 'l', name: 'bouillon de volaille ou de porc, peu salé (maison ou prêt à l’emploi)', group: 'Bouillon' },
       { quantity: 300, unit: 'g', name: 'nouilles de riz', group: 'Bol' },
       { quantity: 300, unit: 'g', name: 'porc haché ou émincé', group: 'Garniture' },
       { quantity: 2, unit: 'c. à soupe', name: 'sauce de poisson', group: 'Bouillon' },
       { quantity: 1, unit: 'c. à café', name: 'sucre', group: 'Bouillon' },
-      { name: 'Coriandre, ciboule, pousses de soja', group: 'Finition', scalable: false },
+      { name: '1 petite botte de coriandre, 2 ciboules et 100 g de pousses de soja', group: 'Finition', scalable: false },
       { quantity: 2, name: 'citrons verts', group: 'Finition' }
     ],
     steps: [
-      { title: 'Assaisonner le bouillon', text: 'Faites frémir le bouillon avec sauce de poisson et sucre.', cue: 'Le bouillon doit être savoureux mais rester clair et léger.' },
-      { title: 'Cuire la garniture', text: 'Faites cuire le porc séparément ou directement dans un peu de bouillon.', cue: 'Le porc doit être entièrement cuit avant d’être réparti dans les bols.' },
-      { title: 'Cuire les nouilles', text: 'Préparez les nouilles selon leur épaisseur puis égouttez-les soigneusement.', mistake: 'Les laisser attendre dans l’eau chaude les rend molles.' },
+      { title: 'Assaisonner le bouillon', text: 'Versez 1,4 l de bouillon de volaille ou de porc peu salé dans une casserole (maison ou prêt à l’emploi). Ajoutez les 2 c. à soupe de sauce de poisson et la cuillerée à café de sucre. Portez à petit frémissement sans laisser réduire fortement.', cue: 'Le bouillon doit être savoureux mais rester clair et léger.' },
+      { title: 'Cuire la garniture', text: 'Ajoutez les 300 g de porc haché ou émincé au bouillon frémissant, en séparant bien les morceaux, et faites-les cuire complètement. Retirez le porc avec une écumoire et réservez-le au chaud.', cue: 'Le porc doit être entièrement cuit avant d’être réparti dans les bols.' },
+      { title: 'Cuire les nouilles', text: 'Faites cuire les 300 g de nouilles de riz dans une autre casserole en suivant la durée indiquée sur le paquet. Égouttez immédiatement et répartissez-les dans quatre bols.', mistake: 'Les laisser attendre dans l’eau chaude les rend molles.' },
       { title: 'Monter les bols', text: 'Répartissez nouilles et porc, puis versez le bouillon brûlant.' },
-      { title: 'Finir à table', text: 'Ajoutez herbes, pousses de soja et citron vert au dernier moment.' }
+      { title: 'Finir à table', text: 'Rincez les pousses de soja et la coriandre, puis émincez la coriandre et les deux ciboules. Coupez les deux citrons verts en quartiers. Répartissez les pousses, la coriandre, la ciboule et les quartiers de citron autour des bols pour que chacun les ajoute à son goût.' }
     ],
     keyPoints: ['Bouillon frémissant, pas bouillant à gros bouillons', 'Nouilles cuites à part', 'Herbes ajoutées au dernier moment'],
     substitutions: ['Un bon bouillon maison ou peu salé du commerce convient pour commencer.'],
@@ -314,14 +314,14 @@ export const recipes: Recipe[] = [
       { quantity: 400, unit: 'ml', name: 'lait de coco', group: 'Sauce' },
       { quantity: 2, unit: 'c. à soupe', name: 'kroeung jaune', group: 'Sauce' },
       { quantity: 1, unit: 'c. à soupe', name: 'sauce de poisson', group: 'Sauce' },
-      { name: 'Concombre, haricots verts fins, herbes fraîches', group: 'Garniture', scalable: false }
+      { name: '½ concombre, 100 g de haricots verts fins et 1 poignée de menthe ou basilic asiatique', group: 'Garniture', scalable: false }
     ],
     steps: [
-      { title: 'Cuire le poisson', text: 'Pochez doucement le poisson puis émiettez-le.', cue: 'Le poisson est complètement cuit et se défait facilement en morceaux.' },
-      { title: 'Préparer la sauce', text: 'Faites revenir doucement le kroeung, ajoutez le lait de coco puis le poisson émietté.' },
-      { title: 'Ajuster', text: 'Assaisonnez avec la sauce de poisson et un peu d’eau si nécessaire.', cue: 'La sauce doit napper sans être trop épaisse.' },
-      { title: 'Préparer les nouilles', text: 'Cuisez puis rincez brièvement les nouilles pour arrêter la cuisson.' },
-      { title: 'Servir avec beaucoup de fraîcheur', text: 'Versez la sauce chaude sur les nouilles et ajoutez les garnitures crues.' }
+      { title: 'Cuire le poisson', text: 'Plongez les 400 g de poisson blanc dans une casserole d’eau à petit frémissement, sans forte ébullition, jusqu’à ce qu’il soit entièrement cuit. Égouttez-le, retirez les éventuelles arêtes et émiettez-le à la fourchette.', cue: 'Le poisson est complètement cuit et se défait facilement en morceaux.' },
+      { title: 'Préparer la sauce', text: 'Dans une casserole, faites chauffer doucement les 2 c. à soupe de kroeung jaune en remuant pendant une minute. Versez ensuite les 400 ml de lait de coco et ajoutez le poisson cuit émietté ; laissez chauffer à petit feu.' },
+      { title: 'Ajuster', text: 'Ajoutez la cuillerée à soupe de sauce de poisson. Si la sauce au coco est trop épaisse, détendez-la avec 1 ou 2 c. à soupe d’eau chaude, sans la transformer en soupe.', cue: 'La sauce doit napper sans être trop épaisse.' },
+      { title: 'Préparer les nouilles', text: 'Cuisez les 350 g de nouilles de riz selon les indications du paquet, puis égouttez-les et rincez-les brièvement à l’eau fraîche pour stopper la cuisson.' },
+      { title: 'Servir avec beaucoup de fraîcheur', text: 'Blanchissez les 100 g de haricots verts fins dans l’eau bouillante jusqu’à ce qu’ils soient tendres, puis rafraîchissez-les et égouttez-les. Émincez le demi-concombre et lavez les feuilles de menthe ou de basilic. Répartissez les nouilles dans les bols, versez la sauce chaude au poisson et ajoutez les légumes et les herbes.' }
     ],
     keyPoints: ['Sauce parfumée mais fluide', 'Garnitures très fraîches'],
     substitutions: ['Vous pouvez utiliser des herbes faciles à trouver : coriandre, menthe, basilic.'],
@@ -356,15 +356,15 @@ export const recipes: Recipe[] = [
       { quantity: 400, unit: 'g', name: 'porc rôti ou poulet grillé', group: 'Garniture' },
       { quantity: 2, unit: 'c. à soupe', name: 'mayonnaise', group: 'Sauce' },
       { quantity: 1, unit: 'c. à soupe', name: 'sauce soja', group: 'Sauce' },
-      { name: 'Carotte et concombre en pickles', group: 'Fraîcheur', scalable: false },
-      { name: 'Coriandre fraîche', group: 'Fraîcheur', scalable: false },
+      { quantity: 200, unit: 'g', name: 'pickles égouttés de carotte et concombre, préparés à l’avance', group: 'Fraîcheur', scalable: false },
+      { name: '6 brins de coriandre fraîche', group: 'Fraîcheur', scalable: false },
       { quantity: 1, name: 'piment frais', group: 'Option', scalable: false }
     ],
     steps: [
       { title: 'Réchauffer le pain', text: 'Passez les baguettes quelques minutes au four pour retrouver une croûte nette.' },
-      { title: 'Préparer la garniture', text: 'Réchauffez la viande et mélangez la sauce.' },
-      { title: 'Monter sans détremper', text: 'Tartinez légèrement, ajoutez la viande puis les pickles bien égouttés.', cue: 'La mie reste légère et la croûte craquante.', mistake: 'Des pickles trop humides ramollissent le pain.' },
-      { title: 'Finir aux herbes', text: 'Ajoutez coriandre et piment juste avant de servir.' }
+      { title: 'Préparer la garniture', text: 'Émincez le porc rôti ou le poulet grillé déjà cuit et réchauffez-le jusqu’à ce qu’il soit bien chaud. Dans un petit bol, mélangez les 2 c. à soupe de mayonnaise et la cuillerée à soupe de sauce soja.' },
+      { title: 'Monter sans détremper', text: 'Ouvrez les quatre petites baguettes dans la longueur. Tartinez la mie de sauce mayonnaise-soja, ajoutez la viande chaude, puis les 200 g de pickles de carotte et de concombre soigneusement égouttés.', cue: 'La mie reste légère et la croûte craquante.', mistake: 'Des pickles trop humides ramollissent le pain.' },
+      { title: 'Finir aux herbes', text: 'Lavez et effeuillez les six brins de coriandre. Ajoutez-les aux sandwiches et, si vous aimez les plats relevés, quelques fines rondelles du piment frais.' }
     ],
     keyPoints: ['Pain chaud', 'Pickles bien égouttés', 'Herbes au dernier moment'],
     substitutions: ['Poulet grillé, porc rôti ou tofu ferme fonctionnent très bien.'],
@@ -394,20 +394,20 @@ export const recipes: Recipe[] = [
     category: 'Soupe',
     moment: 'Repas familial',
     ingredients: [
-      { quantity: 1.2, unit: 'l', name: 'bouillon léger', group: 'Bouillon' },
+      { quantity: 1.2, unit: 'l', name: 'bouillon de volaille ou de légumes peu salé (maison ou prêt à l’emploi)', group: 'Bouillon' },
       { quantity: 400, unit: 'g', name: 'poisson ou poulet', group: 'Garniture' },
-      { quantity: 2, unit: 'c. à soupe', name: 'tamarin dilué', group: 'Acidité' },
+      { quantity: 2, unit: 'c. à soupe', name: 'jus de tamarin filtré', note: 'pulpe détendue dans de l’eau tiède puis passée au tamis, ou concentré dilué', group: 'Acidité' },
       { quantity: 1, unit: 'c. à soupe', name: 'sauce de poisson', group: 'Assaisonnement' },
       { quantity: 1, unit: 'c. à café', name: 'sucre', group: 'Assaisonnement' },
-      { name: 'Tomate, ananas ou légumes de saison', group: 'Garniture', scalable: false },
-      { name: 'Herbes fraîches', group: 'Finition', scalable: false }
+      { name: '2 tomates en quartiers et 150 g d’ananas frais en dés (ou 250 g de courgette)', group: 'Garniture', scalable: false },
+      { name: '1 petite poignée de coriandre fraîche ou de basilic asiatique', group: 'Finition', scalable: false }
     ],
     steps: [
-      { title: 'Faire frémir le bouillon', text: 'Portez le bouillon à petit frémissement.' },
-      { title: 'Cuire la garniture', text: 'Ajoutez viande ou poisson puis les légumes selon leur temps de cuisson.', cue: 'Le poisson ou le poulet doit être complètement cuit avant de goûter et de corriger le bouillon.' },
+      { title: 'Faire frémir le bouillon', text: 'Versez 1,2 l de bouillon de volaille ou de légumes peu salé dans une casserole. Un bouillon maison filtré convient, tout comme un bouillon prêt à l’emploi dilué s’il est très concentré. Chauffez jusqu’à un petit frémissement.' },
+      { title: 'Cuire la garniture', text: 'Découpez les 400 g de poisson ou de poulet en morceaux réguliers et mettez-les dans le bouillon frémissant. Ajoutez les quartiers de tomate et les dés d’ananas, ou la courgette coupée en petits dés. Faites cuire à petit feu jusqu’à cuisson complète du poisson ou du poulet et des légumes.', cue: 'Le poisson ou le poulet doit être complètement cuit avant de goûter et de corriger le bouillon.' },
       { title: 'Ajouter le tamarin petit à petit', text: 'Quand le poisson ou le poulet et les légumes sont cuits, ajoutez le tamarin en plusieurs fois et goûtez le bouillon entre chaque ajout.', cue: 'La soupe doit être acidulée et fraîche, sans devenir trop forte.' },
-      { title: 'Équilibrer', text: 'Ajoutez sauce de poisson et sucre pour arrondir sans masquer l’acidité.' },
-      { title: 'Finir aux herbes', text: 'Coupez le feu puis ajoutez les herbes fraîches.' }
+      { title: 'Équilibrer', text: 'Après avoir vérifié que le poisson ou le poulet est complètement cuit, ajoutez la cuillerée à soupe de sauce de poisson et la cuillerée à café de sucre. Mélangez et ajustez seulement après dégustation du bouillon cuit.' },
+      { title: 'Finir aux herbes', text: 'Coupez le feu, lavez puis ciselez la coriandre ou le basilic asiatique, et ajoutez cette poignée d’herbes juste avant de servir.' }
     ],
     keyPoints: ['Ajouter le tamarin progressivement', 'Goûter à chaque correction'],
     substitutions: ['Le citron vert peut compléter l’acidité, mais le tamarin donne une rondeur différente.'],
@@ -443,14 +443,14 @@ export const recipes: Recipe[] = [
       { quantity: 1, unit: 'c. à soupe', name: 'prahok', group: 'Assaisonnement' },
       { quantity: 1, unit: 'c. à soupe', name: 'kroeung jaune', group: 'Aromates' },
       { quantity: 1, unit: 'c. à café', name: 'sucre de palme ou sucre roux', group: 'Assaisonnement' },
-      { name: 'Concombre, chou, haricots longs ou crudités', group: 'Service', scalable: false }
+      { quantity: 300, unit: 'g', name: 'crudités au choix : concombre, chou et haricots longs', group: 'Service', scalable: false }
     ],
     steps: [
-      { title: 'Faire revenir les aromates', text: 'Faites chauffer doucement le kroeung dans un peu de coco.' },
+      { title: 'Faire revenir les aromates', text: 'Prélevez 2 c. à soupe des 250 ml de lait de coco. Versez-les dans une petite casserole avec la cuillerée à soupe de kroeung jaune et faites chauffer doucement en remuant pour libérer les parfums.' },
       { title: 'Cuire le porc', text: 'Ajoutez le porc haché, émiettez-le finement et poursuivez la cuisson jusqu’à ce qu’il soit complètement cuit.' },
       { title: 'Ajouter le prahok progressivement', text: 'Ajoutez d’abord une partie du prahok et poursuivez la cuisson. Goûtez uniquement lorsque le porc et toute la préparation sont complètement cuits, puis ajustez.', mistake: 'Ne goûtez jamais une préparation contenant du porc cru ou insuffisamment cuit.' },
-      { title: 'Ajouter le lait de coco', text: 'Versez le reste du lait de coco et laissez épaissir doucement.', cue: 'La préparation reste crémeuse et assez épaisse pour être prise avec un morceau de légume.' },
-      { title: 'Servir avec du croquant', text: 'Servez tiède avec beaucoup de crudités.' }
+      { title: 'Ajouter le lait de coco', text: 'Ajoutez la cuillerée à café de sucre de palme (ou sucre roux), puis versez le reste du lait de coco. Remuez et laissez réduire doucement jusqu’à obtenir une sauce épaisse et crémeuse, avec le porc déjà complètement cuit.', cue: 'La préparation reste crémeuse et assez épaisse pour être prise avec un morceau de légume.' },
+      { title: 'Servir avec du croquant', text: 'Lavez et coupez environ 300 g de concombre, chou et haricots longs en morceaux à tremper. Servez ces crudités avec la préparation tiède au porc et au prahok.' }
     ],
     keyPoints: ['Prahok ajouté progressivement', 'Toujours servir avec une grande part de légumes frais'],
     substitutions: ['Si vous découvrez le prahok, commencez avec une quantité plus faible et augmentez au prochain essai.'],
@@ -486,13 +486,13 @@ export const recipes: Recipe[] = [
       { quantity: 400, unit: 'ml', name: 'lait de coco', group: 'Crème' },
       { quantity: 2, unit: 'c. à soupe', name: 'sucre de palme ou sucre roux', group: 'Crème' },
       { quantity: 1, unit: 'pincée', name: 'sel', group: 'Crème', scalable: false },
-      { name: 'Graines de sésame grillées, facultatif', group: 'Finition', scalable: false }
+      { quantity: 1, unit: 'c. à soupe', name: 'graines de sésame grillées, facultatif', group: 'Finition', scalable: false }
     ],
     steps: [
-      { title: 'Chauffer le coco', text: 'Faites chauffer doucement lait de coco, sucre et sel sans faire bouillir fortement.', cue: 'De petites bulles apparaissent au bord de la casserole sans gros bouillons.' },
+      { title: 'Chauffer le coco', text: 'Versez les 400 ml de lait de coco dans une casserole avec les 2 c. à soupe de sucre de palme ou sucre roux et la pincée de sel. Faites chauffer doucement jusqu’à dissoudre le sucre, sans forte ébullition.', cue: 'De petites bulles apparaissent au bord de la casserole sans gros bouillons.' },
       { title: 'Ajouter les bananes', text: 'Coupez les bananes en gros morceaux puis ajoutez-les.' },
       { title: 'Cuire doucement', text: 'Laissez frémir quelques minutes.', duration: '8–10 min', cue: 'Les bananes doivent être tendres mais garder leur forme.', mistake: 'Une cuisson trop longue transforme les bananes en purée.' },
-      { title: 'Servir tiède', text: 'Servez avec un peu de sésame grillé si vous aimez.' }
+      { title: 'Servir tiède', text: 'Répartissez les bananes et la crème de lait de coco dans quatre coupes. Saupoudrez facultativement d’une cuillerée à soupe de graines de sésame grillées.' }
     ],
     keyPoints: ['Bananes pas trop mûres', 'Frémissement doux'],
     substitutions: ['Du sucre roux fonctionne très bien si vous n’avez pas de sucre de palme.'],
@@ -531,16 +531,16 @@ export const recipes: Recipe[] = [
       { quantity: 100, unit: 'g', name: 'épinards ou feuilles vertes tendres', group: 'Légumes' },
       { quantity: 3, unit: 'c. à soupe', name: 'kroeung jaune', group: 'Bouillon' },
       { quantity: 2, unit: 'c. à soupe', name: 'riz cru', group: 'Bouillon' },
-      { quantity: 1.2, unit: 'l', name: 'eau ou bouillon léger non salé', group: 'Bouillon' },
+      { quantity: 1.2, unit: 'l', name: 'eau ou bouillon de volaille ou de légumes non salé', group: 'Bouillon' },
       { quantity: 1, unit: 'c. à soupe', name: 'sauce de poisson, à ajuster', group: 'Assaisonnement' },
       { name: 'Feuilles de basilic asiatique ou coriandre', group: 'Finition', scalable: false }
     ],
     steps: [
       { title: 'Griller le riz', text: 'Dans une poêle sèche, faites blondir le riz en remuant puis laissez refroidir et réduisez en poudre assez fine.', duration: '5–7 min', cue: 'Le riz sent légèrement la noisette et ne doit pas brûler.', mistake: 'Un riz noirci apporte de l’amertume.' },
       { title: 'Réveiller les aromates', text: 'Faites chauffer le kroeung dans une grande casserole avec quelques cuillerées d’eau pendant une minute.', cue: 'Les aromates parfument la vapeur sans attacher au fond.' },
-      { title: 'Construire le bouillon', text: 'Versez l’eau ou le bouillon, ajoutez la courge, l’aubergine et les haricots puis laissez frémir.', duration: '15 min', cue: 'Les légumes commencent à s’attendrir mais gardent leur forme.' },
+      { title: 'Construire le bouillon', text: 'Versez les 1,2 l d’eau ou de bouillon non salé sur le kroeung, puis ajoutez les cubes de potiron ou de courge, les morceaux d’aubergine et les haricots longs coupés en tronçons. Laissez frémir environ 15 minutes.', duration: '15 min', cue: 'Les légumes commencent à s’attendrir mais gardent leur forme.' },
       { title: 'Cuire le poisson', text: 'Ajoutez le poisson, laissez frémir doucement jusqu’à cuisson complète, puis incorporez le riz grillé moulu.', duration: '8–12 min', cue: 'Le poisson est opaque et se détache facilement.', mistake: 'Une forte ébullition casse les morceaux de poisson.' },
-      { title: 'Finir les légumes et assaisonner', text: 'Ajoutez les feuilles vertes pour deux minutes, assaisonnez à la sauce de poisson et servez avec les herbes.', cue: 'Le bouillon est légèrement lié et les légumes restent distincts.' }
+      { title: 'Finir les légumes et assaisonner', text: 'Ajoutez les 100 g d’épinards ou de feuilles vertes tendres et laissez cuire encore deux minutes. Versez la cuillerée à soupe de sauce de poisson, remuez puis servez avec les feuilles de basilic asiatique ou la coriandre.', cue: 'Le bouillon est légèrement lié et les légumes restent distincts.' }
     ],
     keyPoints: ['Riz grillé pour lier le bouillon', 'Légumes ajoutés selon leur temps de cuisson', 'Poisson entièrement cuit'],
     substitutions: ['Le potiron peut être remplacé par de la courgette, ajoutée plus tard pour ne pas fondre.', 'Un bouillon de légumes léger convient si vous n’avez pas de bouillon de poisson.'],
@@ -584,14 +584,14 @@ export const recipes: Recipe[] = [
       { quantity: 1, unit: 'c. à café', name: 'sucre de palme ou sucre roux', group: 'Assaisonnement' },
       { quantity: 2, unit: 'c. à soupe', name: 'eau', group: 'Assaisonnement' },
       { name: 'Feuilles de combava finement ciselées, facultatif', group: 'Finition', scalable: false },
-      { name: 'Riz jasmin cuit pour accompagner', group: 'Service', scalable: false }
+      { quantity: 600, unit: 'g', name: 'riz jasmin déjà cuit, pour accompagner', group: 'Service', scalable: false }
     ],
     steps: [
-      { title: 'Préparer la mise en place', text: 'Émincez le poulet de manière régulière, coupez les haricots et mélangez sauce de poisson, sucre et eau.', cue: 'Tous les ingrédients sont prêts : la cuisson sera rapide.' },
+      { title: 'Préparer la mise en place', text: 'Coupez les 600 g de poulet désossé en lanières régulières. Équeutez les 200 g de haricots verts et coupez-les en tronçons ; émincez l’oignon. Dans un bol, mélangez sauce de poisson, sucre de palme ou sucre roux et les 2 c. à soupe d’eau.', cue: 'Tous les ingrédients sont prêts : la cuisson sera rapide.' },
       { title: 'Faire parfumer le kroeung', text: 'Chauffez une grande poêle ou un wok avec l’huile, ajoutez le kroeung et remuez brièvement.', duration: '1–2 min', cue: 'La pâte dégage son parfum sans brunir fortement.', mistake: 'Une pâte brûlée devient amère : réduisez le feu si elle accroche.' },
       { title: 'Saisir le poulet', text: 'Ajoutez le poulet en deux fournées si nécessaire et faites sauter jusqu’à ce que la surface soit colorée.', duration: '5–7 min', cue: 'Les morceaux sont saisis sans rendre trop de jus.' },
       { title: 'Ajouter les légumes', text: 'Ajoutez l’oignon et les haricots puis versez le mélange d’assaisonnement. Continuez jusqu’à ce que le poulet soit entièrement cuit.', duration: '5–6 min', cue: 'Les haricots restent légèrement croquants ; aucune chair rosée ne subsiste.' },
-      { title: 'Servir', text: 'Parsemez éventuellement de feuilles de combava et servez immédiatement avec le riz.', cue: 'La sauce nappe légèrement le poulet sans noyer le sauté.' }
+      { title: 'Servir', text: 'Parsemez, si vous le souhaitez, de feuilles de combava sans nervure, très finement ciselées. Répartissez le sauté de poulet dans quatre assiettes et servez-le tout de suite avec les 600 g de riz jasmin cuit, réchauffé.', cue: 'La sauce nappe légèrement le poulet sans noyer le sauté.' }
     ],
     keyPoints: ['Kroeung parfumé sans brûler', 'Cuisson vive en petites fournées', 'Poulet entièrement cuit'],
     substitutions: ['Du tofu ferme peut remplacer le poulet : faites-le bien dorer avant de l’enrober de kroeung.', 'Utilisez des haricots verts classiques si les haricots longs sont introuvables.'],
@@ -635,10 +635,10 @@ export const recipes: Recipe[] = [
       { name: 'Quelques gouttes d’extrait de pandan, facultatif', group: 'Pâte', scalable: false }
     ],
     steps: [
-      { title: 'Pétrir une pâte souple', text: 'Mélangez farine de riz gluant, sel et eau progressivement. Pétrissez jusqu’à obtenir une pâte souple qui ne craquelle presque pas.', cue: 'Elle se roule facilement sans coller excessivement.' },
+      { title: 'Pétrir une pâte souple', text: 'Mélangez les 220 g de farine de riz gluant et la pincée de sel. Ajoutez progressivement environ 160 ml d’eau tiède, avec quelques gouttes d’extrait de pandan si vous en utilisez. Pétrissez jusqu’à obtenir une pâte souple qui se roule sans se fissurer.', cue: 'Elle se roule facilement sans coller excessivement.' },
       { title: 'Former les boulettes', text: 'Divisez la pâte en 16 à 20 portions. Aplatissez chaque portion, glissez au centre un petit cube de sucre de palme et refermez parfaitement.', cue: 'Le sucre est totalement enveloppé, sans fissure.', mistake: 'Une fermeture imparfaite laisse fuir le sucre dans l’eau de cuisson.' },
-      { title: 'Pocher', text: 'Plongez les boulettes par petites quantités dans une grande casserole d’eau frémissante. Attendez qu’elles remontent, puis prolongez légèrement la cuisson.', duration: '5–7 min par fournée', cue: 'Les boulettes flottent et la pâte paraît cuite et souple.' },
-      { title: 'Enrober de coco', text: 'Égouttez-les avec une écumoire puis roulez délicatement les bouchées dans la noix de coco râpée.', cue: 'Le coco adhère à une surface encore légèrement humide.' },
+      { title: 'Pocher', text: 'Plongez les boulettes par petites quantités dans une grande casserole d’eau frémissante. Lorsqu’elles remontent à la surface, poursuivez la cuisson 1 à 2 minutes, puis vérifiez sur une boulette que la pâte est cuite à cœur.', duration: '5–7 min par fournée', cue: 'Les boulettes flottent et la pâte paraît cuite et souple.' },
+      { title: 'Enrober de coco', text: 'Égouttez les boulettes à l’écumoire. Roulez-les, encore légèrement humides, dans les 120 g de noix de coco fraîche râpée ou de coco râpé préalablement réhydraté.', cue: 'Le coco adhère à une surface encore légèrement humide.' },
       { title: 'Laisser tiédir', text: 'Laissez reposer quelques minutes avant de déguster pour éviter de vous brûler avec le cœur sucré.', cue: 'Les bouchées sont tièdes et se tiennent bien.' }
     ],
     keyPoints: ['Farine de riz gluant, et non farine de riz ordinaire', 'Bien fermer chaque boulette', 'Laisser refroidir le sucre fondu avant de croquer'],

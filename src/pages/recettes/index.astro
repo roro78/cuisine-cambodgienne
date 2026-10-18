@@ -4,6 +4,8 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import EditorialSectionHero from '../../components/EditorialSectionHero.astro';
 import { recipes } from '../../data/recipes';
+import { recipeTechniqueGuides } from '../../data/recipeTechniques';
+import '../../styles/recipe-techniques.css';
 import { imageSrcSet } from '../../utils/images';
 import '../../styles/recipe-v15.css';
 import '../../styles/v16-editorial.css';
@@ -115,6 +117,21 @@ const toneMap: Record<string,string> = {
           </div>
         </a>
       ))}
+    </section>
+
+    <section class="recipe-technique-explore" aria-labelledby="recipe-technique-explore-title">
+      <p class="eyebrow">Pour ne plus cuisiner à l’aveugle</p>
+      <h2 id="recipe-technique-explore-title">Les préparations expliquées pas à pas</h2>
+      <p>Quand une recette parle de bouillon ou de pickles, les proportions et la méthode comptent. Retrouvez les bases avant de vous lancer.</p>
+      <div>
+        {recipeTechniqueGuides.map((guide) => (
+          <a href={`/techniques/${guide.slug}/`}>
+            <strong>{guide.slug === 'bouillon-leger-maison' ? 'Préparer un bouillon léger' : 'Faire des pickles carotte-concombre'}</strong>
+            <span>{guide.preparation}</span>
+            <em>Suivre la méthode →</em>
+          </a>
+        ))}
+      </div>
     </section>
   </main>
 

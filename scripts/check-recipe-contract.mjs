@@ -168,6 +168,52 @@ if (!v16Css.includes('@media(max-width:900px)') ||
 }
 
 
+/* Contrat éditorial : chaque ingrédient structurant doit être nommé dans les
+ * étapes, pas caché derrière « sauce », « marinade » ou « finition ». */
+const usedIngredientTokens = {
+  'amok-trey': ['poisson','lait de coco','kroeung','œufs','sauce de poisson','sucre','combava','basilic'],
+  'lok-lak': ['bœuf','sauce soja','sauce d’huître','sucre','ail','citrons verts','poivre','tomate','concombre','salade'],
+  'kroeung-jaune': ['citronnelle','galanga','curcuma','combava','ail','échalotes'],
+  'bai-sach-chrouk': ['porc','sauce soja','sauce de poisson','sucre roux','ail','riz jasmin','pickles'],
+  'kuy-teav': ['bouillon','nouilles de riz','porc','sauce de poisson','sucre','coriandre','ciboules','pousses de soja','citrons verts'],
+  'num-banh-chok': ['nouilles de riz','poisson','lait de coco','kroeung','sauce de poisson','concombre','haricots verts','menthe'],
+  'num-pang': ['baguettes','porc rôti','poulet grillé','mayonnaise','sauce soja','pickles','coriandre','piment'],
+  'samlor-machu': ['bouillon','poisson','poulet','tamarin','sauce de poisson','sucre','tomate','ananas','courgette','coriandre'],
+  'prahok-ktis': ['porc','lait de coco','prahok','kroeung','sucre','concombre','chou','haricots longs'],
+  'chek-ktis': ['bananes','lait de coco','sucre','sel','sésame'],
+  'samlor-kako': ['poisson','potiron','aubergine','haricots','feuilles vertes','kroeung','riz','eau','sauce de poisson','basilic'],
+  'cha-kroeung': ['poulet','kroeung','haricots','oignon','huile','sauce de poisson','sucre','eau','combava','riz jasmin'],
+  'num-plae-ai': ['farine de riz gluant','eau','sel','sucre de palme','noix de coco','pandan']
+};
+for (const {slug, source} of blocks) {
+  const steps = source.match(/    steps: \[([\s\S]*?)\n    \],/)?.[1]?.toLocaleLowerCase('fr') ?? '';
+  if(!steps) failures.push(`Missing preparation steps for ${slug}`);
+  for(const term of usedIngredientTokens[slug] ?? []) {
+    if(!steps.includes(term)) failures.push(`Ingredient ${term} not explained in steps of ${slug}`);
+  }
+}
+if(Object.keys(usedIngredientTokens).length !== blocks.length) failures.push('Ingredient coverage map must include all recipes');
+if(/name: 'bouillon léger'/.test(recipes)) failures.push('Unqualified bouillon léger is too vague');
+if(!recipes.includes('jus de tamarin filtré') || !recipes.includes('pandan si vous en utilisez')) failures.push('Critical ingredient preparation details missing');
+
+const guides = fs.readFileSync('src/data/recipeTechniques.ts','utf8');
+const guidePage = fs.readFileSync('src/pages/techniques/[slug].astro','utf8');
+const sitemap = fs.readFileSync('src/pages/sitemap.xml.ts','utf8');
+const guideSlugs = [...guides.matchAll(/^    slug: '([^']+)',/gm)].map((match)=>match[1]);
+for(const guideSlug of ['bouillon-leger-maison','pickles-carotte-concombre']) {
+  if(!guideSlugs.includes(guideSlug)) failures.push(`Missing culinary how-to guide ${guideSlug}`);
+}
+if(!detail.includes('getTechniqueGuidesForRecipe(recipe.slug)') ||
+   !detail.includes('/techniques/${guide.slug}/') ||
+   !listing.includes('recipeTechniqueGuides.map') ||
+   !sitemap.includes('recipeTechniqueGuides.map') ||
+   !guidePage.includes("HowToStep") ||
+   !guidePage.includes('guide.steps.map') ||
+   !guidePage.includes('linkedRecipes.map')) {
+  failures.push('Technique guides must be internally linked, indexed and expose the visible HowTo steps');
+}
+
+
 if (failures.length) {
   console.error('Recipe contract failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));
