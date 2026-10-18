@@ -1,0 +1,7 @@
+---
+import RestoredRecipe from '../../components/RestoredRecipe.astro';
+import { restoredRecipes } from '../../data/restoredRecipes';
+const recipe = restoredRecipes.find((item) => item.slug === 'samla-mchou-yuon');
+if (!recipe) throw new Error('Missing restored recipe: samla-mchou-yuon');
+---
+<RestoredRecipe recipe={recipe} />
