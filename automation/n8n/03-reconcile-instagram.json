@@ -1,0 +1,235 @@
+{
+  "name": "Cuisine du Cambodge - 03 - Réconcilier et publier Instagram",
+  "nodes": [
+    {
+      "id": "db86e1eb-5913-502d-99ad-9327ba3e3646",
+      "name": "Toutes les heures - vérification Instagram",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "6c37bc45-e230-5eca-a374-6fda991d6e72",
+      "name": "Réserver un conteneur à examiner",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH chosen AS (SELECT id FROM cuisine_social.posts WHERE status='publishing' AND ig_state='container_created' AND instagram_container_id IS NOT NULL ORDER BY updated_at FOR UPDATE SKIP LOCKED LIMIT 1) UPDATE cuisine_social.posts p SET ig_state='checking',updated_at=NOW() FROM chosen WHERE p.id=chosen.id RETURNING p.*",
+        "options": {}
+      }
+    },
+    {
+      "id": "6b9dcc16-2626-531e-8845-65688295e94e",
+      "name": "Vérifier le statut conteneur",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "={{\"https://graph.facebook.com/v26.0/\"+$json.instagram_container_id+\"?fields=status_code\"}}",
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      }
+    },
+    {
+      "id": "59b33725-b282-5aea-965c-8b54ab6e1df1",
+      "name": "Lire le statut Meta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const original=$('Réserver un conteneur à examiner').first().json;\nconst state=String($json.status_code||'').toUpperCase();\nif(!original.id)throw Error('conteneur_absent');\nreturn [{json:{id:original.id,containerId:original.instagram_container_id,status:state}}];",
+        "mode": "runOnceForAllItems"
+      }
+    },
+    {
+      "id": "68fe326f-0e96-5ca4-bc39-0a0dc70f82cf",
+      "name": "Enregistrer READY ou reporter",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        960,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE cuisine_social.posts SET ig_state=CASE WHEN $1='FINISHED' THEN 'submitting' WHEN $1='IN_PROGRESS' THEN 'container_created' ELSE 'manual_review' END,updated_at=NOW() WHERE id=$2 AND ig_state='checking' RETURNING id,ig_state,instagram_container_id",
+        "options": {
+          "queryReplacement": "={{[$json.status,$json.id]}}"
+        }
+      }
+    },
+    {
+      "id": "8dde01ec-4446-54de-8ccc-c04e74affbcd",
+      "name": "Ne garder que les conteneurs prêts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        0
+      ],
+      "parameters": {
+        "jsCode": "return items.filter(i=>i.json.ig_state==='submitting');",
+        "mode": "runOnceForAllItems"
+      }
+    },
+    {
+      "id": "eec60b49-bfe7-5b31-81d2-03d70a706a68",
+      "name": "Publier Instagram une seule fois",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v26.0/CONFIGURER_INSTAGRAM_USER_ID/media_publish",
+        "options": {},
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{JSON.stringify({creation_id:$json.instagram_container_id})}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      }
+    },
+    {
+      "id": "9d54fc7f-23d2-558c-a095-5ee2bcc59a6f",
+      "name": "Persister publication Instagram",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1680,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE cuisine_social.posts SET instagram_post_id=$1,ig_state='published',status=CASE WHEN fb_state='published' THEN 'published' ELSE 'manual_review' END,published_at=NOW(),updated_at=NOW() WHERE id=$2 AND ig_state='submitting' RETURNING id,status,instagram_post_id",
+        "options": {
+          "queryReplacement": "={{[String($json.id||''),$('Ne garder que les conteneurs prêts').first().json.id]}}"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Toutes les heures - vérification Instagram": {
+      "main": [
+        [
+          {
+            "node": "Réserver un conteneur à examiner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Réserver un conteneur à examiner": {
+      "main": [
+        [
+          {
+            "node": "Vérifier le statut conteneur",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vérifier le statut conteneur": {
+      "main": [
+        [
+          {
+            "node": "Lire le statut Meta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lire le statut Meta": {
+      "main": [
+        [
+          {
+            "node": "Enregistrer READY ou reporter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enregistrer READY ou reporter": {
+      "main": [
+        [
+          {
+            "node": "Ne garder que les conteneurs prêts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ne garder que les conteneurs prêts": {
+      "main": [
+        [
+          {
+            "node": "Publier Instagram une seule fois",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publier Instagram une seule fois": {
+      "main": [
+        [
+          {
+            "node": "Persister publication Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Paris"
+  },
+  "active": false,
+  "pinData": {},
+  "tags": []
+}
