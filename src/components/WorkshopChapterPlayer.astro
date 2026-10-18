@@ -69,8 +69,42 @@ const formatTime = (value: number) => {
   <p class="workshop-player-status" data-player-status aria-live="polite">Prêt à écouter. Le défilement de la page est libre.</p>
   <p class="workshop-player-notice">Le suivi automatique est facultatif. Faites défiler la page vous-même à tout moment : le son continuera.</p>
 
-  <!-- One audio element and two responsive control surfaces. Only the compact dock is visible on phones. -->
-  <div class="workshop-mobile-dock" data-player-mobile-dock data-dock-visible="false" role="region" aria-label="Mini-lecteur de l’atelier">
+  <!-- Mobile sheet is navigation only: the single <audio> above remains authoritative. -->
+  <div class="workshop-mobile-backdrop" data-mobile-backdrop hidden aria-hidden="true"></div>
+  <div class="workshop-mobile-dock" data-player-mobile-dock data-dock-visible="false" role="region" aria-label="Mini-lecteur de l’atelier" data-dock-expanded="false">
+    <div class="workshop-mobile-sheet" data-mobile-sheet id={"workshop-mobile-sheet-" + info.slug} hidden aria-label="Chapitres et transcription">
+      <header class="workshop-mobile-sheet-header" data-mobile-sheet-gesture>
+        <div>
+          <p class="workshop-mobile-sheet-eyebrow">Votre guide audio</p>
+          <h4>Chapitres et narration</h4>
+          <p>Choisissez un passage ou consultez son texte. La lecture reste à votre rythme.</p>
+        </div>
+        <button type="button" class="workshop-mobile-sheet-close" data-mobile-sheet-close aria-label="Replier la navigation audio">⌄ Fermer</button>
+      </header>
+      <div class="workshop-mobile-sheet-body">
+        <nav class="workshop-mobile-chapters" aria-label="Choisir un chapitre audio">
+          {info.chapters.map((chapter, index) => (
+            <button type="button" data-mobile-chapter={index} aria-current={index === 0 ? 'step' : undefined}>
+              <span>{index === 0 ? 'Intro' : '0' + index}</span>
+              <strong>{chapter.title}</strong>
+              <small>{formatTime(chapter.start)}</small>
+            </button>
+          ))}
+        </nav>
+        <section class="workshop-mobile-transcript" aria-label="Texte de la narration en cours">
+          <h5>Texte du chapitre actif</h5>
+          <p data-mobile-transcript>{info.chapters[0]?.text}</p>
+        </section>
+        <p class="workshop-mobile-sheet-hint">Le suivi est facultatif : vous pouvez toujours faire défiler les gestes indépendamment de la voix.</p>
+      </div>
+    </div>
+    <button class="workshop-mobile-dock-grip" data-mobile-toggle data-mobile-gesture-zone type="button"
+      aria-controls={"workshop-mobile-sheet-" + info.slug} aria-expanded="false"
+      aria-label="Déployer les chapitres et la transcription du lecteur">
+      <span class="workshop-mobile-dock-handle" aria-hidden="true"></span>
+      <span data-mobile-toggle-label>Glisser vers le haut · Chapitres &amp; texte</span>
+      <span class="workshop-mobile-dock-chevron" aria-hidden="true">⌃</span>
+    </button>
     <div class="workshop-mobile-dock-heading">
       <div class="workshop-mobile-dock-caption">
         <span class="workshop-mobile-kicker">Atelier audio · <span data-mobile-chapter-count>Introduction</span></span>
