@@ -27,6 +27,16 @@ const formatTime = (value: number) => {
 
   <audio data-player-audio src={info.audio} preload="metadata" aria-label={"Narration : " + info.title}></audio>
 
+  <div class="workshop-player-mobile-bar">
+    <div class="workshop-player-mobile-current" aria-label="Chapitre audio en cours">
+      <span>EN CUISINE · AUDIO</span>
+      <strong data-player-mobile-chapter>Présentation de l’atelier</strong>
+    </div>
+    <button type="button" class="workshop-player-mobile-toggle" data-player-mobile-toggle aria-controls={"workshop-mobile-options-" + info.slug} aria-expanded="false">
+      Options <span aria-hidden="true">⌃</span>
+    </button>
+  </div>
+
   <div class="workshop-player-main-controls">
     <button class="workshop-player-primary" type="button" data-player-play aria-label="Écouter l’atelier">▶ <span>Écouter</span></button>
     <div class="workshop-player-seek-area">
@@ -36,6 +46,7 @@ const formatTime = (value: number) => {
     </div>
   </div>
 
+  <div class="workshop-player-extras" id={"workshop-mobile-options-" + info.slug}>
   <div class="workshop-player-secondary-controls">
     <div class="workshop-player-skip-controls">
       <button type="button" data-player-stop aria-label="Arrêter la narration et revenir au début">■ Arrêter</button>
@@ -68,6 +79,7 @@ const formatTime = (value: number) => {
   </details>
   <p class="workshop-player-status" data-player-status aria-live="polite">Prêt à écouter. Le défilement de la page est libre.</p>
   <p class="workshop-player-notice">Le suivi automatique est facultatif. Faites défiler la page vous-même à tout moment : le son continuera.</p>
+  </div>
 </section>
 
 <script>
