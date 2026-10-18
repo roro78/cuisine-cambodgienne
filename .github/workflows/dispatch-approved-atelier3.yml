@@ -1,0 +1,33 @@
+name: Dispatch pinned atelier 3 release (one-shot)
+
+# Only the dedicated operations branch can request this approved, pinned release.
+# The actual build and publication remain owned by deploy-ovh.yml on main.
+on:
+  push:
+    branches:
+      - ops/atelier3-release-20261018
+    paths:
+      - .github/workflows/dispatch-approved-atelier3.yml
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Validate pinned main and dispatch existing release gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: 9c72d0b8a68d065f04367566077e70aa2cdea94e
+        shell: bash
+        run: |
+          set -euo pipefail
+          head="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
+          test "$head" = "$EXPECTED_SHA" || { echo "STOP: main SHA differs from approved release"; exit 1; }
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/deploy-ovh.yml/dispatches" \
+            -f ref=main \
+            -f "inputs[expected_source_sha]=$EXPECTED_SHA"
+          echo "Dispatched pinned release from main: $EXPECTED_SHA"
