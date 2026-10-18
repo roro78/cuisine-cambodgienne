@@ -1,0 +1,111 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from './SiteHeader.astro';
+import SiteFooter from './SiteFooter.astro';
+import type { RestoredRecipe } from '../data/restoredRecipes';
+import '../styles/restored-recipes.css';
+
+interface Props { recipe: RestoredRecipe }
+const { recipe } = Astro.props;
+const url = `https://www.cuisine-du-cambodge.com/recettes/${recipe.slug}/`;
+const recipeJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Recipe',
+  name: recipe.title,
+  description: recipe.description,
+  url,
+  author: { '@type': 'Organization', name: 'Cuisine du Cambodge' },
+  recipeCuisine: 'Cambodgienne / Asie du Sud-Est',
+  inLanguage: 'fr-FR',
+  recipeYield: recipe.servings,
+  recipeIngredient: recipe.ingredients,
+  recipeInstructions: recipe.steps.map((step, index) => ({
+    '@type': 'HowToStep',
+    position: index + 1,
+    name: step.title,
+    text: step.text
+  }))
+};
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://www.cuisine-du-cambodge.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Recettes', item: 'https://www.cuisine-du-cambodge.com/recettes/' },
+    { '@type': 'ListItem', position: 3, name: recipe.title, item: url }
+  ]
+};
+---
+<BaseLayout title={`${recipe.title} | Cuisine du Cambodge`} description={recipe.description} image={recipe.image} imageAlt={recipe.imageAlt}>
+  <SiteHeader />
+  <main class="restored-recipe" id="contenu">
+    <nav class="restored-recipe-breadcrumb" aria-label="Fil d’Ariane">
+      <a href="/">Accueil</a><span aria-hidden="true">/</span>
+      <a href="/recettes/">Recettes</a><span aria-hidden="true">/</span>
+      <span aria-current="page">{recipe.title}</span>
+    </nav>
+    <header class="restored-recipe-hero">
+      <div class="restored-recipe-heading">
+        <p class="eyebrow">{recipe.kicker}</p>
+        <h1>{recipe.title}</h1>
+        <p class="restored-recipe-lead">{recipe.intro}</p>
+        <dl class="restored-recipe-facts">
+          <div><dt>Pour</dt><dd>{recipe.servings}</dd></div>
+          <div><dt>Préparation</dt><dd>{recipe.prepTime}</dd></div>
+          <div><dt>Cuisson</dt><dd>{recipe.cookTime}</dd></div>
+        </dl>
+        <div class="restored-recipe-actions">
+          <a href="#ingredients">Ingrédients <span aria-hidden="true">↓</span></a>
+          <a href="#preparation">Préparation <span aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+      {recipe.image ? (
+        <figure class="restored-recipe-visual">
+          <img src={recipe.image} alt={recipe.imageAlt ?? ''} width="1600" height="1067" decoding="async" />
+          <figcaption>{recipe.imageCaption}</figcaption>
+        </figure>
+      ) : (
+        <div class="restored-recipe-visual restored-recipe-visual--text" aria-hidden="true">
+          <span>Patrimoine culinaire</span>
+          <strong>Une recette retrouvée</strong>
+          <span>Cuisine du Cambodge</span>
+        </div>
+      )}
+    </header>
+
+    <div class="restored-recipe-body">
+      <aside class="restored-recipe-ingredients" id="ingredients">
+        <p class="eyebrow">Préparez votre plan de travail</p>
+        <h2>Les ingrédients</h2>
+        <ul>{recipe.ingredients.map((ingredient) => <li>{ingredient}</li>)}</ul>
+      </aside>
+      <article class="restored-recipe-method" id="preparation">
+        <p class="eyebrow">En cuisine</p>
+        <h2>La préparation pas à pas</h2>
+        <ol>
+          {recipe.steps.map((step) => (
+            <li>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </li>
+          ))}
+        </ol>
+      </article>
+    </div>
+    <section class="restored-recipe-notes" aria-labelledby="notes-title">
+      <p class="eyebrow">Bien comprendre la recette</p>
+      <h2 id="notes-title">Variantes, repères et précisions</h2>
+      <ul>{recipe.tips.map((tip) => <li>{tip}</li>)}</ul>
+    </section>
+    <section class="restored-recipe-sources" aria-labelledby="restored-sources-title">
+      <p class="eyebrow">Traçabilité éditoriale</p>
+      <h2 id="restored-sources-title">Sources utilisées</h2>
+      <p>Recette réécrite, détaillée et adaptée à la cuisine domestique actuelle : ce n’est pas une reproduction mot pour mot de l’ancienne page disparue.</p>
+      <ul>{recipe.sources.map((source) => <li><a href={source.url} target="_blank" rel="noopener noreferrer">{source.label} ↗</a></li>)}</ul>
+    </section>
+    <a class="restored-recipe-back" href="/recettes/">← Retrouver toutes les recettes</a>
+  </main>
+  <script type="application/ld+json" set:html={JSON.stringify(recipeJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} />
+  <SiteFooter />
+</BaseLayout>
