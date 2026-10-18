@@ -30,7 +30,8 @@ const releasedWorkshopAudio = new Set([
   'piler-aromates-au-mortier',
   'equilibrer-une-sauce',
   'saisir-viande-poele',
-  'fraicheur-herbes-agrumes'
+  'fraicheur-herbes-agrumes',
+  'bouillon-leger-savoureux'
 ]);
 
 export function getWorkshopAudio(slug: string): WorkshopAudioInfo | undefined {
