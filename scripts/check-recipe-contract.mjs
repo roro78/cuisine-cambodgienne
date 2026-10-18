@@ -186,7 +186,7 @@ const usedIngredientTokens = {
   'num-plae-ai': ['farine de riz gluant','eau','sel','sucre de palme','noix de coco','pandan']
 };
 for (const {slug, source} of blocks) {
-  const steps = source.match(/    steps: \\[([\\s\\S]*?)\\n    \\],/)?.[1]?.toLocaleLowerCase('fr') ?? '';
+  const steps = source.match(/    steps: \[([\s\S]*?)\n    \],/)?.[1]?.toLocaleLowerCase('fr') ?? '';
   if(!steps) failures.push(`Missing preparation steps for ${slug}`);
   for(const term of usedIngredientTokens[slug] ?? []) {
     if(!steps.includes(term)) failures.push(`Ingredient ${term} not explained in steps of ${slug}`);
