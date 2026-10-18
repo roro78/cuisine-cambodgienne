@@ -79,7 +79,9 @@ jobs:
         run: npm run build
 
       - name: Verify compiled historical SEO redirects
-        run: node scripts/check-seo-legacy-redirects.mjs
+        run: |
+          cp public/.htaccess dist/.htaccess
+          node scripts/check-seo-legacy-redirects.mjs
 
       - name: Check generated experience routes when included
         shell: bash
