@@ -124,7 +124,7 @@ export function initWorkshopChapterPlayers(): void {
       if (index === 0) {
         if (scroll) {
           automaticScrollUntil = Date.now() + 1800;
-          root.scrollIntoView({
+          (mobileViewport.matches ? root.closest<HTMLElement>('[data-workshop-tutorial]') ?? root : root).scrollIntoView({
             behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
             block: 'start'
           });
@@ -226,6 +226,7 @@ export function initWorkshopChapterPlayers(): void {
       renderFollowing();
       renderProgress();
       status!.textContent = 'Narration arrêtée. Vous pourrez la reprendre depuis le début.';
+      if (mobileStatus) mobileStatus.textContent = status!.textContent;
     }
     playButton.addEventListener('click', togglePlay);
     mobilePlay?.addEventListener('click', togglePlay);
@@ -253,6 +254,53 @@ export function initWorkshopChapterPlayers(): void {
     next.addEventListener('click', goNext);
     mobilePrevious?.addEventListener('click', goPrevious);
     mobileNext?.addEventListener('click', goNext);
+
+    // A real upward/downward gesture on the grip or title expands/collapses the
+    // same dock. Touching the seek range or playback buttons never toggles it.
+    let swipeStart: { x: number; y: number } | null = null;
+    let suppressExpandClick = false;
+    function gestureStart(event: PointerEvent): void {
+      if (!mobileViewport.matches || !(event.target instanceof Element)) return;
+      if (event.target.closest('input, a, [data-mobile-follow], [data-mobile-chapter]')) return;
+      swipeStart = { x: event.clientX, y: event.clientY };
+    }
+    function gestureEnd(event: PointerEvent): void {
+      if (!swipeStart || !mobileViewport.matches) return;
+      const deltaY = event.clientY - swipeStart.y;
+      const deltaX = event.clientX - swipeStart.x;
+      swipeStart = null;
+      if (Math.abs(deltaY) < 36 || Math.abs(deltaY) <= Math.abs(deltaX) * 1.3) return;
+      if (event.currentTarget === mobileExpand) {
+        suppressExpandClick = true;
+        window.setTimeout(() => { suppressExpandClick = false; }, 350);
+      }
+      setMobileExpanded(deltaY < 0);
+    }
+    const swipeTargets: (HTMLElement | null)[] = [
+      mobileExpand, root.querySelector<HTMLElement>('.workshop-mobile-dock-caption')
+    ];
+    swipeTargets.forEach((target) => {
+      target?.addEventListener('pointerdown', gestureStart);
+      target?.addEventListener('pointerup', gestureEnd);
+      target?.addEventListener('pointercancel', () => { swipeStart = null; });
+    });
+    mobileExpand?.addEventListener('click', () => {
+      if (suppressExpandClick) { suppressExpandClick = false; return; }
+      setMobileExpanded(!mobileExpanded);
+    });
+    mobileBackdrop?.addEventListener('click', () => setMobileExpanded(false, true));
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && mobileExpanded) {
+        event.preventDefault();
+        setMobileExpanded(false, true);
+      }
+    });
+    mobileChapterButtons.forEach((button) => button.addEventListener('click', () => {
+      const index = Number(button.dataset.mobileChapter);
+      if (!Number.isInteger(index)) return;
+      setMobileExpanded(false, true);
+      jumpTo(index, true);
+    }));
     chapterButtons.forEach((button) => button.addEventListener('click', () => {
       const index = Number(button.dataset.playerChapter);
       if (Number.isInteger(index)) jumpTo(index, true);
@@ -293,6 +341,7 @@ export function initWorkshopChapterPlayers(): void {
       jumpTo(index + 1, false);
     });
 
+    setMobileExpanded(false);
     renderFollowing();
     renderProgress();
   });
