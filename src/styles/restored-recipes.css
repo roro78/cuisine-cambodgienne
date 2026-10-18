@@ -52,3 +52,15 @@
   .restored-recipe-method>ol>li::before{font-size:1.1rem}
   .restored-recipe-sources{border-radius:0}
 }
+
+/* Découverte non intrusive : le catalogue de 13 recettes reste intact. */
+.restored-recipe-listing{padding:clamp(3rem,5vw,5rem) var(--page-pad);background:#eae2d3;border-top:1px solid #d4c7b1}
+.restored-recipe-listing h2{font:400 clamp(2rem,3.4vw,3.3rem)/1.1 var(--serif);max-width:23ch;margin:.3rem 0 1rem}
+.restored-recipe-listing>p:not(.eyebrow){line-height:1.75;max-width:75ch}
+.restored-recipe-listing-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;max-width:90rem;margin-top:2rem}
+.restored-recipe-listing-grid a{display:flex;flex-direction:column;gap:.9rem;justify-content:space-between;min-height:13rem;border:1px solid #cdc1ad;border-radius:1rem;background:#f8f4ec;padding:1.7rem;transition:border-color .2s ease,transform .2s ease}
+.restored-recipe-listing-grid a:hover{border-color:#8b7243;transform:translateY(-2px)}
+.restored-recipe-listing-grid a span{letter-spacing:.16em;text-transform:uppercase;font-size:.7rem;color:#6d664e}
+.restored-recipe-listing-grid a strong{font:400 clamp(1.45rem,2.2vw,2.2rem)/1.2 var(--serif)}
+.restored-recipe-listing-grid a em{font-size:.86rem;font-style:normal;font-weight:650}
+@media(max-width:640px){.restored-recipe-listing-grid{grid-template-columns:1fr}.restored-recipe-listing-grid a{min-height:10rem}}
