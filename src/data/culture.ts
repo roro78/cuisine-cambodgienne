@@ -61,7 +61,7 @@ export const cultureArticles: CultureArticle[] = [
     imageWidths: [1600],
     sources: [
       { label: 'FAO (2024) — Le riz, culture alimentaire et ressource économique au Cambodge', url: 'https://www.fao.org/hand-in-hand/previous-editions/hih-IF-2024/cambodia/en' },
-      { label: 'FAO (2026) — Situation des récoltes et du riz au Cambodge', url: 'https://www.fao.org/giews/countrybrief/country.jsp?code=KH' },
+      { label: 'FAO (2026) — Situation des récoltes et du riz au Cambodge', url: 'https://www.fao.org/giews/countrybrief/country.jsp?code=KHM&lang=fr' },
       { label: 'UNESCO (2015) — Jeux rituels liés aux cultures rizicoles', url: 'https://ich.unesco.org/en/RL/tugging-rituals-and-games-01080' }
     ]
   },
