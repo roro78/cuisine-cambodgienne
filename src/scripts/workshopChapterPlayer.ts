@@ -44,6 +44,16 @@ export function initWorkshopChapterPlayers(): void {
     const status = root.querySelector<HTMLElement>('[data-player-status]');
     const transcript = root.querySelector<HTMLElement>('[data-player-transcript]');
     const chapterButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-player-chapter]')];
+    const mobileDock = root.querySelector<HTMLElement>('[data-player-mobile-dock]');
+    const mobilePlay = root.querySelector<HTMLButtonElement>('[data-mobile-play]');
+    const mobileStop = root.querySelector<HTMLButtonElement>('[data-mobile-stop]');
+    const mobilePrevious = root.querySelector<HTMLButtonElement>('[data-mobile-previous]');
+    const mobileNext = root.querySelector<HTMLButtonElement>('[data-mobile-next]');
+    const mobileFollow = root.querySelector<HTMLButtonElement>('[data-mobile-follow]');
+    const mobileSeek = root.querySelector<HTMLInputElement>('[data-mobile-seek]');
+    const mobileTime = root.querySelector<HTMLElement>('[data-mobile-time]');
+    const mobileChapterTitle = root.querySelector<HTMLElement>('[data-mobile-chapter-title]');
+    const mobileChapterCount = root.querySelector<HTMLElement>('[data-mobile-chapter-count]');
     if (!audio || !playButton || !seek || !timer || !previous || !next || !stopButton || !followButton || !status || !transcript) return;
 
     root.dataset.playerEnhanced = 'true';
@@ -51,6 +61,24 @@ export function initWorkshopChapterPlayers(): void {
     let currentChapter = -1;
     let following = false;
     let automaticScrollUntil = 0;
+    let tutorialVisible = false;
+    const mobileViewport = window.matchMedia('(max-width: 760px)');
+    function updateMobileDockVisibility(): void {
+      if (!mobileDock || !audio) return;
+      const visible = mobileViewport.matches && (tutorialVisible || !audio.paused);
+      mobileDock.dataset.dockVisible = String(visible);
+      document.documentElement.classList.toggle('workshop-dock-open', visible);
+    }
+    if (typeof IntersectionObserver !== 'undefined') {
+      const observer = new IntersectionObserver((entries) => {
+        tutorialVisible = entries[0]?.isIntersecting ?? false;
+        updateMobileDockVisibility();
+      });
+      observer.observe(root.closest('[data-workshop-tutorial]') ?? root);
+    } else {
+      tutorialVisible = true;
+    }
+    mobileViewport.addEventListener('change', updateMobileDockVisibility);
 
     function duration(): number {
       return audio && Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : plannedDuration;
@@ -58,6 +86,10 @@ export function initWorkshopChapterPlayers(): void {
     function renderFollowing(): void {
       followButton!.setAttribute('aria-pressed', String(following));
       if (followState) followState.textContent = following ? 'Activé' : 'Désactivé';
+      if (mobileFollow) {
+        mobileFollow.setAttribute('aria-pressed', String(following));
+        mobileFollow.textContent = following ? '◉ Guidage actif' : '◉ Suivre';
+      }
     }
     function syncStage(index: number, scroll: boolean): void {
       if (index === 0) {
@@ -92,10 +124,14 @@ export function initWorkshopChapterPlayers(): void {
         else button.removeAttribute('aria-current');
       });
       transcript!.textContent = chapters[chapter].text;
+      if (mobileChapterTitle) mobileChapterTitle.textContent = chapters[chapter].title;
+      if (mobileChapterCount) mobileChapterCount.textContent = chapter === 0 ? 'Introduction' : 'Étape ' + chapter + '/4';
       status!.textContent = (chapter === 0 ? 'Présentation' : 'Étape ' + chapter + ' sur 4')
         + ' — ' + chapters[chapter].title + (audio.paused ? ' · en pause' : ' · en cours');
       previous!.disabled = chapter === 0;
       next!.disabled = chapter === chapters.length - 1;
+      if (mobilePrevious) mobilePrevious.disabled = chapter === 0;
+      if (mobileNext) mobileNext.disabled = chapter === chapters.length - 1;
       syncStage(chapter, following);
     }
     function renderProgress(): void {
@@ -106,9 +142,19 @@ export function initWorkshopChapterPlayers(): void {
         seek!.value = String(Math.min(audio.currentTime || 0, max));
       }
       timer!.textContent = timestamp(audio.currentTime) + ' / ' + timestamp(max);
+      if (mobileSeek && max > 0) {
+        mobileSeek.max = String(max);
+        mobileSeek.value = String(Math.min(audio.currentTime || 0, max));
+      }
+      if (mobileTime) mobileTime.textContent = timestamp(audio.currentTime) + ' / ' + timestamp(max);
+      if (mobilePlay) {
+        mobilePlay.setAttribute('aria-label', audio.paused ? 'Écouter l’atelier' : 'Mettre la narration en pause');
+        mobilePlay.textContent = audio.paused ? '▶' : 'Ⅱ';
+      }
       playButton!.setAttribute('aria-label', audio.paused ? 'Écouter l’atelier' : 'Mettre la narration en pause');
       playButton!.innerHTML = audio.paused ? '▶ <span>Écouter</span>' : 'Ⅱ <span>Pause</span>';
       syncChapter();
+      updateMobileDockVisibility();
     }
     async function start(): Promise<void> {
       if (!audio) return;
@@ -133,18 +179,22 @@ export function initWorkshopChapterPlayers(): void {
       status!.textContent = 'Défilement manuel : le suivi est désactivé, mais le son continue.';
     }
 
-    playButton.addEventListener('click', () => {
-      if (audio.paused) void start();
-      else audio.pause();
-    });
-    stopButton.addEventListener('click', () => {
-      audio.pause();
-      audio.currentTime = 0;
+    function togglePlay(): void {
+      if (audio!.paused) void start();
+      else audio!.pause();
+    }
+    function stop(): void {
+      audio!.pause();
+      audio!.currentTime = 0;
       following = false;
       renderFollowing();
       renderProgress();
-      status.textContent = 'Narration arrêtée. Vous pourrez la reprendre depuis le début.';
-    });
+      status!.textContent = 'Narration arrêtée. Vous pourrez la reprendre depuis le début.';
+    }
+    playButton.addEventListener('click', togglePlay);
+    mobilePlay?.addEventListener('click', togglePlay);
+    stopButton.addEventListener('click', stop);
+    mobileStop?.addEventListener('click', stop);
     audio.addEventListener('play', renderProgress);
     audio.addEventListener('pause', renderProgress);
     audio.addEventListener('timeupdate', renderProgress);
@@ -155,27 +205,38 @@ export function initWorkshopChapterPlayers(): void {
       renderProgress();
       status!.textContent = 'Atelier terminé. Bravo !';
     });
-    seek.addEventListener('input', () => {
-      const value = Number(seek.value);
-      if (Number.isFinite(value)) audio.currentTime = value;
+    function seekTo(value: number): void {
+      if (Number.isFinite(value)) audio!.currentTime = value;
       renderProgress();
-    });
-    previous.addEventListener('click', () => jumpTo(Math.max(0, chapterAt(audio.currentTime, chapters) - 1), true));
-    next.addEventListener('click', () => jumpTo(Math.min(chapters.length - 1, chapterAt(audio.currentTime, chapters) + 1), true));
+    }
+    seek.addEventListener('input', () => seekTo(Number(seek.value)));
+    mobileSeek?.addEventListener('input', () => seekTo(Number(mobileSeek.value)));
+    const goPrevious = () => jumpTo(Math.max(0, chapterAt(audio.currentTime, chapters) - 1), true);
+    const goNext = () => jumpTo(Math.min(chapters.length - 1, chapterAt(audio.currentTime, chapters) + 1), true);
+    previous.addEventListener('click', goPrevious);
+    next.addEventListener('click', goNext);
+    mobilePrevious?.addEventListener('click', goPrevious);
+    mobileNext?.addEventListener('click', goNext);
     chapterButtons.forEach((button) => button.addEventListener('click', () => {
       const index = Number(button.dataset.playerChapter);
       if (Number.isInteger(index)) jumpTo(index, true);
     }));
-    followButton.addEventListener('click', () => {
+    function toggleFollowing(): void {
       following = !following;
       renderFollowing();
-      if (following) syncStage(chapterAt(audio.currentTime, chapters), true);
+      if (following) syncStage(chapterAt(audio!.currentTime, chapters), true);
       else status!.textContent = 'Défilement libre activé. Le son continue.';
-    });
+    }
+    followButton.addEventListener('click', toggleFollowing);
+    mobileFollow?.addEventListener('click', toggleFollowing);
 
     // User scroll always takes priority, including on phones and keyboard navigation.
     window.addEventListener('wheel', stopFollowing, { passive: true });
-    window.addEventListener('touchmove', stopFollowing, { passive: true });
+    window.addEventListener('touchmove', (event) => {
+      // Touch gestures on the timeline or player do not count as manual page scrolling.
+      if (event.target instanceof Element && event.target.closest('[data-workshop-chapter-player]')) return;
+      stopFollowing();
+    }, { passive: true });
     window.addEventListener('scroll', () => {
       // A mouse drag of the page scrollbar should also disable follow.
       // Ignore scroll events emitted by our own smooth scrollIntoView.

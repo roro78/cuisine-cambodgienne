@@ -84,6 +84,12 @@ jobs:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
         run: npm run test:browser-experiences
 
+      - name: Atelier mortier mobile bottom-dock browser regression
+        if: github.ref == 'refs/heads/feat/atelier-mortier-mobile-dock-slides-20261018'
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/workshop-mobile-dock-browser.test.mjs
+
       - name: Install Playwright video encoder
         run: node ./node_modules/playwright-core/cli.js install ffmpeg
 
