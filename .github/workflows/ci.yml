@@ -133,6 +133,12 @@ jobs:
           node scripts/check-workshop-audio.mjs --slug=composer-repas-cambodgien
           node tests/workshop-repas-audio-browser.test.mjs
 
+      - name: Mobile bottom sheet and six Coral workshop browser QA
+        if: github.ref == 'refs/heads/feat/ateliers-mobile-audio-bottom-sheet-20261018'
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/workshop-mobile-bottom-sheet-browser.test.mjs
+
       - name: Install Playwright video encoder
         run: node ./node_modules/playwright-core/cli.js install ffmpeg
 
