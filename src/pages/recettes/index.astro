@@ -4,8 +4,10 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import EditorialSectionHero from '../../components/EditorialSectionHero.astro';
 import { recipes } from '../../data/recipes';
+import { restoredRecipes } from '../../data/restoredRecipes';
 import { recipeTechniqueGuides } from '../../data/recipeTechniques';
 import '../../styles/recipe-techniques.css';
+import '../../styles/restored-recipes.css';
 import { imageSrcSet } from '../../utils/images';
 import '../../styles/recipe-v15.css';
 import '../../styles/v16-editorial.css';
@@ -117,6 +119,21 @@ const toneMap: Record<string,string> = {
           </div>
         </a>
       ))}
+    </section>
+
+    <section class="restored-recipe-listing" aria-labelledby="restored-recipes-title">
+      <p class="eyebrow">À retrouver</p>
+      <h2 id="restored-recipes-title">Deux recettes historiques, de nouveau accessibles</h2>
+      <p>Ces fiches ont été reconstituées à partir de références encore disponibles sur Internet. Les ingrédients et les méthodes ont été réécrits et clarifiés pour cuisiner aujourd’hui, sans prétendre reproduire mot pour mot les pages disparues.</p>
+      <div class="restored-recipe-listing-grid">
+        {restoredRecipes.map((recipe) => (
+          <a href={`/recettes/${recipe.slug}/`}>
+            <span>{recipe.kicker}</span>
+            <strong>{recipe.title}</strong>
+            <em>Lire la recette →</em>
+          </a>
+        ))}
+      </div>
     </section>
 
     <section class="recipe-technique-explore" aria-labelledby="recipe-technique-explore-title">
