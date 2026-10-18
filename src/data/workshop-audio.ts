@@ -23,6 +23,13 @@ export interface WorkshopAudioInfo {
 const all: WorkshopAudioInfo[] = [mortier, sauce, viande, herbes, bouillon, table];
 const bySlug = new Map(all.map((item) => [item.slug, item]));
 
+// Audio is deliberately released workshop by workshop. The files and manifests
+// can be shipped ahead of time, but a player is rendered only after that workshop
+// has passed its own production validation.
+const releasedWorkshopAudio = new Set([
+  'piler-aromates-au-mortier'
+]);
+
 export function getWorkshopAudio(slug: string): WorkshopAudioInfo | undefined {
-  return bySlug.get(slug);
+  return releasedWorkshopAudio.has(slug) ? bySlug.get(slug) : undefined;
 }
