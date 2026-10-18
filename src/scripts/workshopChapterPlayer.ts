@@ -72,7 +72,7 @@ export function initWorkshopChapterPlayers(): void {
     let tutorialVisible = false;
     let sheetExpanded = false;
     let gestureStartY: number | null = null;
-    let lastSwipeAt = 0;
+    let suppressGestureClick = false;
     const mobileViewport = window.matchMedia('(max-width: 760px)');
 
     function setSheetExpanded(expanded: boolean, restoreFocus = false): void {
@@ -110,8 +110,12 @@ export function initWorkshopChapterPlayers(): void {
     }
     mobileViewport.addEventListener('change', updateMobileDockVisibility);
     mobileToggle?.addEventListener('click', () => {
-      // Pointer swipes can emit a click on touch devices; don't undo the gesture.
-      if (Date.now() - lastSwipeAt < 650) return;
+      // Suppress only the synthetic click from the completed swipe, not a quick
+      // intentional tap immediately afterwards.
+      if (suppressGestureClick) {
+        suppressGestureClick = false;
+        return;
+      }
       setSheetExpanded(!sheetExpanded, true);
     });
     mobileSheetClose?.addEventListener('click', () => setSheetExpanded(false, true));
@@ -121,6 +125,7 @@ export function initWorkshopChapterPlayers(): void {
     for (const zone of [grip, sheetHeader]) {
       zone?.addEventListener('pointerdown', (event: PointerEvent) => {
         if (event.target instanceof Element && event.target.closest('button:not([data-mobile-toggle])')) return;
+        suppressGestureClick = false;
         gestureStartY = event.clientY;
         // Keep receiving pointerup when the finger exits the narrow handle.
         zone.setPointerCapture(event.pointerId);
@@ -130,7 +135,7 @@ export function initWorkshopChapterPlayers(): void {
         const distance = event.clientY - gestureStartY;
         gestureStartY = null;
         if (Math.abs(distance) < 38) return;
-        lastSwipeAt = Date.now();
+        suppressGestureClick = true;
         if (distance < 0) setSheetExpanded(true);
         else setSheetExpanded(false, true);
       });
