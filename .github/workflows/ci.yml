@@ -133,6 +133,12 @@ jobs:
           node scripts/check-workshop-audio.mjs --slug=composer-repas-cambodgien
           node tests/workshop-repas-audio-browser.test.mjs
 
+      - name: Mobile narration sheet - swipe chapters and six workshop QA
+        if: github.ref == 'refs/heads/feat/atelier-mobile-expanded-narration-sheet-20261018'
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/workshop-expanded-mobile-qa.mjs
+
       - name: Install Playwright video encoder
         run: node ./node_modules/playwright-core/cli.js install ffmpeg
 

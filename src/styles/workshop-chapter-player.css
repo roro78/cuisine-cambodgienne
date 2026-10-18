@@ -79,3 +79,88 @@
   .workshop-mobile-follow{padding:.4rem .5rem}
 }
 @media(prefers-reduced-motion:reduce){.workshop-chapter-player *{scroll-behavior:auto!important}}
+
+/* V23 — On phones narration belongs to the expandable bottom sheet, not to
+   a second content card. Desktop and non-enhanced fallbacks remain unchanged. */
+.workshop-mobile-backdrop { display:none; }
+@media (max-width:760px) {
+  .workshop-chapter-player[data-player-enhanced="true"] {
+    block-size:0; min-block-size:0; margin:0; padding:0; border:0;
+    background:transparent; box-shadow:none; overflow:visible;
+  }
+  .workshop-chapter-player[data-player-enhanced="true"] > :not([data-player-mobile-dock]):not([data-player-audio]):not([data-mobile-backdrop]) {
+    display:none !important;
+  }
+  .workshop-chapter-player[data-player-enhanced="true"] > [data-player-audio] { display:none; }
+  html.workshop-dock-open body { padding-bottom:calc(10rem + env(safe-area-inset-bottom,0px)); }
+  .workshop-mobile-backdrop:not([hidden]) {
+    display:block; position:fixed; inset:0; z-index:99; width:100%;
+    border:0; background:rgba(28,22,17,.48); cursor:pointer;
+  }
+  .workshop-mobile-dock[data-dock-visible="true"] {
+    display:flex; flex-direction:column; gap:0; padding-top:.15rem;
+    max-width:100vw;
+  }
+  .workshop-mobile-expand {
+    display:flex; flex:0 0 auto; align-items:center; justify-content:center;
+    gap:.6rem; width:100%; min-height:1.9rem; background:transparent;
+    border:0; color:#715d48; cursor:pointer; touch-action:none;
+    padding:.25rem .2rem .3rem; font:700 .64rem/1.3 system-ui,sans-serif;
+  }
+  .workshop-mobile-grip {
+    display:inline-block; flex:0 0 auto; width:2.2rem; height:.24rem;
+    background:#b5a184; border-radius:999px;
+  }
+  .workshop-mobile-expand-chevron { font-size:1rem; line-height:1; transition:transform .18s; }
+  .workshop-mobile-expand:focus-visible,
+  .workshop-mobile-chapters button:focus-visible { outline:3px solid #ad693d; outline-offset:2px; }
+  .workshop-mobile-dock[data-expanded="true"] {
+    height:min(82dvh, 720px);
+    max-height:calc(100dvh - env(safe-area-inset-top,0px) - .7rem);
+    border-radius:1.1rem 1.1rem 0 0;
+    box-shadow:0 -15px 44px #25190b55;
+  }
+  .workshop-mobile-dock[data-expanded="true"] .workshop-mobile-expand-chevron { transform:rotate(180deg); }
+  .workshop-mobile-panel:not([hidden]) {
+    display:block; flex:1 1 auto; min-height:0; overflow-y:auto;
+    overscroll-behavior:contain; -webkit-overflow-scrolling:touch;
+    padding:.6rem .18rem 1.05rem;
+    border-bottom:1px solid #ddccb5;
+    scrollbar-color:#c1a878 #fffaf1;
+  }
+  .workshop-mobile-panel-intro h4 {
+    font:500 clamp(1.35rem,5vw,1.9rem)/1.16 var(--serif);
+    letter-spacing:-.025em; margin:.25rem 0 .35rem; color:#302d27;
+  }
+  .workshop-mobile-panel-intro>p:last-child {
+    font-size:.8rem; line-height:1.45; color:#65513a; margin:0 0 .8rem;
+  }
+  .workshop-mobile-panel-kicker {
+    font-size:.65rem; font-weight:800; text-transform:uppercase;
+    letter-spacing:.07em; color:#95602b; margin:0;
+  }
+  .workshop-mobile-chapters { list-style:none; display:grid; gap:.46rem; padding:0; margin:0 0 1.05rem; }
+  .workshop-mobile-chapters button {
+    display:grid; grid-template-columns:2.65rem minmax(0,1fr) 2.6rem;
+    gap:.45rem; align-items:center; width:100%; min-height:3.45rem;
+    border:1px solid #d9c7a9; border-radius:.65rem; padding:.55rem .65rem;
+    color:#392e20; background:#fbf3e5; text-align:left; cursor:pointer;
+  }
+  .workshop-mobile-chapters button[aria-current="step"] {
+    background:#f6e2ae; border-color:#b88a36;
+    box-shadow:inset 3px 0 0 #c89634;
+  }
+  .workshop-mobile-chapter-number { font-size:.69rem; font-weight:800; color:#926330; }
+  .workshop-mobile-chapter-name { font-size:.82rem; line-height:1.25; font-weight:700; min-width:0; }
+  .workshop-mobile-chapters small { text-align:right; font-size:.72rem; color:#77644b; }
+  .workshop-mobile-transcript { border-top:1px solid #ddccb5; padding:.9rem .2rem .2rem; }
+  .workshop-mobile-transcript [data-mobile-transcript] {
+    font-size:.86rem; line-height:1.65; color:#4e4031; margin:.4rem 0;
+  }
+  .workshop-mobile-panel-status { font-size:.72rem; line-height:1.45; color:#65513a; margin:.45rem .2rem 0; }
+  .workshop-mobile-dock-heading { flex:0 0 auto; padding-top:.25rem; }
+  .workshop-mobile-dock-controls { flex:0 0 auto; }
+  @media (prefers-reduced-motion: reduce) {
+    .workshop-mobile-expand-chevron { transition:none; }
+  }
+}

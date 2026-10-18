@@ -45,6 +45,13 @@ export function initWorkshopChapterPlayers(): void {
     const transcript = root.querySelector<HTMLElement>('[data-player-transcript]');
     const chapterButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-player-chapter]')];
     const mobileDock = root.querySelector<HTMLElement>('[data-player-mobile-dock]');
+    const mobileExpand = root.querySelector<HTMLButtonElement>('[data-mobile-expand]');
+    const mobileExpandLabel = root.querySelector<HTMLElement>('[data-mobile-expand-label]');
+    const mobilePanel = root.querySelector<HTMLElement>('[data-mobile-panel]');
+    const mobileBackdrop = root.querySelector<HTMLButtonElement>('[data-mobile-backdrop]');
+    const mobileChapterButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-mobile-chapter]')];
+    const mobileTranscript = root.querySelector<HTMLElement>('[data-mobile-transcript]');
+    const mobileStatus = root.querySelector<HTMLElement>('[data-mobile-status]');
     const mobilePlay = root.querySelector<HTMLButtonElement>('[data-mobile-play]');
     const mobileStop = root.querySelector<HTMLButtonElement>('[data-mobile-stop]');
     const mobilePrevious = root.querySelector<HTMLButtonElement>('[data-mobile-previous]');
@@ -62,12 +69,31 @@ export function initWorkshopChapterPlayers(): void {
     let following = false;
     let automaticScrollUntil = 0;
     let tutorialVisible = false;
+    let mobileExpanded = false;
     const mobileViewport = window.matchMedia('(max-width: 760px)');
+
     function updateMobileDockVisibility(): void {
       if (!mobileDock || !audio) return;
-      const visible = mobileViewport.matches && (tutorialVisible || !audio.paused);
+      const visible = mobileViewport.matches && (tutorialVisible || !audio.paused || mobileExpanded);
       mobileDock.dataset.dockVisible = String(visible);
       document.documentElement.classList.toggle('workshop-dock-open', visible);
+    }
+    function setMobileExpanded(next: boolean, restoreFocus = false): void {
+      if (!mobileDock || !mobilePanel || !mobileExpand) return;
+      mobileExpanded = next && mobileViewport.matches;
+      mobileDock.dataset.expanded = String(mobileExpanded);
+      mobilePanel.hidden = !mobileExpanded;
+      if (mobileBackdrop) mobileBackdrop.hidden = !mobileExpanded;
+      mobileExpand.setAttribute('aria-expanded', String(mobileExpanded));
+      mobileExpand.setAttribute('aria-label', mobileExpanded
+        ? 'Replier la navigation audio'
+        : 'Déployer les chapitres et la transcription');
+      if (mobileExpandLabel) mobileExpandLabel.textContent = mobileExpanded
+        ? 'Replier la navigation'
+        : 'Glisser pour les chapitres';
+      document.documentElement.classList.toggle('workshop-panel-expanded', mobileExpanded);
+      updateMobileDockVisibility();
+      if (!mobileExpanded && restoreFocus && mobileViewport.matches) mobileExpand.focus({ preventScroll: true });
     }
     if (typeof IntersectionObserver !== 'undefined') {
       const observer = new IntersectionObserver((entries) => {
@@ -78,7 +104,10 @@ export function initWorkshopChapterPlayers(): void {
     } else {
       tutorialVisible = true;
     }
-    mobileViewport.addEventListener('change', updateMobileDockVisibility);
+    mobileViewport.addEventListener('change', () => {
+      if (!mobileViewport.matches) setMobileExpanded(false);
+      updateMobileDockVisibility();
+    });
 
     function duration(): number {
       return audio && Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : plannedDuration;
@@ -95,7 +124,7 @@ export function initWorkshopChapterPlayers(): void {
       if (index === 0) {
         if (scroll) {
           automaticScrollUntil = Date.now() + 1800;
-          root.scrollIntoView({
+          (mobileViewport.matches ? root.closest<HTMLElement>('[data-workshop-tutorial]') ?? root : root).scrollIntoView({
             behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
             block: 'start'
           });
@@ -124,10 +153,16 @@ export function initWorkshopChapterPlayers(): void {
         else button.removeAttribute('aria-current');
       });
       transcript!.textContent = chapters[chapter].text;
+      if (mobileTranscript) mobileTranscript.textContent = chapters[chapter].text;
+      mobileChapterButtons.forEach((button, index) => {
+        if (index === chapter) button.setAttribute('aria-current', 'step');
+        else button.removeAttribute('aria-current');
+      });
       if (mobileChapterTitle) mobileChapterTitle.textContent = chapters[chapter].title;
       if (mobileChapterCount) mobileChapterCount.textContent = chapter === 0 ? 'Introduction' : 'Étape ' + chapter + '/4';
       status!.textContent = (chapter === 0 ? 'Présentation' : 'Étape ' + chapter + ' sur 4')
         + ' — ' + chapters[chapter].title + (audio.paused ? ' · en pause' : ' · en cours');
+      if (mobileStatus) mobileStatus.textContent = status!.textContent;
       previous!.disabled = chapter === 0;
       next!.disabled = chapter === chapters.length - 1;
       if (mobilePrevious) mobilePrevious.disabled = chapter === 0;
@@ -147,6 +182,7 @@ export function initWorkshopChapterPlayers(): void {
         mobileSeek.value = String(Math.min(audio.currentTime || 0, max));
       }
       if (mobileTime) mobileTime.textContent = timestamp(audio.currentTime) + ' / ' + timestamp(max);
+      if (mobileStatus && status) mobileStatus.textContent = status.textContent;
       if (mobilePlay) {
         mobilePlay.setAttribute('aria-label', audio.paused ? 'Écouter l’atelier' : 'Mettre la narration en pause');
         mobilePlay.textContent = audio.paused ? '▶' : 'Ⅱ';
@@ -190,6 +226,7 @@ export function initWorkshopChapterPlayers(): void {
       renderFollowing();
       renderProgress();
       status!.textContent = 'Narration arrêtée. Vous pourrez la reprendre depuis le début.';
+      if (mobileStatus) mobileStatus.textContent = status!.textContent;
     }
     playButton.addEventListener('click', togglePlay);
     mobilePlay?.addEventListener('click', togglePlay);
@@ -217,6 +254,54 @@ export function initWorkshopChapterPlayers(): void {
     next.addEventListener('click', goNext);
     mobilePrevious?.addEventListener('click', goPrevious);
     mobileNext?.addEventListener('click', goNext);
+
+    // A real upward/downward gesture on the grip or title expands/collapses the
+    // same dock. Touching the seek range or playback buttons never toggles it.
+    let swipeStart: { x: number; y: number } | null = null;
+    let suppressExpandClick = false;
+    function gestureStart(event: PointerEvent): void {
+      if (!mobileViewport.matches || !(event.target instanceof Element)) return;
+      if (event.target.closest('input, a, [data-mobile-follow], [data-mobile-chapter]')) return;
+      swipeStart = { x: event.clientX, y: event.clientY };
+      (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
+    }
+    function gestureEnd(event: PointerEvent): void {
+      if (!swipeStart || !mobileViewport.matches) return;
+      const deltaY = event.clientY - swipeStart.y;
+      const deltaX = event.clientX - swipeStart.x;
+      swipeStart = null;
+      if (Math.abs(deltaY) < 36 || Math.abs(deltaY) <= Math.abs(deltaX) * 1.3) return;
+      if (event.currentTarget === mobileExpand) {
+        suppressExpandClick = true;
+        window.setTimeout(() => { suppressExpandClick = false; }, 350);
+      }
+      setMobileExpanded(deltaY < 0);
+    }
+    const swipeTargets: (HTMLElement | null)[] = [
+      mobileExpand, root.querySelector<HTMLElement>('.workshop-mobile-dock-caption')
+    ];
+    swipeTargets.forEach((target) => {
+      target?.addEventListener('pointerdown', gestureStart);
+      target?.addEventListener('pointerup', gestureEnd);
+      target?.addEventListener('pointercancel', () => { swipeStart = null; });
+    });
+    mobileExpand?.addEventListener('click', () => {
+      if (suppressExpandClick) { suppressExpandClick = false; return; }
+      setMobileExpanded(!mobileExpanded);
+    });
+    mobileBackdrop?.addEventListener('click', () => setMobileExpanded(false, true));
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && mobileExpanded) {
+        event.preventDefault();
+        setMobileExpanded(false, true);
+      }
+    });
+    mobileChapterButtons.forEach((button) => button.addEventListener('click', () => {
+      const index = Number(button.dataset.mobileChapter);
+      if (!Number.isInteger(index)) return;
+      setMobileExpanded(false, true);
+      jumpTo(index, true);
+    }));
     chapterButtons.forEach((button) => button.addEventListener('click', () => {
       const index = Number(button.dataset.playerChapter);
       if (Number.isInteger(index)) jumpTo(index, true);
@@ -257,6 +342,7 @@ export function initWorkshopChapterPlayers(): void {
       jumpTo(index + 1, false);
     });
 
+    setMobileExpanded(false);
     renderFollowing();
     renderProgress();
   });
