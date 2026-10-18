@@ -102,7 +102,7 @@ export const restoredRecipes: RestoredRecipe[] = [
       { label: 'Le Routard — discussion du 30 mai 2017 citant l’ancienne recette', url: 'https://www.routard.com/forums/t/recherche-nom-dun-dessert/177773' },
       { label: 'Provence Town — recette Nom Krob Totim publiée le 26 octobre 2017', url: 'https://provencetown.wordpress.com/category/recettes/' }
     ]
-  }
+  },
   {
     slug: 'samla-mchou-yuon',
     title: 'Samla M’Chou Yuon : soupe acidulée au poisson, à la tomate et à l’ananas',
