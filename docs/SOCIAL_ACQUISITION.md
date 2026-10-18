@@ -12,7 +12,7 @@ Architecture réutilisée : VPS OVH ORVEKIO, n8n (`https://n8n.orvekio.com`), Ol
 - `/social-feed.json` : catalogue public statique de sujets et faits sourcés sur le site, empreinte éditoriale pour repérer les mises à jour. N'inclut aucune donnée privée.
 - `scripts/build-social-assets.mjs` : conversion automatique des médias du site en JPEG carré, compatible avec les publications Instagram, sans générer de fausses images. Les ateliers sans image propre sont dans le flux, mais exclus de la sélection pour un post simultané Facebook+Instagram.
 - `automation/n8n/schema.sql` : file et états de publication isolés, clé unique par jour et état séparé par plateforme.
-- `automation/n8n/01-drafts-email-approval.json` : calendrier journalier, lecture des sources, sélection avec priorité aux articles nouveaux/modifiés, génération locale Ollama, validation technique, stockage de brouillon, e-mail Resend, formulaire n8n en deux étapes **POST** et sauvegarde de l'approbation/refus.
+- `automation/n8n/01-drafts-email-approval.json` : calendrier journalier, lecture des sources, sélection avec priorité aux articles nouveaux/modifiés, génération locale Ollama, validation technique, stockage de brouillon, e-mail Resend, formulaire n8n en deux étapes **POST** et sauvegarde de l'approbation, du refus ou d'une demande de modification commentée. Une demande de modification reste non publiable et son commentaire est conservé pour la reprise éditoriale.
 - `automation/n8n/02-publish-approved.json` : un seul envoi par jour depuis la file approuvée, claim atomique, publication Facebook et création de conteneur Instagram ; identifiants enregistrés immédiatement.
 - `automation/n8n/03-reconcile-instagram.json` : vérifie si le média Instagram est prêt avant l'envoi final ; jamais de soumission répétée automatiquement après état ambigu.
 
@@ -40,7 +40,7 @@ Architecture réutilisée : VPS OVH ORVEKIO, n8n (`https://n8n.orvekio.com`), Ol
 ## Sécurité / idempotence
 
 - Le `Save draft` utilise `ON CONFLICT DO NOTHING` : pas deux e-mails pour le même créneau si le même déclencheur repart.
-- La publication est impossible sans `status=approved` enregistré après validation explicite. Un refus ou délai dépassé laisse le contenu non publiable.
+- La publication est impossible sans `status=approved` enregistré après validation explicite. Un refus, une demande de modification ou un délai dépassé laisse le contenu non publiable.
 - Les appels Meta sont précédés d'un **claim atomique PostgreSQL** (`FOR UPDATE SKIP LOCKED`) mettant les états en cours de soumission. En cas de crash entre appel externe et écriture de l'ID Meta, le workflow **ne retente jamais automatiquement** : vérifier le compte et réparer manuellement l'état. Le risque de livraison bloquée est préférable aux doublons.
 - Un résultat de génération incorrect, des données manquantes ou une erreur de conversion bloque le brouillon. Le contrôle `claimsUsed` vérifie la provenance déclarée, mais **ne prouve pas que chaque affirmation IA est vraie** ; une revue humaine reste obligatoire.
 - Ne jamais stocker de tokens Meta, clé Resend ou mot de passe en fichiers JSON, Git ou champs visibles des workflows.
