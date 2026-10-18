@@ -29,7 +29,8 @@ const bySlug = new Map(all.map((item) => [item.slug, item]));
 const releasedWorkshopAudio = new Set([
   'piler-aromates-au-mortier',
   'equilibrer-une-sauce',
-  'saisir-viande-poele'
+  'saisir-viande-poele',
+  'fraicheur-herbes-agrumes'
 ]);
 
 export function getWorkshopAudio(slug: string): WorkshopAudioInfo | undefined {
