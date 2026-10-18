@@ -149,6 +149,11 @@ export function initWorkshopChapterPlayers(): void {
       if (!mobileExtras || !mobileToggle) return;
       mobileExtras.classList.toggle('is-open', open);
       mobileToggle.setAttribute('aria-expanded', String(open));
+      // Never leave keyboard focus inside a panel that just became hidden.
+      if (!open && window.matchMedia('(max-width: 780px)').matches
+          && mobileExtras.contains(document.activeElement)) {
+        mobileToggle.focus({ preventScroll: true });
+      }
     }
 
     playButton.addEventListener('click', () => {
