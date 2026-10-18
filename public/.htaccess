@@ -1,20 +1,29 @@
-# Cuisine du Cambodge — restauration SEO des anciennes URL
-# Règles limitées aux équivalences éditoriales vérifiées.
-# Apache/OVH : mod_alias, présent sur l'hébergement mutualisé.
-#
-# Ancienne page de recettes citée par Wikipédia -> catalogue des recettes actuel.
-# Correspondance de rubrique vérifiée ; conserver 301 même si l'ancienne URL
-# n'existe plus sur le disque, afin d'éviter un retour 404.
-RedirectMatch 301 ^/recettes-cambodgiennes/?$ https://www.cuisine-du-cambodge.com/recettes/
+# Cuisine du Cambodge — SEO: redirections historiques et URL canonique
+# Une URL unique : https://www.cuisine-du-cambodge.com/
+# Hébergement OVH Apache : mod_rewrite. Ne pas rediriger d'autres hôtes du même multisite.
+RewriteEngine On
 
-# Ancien article « le riz, symbole de vie » -> dossier culturel documenté.
-RedirectMatch 301 ^/le-riz-symbole-de-vie-au-cambodge/?$ https://www.cuisine-du-cambodge.com/culture/le-riz-symbole-de-vie-au-cambodge/
+# Anciennes URLs retrouvées via les backlinks. Chaque lien rejoint sa cible en un seul 301.
+RewriteCond %{HTTP_HOST} ^(www[.])?cuisine-du-cambodge[.]com$ [NC]
+RewriteRule ^recettes-cambodgiennes/?$ https://www.cuisine-du-cambodge.com/recettes/ [R=301,L,NE]
 
-# Ancienne recette de curry de poulet khmer : fiche culinaire réécrite, même plat.
-RedirectMatch 301 ^/recettes/recettes_khmeres_poulet_curry[.]php$ https://www.cuisine-du-cambodge.com/recettes/curry-poulet-khmer/
+RewriteCond %{HTTP_HOST} ^(www[.])?cuisine-du-cambodge[.]com$ [NC]
+RewriteRule ^le-riz-symbole-de-vie-au-cambodge/?$ https://www.cuisine-du-cambodge.com/culture/le-riz-symbole-de-vie-au-cambodge/ [R=301,L,NE]
 
-# Nom Krob Totim : ancienne URL du dessert, recette dédiée reconstituée.
-RedirectMatch 301 ^/nom-krob-totim-dessert-cambodgien-tapioca/?$ https://www.cuisine-du-cambodge.com/recettes/nom-krob-totim/
+RewriteCond %{HTTP_HOST} ^(www[.])?cuisine-du-cambodge[.]com$ [NC]
+RewriteRule ^recettes/recettes_khmeres_poulet_curry[.]php$ https://www.cuisine-du-cambodge.com/recettes/curry-poulet-khmer/ [R=301,L,NE]
 
-# Samla M'Chou Yuon : variante poissonneuse reconstituée, distincte du Samlor Machu générique.
-RedirectMatch 301 ^/recette-cambodgienne-samla-mchou-yuan/?$ https://www.cuisine-du-cambodge.com/recettes/samla-mchou-yuon/
+RewriteCond %{HTTP_HOST} ^(www[.])?cuisine-du-cambodge[.]com$ [NC]
+RewriteRule ^nom-krob-totim-dessert-cambodgien-tapioca/?$ https://www.cuisine-du-cambodge.com/recettes/nom-krob-totim/ [R=301,L,NE]
+
+RewriteCond %{HTTP_HOST} ^(www[.])?cuisine-du-cambodge[.]com$ [NC]
+RewriteRule ^recette-cambodgienne-samla-mchou-yuan/?$ https://www.cuisine-du-cambodge.com/recettes/samla-mchou-yuon/ [R=301,L,NE]
+
+# Ancien domaine sans www : conserver le chemin demandé et les paramètres UTM.
+RewriteCond %{HTTP_HOST} ^cuisine-du-cambodge[.]com$ [NC]
+RewriteRule ^(.*)$ https://www.cuisine-du-cambodge.com/$1 [R=301,L,NE]
+
+# Ancien protocole http avec www ; aucune redirection sur https://www.
+RewriteCond %{HTTP_HOST} ^www[.]cuisine-du-cambodge[.]com$ [NC]
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://www.cuisine-du-cambodge.com/$1 [R=301,L,NE]
