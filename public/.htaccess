@@ -9,3 +9,9 @@ RedirectMatch 301 ^/recettes-cambodgiennes/?$ https://www.cuisine-du-cambodge.co
 
 # Ancien article « le riz, symbole de vie » -> dossier culturel documenté.
 RedirectMatch 301 ^/le-riz-symbole-de-vie-au-cambodge/?$ https://www.cuisine-du-cambodge.com/culture/le-riz-symbole-de-vie-au-cambodge/
+
+# Ancienne recette de curry de poulet khmer : fiche culinaire réécrite, même plat.
+RedirectMatch 301 ^/recettes/recettes_khmeres_poulet_curry[.]php$ https://www.cuisine-du-cambodge.com/recettes/curry-poulet-khmer/
+
+# Nom Krob Totim : ancienne URL du dessert, recette dédiée reconstituée.
+RedirectMatch 301 ^/nom-krob-totim-dessert-cambodgien-tapioca/?$ https://www.cuisine-du-cambodge.com/recettes/nom-krob-totim/
