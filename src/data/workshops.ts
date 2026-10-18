@@ -46,7 +46,7 @@ export const workshops: Workshop[] = [
       'Reconnaître une pâte assez fine sans dépendre d’un minuteur.'
     ],
     prepare: [
-      'Pour cet exercice : 1 cœur tendre de citronnelle, 10 g de galanga, 10 g de curcuma frais, 1 gousse d’ail et 1 petite échalote, épluchés puis coupés très finement.',
+      'Pour cet exercice : 1 cœur tendre de citronnelle, 10 g de galanga, 10 g de curcuma frais, 1 gousse d’ail et 1 petite échalote. Réservez un morceau épais de citronnelle et un morceau fin pour la comparaison du premier geste ; émincez ensuite très finement tous les aromates avant de les piler.',
       'Un mortier, un pilon et une petite cuillère pour ramener la pâte au centre.',
       'Une petite assiette pour comparer les textures au fil de l’atelier.'
     ],
@@ -109,7 +109,7 @@ export const workshops: Workshop[] = [
     prepare: [
       'Quatre petits bols identiques.',
       'Préparez une base sans produit cru : mélangez 120 ml d’eau avec ½ c. à café de sauce de poisson. Versez 30 ml de cette base dans chacun des quatre bols.',
-      'Pour trois essais séparés : du jus de citron vert ou du jus de tamarin filtré, 1 petite pincée de sucre et 1 petite pincée de sel. Gardez le quatrième bol sans ajout.'
+      'Prévoyez du jus de citron vert ou de tamarin filtré, 1 c. à café de sucre et ½ c. à café de sel dans de petites coupelles. Pour les trois premiers essais, prélevez seulement quelques gouttes de jus, une pincée de sucre et une pincée de sel, chacune dans un bol différent ; gardez le reste pour ajuster le bol préféré. Le quatrième bol reste nature.'
     ],
     experiments: [
       'Préparer quatre bols de sauce identiques et ne changer qu’un ingrédient par bol.',
@@ -168,7 +168,7 @@ export const workshops: Workshop[] = [
     ],
     prepare: [
       'Une grande poêle ou un wok.',
-      '450 g de bœuf à poêler, en morceaux de taille identique : 100 g pour le premier essai, 250 g pour comparer une poêle plus chargée et 100 g pour l’essai final.',
+      '500 à 700 g de bœuf à poêler selon la taille de la poêle, en morceaux identiques : environ 100 g pour le premier essai, 300 à 500 g pour l’essai surchargé et 100 g pour la dernière fournée. Pour le deuxième essai, les morceaux doivent se toucher ou se chevaucher ; si 300 g tiennent espacés dans votre poêle, augmentez la quantité. Faites cuire entièrement chaque fournée.',
       '1 c. à soupe d’huile neutre, répartie entre les essais, et 1 c. à café de sauce soja à verser seulement sur la dernière fournée une fois la viande dorée.'
     ],
     experiments: [
