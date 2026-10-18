@@ -72,6 +72,9 @@ jobs:
             echo "Grand Diner not included in this release."
           fi
 
+      - name: Check all six Coral MP3 files and chapter timelines (offline)
+        run: node scripts/check-workshop-audio.mjs
+
       - name: Build approved static site
         run: npm run build
 
