@@ -45,6 +45,13 @@ export function initWorkshopChapterPlayers(): void {
     const transcript = root.querySelector<HTMLElement>('[data-player-transcript]');
     const chapterButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-player-chapter]')];
     const mobileDock = root.querySelector<HTMLElement>('[data-player-mobile-dock]');
+    const mobileExpand = root.querySelector<HTMLButtonElement>('[data-mobile-expand]');
+    const mobileExpandLabel = root.querySelector<HTMLElement>('[data-mobile-expand-label]');
+    const mobilePanel = root.querySelector<HTMLElement>('[data-mobile-panel]');
+    const mobileBackdrop = root.querySelector<HTMLButtonElement>('[data-mobile-backdrop]');
+    const mobileChapterButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-mobile-chapter]')];
+    const mobileTranscript = root.querySelector<HTMLElement>('[data-mobile-transcript]');
+    const mobileStatus = root.querySelector<HTMLElement>('[data-mobile-status]');
     const mobilePlay = root.querySelector<HTMLButtonElement>('[data-mobile-play]');
     const mobileStop = root.querySelector<HTMLButtonElement>('[data-mobile-stop]');
     const mobilePrevious = root.querySelector<HTMLButtonElement>('[data-mobile-previous]');
@@ -62,12 +69,31 @@ export function initWorkshopChapterPlayers(): void {
     let following = false;
     let automaticScrollUntil = 0;
     let tutorialVisible = false;
+    let mobileExpanded = false;
     const mobileViewport = window.matchMedia('(max-width: 760px)');
+
     function updateMobileDockVisibility(): void {
       if (!mobileDock || !audio) return;
-      const visible = mobileViewport.matches && (tutorialVisible || !audio.paused);
+      const visible = mobileViewport.matches && (tutorialVisible || !audio.paused || mobileExpanded);
       mobileDock.dataset.dockVisible = String(visible);
       document.documentElement.classList.toggle('workshop-dock-open', visible);
+    }
+    function setMobileExpanded(next: boolean, restoreFocus = false): void {
+      if (!mobileDock || !mobilePanel || !mobileExpand) return;
+      mobileExpanded = next && mobileViewport.matches;
+      mobileDock.dataset.expanded = String(mobileExpanded);
+      mobilePanel.hidden = !mobileExpanded;
+      if (mobileBackdrop) mobileBackdrop.hidden = !mobileExpanded;
+      mobileExpand.setAttribute('aria-expanded', String(mobileExpanded));
+      mobileExpand.setAttribute('aria-label', mobileExpanded
+        ? 'Replier la navigation audio'
+        : 'Déployer les chapitres et la transcription');
+      if (mobileExpandLabel) mobileExpandLabel.textContent = mobileExpanded
+        ? 'Replier la navigation'
+        : 'Glisser pour les chapitres';
+      document.documentElement.classList.toggle('workshop-panel-expanded', mobileExpanded);
+      updateMobileDockVisibility();
+      if (!mobileExpanded && restoreFocus && mobileViewport.matches) mobileExpand.focus({ preventScroll: true });
     }
     if (typeof IntersectionObserver !== 'undefined') {
       const observer = new IntersectionObserver((entries) => {
@@ -78,7 +104,10 @@ export function initWorkshopChapterPlayers(): void {
     } else {
       tutorialVisible = true;
     }
-    mobileViewport.addEventListener('change', updateMobileDockVisibility);
+    mobileViewport.addEventListener('change', () => {
+      if (!mobileViewport.matches) setMobileExpanded(false);
+      updateMobileDockVisibility();
+    });
 
     function duration(): number {
       return audio && Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : plannedDuration;
@@ -124,10 +153,16 @@ export function initWorkshopChapterPlayers(): void {
         else button.removeAttribute('aria-current');
       });
       transcript!.textContent = chapters[chapter].text;
+      if (mobileTranscript) mobileTranscript.textContent = chapters[chapter].text;
+      mobileChapterButtons.forEach((button, index) => {
+        if (index === chapter) button.setAttribute('aria-current', 'step');
+        else button.removeAttribute('aria-current');
+      });
       if (mobileChapterTitle) mobileChapterTitle.textContent = chapters[chapter].title;
       if (mobileChapterCount) mobileChapterCount.textContent = chapter === 0 ? 'Introduction' : 'Étape ' + chapter + '/4';
       status!.textContent = (chapter === 0 ? 'Présentation' : 'Étape ' + chapter + ' sur 4')
         + ' — ' + chapters[chapter].title + (audio.paused ? ' · en pause' : ' · en cours');
+      if (mobileStatus) mobileStatus.textContent = status!.textContent;
       previous!.disabled = chapter === 0;
       next!.disabled = chapter === chapters.length - 1;
       if (mobilePrevious) mobilePrevious.disabled = chapter === 0;
@@ -147,6 +182,7 @@ export function initWorkshopChapterPlayers(): void {
         mobileSeek.value = String(Math.min(audio.currentTime || 0, max));
       }
       if (mobileTime) mobileTime.textContent = timestamp(audio.currentTime) + ' / ' + timestamp(max);
+      if (mobileStatus && status) mobileStatus.textContent = status.textContent;
       if (mobilePlay) {
         mobilePlay.setAttribute('aria-label', audio.paused ? 'Écouter l’atelier' : 'Mettre la narration en pause');
         mobilePlay.textContent = audio.paused ? '▶' : 'Ⅱ';
