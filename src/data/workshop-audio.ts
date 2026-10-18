@@ -31,7 +31,8 @@ const releasedWorkshopAudio = new Set([
   'equilibrer-une-sauce',
   'saisir-viande-poele',
   'fraicheur-herbes-agrumes',
-  'bouillon-leger-savoureux'
+  'bouillon-leger-savoureux',
+  'composer-repas-cambodgien'
 ]);
 
 export function getWorkshopAudio(slug: string): WorkshopAudioInfo | undefined {
