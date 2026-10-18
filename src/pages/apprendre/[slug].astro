@@ -230,7 +230,7 @@ const howToSchema = {
                   ) : (
                     <img src={mortarPhotos[stepIndex]} width="1240" height={stepIndex === 0 ? 827 : 930} loading={stepIndex === 0 ? "eager" : "lazy"} decoding="async" alt={mortarAlt[stepIndex]} />
                   )}
-                  <figcaption>Image illustrative générée par IA · Étape {stepIndex + 1}. Vérifiez sur votre propre préparation.</figcaption>
+                  <figcaption>Étape {stepIndex + 1} · Comparez les repères avec votre propre préparation.</figcaption>
                 </figure>
               ) : (
                 <WorkshopInfographic learning={learning} stageIndex={stepIndex} />
