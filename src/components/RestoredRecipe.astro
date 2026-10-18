@@ -61,7 +61,7 @@ const breadcrumb = {
       </div>
       {recipe.image ? (
         <figure class="restored-recipe-visual">
-          <img src={recipe.image} alt={recipe.imageAlt ?? ''} width="1600" height="1067" decoding="async" />
+          <img src={recipe.image} alt={recipe.imageAlt ?? ''} width={recipe.imageWidth ?? 1600} height={recipe.imageHeight ?? 1067} decoding="async" />
           <figcaption>{recipe.imageCaption}</figcaption>
         </figure>
       ) : (
