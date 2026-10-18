@@ -1,0 +1,115 @@
+name: Live OVH atelier 4 mobile and desktop QA (one-shot)
+
+on:
+  push:
+    branches:
+      - ops/atelier4-release-20261018
+    paths:
+      - .github/workflows/atelier4-live-qa.yml
+
+permissions:
+  contents: read
+
+jobs:
+  public-browser-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout pinned site (test dependencies only)
+        uses: actions/checkout@v4
+        with:
+          ref: 38029e7e9847392cc2bea9a2d565d960846f5429
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - name: Setup Chrome
+        id: chrome
+        uses: browser-actions/setup-chrome@v2
+      - name: Run tests against actual public OVH domain
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        shell: bash
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { chromium } from 'playwright-core';
+          const origin = 'https://www.cuisine-du-cambodge.com';
+          const workshops = [
+            ['piler-aromates-au-mortier', 19.512],
+            ['equilibrer-une-sauce', 19.008],
+            ['saisir-viande-poele', 20.544],
+            ['fraicheur-herbes-agrumes', 23.328]
+          ];
+          const browser = await chromium.launch({
+            executablePath: process.env.CHROME_BIN,
+            headless: true,
+            args: ['--no-sandbox', '--disable-dev-shm-usage']
+          });
+          try {
+            for (const [slug, firstChapterStart] of workshops) {
+              for (const width of [390, 1440]) {
+                const mobile = width === 390;
+                const page = await browser.newPage({
+                  viewport: {width, height: mobile ? 844 : 900},
+                  hasTouch: mobile, isMobile: mobile, reducedMotion: 'reduce'
+                });
+                const errors = [];
+                page.on('pageerror', e => errors.push(e.message));
+                try {
+                  const response = await page.goto(origin + '/apprendre/' + slug + '/', {
+                    waitUntil: 'domcontentloaded', timeout: 35000
+                  });
+                  assert.equal(response?.status(), 200, slug + ': page HTTP 200');
+                  const url = origin + '/audio/workshops/' + slug + '/atelier-coral.mp3';
+                  const mp3 = await page.request.get(url);
+                  assert.equal(mp3.status(), 200, slug + ': MP3 public HTTP 200');
+                  assert.match(mp3.headers()['content-type'] || '', /audio\/mpeg/i);
+                  assert.equal(await page.locator('[data-player-audio]').count(), 1);
+                  const dock = page.locator('[data-player-mobile-dock]');
+                  assert.equal(await dock.count(), 1);
+                  assert.ok((await page.evaluate(() => document.documentElement.scrollWidth-innerWidth)) <= 3, 'No horizontal scroll ' + width);
+                  if (mobile) {
+                    await page.locator('[data-workshop-tutorial]').scrollIntoViewIfNeeded();
+                    await page.waitForFunction(() =>
+                      document.querySelector('[data-player-mobile-dock]')?.getAttribute('data-dock-visible')==='true',
+                      null, {timeout:10000}
+                    );
+                    assert.ok(await dock.isVisible());
+                    const g = await dock.evaluate(el => {const r=el.getBoundingClientRect(); return {bottom:r.bottom,height:r.height,vh:innerHeight}});
+                    assert.ok(Math.abs(g.bottom - g.vh) <= 3, 'Dock bottom');
+                    assert.ok(g.height < 185, 'Dock height');
+                    assert.equal(await page.locator('.workshop-player-main-controls').isVisible(), false);
+                    await page.locator('[data-mobile-next]').click();
+                    await page.waitForTimeout(400);
+                    assert.equal((await page.locator('[data-mobile-chapter-count]').innerText()).toLocaleLowerCase('fr-FR'), 'étape 1/4');
+                    const sec = await page.locator('[data-player-audio]').evaluate(a => a.currentTime);
+                    assert.ok(sec >= firstChapterStart - 0.05, 'Chapter seek actual timestamp');
+                    assert.equal(await page.locator('[data-tutorial-step="1"]').isVisible(), true);
+                    await page.locator('[data-mobile-follow]').click();
+                    assert.equal(await page.locator('[data-mobile-follow]').getAttribute('aria-pressed'), 'true');
+                    await page.mouse.wheel(0, 420);
+                    await page.waitForTimeout(250);
+                    assert.equal(await page.locator('[data-mobile-follow]').getAttribute('aria-pressed'), 'false');
+                    assert.equal(await page.locator('[data-player-audio]').evaluate(a => a.paused), false, 'Manual scroll keeps narration running');
+                    await page.locator('[data-mobile-stop]').click();
+                    const stopped = await page.locator('[data-player-audio]').evaluate(a=>({paused:a.paused,t:a.currentTime}));
+                    assert.equal(stopped.paused,true);
+                    assert.ok(stopped.t < 0.05);
+                  } else {
+                    assert.equal(await dock.isVisible(), false);
+                    assert.equal(await page.locator('.workshop-player-main-controls').isVisible(), true);
+                  }
+                  assert.deepEqual(errors, [], 'Client JavaScript errors');
+                  console.log('LIVE_OVH_PASS', slug, width, 'HTTP MP3, responsive dock, timeline and QA');
+                } finally { await page.close(); }
+              }
+            }
+            const p=await browser.newPage();
+            await p.goto(origin+'/apprendre/bouillon-leger-savoureux/', {waitUntil:'domcontentloaded'});
+            assert.equal(await p.locator('[data-workshop-chapter-player]').count(), 0,
+              'Atelier 3 must remain locked');
+            console.log('LIVE_OVH_PASS fifth workshop remains locked');
+            await p.close();
+          } finally { await browser.close(); }
+          JS
