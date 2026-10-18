@@ -14,6 +14,8 @@ export interface RestoredRecipe {
   image?: string;
   imageAlt?: string;
   imageCaption?: string;
+  imageWidth?: number;
+  imageHeight?: number;
 }
 
 /**
