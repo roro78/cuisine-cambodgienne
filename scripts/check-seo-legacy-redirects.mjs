@@ -1,26 +1,49 @@
-// Contrat de non-régression des anciennes URL et du build statique OVH.
+// Historical-link recovery contract — safe redirects, restored pages and OVH output.
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
-assert.ok(existsSync('public/.htaccess'), 'Apache redirect file missing');
-assert.ok(existsSync('src/pages/recettes/index.astro'), 'Recipe catalogue target missing');
-assert.ok(readFileSync('src/data/culture.ts', 'utf8').includes("slug: 'le-riz-symbole-de-vie-au-cambodge'"),
-  'Restored rice article route missing from the culture data');
-
-const apache = readFileSync('public/.htaccess', 'utf8');
+const read = (path) => readFileSync(path, 'utf8');
+const apache = read('public/.htaccess');
 const lines = apache.split(/\r?\n/).map((line) => line.trim());
-const expectedRules = [
+const expected = [
   'RedirectMatch 301 ^/recettes-cambodgiennes/?$ https://www.cuisine-du-cambodge.com/recettes/',
-  'RedirectMatch 301 ^/le-riz-symbole-de-vie-au-cambodge/?$ https://www.cuisine-du-cambodge.com/culture/le-riz-symbole-de-vie-au-cambodge/'
+  'RedirectMatch 301 ^/le-riz-symbole-de-vie-au-cambodge/?$ https://www.cuisine-du-cambodge.com/culture/le-riz-symbole-de-vie-au-cambodge/',
+  'RedirectMatch 301 ^/recettes/recettes_khmeres_poulet_curry[.]php$ https://www.cuisine-du-cambodge.com/recettes/curry-poulet-khmer/',
+  'RedirectMatch 301 ^/nom-krob-totim-dessert-cambodgien-tapioca/?$ https://www.cuisine-du-cambodge.com/recettes/nom-krob-totim/'
 ];
-for (const rule of expectedRules) {
-  assert.ok(lines.includes(rule), `Missing permanent Apache redirect: ${rule}`);
+for (const rule of expected) assert.ok(lines.includes(rule), `Missing exact Apache 301: ${rule}`);
+assert.equal(lines.filter((line) => line.startsWith('RedirectMatch 301 ')).length, expected.length,
+  'Review any extra historical redirects before releasing');
+assert.ok(!/samla-mchou-yuan|les-marches-cambodgiens/.test(apache),
+  'Undocumented redirect: these old URLs are not yet confirmed editorial matches');
+
+const culture = read('src/data/culture.ts');
+assert.ok(culture.includes("slug: 'le-riz-symbole-de-vie-au-cambodge'"), 'Restored rice article missing');
+assert.ok(existsSync('src/pages/recettes/index.astro'), 'Recipe index missing');
+const restored = read('src/data/restoredRecipes.ts');
+const sitemapSource = read('src/pages/sitemap.xml.ts');
+const index = read('src/pages/recettes/index.astro');
+const template = read('src/components/RestoredRecipe.astro');
+assert.ok(template.includes("recipeJsonLd") && template.includes("schema.org"), 'Recipe schema missing');
+for (const slug of ['curry-poulet-khmer', 'nom-krob-totim']) {
+  assert.ok(restored.includes(`slug: '${slug}'`), `Recipe data missing: ${slug}`);
+  assert.ok(existsSync(`src/pages/recettes/${slug}.astro`), `Recipe route missing: ${slug}`);
 }
-assert.ok(!/recettes_khmeres_poulet_curry|nom-krob-totim|samla-mchou-yuan|les-marches-cambodgiens/.test(apache),
-  'Do not redirect historical pages to different recipes or topics');
+assert.ok(sitemapSource.includes('restoredRecipes.map'), 'Restored recipes missing from sitemap');
+assert.ok(index.includes('restoredRecipes.map'), 'No internal links from recipe catalogue');
 
 if (existsSync('dist/')) {
-  assert.ok(existsSync('dist/.htaccess'), 'Compiled output is missing the Apache redirect file');
-  assert.equal(readFileSync('dist/.htaccess', 'utf8'), apache, 'Compiled Apache redirect differs from source');
+  assert.ok(existsSync('dist/.htaccess'), 'Compiled Apache redirect file missing');
+  assert.equal(read('dist/.htaccess'), apache, 'Compiled redirect content differs');
+  const expectedHtml = [
+    'dist/recettes/curry-poulet-khmer/index.html',
+    'dist/recettes/nom-krob-totim/index.html',
+    'dist/culture/le-riz-symbole-de-vie-au-cambodge/index.html'
+  ];
+  for (const path of expectedHtml) assert.ok(existsSync(path), `Built destination missing: ${path}`);
+  assert.ok(existsSync('dist/sitemap.xml'), 'Built sitemap missing');
+  const sitemap = read('dist/sitemap.xml');
+  for (const slug of ['curry-poulet-khmer', 'nom-krob-totim'])
+    assert.ok(sitemap.includes(`/recettes/${slug}/`), `Sitemap missing: ${slug}`);
 }
-console.log('PASS: two relevant 301 redirects, existing targets and Apache output.');
+console.log('PASS: four relevant 301 rules, historical recipes, sitemap and deployment artefacts.');
