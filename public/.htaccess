@@ -15,3 +15,6 @@ RedirectMatch 301 ^/recettes/recettes_khmeres_poulet_curry[.]php$ https://www.cu
 
 # Nom Krob Totim : ancienne URL du dessert, recette dédiée reconstituée.
 RedirectMatch 301 ^/nom-krob-totim-dessert-cambodgien-tapioca/?$ https://www.cuisine-du-cambodge.com/recettes/nom-krob-totim/
+
+# Samla M'Chou Yuon : variante poissonneuse reconstituée, distincte du Samlor Machu générique.
+RedirectMatch 301 ^/recette-cambodgienne-samla-mchou-yuan/?$ https://www.cuisine-du-cambodge.com/recettes/samla-mchou-yuon/
