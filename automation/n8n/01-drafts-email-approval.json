@@ -1,0 +1,359 @@
+{
+  "name": "Cuisine du Cambodge - 01 - Brouillon IA et validation email",
+  "nodes": [
+    {
+      "id": "0c21d38b-3f7d-5126-8d3e-ab0ce07baea3",
+      "name": "Tous les jours à 07 h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 7,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "8b9e3c39-64b3-5eba-aa22-a0777f40d7b2",
+      "name": "Lire le catalogue du site",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.cuisine-du-cambodge.com/social-feed.json",
+        "options": {}
+      }
+    },
+    {
+      "id": "e31d6dfc-fef2-56b5-8dee-27f120a91b63",
+      "name": "Historique Cuisine uniquement",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT source_id,source_fingerprint,COUNT(*) AS uses,MAX(scheduled_date) AS latest_date FROM cuisine_social.posts GROUP BY source_id,source_fingerprint ORDER BY latest_date DESC LIMIT 500",
+        "options": {}
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "76370edb-44be-5bba-a884-cfc519c10a77",
+      "name": "Choisir un contenu original",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const feed=$('Lire le catalogue du site').first().json;\nif(feed?.product!=='cuisine-du-cambodge'||feed?.schemaVersion!==1||!Array.isArray(feed.items)) throw Error('catalogue_non_valide');\nconst history=items.map(i=>i.json).filter(i=>i.source_id);\nconst previous=new Map(history.map(h=>[h.source_id,{fingerprint:h.source_fingerprint,seen:Number(h.uses||0),last:h.latest_date||''}]));\nconst kinds=['recette','technique','ingredient','recette','culture','recette','atelier'];\nconst todayParts=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Paris',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());\nconst part=(key)=>todayParts.find(p=>p.type===key)?.value;\nconst today=`${part('year')}-${part('month')}-${part('day')}`;\nconst desired=kinds[(new Date(today+'T12:00:00Z').getUTCDay()+6)%7];\nconst candidates=feed.items.filter(s=>s.imageUrl&&/^https:\\/\\/www\\.cuisine-du-cambodge\\.com\\/social-assets\\/[a-z0-9-]+\\.jpg$/.test(s.imageUrl));\nif(!candidates.length) throw Error('aucun_media_JPEG');\nconst ranked=candidates.map((s,index)=>{\n const p=previous.get(s.id); const fresh=!p||p.fingerprint!==s.fingerprint;\n return {s,score:(fresh?1000:0)+(s.kind===desired?70:0)-(p?.seen||0)*40-index/10000};\n}).sort((a,b)=>b.score-a.score);\nconst source=ranked[0].s;\nreturn [{json:{source,scheduledDate:today,sourceId:source.id,fingerprint:source.fingerprint,imageUrl:source.imageUrl}}];",
+        "mode": "runOnceForAllItems"
+      }
+    },
+    {
+      "id": "6e033ccb-6882-5daa-9cbc-9a5aae479141",
+      "name": "Rédiger via Llama sur Ollama",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "http://ollama:11434/v1/chat/completions",
+        "options": {},
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{JSON.stringify({model:'llama3.2:latest',temperature:0.3,stream:false,response_format:{type:'json_object'},messages:[{role:'system',content:'Tu es rédacteur francophone spécialisé en cuisine cambodgienne. Rédige deux légendes fiables et naturelles à partir des SEULS faits du JSON utilisateur. N’invente pas d’histoire, de tradition, de technique, de prix, d’événement, de témoignage ou d’atelier proposé en présentiel. Pas de mention voix IA. Sans promesse excessive. Retourne seulement un JSON avec facebookCaption (200 à 850 caractères), instagramCaption (150 à 700 caractères), claimsUsed (tableau de phrases reprises EXACTEMENT du champ facts). Le CTA doit être discret. N’inclus pas de lien dans Instagram.'},{role:'user',content:JSON.stringify({title:$json.source.title,kind:$json.source.kind,summary:$json.source.summary,facts:$json.source.facts,url:$json.source.url,sourceReferences:$json.source.sourceReferences,platforms:['facebook','instagram']})}]})}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "4ca636b2-a6ab-5161-b502-bab6cb491d5f",
+      "name": "Vérifier et cadrer les textes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const s=$('Choisir un contenu original').first().json;\nconst raw=String($json.choices?.[0]?.message?.content||'').trim().replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/,'');\nlet v;try{v=JSON.parse(raw)}catch{throw Error('reponse_llama_non_json')}\nif(!v||typeof v!=='object')throw Error('reponse_llama_invalide');\nconst fb=String(v.facebookCaption||'').trim(), ig=String(v.instagramCaption||'').trim();\nif(fb.length<100||fb.length>1400||ig.length<100||ig.length>1400) throw Error('legendes_vides_ou_longues');\nif(!Array.isArray(v.claimsUsed)||v.claimsUsed.some(c=>!s.source.facts.includes(c)))throw Error('preuves_non_verifiables');\nconst utm=new URL(s.source.url);utm.searchParams.set('utm_source','facebook');utm.searchParams.set('utm_medium','organic_social');utm.searchParams.set('utm_campaign','cuisine_organique');utm.searchParams.set('utm_content',s.source.kind+'_'+s.sourceId.split(':')[1]);\nconst safeFb=fb+'\\n\\n'+utm.href;\nconst safeIg=ig+'\\n\\nRetrouvez la page sur cuisine-du-cambodge.com';\nreturn [{json:{...s,facebookCaption:safeFb,instagramCaption:safeIg,claimsUsed:v.claimsUsed}}];",
+        "mode": "runOnceForAllItems"
+      }
+    },
+    {
+      "id": "17b6e2bd-8a5e-5563-95ec-4e5748cd7db2",
+      "name": "Enregistrer le brouillon",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1440,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO cuisine_social.posts(source_id,source_fingerprint,source_snapshot,scheduled_date,facebook_caption,instagram_caption,image_url) VALUES ($1,$2,$3::jsonb,$4::date,$5,$6,$7) ON CONFLICT (scheduled_date) DO NOTHING RETURNING id,scheduled_date",
+        "options": {
+          "queryReplacement": "={{[$json.sourceId,$json.fingerprint,JSON.stringify($json.source),$json.scheduledDate,$json.facebookCaption,$json.instagramCaption,$json.imageUrl]}}"
+        }
+      }
+    },
+    {
+      "id": "c2dac383-8325-58f5-a85e-41636a0faba1",
+      "name": "Envoyer la demande de validation Resend",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1680,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "options": {},
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{JSON.stringify({from:'Cuisine du Cambodge <social@CONFIGURER_DOMAINE_VERIFIE>',to:['CONFIGURER_EMAIL_VALIDATION'],subject:'[Cuisine du Cambodge] Valider le post du '+$('Vérifier et cadrer les textes').first().json.scheduledDate,text:'Proposition de publication (Facebook + Instagram)\\n\\nSOURCE : '+$('Vérifier et cadrer les textes').first().json.source.url+'\\n\\nIMAGE : '+$('Vérifier et cadrer les textes').first().json.imageUrl+'\\n\\nFACEBOOK :\\n'+$('Vérifier et cadrer les textes').first().json.facebookCaption+'\\n\\nINSTAGRAM :\\n'+$('Vérifier et cadrer les textes').first().json.instagramCaption+'\\n\\nPour approuver ou refuser, ouvrez ce FORMULAIRE et confirmez votre décision : '+$execution.resumeFormUrl+'\\n\\nAUCUNE PUBLICATION sans validation. Le lien expire sous 72 h.'})}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      }
+    },
+    {
+      "id": "17deb78c-2a85-546d-b077-6c1cc0cc8e99",
+      "name": "Attendre une décision via formulaire",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1920,
+        0
+      ],
+      "parameters": {
+        "resume": "form",
+        "formTitle": "Cuisine du Cambodge — validation éditoriale",
+        "formDescription": "Confirmez votre choix. Sans accord explicite, la publication ne part pas.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Decision",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Approuver"
+                  },
+                  {
+                    "option": "Demander une modification"
+                  },
+                  {
+                    "option": "Refuser"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Commentaire",
+              "fieldType": "textarea",
+              "placeholder": "Facultatif pour un refus ; requis pour demander une modification.",
+              "requiredField": false
+            }
+          ]
+        },
+        "limitWaitTime": true,
+        "limitType": "afterTimeInterval",
+        "resumeAmount": 72,
+        "resumeUnit": "hours",
+        "options": {}
+      }
+    },
+    {
+      "id": "441a0d68-5048-5f18-8dd5-a71d82212786",
+      "name": "Interpréter la décision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const d=String($json?.data?.Decision??$json?.Decision??$json?.body?.Decision??'').trim();\nconst note=String($json?.data?.Commentaire??$json?.Commentaire??$json?.body?.Commentaire??'').trim().slice(0,2000);\nconst saved=$('Enregistrer le brouillon').first().json;\nif(!saved?.id)throw Error('brouillon_non_identifie');\nconst decision=d==='Approuver'?'approved':d==='Demander une modification'?'revision_requested':'rejected';\nif(decision==='revision_requested'&&!note) throw Error('commentaire_requis_pour_modification');\nreturn [{json:{id:Number(saved.id),decision,note}}];",
+        "mode": "runOnceForAllItems"
+      }
+    },
+    {
+      "id": "5831132c-c523-52a4-85a3-45ea8fdd69d8",
+      "name": "Persister la décision humaine",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        2400,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE cuisine_social.posts SET status=$1, human_decision=$1, human_note=$2, decided_at=NOW(), approved_at=CASE WHEN $1='approved' THEN NOW() ELSE NULL END, updated_at=NOW() WHERE id=$3 AND status='draft' RETURNING id,status,human_note",
+        "options": {
+          "queryReplacement": "={{[$json.decision,$json.note,$json.id]}}"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Tous les jours à 07 h": {
+      "main": [
+        [
+          {
+            "node": "Lire le catalogue du site",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lire le catalogue du site": {
+      "main": [
+        [
+          {
+            "node": "Historique Cuisine uniquement",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Historique Cuisine uniquement": {
+      "main": [
+        [
+          {
+            "node": "Choisir un contenu original",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Choisir un contenu original": {
+      "main": [
+        [
+          {
+            "node": "Rédiger via Llama sur Ollama",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rédiger via Llama sur Ollama": {
+      "main": [
+        [
+          {
+            "node": "Vérifier et cadrer les textes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vérifier et cadrer les textes": {
+      "main": [
+        [
+          {
+            "node": "Enregistrer le brouillon",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enregistrer le brouillon": {
+      "main": [
+        [
+          {
+            "node": "Envoyer la demande de validation Resend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envoyer la demande de validation Resend": {
+      "main": [
+        [
+          {
+            "node": "Attendre une décision via formulaire",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attendre une décision via formulaire": {
+      "main": [
+        [
+          {
+            "node": "Interpréter la décision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Interpréter la décision": {
+      "main": [
+        [
+          {
+            "node": "Persister la décision humaine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Paris"
+  },
+  "active": false,
+  "pinData": {},
+  "tags": []
+}

@@ -18,8 +18,8 @@
     "test:reception": "node --test tests/dinner-reception.test.mjs",
     "test:built-experiences": "node scripts/check-experiences-build.mjs",
     "test:browser-experiences": "node tests/experiences-browser-smoke.mjs",
-    "prebuild": "node scripts/v17-responsive-images.mjs",
-    "predev": "node scripts/v17-responsive-images.mjs"
+    "prebuild": "node scripts/v17-responsive-images.mjs && node scripts/build-social-assets.mjs",
+    "predev": "node scripts/v17-responsive-images.mjs && node scripts/build-social-assets.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -29,6 +29,8 @@
     "sharp": "^0.34.4"
   },
   "devDependencies": {
+    "@types/node": "^24.10.1",
+    "esbuild": "^0.25.10",
     "playwright-core": "^1.56.1"
   }
 }
