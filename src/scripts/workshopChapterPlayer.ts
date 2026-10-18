@@ -145,11 +145,18 @@ export function initWorkshopChapterPlayers(): void {
       status!.textContent = 'Défilement manuel : le suivi est désactivé, mais le son continue.';
     }
 
+    function setMobileOptions(open: boolean): void {
+      if (!mobileExtras || !mobileToggle) return;
+      mobileExtras.classList.toggle('is-open', open);
+      mobileToggle.setAttribute('aria-expanded', String(open));
+    }
+
     playButton.addEventListener('click', () => {
       if (audio.paused) void start();
       else audio.pause();
     });
     stopButton.addEventListener('click', () => {
+      setMobileOptions(false);
       audio.pause();
       audio.currentTime = 0;
       following = false;
@@ -172,28 +179,36 @@ export function initWorkshopChapterPlayers(): void {
       if (Number.isFinite(value)) audio.currentTime = value;
       renderProgress();
     });
-    previous.addEventListener('click', () => jumpTo(Math.max(0, chapterAt(audio.currentTime, chapters) - 1), true));
-    next.addEventListener('click', () => jumpTo(Math.min(chapters.length - 1, chapterAt(audio.currentTime, chapters) + 1), true));
+    previous.addEventListener('click', () => {
+      setMobileOptions(false);
+      jumpTo(Math.max(0, chapterAt(audio.currentTime, chapters) - 1), true);
+    });
+    next.addEventListener('click', () => {
+      setMobileOptions(false);
+      jumpTo(Math.min(chapters.length - 1, chapterAt(audio.currentTime, chapters) + 1), true);
+    });
     mobileToggle?.addEventListener('click', () => {
-      if (!mobileExtras) return;
-      const open = !mobileExtras.classList.contains('is-open');
-      mobileExtras.classList.toggle('is-open', open);
-      mobileToggle.setAttribute('aria-expanded', String(open));
+      setMobileOptions(!mobileExtras?.classList.contains('is-open'));
     });
     root.addEventListener('keydown', (event) => {
       if (event.key !== 'Escape' || !mobileExtras?.classList.contains('is-open')) return;
-      mobileExtras.classList.remove('is-open');
-      mobileToggle?.setAttribute('aria-expanded', 'false');
+      setMobileOptions(false);
       mobileToggle?.focus();
     });
     chapterButtons.forEach((button) => button.addEventListener('click', () => {
       const index = Number(button.dataset.playerChapter);
-      if (Number.isInteger(index)) jumpTo(index, true);
+      if (Number.isInteger(index)) {
+        setMobileOptions(false);
+        jumpTo(index, true);
+      }
     }));
     followButton.addEventListener('click', () => {
       following = !following;
       renderFollowing();
-      if (following) syncStage(chapterAt(audio.currentTime, chapters), true);
+      if (following) {
+        setMobileOptions(false);
+        syncStage(chapterAt(audio.currentTime, chapters), true);
+      }
       else status!.textContent = 'Défilement libre activé. Le son continue.';
     });
 
