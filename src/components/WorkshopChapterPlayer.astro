@@ -68,6 +68,27 @@ const formatTime = (value: number) => {
   </details>
   <p class="workshop-player-status" data-player-status aria-live="polite">Prêt à écouter. Le défilement de la page est libre.</p>
   <p class="workshop-player-notice">Le suivi automatique est facultatif. Faites défiler la page vous-même à tout moment : le son continuera.</p>
+
+  <!-- One audio element and two responsive control surfaces. Only the compact dock is visible on phones. -->
+  <div class="workshop-mobile-dock" data-player-mobile-dock data-dock-visible="false" role="region" aria-label="Mini-lecteur de l’atelier">
+    <div class="workshop-mobile-dock-heading">
+      <div class="workshop-mobile-dock-caption">
+        <span class="workshop-mobile-kicker">Atelier audio · <span data-mobile-chapter-count>Introduction</span></span>
+        <strong data-mobile-chapter-title>{info.chapters[0]?.title}</strong>
+      </div>
+      <button type="button" data-mobile-follow class="workshop-mobile-follow" aria-pressed="false" aria-label="Suivre la narration et les étapes">◉ Suivre</button>
+    </div>
+    <div class="workshop-mobile-dock-controls">
+      <button type="button" data-mobile-previous class="workshop-mobile-icon" aria-label="Chapitre précédent" disabled>‹</button>
+      <button type="button" data-mobile-play class="workshop-mobile-play" aria-label="Écouter l’atelier">▶</button>
+      <div class="workshop-mobile-timeline">
+        <input data-mobile-seek type="range" min="0" max={info.duration} step="0.1" value="0" aria-label="Avancer ou reculer dans la narration" />
+        <span data-mobile-time>0:00 / {formatTime(info.duration)}</span>
+      </div>
+      <button type="button" data-mobile-next class="workshop-mobile-icon" aria-label="Chapitre suivant">›</button>
+      <button type="button" data-mobile-stop class="workshop-mobile-icon workshop-mobile-stop" aria-label="Arrêter la narration">■</button>
+    </div>
+  </div>
 </section>
 
 <script>
