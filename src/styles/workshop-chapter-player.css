@@ -79,3 +79,96 @@
   .workshop-mobile-follow{padding:.4rem .5rem}
 }
 @media(prefers-reduced-motion:reduce){.workshop-chapter-player *{scroll-behavior:auto!important}}
+
+/* Mobile narration is a fixed bottom sheet, not another large block in the lesson.
+   All changes are scoped to phones; desktop retains the original full player. */
+.workshop-mobile-backdrop{display:none}
+@media(max-width:760px){
+  .workshop-chapter-player{
+    height:0;min-height:0;overflow:visible;margin:0;padding:0;border:0;background:transparent;box-shadow:none;
+  }
+  .workshop-chapter-player>.workshop-player-heading,
+  .workshop-chapter-player>.workshop-player-main-controls,
+  .workshop-chapter-player>.workshop-player-secondary-controls,
+  .workshop-chapter-player>.workshop-player-chapters,
+  .workshop-chapter-player>.workshop-player-transcript,
+  .workshop-chapter-player>.workshop-player-status,
+  .workshop-chapter-player>.workshop-player-notice{display:none}
+  html.workshop-sheet-open{overflow:hidden}
+  .workshop-mobile-backdrop:not([hidden]){
+    display:block;position:fixed;inset:0;background:rgba(24,18,12,.43);z-index:199;
+  }
+  .workshop-mobile-dock[data-dock-visible="true"]{z-index:200}
+  .workshop-mobile-dock-grip{
+    width:100%;display:flex;align-items:center;justify-content:center;gap:.55rem;
+    min-height:2rem;margin:-.35rem 0 .25rem;padding:0 .2rem;
+    border:0;background:transparent;color:#71532b;font-size:.67rem;font-weight:750;
+    cursor:pointer;touch-action:none;
+  }
+  .workshop-mobile-dock-handle{
+    width:1.45rem;height:.23rem;border-radius:10px;background:#bd995e;flex:none;
+  }
+  .workshop-mobile-dock-chevron{font-size:1rem;line-height:1;transition:transform .2s}
+  .workshop-mobile-dock[data-dock-expanded="true"] .workshop-mobile-dock-chevron{transform:rotate(180deg)}
+  .workshop-mobile-sheet[hidden]{display:none!important}
+  .workshop-mobile-sheet:not([hidden]){
+    display:flex;flex-direction:column;position:absolute;bottom:calc(100% - 1px);left:0;right:0;
+    max-height:calc(100vh - 12rem);max-height:calc(100dvh - 12rem);
+    overflow:hidden;box-sizing:border-box;background:#fffaf1;
+    border:1px solid #d4b983;border-bottom:0;border-radius:1.15rem 1.15rem 0 0;
+    box-shadow:0 -18px 35px #25190b35;
+  }
+  .workshop-mobile-sheet-header{
+    display:flex;align-items:start;justify-content:space-between;gap:.7rem;flex:none;
+    padding:1.15rem 1rem .85rem;border-bottom:1px solid #e6d7c0;touch-action:none;
+  }
+  .workshop-mobile-sheet-header h4{
+    margin:.2rem 0 .4rem;color:#342817;font:600 clamp(1.2rem,5vw,1.55rem)/1.2 var(--serif);
+  }
+  .workshop-mobile-sheet-header p{margin:0;color:#715943;font-size:.75rem;line-height:1.45}
+  .workshop-mobile-sheet-header .workshop-mobile-sheet-eyebrow{
+    font-size:.61rem;letter-spacing:.12em;font-weight:800;text-transform:uppercase;color:#96602e;
+  }
+  .workshop-mobile-sheet-close{
+    flex:none;border:1px solid #cfb68b;border-radius:1rem;background:#fff2d8;color:#42331e;
+    font-size:.74rem;font-weight:750;padding:.55rem .65rem;min-height:2.75rem;cursor:pointer;
+  }
+  .workshop-mobile-sheet-body{
+    overflow-y:auto;overscroll-behavior:contain;min-height:0;padding:1rem;
+    -webkit-overflow-scrolling:touch;
+  }
+  .workshop-mobile-chapters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem}
+  .workshop-mobile-chapters button{
+    display:grid;grid-template-columns:1.5rem minmax(0,1fr);grid-template-rows:auto auto;
+    gap:.2rem .5rem;text-align:left;align-items:start;min-height:4.7rem;
+    padding:.7rem;background:#fff4e1;border:1px solid #d7c19a;border-radius:.55rem;color:#42321d;
+    cursor:pointer;
+  }
+  .workshop-mobile-chapters button[aria-current="step"]{
+    background:#f5dfaa;border-color:#ab7932;box-shadow:inset 0 0 0 1px #ab7932;
+  }
+  .workshop-mobile-chapters button>span{grid-row:1/3;font-size:.68rem;color:#89592c;font-weight:800}
+  .workshop-mobile-chapters button>strong{
+    min-width:0;font-size:.78rem;line-height:1.25;font-weight:750;overflow-wrap:break-word;
+  }
+  .workshop-mobile-chapters button>small{font-size:.69rem;font-variant-numeric:tabular-nums;color:#78634b}
+  .workshop-mobile-transcript{
+    margin-top:1rem;border-top:1px solid #e0ceb2;padding-top:.85rem;
+  }
+  .workshop-mobile-transcript h5{
+    margin:0 0 .4rem;color:#5c4122;font-size:.81rem;
+  }
+  .workshop-mobile-transcript p{margin:0;color:#4c3e2e;font-size:.86rem;line-height:1.65}
+  .workshop-mobile-sheet-hint{color:#7b6348;font-size:.73rem;line-height:1.5;margin:.7rem 0 0}
+  .workshop-mobile-dock button:focus-visible,
+  .workshop-mobile-sheet button:focus-visible{
+    outline:3px solid #9d612e;outline-offset:2px;
+  }
+}
+@media(max-width:350px){
+  .workshop-mobile-chapters{grid-template-columns:1fr}
+  .workshop-mobile-chapters button{min-height:3.4rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .workshop-mobile-dock-chevron{transition:none}
+}
