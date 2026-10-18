@@ -122,6 +122,8 @@ export function initWorkshopChapterPlayers(): void {
       zone?.addEventListener('pointerdown', (event: PointerEvent) => {
         if (event.target instanceof Element && event.target.closest('button:not([data-mobile-toggle])')) return;
         gestureStartY = event.clientY;
+        // Keep receiving pointerup when the finger exits the narrow handle.
+        zone.setPointerCapture(event.pointerId);
       });
       zone?.addEventListener('pointerup', (event: PointerEvent) => {
         if (gestureStartY === null) return;
