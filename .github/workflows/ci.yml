@@ -122,6 +122,14 @@ jobs:
           node scripts/check-workshop-audio.mjs --slug=bouillon-leger-savoureux
           node tests/workshop-bouillon-audio-browser.test.mjs
 
+      - name: Atelier repas Coral - MP3 integrity and responsive player
+        if: github.ref == 'refs/heads/feat/atelier6-repas-coral-mobile-20261018'
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: |
+          node scripts/check-workshop-audio.mjs --slug=composer-repas-cambodgien
+          node tests/workshop-repas-audio-browser.test.mjs
+
       - name: Install Playwright video encoder
         run: node ./node_modules/playwright-core/cli.js install ffmpeg
 
