@@ -18,6 +18,54 @@ const tourismGuide = 'https://tourismcambodia.org/public/index.php/official-acti
 
 export const cultureArticles: CultureArticle[] = [
   {
+    slug: 'le-riz-symbole-de-vie-au-cambodge',
+    title: 'Le riz au Cambodge : une place au centre de la vie quotidienne',
+    eyebrow: 'Cultures et paysages',
+    intro: 'Dans les rizières comme à table, le riz accompagne le quotidien cambodgien. Comprendre sa place aide aussi à comprendre les plats qui l’entourent.',
+    seoDescription: 'Le riz au Cambodge : aliment de base, travail des rizières, saisons et traditions autour des récoltes, avec les sources de la FAO et de l’UNESCO.',
+    readingTime: '6 min',
+    sections: [
+      {
+        title: 'Un aliment de base, bien plus qu’une garniture',
+        paragraphs: [
+          'Au Cambodge, le riz est au cœur de l’alimentation. La FAO le décrit comme un aliment de base, mais aussi comme une ressource essentielle pour les revenus de nombreux foyers agricoles. Son importance se voit à la fois dans les paysages, les activités rurales et les repas de chaque jour.',
+          'À table, le riz sert de point d’équilibre : il accompagne les currys, les soupes, les viandes sautées et les condiments. Il permet de doser chaque bouchée, surtout lorsqu’un plat est très parfumé, pimenté ou salé.'
+        ]
+      },
+      {
+        title: 'Le rythme des rizières et des saisons',
+        paragraphs: [
+          'Une grande partie de la riziculture cambodgienne dépend de la saison des pluies. La FAO suit chaque année les récoltes, les conditions météorologiques et les volumes produits : ces variations ont des conséquences concrètes pour les agriculteurs et l’approvisionnement.',
+          'Le riz ne raconte donc pas seulement un geste de cuisine. Il relie des terres agricoles, un climat, des variétés cultivées et le travail de nombreuses familles. La façon de cultiver change selon les régions et l’accès à l’eau.'
+        ]
+      },
+      {
+        title: 'Des traditions liées aux récoltes',
+        paragraphs: [
+          'Les rizières ont aussi une dimension sociale et culturelle. L’UNESCO documente, notamment au Cambodge, des jeux rituels associés aux cultures rizicoles et au début d’un nouveau cycle agricole. Ces pratiques sont liées au souhait de bonnes récoltes et à la cohésion des communautés.',
+          'Il serait réducteur d’en déduire que chaque famille ou chaque village célèbre le riz de la même façon. Les pratiques diffèrent selon les lieux et les générations ; elles rappellent surtout que l’agriculture et la vie collective se rencontrent au-delà du repas.'
+        ]
+      },
+      {
+        title: 'Comprendre le riz pour mieux cuisiner cambodgien',
+        paragraphs: [
+          'Pour commencer chez soi, un riz jasmin bien cuit et servi chaud suffit déjà à transformer un plat. Il absorbe une sauce, tempère un condiment relevé et laisse de la place aux herbes fraîches, aux légumes et aux préparations mijotées.',
+          'Avec un amok, une soupe acidulée ou un curry, pensez au riz dès le début de la préparation : l’assaisonnement d’un plat destiné à être dégusté avec du riz peut sembler intense si on le goûte seul.'
+        ]
+      }
+    ],
+    image: '/images/cuisine/v17-table-meal-1600.jpg',
+    imageAlt: 'Table cambodgienne avec riz, plats chauds et accompagnements',
+    imageWidth: 1600,
+    imageHeight: 1067,
+    imageWidths: [1600],
+    sources: [
+      { label: 'FAO (2024) — Le riz, culture alimentaire et ressource économique au Cambodge', url: 'https://www.fao.org/hand-in-hand/previous-editions/hih-IF-2024/cambodia/en' },
+      { label: 'FAO (2026) — Situation des récoltes et du riz au Cambodge', url: 'https://www.fao.org/giews/countrybrief/country.jsp?code=KH' },
+      { label: 'UNESCO (2015) — Jeux rituels liés aux cultures rizicoles', url: 'https://ich.unesco.org/en/RL/tugging-rituals-and-games-01080' }
+    ]
+  },
+  {
     slug: 'poivre-de-kampot',
     title: 'Poivre de Kampot : un produit lié à son territoire',
     eyebrow: 'Territoires',
