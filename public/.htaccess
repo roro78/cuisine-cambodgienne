@@ -1,0 +1,8 @@
+# Cuisine du Cambodge — restauration SEO des anciennes URL
+# Règles limitées aux équivalences éditoriales vérifiées.
+# Apache/OVH : mod_alias, présent sur l'hébergement mutualisé.
+#
+# Ancienne page de recettes citée par Wikipédia -> catalogue des recettes actuel.
+# Correspondance de rubrique vérifiée ; conserver 301 même si l'ancienne URL
+# n'existe plus sur le disque, afin d'éviter un retour 404.
+RedirectMatch 301 ^/recettes-cambodgiennes/?$ https://www.cuisine-du-cambodge.com/recettes/
