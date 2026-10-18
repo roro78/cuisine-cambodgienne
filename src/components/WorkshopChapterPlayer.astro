@@ -69,9 +69,47 @@ const formatTime = (value: number) => {
   <p class="workshop-player-status" data-player-status aria-live="polite">Prêt à écouter. Le défilement de la page est libre.</p>
   <p class="workshop-player-notice">Le suivi automatique est facultatif. Faites défiler la page vous-même à tout moment : le son continuera.</p>
 
-  <!-- One audio element and two responsive control surfaces. Only the compact dock is visible on phones. -->
+  <!-- The six MP3s keep a single audio element. Mobile presentation is a compact
+       fixed dock which expands into a navigable sheet, never a duplicate player. -->
+  <button type="button" class="workshop-mobile-backdrop" data-mobile-backdrop aria-label="Fermer la navigation audio" hidden></button>
+
   <div class="workshop-mobile-dock" data-player-mobile-dock data-dock-visible="false" role="region" aria-label="Mini-lecteur de l’atelier">
-    <div class="workshop-mobile-dock-heading">
+      <button
+      type="button"
+      class="workshop-mobile-expand"
+      data-mobile-expand
+      aria-expanded="false"
+      aria-controls={"workshop-mobile-panel-" + info.slug}
+      aria-label="Déployer les chapitres et la transcription"
+    >
+      <span class="workshop-mobile-grip" aria-hidden="true"></span>
+      <span class="workshop-mobile-expand-label" data-mobile-expand-label>Glisser pour les chapitres</span>
+      <span class="workshop-mobile-expand-chevron" aria-hidden="true">⌃</span>
+    </button>
+    <div class="workshop-mobile-panel" data-mobile-panel id={"workshop-mobile-panel-" + info.slug} hidden>
+      <div class="workshop-mobile-panel-intro">
+        <p class="workshop-mobile-panel-kicker">Votre atelier audio</p>
+        <h4>Les chapitres de la narration</h4>
+        <p>Choisissez un chapitre pour retrouver son geste, sans perdre le fil.</p>
+      </div>
+      <ol class="workshop-mobile-chapters" aria-label="Choisir un chapitre de narration">
+        {info.chapters.map((chapter, index) => (
+          <li>
+            <button type="button" data-mobile-chapter={index} aria-current={index === 0 ? 'step' : undefined}>
+              <span class="workshop-mobile-chapter-number">{index === 0 ? 'Intro' : String(index).padStart(2, '0')}</span>
+              <span class="workshop-mobile-chapter-name">{chapter.title}</span>
+              <small>{formatTime(chapter.start)}</small>
+            </button>
+          </li>
+        ))}
+      </ol>
+      <div class="workshop-mobile-transcript">
+        <p class="workshop-mobile-panel-kicker">Ce que raconte Coral</p>
+        <p data-mobile-transcript>{info.chapters[0]?.text}</p>
+      </div>
+      <p class="workshop-mobile-panel-status" data-mobile-status aria-live="polite">Prêt à écouter.</p>
+    </div>
+  <div class="workshop-mobile-dock-heading">
       <div class="workshop-mobile-dock-caption">
         <span class="workshop-mobile-kicker">Atelier audio · <span data-mobile-chapter-count>Introduction</span></span>
         <strong data-mobile-chapter-title>{info.chapters[0]?.title}</strong>
