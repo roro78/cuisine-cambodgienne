@@ -3,6 +3,7 @@
 .workshop-chapter-player{
   margin:0 0 clamp(1.8rem,4vw,3rem);padding:clamp(1.15rem,2.8vw,2.3rem);
   color:#302d27;background:#fffaf1;border:1px solid #cfbea4;box-shadow:0 12px 34px #47351f11;
+  scroll-margin-top:5.5rem;
 }
 .workshop-player-heading{display:flex;gap:2rem;align-items:start;justify-content:space-between}
 .workshop-player-kicker{margin:0;color:#9a603b;font-size:.7rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase}
@@ -18,7 +19,7 @@
 .workshop-player-time{font-size:.72rem;text-align:right;color:#715d48;font-variant-numeric:tabular-nums}
 .workshop-player-secondary-controls{display:flex;gap:1.2rem;justify-content:space-between;align-items:center;margin:1.3rem 0 1.55rem}
 .workshop-player-skip-controls{display:flex;flex-wrap:wrap;gap:.55rem}
-.workshop-player-skip-controls button{background:transparent;border:1px solid #cbb79b;padding:.65rem .8rem;font-size:.74rem;color:#453828;cursor:pointer}
+.workshop-player-skip-controls button{background:transparent;border:1px solid #cbb79b;padding:.65rem .8rem;min-height:2.75rem;font-size:.74rem;color:#453828;cursor:pointer}
 .workshop-player-skip-controls button:disabled{opacity:.35;cursor:not-allowed}
 .workshop-player-follow{display:flex;align-items:center;flex-wrap:wrap;gap:.45rem;background:#f6eee0;border:1px solid #c9b18a;padding:.65rem .8rem;color:#42372b;font-size:.75rem;font-weight:750;cursor:pointer}
 .workshop-player-follow[aria-pressed="true"]{background:#e5bf68;border-color:#bc8b37}

@@ -38,12 +38,13 @@ export function initWorkshopChapterPlayers(): void {
     const timer = root.querySelector<HTMLElement>('[data-player-time]');
     const previous = root.querySelector<HTMLButtonElement>('[data-player-previous]');
     const next = root.querySelector<HTMLButtonElement>('[data-player-next]');
+    const stopButton = root.querySelector<HTMLButtonElement>('[data-player-stop]');
     const followButton = root.querySelector<HTMLButtonElement>('[data-player-follow]');
     const followState = root.querySelector<HTMLElement>('[data-follow-state]');
     const status = root.querySelector<HTMLElement>('[data-player-status]');
     const transcript = root.querySelector<HTMLElement>('[data-player-transcript]');
     const chapterButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-player-chapter]')];
-    if (!audio || !playButton || !seek || !timer || !previous || !next || !followButton || !status || !transcript) return;
+    if (!audio || !playButton || !seek || !timer || !previous || !next || !stopButton || !followButton || !status || !transcript) return;
 
     root.dataset.playerEnhanced = 'true';
     const plannedDuration = Number(root.dataset.audioDuration) || chapters.at(-1)?.start || 0;
@@ -59,7 +60,16 @@ export function initWorkshopChapterPlayers(): void {
       if (followState) followState.textContent = following ? 'Activé' : 'Désactivé';
     }
     function syncStage(index: number, scroll: boolean): void {
-      if (index === 0) return;
+      if (index === 0) {
+        if (scroll) {
+          automaticScrollUntil = Date.now() + 1800;
+          root.scrollIntoView({
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+            block: 'start'
+          });
+        }
+        return;
+      }
       window.dispatchEvent(new CustomEvent('workshop:audio-chapter', {
         detail: { index: index - 1 }
       }));
@@ -127,6 +137,14 @@ export function initWorkshopChapterPlayers(): void {
       if (audio.paused) void start();
       else audio.pause();
     });
+    stopButton.addEventListener('click', () => {
+      audio.pause();
+      audio.currentTime = 0;
+      following = false;
+      renderFollowing();
+      renderProgress();
+      status.textContent = 'Narration arrêtée. Vous pourrez la reprendre depuis le début.';
+    });
     audio.addEventListener('play', renderProgress);
     audio.addEventListener('pause', renderProgress);
     audio.addEventListener('timeupdate', renderProgress);
@@ -164,8 +182,11 @@ export function initWorkshopChapterPlayers(): void {
       if (following && Date.now() > automaticScrollUntil) stopFollowing();
     }, { passive: true });
     window.addEventListener('keydown', (event) => {
-      if (['PageDown', 'PageUp', 'ArrowDown', 'ArrowUp', 'Home', 'End', ' '].includes(event.key)
-          && !(event.target instanceof HTMLInputElement)) stopFollowing();
+      if (!['PageDown', 'PageUp', 'ArrowDown', 'ArrowUp', 'Home', 'End', ' '].includes(event.key)) return;
+      // Space or arrows on controls operate the control, not the page scroll.
+      if (event.target instanceof Element &&
+          event.target.closest('button, input, select, textarea, summary, a, [contenteditable]')) return;
+      stopFollowing();
     });
     // Selecting an existing visual stage seeks to the matching audio chapter
     // without unexpectedly starting playback.

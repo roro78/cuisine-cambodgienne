@@ -22,7 +22,7 @@ const formatTime = (value: number) => {
       <h3>À vos oreilles, à votre rythme.</h3>
       <p>Une voix vous accompagne pendant les gestes. Vous pouvez écouter et faire défiler la page séparément.</p>
     </div>
-    <span class="workshop-player-voice">Voix Coral · sans musique</span>
+    <span class="workshop-player-voice">Voix IA Coral · sans musique</span>
   </div>
 
   <audio data-player-audio src={info.audio} preload="metadata" aria-label={"Narration : " + info.title}></audio>
@@ -38,6 +38,7 @@ const formatTime = (value: number) => {
 
   <div class="workshop-player-secondary-controls">
     <div class="workshop-player-skip-controls">
+      <button type="button" data-player-stop aria-label="Arrêter la narration et revenir au début">■ Arrêter</button>
       <button type="button" data-player-previous aria-label="Revenir au chapitre précédent">← Chapitre précédent</button>
       <button type="button" data-player-next aria-label="Passer au chapitre suivant">Chapitre suivant →</button>
     </div>

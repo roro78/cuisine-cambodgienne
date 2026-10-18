@@ -10,8 +10,14 @@ const slugs = [
   'fraicheur-herbes-agrumes', 'bouillon-leger-savoureux', 'composer-repas-cambodgien'
 ];
 if (slugs.length !== 6) throw new Error('Six ateliers requis.');
+const args = process.argv.slice(2);
+const selected = args.length === 1 && args[0].startsWith('--slug=') ? args[0].slice(7) : null;
+if ((args.length && !selected) || (selected && !slugs.includes(selected))) {
+  throw new Error('Usage: node scripts/check-workshop-audio.mjs [--slug=<atelier-existant>]');
+}
+const requested = selected ? [selected] : slugs;
 let total = 0;
-for (const slug of slugs) {
+for (const slug of requested) {
   const jsonFile = path.join(root, 'src/data/workshop-audio', slug + '.json');
   const { slug: storedSlug, voice, audio, duration, chapters } = JSON.parse(fs.readFileSync(jsonFile, 'utf8'));
   if (storedSlug !== slug || voice !== 'coral' || !Array.isArray(chapters) || chapters.length !== 5) {
@@ -36,14 +42,19 @@ for (const slug of slugs) {
   if (duration < 45 || duration > 600) throw new Error('Durée hors limites : ' + slug);
   if (chapters[0].start !== 0) throw new Error('Introduction manquante : ' + slug);
   let previous = -1;
+  let nextStart = 0;
   for (const [index, chapter] of chapters.entries()) {
     if (!chapter.title || typeof chapter.text !== 'string' || chapter.text.length < 80 ||
-        !Number.isFinite(chapter.start) || chapter.start <= previous || chapter.start >= duration) {
+        !Number.isFinite(chapter.start) || chapter.start <= previous || chapter.start >= duration ||
+        !Number.isFinite(chapter.duration) || chapter.duration <= 0 ||
+        Math.abs(chapter.start - nextStart) > 0.03) {
       throw new Error('Chapitre invalide : ' + slug + '/' + index);
     }
     previous = chapter.start;
+    nextStart = chapter.start + chapter.duration;
   }
+  if (Math.abs(nextStart - duration) > 0.03) throw new Error('Fin des chapitres erronée : ' + slug);
   total += binary.length;
   console.log('PASS', slug, actualSeconds.toFixed(3) + 's', binary.length + ' bytes', '5 chapitres');
 }
-console.log('PASS six ateliers : ' + total + ' octets audio, 30 chapitres.');
+console.log('PASS ' + requested.length + ' atelier(s) : ' + total + ' octets audio, ' + requested.length * 5 + ' chapitres.');
