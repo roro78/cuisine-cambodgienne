@@ -79,6 +79,7 @@ jobs:
         run: |
           cp public/.htaccess dist/.htaccess
           node scripts/check-seo-legacy-redirects.mjs
+          node scripts/check-seo-sitemap-integrity.mjs
 
       - name: Built pages and deployment boundaries
         run: npm run test:built-experiences
