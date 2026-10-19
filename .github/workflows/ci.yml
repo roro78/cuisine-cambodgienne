@@ -45,6 +45,9 @@ jobs:
       - name: Editorial regression contract
         run: npm run test:editorial
 
+      - name: Social publication safety contract
+        run: node --test tests/social-pipeline.test.mjs
+
       - name: Validate all six Coral MP3s and actual chapter boundaries (offline)
         run: node scripts/check-workshop-audio.mjs
 
