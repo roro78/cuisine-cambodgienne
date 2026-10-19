@@ -39,7 +39,7 @@ const breadcrumbSchema = {
           <div><dt>Rendement</dt><dd>{workshop.portions}</dd></div>
           <div><dt>Technique</dt><dd>Préparer · goûter · rectifier</dd></div>
         </dl>
-        {workshop.status !== 'validated' && <p class="guided-pilot" role="status">Version pilote en cours de validation culinaire, photographique et audio. Ce parcours ne doit pas être annoncé comme un atelier finalisé.</p>}
+        {workshop.status !== 'validated' && <p class="guided-pilot" role="status">Recette de base validée par source publiée. La photographie du résultat et le nouvel audio Coral restent à produire et contrôler ; cet atelier est encore un pilote.</p>}
         <a class="guided-start" href="#ingredients">Voir les ingrédients ↓</a>
       </div>
       <figure class="guided-ingredient-image">
@@ -51,6 +51,8 @@ const breadcrumbSchema = {
     <section class="guided-context" aria-labelledby="context-title">
       <h2 id="context-title">Pourquoi commencer par cette sauce ?</h2>
       <p>{workshop.recipeNote}</p>
+      <p><strong>Source vérifiée :</strong> <a href={workshop.recipeSource.url} rel="noopener noreferrer" target="_blank">{workshop.recipeSource.title}</a> (consultée le 19 octobre 2026).</p>
+      <details><summary>Autres références et périmètre de cette validation</summary><ul>{workshop.recipeSource.crossCheckUrls.map((url) => <li><a href={url} rel="noopener noreferrer" target="_blank">{new URL(url).hostname}</a></li>)}</ul><p>{workshop.recipeSource.scope}</p></details>
       <p>Vous allez d’abord fabriquer votre sauce à partir de la pulpe, puis découvrir comment le tamarin, le sucre et la sauce de poisson modifient son équilibre. L’exercice des quatre bols de la <a href={workshop.historyUrl}>leçon historique</a> est conservé, mais prend désormais place dans une préparation complète.</p>
     </section>
 

@@ -27,11 +27,11 @@ En cas de déploiement accidentel, la page est en noindex et explicitement marqu
 
 G0 — Protection : confirmer que la branche ne modifie aucune des six narrations, routes ou images existantes.
 
-G1 — Culinaire : une personne indépendante exécute toute la recette du pilote ; consigner masse de pulpe, quantité de filtrat réellement obtenue, assaisonnement final, rendement, goût avec accompagnement, éventuels allergènes. Corriger après cet essai, pas en inventant sa réussite.
+G1 — Provenance et quantités : **PASS documentaire le 19/10/2026**. Recette de base retrouvée : https://cambodiarecipe.com/tamarind-sauce/ (2023), avec 2 c. à soupe de tamarin, 1/3 tasse d’eau (80 ml), 2 c. à soupe de sucre et 2 c. à soupe de sauce de poisson, ail et piment facultatifs. Recoupements : CamboKitchen et Cambodianess (liens enregistrés dans src/data/guidedWorkshops.ts). Le brouillon précédent à 180 ml d’eau, 10 g de sucre et 10 ml de sauce de poisson a été corrigé. Les quatre coupelles sont notre ajout pédagogique. Essai gustatif indépendant facultatif mais conseillé : sa réalisation n’est pas prétendue.
 
 G2 — Média : photographie véridique de la sauce finie et visuels de gestes. Vérifier licences et droits de réutilisation. L'image historique de tamarin utilisée actuellement est explicitement légendée comme image d'ingrédient, pas comme résultat final.
 
-G3 — Coral : après G1, valider puis générer le nouveau fichier audio uniquement pour cette page avec la voie Coral déjà retenue. Mesurer les trames MP3 et chapitres réels, synchroniser étape par étape sans réutiliser un MP3 historique.
+G3 — Coral : après G1 documentaire validé, générer le nouveau fichier audio uniquement pour cette page avec la voie Coral déjà retenue. Mesurer les trames MP3 et chapitres réels, synchroniser étape par étape sans réutiliser un MP3 historique.
 
 G4 — SEO : publier uniquement une fois G1-G3 acquis ; passer status=validated ; créer Recipe JSON-LD fidèle, vérifier image du plat fini, canonical, sitemap, liens internes, absence de cannibalisation.
 
@@ -41,6 +41,8 @@ G6 — Livraison : review de la PR, tests Astro et mobile, fusion et déploiemen
 
 ## Limites assumées
 
-Une version codée, même complète sur le plan textuel, ne prouve pas la réussite culinaire.
+La recette publiée permet de valider la provenance et les proportions de base, pas de prétendre à une dégustation réalisée.
 Le brouillon narratif n'est pas un MP3. Aucun test de lecture mobile avec une nouvelle narration n'est revendiqué à ce stade.
 Les recettes nouvelles ne sont pas des restaurations de recettes traditionnelles historiques. Les anciennes pages ne sont ni déplacées ni écrasées.
+
+La validation documentaire G1 ne déclenche ni fusion, ni déploiement, ni création d’un MP3. G2 image et G3 audio restent à mener indépendamment, sans modifier les six contenus historiques.
