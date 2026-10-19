@@ -81,11 +81,11 @@ const workshopExperiences: Record<string, { image: string; imageAlt: string; que
     focus: 'Réduction · Équilibre · Fraîcheur'
   },
   'composer-repas-cambodgien': {
-    image: '/images/cuisine/v19-table-partage-desktop-1440.webp',
-    imageAlt: 'Table cambodgienne dressée pour partager plusieurs plats et accompagnements.',
-    question: 'Comment faire un repas généreux sans multiplier les plats ?',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Cambodia%27s_rice_fields.jpg/1280px-Cambodia%27s_rice_fields.jpg',
+    imageAlt: 'Rizières verdoyantes près de Siem Reap, au Cambodge.',
+    question: 'Pourquoi le riz est-il le point de départ du repas cambodgien ?',
     answer: 'Associez une base, un plat chaud, un contraste frais et un condiment à part.',
-    focus: 'Contrastes · Partage · Équilibre'
+    focus: 'Riz · Partage · Équilibre'
   }
 };
 const workshopExperience = workshopExperiences[workshop.slug];
@@ -148,20 +148,46 @@ const howToSchema = {
           <img
             src={workshopExperience.image}
             alt={workshopExperience.imageAlt}
-            width="1440"
-            height="1080"
+            width={workshop.slug === 'composer-repas-cambodgien' ? 1280 : 1440}
+            height={workshop.slug === 'composer-repas-cambodgien' ? 720 : 1080}
             loading="eager"
             decoding="async"
             fetchpriority="high"
           />
           <figcaption><span>À explorer</span><strong>{workshop.eyebrow}</strong></figcaption>
         </figure>
+        {workshop.slug === 'composer-repas-cambodgien' && (
+          <p class="workshop-rice-credit">Rizières près de Siem Reap · Dmitry A. Mottl · CC BY-SA 4.0 · <a href="https://commons.wikimedia.org/wiki/File:Cambodia%27s_rice_fields.jpg" target="_blank" rel="noreferrer">Photo et licence</a></p>
+        )}
         <aside class="workshop-experience-question" aria-label="Question de départ">
           <span>La question de l’atelier</span>
           <p>{workshopExperience.question}</p>
         </aside>
       </div>
     </section>
+
+    {workshop.slug === 'composer-repas-cambodgien' && (
+      <section class="workshop-rice-story" aria-labelledby="atelier-riz-title">
+        <div class="workshop-rice-story-head">
+          <p class="v16-page-kicker">Avant l’atelier · Un aliment essentiel</p>
+          <h2 id="atelier-riz-title">Le riz, bien plus qu’un accompagnement.</h2>
+          <p>Au Cambodge, le riz fait partie du quotidien, dans les campagnes comme dans les villes et à toutes les tables. Il accompagne le poisson, les soupes, les currys et les légumes. Il devient aussi bouillie de riz au petit déjeuner, riz sauté, nouilles de riz ou préparation sucrée.</p>
+          <p>Le Cambodge cultive différentes variétés, dont le riz parfumé Phka Rumduol. Commercialisé notamment sous le nom Malys Angkor, il a reçu en novembre 2025 le titre de meilleur riz du monde lors de la World Rice Conference, pour la septième fois pour un riz cambodgien.</p>
+          <p>Ce riz raconte aussi les rizières, les saisons et le travail des agriculteurs. Pour découvrir cette histoire, les variétés et les plats en détail, lisez notre carnet dédié.</p>
+          <a class="workshop-rice-story-link" href="/culture/le-riz-symbole-de-vie-au-cambodge/">Lire le carnet complet sur le riz cambodgien →</a>
+        </div>
+        <div class="workshop-rice-story-photos">
+          <figure>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Cambodian_farmers_planting_rice.jpg/1280px-Cambodian_farmers_planting_rice.jpg" width="1280" height="851" alt="Agriculteurs cambodgiens repiquant du riz dans une rizière" loading="lazy" decoding="async" />
+            <figcaption>Le riz commence dans les champs. <a href="https://commons.wikimedia.org/wiki/File:Cambodian_farmers_planting_rice.jpg" target="_blank" rel="noreferrer">Brad Collis · CC BY 2.0</a></figcaption>
+          </figure>
+          <figure>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Bowl_of_white_rice_01.jpg/1280px-Bowl_of_white_rice_01.jpg" width="1280" height="1084" alt="Riz blanc cuit dans un bol, prêt à être servi avec les plats du repas" loading="lazy" decoding="async" />
+            <figcaption>Puis il arrive à table. Photo générique : <a href="https://commons.wikimedia.org/wiki/File:Bowl_of_white_rice_01.jpg" target="_blank" rel="noreferrer">Douglas Perkins · CC0</a>.</figcaption>
+          </figure>
+        </div>
+      </section>
+    )}
 
     <section class="workshop-learning-lab" id="experience-atelier" aria-labelledby="workshop-lab-title">
       <div class="workshop-lab-introduction">
@@ -399,3 +425,19 @@ const howToSchema = {
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   <SiteFooter />
 </BaseLayout>
+
+<style>
+  .workshop-rice-credit{font-size:.78rem;line-height:1.4;margin:.5rem .25rem 0;color:#494239}
+  .workshop-rice-credit a{color:inherit;text-decoration:underline;text-underline-offset:.2em}
+  .workshop-rice-story{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(1.25rem,4vw,3.5rem);max-width:1280px;margin:clamp(2rem,6vw,5rem) auto;padding:clamp(1.2rem,3.5vw,2.8rem);border:1px solid #d8c7ae;border-radius:1.3rem;background:#f3eadc;color:#322b23}
+  .workshop-rice-story h2{font-size:clamp(1.7rem,3vw,2.7rem);line-height:1.12;margin:.6rem 0 1.2rem}
+  .workshop-rice-story p{line-height:1.7;font-size:1rem;max-width:64ch}
+  .workshop-rice-story-link{display:inline-block;margin-top:.65rem;color:#62451c;font-weight:750;text-decoration:underline;text-underline-offset:.25em}
+  .workshop-rice-story-photos{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;align-content:center;min-width:0}
+  .workshop-rice-story-photos figure{margin:0;min-width:0}
+  .workshop-rice-story-photos img{width:100%;height:clamp(12rem,22vw,18rem);border-radius:.9rem;object-fit:cover;display:block}
+  .workshop-rice-story-photos figcaption{font-size:.8rem;line-height:1.5;margin-top:.5rem}
+  .workshop-rice-story-photos a{color:#62451c;text-decoration:underline}
+  @media(max-width:820px){.workshop-rice-story{grid-template-columns:minmax(0,1fr);margin-inline:1rem}.workshop-rice-story-photos img{height:clamp(11rem,34vw,18rem)}}
+  @media(max-width:380px){.workshop-rice-story{padding:1rem}.workshop-rice-story-photos{gap:.5rem}}
+</style>
