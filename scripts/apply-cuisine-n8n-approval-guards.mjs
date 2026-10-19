@@ -106,6 +106,7 @@ async function main() {
     assert.equal(JSON.stringify(latest.nodes), JSON.stringify(task.current.nodes), 'Concurrent node edits detected; aborting');
     assert.equal(JSON.stringify(latest.connections), JSON.stringify(task.current.connections), 'Connections changed; aborting');
     assert.equal(latest.active, false, 'Workflow became active; aborting');
+    assert.ok(!latest.pinData || Object.keys(latest.pinData).length === 0, 'Pinned execution data present; refusing full workflow update');
     assert.equal(latest.versionId, task.current.versionId, 'Workflow version changed; aborting');
     const modifiedNodes = structuredClone(latest.nodes);
     const sqlNode = modifiedNodes.find((n) => n.name === task.spec.node);
