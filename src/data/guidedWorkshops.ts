@@ -54,8 +54,8 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
   description: 'Réaliser une sauce acidulée au tamarin, de la pulpe à la dégustation : quantités, filtrage, assaisonnement, quatre bols de comparaison et corrections progressives.',
   promise: 'Vous commencez avec de la pulpe de tamarin et repartez avec une sauce prête à servir, en ayant compris comment corriger son goût.',
   portions: '2 petites portions de sauce après les quatre coupelles de dégustation',
-  prepMinutes: 15,
-  heatingMinutes: 5,
+  prepMinutes: 7,
+  heatingMinutes: 9,
   tastingMinutes: 12,
   recipeNote: 'La sauce de base reprend les proportions publiées par Cambodia Recipe (2023) : deux cuillères à soupe de pulpe de tamarin, 80 ml d’eau, deux cuillères à soupe de sucre et deux de sauce de poisson. L’ail et le piment sont facultatifs. La filtration et les quatre bols de comparaison sont des ajouts pédagogiques, non une reproduction de la méthode publiée.',
   recipeSource: {

@@ -33,7 +33,7 @@ test('every ingredient has a real quantity and is referenced in an executable st
   assert.ok(workshop.ingredients.some(i => i.id === 'ail'));
   assert.ok(workshop.ingredients.some(i => i.id === 'piment'));
   for (const i of workshop.ingredients) {
-    assert.ok(i.label.length > 12, 'Ingredient not identified: ' + i.id);
+    assert.ok(i.label.trim().length >= 3, 'Ingredient not identified: ' + i.id);
     assert.match(i.quantity, /^\d+\s*(?:g|ml|c\. à soupe|gousses|petits piments)\b/u, 'Explicit measured unit required: ' + i.id);
     assert.ok(workshop.steps.some(s => s.ingredients.includes(i.id)), 'Unused ingredient ' + i.id);
   }
@@ -45,6 +45,7 @@ test('every ingredient has a real quantity and is referenced in an executable st
 });
 test('all six stages teach measurable actions, cues, troubleshooting and audio script drafts', () => {
   assert.equal(workshop.steps.length, 6);
+  assert.equal(workshop.steps.reduce((sum, step) => sum + step.minutes, 0), workshop.prepMinutes + workshop.heatingMinutes + workshop.tastingMinutes, 'Displayed duration must equal stage durations');
   assert.equal(new Set(workshop.steps.map(s => s.id)).size, workshop.steps.length);
   for (const s of workshop.steps) {
     assert.ok(s.minutes > 0 && Number.isInteger(s.minutes));
@@ -55,6 +56,7 @@ test('all six stages teach measurable actions, cues, troubleshooting and audio s
   assert.match(source, /quatre bols|quatre coupelles/i);
   assert.match(source, /une cuillère à café, soit environ 5 ml/);
   assert.match(source, /une expérience pédagogique ajoutée à la recette publiée/);
+  assert.match(page, /recetteSource\.url|recipeSource\.url/, 'The publisher must appear on the page');
 });
 test('existing urls, safety checks and no social eligibility for the draft', () => {
   assert.ok(workshop.ingredientUrl.startsWith('/ingredients/'));

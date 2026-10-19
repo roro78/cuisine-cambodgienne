@@ -8,6 +8,7 @@ on:
       - "src/data/guidedWorkshops.ts"
       - "src/pages/apprendre/pratique/**"
       - "tests/guided-workshop-contract.test.mjs"
+      - "scripts/export-guided-workshop-narration.mjs"
       - ".github/workflows/guided-pilot.yml"
 permissions:
   contents: read
@@ -32,6 +33,8 @@ jobs:
           fi
       - name: Test guided workshop editorial contract
         run: node --test tests/guided-workshop-contract.test.mjs
+      - name: Check Coral script without TTS calls
+        run: node scripts/export-guided-workshop-narration.mjs --check
       - name: Typecheck
         run: npm run check
       - name: Build

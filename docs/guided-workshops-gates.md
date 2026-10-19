@@ -31,7 +31,7 @@ G1 — Provenance et quantités : **PASS documentaire le 19/10/2026**. Recette d
 
 G2 — Média : photographie véridique de la sauce finie et visuels de gestes. Vérifier licences et droits de réutilisation. L'image historique de tamarin utilisée actuellement est explicitement légendée comme image d'ingrédient, pas comme résultat final.
 
-G3 — Coral : après G1 documentaire validé, générer le nouveau fichier audio uniquement pour cette page avec la voie Coral déjà retenue. Mesurer les trames MP3 et chapitres réels, synchroniser étape par étape sans réutiliser un MP3 historique.
+G3 — Coral : **script six chapitres préparé et exportable hors ligne**, sans TTS ni coût. Après G1 documentaire validé, générer le nouveau fichier audio uniquement pour cette page avec la voie Coral déjà retenue. Mesurer les trames MP3 et chapitres réels, synchroniser étape par étape sans réutiliser un MP3 historique.
 
 G4 — SEO : publier uniquement une fois G1-G3 acquis ; passer status=validated ; créer Recipe JSON-LD fidèle, vérifier image du plat fini, canonical, sitemap, liens internes, absence de cannibalisation.
 
@@ -46,3 +46,7 @@ Le brouillon narratif n'est pas un MP3. Aucun test de lecture mobile avec une no
 Les recettes nouvelles ne sont pas des restaurations de recettes traditionnelles historiques. Les anciennes pages ne sont ni déplacées ni écrasées.
 
 La validation documentaire G1 ne déclenche ni fusion, ni déploiement, ni création d’un MP3. G2 image et G3 audio restent à mener indépendamment, sans modifier les six contenus historiques.
+
+## Lot d'isolation suivant
+
+Le 19 octobre, le correctif du test « Eau potable » a été préparé : le test vérifie désormais un libellé présent et la quantité au lieu de la longueur artificielle du libellé. Les durées affichées sont alignées sur les six étapes et couvertes par un contrôle. Le script d'export Coral reste **hors ligne**, sans accès au service TTS et sans MP3 généré. Voir `docs/atelier-pratique-tamarin-coral.md`.
