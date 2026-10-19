@@ -21,6 +21,7 @@ export function getStaticPaths() {
 const { article } = Astro.props;
 
 const glossaryByArticle: Record<string, string[]> = {
+  'le-riz-symbole-de-vie-au-cambodge': ['riz-jasmin'],
   'poivre-de-kampot': ['poivre-de-kampot'],
   'comprendre-le-kroeung': ['kroeung', 'citronnelle', 'galanga', 'combava', 'curcuma'],
   'comprendre-amok': ['amok', 'kroeung', 'lait-de-coco', 'combava', 'feuille-bananier'],
@@ -97,19 +98,49 @@ const breadcrumbSchema = {
       </header>
 
       <figure class="culture-visual" data-parallax="0.06">
-        <img src={article.image} srcset={imageSrcSet(article.image, article.imageWidths)} sizes="(max-width: 900px) 100vw, 52vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} decoding="async" />
-        <figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption>
+        <img src={article.image} srcset={article.imageWidths.length ? imageSrcSet(article.image, article.imageWidths) : undefined} sizes="(max-width: 900px) 100vw, 52vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} decoding="async" />
+        <figcaption>
+          {article.slug === 'le-riz-symbole-de-vie-au-cambodge' ? (
+            <>Rizières près de Siem Reap · Photo Dmitry A. Mottl, CC BY-SA 4.0 · <a href="https://commons.wikimedia.org/wiki/File:Cambodia%27s_rice_fields.jpg" target="_blank" rel="noreferrer">Source et licence</a></>
+          ) : 'Photographie illustrative · crédits et licence en bas de page.'}
+        </figcaption>
       </figure>
     </section>
 
     <article class="culture-copy">
       {article.sections.map((section: CultureArticle['sections'][number], index: number) => (
+        <>
         <section data-reveal={index % 2 === 0 ? 'up' : 'right'}>
           <h2>{section.title}</h2>
           {section.paragraphs.map((paragraph: string) => <p>{paragraph}</p>)}
         </section>
+        {article.gallery && index === 1 && (
+          <div class="rice-photo-report" aria-label="Le riz des champs à la table">
+            {article.gallery.slice(0, 2).map((photo) => (
+              <figure>
+                <img src={photo.image} alt={photo.imageAlt} width={photo.width} height={photo.height} loading="lazy" decoding="async" />
+                <figcaption>{photo.caption} <small>{photo.credit} · <a href={photo.source} target="_blank" rel="noreferrer">Source et licence</a></small></figcaption>
+              </figure>
+            ))}
+          </div>
+        )}
+        {article.gallery && index === 5 && article.gallery[2] && (
+          <figure class="rice-festival-photo">
+            <img src={article.gallery[2].image} alt={article.gallery[2].imageAlt} width={article.gallery[2].width} height={article.gallery[2].height} loading="lazy" decoding="async" />
+            <figcaption>{article.gallery[2].caption} <small>{article.gallery[2].credit} · <a href={article.gallery[2].source} target="_blank" rel="noreferrer">Source et licence</a></small></figcaption>
+          </figure>
+        )}
+        </>
       ))}
 
+      {article.slug === 'le-riz-symbole-de-vie-au-cambodge' && (
+        <aside class="rice-workshop-link">
+          <p class="eyebrow">De la rizière à votre cuisine</p>
+          <h2>Et maintenant, passons à table.</h2>
+          <p>Apprenez à associer le riz, un plat chaud, des légumes et un condiment : un petit exercice pour comprendre un repas cambodgien.</p>
+          <a href="/apprendre/composer-repas-cambodgien/">Découvrir l’atelier « Composer un repas » →</a>
+        </aside>
+      )}
       <aside class="source-box">
         <p class="eyebrow">Sources</p>
         <ul>
@@ -148,3 +179,19 @@ const breadcrumbSchema = {
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   <SiteFooter />
 </BaseLayout>
+
+<style>
+  .culture-visual figcaption a{color:inherit;text-decoration:underline;text-underline-offset:.15em;font-size:inherit}
+  .rice-photo-report{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:clamp(.8rem,2vw,1.5rem);margin:clamp(1.4rem,4vw,3rem) 0}
+  .rice-photo-report figure,.rice-festival-photo{margin:0;min-width:0}
+  .rice-photo-report img,.rice-festival-photo img{width:100%;height:clamp(15rem,33vw,23rem);object-fit:cover;border-radius:1rem;display:block}
+  .rice-photo-report figcaption,.rice-festival-photo figcaption{padding:.75rem .25rem 0;color:#4d483e;font-size:.95rem;line-height:1.55}
+  .rice-photo-report figcaption small,.rice-festival-photo figcaption small{display:block;margin-top:.3rem;font-size:.78rem}
+  .rice-photo-report a,.rice-festival-photo a,.rice-workshop-link a{color:#664c27;text-decoration:underline;text-underline-offset:.2em}
+  .rice-festival-photo{max-width:42rem;margin:1.5rem auto 2rem}
+  .rice-festival-photo img{max-height:32rem;object-position:center 44%}
+  .rice-workshop-link{padding:clamp(1.25rem,3.8vw,2.5rem);background:#eee2cb;border:1px solid #d3c2a6;border-radius:1.3rem;margin:2rem 0}
+  .rice-workshop-link h2{margin:.55rem 0}.rice-workshop-link p{max-width:56ch}
+  .rice-workshop-link a{font-weight:700;display:inline-block;margin-top:.65rem}
+  @media(max-width:720px){.rice-photo-report{grid-template-columns:1fr}.rice-photo-report img{height:auto;max-height:25rem}.rice-festival-photo img{height:auto;max-height:27rem}}
+</style>
