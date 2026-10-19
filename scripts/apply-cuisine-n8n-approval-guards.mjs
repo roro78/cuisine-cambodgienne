@@ -20,6 +20,7 @@ const origin = new URL(base);
 assert.equal(origin.protocol, 'https:', 'n8n must use HTTPS');
 assert.equal(origin.hostname, 'n8n.orvekio.com', 'Refusing to modify any other n8n instance');
 assert.equal(origin.pathname.replace(/\/$/, ''), '', 'N8N_BASE_URL must be the instance root');
+assert.ok(!origin.username && !origin.password && !origin.search && !origin.hash, 'N8N_BASE_URL must contain no credentials or suffix');
 const api = origin.origin + '/api/v1';
 const headers = { 'X-N8N-API-KEY': key, Accept: 'application/json' };
 
@@ -42,7 +43,7 @@ async function request(path, options = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
   try {
-    const resp = await fetch(api + path, { ...options, headers: { ...headers, ...(options.headers || {}) }, signal: controller.signal });
+    const resp = await fetch(api + path, { ...options, headers: { ...headers, ...(options.headers || {}) }, signal: controller.signal, redirect: 'error' });
     if (!resp.ok) throw new Error('n8n API ' + options.method?.toUpperCase() + ' ' + path.split('?')[0] + ' returned HTTP ' + resp.status);
     return await resp.json();
   } finally {
@@ -66,7 +67,9 @@ async function listByName(name) {
 function inspect(workflow, spec) {
   assert.equal(workflow.name, spec.name, 'Unexpected workflow name');
   assert.equal(workflow.active, false, 'Workflow is active; refusing modification');
+  assert.ok(!workflow.activeVersion, 'Workflow has a published version; refusing modification');
   assert.notEqual(workflow.isArchived, true, 'Workflow is archived');
+  assert.ok(!workflow.pinData || Object.keys(workflow.pinData).length === 0, 'Pinned execution data present; refusing full workflow update');
   assert.ok(Array.isArray(workflow.nodes), 'Missing workflow nodes');
   const matches = workflow.nodes.filter((n) => n.name === spec.node && n.type === 'n8n-nodes-base.postgres');
   assert.equal(matches.length, 1, 'Target SQL node missing or duplicated: ' + spec.node);
@@ -86,6 +89,15 @@ function inspect(workflow, spec) {
 }
 async function main() {
   const tasks = [];
+  const firstWorkflowName = 'Cuisine du Cambodge - 01 - Brouillon IA et validation email';
+  const firstWorkflowId = await listByName(firstWorkflowName);
+  async function checkFirstWorkflowInactive() {
+    const first = await request('/workflows/' + encodeURIComponent(firstWorkflowId));
+    assert.equal(first.name, firstWorkflowName, 'Unexpected first Cuisine workflow');
+    assert.equal(first.active, false, 'First Cuisine workflow is active; aborting');
+    assert.ok(!first.activeVersion, 'First Cuisine workflow has a published version; aborting');
+  }
+  await checkFirstWorkflowInactive();
   // Validate BOTH workflows and expected SQL before making ANY changes.
   for (const spec of specs) {
     const id = await listByName(spec.name);
@@ -101,12 +113,18 @@ async function main() {
 
   for (const task of tasks) {
     if (task.plan.status === 'already-safe') continue;
+    await checkFirstWorkflowInactive();
     const latest = await request('/workflows/' + encodeURIComponent(task.id));
     // Stop on concurrent edits. This preserves the user's Meta IDs and credential associations.
     assert.equal(JSON.stringify(latest.nodes), JSON.stringify(task.current.nodes), 'Concurrent node edits detected; aborting');
     assert.equal(JSON.stringify(latest.connections), JSON.stringify(task.current.connections), 'Connections changed; aborting');
+    for (const field of ['name', 'description', 'nodeGroups', 'settings', 'staticData', 'pinData', 'tags', 'shared', 'parentFolderId', 'projectId']) {
+      assert.deepEqual(latest[field], task.current[field], 'Workflow configuration changed: ' + field);
+    }
     assert.equal(latest.active, false, 'Workflow became active; aborting');
+    assert.ok(!latest.activeVersion, 'Workflow acquired a published version; aborting');
     assert.ok(!latest.pinData || Object.keys(latest.pinData).length === 0, 'Pinned execution data present; refusing full workflow update');
+    assert.equal(typeof latest.versionId, 'string', 'Workflow version unavailable; aborting');
     assert.equal(latest.versionId, task.current.versionId, 'Workflow version changed; aborting');
     const modifiedNodes = structuredClone(latest.nodes);
     const sqlNode = modifiedNodes.find((n) => n.name === task.spec.node);
@@ -115,9 +133,15 @@ async function main() {
       name: latest.name,
       nodes: modifiedNodes,
       connections: latest.connections,
-      settings: latest.settings || {},
-      staticData: latest.staticData ?? null,
+      settings: latest.settings,
     };
+    assert.ok(latest.settings && typeof latest.settings === 'object', 'Workflow settings unavailable; aborting');
+    if (Object.hasOwn(latest, 'staticData')) body.staticData = latest.staticData;
+    // These are writable in the instance's /api/v1/docs workflow schema.
+    // Omitting them from a full PUT could discard existing canvas/configuration data.
+    for (const field of ['description', 'nodeGroups', 'pinData']) {
+      if (Object.hasOwn(latest, field)) body[field] = latest[field];
+    }
     await request('/workflows/' + encodeURIComponent(task.id), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -125,20 +149,16 @@ async function main() {
     });
     const after = await request('/workflows/' + encodeURIComponent(task.id));
     assert.equal(after.active, false, 'ALERT: Workflow unexpectedly active after update');
+    assert.ok(!after.activeVersion, 'ALERT: Workflow unexpectedly published after update');
     const node = after.nodes.find((n) => n.name === task.spec.node);
     assert.equal(node?.parameters?.query, task.plan.query, 'SQL guard not confirmed after write');
-    for (const originalNode of latest.nodes) {
-      const changed = after.nodes.find((n) => n.name === originalNode.name);
-      assert.ok(changed, 'Node missing after update');
-      if (originalNode.name !== task.spec.node) {
-        assert.deepEqual(changed.credentials, originalNode.credentials, 'Credential changed: ' + originalNode.name);
-        assert.deepEqual(changed.parameters, originalNode.parameters, 'Other node settings changed: ' + originalNode.name);
-      } else {
-        assert.deepEqual(changed.credentials, originalNode.credentials, 'Target node credential changed');
-      }
+    assert.deepEqual(after.nodes, modifiedNodes, 'A node setting, URL, credential, or node order changed');
+    for (const field of ['name', 'description', 'nodeGroups', 'connections', 'settings', 'staticData', 'pinData', 'tags', 'shared', 'parentFolderId', 'projectId']) {
+      assert.deepEqual(after[field], latest[field], 'Workflow configuration changed after update: ' + field);
     }
     console.log(task.spec.name + ': SQL guard SAVED and verified; inactive; credentials unchanged.');
   }
+  await checkFirstWorkflowInactive();
   console.log('No workflow was executed, published, imported, or activated.');
 }
 main().catch((err) => { console.error('STOP (no further writes): ' + err.message); process.exitCode = 1; });
