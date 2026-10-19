@@ -46,7 +46,7 @@ try {
       assert.equal(await page.locator('.guided-ingredients > li').count(), 6, 'Core and optional ingredients');
       assert.equal(await page.locator('.guided-step').count(), 6, 'Six cooking stages');
       assert.equal(await page.locator('[data-guided-done]').count(), 6, 'Six completion controls');
-      assert.equal(await page.locator('[data-guided-meter]').evaluate(el => el.value), '0');
+      assert.equal(await page.locator('[data-guided-meter]').evaluate(el => el.value), 0);
       assert.match(await page.locator('.guided-context').innerText(), /Source vérifiée/i);
       assert.equal(await page.locator('summary:text("Lire le brouillon de narration")').count(), 0,
         'Private voice drafts must not appear in public page');
@@ -58,13 +58,13 @@ try {
       assert.ok(overflow <= 3, 'Horizontal viewport overflow ' + overflow + 'px at width ' + width);
       const first = page.locator('[data-guided-done]').first();
       await first.check();
-      assert.equal(await page.locator('[data-guided-meter]').evaluate(el => el.value), '1');
+      assert.equal(await page.locator('[data-guided-meter]').evaluate(el => el.value), 1);
       assert.match(await page.locator('[data-guided-count]').innerText(), /1 étape sur 6 terminée/);
       await page.locator('[data-guided-done]').last().check();
-      assert.equal(await page.locator('[data-guided-meter]').evaluate(el => el.value), '2');
+      assert.equal(await page.locator('[data-guided-meter]').evaluate(el => el.value), 2);
       assert.match(await page.locator('[data-guided-count]').innerText(), /2 étapes sur 6 terminées/);
       await first.uncheck();
-      assert.equal(await page.locator('[data-guided-meter]').evaluate(el => el.value), '1');
+      assert.equal(await page.locator('[data-guided-meter]').evaluate(el => el.value), 1);
       await page.locator('.guided-step details summary').first().click();
       assert.equal(await page.locator('.guided-step details[open]').count(), 1, 'Chef tips expand');
       assert.equal(await page.locator('a.guided-next').count(), 5);
