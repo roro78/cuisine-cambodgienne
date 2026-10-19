@@ -109,6 +109,7 @@ const breadcrumbSchema = {
 
     <article class="culture-copy">
       {article.sections.map((section: CultureArticle['sections'][number], index: number) => (
+        <>
         <section data-reveal={index % 2 === 0 ? 'up' : 'right'}>
           <h2>{section.title}</h2>
           {section.paragraphs.map((paragraph: string) => <p>{paragraph}</p>)}
@@ -129,6 +130,7 @@ const breadcrumbSchema = {
             <figcaption>{article.gallery[2].caption} <small>{article.gallery[2].credit} · <a href={article.gallery[2].source} target="_blank" rel="noreferrer">Source et licence</a></small></figcaption>
           </figure>
         )}
+        </>
       ))}
 
       {article.slug === 'le-riz-symbole-de-vie-au-cambodge' && (
