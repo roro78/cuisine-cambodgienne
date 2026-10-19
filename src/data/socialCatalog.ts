@@ -76,7 +76,7 @@ export function getSocialCatalog(): SocialSource[] {
     ...cultureArticles.map(article => create(
       'culture', article.slug, article.title, `/culture/${article.slug}/`, article.intro,
       [article.sections[0]?.paragraphs[0], ...article.sections.map(section => section.title)],
-      article.image, 'article', article.sources.map(source => source.url)
+      article.socialImage ?? article.image, article.socialImage ? 'illustration' : 'article', article.sources.map(source => source.url)
     )),
     ...workshops.map(workshop => {
       // Only the mortier atelier has its own approved, on-page step photo in the catalog.
