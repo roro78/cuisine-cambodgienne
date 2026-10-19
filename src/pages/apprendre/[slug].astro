@@ -154,11 +154,13 @@ const howToSchema = {
             decoding="async"
             fetchpriority="high"
           />
-          <figcaption><span>À explorer</span><strong>{workshop.eyebrow}</strong></figcaption>
+          <figcaption>
+            <span>À explorer</span><strong>{workshop.eyebrow}</strong>
+            {workshop.slug === 'composer-repas-cambodgien' && (
+              <small class="workshop-rice-credit">Dmitry A. Mottl · CC BY-SA 4.0 · <a href="https://commons.wikimedia.org/wiki/File:Cambodia%27s_rice_fields.jpg" target="_blank" rel="noreferrer">Photo des rizières, Siem Reap</a></small>
+            )}
+          </figcaption>
         </figure>
-        {workshop.slug === 'composer-repas-cambodgien' && (
-          <p class="workshop-rice-credit">Rizières près de Siem Reap · Dmitry A. Mottl · CC BY-SA 4.0 · <a href="https://commons.wikimedia.org/wiki/File:Cambodia%27s_rice_fields.jpg" target="_blank" rel="noreferrer">Photo et licence</a></p>
-        )}
         <aside class="workshop-experience-question" aria-label="Question de départ">
           <span>La question de l’atelier</span>
           <p>{workshopExperience.question}</p>
@@ -427,7 +429,7 @@ const howToSchema = {
 </BaseLayout>
 
 <style>
-  .workshop-rice-credit{font-size:.78rem;line-height:1.4;margin:.5rem .25rem 0;color:#494239}
+  .workshop-experience-photo figcaption .workshop-rice-credit{display:block;max-width:15rem;margin-top:.2rem;font:400 .7rem/1.35 sans-serif;color:#493d30;letter-spacing:normal;text-transform:none}
   .workshop-rice-credit a{color:inherit;text-decoration:underline;text-underline-offset:.2em}
   .workshop-rice-story{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(1.25rem,4vw,3.5rem);max-width:1280px;margin:clamp(2rem,6vw,5rem) auto;padding:clamp(1.2rem,3.5vw,2.8rem);border:1px solid #d8c7ae;border-radius:1.3rem;background:#f3eadc;color:#322b23}
   .workshop-rice-story h2{font-size:clamp(1.7rem,3vw,2.7rem);line-height:1.12;margin:.6rem 0 1.2rem}
