@@ -32,7 +32,7 @@
       ],
       "parameters": {
         "operation": "executeQuery",
-        "query": "WITH chosen AS (SELECT id FROM cuisine_social.posts WHERE status='publishing' AND ig_state='container_created' AND instagram_container_id IS NOT NULL ORDER BY updated_at FOR UPDATE SKIP LOCKED LIMIT 1) UPDATE cuisine_social.posts p SET ig_state='checking',updated_at=NOW() FROM chosen WHERE p.id=chosen.id RETURNING p.*",
+        "query": "WITH chosen AS (SELECT id FROM cuisine_social.posts WHERE status='publishing' AND human_decision='approved' AND approved_at IS NOT NULL AND decided_at IS NOT NULL AND fb_state='published' AND ig_state='container_created' AND instagram_container_id IS NOT NULL ORDER BY updated_at FOR UPDATE SKIP LOCKED LIMIT 1) UPDATE cuisine_social.posts p SET ig_state='checking',updated_at=NOW() FROM chosen WHERE p.id=chosen.id RETURNING p.*",
         "options": {}
       }
     },
