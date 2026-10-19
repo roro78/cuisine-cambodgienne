@@ -22,7 +22,8 @@ test('every ingredient has a real quantity and is referenced in an executable st
   assert.equal(new Set(ids).size, ids.length);
   assert.ok(workshop.ingredients.length >= 4);
   for (const i of workshop.ingredients) {
-    assert.ok(i.label.length > 12 && i.quantity.length > 4);
+    assert.ok(i.label.length > 12, 'Ingredient not identified: ' + i.id);
+    assert.match(i.quantity, /^\d+(?:[.,]\d+)?\s*(?:g|ml)\b/, 'Amount must start with a measured mass or volume: ' + i.id);
     assert.ok(workshop.steps.some(s => s.ingredients.includes(i.id)), 'Unused ingredient ' + i.id);
   }
   for (const s of workshop.steps) {
