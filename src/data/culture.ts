@@ -98,13 +98,13 @@ export const cultureArticles: CultureArticle[] = [
         height: 851
       },
       {
-        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Bowl_of_white_rice_01.jpg/1280px-Bowl_of_white_rice_01.jpg',
-        imageAlt: 'Bol de riz blanc cuit, en grains',
-        caption: 'Le riz servi nature : une base simple pour accueillir un plat en sauce ou des légumes.',
-        credit: 'Douglas Perkins · CC0 · photo illustrative, origine du riz non précisée',
-        source: 'https://commons.wikimedia.org/wiki/File:Bowl_of_white_rice_01.jpg',
-        width: 1280,
-        height: 1084
+        image: 'https://upload.wikimedia.org/wikipedia/commons/8/83/Cambodia_rice.jpg',
+        imageAlt: 'Épis de riz en croissance photographiés au Cambodge, au premier plan',
+        caption: 'Avant d’être un grain dans le bol, le riz grandit sur une plante que cultivent les familles agricoles.',
+        credit: 'Chhoukkosal · CC BY-SA 4.0 · photographie recadrée à l’affichage',
+        source: 'https://commons.wikimedia.org/wiki/File:Cambodia_rice.jpg',
+        width: 960,
+        height: 1280
       },
       {
         image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Ak_Ambok.jpg/960px-Ak_Ambok.jpg',
@@ -117,7 +117,7 @@ export const cultureArticles: CultureArticle[] = [
       }
     ],
     sources: [
-      { label: 'FAO — Le riz et les moyens de subsistance au Cambodge', url: 'https://fao.sitefinity.cloud/hand-in-hand/previous-editions/hih-IF-2023/cambodia/en' },
+      { label: 'FAO — Le riz et les moyens de subsistance au Cambodge', url: 'https://www.fao.org/hand-in-hand/previous-editions/hih-IF-2024/cambodia/en' },
       { label: 'FAO — Agriculture et alimentation au Cambodge', url: 'https://www.fao.org/cambodia/our-office/cambodia-at-a-glance/en' },
       { label: 'Agence Kampuchea Presse (9 novembre 2025) — Malys Angkor primé pour la septième fois', url: 'https://www.akp.gov.kh/fr/post/detail/352733' },
       { label: 'Agence Kampuchea Presse (5 janvier 2026) — Riz Phka Rumduol et exportations', url: 'https://akp.gov.kh/fr/post/detail/358182' },
