@@ -1,0 +1,156 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SiteHeader from '../../../components/SiteHeader.astro';
+import SiteFooter from '../../../components/SiteFooter.astro';
+import { tamarindGuidedWorkshop as workshop } from '../../../data/guidedWorkshops';
+
+const total = workshop.prepMinutes + workshop.heatingMinutes + workshop.tastingMinutes;
+const url = 'https://www.cuisine-du-cambodge.com/apprendre/pratique/sauce-tamarin/';
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://www.cuisine-du-cambodge.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Ateliers', item: 'https://www.cuisine-du-cambodge.com/apprendre/' },
+    { '@type': 'ListItem', position: 3, name: workshop.title, item: url }
+  ]
+};
+---
+<BaseLayout
+  title={workshop.title + ' — Atelier guidé | Cuisine du Cambodge'}
+  description={workshop.description}
+  noindex={workshop.status !== 'validated'}
+>
+  <SiteHeader />
+  <main class="guided-main">
+    <nav class="guided-breadcrumb" aria-label="Fil d’Ariane">
+      <a href="/apprendre/">← Toutes les leçons</a>
+      <span aria-hidden="true">/</span>
+      <span>Atelier pratique : sauce au tamarin</span>
+    </nav>
+
+    <header class="guided-hero">
+      <div>
+        <p class="guided-eyebrow">Une vraie préparation, pas seulement une leçon</p>
+        <h1>{workshop.title}</h1>
+        <p class="guided-lede">{workshop.promise}</p>
+        <dl class="guided-facts">
+          <div><dt>Durée indicative</dt><dd>{total} min</dd></div>
+          <div><dt>Rendement</dt><dd>{workshop.portions}</dd></div>
+          <div><dt>Technique</dt><dd>Préparer · goûter · rectifier</dd></div>
+        </dl>
+        {workshop.status !== 'validated' && <p class="guided-pilot" role="status">Version pilote en cours de validation culinaire, photographique et audio. Ce parcours ne doit pas être annoncé comme un atelier finalisé.</p>}
+        <a class="guided-start" href="#ingredients">Voir les ingrédients ↓</a>
+      </div>
+      <figure class="guided-ingredient-image">
+        <img src={workshop.image} alt={workshop.imageAlt} width="1200" height="660" loading="eager" />
+        <figcaption>Le tamarin est l’ingrédient de départ, pas la photographie d’une sauce terminée.</figcaption>
+      </figure>
+    </header>
+
+    <section class="guided-context" aria-labelledby="context-title">
+      <h2 id="context-title">Pourquoi commencer par cette sauce ?</h2>
+      <p>{workshop.recipeNote}</p>
+      <p>Vous allez d’abord fabriquer votre sauce à partir de la pulpe, puis découvrir comment le tamarin, le sucre et la sauce de poisson modifient son équilibre. L’exercice des quatre bols de la <a href={workshop.historyUrl}>leçon historique</a> est conservé, mais prend désormais place dans une préparation complète.</p>
+    </section>
+
+    <div class="guided-layout">
+      <aside class="guided-kit" id="ingredients" aria-labelledby="ingredients-title">
+        <h2 id="ingredients-title">Ingrédients mesurés</h2>
+        <ul class="guided-ingredients">
+          {workshop.ingredients.map((ingredient) => (
+            <li>
+              <strong>{ingredient.quantity}</strong>
+              <span>{ingredient.label}</span>
+              <small>{ingredient.purpose}{ingredient.allergen ? ' · Allergène : ' + ingredient.allergen : ''}</small>
+            </li>
+          ))}
+        </ul>
+        <h3>Matériel</h3>
+        <ul>{workshop.equipment.map((item) => <li>{item}</li>)}</ul>
+        <p>Besoin de reconnaître la pulpe ? <a href={workshop.ingredientUrl}>Lire la fiche du tamarin</a>.</p>
+      </aside>
+
+      <section class="guided-method" id="etapes" aria-labelledby="method-title">
+        <p class="guided-eyebrow">Suivez les gestes dans l’ordre</p>
+        <h2 id="method-title">Préparation guidée</h2>
+        <p>Chaque étape comporte une consigne, un signe de réussite et une solution en cas de difficulté. La narration Coral de cet atelier est en préparation : aucun ancien MP3 n’a été réaffecté artificiellement.</p>
+        <ol class="guided-steps">
+          {workshop.steps.map((step, index) => (
+            <li id={step.id} class="guided-step">
+              <header>
+                <span>Étape {index + 1} sur {workshop.steps.length} · environ {step.minutes} min</span>
+                <h3>{step.title}</h3>
+              </header>
+              <ol class="guided-actions">{step.instructions.map((action) => <li>{action}</li>)}</ol>
+              <p class="guided-check"><strong>Ce que vous devez constater :</strong> {step.check}</p>
+              <details>
+                <summary>Astuce du chef et dépannage</summary>
+                <p><strong>Astuce :</strong> {step.tip}</p>
+                <p><strong>Si ça ne fonctionne pas :</strong> {step.recovery}</p>
+              </details>
+              <details>
+                <summary>Lire le brouillon de narration</summary>
+                <p>{step.narrationDraft}</p>
+              </details>
+            </li>
+          ))}
+        </ol>
+      </section>
+    </div>
+
+    <section class="guided-finish" aria-labelledby="finish-title">
+      <h2 id="finish-title">Votre sauce est prête</h2>
+      <p>{workshop.serving}</p>
+      <h3>Hygiène et précautions</h3>
+      <ul>{workshop.safety.map((note) => <li>{note}</li>)}</ul>
+      <p><strong>Pour aller plus loin :</strong> <a href={workshop.historyUrl}>comprendre les corrections gustatives</a>, puis découvrir <a href={workshop.ingredientUrl}>les usages du tamarin</a>.</p>
+      <a href="/apprendre/">← Revenir aux ateliers</a>
+    </section>
+  </main>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <SiteFooter />
+</BaseLayout>
+<style>
+  .guided-main{max-width:1240px;margin:0 auto;padding:clamp(1.2rem,3vw,3rem) clamp(1rem,3vw,2rem) 5rem;color:#302a24}
+  .guided-main a{color:#704413;text-underline-offset:.18em}
+  .guided-breadcrumb{display:flex;gap:.8rem;flex-wrap:wrap;margin:0 0 2.5rem;font-size:.86rem}
+  .guided-hero{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(1.2rem,4vw,3rem);align-items:center;padding-bottom:3rem;border-bottom:1px solid #d8c9b8}
+  .guided-eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.13em;font-weight:800;color:#845725}
+  .guided-hero h1{font-family:Georgia,serif;font-size:clamp(2.15rem,5vw,4.1rem);line-height:1.08;margin:.7rem 0 1.3rem}
+  .guided-lede{font-size:clamp(1.05rem,1.8vw,1.28rem);line-height:1.68;max-width:55ch}
+  .guided-facts{display:flex;gap:1rem 2rem;flex-wrap:wrap;margin:1.8rem 0}
+  .guided-facts dt{font-size:.77rem;color:#685c50}
+  .guided-facts dd{font-weight:750;margin:.25rem 0 0;font-size:.95rem;max-width:22ch}
+  .guided-ingredient-image{margin:0}
+  .guided-ingredient-image img{display:block;width:100%;height:clamp(240px,36vw,450px);object-fit:cover;border-radius:1.2rem}
+  .guided-ingredient-image figcaption{font-size:.78rem;line-height:1.5;margin-top:.5rem;color:#685c50}
+  .guided-pilot{padding:1rem;border-left:3px solid #896537;background:#f1e8d8;font-size:.9rem;line-height:1.55}
+  .guided-start{display:inline-block;padding:.85rem 1.1rem;border:1px solid #9a7b51;border-radius:2rem;font-weight:750}
+  .guided-context{padding:2rem 0;max-width:85ch;line-height:1.7}
+  .guided-context h2,.guided-method h2,.guided-finish h2{font-family:Georgia,serif;font-size:clamp(1.7rem,3.4vw,2.65rem);line-height:1.15}
+  .guided-layout{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(0,1.65fr);gap:clamp(1.5rem,4vw,4rem);align-items:start}
+  .guided-kit{background:#f2e9dc;padding:clamp(1.1rem,2.8vw,2rem);border-radius:1.1rem}
+  .guided-kit h2{font-family:Georgia,serif;font-size:1.7rem;margin:.15rem 0 1.5rem}
+  .guided-kit h3{font-size:1.2rem;margin-top:2rem}
+  .guided-kit ul{padding-left:1.2rem;line-height:1.65}
+  .guided-ingredients li{margin-bottom:1rem}
+  .guided-ingredients strong,.guided-ingredients span,.guided-ingredients small{display:block}
+  .guided-ingredients strong{font-size:1.05rem}
+  .guided-ingredients small{color:#675c51;margin-top:.25rem}
+  .guided-method{min-width:0}
+  .guided-method>p{line-height:1.65}
+  .guided-steps{margin:1.5rem 0;padding-left:0;list-style:none;display:grid;gap:1.4rem}
+  .guided-step{padding:clamp(1.1rem,2.5vw,2rem);border:1px solid #ddd0c0;border-radius:1rem;background:#fffdf9;scroll-margin-top:6rem}
+  .guided-step header span{font-size:.82rem;font-weight:750;color:#7c5930}
+  .guided-step h3{font-family:Georgia,serif;font-size:clamp(1.3rem,2vw,1.7rem);margin:.6rem 0 1.2rem}
+  .guided-actions{margin:0 0 1rem;padding-left:1.45rem;line-height:1.75}
+  .guided-actions li{margin-bottom:.7rem}
+  .guided-check{background:#f6efe4;border-radius:.6rem;padding:.85rem 1rem;line-height:1.65}
+  .guided-step details{border-top:1px solid #e6d9ca;padding:.9rem 0;line-height:1.6}
+  .guided-step summary{cursor:pointer;font-weight:700;min-height:28px}
+  .guided-finish{margin-top:3rem;padding:clamp(1.2rem,3vw,2.7rem);border-radius:1.2rem;background:#f1e8d8;line-height:1.75}
+  .guided-finish li{margin-bottom:.45rem}
+  @media(max-width:840px){.guided-hero,.guided-layout{grid-template-columns:1fr}.guided-kit{order:0}.guided-method{order:1}.guided-hero{gap:1.4rem}.guided-ingredient-image img{height:clamp(200px,65vw,390px)}}
+  @media(prefers-reduced-motion:reduce){.guided-main *{scroll-behavior:auto!important}}
+</style>

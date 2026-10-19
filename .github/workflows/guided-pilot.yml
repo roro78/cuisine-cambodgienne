@@ -1,0 +1,38 @@
+name: Guided tamarind pilot (no deployment)
+on:
+  push:
+    branches:
+      - feat/atelier-guide-sauce-tamarin-pilote-20261019
+  pull_request:
+    paths:
+      - "src/data/guidedWorkshops.ts"
+      - "src/pages/apprendre/pratique/**"
+      - "tests/guided-workshop-contract.test.mjs"
+      - ".github/workflows/guided-pilot.yml"
+permissions:
+  contents: read
+jobs:
+  isolated-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install --no-audit --no-fund
+      - name: Assert historical files unchanged
+        run: |
+          git diff --name-only origin/main...HEAD | tee /tmp/guided-files.txt
+          if grep -E '^(src/data/workshops.ts|src/data/workshopLearning.ts|src/data/workshop-audio/|src/pages/apprendre/index.astro|src/pages/apprendre/\[slug\].astro|src/components/WorkshopChapterPlayer.astro|src/scripts/workshopChapterPlayer.ts|src/data/socialCatalog.ts|public/audio/workshops/)' /tmp/guided-files.txt; then
+            echo "Historical atelier, audio player or social catalog changed: STOP"
+            exit 1
+          fi
+      - name: Test guided workshop editorial contract
+        run: node --test tests/guided-workshop-contract.test.mjs
+      - name: Typecheck
+        run: npm run check
+      - name: Build
+        run: npm run build
