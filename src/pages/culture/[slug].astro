@@ -98,7 +98,7 @@ const breadcrumbSchema = {
       </header>
 
       <figure class="culture-visual" data-parallax="0.06">
-        <img src={article.image} srcset={imageSrcSet(article.image, article.imageWidths)} sizes="(max-width: 900px) 100vw, 52vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} decoding="async" />
+        <img src={article.image} srcset={article.imageWidths.length ? imageSrcSet(article.image, article.imageWidths) : undefined} sizes="(max-width: 900px) 100vw, 52vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} decoding="async" />
         <figcaption>
           {article.slug === 'le-riz-symbole-de-vie-au-cambodge' ? (
             <>Rizières près de Siem Reap · Photo Dmitry A. Mottl, CC BY-SA 4.0 · <a href="https://commons.wikimedia.org/wiki/File:Cambodia%27s_rice_fields.jpg" target="_blank" rel="noreferrer">Source et licence</a></>
@@ -181,6 +181,7 @@ const breadcrumbSchema = {
 </BaseLayout>
 
 <style>
+  .culture-visual figcaption a{color:inherit;text-decoration:underline;text-underline-offset:.15em;font-size:inherit}
   .rice-photo-report{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:clamp(.8rem,2vw,1.5rem);margin:clamp(1.4rem,4vw,3rem) 0}
   .rice-photo-report figure,.rice-festival-photo{margin:0;min-width:0}
   .rice-photo-report img,.rice-festival-photo img{width:100%;height:clamp(15rem,33vw,23rem);object-fit:cover;border-radius:1rem;display:block}
