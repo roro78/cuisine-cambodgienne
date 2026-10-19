@@ -12,6 +12,8 @@ export interface CultureArticle {
   imageWidth: number;
   imageHeight: number;
   imageWidths: number[];
+  /** Illustration locale approuvée pour le catalogue social; distincte de la photo documentaire du carnet. */
+  socialImage?: string;
   gallery?: { image: string; imageAlt: string; caption: string; credit: string; source: string; width: number; height: number }[];
 }
 
@@ -82,6 +84,7 @@ export const cultureArticles: CultureArticle[] = [
         ]
       }
     ],
+    socialImage: '/images/cuisine/v17-table-meal-1600.jpg',
     image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Cambodia%27s_rice_fields.jpg/1280px-Cambodia%27s_rice_fields.jpg',
     imageAlt: 'Rizières verdoyantes près de Siem Reap, au Cambodge, avec des palmiers à l’horizon',
     imageWidth: 1280,
