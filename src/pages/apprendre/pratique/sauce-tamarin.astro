@@ -40,7 +40,7 @@ const breadcrumbSchema = {
           <div><dt>Technique</dt><dd>Préparer · goûter · rectifier</dd></div>
         </dl>
         {workshop.status !== 'validated' && <p class="guided-pilot" role="status">Recette de base validée par source publiée. La photographie du résultat et le nouvel audio Coral restent à produire et contrôler ; cet atelier est encore un pilote.</p>}
-        <a class="guided-start" href="#ingredients">Voir les ingrédients ↓</a>
+        <a class="guided-start" href="#ingredients">Commencer avec les ingrédients ↓</a>
       </div>
       <figure class="guided-ingredient-image">
         <img src={workshop.image} alt={workshop.imageAlt} width="1200" height="660" loading="eager" />
@@ -54,6 +54,19 @@ const breadcrumbSchema = {
       <p><strong>Source vérifiée :</strong> <a href={workshop.recipeSource.url} rel="noopener noreferrer" target="_blank">{workshop.recipeSource.title}</a> (consultée le 19 octobre 2026).</p>
       <details><summary>Autres références et périmètre de cette validation</summary><ul>{workshop.recipeSource.crossCheckUrls.map((url) => <li><a href={url} rel="noopener noreferrer" target="_blank">{new URL(url).hostname}</a></li>)}</ul><p>{workshop.recipeSource.scope}</p></details>
       <p>Vous allez d’abord fabriquer votre sauce à partir de la pulpe, puis découvrir comment le tamarin, le sucre et la sauce de poisson modifient son équilibre. L’exercice des quatre bols de la <a href={workshop.historyUrl}>leçon historique</a> est conservé, mais prend désormais place dans une préparation complète.</p>
+    </section>
+
+    <section class="guided-progress" aria-labelledby="guided-progress-title" data-guided-progress>
+      <div>
+        <p class="guided-eyebrow">Votre progression</p>
+        <h2 id="guided-progress-title">Une étape à la fois</h2>
+        <p>Préparez les ingrédients, effectuez chaque geste, puis cochez la case correspondante. La progression est temporaire et reste sur cet écran, sans inscription ni suivi de votre activité.</p>
+      </div>
+      <div class="guided-progress-indicator">
+        <output data-guided-count for="guided-stage-extraire guided-stage-filtrer guided-stage-base guided-stage-comparer guided-stage-finaliser guided-stage-servir" aria-live="polite" aria-atomic="true">0 étape sur 6 terminée</output>
+        <progress data-guided-meter max="6" value="0" aria-label="Progression dans les six étapes">0 sur 6</progress>
+        <a href="#etapes">Aller aux étapes ↓</a>
+      </div>
     </section>
 
     <div class="guided-layout">
@@ -76,7 +89,7 @@ const breadcrumbSchema = {
       <section class="guided-method" id="etapes" aria-labelledby="method-title">
         <p class="guided-eyebrow">Suivez les gestes dans l’ordre</p>
         <h2 id="method-title">Préparation guidée</h2>
-        <p>Chaque étape comporte une consigne, un signe de réussite et une solution en cas de difficulté. La narration Coral de cet atelier est en préparation : aucun ancien MP3 n’a été réaffecté artificiellement.</p>
+        <p>Chaque étape comporte une consigne mesurable, un signe de réussite et une solution de dépannage. La narration Coral sera ajoutée après contrôle ; les anciens MP3 restent réservés aux ateliers historiques.</p>
         <ol class="guided-steps">
           {workshop.steps.map((step, index) => (
             <li id={step.id} class="guided-step">
@@ -91,10 +104,11 @@ const breadcrumbSchema = {
                 <p><strong>Astuce :</strong> {step.tip}</p>
                 <p><strong>Si ça ne fonctionne pas :</strong> {step.recovery}</p>
               </details>
-              <details>
-                <summary>Lire le brouillon de narration</summary>
-                <p>{step.narrationDraft}</p>
-              </details>
+              <label class="guided-done" for={`guided-stage-${step.id}`}>
+                <input id={`guided-stage-${step.id}`} type="checkbox" data-guided-done />
+                <span>J’ai terminé cette étape</span>
+              </label>
+              {index < workshop.steps.length - 1 && <a class="guided-next" href={`#${workshop.steps[index + 1].id}`}>Étape suivante →</a>}
             </li>
           ))}
         </ol>
@@ -113,6 +127,26 @@ const breadcrumbSchema = {
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   <SiteFooter />
 </BaseLayout>
+<script>
+  const root = document.querySelector<HTMLElement>('[data-guided-progress]');
+  if (root) {
+    const checkboxes = Array.from(document.querySelectorAll<HTMLInputElement>('[data-guided-done]'));
+    const output = root.querySelector<HTMLOutputElement>('[data-guided-count]');
+    const meter = root.querySelector<HTMLProgressElement>('[data-guided-meter]');
+    const update = () => {
+      const done = checkboxes.filter((checkbox) => checkbox.checked).length;
+      if (meter) {
+        meter.max = checkboxes.length;
+        meter.value = done;
+      }
+      if (output) {
+        output.textContent = `${done} étape${done > 1 ? 's' : ''} sur ${checkboxes.length} terminée${done > 1 ? 's' : ''}`;
+      }
+    };
+    checkboxes.forEach((checkbox) => checkbox.addEventListener('change', update));
+    update();
+  }
+</script>
 <style>
   .guided-main{max-width:1240px;margin:0 auto;padding:clamp(1.2rem,3vw,3rem) clamp(1rem,3vw,2rem) 5rem;color:#302a24}
   .guided-main a{color:#704413;text-underline-offset:.18em}
@@ -151,8 +185,20 @@ const breadcrumbSchema = {
   .guided-check{background:#f6efe4;border-radius:.6rem;padding:.85rem 1rem;line-height:1.65}
   .guided-step details{border-top:1px solid #e6d9ca;padding:.9rem 0;line-height:1.6}
   .guided-step summary{cursor:pointer;font-weight:700;min-height:28px}
+  .guided-progress{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(220px,.7fr);gap:2rem;align-items:center;margin:1.4rem 0 2.6rem;padding:1.2rem clamp(1rem,3vw,2rem);border:1px solid #d2c0a8;background:#fffaf2;border-radius:1.1rem}
+  .guided-progress h2{font:400 clamp(1.5rem,2vw,2rem)/1.2 Georgia,serif;margin:.3rem 0}
+  .guided-progress p{line-height:1.65;margin-bottom:0}
+  .guided-progress-indicator{display:grid;gap:.8rem}
+  .guided-progress-indicator output{font-size:1rem;font-weight:700}
+  .guided-progress-indicator progress{display:block;width:100%;height:1rem;accent-color:#715020}
+  .guided-progress-indicator a{font-weight:700}
+  .guided-done{margin:1rem 0 .3rem;display:flex;align-items:center;gap:.8rem;min-height:44px;border-top:1px solid #e6d9ca;padding-top:.7rem;cursor:pointer;font-weight:700}
+  .guided-done input{width:1.4rem;height:1.4rem;accent-color:#715020;flex:none}
+  .guided-next{display:inline-flex;min-height:44px;align-items:center;font-weight:700}
+  .guided-main a:not(.guided-start){text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.2em}
+  .guided-main :is(a,button,summary,input):focus-visible{outline:3px solid #a2661e;outline-offset:3px}
   .guided-finish{margin-top:3rem;padding:clamp(1.2rem,3vw,2.7rem);border-radius:1.2rem;background:#f1e8d8;line-height:1.75}
   .guided-finish li{margin-bottom:.45rem}
-  @media(max-width:840px){.guided-hero,.guided-layout{grid-template-columns:1fr}.guided-kit{order:0}.guided-method{order:1}.guided-hero{gap:1.4rem}.guided-ingredient-image img{height:clamp(200px,65vw,390px)}}
+  @media(max-width:840px){.guided-hero,.guided-layout,.guided-progress{grid-template-columns:1fr}.guided-kit{order:0}.guided-method{order:1}.guided-hero{gap:1.4rem}.guided-ingredient-image img{height:clamp(200px,65vw,390px)}}
   @media(prefers-reduced-motion:reduce){.guided-main *{scroll-behavior:auto!important}}
 </style>

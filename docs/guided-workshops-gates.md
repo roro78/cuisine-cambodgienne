@@ -50,3 +50,9 @@ La validation documentaire G1 ne déclenche ni fusion, ni déploiement, ni créa
 ## Lot d'isolation suivant
 
 Le 19 octobre, le correctif du test « Eau potable » a été préparé : le test vérifie désormais un libellé présent et la quantité au lieu de la longueur artificielle du libellé. Les durées affichées sont alignées sur les six étapes et couvertes par un contrôle. Le script d'export Coral reste **hors ligne**, sans accès au service TTS et sans MP3 généré. Voir `docs/atelier-pratique-tamarin-coral.md`.
+
+## UX et tests navigateur indépendants — 19 octobre
+
+Le parcours pilote comporte maintenant six validations manuelles par case à cocher, un indicateur de progression limité à la visite en cours, des liens d'étape et des astuces dépliables accessibles au clavier. Les scripts de narration restent dans le modèle exportable Coral, **jamais dans le HTML de visite**. Aucun stockage de progression, réseau supplémentaire ni modification des lecteurs existants.
+
+La CI dédiée exécute désormais le smoke-test Chromium à 360/390/768/1440 px : absence de débordement horizontal, affichage de la source, passage des étapes, conseils, compteur, image d'ingrédient, `noindex`, aucune lecture parasite d'ancien MP3. Le résultat doit être constaté sur GitHub ; la documentation ne préjuge pas du verdict.

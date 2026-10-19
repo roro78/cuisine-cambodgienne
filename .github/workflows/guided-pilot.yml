@@ -9,6 +9,7 @@ on:
       - "src/pages/apprendre/pratique/**"
       - "tests/guided-workshop-contract.test.mjs"
       - "scripts/export-guided-workshop-narration.mjs"
+      - "tests/guided-workshop-browser.test.mjs"
       - ".github/workflows/guided-pilot.yml"
 permissions:
   contents: read
@@ -39,3 +40,10 @@ jobs:
         run: npm run check
       - name: Build
         run: npm run build
+      - name: Setup Chrome for responsive pilot browser tests
+        id: chrome
+        uses: browser-actions/setup-chrome@v2
+      - name: Browser regression for guided tamarind (mobile and desktop)
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/guided-workshop-browser.test.mjs
