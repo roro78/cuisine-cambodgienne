@@ -2,6 +2,8 @@
 
 **Version 1.0 — 20 octobre 2026.** Ce document est la source de vérité pour toute **nouvelle création ou refonte** d'un atelier de Cuisine du Cambodge. Il n'homologue pas rétroactivement les six anciennes capsules de gestes. Les recettes historiques restent inchangées.
 
+> **Complément obligatoire V2 (21 octobre 2026) — voix, script et navigation :** lire [Référentiel permanent de narration immersive V2](./REFERENTIEL-NARRATION-IMMERSIVE-V2.md) **avant de rédiger ou générer un nouvel atelier MP3**. Le [prompt opérationnel de reprise des cinq ateliers](./PROMPT-CONTINUATION-CINQ-ATELIERS-V2.md) applique ce contrat. **En cas de divergence sur la durée de l'introduction, la longueur des scripts, les quantités parlées ou les interactions MP3/page, le référentiel V2 fait foi ; les six phases et les exigences de sécurité, sources, médias, droits et publication du présent document restent en vigueur.** Le Lok Lak V2 enregistré et validé à l'écoute est l'étalon, mais pas une autorisation de commercialisation.
+
 ## La promesse d'un véritable atelier
 
 Un atelier est une **préparation que le visiteur réalise de bout en bout** : il part des ingrédients, organise son plan de travail, apprend un geste, vérifie le résultat et termine avec quelque chose de concret à servir ou utiliser. Une astuce, une expérience isolée ou une liste de conseils n'est pas un atelier, même si elle comporte une vidéo ou un MP3.
@@ -41,7 +43,7 @@ La phase 4 **n'impose pas une cuisson** si la recette est sans cuisson (ex. kroe
 ## Contrat du MP3 — même atelier, même référence éditoriale
 
 - **Sept chapitres** : une introduction suivie des six phases **dans le même ordre**, identifiées par les mêmes IDs. C'est la trame standard pour les nouveaux enregistrements. Les anciens MP3 à cinq chapitres restent des **capsules techniques historiques**, et ne doivent pas être renommés en nouveaux guides de recette.
-- **Introduction (20–45 s indicatif)** : résultat concret promis, durée indicative, sécurité utile, incitation à préparer les ingrédients et à **mettre en pause** pendant le geste.
+- **Introduction des anciennes capsules (20–45 s indicatif)** ; **pour les nouveaux ateliers V2, la longueur est dictée par la mise en place complète**, conforme au référentiel immersif V2. Dans tous les cas : résultat concret promis, orientation, ingrédients à mesurer sur la fiche, matériel annoncé, sécurité utile, incitation à préparer les ingrédients et à **mettre en pause** pendant le geste.
 - **Chapitres pratiques** : une invitation à agir, une raison culinaire, **un repère sensoriel observable**, un piège fréquent et/ou une correction, puis une **pause à faire par l'utilisateur**. Le MP3 n'est ni la lecture de l'article ni un métronome ; le passage de chapitre n'est pas prétendument interactif.
 - **Narration tirée du même modèle** que la fiche : ID, quantités et titres cohérents. Pas de copier-coller intégral des actions écrites. Ne pas inventer de chronologie ni de dosage différent.
 - **Voix** : voix féminine française Coral utilisée par l'infrastructure existante tant que ce choix est maintenu ; aucun secret de backend dans le dépôt et aucune mention du fournisseur dans l'interface publique.
