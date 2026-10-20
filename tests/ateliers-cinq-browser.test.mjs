@@ -46,7 +46,8 @@ try{
           await chapterOne.click();
           assert.equal(await chapterOne.getAttribute('aria-current'),'true','Selecting phase updates the active audio chapter');
           assert.equal(await page.locator('[data-cooking-chapter]').first().getAttribute('aria-current'),null,'Introduction is deselected');
-          assert.ok((await page.locator('[data-cooking-transcript]').innerText()).length>90,'Chapter transcription remains accessible');
+          await page.locator('.guided-cooking-transcript summary').click();
+          assert.ok((await page.locator('[data-cooking-transcript]').innerText()).length>90,'Opened chapter transcription remains accessible');
           if(width===360){
             const url=await page.locator('[data-cooking-audio]').getAttribute('src');
             const audioResponse=await page.request.get(base+url,{headers:{Range:'bytes=0-1023'}});
