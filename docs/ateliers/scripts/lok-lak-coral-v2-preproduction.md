@@ -1,6 +1,6 @@
 # Atelier Lok Lak — script Coral V2, préproduction
 
-**Statut :** SCRIPT INTÉGRAL RÉDIGÉ — **PAS D'ENREGISTREMENT, PAS DE VALIDATION ACOUSTIQUE, PAS DE PUBLICATION**.  
+**Statut :** SCRIPT V2 APPROUVÉ SUR LE PRINCIPE PAR L'ÉDITEUR (MARINADE AVANT SAISIE) — **PAS ENCORE D'ENREGISTREMENT NI DE VALIDATION ACOUSTIQUE, PAS DE PUBLICATION**.  
 **Source de recette inchangée :** `src/data/recipes.ts`, slug `lok-lak`.  
 **Source de phases :** `src/data/atelier-recette-guides/lok-lak.json`.  
 **Référentiel :** PR #90 — intro + six phases dans le même ordre.  
@@ -20,126 +20,112 @@
 
 ## CHAPITRE 0 — INTRO
 
-Bonjour et bienvenue dans notre atelier Cuisine du Cambodge !
+Bonjour, et bienvenue dans notre atelier Cuisine du Cambodge !
 
-Aujourd'hui, on prépare ensemble un Lok Lak : du bœuf joliment saisi, des légumes frais et cette petite sauce au citron vert et au poivre qui réveille vraiment le plat.
+Aujourd'hui, on prépare un délicieux Lok Lak. On va mariner des cubes de bœuf, les saisir en petites fournées, puis les servir avec des crudités bien fraîches et une petite sauce au citron vert et au poivre de Kampot.
 
-Ce que j'aimerais vous montrer, c'est comment obtenir de belles faces dorées sans dessécher la viande, et comment tout organiser pour servir le Lok Lak pendant qu'il est encore bien chaud.
+Vous allez voir, les secrets de ce plat, ce sont des morceaux réguliers, une marinade bien répartie, et surtout une poêle qui reste suffisamment chaude. Et je vous partagerai mes petites astuces si la viande rend de l'eau ou si la sauce colore trop vite.
 
-Avant de commencer, choisissez votre nombre de convives sur la fiche et préparez les quantités qui y sont indiquées. Pas besoin de retenir les chiffres à l'oreille : moi, je vais vous accompagner dans les gestes, les cuissons et les astuces.
+Avant de démarrer, choisissez votre nombre de convives sur la fiche, puis préparez les quantités indiquées : elles changent selon les personnes à table. Moi, dans l'audio, je vous guiderai sur les gestes et les temps, sans vous imposer de grammages.
 
-Vous pourrez mettre l'enregistrement en pause à votre rythme. Quand vous serez prêt, relancez simplement la lecture, et on continuera ensemble.
+Il faudra compter environ vingt minutes de marinade au réfrigérateur. On profitera de ce temps pour préparer les légumes et le condiment. Vous êtes libre de mettre l'enregistrement en pause : je continuerai simplement l'explication et vous relancerez la lecture quand vous serez prêt.
 
-Allez, on s'installe !
+Allez, on cuisine ensemble !
 
 ## CHAPITRE 1 — installer — PRÉPARER SON POSTE
 
-Pour ce Lok Lak, prenez une grande poêle ou un wok adapté à une cuisson vive, une spatule, un couteau et une planche à découper. Prévoyez deux petits bols : un pour la sauce qui va enrober le bœuf, un autre pour le citron et le poivre que l'on servira à table. Ajoutez des assiettes propres, et, si vous en avez un, un thermomètre de cuisine.
+Commençons par installer votre petit coin de cuisine. Prenez une grande poêle ou un wok adapté à la saisie, une spatule, une planche à découper, un couteau, un saladier pour la viande, un petit bol pour le condiment, et autant d'assiettes propres que nécessaire. Prévoyez aussi du papier absorbant, et un thermomètre alimentaire si vous en avez un.
 
-Sur votre plan de travail, disposez le bœuf, la sauce soja, la sauce d'huître, le sucre, l'ail, les citrons verts et le poivre. Gardez la tomate, le concombre et la salade à part. Toutes les quantités sont sur votre fiche, selon le nombre de personnes pour lequel vous cuisinez.
+Regardez maintenant les ingrédients préparés selon votre fiche : le bœuf, la sauce soja, la sauce d'huître, le sucre et l'ail serviront à notre marinade. Le citron vert et le poivre de Kampot sont réservés au condiment. La tomate, le concombre et la salade apporteront le contraste frais au moment de servir. Selon votre poêle, gardez aussi un peu d'huile neutre à portée de main, comme indiqué séparément sur la fiche de cet atelier.
 
-Petite précaution avant de démarrer : la sauce soja et la sauce d'huître peuvent contenir des allergènes. Vérifiez les étiquettes si quelqu'un à table est concerné.
+Deux petits détails pratiques : vérifiez les étiquettes des sauces si vous avez des allergies, et gardez les légumes à manger crus bien séparés du bœuf cru. On veut cuisiner tranquillement, sans risquer de contaminer les crudités.
 
-Et surtout, réservez une surface propre aux crudités. La viande crue ne doit pas entrer en contact avec les légumes que l'on mangera sans cuisson.
-
-Ne chauffez pas encore la poêle. Vous voyez, pour une saisie rapide, tout se joue déjà dans cette préparation : quand le feu sera allumé, on n'aura plus envie de chercher le moindre bol.
-
-Prenez le temps d'installer tranquillement tout votre matériel. Vous pouvez mettre en pause ; on reprend quand le plan de travail est prêt.
+La poêle reste éteinte pour l'instant. Si tous les bols, les ingrédients et les ustensiles sont prêts, parfait ! Sinon, vous pouvez faire pause le temps de vous organiser. Je vous retrouve pour la découpe et la marinade.
 
 ## CHAPITRE 2 — preparer — TAILLER LE BŒUF ET LES CRUDITÉS
 
-On passe aux découpes.
+On s'occupe du bœuf maintenant. Sortez-le du réfrigérateur juste au moment de le préparer, et placez-le sur votre planche réservée à la viande.
 
-Commençons par les légumes, sur une planche bien propre. Lavez la tomate et le concombre, puis rincez les feuilles de salade. Égouttez-les soigneusement. Pour la tomate, faites de belles tranches ou des quartiers qui tiendront sur l'assiette. Pour le concombre, préférez des rondelles ou des demi-rondelles assez fines pour être agréables à croquer, sans devenir transparentes.
+Coupez-le en cubes réguliers, autour de deux à trois centimètres. Regardez leur taille : l'idée, c'est que chaque morceau puisse cuire à peu près au même rythme. Si vous voyez de gros nerfs, retirez-les avec précaution. Et s'il reste un cube vraiment plus gros que les autres, recoupez-le. Vous n'avez pas besoin d'aller vite ; une découpe régulière vous simplifiera toute la cuisson.
 
-Séchez délicatement les feuilles de salade. Voilà une petite astuce toute simple : des crudités bien égouttées restent croquantes, et surtout, elles ne diluent pas les saveurs du bœuf.
+Dans un saladier, réunissez la sauce soja, la sauce d'huître, le sucre et l'ail finement haché, avec les quantités déjà mesurées sur la fiche. Mélangez avec une cuillère, puis ajoutez vos cubes de bœuf. Remuez délicatement pour que chaque face soit enrobée : on veut une fine couche d'assaisonnement autour de la viande, pas simplement une flaque de sauce au fond du saladier.
 
-Réservez-les dans un plat propre, au frais si vous ne servez pas tout de suite.
+Couvrez le récipient et placez-le au réfrigérateur pour environ vingt minutes. Je préfère vous le faire faire au frais : c'est plus sûr que de laisser de la viande crue attendre sur le plan de travail, surtout si votre cuisine est chaude.
 
-Maintenant, le bœuf. Utilisez une planche réservée à la viande, ou nettoyez parfaitement celle des légumes avant de continuer. Découpez votre morceau en cubes réguliers, d'environ deux à trois centimètres, en tenant compte de son épaisseur. Il vaut mieux des morceaux de taille comparable que de petits cubes mélangés à de très gros : sinon, ils ne cuiront pas au même rythme.
+Petite astuce : n'essayez pas de sécher ou de rincer le bœuf après l'avoir mariné. Nous aurons plutôt besoin de bien répartir les morceaux dans la poêle, sans verser d'un seul coup une grande quantité de marinade. Et ne goûtez jamais la marinade une fois qu'elle a touché la viande crue.
 
-Retirez les éventuels gros morceaux de nerf. Tamponnez légèrement la surface avec du papier absorbant propre : une viande trop humide saisit moins bien.
-
-Répartissez les cubes en petites portions, adaptées à la taille de votre poêle. Si vous cuisinez pour beaucoup de monde, vous ferez davantage de fournées ; l'important, c'est de ne jamais entasser les morceaux.
-
-Et là, regardez votre plan de travail : légumes frais d'un côté, viande préparée de l'autre, tout bien séparé. C'est exactement ce qu'on veut.
-
-Vous pouvez mettre la lecture en pause pour finir les découpes. Je vous retrouve pour les deux sauces.
+Voilà, votre viande se parfume tranquillement. Mettez la lecture en pause si vous avez besoin de terminer cette préparation. Quand vous revenez, on profite de ce temps de repos pour les crudités et notre condiment.
 
 ## CHAPITRE 3 — assembler — LES DEUX SAUCES, DEUX RÔLES DIFFÉRENTS
 
-Nous allons préparer deux petits bols, mais attention, ils n'ont pas du tout le même rôle.
+Pendant que le bœuf marine au frais, on va préparer toute la fraîcheur du Lok Lak.
 
-D'abord, hachez l'ail finement. Dans le premier bol, versez la sauce soja, la sauce d'huître et le sucre, en utilisant les quantités que vous avez mesurées sur la fiche. Ajoutez l'ail, puis mélangez jusqu'à ce que le sucre commence à se dissoudre.
+Prenez d'abord vos feuilles de salade, la tomate et le concombre. Lavez-les soigneusement sur une surface propre, avec un couteau et une planche qui n'ont pas touché le bœuf cru. Pour la tomate, faites de belles tranches ou des quartiers. Pour le concombre, des rondelles ou des demi-rondelles : ni trop épaisses, ni tellement fines qu'elles deviennent toutes molles. Égouttez les feuilles de salade, puis séchez-les doucement.
 
-Dans notre version de l'atelier, ce mélange reste de côté : on l'ajoutera seulement en fin de cuisson pour enrober la viande. C'est important, parce que le sucre et l'ail peuvent brûler rapidement dans une poêle trop chaude. Ne le versez donc pas encore sur le bœuf.
+Pourquoi j'insiste sur ce détail ? Parce que les crudités ne sont pas là seulement pour faire joli. Elles doivent apporter du croquant et de la fraîcheur. Si elles sont pleines d'eau, elles vont aussi diluer les saveurs de notre assiette. Réservez-les donc dans un plat propre.
 
-Le second bol, c'est notre condiment de table. Pressez les citrons verts en retirant les pépins. Ajoutez le poivre noir de Kampot fraîchement moulu, puis mélangez. On cherche quelque chose de vif, très parfumé, qui réveillera la viande au moment de manger. Goûtez ce condiment tant qu'il est resté parfaitement séparé de la viande crue.
+Passons au condiment. Pressez les citrons verts, retirez les pépins, puis ajoutez le poivre noir de Kampot fraîchement moulu. Mélangez dans un petit bol. Sentez ce parfum : on recherche une acidité fraîche et un poivre bien présent, qui viendront réveiller le bœuf quand on mangera.
 
-Au fait, le poivre de Kampot vient du Cambodge et bénéficie d'une indication géographique protégée. C'est un ingrédient qui mérite qu'on le moud au dernier moment : son parfum fait une vraie différence.
+Le poivre de Kampot est un produit emblématique du Cambodge, protégé par une indication géographique. Le moudre juste avant le service permet de mieux apprécier ses arômes.
 
-Et voici mon conseil : gardez toujours le bol citron–poivre à part. Ce n'est pas la sauce de cuisson. Chacun pourra ainsi en ajouter à son goût sans masquer le travail de saisie.
-
-Voilà, les deux sauces sont prêtes. Le bœuf est découpé, les légumes attendent, et maintenant, on va passer à la partie la plus technique du Lok Lak.
+Et surtout, gardez bien ce condiment à part : on ne le met pas dans la marinade ni dans la poêle. Si votre marinade n'a pas encore reposé une vingtaine de minutes, profitez-en pour nettoyer le plan de travail et préparer vos assiettes. Vous pouvez mettre pause et revenir quand ce temps est écoulé. Ensuite, place à la saisie !
 
 ## CHAPITRE 4 — maitriser — UNE BELLE SAISIE SANS FAIRE BOUILLIR LE BŒUF
 
-Allez, on passe à la poêle !
+Allez, maintenant que la viande a mariné, on passe à la partie la plus importante : la saisie.
 
-Utilisez une grande poêle antiadhésive adaptée à la saisie. Faites-la chauffer progressivement, sans la laisser fumer : ce qui compte ici, c'est une chaleur bien maîtrisée et de petites fournées. Si vos morceaux commencent à accrocher, baissez légèrement le feu et décollez-les doucement à la spatule, sans les déchirer.
+Sortez le bœuf du réfrigérateur juste avant la cuisson. Égouttez légèrement les cubes au-dessus du saladier pour éviter de verser toute la marinade d'un seul coup dans la poêle. N'utilisez pas ensuite le liquide de marinade crue comme une sauce froide : il a été au contact de la viande. Mettez-le de côté pour l'éliminer, plutôt que d'en faire une sauce de table.
 
-Placez une petite portion de viande dans la poêle. Écoutez : on doit entendre un vrai grésillement. Laissez les morceaux quelques instants tranquilles pour qu'une face se colore. Ensuite, retournez-les et poursuivez la cuisson pour faire dorer les autres côtés.
+Chauffez progressivement votre poêle adaptée à une cuisson vive. Si le revêtement le nécessite, ajoutez un peu d'huile neutre, en suivant la quantité prévue sur la fiche de l'atelier. Il ne faut pas une piscine d'huile, seulement un fond légèrement graissé. Et ne laissez jamais une poêle vide fumer fortement.
 
-Pourquoi je vous conseille de travailler en petites portions ? Parce que si on remplit trop la poêle, sa température descend. La viande rend de l'eau et, au lieu de saisir, elle se met à mijoter dans son jus. On perd la belle coloration.
+Déposez une première petite portion de cubes dans la poêle, sans les entasser. Écoutez : un bon grésillement, c'est ce qu'on cherche. Laissez une face prendre de la couleur, puis retournez les morceaux pour faire dorer les autres côtés. Comme il y a du sucre dans la marinade, surveillez bien : on veut une belle coloration, pas une croûte noire et amère.
 
-Si ça vous arrive, ce n'est pas grave. Retirez une partie des morceaux avec un ustensile propre, laissez l'excès de liquide s'évaporer, puis reprenez avec moins de viande à la fois. On peut très souvent retrouver une jolie saisie en adaptant la taille des fournées.
+Pourquoi plusieurs fournées ? Si vous ajoutez toute la viande d'un coup, la poêle refroidit et le bœuf peut rendre beaucoup d'eau. Au lieu de dorer, il se met à bouillir dans son jus.
 
-Comptez seulement quelques minutes par fournée, souvent autour de deux à trois minutes pour commencer à colorer, mais ne prenez surtout pas ce chiffre comme une garantie de cuisson : l'épaisseur des cubes, votre poêle et la température changent tout.
+Si cela vous arrive, pas de panique. Retirez quelques morceaux dans un plat propre, laissez l'humidité de la poêle s'évaporer et reprenez avec une plus petite quantité. Vous pouvez aussi ajuster légèrement le feu. C'est une erreur fréquente et on peut souvent retrouver une meilleure coloration au lot suivant.
 
-Transférez les morceaux dans un plat propre, jamais sur l'assiette qui contenait la viande crue. Laissez la poêle reprendre sa chaleur et recommencez autant de fois que nécessaire.
+Continuez jusqu'à ce que toutes les portions soient saisies. Quelques minutes suffisent parfois pour colorer les morceaux, mais attention : la durée dépend de leur taille et de la puissance du feu. Elle ne garantit pas la cuisson à cœur.
 
-Un point important : la couleur dorée ne suffit pas à prouver que le bœuf est cuit à cœur. Pour du bœuf découpé dans un morceau entier, la recommandation USDA de référence est une température interne d'au moins soixante-trois degrés, suivie de trois minutes de repos. Vérifiez les cubes les plus épais avec un thermomètre adapté. Si vous utilisez une viande hachée ou attendrie mécaniquement, les précautions sont différentes : vérifiez-les avant de cuisiner.
+Pour du bœuf issu d'un morceau entier, la référence de sécurité de l'USDA est au moins soixante-trois degrés à cœur, suivis de trois minutes de repos. Vérifiez avec un thermomètre adapté, notamment sur les cubes les plus épais. La couleur extérieure seule ne suffit pas. Si la viande est hachée ou attendrie mécaniquement, les règles sont différentes.
 
-Prenez maintenant le temps de saisir vos portions et de contrôler leur cuisson. Mettez votre guide en pause si nécessaire ; quand la viande sera prête, nous allons la napper de sauce.
+Prenez le temps de terminer vos fournées et de contrôler la cuisson. Faites pause si nécessaire. Ensuite, on va vérifier l'enrobage et finir notre Lok Lak sans brûler la marinade.
 
 ## CHAPITRE 5 — rectifier — ENROBER SANS BRÛLER
 
-On y est presque !
+Voilà, votre bœuf est saisi. On va maintenant regarder ce qu'il s'est passé avec la marinade.
 
-Remettez le bœuf saisi dans la poêle, ou dans une poêle propre si des sucs ont brûlé. Faites attention aux projections, surtout si le fond est encore très chaud.
+Rassemblez si nécessaire les morceaux dans la poêle, par petites portions selon sa taille, et remuez brièvement. La sauce qui enrobe déjà la viande doit chauffer et former une pellicule brillante sur les cubes. Vous voyez, on n'a plus besoin de verser un deuxième bol de sauce à la fin : l'assaisonnement était déjà sur le bœuf avant la cuisson.
 
-Prenez maintenant le premier bol, celui contenant la sauce soja, la sauce d'huître, le sucre et l'ail. Versez ce mélange sur la viande. Remuez pour enrober les cubes sur toutes leurs faces, juste le temps que la sauce chauffe et devienne brillante.
+Regardez le fond de la poêle. S'il y a un peu de jus, laissez-le réduire doucement en remuant, jusqu'à ce qu'il accroche légèrement à la viande. En revanche, si la sauce noircit ou sent le brûlé, retirez immédiatement la poêle du feu. Avec le sucre et l'ail, ça peut arriver très vite. Ne grattez pas un fond complètement brûlé pour le mélanger au plat.
 
-Regardez bien sa texture. Elle doit former une fine pellicule sur le bœuf, pas une grande flaque au fond de la poêle. Si elle reste un peu liquide, laissez-la réduire brièvement tout en remuant, en surveillant le feu. En revanche, si elle fonce trop vite ou commence à sentir le brûlé, retirez aussitôt la poêle du feu : le sucre ne pardonne pas une réduction trop longue.
+Si la viande a rendu trop d'eau, rassurez-vous : ce n'est pas forcément raté. Évaporez l'excès d'humidité sans prolonger indéfiniment la cuisson du bœuf, puis servez ce qui est prêt. La prochaine fois, faites simplement des fournées plus petites.
 
-Pas besoin d'ajouter le condiment au citron maintenant : il sera bien meilleur servi séparément, avec le poivre qui garde tout son parfum.
+Et surtout, ne réutilisez pas telle quelle la marinade crue restée dans le saladier. Elle doit être jetée, sauf si elle est ensuite portée à une véritable ébullition complète dans une préparation séparée ; pour notre atelier, nous n'en avons pas besoin.
 
-Vérifiez une dernière fois que la viande a atteint un niveau de cuisson sûr. Respectez le repos nécessaire avant la dégustation lorsque vous utilisez la référence du bœuf issu d'un morceau entier. Ne goûtez jamais une sauce susceptible d'avoir touché de la viande insuffisamment cuite.
+Avant de finir, assurez-vous que la viande a atteint une cuisson sûre et respectez le repos recommandé pour le type de morceau utilisé. Notre repère visuel, c'est un bœuf coloré, légèrement brillant, avec un enrobage qui ne brûle pas.
 
-Le bon résultat ? De petits morceaux bien colorés, nappés d'une sauce brillante, sans excès de liquide et sans goût de brûlé.
-
-On coupe le feu. Place au dressage !
+Ça sent bon ? Super ! On coupe le feu, et on va dresser tout ça.
 
 ## CHAPITRE 6 — terminer — DRESSER ET DÉGUSTER
 
-Et voilà, notre Lok Lak prend forme !
+Et voilà, on arrive au moment que j'adore : le dressage.
 
-Sur vos assiettes propres, disposez les feuilles de salade. Ajoutez les tranches de tomate et de concombre pour apporter de la fraîcheur. Répartissez ensuite le bœuf encore chaud, de préférence sans détremper les crudités avec la sauce.
+Prenez vos assiettes propres. Installez d'abord les feuilles de salade, puis ajoutez vos tranches de tomate et de concombre. L'idée, c'est de garder les légumes frais et croquants. Répartissez ensuite le bœuf mariné et bien saisi à côté, sans arroser toutes les crudités avec le jus de cuisson.
 
-Posez le petit bol de citron vert et de poivre de Kampot à table. Je vous conseille de goûter d'abord une bouchée de bœuf telle quelle, puis une seconde avec une petite touche de condiment. Vous sentirez tout de suite le contraste entre la saveur chaude et généreuse de la viande et le côté frais, acidulé, poivré.
+Présentez le condiment citron vert–poivre de Kampot à part. Goûtez une première bouchée de bœuf, puis une autre avec une petite touche de citron et de poivre. Vous sentirez le contraste : la viande bien assaisonnée et chaude, puis cette note vive qui réveille le tout.
 
-C'est aussi ça que j'aime dans ce plat : il ne repose pas sur une liste interminable d'ingrédients, mais sur quelques gestes bien faits et des saveurs qui se répondent.
+Et vous voyez, ce Lok Lak vous a appris beaucoup plus qu'à suivre une recette. Vous avez préparé une marinade, taillé la viande de façon régulière, organisé les ingrédients pour cuisiner sereinement, puis maîtrisé une saisie en petites fournées. Tous ces gestes, vous pourrez les réutiliser dans d'autres plats.
 
-Aujourd'hui, vous avez surtout appris trois choses : préparer tous les éléments avant de chauffer la poêle, saisir sans l'encombrer et n'ajouter la sauce de cuisson qu'au bon moment. Ce sont des gestes que vous pourrez réutiliser dans beaucoup d'autres recettes.
+Si la première fournée n'était pas parfaite, ce n'est pas grave : l'important, c'est d'avoir compris ce qu'il fallait observer et comment corriger. C'est comme ça qu'on progresse en cuisine.
 
-Votre Lok Lak est prêt. J'espère que vous avez pris plaisir à le préparer avec moi. Servez sans attendre, profitez-en bien… et surtout, bon appétit !
+Merci d'avoir partagé cet atelier avec moi. J'espère que vous allez vous régaler… à très bientôt, et bon appétit !
 
 ---
 
 ## Revue éditoriale avant TTS — bloquants et actions
 
-1. **Écart culinaire réel** : les références cambodgiennes vérifiées font généralement mariner le bœuf avant cuisson ; la recette canonique choisit une sauce ajoutée en fin de saisie. Cette variante est rendue explicite dans le script. Si une recette de référence plus classique est exigée, créer une version supplémentaire validée, sans modifier les recettes historiques.
-2. **Ingrédients absents de la recette historique** : matière grasse de cuisson et sel du condiment figurent dans plusieurs références. Cette version conserve les proportions d'origine, et exige une poêle antiadhésive adaptée. Une variante utilisant de l'huile ou du sel doit être documentée séparément, sans ajout silencieux. **La méthode doit être testée en cuisine avant enregistrement et publication.**
+1. **Décision éditoriale actée :** marinade bœuf + soja + sauce d'huître + sucre + ail avant saisie, environ vingt minutes au réfrigérateur. La recette historique du site conserve sa version différente sans modification.
+2. **Huile de cuisson explicitement déclarée à part :** la fiche atelier mentionne une petite quantité d'huile neutre facultative suivant la poêle, comme complément pédagogique distinct de la recette historique ; elle n'est pas introduite silencieusement dans le catalogue.
 3. **Sélecteur de convives** : non présent sur les nouvelles pages examinées dans la PR #92 ; à implémenter ou raccorder avant publication. Vérifier séparément les champs d'ingrédients `scalable:false` mal structurés dans la recette historique, sans modifier ce fichier.
 4. **Suivi page/audio** : le composant `CookingWorkshopAudio.astro` active les chapitres et la transcription mais **ne fait pas défiler vers la grande étape**. Réutiliser avec adaptation la logique facultative de `WorkshopChapterPlayer.astro`, sans toucher aux anciens ateliers.
 5. **Sécurité alimentaire** : référence USDA pour les morceaux entiers 63 °C + 3 minutes de repos. Contrôler les préconisations selon la catégorie exacte de bœuf. Pas de promesse de sécurité sur la seule base des deux à trois minutes de saisie.
