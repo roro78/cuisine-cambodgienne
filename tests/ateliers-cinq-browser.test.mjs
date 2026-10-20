@@ -37,6 +37,10 @@ try{
         assert.equal(await page.locator('.fca-step').count(),6,'Phases '+slug);
         assert.equal(await page.locator('.fca-steps-nav a').count(),6,'Navigation '+slug);
         assert.equal(await page.locator('meta[name="robots"]').getAttribute('content').then(v=>v?.includes('noindex')),true,'Pilot noindex '+slug);
+        const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+        assert.ok(overflow<=3,'Horizontal scroll at '+width+' '+slug+': '+overflow);
+        const overlap=await page.evaluate(()=>document.querySelector('.fca-breadcrumb').getBoundingClientRect().top-document.querySelector('[data-site-header]').getBoundingClientRect().bottom);
+        assert.ok(overlap>=-2,'Fixed header overlaps breadcrumb '+slug+' '+width);
         const audioCount=await page.locator('[data-cooking-audio]').count();
         assert.ok(audioCount===0||audioCount===1,'At most one recording per atelier '+slug);
         if(audioCount===1){
@@ -58,10 +62,7 @@ try{
           assert.equal(await page.locator('audio').count(),0,'Do not fabricate an MP3 '+slug);
         }
         assert.equal(await page.locator('.fca-hero-photo img').evaluate(e=>e instanceof HTMLImageElement&&e.complete&&e.naturalWidth>0),true,'Editorial photo '+slug);
-        const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
-        assert.ok(overflow<=3,'Horizontal scroll at '+width+' '+slug+': '+overflow);
-        const overlap=await page.evaluate(()=>document.querySelector('.fca-breadcrumb').getBoundingClientRect().top-document.querySelector('[data-site-header]').getBoundingClientRect().bottom);
-        assert.ok(overlap>=-2,'Fixed header overlaps breadcrumb '+slug+' '+width);
+
         await page.locator('.fca-checks input').first().check();
         assert.equal(await page.locator('.fca-checks input').first().isChecked(),true);
         await page.locator('.fca-observe details summary').first().click();
