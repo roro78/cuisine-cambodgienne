@@ -23,7 +23,8 @@
   "equipment": [
     "Une casserole assez grande et une louche",
     "Une planche, un couteau et un tamis fin si le tamarin est préparé à partir de pulpe",
-    "Quatre bols résistants à la chaleur et une cuillère de mesure"
+    "Quatre bols résistants à la chaleur et une cuillère de mesure",
+    "Un thermomètre alimentaire pour contrôler la protéine cuite"
   ],
   "beforeStarting": [
     "Choisissez poisson ou poulet et gardez-le au frais jusqu'à la cuisson ; ne mélangez pas les deux variantes sans ajuster le temps.",
@@ -31,7 +32,8 @@
   ],
   "safety": [
     "La soupe contenant viande ou poisson crus ne se goûte qu'après vérification de leur cuisson complète.",
-    "Manipulez le bouillon très chaud avec précaution et évitez les éclaboussures."
+    "Manipulez le bouillon très chaud avec précaution et évitez les éclaboussures.",
+    "Si vous choisissez le poulet, vérifiez au thermomètre au moins 74 °C à cœur ; pour le poisson, visez au moins 63 °C. Contrôlez les morceaux les plus épais avant toute dégustation de la soupe."
   ],
   "allergens": {
     "status": "declared",
@@ -42,7 +44,13 @@
   "sources": {
     "recipeSource": "/recettes/samlor-machu/",
     "culturalNote": "Cet atelier réalise la recette samlor-machu documentée sur Cuisine du Cambodge ; les gestes et les variantes doivent rester fidèles à cette version.",
-    "pedagogicalAdaptation": "Les pauses, critères sensoriels et corrections de gestes sont des compléments d'apprentissage ajoutés à la recette sans changer les ingrédients ni les proportions."
+    "pedagogicalAdaptation": "Les pauses, critères sensoriels et corrections de gestes sont des compléments d'apprentissage ajoutés à la recette sans changer les ingrédients ni les proportions.",
+    "safetyReferences": [
+      {
+        "title": "USDA FSIS — températures minimales de cuisson (poisson et volaille)",
+        "url": "https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/safe-temperature-chart"
+      }
+    ]
   },
   "phases": [
     {
