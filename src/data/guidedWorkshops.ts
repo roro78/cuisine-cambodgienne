@@ -1,6 +1,6 @@
 /**
  * Pilote autonome. Aucune modification des six leçons historiques.
- * Recette de base vérifiée par référence publiée. Médias et MP3 encore en attente.
+ * Recette de base documentée ; photographie finale et contrôle d’écoute du nouveau MP3 encore en attente.
  */
 export type GuidedWorkshopStatus = 'pilot_review' | 'validated';
 export interface GuidedIngredient {
@@ -62,7 +62,7 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
       'https://www.cambodianess.com/article/how-to-make-trei-toek-ampil-tumdeep-fried-fish-with-tamarind-sauce',
       'https://www.eater.com/22502726/grilled-fish-recipe-chinchakriya-un-cambodian-food-pop-up'
     ],
-    scope: 'Les ingrédients et les proportions de la sauce de base sont sourcés. Le filtrage facultatif, les petites réserves d’assaisonnement et d’eau, ainsi que les quatre coupelles, sont nos ajouts pédagogiques. Aucun essai gustatif indépendant ni enregistrement vocal terminé n’est revendiqué.'
+    scope: 'Les ingrédients et les proportions de la sauce de base sont sourcés. Le filtrage facultatif, les petites réserves d’assaisonnement et d’eau, ainsi que les quatre coupelles, sont nos ajouts pédagogiques. Aucun essai gustatif indépendant n’est revendiqué. Un nouveau guide audio a été généré, mais son écoute intégrale et sa validation mobile et ordinateur restent en attente.'
   },
   historyUrl: '/apprendre/equilibrer-une-sauce/',
   ingredientUrl: '/ingredients/tamarin/',
