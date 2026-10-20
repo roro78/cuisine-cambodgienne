@@ -77,7 +77,7 @@
       "ingredientNames": [],
       "actions": [
         "Préparez le saladier pour la marinade, la casserole pour le riz et la poêle ou le gril pour le porc, avant de sortir la viande froide.",
-        "Mesurez les ingrédients de la recette : porc, sauce soja, sauce de poisson, sucre roux, ail, 320 grammes de riz cru et 200 grammes de pickles prêts."
+        "Mesurez les ingrédients de la recette : porc, sauce soja, sauce de poisson, sucre roux, ail, quantité de riz cru indiquée sur la fiche et pickles prévus sur la fiche prêts."
       ],
       "observe": "Chaque élément a sa place et les pickles sont déjà préparés.",
       "check": "Le poste permet de gérer cuisson du riz et saisie du porc sans confusion.",
@@ -97,7 +97,7 @@
         "gousses d’ail"
       ],
       "actions": [
-        "Épluchez et hachez les deux gousses d'ail, puis disposez les 600 grammes de tranches fines de porc dans un saladier réservé à la viande.",
+        "Épluchez et hachez les les gousses d'ail prévues sur la fiche, puis disposez les tranches fines de porc mesurées selon la fiche dans un saladier réservé à la viande.",
         "Vérifiez que les tranches ne sont pas trop épaisses et qu'elles peuvent être étalées dans la poêle en plusieurs fournées si nécessaire."
       ],
       "observe": "L'ail est finement haché et les tranches de porc sont assez régulières.",
@@ -140,8 +140,8 @@
         "pickles égouttés de concombre et de carotte, préparés à l’avance"
       ],
       "actions": [
-        "Rincez les 320 grammes de riz jasmin cru à l'eau froide, mesurez l'eau et cuisez le riz en respectant les indications précises du paquet utilisé.",
-        "Pendant cette cuisson, égouttez les 200 grammes de pickles de concombre et carotte déjà préparés, puis gardez-les dans un plat propre."
+        "Rincez les riz jasmin cru mesuré sur la fiche à l'eau froide, mesurez l'eau et cuisez le riz en respectant les indications précises du paquet utilisé.",
+        "Pendant cette cuisson, égouttez les pickles prévus sur la fiche de concombre et carotte déjà préparés, puis gardez-les dans un plat propre."
       ],
       "observe": "Le riz absorbe l'eau et reste souple ; les pickles sont égouttés et conservent du croquant.",
       "check": "Le riz est cuit conformément à sa variété et les pickles n'apportent pas de liquide excessif.",
@@ -176,11 +176,11 @@
       "minutes": 3,
       "ingredientNames": [],
       "actions": [
-        "Répartissez le riz jasmin chaud dans quatre assiettes, placez les tranches de porc bien cuites dessus et vérifiez que chaque portion est suffisamment garnie.",
+        "Répartissez le riz jasmin chaud dans des assiettes propres, placez les tranches de porc bien cuites dessus et vérifiez que chaque portion est suffisamment garnie.",
         "Ajoutez les pickles égouttés de carotte et concombre sur le côté, puis dégustez le contraste entre porc savoureux, riz neutre et légumes acidulés."
       ],
       "observe": "Les trois éléments restent distincts et chaque assiette est prête à être servie.",
-      "check": "Quatre repas complets sont dressés, avec porc cuit, riz chaud et pickles.",
+      "check": "Les repas préparés sont dressés, avec porc cuit, riz chaud et pickles.",
       "mistake": "Mélanger tous les pickles au riz chaud longtemps avant le service leur fait perdre leur croquant.",
       "recovery": "Gardez-les sur le côté et apportez-les juste avant de déguster.",
       "learning": "La composition du repas équilibre le plat principal avec le riz et un contraste frais.",
