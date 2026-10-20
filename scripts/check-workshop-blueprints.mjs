@@ -2,8 +2,8 @@
  * Contrat éditorial des ateliers-recettes. Aucune synthèse TTS ni action réseau.
  * node scripts/check-workshop-blueprints.mjs [chemin-fiche.json ...]
  */
-import { readFileSync, existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { resolve, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { transformSync } from 'esbuild';
 
@@ -126,7 +126,14 @@ export async function validateBlueprintFile(path) {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const files = process.argv.slice(2);
-  if (!files.length) files.push('docs/ateliers/exemples/exemple-kroeung-jaune.json');
+  // En CI, contrôler automatiquement toute nouvelle fiche que l'on ajoute au catalogue.
+  if (!files.length) {
+    files.push('docs/ateliers/exemples/exemple-kroeung-jaune.json');
+    const folder = 'src/data/atelier-recette-guides';
+    if (existsSync(folder)) {
+      for (const name of readdirSync(folder).filter(name => name.endsWith('.json')).sort()) files.push(join(folder, name));
+    }
+  }
   let invalid = 0;
   for (const file of files) {
     try {

@@ -56,8 +56,9 @@ Copier le fichier [exemple-kroeung-jaune.json](./exemples/exemple-kroeung-jaune.
 
 - L'interface se base sur la **recette canonique** (champ sourceRecipeSlug) pour construire ingrédients et proportions. Les champs additionalTrialIngredients ne contiennent **que** les quantités utiles aux exercices, sans doubler la base.
 - Les six objets phases portent les IDs imposés ci-dessus, le texte, l'observation, le diagnostic et le script audio.
-- Le storyboard TTS se calcule sans réseau en une commande : \`node scripts/export-cooking-workshop-audio.mjs docs/ateliers/exemples/exemple-kroeung-jaune.json\`.
-- Vérification éditoriale hors ligne : \`node scripts/check-workshop-blueprints.mjs docs/ateliers/exemples/exemple-kroeung-jaune.json\`.
+- **Emplacement de travail des futures fiches** : `src/data/atelier-recette-guides/<slug>.json`. La CI contrôle automatiquement chaque JSON de ce dossier, en plus de l'exemple ; aucun fichier de ce dossier ne vaut publication sans passage des gates.
+- Le storyboard TTS se calcule sans réseau en une commande : `node scripts/export-cooking-workshop-audio.mjs docs/ateliers/exemples/exemple-kroeung-jaune.json`.
+- Vérification éditoriale hors ligne : `node scripts/check-workshop-blueprints.mjs docs/ateliers/exemples/exemple-kroeung-jaune.json`.
 - Les tests automatiques refusent une source recette absente, un champ obligatoire vide, une phase manquante, un ingrédient inventé dans la liste de référence ou une narration qui reproduit littéralement l'instruction principale.
 - L'exemple kroeung constitue une **démonstration de la trame**, pas une validation gustative, une génération vocale ni une nouvelle publication.
 
