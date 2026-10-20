@@ -5,11 +5,11 @@
   "slug": "lok-lak-de-la-poele-a-l-assiette",
   "title": "Réaliser un Lok Lak complet, de la saisie au service",
   "sourceRecipeSlug": "lok-lak",
-  "finalPreparation": "Quatre assiettes de Lok Lak avec bœuf bien saisi, crudités et condiment citron vert–poivre.",
+  "finalPreparation": "Un Lok Lak complet avec bœuf bien saisi, crudités et condiment citron vert–poivre.",
   "learningGoal": "Maîtriser la saisie du bœuf par petites fournées, apprendre à le glacer avec sa sauce et dresser un Lok Lak complet sans détremper la viande.",
   "difficulty": "Intermédiaire",
   "canonicalServings": 4,
-  "portionLabel": "4 assiettes de Lok Lak",
+  "portionLabel": "Portions adaptables selon le nombre de convives",
   "duration": {
     "preparationMinutes": 0,
     "practicalMinutes": 30,
@@ -23,7 +23,7 @@
   "equipment": [
     "Une grande poêle ou un wok, une spatule résistante",
     "Deux bols distincts pour la sauce et le condiment",
-    "Une planche, un couteau et quatre assiettes propres",
+    "Une planche, un couteau et des assiettes propres selon le nombre de convives",
     "Un thermomètre alimentaire pour vérifier la cuisson du bœuf"
   ],
   "beforeStarting": [
@@ -56,12 +56,12 @@
   "phases": [
     {
       "id": "installer",
-      "title": "Organiser la poêle et les quatre assiettes",
+      "title": "Organiser la poêle, les bols et les assiettes",
       "minutes": 3,
       "ingredientNames": [],
       "actions": [
         "Placez la grande poêle, la spatule et deux bols distincts sur le plan de travail pour ne rien chercher pendant la cuisson vive.",
-        "Mesurez les huit ingrédients de la fiche Lok Lak et réservez une assiette propre pour les légumes qui ne toucheront pas le bœuf cru."
+        "Mesurez tous les ingrédients selon le nombre de personnes choisi sur la fiche et préparez des assiettes propres pour les légumes, séparées de la viande crue."
       ],
       "observe": "Le poste est dégagé ; les sauces et les crudités sont encore bien séparées.",
       "check": "Tous les ingrédients sont à portée de main et la poêle est prête, mais encore froide.",
@@ -81,11 +81,11 @@
         "1 tomate, ½ concombre et 4 feuilles de salade"
       ],
       "actions": [
-        "Détaillez les 600 grammes de bœuf tendre en cubes réguliers et répartissez-les en deux portions d'environ 300 grammes, sans les assaisonner trop tôt.",
-        "Coupez la tomate et le demi-concombre, lavez les quatre feuilles de salade puis égouttez-les soigneusement dans un plat propre."
+        "Détaillez le bœuf tendre en cubes réguliers d'environ 2 à 3 cm, puis répartissez-les en petites fournées adaptées à votre poêle, sans l'assaisonner à l'avance.",
+        "Coupez les tomates en quartiers ou en tranches et le concombre en rondelles ou demi-rondelles ; lavez puis égouttez soigneusement les feuilles de salade, en utilisant les quantités adaptées indiquées sur la fiche."
       ],
       "observe": "Les cubes de bœuf ont des tailles comparables et les crudités ne baignent pas dans l'eau.",
-      "check": "Les deux portions de bœuf sont prêtes ; les légumes sont lavés et égouttés.",
+      "check": "Les portions de bœuf sont prêtes pour la saisie ; les crudités sont lavées et égouttées sans contact avec le bœuf cru.",
       "mistake": "Des cubes très différents cuisent inégalement et des légumes mouillés diluent la sauce.",
       "recovery": "Recoupez les gros cubes et séchez doucement les légumes avant de chauffer la poêle.",
       "learning": "Tailler régulièrement permet une cuisson homogène, même à feu vif.",
@@ -106,8 +106,8 @@
         "poivre noir de Kampot fraîchement moulu"
       ],
       "actions": [
-        "Dans un bol, mélangez les deux cuillères de sauce soja, la cuillère de sauce d’huître, le sucre et la gousse d’ail hachée ; gardez cette sauce pour la fin de cuisson.",
-        "Dans un second bol, pressez les deux citrons verts et ajoutez le poivre noir de Kampot fraîchement moulu ; ce condiment sera servi séparément."
+        "Dans un bol, mélangez les quantités indiquées de sauce soja, sauce d'huître, sucre et ail finement haché ; gardez ce mélange séparé pour la fin de cuisson.",
+        "Dans un second bol, pressez les citrons verts et mélangez leur jus avec le poivre de Kampot fraîchement moulu, selon les quantités choisies ; servez ce condiment à part."
       ],
       "observe": "La sauce de cuisson est bien homogène et le condiment sent distinctement le citron et le poivre.",
       "check": "Deux bols différents sont prêts ; la sauce ne touche pas encore le bœuf cru.",
@@ -124,12 +124,12 @@
       "minutes": 8,
       "ingredientNames": [],
       "actions": [
-        "Faites chauffer très fortement la poêle adaptée, ajoutez la première moitié du bœuf et laissez-la colorer sans l'entasser ; retournez les morceaux pour obtenir des faces dorées.",
-        "Retirez cette fournée dans un plat propre, remontez la température de la poêle puis saisissez la seconde portion ; poursuivez jusqu'à une cuisson sûre et adaptée à la taille des morceaux."
+        "Faites chauffer une poêle adaptée sans surchauffe excessive, puis saisissez une petite portion de bœuf sans entasser les cubes. Retournez-les pour faire dorer plusieurs faces.",
+        "Retirez la fournée dans un plat propre, laissez la poêle reprendre sa chaleur puis saisissez les autres portions. Adaptez le nombre de fournées à la quantité totale et vérifiez la cuisson des morceaux les plus épais."
       ],
       "observe": "Vous entendez une saisie franche plutôt qu'un léger bouillonnement ; la viande dore.",
       "check": "Les cubes portent des faces dorées, sans piscine de jus dans la poêle.",
-      "mistake": "Mettre les 600 grammes en une seule fois fait tomber la température et rend de l'eau.",
+      "mistake": "Entasser tous les morceaux fait chuter la température et la viande rend de l'eau.",
       "recovery": "Retirez une partie de la viande, laissez évaporer l'humidité puis reprenez en plus petite fournée.",
       "learning": "Une petite quantité garde mieux la chaleur et permet la coloration recherchée.",
       "audioScript": "Écoutez votre poêle : elle doit grésiller. Si la viande bouillonne dans son jus, vous avez trop rempli la surface. Travaillez en deux fournées et observez les faces dorées. Faites pause pour cette cuisson.",
@@ -142,7 +142,7 @@
       "minutes": 4,
       "ingredientNames": [],
       "actions": [
-        "Réunissez le bœuf saisi dans la poêle, versez la sauce soja–huître–ail préparée à part et mélangez brièvement pour que tous les cubes soient enrobés.",
+        "Réunissez le bœuf saisi dans la poêle, versez la sauce soja–huître–ail préparée à part et mélangez brièvement pour enrober tous les cubes.",
         "Laissez chauffer la sauce jusqu'à ce qu'elle nappe les morceaux, sans prolonger au point de brûler le sucre ; vérifiez la cuisson du bœuf avant d'arrêter le feu."
       ],
       "observe": "La sauce reste brillante et accroche aux faces dorées sans devenir noire.",
@@ -160,11 +160,11 @@
       "minutes": 3,
       "ingredientNames": [],
       "actions": [
-        "Répartissez les feuilles de salade, la tomate et le concombre sur quatre assiettes propres, puis posez le bœuf chaud et nappé à côté des crudités.",
+        "Répartissez la salade, la tomate et le concombre sur les assiettes propres, puis posez le bœuf chaud et nappé à côté des crudités.",
         "Présentez le condiment citron vert–poivre à part et laissez chacun tremper une bouchée pour observer la différence entre viande chaude et acidité vive."
       ],
       "observe": "La viande reste dorée, les légumes frais, et le condiment est séparé.",
-      "check": "Quatre assiettes complètes sont dressées et prêtes à être dégustées immédiatement.",
+      "check": "Les assiettes sont dressées et prêtes à être dégustées immédiatement.",
       "mistake": "Verser tout le citron–poivre sur la viande à l'avance masque la saisie et ramollit les légumes.",
       "recovery": "Servez le condiment dans son bol et ajoutez-le à chaque bouchée seulement à table.",
       "learning": "Le plaisir du Lok Lak vient aussi du contraste de température et de goûts.",
