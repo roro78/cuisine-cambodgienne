@@ -34,7 +34,9 @@ export function initCookingWorkshopServings(): void {
     const render = () => {
       const factor = servings / base;
       input.value = String(servings);
-      summary.textContent = `${servings} personne${servings > 1 ? 's' : ''}`;
+      summary.textContent = root.dataset.workshopPortionKind === 'pot'
+        ? `${servings} petit${servings > 1 ? 's' : ''} pot${servings > 1 ? 's' : ''}`
+        : `${servings} personne${servings > 1 ? 's' : ''}`;
       quantities.forEach((quantity) => {
         const source = Number(quantity.dataset.baseQuantity);
         if (!Number.isFinite(source)) return;
