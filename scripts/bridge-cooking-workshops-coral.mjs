@@ -71,7 +71,10 @@ const output=resolve('public/audio/workshops',guide.slug,filename);
 const manifestPath=resolve('src/data/atelier-recette-audio',recipe+(v2?'-v2':'')+'.json');
 const tracks=plan.chapters.map((c,i)=>{
   if(!v2)return [join(tmp,c.id+'.mp3')];
-  return splitVoiceForTts(voiceTexts[i]).map((_,part)=>join(tmp,c.id+'-part-'+String(part+1).padStart(2,'0')+'.mp3'));
+  return splitVoiceForTts(voiceTexts[i]).map((text,part)=>{
+    const sourceTag=createHash('sha256').update(text).digest('hex').slice(0,16);
+    return join(tmp,c.id+'-part-'+String(part+1).padStart(2,'0')+'-'+sourceTag+'.mp3');
+  });
 });
 const chunks=tracks.flat();
 if(v2){
