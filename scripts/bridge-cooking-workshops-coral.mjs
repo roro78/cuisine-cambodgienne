@@ -37,7 +37,7 @@ const voiceTexts=plan.chapters.map(c=>c.text);
 const v2=guide.audio.storyboardVersion===2;
 // Lok Lak V2 is immutable: recording already listened to and approved.
 // Only the five non-Lok-Lak blueprints explicitly upgraded to V2 are eligible.
-if(recipe==='lok-lak')throw Error('Lok Lak V2 approuvé : toute génération est interdite.');
+if(recipe==='lok-lak' && mode!=='--plan')throw Error('Lok Lak V2 approuvé : toute génération est interdite.');
 if(!v2)throw Error('Atelier non migré vers la narration immersive V2 : aucune génération autorisée.');
 if(voiceTexts.some(t=>typeof t!=='string'||t.length<90||t.length>(v2?4500:1200)))
   throw Error('Narration absente ou excessivement longue.');
