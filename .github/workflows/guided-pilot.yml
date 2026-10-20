@@ -32,26 +32,10 @@ jobs:
             echo "Historical atelier, audio player or social catalog changed: STOP"
             exit 1
           fi
-          # The one NEW tamarind recording is allowed only at its isolated path.
-          # All 6 historical MP3s and any other workshop audio remain forbidden.
-          if grep -E '^public/audio/workshops/' /tmp/guided-files.txt | grep -Ev '^public/audio/workshops/pratique-sauce-tamarin/atelier-coral\.mp3
-      - name: Test guided workshop editorial contract
-        run: node --test tests/guided-workshop-contract.test.mjs
-      - name: Check Coral script without TTS calls
-        run: node scripts/export-guided-workshop-narration.mjs --check
-      - name: Typecheck
-        run: npm run check
-      - name: Build
-        run: npm run build
-      - name: Setup Chrome for responsive pilot browser tests
-        id: chrome
-        uses: browser-actions/setup-chrome@v2
-      - name: Browser regression for guided tamarind (mobile and desktop)
-        env:
-          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
-        run: node tests/guided-workshop-browser.test.mjs
-; then
-            echo "Historical workshop MP3 or unexpected audio file changed: STOP"
+          # Only the brand-new tamarind MP3 is allowed in the audio folder.
+          # Reject changes to any historical MP3 or unexpected workshop audio.
+          if grep -E '^public/audio/workshops/' /tmp/guided-files.txt | grep -Ev '^public/audio/workshops/pratique-sauce-tamarin/atelier-coral[.]mp3$'; then
+            echo "Historical MP3 or unexpected workshop audio changed: STOP"
             exit 1
           fi
       - name: Test guided workshop editorial contract
