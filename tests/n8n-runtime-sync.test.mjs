@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { planWorkflow } from '../scripts/sync-cuisine-n8n-runtime.mjs';
+import { planWorkflow, asPayload } from '../scripts/sync-cuisine-n8n-runtime.mjs';
 
 const load = filename => JSON.parse(readFileSync(new URL(
   '../automation/n8n/' + filename, import.meta.url), 'utf8'));
@@ -158,4 +158,45 @@ test('sync refuses changed SQL conditions, unexpected connections and modified g
   guard.nodes.find(n=>n.name==='Brouillon inséré ?').parameters.conditions.conditions[0].operator.operation =
     'isEmpty';
   assert.throws(() => planWorkflow(guard,reviewed[0],0), /Draft guard customized/);
+});
+
+test('PUT payload omits GET-only null fields and derived binaryMode while preserving credentials', () => {
+  const live = fromCandidate(reviewed[0], 0);
+  live.description = null;
+  live.nodeGroups = [];
+  live.pinData = null;
+  live.staticData = null;
+  live.settings.binaryMode = 'separate';
+  const { update } = planWorkflow(live, reviewed[0], 0);
+  const body = asPayload(update);
+  assert.deepEqual(Object.keys(body).sort(), ['connections','name','nodes','settings']);
+  assert.equal(body.settings.binaryMode, undefined);
+  assert.equal(body.settings.executionOrder, 'v1');
+  assert.equal(body.settings.timezone, 'Europe/Paris');
+  assert.equal(body.nodes.find(n => n.type === 'n8n-nodes-base.postgres').credentials.postgres.id,
+    'preserve-real-credential-id');
+  assert.equal(live.settings.binaryMode, 'separate', 'planning and serialization cannot mutate source');
+});
+
+test('PUT payload preserves supported description, node groups and static data', () => {
+  const live = fromCandidate(reviewed[1], 1);
+  live.description = 'Cuisine publication automation';
+  live.nodeGroups = [{ id:'group-01', name:'group', position:[0,0], size:[300,300] }];
+  live.staticData = { lastId: 4 };
+  const body = asPayload(live);
+  assert.equal(body.description, live.description);
+  assert.deepEqual(body.nodeGroups, live.nodeGroups);
+  assert.deepEqual(body.staticData, live.staticData);
+});
+
+test('PUT payload rejects potential loss of unsupported live settings', () => {
+  const live = fromCandidate(reviewed[2], 2);
+  live.settings.availableInMCP = true;
+  assert.throws(() => asPayload(live), /MCP access enabled/);
+  delete live.settings.availableInMCP;
+  live.settings.unexpected = 'do-not-drop';
+  assert.throws(() => asPayload(live), /Unsupported live setting/);
+  delete live.settings.unexpected;
+  live.pinData = { pinned: [{ json:{id:42} }] };
+  assert.throws(() => asPayload(live), /Pinned live data/);
 });
