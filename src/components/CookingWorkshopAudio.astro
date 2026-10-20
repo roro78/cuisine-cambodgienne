@@ -1,0 +1,95 @@
+---
+interface Chapter { id:string; title:string; startSec:number; endSec:number }
+interface Manifest { atelier:string; status:string; audioUrl:string; durationSec:number; chapters:Chapter[]; review?:{acousticListening:boolean;mobile:boolean;desktop:boolean} }
+interface Props { manifest:Manifest; scripts:string[] }
+const { manifest, scripts }=Astro.props;
+if(manifest.chapters.length!==7 || scripts.length!==7)throw Error('Lecteur atelier : intro et six chapitres exigés.');
+const chapters=manifest.chapters.map((chapter,i)=>({...chapter,text:scripts[i]}));
+const displayTime=(s:number)=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+---
+<section class="guided-cooking-audio" data-cooking-chapters={JSON.stringify(chapters)} aria-labelledby="guided-cooking-title">
+  <div class="guided-cooking-audio-head">
+    <div>
+      <p class="guided-cooking-eyebrow">La cuisine à écouter</p>
+      <h2 id="guided-cooking-title">Votre guide audio en sept chapitres.</h2>
+      <p>{displayTime(manifest.durationSec)} · une introduction puis six phases de cuisine, à votre rythme.</p>
+    </div>
+    <small class="guided-cooking-review">En préécoute · validation sonore à terminer</small>
+  </div>
+  <audio src={manifest.audioUrl} controls preload="metadata" data-cooking-audio aria-label="Guide vocal de l’atelier">
+    Ce navigateur ne prend pas en charge la lecture du guide audio.
+  </audio>
+  <ol class="guided-cooking-chapter-list" aria-label="Chapitres de l’atelier guidé">
+    {chapters.map((chapter,i)=>(
+      <li>
+        <button type="button" data-cooking-chapter={i} aria-current={i===0?'true':undefined}>
+          <span>{i===0?'Intro':String(i).padStart(2,'0')}</span>
+          <strong>{chapter.title}</strong>
+          <small>{displayTime(chapter.startSec)}</small>
+        </button>
+      </li>
+    ))}
+  </ol>
+  <details class="guided-cooking-transcript">
+    <summary>Lire les paroles du chapitre sélectionné</summary>
+    <p data-cooking-transcript>{scripts[0]}</p>
+  </details>
+  <p class="guided-cooking-live" data-cooking-status aria-live="polite">Introduction sélectionnée.</p>
+  <p class="guided-cooking-tip">Pendant chaque geste, mettez le guide en pause. Les instructions écrites restent disponibles sans lecteur audio.</p>
+</section>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-cooking-chapters]').forEach((root)=>{
+    type Chapter={id:string;title:string;startSec:number;endSec:number;text:string};
+    const chapters=JSON.parse(root.dataset.cookingChapters||'[]') as Chapter[];
+    const audio=root.querySelector<HTMLAudioElement>('[data-cooking-audio]');
+    const buttons=Array.from(root.querySelectorAll<HTMLButtonElement>('[data-cooking-chapter]'));
+    const status=root.querySelector<HTMLElement>('[data-cooking-status]');
+    const transcript=root.querySelector<HTMLElement>('[data-cooking-transcript]');
+    let active=0;
+    const activate=(index:number)=>{
+      if(index<0||index>=chapters.length)return;
+      active=index;
+      buttons.forEach((button,i)=>i===index?button.setAttribute('aria-current','true'):button.removeAttribute('aria-current'));
+      if(status)status.textContent='Chapitre '+(index===0?'introduction':index)+' : '+chapters[index].title;
+      if(transcript)transcript.textContent=chapters[index].text;
+    };
+    buttons.forEach((button,i)=>button.addEventListener('click',()=>{
+      if(!audio)return;
+      audio.currentTime=chapters[i].startSec;
+      activate(i);
+      void audio.play().catch(()=>{
+        if(status)status.textContent='Chapitre sélectionné. Appuyez sur Lecture pour démarrer.';
+      });
+    }));
+    audio?.addEventListener('timeupdate',()=>{
+      let index=0;
+      for(let i=1;i<chapters.length;i++)if(audio.currentTime+0.02>=chapters[i].startSec)index=i;
+      if(active!==index)activate(index);
+    });
+    audio?.addEventListener('error',()=>{
+      if(status)status.textContent='Audio momentanément indisponible. Les instructions écrites restent accessibles.';
+    });
+  });
+</script>
+<style>
+  .guided-cooking-audio{box-sizing:border-box;max-width:100%;margin:35px 0 55px;border:1px solid #dbc9a8;border-radius:14px;background:#fcf8ed;padding:clamp(19px,3vw,36px);color:#322b21}
+  .guided-cooking-audio *{box-sizing:border-box}
+  .guided-cooking-audio-head{display:flex;align-items:start;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:19px}
+  .guided-cooking-eyebrow{font-size:11px;text-transform:uppercase;font-weight:750;letter-spacing:.1em;color:#77501c}
+  .guided-cooking-audio h2{font:400 clamp(1.5rem,3vw,2.2rem)/1.18 Georgia,serif;margin:7px 0}
+  .guided-cooking-audio-head p{margin:0 0 10px;font-size:14px}
+  .guided-cooking-review{color:#685331;font-weight:700}
+  .guided-cooking-audio audio{display:block;width:100%;margin:18px 0}
+  .guided-cooking-chapter-list{list-style:none;margin:15px 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:9px}
+  .guided-cooking-chapter-list button{display:flex;gap:10px;align-items:center;text-align:left;width:100%;min-height:56px;background:#fff;border-radius:9px;border:1px solid #dac8aa;padding:11px;color:#302a20;cursor:pointer}
+  .guided-cooking-chapter-list button[aria-current="true"]{border-color:#a77a34;background:#f4e6ce}
+  .guided-cooking-chapter-list button strong{font-size:13px;line-height:1.35;flex:1}
+  .guided-cooking-chapter-list button span,.guided-cooking-chapter-list button small{font-size:12px;color:#6d5839}
+  .guided-cooking-chapter-list button:focus-visible,.guided-cooking-audio summary:focus-visible{outline:3px solid #987030;outline-offset:3px}
+  .guided-cooking-transcript{border-top:1px solid #dbc8aa;padding-top:13px;margin-top:14px}
+  .guided-cooking-transcript summary{font-weight:700;cursor:pointer;min-height:43px}
+  .guided-cooking-transcript p{line-height:1.8}
+  .guided-cooking-live{font-weight:750;font-size:13px}
+  .guided-cooking-tip{font-size:13px;color:#635b51}
+  @media(max-width:560px){.guided-cooking-chapter-list{grid-template-columns:1fr}}
+</style>
