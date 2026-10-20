@@ -37,6 +37,12 @@ try {
       assert.equal(await page.locator('.atelier-step-nav a').count(),6);
       assert.equal(await page.locator('meta[name="robots"]').getAttribute('content').then(s=>s?.includes('noindex')),true);
       assert.equal(await page.locator('audio').count(),0,'No fake MP3 in draft');
+      const topGap=await page.evaluate(()=>{
+        const header=document.querySelector('[data-site-header]');
+        const breadcrumb=document.querySelector('.atelier-breadcrumb');
+        return breadcrumb.getBoundingClientRect().top - header.getBoundingClientRect().bottom;
+      });
+      assert.ok(topGap>=-1, 'Breadcrumb obscured by fixed SiteHeader at '+width+'px: '+topGap);
       assert.equal(await page.locator('.atelier-hero-photo img').evaluate(el=>el instanceof HTMLImageElement&&el.complete&&el.naturalWidth>0),true,'Original recipe image loads');
       const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
       assert.ok(overflow<=3,'Horizontal overflow at '+width+'px: '+overflow+'px');

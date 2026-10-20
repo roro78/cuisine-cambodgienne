@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "kind": "cooking-workshop",
   "status": "draft",
-  "slug": "kroeung-jaune-au-mortier",
+  "slug": "atelier-pratique-kroeung-jaune",
   "title": "Fabriquer un kroeung jaune au mortier",
   "sourceRecipeSlug": "kroeung-jaune",
   "finalPreparation": "Un petit pot de pâte aromatique kroeung jaune, prêt à parfumer une préparation cuite",
@@ -99,7 +99,7 @@
       ],
       "actions": [
         "Placez une petite quantité de citronnelle émincée et de galanga dans le fond du mortier.",
-        "Écrasez en petites séries et ramenez régulièrement les morceaux au centre plutôt que de remplir le mortier d'un coup."
+        "Écrasez en petites séries et ramenez les morceaux au centre. Répétez jusqu’à incorporer toute la citronnelle et tout le galanga prévus par la recette ; n’en laissez pas de côté avant de passer aux autres aromates."
       ],
       "observe": "Les petits morceaux cessent de rebondir et commencent à s'écraser.",
       "check": "La citronnelle et le galanga s'assouplissent et adhèrent au fond du mortier.",

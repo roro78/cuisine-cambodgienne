@@ -129,7 +129,7 @@ const totalMinutes = workshop.duration.practicalMinutes + workshop.duration.prep
 </BaseLayout>
 
 <style>
-  .cooking-atelier{--ink:#302e28;--border:#ddd4c6;--paper:#faf6ef;max-width:1340px;margin:auto;padding:24px clamp(18px,4.2vw,64px) 85px;color:var(--ink);line-height:1.65}
+  .cooking-atelier{--ink:#302e28;--border:#ddd4c6;--paper:#faf6ef;max-width:1340px;margin:auto;padding:125px clamp(18px,4.2vw,64px) 85px;color:var(--ink);line-height:1.65}
   .cooking-atelier *{box-sizing:border-box}
   .cooking-atelier a{color:#76531d;text-underline-offset:3px}
   .cooking-atelier :is(a,input,summary):focus-visible{outline:3px solid #aa771a;outline-offset:3px}
@@ -152,7 +152,7 @@ const totalMinutes = workshop.duration.practicalMinutes + workshop.duration.prep
   .atelier-hero-photo figcaption{margin-top:7px;font-size:12px;color:#635d53}
   .atelier-goal{display:grid;grid-template-columns:.85fr 1.15fr;gap:50px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:40px 0;margin-bottom:75px}
   .atelier-goal>p{font-size:clamp(1rem,1.5vw,1.2rem);margin:5px 0}
-  .atelier-section{margin:0 0 82px}.atelier-section>p:not(.eyebrow){max-width:760px}
+  .atelier-section{margin:0 0 82px;scroll-margin-top:124px}.atelier-section>p:not(.eyebrow){max-width:760px}
   .atelier-kit-grid{display:grid;grid-template-columns:1fr .9fr;gap:22px;margin-top:34px}
   .atelier-kit-panel{padding:clamp(20px,3vw,36px);background:var(--paper);border:1px solid var(--border);border-radius:12px}
   .atelier-checklist{list-style:none;padding:0;margin:0}
@@ -170,7 +170,7 @@ const totalMinutes = workshop.duration.practicalMinutes + workshop.duration.prep
   .atelier-step-nav a{display:flex;gap:12px;align-items:center;min-height:66px;border:1px solid var(--border);padding:12px 14px;border-radius:8px;text-decoration:none;color:var(--ink)}
   .atelier-step-nav a:hover{background:#faf5ea}.atelier-step-nav span{font-size:13px;font-weight:700;color:#835f2d}
   .atelier-step-nav strong{font-size:13px;line-height:1.4}
-  .atelier-phase{padding:40px 0 46px;border-top:1px solid var(--border);scroll-margin-top:20px}
+  .atelier-phase{padding:40px 0 46px;border-top:1px solid var(--border);scroll-margin-top:124px}
   .atelier-phase-heading{display:flex;gap:20px;align-items:flex-start;margin-bottom:26px}
   .atelier-phase-number{font:3rem Georgia,serif;color:#aa8549;line-height:1}
   .atelier-phase-heading h3{margin:7px 0 0}
@@ -184,10 +184,10 @@ const totalMinutes = workshop.duration.practicalMinutes + workshop.duration.prep
   .atelier-observe details p{font-size:14px}
   .atelier-learning{margin:26px 0 12px;border-left:3px solid #b69a65;padding:14px 20px;background:#fbf8f2}
   .atelier-next{display:inline-block;margin-top:16px;font-size:14px;font-weight:700}
-  .atelier-finish{background:var(--paper);padding:clamp(23px,4vw,48px);border:1px solid var(--border);border-radius:12px;margin-bottom:64px}
+  .atelier-finish{scroll-margin-top:124px;background:var(--paper);padding:clamp(23px,4vw,48px);border:1px solid var(--border);border-radius:12px;margin-bottom:64px}
   .atelier-finish p{max-width:800px}.atelier-finish .atelier-action{margin-top:15px}
   .atelier-sources{padding-top:24px;border-top:1px solid var(--border);color:#5d584d;font-size:14px}
   .atelier-sources h2{font-size:1.55rem}
   @media(max-width:900px){.atelier-hero,.atelier-goal,.atelier-kit-grid,.atelier-phase-columns{grid-template-columns:1fr}.atelier-hero-photo{order:-1}.atelier-goal{gap:0}.atelier-step-nav{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:570px){.cooking-atelier{padding:14px 17px 60px}.atelier-hero{margin-bottom:38px}.atelier-stats{gap:12px}.atelier-goal{margin-bottom:50px}.atelier-section{margin-bottom:55px}.atelier-step-nav{grid-template-columns:1fr}.atelier-step-nav a{min-height:55px}.atelier-phase{padding:30px 0}.atelier-phase-heading{gap:12px}.atelier-phase-number{font-size:2.5rem}.atelier-observe{padding:18px}}
+  @media(max-width:570px){.cooking-atelier{padding:101px 17px 60px}.atelier-hero{margin-bottom:38px}.atelier-stats{gap:12px}.atelier-goal{margin-bottom:50px}.atelier-section{margin-bottom:55px}.atelier-step-nav{grid-template-columns:1fr}.atelier-step-nav a{min-height:55px}.atelier-phase{padding:30px 0;scroll-margin-top:100px}.atelier-section,.atelier-finish{scroll-margin-top:100px}.atelier-phase-heading{gap:12px}.atelier-phase-number{font-size:2.5rem}.atelier-observe{padding:18px}}
 </style>

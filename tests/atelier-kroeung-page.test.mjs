@@ -10,11 +10,13 @@ const source = readFileSync('src/pages/apprendre/pratique/kroeung-jaune.astro','
 test('Atelier kroeung : vraie recette, six phases, ingrédients et rendement canonique', () => {
   assert.deepEqual(errors, []);
   assert.equal(recipe.slug, 'kroeung-jaune');
+  assert.notEqual(workshop.slug,'kroeung-jaune-au-mortier','A real workshop must not reuse the example slug');
   assert.equal(workshop.canonicalServings, recipe.baseServings);
   assert.deepEqual(workshop.phases.map((phase) => phase.id), PHASE_IDS);
   assert.match(source, /recipe[.]ingredients[.]map/);
   assert.match(source, /ingredientLine[(]item[)]/);
   assert.match(source, /Ce que vous faites/);
+  assert.match(workshop.phases[2].actions.join(' '), /toute la citronnelle et tout le galanga/);
   assert.match(source, /Comment savoir si c’est réussi/);
   assert.match(source, /Si le résultat n’est pas bon/);
   assert.match(source, /Utiliser le kroeung dans un Amok Trey/);
