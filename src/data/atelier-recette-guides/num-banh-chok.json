@@ -184,7 +184,7 @@
   ],
   "audio": {
     "mode": "guided-cooking",
-    "status": "script_only",
+    "status": "generated_review_pending",
     "voice": "coral",
     "intro": "Bonjour et bienvenue dans notre atelier Cuisine du Cambodge ! Aujourd'hui nous réalisons un Num Banh Chok, avec des nouilles de riz, une sauce chaude au poisson et au kroeung jaune, du lait de coco et beaucoup de fraîcheur. Notre objectif, c'est de maîtriser l'ordre des préparations : pocher le poisson sans le dessécher, l'émietter en retirant les arêtes, construire une sauce parfumée mais fluide, puis dresser avec des légumes croquants. Ce plat existe en plusieurs variantes cambodgiennes ; nous suivrons celle de notre fiche, avec du coco et du kroeung jaune. Choisissez votre nombre de convives et préparez les quantités sur la fiche. Le son accompagne vos gestes, pas les grammages qui changent avec les portions. Sortez deux casseroles, une passoire, une écumoire, une louche, une planche, un couteau, une fourchette, un thermomètre si possible et des bols propres. Le kroeung doit être préparé avant le cours ou acheté prêt ; on ne va pas prétendre le fabriquer ici en quelques secondes. Je vous préviendrai lorsqu'une pause est utile. Allez, on commence !",
     "publicProviderMention": false,
@@ -238,7 +238,57 @@
       ],
       "scriptSha256": "8830e51af9050773961483b2646a9abfa09b08cb846b8b780b519b64637ce6d1"
     },
-    "storyboardVersion": 2
+    "storyboardVersion": 2,
+    "asset": {
+      "audioUrl": "/audio/workshops/num-banh-chok-sauce-et-herbes-fraiches/atelier-coral-v2.mp3",
+      "durationSec": 698.16,
+      "sha256": "69b467288ef3c23ef2d6b914d395d9f54175372085ee3c52fe1019489a30e1d1",
+      "chapters": [
+        {
+          "id": "intro",
+          "title": "Bienvenue et mise en place",
+          "startSec": 0,
+          "endSec": 80.376
+        },
+        {
+          "id": "installer",
+          "title": "Rassembler la sauce, les nouilles et les herbes",
+          "startSec": 80.376,
+          "endSec": 188.784
+        },
+        {
+          "id": "preparer",
+          "title": "Préparer poisson et garnitures fraîches",
+          "startSec": 188.784,
+          "endSec": 286.344
+        },
+        {
+          "id": "assembler",
+          "title": "Pocher et émietter le poisson blanc",
+          "startSec": 286.344,
+          "endSec": 391.488
+        },
+        {
+          "id": "maitriser",
+          "title": "Construire la sauce chaude au kroeung",
+          "startSec": 391.488,
+          "endSec": 501.84
+        },
+        {
+          "id": "rectifier",
+          "title": "Cuire les nouilles et rectifier les textures",
+          "startSec": 501.84,
+          "endSec": 609.312
+        },
+        {
+          "id": "terminer",
+          "title": "Monter les bols et ajouter la fraîcheur",
+          "startSec": 609.312,
+          "endSec": 698.16
+        }
+      ],
+      "scriptSha256": "96ba8cc1097ece97aa622015bdbdcf202df2844ddde38380a1b4778c697ee3b8"
+    }
   },
   "media": {
     "finishedPreparationImage": "",
