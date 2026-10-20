@@ -42,6 +42,17 @@ try{
         if(audioCount===1){
           assert.equal(await page.locator('[data-cooking-chapter]').count(),7,'Intro + six genuine chapters');
           assert.match(await page.locator('[data-cooking-audio]').getAttribute('src'),/\/audio\/workshops\/[^/]+\/atelier-coral[.]mp3$/);
+          const chapterOne=page.locator('[data-cooking-chapter]').nth(1);
+          await chapterOne.click();
+          assert.equal(await chapterOne.getAttribute('aria-current'),'true','Selecting phase updates the active audio chapter');
+          assert.equal(await page.locator('[data-cooking-chapter]').first().getAttribute('aria-current'),null,'Introduction is deselected');
+          assert.ok((await page.locator('[data-cooking-transcript]').innerText()).length>90,'Chapter transcription remains accessible');
+          if(width===360){
+            const url=await page.locator('[data-cooking-audio]').getAttribute('src');
+            const audioResponse=await page.request.get(base+url,{headers:{Range:'bytes=0-1023'}});
+            assert.ok([200,206].includes(audioResponse.status()),'Recorded MP3 is served by the built site: '+slug);
+            await audioResponse.dispose();
+          }
         }else{
           assert.equal(await page.locator('audio').count(),0,'Do not fabricate an MP3 '+slug);
         }
