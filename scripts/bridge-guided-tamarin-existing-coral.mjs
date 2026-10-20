@@ -80,7 +80,7 @@ if (mode === '--prepare') {
     if (existsSync(existing)) {
       const buffer = readFileSync(existing);
       const valid = buffer.length > 1024 &&
-        (buffer.subarray(0,3).toString() === 'ID3' || (buffer[0] === 0xff && (buffer[1] & 0xe0) === 0xe0);
+        (buffer.subarray(0,3).toString() === 'ID3' || (buffer[0] === 0xff && (buffer[1] & 0xe0) === 0xe0));
       if (!valid) throw new Error('Corrupted restored track: ' + items[i]);
       console.log('CORAL_RESUME_SKIP_VALID_TRACK ' + items[i] + ' bytes=' + buffer.length);
       continue;
