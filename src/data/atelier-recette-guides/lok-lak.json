@@ -23,7 +23,8 @@
   "equipment": [
     "Une grande poêle ou un wok, une spatule résistante",
     "Deux bols distincts pour la sauce et le condiment",
-    "Une planche, un couteau et quatre assiettes propres"
+    "Une planche, un couteau et quatre assiettes propres",
+    "Un thermomètre alimentaire pour vérifier la cuisson du bœuf"
   ],
   "beforeStarting": [
     "Décongelez le bœuf au réfrigérateur si nécessaire ; gardez-le au frais jusqu'à la préparation.",
@@ -31,7 +32,8 @@
   ],
   "safety": [
     "Gardez le bœuf cru à l'écart des crudités lavées.",
-    "Nettoyez couteau et planche après la viande crue, et vérifiez que les morceaux de bœuf sont suffisamment cuits avant service."
+    "Nettoyez couteau et planche après la viande crue, et vérifiez que les morceaux de bœuf sont suffisamment cuits avant service.",
+    "Pour le bœuf issu d'un morceau entier, la référence de sécurité USDA est d'au moins 63 °C à cœur avec 3 minutes de repos. Vérifiez la cuisson des cubes les plus épais au thermomètre ; la seule coloration extérieure n'est pas un contrôle fiable."
   ],
   "allergens": {
     "status": "declared",
@@ -43,7 +45,13 @@
   "sources": {
     "recipeSource": "/recettes/lok-lak/",
     "culturalNote": "Cet atelier réalise la recette lok-lak documentée sur Cuisine du Cambodge ; les gestes et les variantes doivent rester fidèles à cette version.",
-    "pedagogicalAdaptation": "Les pauses, critères sensoriels et corrections de gestes sont des compléments d'apprentissage ajoutés à la recette sans changer les ingrédients ni les proportions."
+    "pedagogicalAdaptation": "Les pauses, critères sensoriels et corrections de gestes sont des compléments d'apprentissage ajoutés à la recette sans changer les ingrédients ni les proportions.",
+    "safetyReferences": [
+      {
+        "title": "USDA FSIS — températures minimales de cuisson (bœuf)",
+        "url": "https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/safe-temperature-chart"
+      }
+    ]
   },
   "phases": [
     {
