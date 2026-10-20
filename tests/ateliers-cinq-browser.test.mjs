@@ -50,6 +50,9 @@ try{
         assert.equal(await page.locator('meta[name="robots"]').getAttribute('content').then(v=>v?.includes('noindex')),true,'Pilot noindex '+slug);
         const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
         assert.ok(overflow<=3,'Horizontal scroll at '+width+' '+slug+': '+overflow);
+        // Portion selectors above scroll to the ingredient area on mobile.
+        // Header clearance must be checked at the top of the document.
+        await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
         const geometry=await page.evaluate(()=>{
           const crumb=document.querySelector('.fca-breadcrumb').getBoundingClientRect();
           const header=document.querySelector('[data-site-header]').getBoundingClientRect();
