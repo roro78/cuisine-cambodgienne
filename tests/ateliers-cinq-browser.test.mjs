@@ -8,7 +8,7 @@ const server=spawn(process.execPath,[cli,'preview','--host','127.0.0.1','--port'
 let log='';for(const stream of [server.stdout,server.stderr])stream.on('data',part=>{log+=String(part)});
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 const routes=[
- ['lok-lak-de-la-poele-a-l-assiette',10],
+ ['lok-lak-de-la-poele-a-l-assiette',11],
  ['samlor-machu-soupe-acidulee-guidee',7],
  ['num-banh-chok-sauce-et-herbes-fraiches',6],
  ['kuy-teav-bouillon-et-nouilles',7],
