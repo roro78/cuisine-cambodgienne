@@ -1,0 +1,61 @@
+import assert from 'node:assert/strict';
+import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { chromium } from 'playwright-core';
+const port=4411,base='http://127.0.0.1:'+port;
+const cli=fileURLToPath(new URL('../node_modules/astro/astro.js',import.meta.url));
+const server=spawn(process.execPath,[cli,'preview','--host','127.0.0.1','--port',String(port)],{stdio:['ignore','pipe','pipe'],detached:process.platform!=='win32'});
+let log='';for(const stream of [server.stdout,server.stderr])stream.on('data',part=>{log+=String(part)});
+const pause=ms=>new Promise(r=>setTimeout(r,ms));
+const routes=[
+ ['lok-lak-de-la-poele-a-l-assiette',8],
+ ['samlor-machu-soupe-acidulee-guidee',7],
+ ['num-banh-chok-sauce-et-herbes-fraiches',6],
+ ['kuy-teav-bouillon-et-nouilles',7],
+ ['bai-sach-chrouk-porc-riz-et-pickles',7]
+];
+let browser;
+try{
+  let ready=false;
+  for(let i=0;i<65;i++){
+    if(server.exitCode!==null)throw Error('Astro preview unavailable '+log);
+    try{if((await fetch(base+'/apprendre/pratique/'+routes[0][0]+'/')).ok){ready=true;break}}catch{}
+    await pause(400);
+  }
+  if(!ready)throw Error('Preview not ready '+log);
+  browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,args:['--no-sandbox','--disable-dev-shm-usage']});
+  for(const width of [360,390,768,1440]){
+    const mobile=width<768;
+    const page=await browser.newPage({viewport:{width,height:mobile?812:900},hasTouch:mobile,isMobile:mobile,reducedMotion:'reduce'});
+    try{
+      const jsErrors=[];page.on('pageerror',e=>jsErrors.push(e.message));
+      for(const [slug,count] of routes){
+        const response=await page.goto(base+'/apprendre/pratique/'+slug+'/',{waitUntil:'domcontentloaded'});
+        assert.equal(response?.status(),200,'Route '+slug);
+        assert.equal(await page.locator('h1').count(),1,'H1 '+slug);
+        assert.equal(await page.locator('.fca-checks li').count(),count,'Ingredients '+slug);
+        assert.equal(await page.locator('.fca-step').count(),6,'Phases '+slug);
+        assert.equal(await page.locator('.fca-steps-nav a').count(),6,'Navigation '+slug);
+        assert.equal(await page.locator('meta[name="robots"]').getAttribute('content').then(v=>v?.includes('noindex')),true,'Pilot noindex '+slug);
+        assert.equal(await page.locator('audio').count(),0,'Do not invent audio '+slug);
+        assert.equal(await page.locator('.fca-hero-photo img').evaluate(e=>e instanceof HTMLImageElement&&e.complete&&e.naturalWidth>0),true,'Editorial photo '+slug);
+        const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+        assert.ok(overflow<=3,'Horizontal scroll at '+width+' '+slug+': '+overflow);
+        const overlap=await page.evaluate(()=>document.querySelector('.fca-breadcrumb').getBoundingClientRect().top-document.querySelector('[data-site-header]').getBoundingClientRect().bottom);
+        assert.ok(overlap>=-2,'Fixed header overlaps breadcrumb '+slug+' '+width);
+        await page.locator('.fca-checks input').first().check();
+        assert.equal(await page.locator('.fca-checks input').first().isChecked(),true);
+        await page.locator('.fca-observe details summary').first().click();
+        assert.equal(await page.locator('.fca-observe details[open]').count(),1);
+        assert.deepEqual(jsErrors,[]);
+      }
+      console.log('FIVE_COMPLETE_WORKSHOPS_BROWSER_PASS '+width);
+    }finally{await page.close()}
+  }
+}catch(error){
+  console.error('FIVE_COMPLETE_WORKSHOPS_BROWSER_FAIL '+(error?.stack||error));
+  process.exitCode=1;
+}finally{
+  await browser?.close();
+  if(server.pid&&process.platform!=='win32'){try{process.kill(-server.pid,'SIGTERM')}catch{server.kill('SIGTERM')}}else server.kill('SIGTERM');
+}
