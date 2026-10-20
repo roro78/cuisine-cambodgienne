@@ -38,7 +38,7 @@ const audioTexts=[workshop.audio.intro,...workshop.phases.map((phase)=>phase.aud
         <p>{workshop.learningGoal}. Le résultat est une préparation complète, prête à parfumer un plat cuisiné.</p>
         <dl class="atelier-stats">
           <div><dt>Durée des gestes</dt><dd>{totalMinutes} min</dd></div>
-          <div><dt>Rendement</dt><dd>{workshop.portionLabel}</dd></div>
+          <div><dt>Rendement</dt><dd data-workshop-servings-hero>{recipe.baseServings} petit pot</dd></div>
           <div><dt>Niveau</dt><dd>{workshop.difficulty}</dd></div>
         </dl>
         <div class="atelier-hero-links">
@@ -145,6 +145,8 @@ const audioTexts=[workshop.audio.intro,...workshop.phases.map((phase)=>phase.aud
     <footer class="atelier-sources">
       <h2>Sources de l’atelier</h2>
       <p>Les ingrédients, proportions et gestes de base viennent de la <a href={'/recettes/' + recipe.slug + '/'}>recette Kroeung jaune</a>. Les critères d’observation et les exercices pédagogiques complètent cette préparation.</p>
+      <p>Références culinaires et variantes consultées :</p>
+      <ul>{workshop.sources.culinaryReferences.map(reference=>(<li><a href={reference.url} target="_blank" rel="noopener noreferrer">{reference.title}</a></li>))}</ul>
       <a href="/apprendre/">← Retour aux ateliers</a>
     </footer>
   </main>
