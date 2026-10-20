@@ -21,7 +21,7 @@ Ouvrir les fichiers dans le navigateur, écouter du début à la fin puis tester
 | Atelier | MP3 nouveau, à écouter | Durée réelle | Écoute | Photo finale | Essai cuisine |
 |---|---|---:|---|---|---|
 | Kroeung jaune | [Écouter](https://raw.githubusercontent.com/roro78/cuisine-cambodgienne/feat/ateliers-cinq-recettes-completes-20261020/public/audio/workshops/atelier-pratique-kroeung-jaune/atelier-coral.mp3) | 2:17 | ☐ | ☐ | ☐ |
-| Lok Lak | [Écouter](https://raw.githubusercontent.com/roro78/cuisine-cambodgienne/feat/ateliers-cinq-recettes-completes-20261020/public/audio/workshops/lok-lak-de-la-poele-a-l-assiette/atelier-coral.mp3) | 1:54 | ☐ | ☐ | ☐ |
+| Lok Lak V2 — **marinade avant saisie** | [Écouter Coral V2](https://raw.githubusercontent.com/roro78/cuisine-cambodgienne/082e0490a33e35c0aaa5286b0be55f24453d81cc/public/audio/workshops/lok-lak-de-la-poele-a-l-assiette/atelier-coral-v2.mp3) | **13:10** | ☐ | ☐ | ☐ |
 | Samlor Machu | [Écouter](https://raw.githubusercontent.com/roro78/cuisine-cambodgienne/feat/ateliers-cinq-recettes-completes-20261020/public/audio/workshops/samlor-machu-soupe-acidulee-guidee/atelier-coral.mp3) | 2:02 | ☐ | ☐ | ☐ |
 | Num Banh Chok | [Écouter](https://raw.githubusercontent.com/roro78/cuisine-cambodgienne/feat/ateliers-cinq-recettes-completes-20261020/public/audio/workshops/num-banh-chok-sauce-et-herbes-fraiches/atelier-coral.mp3) | 2:07 | ☐ | ☐ | ☐ |
 | Kuy Teav | [Écouter](https://raw.githubusercontent.com/roro78/cuisine-cambodgienne/feat/ateliers-cinq-recettes-completes-20261020/public/audio/workshops/kuy-teav-bouillon-et-nouilles/atelier-coral.mp3) | 1:50 | ☐ | ☐ | ☐ |
@@ -38,9 +38,17 @@ Les minutages ci-dessous viennent des manifestes MP3 enregistrés, **pas** des m
 
 Intro — **0:00** · Bienvenue et mise en place ; 1. installer — **0:20** · Organiser le poste et mesurer les aromates ; 2. preparer — **0:38** · Nettoyer et émincer les aromates ; 3. assembler — **0:57** · Commencer avec les fibres fermes ; 4. maitriser — **1:16** · Transformer les aromates en pâte ; 5. rectifier — **1:37** · Évaluer et corriger la texture ; 6. terminer — **1:58** · Conditionner la pâte et retenir le geste
 
-### Lok Lak (1:54)
+### Lok Lak V2 — 13:10 (marinade avant saisie)
 
-Intro — **0:00** · Bienvenue et mise en place ; 1. installer — **0:27** · Organiser la poêle et les quatre assiettes ; 2. preparer — **0:42** · Tailler le bœuf et préparer les crudités ; 3. assembler — **0:57** · Mélanger la sauce et le condiment poivré ; 4. maitriser — **1:13** · Saisir le bœuf en deux petites fournées ; 5. rectifier — **1:27** · Glacer et contrôler l'enrobage ; 6. terminer — **1:39** · Dresser le Lok Lak et déguster les contrastes
+[**Écouter le MP3 de prévalidation**](https://raw.githubusercontent.com/roro78/cuisine-cambodgienne/082e0490a33e35c0aaa5286b0be55f24453d81cc/public/audio/workshops/lok-lak-de-la-poele-a-l-assiette/atelier-coral-v2.mp3). Intro et six phases enregistrées et vérifiées par `ffprobe` : durée **789,936 secondes**, SHA-256 `d3f5558c07f7aff5c4c57ccf7c662544079744dc0fa8223ec869a6b061d0912e`.
+
+Introduction — **0:00** · Bienvenue et mise en place ; 1. installer — **1:20** · Préparer le matériel et repérer les ingrédients ; 2. preparer — **2:52** · Tailler le bœuf et le faire mariner ; 3. assembler — **4:51** · Préparer les crudités et le condiment citron–poivre ; 4. maitriser — **6:48** · Saisir les cubes de bœuf marinés en petites fournées ; 5. rectifier — **9:46** · Contrôler la cuisson et l'enrobage de la marinade ; 6. terminer — **11:43** · Dresser le Lok Lak et servir le condiment.
+
+**Ancienne version V1 (1:54) archivée :** le fichier `atelier-coral.mp3` et son manifeste original demeurent intacts mais ne correspondent plus au script V2. **Ne pas écouter V1 pour valider V2.**
+
+**Écoute humaine à réaliser :** naturel de la voix, précision des découpes, marinade au réfrigérateur et reprise après pause, saisie du bœuf, contrôle de cuisson, dressage et « bon appétit ». Vérifier les transitions entre les 27 sous-segments d'enregistrement, assemblés en sept grands chapitres. Aucun de ces contrôles acoustiques humains n'est déclaré validé automatiquement.
+
+**Navigation de page :** suivre facultativement les **six grandes phases**, sans faire défiler à chaque phrase. Vérification mobile/desktop du nouveau MP3 à confirmer dans la CI post-assemblage. **Statut DRAFT / noindex ; aucune publication OVH.**
 
 ### Samlor Machu (2:02)
 
