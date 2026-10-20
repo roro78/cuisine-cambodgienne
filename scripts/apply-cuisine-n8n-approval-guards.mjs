@@ -151,7 +151,7 @@ async function main() {
     const safeId = String(task.id);
     assert.match(safeId, /^[A-Za-z0-9_-]+$/, 'Unexpected workflow ID for backup path');
     const backupPath = join(backupDirectory, 'cuisine-' + safeId + '-' + new Date().toISOString().replace(/[:.]/g, '-') + '.json');
-    writeFileSync(backupPath, JSON.stringify(latest, null, 2) + '\\n', { encoding: 'utf8', mode: 0o600, flag: 'wx' });
+    writeFileSync(backupPath, JSON.stringify(latest, null, 2) + '\n', { encoding: 'utf8', mode: 0o600, flag: 'wx' });
     console.log(task.spec.name + ': private local backup saved (0600) before update.');
     await request('/workflows/' + encodeURIComponent(task.id), {
       method: 'PUT',
