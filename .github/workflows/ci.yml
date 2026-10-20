@@ -49,6 +49,7 @@ jobs:
         run: |
           node scripts/check-workshop-blueprints.mjs
           node --test tests/atelier-standard.test.mjs
+          node --test tests/atelier-kroeung-page.test.mjs
 
       - name: Validate all six Coral MP3s and actual chapter boundaries (offline)
         run: node scripts/check-workshop-audio.mjs
