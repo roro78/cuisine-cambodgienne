@@ -181,7 +181,7 @@ test('PUT payload omits GET-only null fields and derived binaryMode while preser
 test('PUT payload preserves supported description, node groups and static data', () => {
   const live = fromCandidate(reviewed[1], 1);
   live.description = 'Cuisine publication automation';
-  live.nodeGroups = [{ id:'group-01', name:'group', position:[0,0], size:[300,300] }];
+  live.nodeGroups = [{ id:'group-01', name:'group', nodeIds:[live.nodes[0].id] }];
   live.staticData = { lastId: 4 };
   const body = asPayload(live);
   assert.equal(body.description, live.description);
@@ -199,4 +199,25 @@ test('PUT payload rejects potential loss of unsupported live settings', () => {
   delete live.settings.unexpected;
   live.pinData = { pinned: [{ json:{id:42} }] };
   assert.throws(() => asPayload(live), /Pinned live data/);
+});
+
+test('n8n 2.32.7 supported settings survive PUT serialization', () => {
+  const live = fromCandidate(reviewed[1], 1);
+  live.settings.callerIds = 'abc, def';
+  live.settings.timeSavedPerExecution = 4.5;
+  live.settings.redactionPolicy = 'non-manual';
+  live.settings.customTelemetryTags = [{key:'purpose',value:'social'}];
+  const payload = asPayload(live);
+  for (const key of ['callerIds','timeSavedPerExecution',
+    'redactionPolicy','customTelemetryTags']) {
+    assert.deepEqual(payload.settings[key], live.settings[key]);
+  }
+});
+
+test('PUT preflight refuses malformed node group metadata instead of sending HTTP 400', () => {
+  const live = fromCandidate(reviewed[1], 1);
+  live.nodeGroups = [{id:'group-01', name:'group', position:[0,0], size:[300,300]}];
+  assert.throws(() => asPayload(live), /Unsupported node group field/);
+  live.nodeGroups = [{id:'group-01', name:'group'}];
+  assert.throws(() => asPayload(live), /Invalid node group nodeIds/);
 });
