@@ -28,7 +28,8 @@ const workshopIngredients: RecipeIngredient[] = flexibleServings ? [
   ...recipe.ingredients.slice(0, 7),
   { quantity: 1, name: 'tomate' },
   { quantity: 0.5, name: 'concombre' },
-  { quantity: 4, name: 'feuille de salade' }
+  { quantity: 4, name: 'feuille de salade' },
+  { quantity: 1, unit: 'c. à soupe', name: 'huile neutre pour la saisie', note: 'facultative selon le type de poêle ; ajout pédagogique à la recette historique' }
 ] : recipe.ingredients;
 const ingredientNames = (item: RecipeIngredient) => {
   if (item.name === 'gousse d’ail') return { singular: 'gousse d’ail', plural: 'gousses d’ail' };
@@ -91,7 +92,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
     <section id="ingredients" class="fca-section" aria-labelledby="fca-ingredients-heading" data-workshop-servings-root={flexibleServings ? '' : undefined} data-base-servings={flexibleServings ? recipe.baseServings : undefined}>
       <p class="fca-eyebrow">01 · Préparer</p>
       <h2 id="fca-ingredients-heading">Les ingrédients et le plan de travail.</h2>
-      <p>Quantités issues de la <a href={recipeHref}>recette {recipe.title}</a>{flexibleServings ? ', adaptées au nombre de personnes que vous choisissez.' : ', pour ' + recipe.baseServings + ' portions.'} Cochez les produits au fur et à mesure.</p>
+      <p>Quantités issues de la <a href={recipeHref}>recette {recipe.title}</a>{flexibleServings ? ', adaptées au nombre de personnes que vous choisissez. Une petite quantité d’huile neutre facultative est signalée séparément pour la saisie du bœuf mariné.' : ', pour ' + recipe.baseServings + ' portions.'} Cochez les produits au fur et à mesure.</p>
       {flexibleServings && (
         <div class="fca-servings" aria-label="Choisir le nombre de convives">
           <label for="fca-servings-input">Je cuisine pour</label>
@@ -148,7 +149,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
     <section class="fca-section" id="atelier" aria-labelledby="fca-steps-heading">
       <p class="fca-eyebrow">02 · Pratiquer</p>
       <h2 id="fca-steps-heading">Vos six phases de cuisine.</h2>
-      <p>Respectez l’ordre des préparations et vérifiez les repères avant de poursuivre. La recette reste entièrement accessible par écrit, même sans MP3.</p>
+      <p>Respectez l’ordre des préparations et vérifiez les repères avant de poursuivre. {flexibleServings ? 'Prévoyez environ vingt minutes de marinade au réfrigérateur : profitez-en pour préparer les crudités et le condiment.' : ''} La recette reste entièrement accessible par écrit, même sans MP3.</p>
       {guideAudio ? <CookingWorkshopAudio manifest={guideAudio} scripts={audioTexts} /> : <p class="fca-preview">Le guide vocal en sept chapitres sera accessible en préécoute dès la génération technique.</p>}
       <nav class="fca-steps-nav" aria-label="Aller directement à une phase">
         {guide.phases.map((phase, i) => (
@@ -166,7 +167,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
               <div>
                 <h4>Ce que vous faites</h4>
                 <ol>{phase.actions.map((action) => <li>{action}</li>)}</ol>
-                {phase.ingredientNames.length>0 && <p class="fca-used"><strong>Ingrédients de cette phase :</strong> {flexibleServings && phase.id==='preparer' ? 'bœuf tendre · tomate · concombre · feuilles de salade (quantités ci-dessus)' : phase.ingredientNames.join(' · ')}</p>}
+                {phase.ingredientNames.length>0 && <p class="fca-used"><strong>Ingrédients de cette phase :</strong> {flexibleServings && phase.id==='assembler' ? 'tomate · concombre · feuilles de salade · citrons verts · poivre de Kampot (quantités ci-dessus)' : phase.ingredientNames.join(' · ')}</p>}
               </div>
               <aside class="fca-observe" aria-label={'Repères : '+phase.title}>
                 <p class="fca-eyebrow">À observer</p><p>{phase.observe}</p>
