@@ -14,7 +14,7 @@ for (const slug of expected) {
     assert.ok(recipes.some(r=>r.slug===data.sourceRecipeSlug));
     assert.deepEqual(data.phases.map(p=>p.id), PHASE_IDS);
     assert.equal(data.status,'draft');
-    assert.equal(data.audio.status,'script_only');
+    assert.ok(['script_only','generated_review_pending'].includes(data.audio.status));
     assert.equal(data.review.productionApproved,false);
     assert.ok(data.phases.every(p=>p.actions.length>=2 && p.check.length>25 && p.recovery.length>25));
     const plan = buildCookingAudioStoryboard(data);

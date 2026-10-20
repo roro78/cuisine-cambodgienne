@@ -51,6 +51,8 @@ jobs:
           node --test tests/atelier-standard.test.mjs
           node --test tests/atelier-kroeung-page.test.mjs
           node --test tests/ateliers-cinq-recettes.test.mjs
+          node --check scripts/bridge-cooking-workshops-coral.mjs
+          node scripts/check-new-cooking-workshop-audio.mjs
 
       - name: Validate all six Coral MP3s and actual chapter boundaries (offline)
         run: node scripts/check-workshop-audio.mjs
