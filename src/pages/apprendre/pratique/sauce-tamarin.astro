@@ -66,6 +66,7 @@ const breadcrumbSchema = {
       <h2 id="context-title">Pourquoi commencer par cette sauce ?</h2>
       <p>{workshop.recipeNote}</p>
       <p><strong>Source vérifiée :</strong> <a href={workshop.recipeSource.url} rel="noopener noreferrer" target="_blank">{workshop.recipeSource.title}</a> (consultée le 19 octobre 2026).</p>
+      <p><strong>Suivre simplement la recette ?</strong> <a href="/recettes/sauce-tamarin/">Retrouvez la fiche Sauce tamarin complète</a>. Cet atelier ajoute les exercices de dégustation et de correction des équilibres.</p>
       <details><summary>Autres références et périmètre de cette validation</summary><ul>{workshop.recipeSource.crossCheckUrls.map((url) => <li><a href={url} rel="noopener noreferrer" target="_blank">{new URL(url).hostname}</a></li>)}</ul><p>{workshop.recipeSource.scope}</p></details>
       <p>Vous allez d’abord fabriquer votre sauce à partir de la pulpe, puis découvrir comment le tamarin, le sucre et la sauce de poisson modifient son équilibre. L’exercice des quatre bols de la <a href={workshop.historyUrl}>leçon historique</a> est conservé, mais prend désormais place dans une préparation complète.</p>
     </section>
