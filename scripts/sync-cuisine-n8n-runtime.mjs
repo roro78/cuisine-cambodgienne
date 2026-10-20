@@ -231,8 +231,8 @@ async function sync() {
           try {
             const data = await res.json();
             const msg = String(data?.message || '');
-            const match = msg.match(/request\\/body(?:\\/[a-zA-Z][\\w-]*){0,4} (?:must NOT have additional properties|must be [a-zA-Z]+|is read-only)/);
-            if (match) safeDiagnostic = ' (' + match[0] + ')';
+            const allowed = /^request[/]body(?:[/][A-Za-z][A-Za-z0-9_-]*){0,4} (?:must NOT have additional properties|must be (?:string|object|array|boolean|number)|is read-only)$/.test(msg);
+            if (allowed) safeDiagnostic = ' (' + msg + ')';
           } catch { /* Omit malformed or unsafe error details. */ }
         }
         throw new Error('n8n API HTTP ' + res.status + safeDiagnostic + ' on ' +
