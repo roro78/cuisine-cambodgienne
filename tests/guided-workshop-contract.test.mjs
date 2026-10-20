@@ -99,5 +99,5 @@ test('generated tamarind guide has seven measured ordered chapters and matches t
   assert.ok(existsSync(new URL('../public' + manifest.audioUrl, import.meta.url)));
   assert.match(page, /data-guided-audio-chapters/);
   assert.match(page, /data-guided-audio-transcript/);
-  assert.match(page, /noindex=\\{workshop.status !== 'validated'\\}/);
+  assert.match(page, /noindex=\{workshop.status !== 'validated'\}/);
 });
