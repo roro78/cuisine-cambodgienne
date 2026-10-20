@@ -87,6 +87,16 @@ try{
             // Simulate the media play notification independently of Chromium audio decoding.
             await page.locator('[data-cooking-audio]').evaluate(el=>el.dispatchEvent(new Event('play')));
             assert.equal(await page.locator('[data-cooking-mobile-dock]').getAttribute('data-visible'),'true','Mobile controls stay on-screen during a phase');
+            await page.locator('[data-cooking-mobile-steps]').click();
+            assert.equal(await page.locator('[data-cooking-mobile-sheet]').isVisible(),true,'Mobile chapter sheet opens over the current phase');
+            assert.equal(await page.locator('[data-cooking-mobile-chapter]').count(),7,'Seven reachable mobile chapters');
+            await page.locator('[data-cooking-mobile-chapter]').nth(2).click();
+            assert.equal(await page.locator('[data-cooking-chapter]').nth(2).getAttribute('aria-current'),'true','Mobile chapter selector updates the active track');
+            assert.equal(await page.locator('[data-cooking-mobile-sheet]').isVisible(),false,'Mobile chapters close after selection');
+            await page.locator('[data-cooking-follow]').click();
+            assert.equal(await page.locator('[data-cooking-follow]').getAttribute('aria-pressed'),'true','Follow can be reenabled');
+            await page.locator('[data-cooking-transcript]').evaluate(el=>el.dispatchEvent(new Event('touchmove',{bubbles:true})));
+            assert.equal(await page.locator('[data-cooking-follow]').getAttribute('aria-pressed'),'false','Touch scrolling transcript cancels follow without pausing');
             await page.locator('[data-cooking-mobile-stop]').click();
             assert.equal(await page.locator('[data-cooking-mobile-dock]').getAttribute('data-visible'),'false','Mobile dock can be dismissed');
           }
