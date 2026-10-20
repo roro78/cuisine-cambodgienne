@@ -40,6 +40,8 @@ jobs:
           fi
       - name: Test guided workshop editorial contract
         run: node --test tests/guided-workshop-contract.test.mjs
+      - name: Refuser une release tamarin sans preuves PR #90
+        run: node --test tests/guided-pilot-release-gate.test.mjs
       - name: Check Coral script without TTS calls
         run: node scripts/export-guided-workshop-narration.mjs --check
       - name: Typecheck
