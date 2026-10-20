@@ -29,9 +29,6 @@ export interface GuidedWorkshop {
   description: string;
   promise: string;
   portions: string;
-  prepMinutes: number;
-  heatingMinutes: number;
-  tastingMinutes: number;
   recipeNote: string;
   recipeSource: { status: 'source_verified'; title: string; url: string; checkedAt: string; crossCheckUrls: string[]; scope: string };
   historyUrl: string;
@@ -54,9 +51,6 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
   description: 'Réaliser une sauce acidulée au tamarin, de la pulpe à la dégustation : quantités, filtrage, assaisonnement, quatre bols de comparaison et corrections progressives.',
   promise: 'Vous commencez avec de la pulpe de tamarin et repartez avec une sauce prête à servir, en ayant compris comment corriger son goût.',
   portions: '2 petites portions de sauce après les quatre coupelles de dégustation',
-  prepMinutes: 7,
-  heatingMinutes: 9,
-  tastingMinutes: 12,
   recipeNote: 'La sauce de base reprend les proportions publiées par Cambodia Recipe (2023) : deux cuillères à soupe de pulpe de tamarin, 80 ml d’eau, deux cuillères à soupe de sucre et deux de sauce de poisson. L’ail et le piment sont facultatifs. La filtration et les quatre bols de comparaison sont des ajouts pédagogiques, non une reproduction de la méthode publiée.',
   recipeSource: {
     status: 'source_verified',
@@ -79,7 +73,7 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
   ingredients: [
     { id: 'tamarin', label: 'Pulpe de tamarin nature dénoyautée, non sucrée', quantity: '2 c. à soupe', purpose: 'Fournir le goût fruité et acidulé' },
     { id: 'eau', label: 'Eau potable', quantity: '80 ml', purpose: 'Détendre la pulpe (environ un tiers de tasse)' },
-    { id: 'sucre', label: 'Sucre de palme râpé, ou sucre roux', quantity: '2 c. à soupe rases', purpose: 'Apporter le doux, avec une pincée en réserve pour les bols' },
+    { id: 'sucre', label: 'Sucre de palme râpé, ou sucre roux', quantity: '2 c. à soupe rases + 1 pincée pour les essais', purpose: 'Deux cuillères pour la recette publiée ; une pincée supplémentaire pour les coupelles' },
     { id: 'poisson', label: 'Sauce de poisson', quantity: '30 ml (2 c. à soupe)', purpose: 'Apporter le salé ; prévoir quelques gouttes de réserve', allergen: 'Poisson' },
     { id: 'ail', label: 'Ail, facultatif', quantity: '2 gousses', purpose: 'Parfumer une variante de la sauce' },
     { id: 'piment', label: 'Petits piments frais, facultatifs', quantity: '2 petits piments', purpose: 'Relever la sauce selon les goûts' }

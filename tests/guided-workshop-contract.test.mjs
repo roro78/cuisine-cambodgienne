@@ -28,7 +28,7 @@ test('every ingredient has a real quantity and is referenced in an executable st
   const byId = Object.fromEntries(workshop.ingredients.map(i => [i.id, i.quantity]));
   assert.equal(byId.tamarin, '2 c. à soupe');
   assert.equal(byId.eau, '80 ml');
-  assert.equal(byId.sucre, '2 c. à soupe rases');
+  assert.equal(byId.sucre, '2 c. à soupe rases + 1 pincée pour les essais');
   assert.equal(byId.poisson, '30 ml (2 c. à soupe)');
   assert.ok(workshop.ingredients.some(i => i.id === 'ail'));
   assert.ok(workshop.ingredients.some(i => i.id === 'piment'));
@@ -45,7 +45,9 @@ test('every ingredient has a real quantity and is referenced in an executable st
 });
 test('all six stages teach measurable actions, cues, troubleshooting and audio script drafts', () => {
   assert.equal(workshop.steps.length, 6);
-  assert.equal(workshop.steps.reduce((sum, step) => sum + step.minutes, 0), workshop.prepMinutes + workshop.heatingMinutes + workshop.tastingMinutes, 'Displayed duration must equal stage durations');
+  assert.equal(workshop.steps.reduce((sum, step) => sum + step.minutes, 0), 28, 'Duration must equal actual stage durations');
+  assert.ok(!('prepMinutes' in workshop) && !('heatingMinutes' in workshop) && !('tastingMinutes' in workshop), 'No duplicate timing values');
+  assert.match(page, /workshop\.steps\.reduce\(/, 'Page timing must derive from the stage data');
   assert.equal(new Set(workshop.steps.map(s => s.id)).size, workshop.steps.length);
   for (const s of workshop.steps) {
     assert.ok(s.minutes > 0 && Number.isInteger(s.minutes));

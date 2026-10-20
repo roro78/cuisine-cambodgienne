@@ -4,7 +4,7 @@ import SiteHeader from '../../../components/SiteHeader.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
 import { tamarindGuidedWorkshop as workshop } from '../../../data/guidedWorkshops';
 
-const total = workshop.prepMinutes + workshop.heatingMinutes + workshop.tastingMinutes;
+const total = workshop.steps.reduce((minutes, step) => minutes + step.minutes, 0);
 const url = 'https://www.cuisine-du-cambodge.com/apprendre/pratique/sauce-tamarin/';
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
