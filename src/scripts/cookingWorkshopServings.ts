@@ -37,6 +37,15 @@ export function initCookingWorkshopServings(): void {
       summary.textContent = root.dataset.workshopPortionKind === 'pot'
         ? `${servings} petit${servings > 1 ? 's' : ''} pot${servings > 1 ? 's' : ''}`
         : `${servings} personne${servings > 1 ? 's' : ''}`;
+      const hero = root.closest('main')?.querySelector<HTMLElement>('[data-workshop-servings-hero]');
+      const kind = root.dataset.workshopPortionKind;
+      if (hero) {
+        const unit = kind === 'pot' ? (servings > 1 ? 'petits pots' : 'petit pot')
+          : kind === 'bol' ? (servings > 1 ? 'bols' : 'bol')
+          : kind === 'assiette' ? (servings > 1 ? 'assiettes' : 'assiette')
+          : (servings > 1 ? 'personnes' : 'personne');
+        hero.textContent = `${servings} ${unit}`;
+      }
       quantities.forEach((quantity) => {
         const source = Number(quantity.dataset.baseQuantity);
         if (!Number.isFinite(source)) return;
