@@ -69,6 +69,9 @@ test('all six stages teach measurable actions, cues, troubleshooting and audio s
   assert.match(stage.finaliser.narrationDraft, /une cuillère à café d’eau supplémentaire/);
   assert.match(stage.finaliser.instructions.join(' '), /ne fait pas partie des 80 ml/);
   assert.match(stage.servir.instructions.join(' '), /24 heures/);
+  for (const id of ['base','comparer','finaliser']) {
+    assert.ok(stage[id].narrationDraft.length <= 285, 'Keep Coral narration concise to reduce backend timeout risk: '+id);
+  }
   assert.ok(!page.includes('Coral'), 'Public pilot must not show voice-provider branding');
 });
 test('existing urls, safety checks and no social eligibility for the draft', () => {

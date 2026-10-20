@@ -122,7 +122,7 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
       check: 'Le sucre est dissous et la sauce tiédie se goûte sans risque de brûlure.',
       tip: 'Pour distinguer plus facilement l’acidité, la douceur et le salé, essayez d’abord la sauce sans ail ni piment. Préparez vos petites réserves séparément avant de répartir les coupelles.',
       recovery: 'Si le goût semble très concentré, attendez que la sauce soit tiède pour le vérifier avant de la modifier.',
-      narrationDraft: 'Ajoutez à la casserole deux cuillères à soupe de sucre et trente millilitres de sauce de poisson. Gardez un peu de chaque assaisonnement à part pour les corrections. Si vous choisissez l’ail et le piment, incorporez-les à la casserole et maintenez un petit frémissement une à deux minutes. Retirez du feu et laissez la sauce tiédir avant de goûter.'
+      narrationDraft: 'Ajoutez trente millilitres de sauce de poisson et deux cuillères à soupe de sucre. Gardez une petite réserve de chacun. Si vous utilisez l’ail ou le piment, incorporez-les à la casserole. Laissez frémir une à deux minutes, puis laissez tiédir avant de goûter.'
     },
     {
       id: 'comparer',
@@ -138,7 +138,7 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
       check: 'Vous savez nommer le goût qui ressort davantage dans chacune des coupelles modifiées.',
       tip: 'Les quatre coupelles sont une expérience pédagogique ajoutée à la recette publiée, et non une étape revendiquée par son auteur.',
       recovery: 'Si une correction ne se distingue pas, regoûtez le témoin avant de faire des ajouts supplémentaires.',
-      narrationDraft: 'Versez dix millilitres de sauce tiédie dans chacune des quatre coupelles. Gardez la première nature : elle est votre témoin. Dans la deuxième, versez deux ou trois gouttes du jus de tamarin réservé ; dans la troisième, une pincée de sucre ; dans la quatrième, deux ou trois gouttes de sauce de poisson prélevées sur la réserve. Mélangez avec des cuillères propres, puis comparez sans vous brûler.'
+      narrationDraft: 'Versez dix millilitres de sauce dans quatre coupelles. Gardez la première nature. Dans la deuxième, deux ou trois gouttes du jus de tamarin réservé ; dans la troisième, une pincée de sucre ; dans la quatrième, deux gouttes de sauce de poisson. Goûtez avec des cuillères propres.'
     },
     {
       id: 'finaliser',
@@ -153,7 +153,7 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
       check: 'La sauce garde une saveur de tamarin identifiable et l’équilibre vous plaît avec son accompagnement.',
       tip: 'La recette source conseille de rectifier le sucré et le salé, sans imposer un équilibre identique à toutes les personnes.',
       recovery: 'Si vous avez trop salé, évitez de masquer ce défaut avec beaucoup de sucre ; corrigez plutôt la concentration.',
-      narrationDraft: 'Reprenez la sauce propre, sans y reverser les coupelles déjà goûtées. Corrigez une seule chose à la fois : quelques gouttes du jus de tamarin réservé, une pincée de sucre ou une goutte de sauce de poisson en réserve. Si la sauce est trop concentrée, ajoutez une cuillère à café d’eau supplémentaire, mélangez, puis regoûtez. Le total de départ reste bien quatre-vingts millilitres d’eau.'
+      narrationDraft: 'Gardez les coupelles déjà goûtées à part. Dans la sauce principale, ajustez une seule chose à la fois : tamarin réservé, sucre ou sauce de poisson. Si le goût est trop intense, ajoutez une cuillère à café d’eau supplémentaire, mélangez et regoûtez.'
     },
     {
       id: 'servir',
