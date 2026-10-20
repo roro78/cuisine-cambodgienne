@@ -86,7 +86,7 @@ Voilà, les deux sauces sont prêtes. Le bœuf est découpé, les légumes atten
 
 Allez, on passe à la poêle !
 
-Utilisez une poêle adaptée à la cuisson vive, suffisamment chaude pour saisir rapidement le bœuf, mais ne la laissez pas surchauffer à vide ni fumer fortement. Si votre matériel a besoin d'un corps gras pour éviter que la viande accroche, cette question doit être réglée dans la fiche avant de commencer : la recette historique de référence n'en indique pas.
+Utilisez une grande poêle antiadhésive adaptée à la saisie. Faites-la chauffer progressivement, sans la laisser fumer : ce qui compte ici, c'est une chaleur bien maîtrisée et de petites fournées. Si vos morceaux commencent à accrocher, baissez légèrement le feu et décollez-les doucement à la spatule, sans les déchirer.
 
 Placez une petite portion de viande dans la poêle. Écoutez : on doit entendre un vrai grésillement. Laissez les morceaux quelques instants tranquilles pour qu'une face se colore. Ensuite, retournez-les et poursuivez la cuisson pour faire dorer les autres côtés.
 
@@ -139,7 +139,7 @@ Votre Lok Lak est prêt. J'espère que vous avez pris plaisir à le préparer av
 ## Revue éditoriale avant TTS — bloquants et actions
 
 1. **Écart culinaire réel** : les références cambodgiennes vérifiées font généralement mariner le bœuf avant cuisson ; la recette canonique choisit une sauce ajoutée en fin de saisie. Cette variante est rendue explicite dans le script. Si une recette de référence plus classique est exigée, créer une version supplémentaire validée, sans modifier les recettes historiques.
-2. **Ingrédients absents de la recette historique** : matière grasse de cuisson et sel du condiment figurent dans plusieurs références, mais **ne sont pas autorisés à être ajoutés silencieusement au guide**. Le chapitre de saisie contient donc une mise en garde éditoriale qui devra être remplacée après décision sur la fiche de préparation. **NE PAS SYNTHÉTISER CE TEXTE TEL QUEL POUR LE PUBLIC.**
+2. **Ingrédients absents de la recette historique** : matière grasse de cuisson et sel du condiment figurent dans plusieurs références. Cette version conserve les proportions d'origine, et exige une poêle antiadhésive adaptée. Une variante utilisant de l'huile ou du sel doit être documentée séparément, sans ajout silencieux. **La méthode doit être testée en cuisine avant enregistrement et publication.**
 3. **Sélecteur de convives** : non présent sur les nouvelles pages examinées dans la PR #92 ; à implémenter ou raccorder avant publication. Vérifier séparément les champs d'ingrédients `scalable:false` mal structurés dans la recette historique, sans modifier ce fichier.
 4. **Suivi page/audio** : le composant `CookingWorkshopAudio.astro` active les chapitres et la transcription mais **ne fait pas défiler vers la grande étape**. Réutiliser avec adaptation la logique facultative de `WorkshopChapterPlayer.astro`, sans toucher aux anciens ateliers.
 5. **Sécurité alimentaire** : référence USDA pour les morceaux entiers 63 °C + 3 minutes de repos. Contrôler les préconisations selon la catégorie exacte de bœuf. Pas de promesse de sécurité sur la seule base des deux à trois minutes de saisie.
