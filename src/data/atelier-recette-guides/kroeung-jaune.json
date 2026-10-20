@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "kind": "cooking-workshop",
+  "status": "draft",
+  "slug": "kroeung-jaune-au-mortier",
+  "title": "Fabriquer un kroeung jaune au mortier",
+  "sourceRecipeSlug": "kroeung-jaune",
+  "finalPreparation": "Un petit pot de pâte aromatique kroeung jaune, prêt à parfumer une préparation cuite",
+  "learningGoal": "Émincer finement puis piler la citronnelle, le galanga et le curcuma pour obtenir une pâte liée plutôt qu'un amas de fibres",
+  "difficulty": "Intermédiaire",
+  "portionLabel": "1 petit pot, conformément à la fiche recette",
+  "duration": {
+    "preparationMinutes": 0,
+    "practicalMinutes": 25,
+    "waitingMinutes": 0,
+    "waitingNote": "Pas de cuisson : la pâte est une préparation aromatique et n'est pas un plat prêt à manger."
+  },
+  "recipeIngredients": {
+    "mode": "canonical-recipe",
+    "additionalTrialIngredients": []
+  },
+  "equipment": [
+    "1 mortier et son pilon",
+    "1 couteau bien aiguisé et une planche",
+    "1 petite spatule propre",
+    "1 récipient propre et refermable"
+  ],
+  "beforeStarting": [
+    "Réunir les aromates de la recette Kroeung jaune et prévoir une surface propre.",
+    "Prévoir une planche stable et se laver les mains avant de manipuler les ingrédients."
+  ],
+  "safety": [
+    "Manier le couteau sur une planche stable.",
+    "Ne pas déguster la pâte aromatique crue comme si elle constituait un plat complet ; elle parfume les préparations."
+  ],
+  "sources": {
+    "recipeSource": "/recettes/kroeung-jaune/",
+    "culturalNote": "La pâte aromatique kroeung se rencontre sous différentes compositions ; l'atelier reprend uniquement la version jaune déjà documentée dans le site.",
+    "pedagogicalAdaptation": "Ce parcours approfondit la recette Kroeung jaune : organisation du poste, tailles des aromates, pilage en plusieurs apports, observation de la texture et conditionnement final. Les quantités proviennent de la recette source."
+  },
+  "phases": [
+    {
+      "id": "installer",
+      "title": "Organiser le poste et mesurer les aromates",
+      "minutes": 3,
+      "ingredientNames": [
+        "tiges de citronnelle",
+        "galanga",
+        "curcuma frais",
+        "zeste de combava",
+        "gousses d’ail",
+        "échalotes"
+      ],
+      "actions": [
+        "Placez le mortier, la planche et un récipient propre à portée de main avant de sortir les aromates.",
+        "Regroupez et mesurez tous les ingrédients selon la fiche Kroeung jaune, en gardant les quantités originales."
+      ],
+      "observe": "Chaque ingrédient est visible, identifiable et mesuré ; rien ne manque.",
+      "check": "Le poste est prêt et tous les ingrédients de la recette sont réunis.",
+      "mistake": "Commencer à piler avant d'avoir taillé les aromates oblige à interrompre le travail.",
+      "recovery": "Reposez le pilon, complétez la mise en place puis reprenez calmement.",
+      "learning": "La mise en place évite de manquer un parfum essentiel.",
+      "audioScript": "Avant le mortier, posez tous les aromates déjà mesurés devant vous. Regardez la citronnelle, le galanga, le curcuma et les autres ingrédients. Rien ne doit manquer. Mettez la voix en pause le temps de préparer votre poste.",
+      "pausePrompt": "Faites pause et réunissez les ingrédients.",
+      "safety": "Travaillez sur une planche stable."
+    },
+    {
+      "id": "preparer",
+      "title": "Nettoyer et émincer les aromates",
+      "minutes": 7,
+      "ingredientNames": [
+        "tiges de citronnelle",
+        "galanga",
+        "curcuma frais",
+        "zeste de combava",
+        "gousses d’ail",
+        "échalotes"
+      ],
+      "actions": [
+        "Retirez les enveloppes dures de citronnelle et gardez la partie tendre, puis émincez-la très finement.",
+        "Pelez et émincez galanga, curcuma, ail et échalotes ; prélevez uniquement le zeste vert du combava."
+      ],
+      "observe": "Les morceaux fibreux sont très petits ; pas de longues lanières de citronnelle.",
+      "check": "Chaque aromate est prêt à être écrasé sans s'enrouler autour du pilon.",
+      "mistake": "De gros morceaux de citronnelle restent durs malgré le pilage.",
+      "recovery": "Arrêtez le pilage et retaillez ces morceaux plus finement.",
+      "learning": "La qualité de la coupe détermine la texture finale.",
+      "audioScript": "Prenez la citronnelle et gardez son cœur tendre. Coupez-la très finement. Faites de même avec le galanga et le curcuma. Le geste important est la finesse : de longues fibres résistent au pilon. Arrêtez la lecture pendant la découpe.",
+      "pausePrompt": "Mettez pause pour émincer tous les ingrédients.",
+      "safety": "Gardez les doigts repliés et coupez sur une planche fixe."
+    },
+    {
+      "id": "assembler",
+      "title": "Commencer avec les fibres fermes",
+      "minutes": 3,
+      "ingredientNames": [
+        "tiges de citronnelle",
+        "galanga"
+      ],
+      "actions": [
+        "Placez une petite quantité de citronnelle émincée et de galanga dans le fond du mortier.",
+        "Écrasez en petites séries et ramenez régulièrement les morceaux au centre plutôt que de remplir le mortier d'un coup."
+      ],
+      "observe": "Les petits morceaux cessent de rebondir et commencent à s'écraser.",
+      "check": "La citronnelle et le galanga s'assouplissent et adhèrent au fond du mortier.",
+      "mistake": "Un mortier surchargé laisse les morceaux rouler sans s'écraser.",
+      "recovery": "Travaillez de plus petites portions et rassemblez les morceaux avec une spatule.",
+      "learning": "L'ordre et le volume de pilage ont un effet réel sur la texture.",
+      "audioScript": "Commencez par la citronnelle et le galanga, les plus résistants. Ajoutez-en peu à la fois. Écoutez le bruit du pilon : les morceaux cessent-ils de rebondir ? Ramenez-les au centre. Faites pause jusqu'à voir les premiers éléments s'écraser.",
+      "pausePrompt": "Faites pause pour écraser la première portion.",
+      "safety": "Gardez les doigts hors du mortier pendant les coups de pilon."
+    },
+    {
+      "id": "maitriser",
+      "title": "Transformer les aromates en pâte",
+      "minutes": 5,
+      "ingredientNames": [
+        "curcuma frais",
+        "zeste de combava",
+        "gousses d’ail",
+        "échalotes"
+      ],
+      "actions": [
+        "Ajoutez progressivement le curcuma, le zeste de combava, l'ail et les échalotes finement taillés.",
+        "Pilez et raclez les parois entre chaque ajout jusqu'à obtenir une pâte humide qui se rassemble."
+      ],
+      "observe": "Le parfum se fond et la pâte commence à se tenir, sans gros morceaux visibles.",
+      "check": "La pâte est homogène, souple et liée au lieu de rester sèche et émiettée.",
+      "mistake": "Ajouter tous les ingrédients d'un coup rend le travail irrégulier.",
+      "recovery": "Revenez à des ajouts progressifs et continuez à écraser les zones fibreuses.",
+      "learning": "Le mortier transforme à la fois la granulométrie et l'expression des arômes.",
+      "audioScript": "Ajoutez maintenant le curcuma, le zeste de combava, l'ail et les échalotes en petites quantités. Travaillez au pilon, puis rassemblez la pâte. Observez : les morceaux isolés deviennent-ils une masse humide et parfumée ? Mettez sur pause pendant le pilage.",
+      "pausePrompt": "Faites pause le temps de travailler la pâte.",
+      "safety": "Attention aux éclaboussures de curcuma et aux coups de pilon."
+    },
+    {
+      "id": "rectifier",
+      "title": "Évaluer et corriger la texture",
+      "minutes": 5,
+      "ingredientNames": [],
+      "actions": [
+        "Prélevez avec une cuillère propre une noisette de pâte pour en observer la régularité et les fibres visibles.",
+        "Si la pâte reste grossière, remettez-la au mortier et pilez de nouveau par petites quantités sans diluer inutilement."
+      ],
+      "observe": "Les longues fibres sont difficiles à distinguer et la pâte se tient sur la cuillère.",
+      "check": "La pâte est suffisamment fine pour être mélangée sans laisser de longs filaments.",
+      "mistake": "Confondre un parfum puissant avec une pâte déjà assez fine.",
+      "recovery": "Fiez-vous à la texture : repilez si des fibres longues subsistent.",
+      "learning": "On décide d'arrêter à partir de repères visuels et tactiles sûrs, non d'un minuteur.",
+      "audioScript": "Arrêtez-vous et regardez votre pâte sur la cuillère. Des fibres longues sont-elles encore visibles ? La pâte reste-t-elle liée ? Si elle est trop grossière, continuez le pilage par petites portions. Cette fois, c'est la texture qui vous dit quand finir.",
+      "pausePrompt": "Faites pause, vérifiez la pâte et ajustez si nécessaire.",
+      "safety": "Ne goûtez pas le mélange cru comme un plat terminé."
+    },
+    {
+      "id": "terminer",
+      "title": "Conditionner la pâte et retenir le geste",
+      "minutes": 2,
+      "ingredientNames": [],
+      "actions": [
+        "Transférez la pâte dans un récipient propre, et refermez-le pour préparer la recette à laquelle elle servira.",
+        "Comparez la texture obtenue à celle du début et retenez les gestes qui ont le plus aidé : couper fin et piler en petites portions."
+      ],
+      "observe": "Le kroeung jaune forme une pâte régulière, prête à être incorporée à une préparation cuite.",
+      "check": "Vous repartez avec une préparation finie et savez quels gestes la rendent fine.",
+      "mistake": "Présenter la pâte comme un plat indépendant à déguster immédiatement.",
+      "recovery": "Employez-la comme aromate dans une recette complète, par exemple un amok correctement cuit.",
+      "learning": "Le geste peut être réutilisé dans plusieurs recettes cambodgiennes.",
+      "audioScript": "Votre kroeung jaune est prêt à parfumer un plat. Placez-le dans un récipient propre. Regardez ce que la citronnelle est devenue : une pâte fine et liée. Vous savez désormais pourquoi il faut tailler fin puis piler progressivement. Bravo pour cette préparation.",
+      "pausePrompt": "Terminez le conditionnement de la pâte avant de passer à une autre recette.",
+      "safety": "Gardez la préparation propre et au frais avant son utilisation."
+    }
+  ],
+  "audio": {
+    "mode": "guided-cooking",
+    "status": "script_only",
+    "voice": "coral",
+    "intro": "Bienvenue ! Aujourd'hui, vous allez réellement fabriquer une pâte de kroeung jaune au mortier, et non seulement apprendre des astuces. Préparez vos aromates, votre planche et votre pilon. Vous pouvez mettre cette narration en pause à tout moment pour pratiquer chaque geste à votre rythme.",
+    "publicProviderMention": false
+  },
+  "media": {
+    "finishedPreparationImage": "",
+    "imageValidated": false,
+    "rightsValidated": false,
+    "stepImagePaths": []
+  },
+  "review": {
+    "recipeValidated": false,
+    "editorialValidated": false,
+    "audioListeningValidated": false,
+    "mobileValidated": false,
+    "desktopValidated": false,
+    "productionApproved": false
+  },
+  "canonicalServings": 1,
+  "allergens": {
+    "status": "none",
+    "items": []
+  }
+}
