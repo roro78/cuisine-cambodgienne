@@ -50,8 +50,8 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
   title: 'Préparer et équilibrer une sauce au tamarin',
   description: 'Réaliser une sauce acidulée au tamarin, de la pulpe à la dégustation : quantités, filtrage, assaisonnement, quatre bols de comparaison et corrections progressives.',
   promise: 'Vous commencez avec de la pulpe de tamarin et repartez avec une sauce prête à servir, en ayant compris comment corriger son goût.',
-  portions: '2 petites portions de sauce après les quatre coupelles de dégustation',
-  recipeNote: 'La sauce de base reprend les proportions publiées par Cambodia Recipe (2023) : deux cuillères à soupe de pulpe de tamarin, 80 ml d’eau, deux cuillères à soupe de sucre et deux de sauce de poisson. L’ail et le piment sont facultatifs. La filtration et les quatre bols de comparaison sont des ajouts pédagogiques, non une reproduction de la méthode publiée.',
+  portions: 'Environ 2 petites portions, après quatre coupelles de dégustation',
+  recipeNote: 'La sauce de base reprend les proportions publiées par Cambodia Recipe (2023) : deux cuillères à soupe de pulpe de tamarin, 80 ml d’eau, deux cuillères à soupe de sucre et deux de sauce de poisson. L’ail et le piment sont facultatifs. Les petites réserves de sel, de sucre et d’eau, la filtration et les quatre bols de comparaison sont des ajouts pédagogiques pour pouvoir réellement goûter et rectifier la sauce.',
   recipeSource: {
     status: 'source_verified',
     title: 'Cambodia Recipe — Tamarind Sauce',
@@ -62,19 +62,19 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
       'https://www.cambodianess.com/article/how-to-make-trei-toek-ampil-tumdeep-fried-fish-with-tamarind-sauce',
       'https://www.eater.com/22502726/grilled-fish-recipe-chinchakriya-un-cambodian-food-pop-up'
     ],
-    scope: 'Les ingrédients et quantités de la base sont sourcés. Le filtrage conditionnel, la réserve de jus et les quatre bols constituent notre prolongement pédagogique. Aucun essai gustatif indépendant ni enregistrement Coral n’est revendiqué.'
+    scope: 'Les ingrédients et les proportions de la sauce de base sont sourcés. Le filtrage facultatif, les petites réserves d’assaisonnement et d’eau, ainsi que les quatre coupelles, sont nos ajouts pédagogiques. Aucun essai gustatif indépendant ni enregistrement vocal terminé n’est revendiqué.'
   },
   historyUrl: '/apprendre/equilibrer-une-sauce/',
   ingredientUrl: '/ingredients/tamarin/',
   relatedRecipeUrls: ['/recettes/samlor-machu/', '/recettes/lok-lak/'],
   image: '/images/cuisine/tamarind-1600.webp',
   imageAlt: 'Gousses de tamarin, ingrédient principal de la préparation ; cette photographie ne représente pas la sauce finale.',
-  equipment: ['1 bol résistant à la chaleur et 1 cuillère', '1 passoire fine et 1 récipient gradué', '1 petite casserole', '4 coupelles identiques et 4 cuillères propres', '1 récipient propre pour la sauce terminée'],
+  equipment: ['1 bol résistant à la chaleur et 1 cuillère', '1 passoire fine et 1 récipient gradué', '1 petite casserole', '4 coupelles identiques, 4 cuillères propres et 1 petite cuillère de mesure', '1 récipient propre pour la sauce terminée', '3 petites coupelles pour les réserves de sucre, sauce de poisson et eau'],
   ingredients: [
     { id: 'tamarin', label: 'Pulpe de tamarin nature dénoyautée, non sucrée', quantity: '2 c. à soupe', purpose: 'Fournir le goût fruité et acidulé' },
-    { id: 'eau', label: 'Eau potable', quantity: '80 ml', purpose: 'Détendre la pulpe (environ un tiers de tasse)' },
-    { id: 'sucre', label: 'Sucre de palme râpé, ou sucre roux', quantity: '2 c. à soupe rases + 1 pincée pour les essais', purpose: 'Deux cuillères pour la recette publiée ; une pincée supplémentaire pour les coupelles' },
-    { id: 'poisson', label: 'Sauce de poisson', quantity: '30 ml (2 c. à soupe)', purpose: 'Apporter le salé ; prévoir quelques gouttes de réserve', allergen: 'Poisson' },
+    { id: 'eau', label: 'Eau potable', quantity: '80 ml pour la recette + 15 ml à part, si besoin', purpose: 'Détendre la pulpe avec 80 ml ; réserver jusqu’à 15 ml supplémentaires uniquement si la sauce finale doit être diluée' },
+    { id: 'sucre', label: 'Sucre de palme râpé, ou sucre roux', quantity: '2 c. à soupe rases + 1 c. à café en réserve', purpose: 'Deux cuillères pour la sauce de base ; une cuillère à café supplémentaire pour les essais et corrections successives' },
+    { id: 'poisson', label: 'Sauce de poisson', quantity: '30 ml pour la base + 5 ml en réserve', purpose: '30 ml (deux cuillères à soupe) dans la sauce de base ; 5 ml supplémentaires à garder dans une coupelle pour les essais et les corrections', allergen: 'Poisson' },
     { id: 'ail', label: 'Ail, facultatif', quantity: '2 gousses', purpose: 'Parfumer une variante de la sauce' },
     { id: 'piment', label: 'Petits piments frais, facultatifs', quantity: '2 petits piments', purpose: 'Relever la sauce selon les goûts' }
   ],
@@ -102,7 +102,7 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
       instructions: [
         'Chauffez la casserole en remuant jusqu’à l’apparition de petites bulles ; la pulpe doit se mélanger à l’eau.',
         'Si de grosses fibres demeurent, passez le mélange dans une passoire fine en appuyant doucement, puis reversez le jus dans la casserole.',
-        'Prélevez une cuillère à café, soit environ 5 ml, de jus non assaisonné dans une coupelle propre et laissez refroidir pour les futurs essais.'
+        'Prélevez une cuillère à café, soit environ 5 ml, de jus de tamarin non assaisonné dans une coupelle propre et laissez-le tiédir ; cette réserve servira aux essais puis, si nécessaire, à la correction finale.'
       ],
       check: 'Le jus est homogène ; une petite portion acide non assaisonnée a été mise de côté.',
       tip: 'La source chauffe directement le tamarin dans l’eau. La filtration facultative est une adaptation de l’atelier pour éviter les fibres dans les coupelles.',
@@ -115,14 +115,14 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
       minutes: 4,
       ingredients: ['sucre', 'poisson', 'ail', 'piment'],
       instructions: [
-        'Dans la casserole, ajoutez deux cuillères à soupe rases de sucre de palme ou de sucre roux et deux cuillères à soupe, soit 30 ml, de sauce de poisson.',
-        'Pour la variante parfumée citée par la source, pelez et écrasez deux gousses d’ail et émincez jusqu’à deux petits piments ; ces ajouts sont facultatifs.',
-        'Remuez à feu doux jusqu’à dissolution du sucre ; retirez la sauce du feu et laissez-la tiédir avant toute dégustation.'
+        'Dans la casserole, ajoutez deux cuillères à soupe rases de sucre de palme ou de sucre roux et 30 ml (deux cuillères à soupe) de sauce de poisson ; gardez séparément le sucre et les 5 ml de sauce de poisson supplémentaires prévus pour les essais.',
+        'Si vous choisissez la variante parfumée, pelez et écrasez deux gousses d’ail, puis émincez jusqu’à deux petits piments ; incorporez-les immédiatement dans la casserole. Pour bien comparer les goûts, vous pouvez aussi laisser cette première sauce sans ail ni piment.',
+        'Remuez à feu doux jusqu’à dissolution complète du sucre. Si vous avez ajouté l’ail ou le piment, maintenez un léger frémissement pendant une à deux minutes. Retirez du feu et laissez réellement tiédir avant toute dégustation, même si cela prend plus de temps que les minutes de gestes indiquées.'
       ],
       check: 'Le sucre est dissous et la sauce tiédie se goûte sans risque de brûlure.',
-      tip: 'Pour mieux percevoir le sucre, le salé et l’acidité, réalisez le premier essai sans piment.',
+      tip: 'Pour distinguer plus facilement l’acidité, la douceur et le salé, essayez d’abord la sauce sans ail ni piment. Préparez vos petites réserves séparément avant de répartir les coupelles.',
       recovery: 'Si le goût semble très concentré, attendez que la sauce soit tiède pour le vérifier avant de la modifier.',
-      narrationDraft: 'Ajoutez deux cuillères à soupe de sucre et deux de sauce de poisson. Vous pouvez ajouter deux gousses d’ail et un peu de piment. Remuez juste assez pour dissoudre le sucre, puis laissez tiédir.'
+      narrationDraft: 'Ajoutez à la casserole deux cuillères à soupe de sucre et trente millilitres de sauce de poisson. Gardez un peu de chaque assaisonnement à part pour les corrections. Si vous choisissez l’ail et le piment, incorporez-les à la casserole et maintenez un petit frémissement une à deux minutes. Retirez du feu et laissez la sauce tiédir avant de goûter.'
     },
     {
       id: 'comparer',
@@ -132,13 +132,13 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
       instructions: [
         'Versez 10 ml de sauce tiédie dans chacune de quatre coupelles identiques, puis conservez le reste dans un récipient propre.',
         'Laissez la première coupelle inchangée : ce sera le témoin pour comprendre les autres versions.',
-        'Dans la deuxième, ajoutez deux ou trois gouttes de jus de tamarin réservé ; dans la troisième, une pincée de sucre ; dans la quatrième, deux ou trois gouttes de sauce de poisson.',
+        'Dans la deuxième, ajoutez deux ou trois gouttes du jus de tamarin réservé ; dans la troisième, une pincée du sucre réservé ; dans la quatrième, deux ou trois gouttes des 5 ml de sauce de poisson supplémentaire.',
         'Remuez avec des cuillères distinctes, puis goûtez sans vous brûler et comparez acidité, douceur et salé à la coupelle témoin.'
       ],
       check: 'Vous savez nommer le goût qui ressort davantage dans chacune des coupelles modifiées.',
       tip: 'Les quatre coupelles sont une expérience pédagogique ajoutée à la recette publiée, et non une étape revendiquée par son auteur.',
       recovery: 'Si une correction ne se distingue pas, regoûtez le témoin avant de faire des ajouts supplémentaires.',
-      narrationDraft: 'Versez dix millilitres de sauce dans chacune de quatre coupelles. Gardez la première nature, ajoutez du tamarin dans la deuxième, une pincée de sucre dans la troisième et quelques gouttes de sauce de poisson dans la quatrième.'
+      narrationDraft: 'Versez dix millilitres de sauce tiédie dans chacune des quatre coupelles. Gardez la première nature : elle est votre témoin. Dans la deuxième, versez deux ou trois gouttes du jus de tamarin réservé ; dans la troisième, une pincée de sucre ; dans la quatrième, deux ou trois gouttes de sauce de poisson prélevées sur la réserve. Mélangez avec des cuillères propres, puis comparez sans vous brûler.'
     },
     {
       id: 'finaliser',
@@ -147,13 +147,13 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
       ingredients: ['tamarin', 'sucre', 'poisson', 'eau'],
       instructions: [
         'Reprenez la sauce restée proprement dans le récipient principal, sans y reverser aucune des coupelles déjà goûtées.',
-        'Pour plus d’acidité, ajoutez quelques gouttes de jus de tamarin ; pour adoucir, une pincée de sucre ; pour renforcer le salé, une ou deux gouttes de sauce de poisson.',
-        'Remuez et regoûtez après chaque correction ; si le goût reste globalement trop intense, diluez avec une cuillère à café d’eau à la fois.'
+        'Pour plus d’acidité, utilisez quelques gouttes du jus de tamarin encore réservé ; pour adoucir, une pincée de sucre gardé à part ; pour renforcer le salé, une ou deux gouttes de sauce de poisson prélevées sur les 5 ml supplémentaires.',
+        'Remuez et regoûtez après chaque correction avec une cuillère propre ; si l’ensemble reste trop intense, ajoutez une cuillère à café (5 ml) d’eau supplémentaire à la fois, sans dépasser d’emblée les 15 ml préparés à part. Cette eau ne fait pas partie des 80 ml de la recette de base.'
       ],
       check: 'La sauce garde une saveur de tamarin identifiable et l’équilibre vous plaît avec son accompagnement.',
       tip: 'La recette source conseille de rectifier le sucré et le salé, sans imposer un équilibre identique à toutes les personnes.',
       recovery: 'Si vous avez trop salé, évitez de masquer ce défaut avec beaucoup de sucre ; corrigez plutôt la concentration.',
-      narrationDraft: 'Goûtez la sauce qui a été conservée proprement. Ajustez une seule chose à la fois : quelques gouttes de tamarin, une pincée de sucre ou une goutte de sauce de poisson, puis regoûtez.'
+      narrationDraft: 'Reprenez la sauce propre, sans y reverser les coupelles déjà goûtées. Corrigez une seule chose à la fois : quelques gouttes du jus de tamarin réservé, une pincée de sucre ou une goutte de sauce de poisson en réserve. Si la sauce est trop concentrée, ajoutez une cuillère à café d’eau supplémentaire, mélangez, puis regoûtez. Le total de départ reste bien quatre-vingts millilitres d’eau.'
     },
     {
       id: 'servir',
@@ -163,7 +163,7 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
       instructions: [
         'Versez la sauce terminée dans un petit bol propre et servez-la comme condiment avec du poisson grillé ou frit déjà cuit.',
         'Conservez les coupelles de dégustation à part et n’utilisez pas de cuillère déjà portée à la bouche dans la sauce principale.',
-        'Réfrigérez rapidement le reste dans un récipient fermé et consommez-le de préférence dans les 24 heures, durée prudente non tirée de la source.'
+        'Placez rapidement les restes de sauce non goûtée dans un récipient fermé au réfrigérateur et consommez-les de préférence dans les 24 heures. Cette durée courte est notre précaution pour cet atelier et ne vient pas de la recette citée.'
       ],
       check: 'Vous obtenez une sauce cambodgienne au tamarin de base sourcée, puis personnalisée selon le goût.',
       tip: 'La sauce paraît différente seule ou avec un morceau de poisson ; vérifiez son équilibre sur le plat.',
@@ -177,6 +177,6 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
     'N’utilisez pas de produits crus nécessitant une cuisson comme base de dégustation.',
     'Goûtez la sauce tiédie et non brûlante ; utilisez des cuillères propres.',
     'Conservez séparément les portions de dégustation et la sauce principale.',
-    'La conservation proposée est prudente et reste à valider pour la recette définitive.'
+    'La durée de 24 heures au réfrigérateur est une précaution de l’atelier, distincte de la recette source ; ne conservez pas les coupelles déjà goûtées pour un repas ultérieur.'
   ]
 };

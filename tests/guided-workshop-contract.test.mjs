@@ -27,9 +27,9 @@ test('every ingredient has a real quantity and is referenced in an executable st
   assert.ok(workshop.ingredients.length >= 4);
   const byId = Object.fromEntries(workshop.ingredients.map(i => [i.id, i.quantity]));
   assert.equal(byId.tamarin, '2 c. à soupe');
-  assert.equal(byId.eau, '80 ml');
-  assert.equal(byId.sucre, '2 c. à soupe rases + 1 pincée pour les essais');
-  assert.equal(byId.poisson, '30 ml (2 c. à soupe)');
+  assert.equal(byId.eau, '80 ml pour la recette + 15 ml à part, si besoin');
+  assert.equal(byId.sucre, '2 c. à soupe rases + 1 c. à café en réserve');
+  assert.equal(byId.poisson, '30 ml pour la base + 5 ml en réserve');
   assert.ok(workshop.ingredients.some(i => i.id === 'ail'));
   assert.ok(workshop.ingredients.some(i => i.id === 'piment'));
   for (const i of workshop.ingredients) {
@@ -48,6 +48,7 @@ test('all six stages teach measurable actions, cues, troubleshooting and audio s
   assert.equal(workshop.steps.reduce((sum, step) => sum + step.minutes, 0), 28, 'Duration must equal actual stage durations');
   assert.ok(!('prepMinutes' in workshop) && !('heatingMinutes' in workshop) && !('tastingMinutes' in workshop), 'No duplicate timing values');
   assert.match(page, /workshop\.steps\.reduce\(/, 'Page timing must derive from the stage data');
+  assert.match(page, /\{total\} min de gestes \+ temps de refroidissement/, 'Cooling must not be hidden inside the working time');
   assert.equal(new Set(workshop.steps.map(s => s.id)).size, workshop.steps.length);
   for (const s of workshop.steps) {
     assert.ok(s.minutes > 0 && Number.isInteger(s.minutes));
@@ -59,6 +60,16 @@ test('all six stages teach measurable actions, cues, troubleshooting and audio s
   assert.match(source, /une cuillère à café, soit environ 5 ml/);
   assert.match(source, /une expérience pédagogique ajoutée à la recette publiée/);
   assert.match(page, /recetteSource\.url|recipeSource\.url/, 'The publisher must appear on the page');
+  const stage = Object.fromEntries(workshop.steps.map(step => [step.id, step]));
+  assert.match(stage.base.instructions.join(' '), /incorporez-les immédiatement dans la casserole/);
+  assert.match(stage.base.instructions.join(' '), /une à deux minutes/);
+  assert.match(stage.base.narrationDraft, /incorporez-les à la casserole/);
+  assert.match(stage.comparer.narrationDraft, /deux ou trois gouttes du jus de tamarin réservé/);
+  assert.match(stage.comparer.narrationDraft, /dix millilitres/);
+  assert.match(stage.finaliser.narrationDraft, /une cuillère à café d’eau supplémentaire/);
+  assert.match(stage.finaliser.instructions.join(' '), /ne fait pas partie des 80 ml/);
+  assert.match(stage.servir.instructions.join(' '), /24 heures/);
+  assert.ok(!page.includes('Coral'), 'Public pilot must not show voice-provider branding');
 });
 test('existing urls, safety checks and no social eligibility for the draft', () => {
   assert.ok(workshop.ingredientUrl.startsWith('/ingredients/'));

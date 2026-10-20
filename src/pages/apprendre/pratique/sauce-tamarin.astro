@@ -35,11 +35,11 @@ const breadcrumbSchema = {
         <h1>{workshop.title}</h1>
         <p class="guided-lede">{workshop.promise}</p>
         <dl class="guided-facts">
-          <div><dt>Durée indicative</dt><dd>{total} min</dd></div>
+          <div><dt>Durée indicative</dt><dd>{total} min de gestes + temps de refroidissement</dd></div>
           <div><dt>Rendement</dt><dd>{workshop.portions}</dd></div>
           <div><dt>Technique</dt><dd>Préparer · goûter · rectifier</dd></div>
         </dl>
-        {workshop.status !== 'validated' && <p class="guided-pilot" role="status">Recette de base validée par source publiée. La photographie du résultat et le nouvel audio Coral restent à produire et contrôler ; cet atelier est encore un pilote.</p>}
+        {workshop.status !== 'validated' && <p class="guided-pilot" role="status">Recette de base validée par source publiée. La photographie du résultat et le guide audio restent à produire et contrôler ; cet atelier est encore un pilote.</p>}
         <a class="guided-start" href="#ingredients">Commencer avec les ingrédients ↓</a>
       </div>
       <figure class="guided-ingredient-image">
@@ -89,7 +89,7 @@ const breadcrumbSchema = {
       <section class="guided-method" id="etapes" aria-labelledby="method-title">
         <p class="guided-eyebrow">Suivez les gestes dans l’ordre</p>
         <h2 id="method-title">Préparation guidée</h2>
-        <p>Chaque étape comporte une consigne mesurable, un signe de réussite et une solution de dépannage. La narration Coral sera ajoutée après contrôle ; les anciens MP3 restent réservés aux ateliers historiques.</p>
+        <p>Chaque étape comporte une consigne mesurable, un signe de réussite et une solution de dépannage. Le guide audio sera ajouté après contrôle ; pour le moment, suivez les instructions écrites.</p>
         <ol class="guided-steps">
           {workshop.steps.map((step, index) => (
             <li id={step.id} class="guided-step">
