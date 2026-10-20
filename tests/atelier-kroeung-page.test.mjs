@@ -14,7 +14,8 @@ test('Atelier kroeung : vraie recette, six phases, ingrédients et rendement can
   assert.equal(workshop.canonicalServings, recipe.baseServings);
   assert.deepEqual(workshop.phases.map((phase) => phase.id), PHASE_IDS);
   assert.match(source, /recipe[.]ingredients[.]map/);
-  assert.match(source, /ingredientLine[(]item[)]/);
+  assert.match(source, /data-workshop-ingredient-quantity/);
+  assert.match(source, /data-workshop-portion-kind="pot"/);
   assert.match(source, /Ce que vous faites/);
   assert.match(workshop.phases[2].actions.join(' '), /toute la citronnelle et tout le galanga/);
   assert.match(source, /Comment savoir si c’est réussi/);
