@@ -49,7 +49,9 @@ jobs:
         run: |
           node tests/social-pipeline.test.mjs
           node --test tests/workflow-01-dryrun.test.mjs
+          node --test tests/n8n-runtime-sync.test.mjs
           node --check scripts/apply-cuisine-n8n-approval-guards.mjs
+          node --check scripts/sync-cuisine-n8n-runtime.mjs
 
       - name: Validate all six Coral MP3s and actual chapter boundaries (offline)
         run: node scripts/check-workshop-audio.mjs
