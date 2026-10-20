@@ -68,6 +68,13 @@ try{
           await page.evaluate(()=>window.dispatchEvent(new WheelEvent('wheel',{deltaY:130})));
           assert.equal(await follow.getAttribute('aria-pressed'),'false','Manual scrolling stops following');
           assert.equal(await page.locator('[data-cooking-audio]').count(),1,'Playback element retained');
+          if (mobile) {
+            // Simulate the media play notification independently of Chromium audio decoding.
+            await page.locator('[data-cooking-audio]').evaluate(el=>el.dispatchEvent(new Event('play')));
+            assert.equal(await page.locator('[data-cooking-mobile-dock]').getAttribute('data-visible'),'true','Mobile controls stay on-screen during a phase');
+            await page.locator('[data-cooking-mobile-stop]').click();
+            assert.equal(await page.locator('[data-cooking-mobile-dock]').getAttribute('data-visible'),'false','Mobile dock can be dismissed');
+          }
           assert.equal(await page.locator('[data-cooking-chapter]').first().getAttribute('aria-current'),null,'Introduction is deselected');
           await page.locator('.guided-cooking-transcript summary').click();
           assert.ok((await page.locator('[data-cooking-transcript]').innerText()).length>90,'Opened chapter transcription remains accessible');
