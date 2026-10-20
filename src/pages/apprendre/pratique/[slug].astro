@@ -21,16 +21,47 @@ const { guide } = Astro.props as { guide: Guide };
 const recipe = recipes.find((item) => item.slug === guide.sourceRecipeSlug);
 if (!recipe) throw new Error('Source de recette manquante pour atelier complet : ' + guide.sourceRecipeSlug);
 const minutes = guide.duration.practicalMinutes + guide.duration.preparationMinutes + guide.duration.waitingMinutes;
-const flexibleServings = guide.sourceRecipeSlug === 'lok-lak';
+const flexibleServings = true;
 // The historical recipe combines three crudités in one unscalable string. Normalize
 // their quantities only for this workshop; never alter the canonical recipe.
-const workshopIngredients: RecipeIngredient[] = flexibleServings ? [
-  ...recipe.ingredients.slice(0, 7),
-  { quantity: 1, name: 'tomate' },
-  { quantity: 0.5, name: 'concombre' },
-  { quantity: 4, name: 'feuille de salade' },
-  { quantity: 1, unit: 'c. à soupe', name: 'huile neutre pour la saisie', note: 'facultative selon le type de poêle ; ajout pédagogique à la recette historique' }
-] : recipe.ingredients;
+// Workshop-only portion normalization: do not touch canonical recipes.ts.
+// Legacy compound, non-scalable labels are expanded into measurable components.
+const workshopIngredients: RecipeIngredient[] = (() => {
+  const items = recipe.ingredients;
+  switch (guide.sourceRecipeSlug) {
+    case 'lok-lak': return [
+      ...items.slice(0,7),
+      { quantity:1, name:'tomate' }, { quantity:0.5, name:'concombre' },
+      { quantity:4, name:'feuille de salade' },
+      { quantity:1, unit:'c. à soupe', name:'huile neutre pour la saisie', note:'Facultative selon la poêle ; ajout pédagogique à la recette historique' }
+    ];
+    case 'bai-sach-chrouk': return [
+      ...items.slice(0,6),
+      { quantity:200, unit:'g', name:'pickles égouttés de concombre et de carotte', note:'À préparer à l’avance ou acheter prêts. Quantité à adapter aux convives.' }
+    ];
+    case 'samlor-machu': return [
+      ...items.slice(0,5),
+      { quantity:2, name:'tomates en quartiers' },
+      { quantity:150, unit:'g', name:'ananas frais en dés', note:'Choix A : ananas.' },
+      { quantity:250, unit:'g', name:'courgette en dés', note:'Choix B : à la place de l’ananas, ne pas utiliser les deux.' },
+      { quantity:1, unit:'petite poignée', name:'coriandre fraîche ou basilic asiatique', note:'Garniture à doser suivant les convives.' }
+    ];
+    case 'kuy-teav': return [
+      ...items.slice(0,5),
+      { quantity:1, unit:'petite botte', name:'coriandre' },
+      { quantity:2, name:'ciboules' },
+      { quantity:100, unit:'g', name:'pousses de soja' },
+      ...items.slice(6)
+    ];
+    case 'num-banh-chok': return [
+      ...items.slice(0,5),
+      { quantity:0.5, name:'concombre' },
+      { quantity:100, unit:'g', name:'haricots verts fins' },
+      { quantity:1, unit:'poignée', name:'menthe ou basilic asiatique' }
+    ];
+    default: return items;
+  }
+})();
 const ingredientNames = (item: RecipeIngredient) => {
   if (item.name === 'gousse d’ail') return { singular: 'gousse d’ail', plural: 'gousses d’ail' };
   if (item.name === 'citrons verts') return { singular: 'citron vert', plural: 'citrons verts' };
@@ -89,7 +120,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
       <p>Ce parcours part d’une recette complète, pas de conseils isolés. À chaque étape, vous cuisinez, observez le résultat, puis apprenez quoi corriger si nécessaire.</p>
     </section>
 
-    <section id="ingredients" class="fca-section" aria-labelledby="fca-ingredients-heading" data-workshop-servings-root={flexibleServings ? '' : undefined} data-base-servings={flexibleServings ? recipe.baseServings : undefined}>
+    <section id="ingredients" class="fca-section" aria-labelledby="fca-ingredients-heading" data-workshop-servings-root="" data-base-servings={recipe.baseServings}>
       <p class="fca-eyebrow">01 · Préparer</p>
       <h2 id="fca-ingredients-heading">Les ingrédients et le plan de travail.</h2>
       <p>Quantités issues de la <a href={recipeHref}>recette {recipe.title}</a>{flexibleServings ? ', adaptées au nombre de personnes que vous choisissez. Une petite quantité d’huile neutre facultative est signalée séparément pour la saisie du bœuf mariné.' : ', pour ' + recipe.baseServings + ' portions.'} Cochez les produits au fur et à mesure.</p>
@@ -101,7 +132,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
           <div class="fca-servings-presets">
             {[2, 4, 6, 8].map((n) => <button type="button" data-workshop-serving-preset={n} aria-pressed={n===recipe.baseServings?'true':'false'}>{n} pers.</button>)}
           </div>
-          <p>Seules les quantités de la liste changent. Les gestes et les repères de cuisson sont identiques pour tous.</p>
+          <p>Seules les quantités de la liste changent. Les gestes et les repères de cuisson restent les mêmes, mais le nombre de fournées et le temps de cuisson peuvent évoluer.</p>
         </div>
       )}
       <div class="fca-kit">
@@ -113,10 +144,10 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
                 <label>
                   <input type="checkbox" aria-label={'Ingrédient préparé : ' + ingredient.name} />
                   <span>
-                    {ingredient.quantity !== undefined && <span data-workshop-ingredient-quantity={flexibleServings ? '' : undefined} data-base-quantity={ingredient.quantity} data-unit={ingredient.unit ?? ''}>{ingredient.quantity}</span>}
+                    {ingredient.quantity !== undefined && <span data-workshop-ingredient-quantity="" data-base-quantity={ingredient.quantity} data-unit={ingredient.unit ?? ''}>{ingredient.quantity}</span>}
                     {ingredient.unit && <span> {ingredient.unit}</span>}
                     {ingredient.quantity !== undefined && ' '}
-                    <span data-workshop-ingredient-name={flexibleServings ? '' : undefined} data-singular-name={ingredientNames(ingredient).singular} data-plural-name={ingredientNames(ingredient).plural}>{ingredient.name}</span>
+                    <span data-workshop-ingredient-name="" data-singular-name={ingredientNames(ingredient).singular} data-plural-name={ingredientNames(ingredient).plural}>{ingredient.name}</span>
                     {ingredient.note && <small>{ingredient.note}</small>}
                   </span>
                 </label>
@@ -149,7 +180,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
     <section class="fca-section" id="atelier" aria-labelledby="fca-steps-heading">
       <p class="fca-eyebrow">02 · Pratiquer</p>
       <h2 id="fca-steps-heading">Vos six phases de cuisine.</h2>
-      <p>Respectez l’ordre des préparations et vérifiez les repères avant de poursuivre. {flexibleServings ? 'Prévoyez environ vingt minutes de marinade au réfrigérateur : profitez-en pour préparer les crudités et le condiment.' : ''} La recette reste entièrement accessible par écrit, même sans MP3.</p>
+      <p>Respectez l’ordre des préparations et vérifiez les repères avant de poursuivre. {guide.sourceRecipeSlug==='lok-lak' ? 'Prévoyez environ vingt minutes de marinade au réfrigérateur : profitez-en pour préparer les crudités et le condiment.' : ''} La recette reste entièrement accessible par écrit, même sans MP3.</p>
       {guideAudio ? <CookingWorkshopAudio manifest={guideAudio} scripts={audioTexts} /> : <p class="fca-preview">Le guide vocal en sept chapitres sera accessible en préécoute dès la génération technique.</p>}
       <nav class="fca-steps-nav" aria-label="Aller directement à une phase">
         {guide.phases.map((phase, i) => (
@@ -167,7 +198,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
               <div>
                 <h4>Ce que vous faites</h4>
                 <ol>{phase.actions.map((action) => <li>{action}</li>)}</ol>
-                {phase.ingredientNames.length>0 && <p class="fca-used"><strong>Ingrédients de cette phase :</strong> {flexibleServings && phase.id==='assembler' ? 'tomate · concombre · feuilles de salade · citrons verts · poivre de Kampot (quantités ci-dessus)' : phase.ingredientNames.join(' · ')}</p>}
+                {phase.ingredientNames.length>0 && <p class="fca-used"><strong>Ingrédients de cette phase :</strong> {guide.sourceRecipeSlug==='lok-lak' && phase.id==='assembler' ? 'tomate · concombre · feuilles de salade · citrons verts · poivre de Kampot (quantités ci-dessus)' : phase.ingredientNames.join(' · ')}</p>}
               </div>
               <aside class="fca-observe" aria-label={'Repères : '+phase.title}>
                 <p class="fca-eyebrow">À observer</p><p>{phase.observe}</p>
