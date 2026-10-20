@@ -52,6 +52,15 @@ try {
         'Private voice drafts must not appear in public page');
       assert.equal(await page.locator('[data-workshop-chapter-player]').count(), 0,
         'No historical Coral player reused for the guided atelier');
+      assert.equal(await page.locator('[data-guided-audio]').count(), 1, 'Dedicated guide MP3 must be present');
+      assert.equal(await page.locator('[data-guided-chapter]').count(), 7, 'Intro + 6 independently accessible guided chapters');
+      assert.equal(await page.locator('[data-guided-audio]').getAttribute('src'), '/audio/workshops/pratique-sauce-tamarin/atelier-coral.mp3');
+      assert.match(await page.locator('.guided-audio-review').innerText(), /préécoute/i, 'Preview has not received acoustic approval');
+      assert.equal(await page.locator('[data-guided-chapter="0"]').getAttribute('aria-current'), 'true');
+      await page.locator('[data-guided-chapter="2"]').click();
+      assert.equal(await page.locator('[data-guided-chapter="2"]').getAttribute('aria-current'), 'true');
+      await page.locator('.guided-audio-text summary').click();
+      assert.match(await page.locator('[data-guided-audio-transcript]').innerText(), /Faites chauffer en remuant/i);
       assert.equal(await page.locator('.guided-ingredient-image img').evaluate(img =>
         img instanceof HTMLImageElement && img.complete && img.naturalWidth > 0), true, 'Hero ingredient image');
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);

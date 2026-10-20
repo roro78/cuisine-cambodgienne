@@ -81,3 +81,23 @@ test('existing urls, safety checks and no social eligibility for the draft', () 
   assert.ok(workshop.safety.some(s => /cuillères propres/i.test(s)));
   assert.ok(!readFileSync(new URL('../src/data/socialCatalog.ts', import.meta.url), 'utf8').includes('guidedWorkshops'));
 });
+
+test('generated tamarind guide has seven measured ordered chapters and matches the six cooking stages', () => {
+  const manifest = JSON.parse(readFileSync(new URL('../src/data/guided-workshop-audio/sauce-tamarin.json', import.meta.url), 'utf8'));
+  assert.equal(manifest.atelier, workshop.id);
+  assert.equal(manifest.status, 'audio_generated_review_pending');
+  assert.equal(manifest.chapters.length, 7);
+  assert.equal(manifest.chapters[0].startSec, 0);
+  assert.equal(manifest.chapters.at(-1).endSec, manifest.durationSec);
+  assert.equal(manifest.review.acousticListening, false, 'No fake acoustic approval');
+  for (let i = 1; i < manifest.chapters.length; i++) {
+    assert.equal(manifest.chapters[i].id, workshop.steps[i - 1].id);
+    assert.equal(manifest.chapters[i].title, workshop.steps[i - 1].title);
+    assert.ok(Math.abs(manifest.chapters[i].startSec - manifest.chapters[i - 1].endSec) < 0.01);
+    assert.ok(manifest.chapters[i].endSec > manifest.chapters[i].startSec);
+  }
+  assert.ok(existsSync(new URL('../public' + manifest.audioUrl, import.meta.url)));
+  assert.match(page, /data-guided-audio-chapters/);
+  assert.match(page, /data-guided-audio-transcript/);
+  assert.match(page, /noindex=\\{workshop.status !== 'validated'\\}/);
+});
