@@ -10,7 +10,7 @@ CI de référence avant les derniers renforcements : [run #39468779762](https://
 ## État factuel
 
 - Six nouveaux MP3 de sept chapitres chacun, mesurés et inscrits sur la branche PR #92 ; le pilote sauce tamarin possède lui aussi son MP3 séparé sur PR #88.
-- Les nouveaux fichiers sont **générés**, non validés à l'oreille. Les statuts `review` et `media` ne sont pas des attestations humaines.
+- **Exception confirmée :** le MP3 **Lok Lak V2** a été approuvé à l'écoute par l'utilisateur dans la conversation le **20 octobre 2026**. Les six autres enregistrements de la liste n'ont pas cette validation d'écoute. Les statuts `review` des autres guides ne constituent pas des attestations humaines.
 - Photographies définitives spécifiques et provenance des droits **non vérifiées** ; la photo de recette existante reste un visuel provisoire et ne doit pas être déclarée photographie contrôlée de l'atelier.
 - Aucune dégustation par un cuisinier indépendant, aucun test manuel Android/desktop ni autorisation OVH n'a été constaté.
 
@@ -21,7 +21,7 @@ Ouvrir les fichiers dans le navigateur, écouter du début à la fin puis tester
 | Atelier | MP3 nouveau, à écouter | Durée réelle | Écoute | Photo finale | Essai cuisine |
 |---|---|---:|---|---|---|
 | Kroeung jaune | [Écouter](https://raw.githubusercontent.com/roro78/cuisine-cambodgienne/feat/ateliers-cinq-recettes-completes-20261020/public/audio/workshops/atelier-pratique-kroeung-jaune/atelier-coral.mp3) | 2:17 | ☐ | ☐ | ☐ |
-| Lok Lak V2 — **marinade avant saisie** | [Écouter Coral V2](https://raw.githubusercontent.com/roro78/cuisine-cambodgienne/082e0490a33e35c0aaa5286b0be55f24453d81cc/public/audio/workshops/lok-lak-de-la-poele-a-l-assiette/atelier-coral-v2.mp3) | **13:10** | ☐ | ☐ | ☐ |
+| Lok Lak V2 — **marinade avant saisie** | [Écouter Coral V2](https://raw.githubusercontent.com/roro78/cuisine-cambodgienne/082e0490a33e35c0aaa5286b0be55f24453d81cc/public/audio/workshops/lok-lak-de-la-poele-a-l-assiette/atelier-coral-v2.mp3) | **13:10** | **✓ Validé par l'utilisateur le 20/10/2026** | ☐ | ☐ |
 | Samlor Machu | [Écouter](https://raw.githubusercontent.com/roro78/cuisine-cambodgienne/feat/ateliers-cinq-recettes-completes-20261020/public/audio/workshops/samlor-machu-soupe-acidulee-guidee/atelier-coral.mp3) | 2:02 | ☐ | ☐ | ☐ |
 | Num Banh Chok | [Écouter](https://raw.githubusercontent.com/roro78/cuisine-cambodgienne/feat/ateliers-cinq-recettes-completes-20261020/public/audio/workshops/num-banh-chok-sauce-et-herbes-fraiches/atelier-coral.mp3) | 2:07 | ☐ | ☐ | ☐ |
 | Kuy Teav | [Écouter](https://raw.githubusercontent.com/roro78/cuisine-cambodgienne/feat/ateliers-cinq-recettes-completes-20261020/public/audio/workshops/kuy-teav-bouillon-et-nouilles/atelier-coral.mp3) | 1:50 | ☐ | ☐ | ☐ |
@@ -46,7 +46,7 @@ Introduction — **0:00** · Bienvenue et mise en place ; 1. installer — **1:2
 
 **Ancienne version V1 (1:54) archivée :** le fichier `atelier-coral.mp3` et son manifeste original demeurent intacts mais ne correspondent plus au script V2. **Ne pas écouter V1 pour valider V2.**
 
-**Écoute humaine à réaliser :** naturel de la voix, précision des découpes, marinade au réfrigérateur et reprise après pause, saisie du bœuf, contrôle de cuisson, dressage et « bon appétit ». Vérifier les transitions entre les 27 sous-segments d'enregistrement, assemblés en sept grands chapitres. Aucun de ces contrôles acoustiques humains n'est déclaré validé automatiquement.
+**Écoute humaine : approuvée par l'utilisateur le 20 octobre 2026** (« Je valide le MP3 »), pour cet enregistrement V2 identifié par son SHA-256 ci-dessus. Cette attestation concerne l'acceptation du rendu vocal ; elle **ne vaut pas** validation des gestes en cuisine ni test manuel de navigation Android/ordinateur. Les transitions entre les 27 sous-segments sont couvertes par cette approbation générale, sans observations de détail supplémentaires rapportées par l'utilisateur.
 
 **Navigation de page :** suivre facultativement les **six grandes phases**, sans faire défiler à chaque phrase. Vérification mobile/desktop du nouveau MP3 à confirmer dans la CI post-assemblage. **Statut DRAFT / noindex ; aucune publication OVH.**
 
