@@ -10,9 +10,9 @@ let log='';for(const stream of [server.stdout,server.stderr])stream.on('data',pa
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 const routes=[
  ['lok-lak-de-la-poele-a-l-assiette',11],
- ['samlor-machu-soupe-acidulee-guidee',7],
- ['num-banh-chok-sauce-et-herbes-fraiches',6],
- ['kuy-teav-bouillon-et-nouilles',7],
+ ['samlor-machu-soupe-acidulee-guidee',9],
+ ['num-banh-chok-sauce-et-herbes-fraiches',8],
+ ['kuy-teav-bouillon-et-nouilles',9],
  ['bai-sach-chrouk-porc-riz-et-pickles',7]
 ];
 let browser;
@@ -35,16 +35,17 @@ try{
         assert.equal(response?.status(),200,'Route '+slug);
         assert.equal(await page.locator('h1').count(),1,'H1 '+slug);
         assert.equal(await page.locator('.fca-checks li').count(),count,'Ingredients '+slug);
-        if(slug==='lok-lak-de-la-poele-a-l-assiette') {
+        if(true) {
           const servings=page.locator('[data-workshop-servings-root]');
-          assert.equal(await servings.count(),1,'Lok Lak : pilot scaling visible');
+          assert.equal(await servings.count(),1,'Every complete V2 course must expose a portion selector');
           await page.locator('[data-workshop-serving-preset="2"]').click();
           assert.match(await page.locator('[data-workshop-servings-summary]').innerText(),/2 personnes/);
-          assert.equal((await page.locator('[data-workshop-ingredient-quantity]').first().innerText()).trim(),'300','Boeuf for 2');
-          assert.equal((await page.locator('[data-workshop-ingredient-quantity]').nth(7).innerText()).trim(),'½','Half a tomato for 2');
+          if (slug==='lok-lak-de-la-poele-a-l-assiette') assert.equal((await page.locator('[data-workshop-ingredient-quantity]').first().innerText()).trim(),'300','Boeuf for 2');
+          if (slug==='lok-lak-de-la-poele-a-l-assiette') assert.equal((await page.locator('[data-workshop-ingredient-quantity]').nth(7).innerText()).trim(),'½','Half a tomato for 2');
           await page.locator('[data-workshop-serving-preset="4"]').click();
-          assert.equal((await page.locator('[data-workshop-ingredient-quantity]').first().innerText()).trim(),'600','Restore canonical quantity');
-          const blueprint=JSON.parse(readFileSync('src/data/atelier-recette-guides/lok-lak.json','utf8'));
+          if (slug==='lok-lak-de-la-poele-a-l-assiette') assert.equal((await page.locator('[data-workshop-ingredient-quantity]').first().innerText()).trim(),'600','Restore canonical quantity');
+          const recipeslug=({ 'lok-lak-de-la-poele-a-l-assiette':'lok-lak','samlor-machu-soupe-acidulee-guidee':'samlor-machu','num-banh-chok-sauce-et-herbes-fraiches':'num-banh-chok','kuy-teav-bouillon-et-nouilles':'kuy-teav','bai-sach-chrouk-porc-riz-et-pickles':'bai-sach-chrouk' })[slug];
+          const blueprint=JSON.parse(readFileSync('src/data/atelier-recette-guides/'+recipeslug+'.json','utf8'));
           const expectedRecording=blueprint.audio.status==='script_only'?0:1;
           assert.equal(await page.locator('[data-cooking-audio]').count(),expectedRecording,
             'Do not show V1 audio with V2 script; V2 recording is shown only after synthesis');
