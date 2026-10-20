@@ -1,0 +1,173 @@
+name: Cuisine - Coral Lok Lak V2 - production MP3 de revue (sans deploiement)
+
+# IMPORTANT: no automatic generation on normal source or PR updates.
+# For a one-time branch-local run, create docs/ateliers/GO-LOK-LAK-V2.txt
+# containing a human approval; this is the only push path that triggers TTS.
+# workflow_dispatch also supports a future manual run if the workflow is on main.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "feat/ateliers-cinq-recettes-completes-20261020"
+    paths:
+      - "docs/ateliers/GO-LOK-LAK-V2.txt"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: cuisine-coral-lok-lak-v2-single-run
+  cancel-in-progress: false
+
+jobs:
+  render_lok_lak_v2:
+    name: Relecture technique et pistes Coral V2, Lok Lak seulement
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout de la branche de preproduction
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Dependances
+        run: npm install --no-audit --no-fund
+      - name: ffmpeg et ffprobe
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+      - name: Exiger une approbation avant tout appel TTS
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f docs/ateliers/GO-LOK-LAK-V2.txt
+          grep -Fxq 'APPROUVE-POUR-ENREGISTREMENT-LOK-LAK-V2' docs/ateliers/GO-LOK-LAK-V2.txt
+          node scripts/check-workshop-blueprints.mjs
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=lok-lak --check
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=lok-lak --plan
+      - name: Restaurer les pistes sauvegardees de ce run, si reprise
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pattern: cuisine-lok-lak-v2-*
+          merge-multiple: true
+          path: .tmp-cooking-coral/lok-lak/v2
+      - name: Coral V2 - ${phase} (reprenable)
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=lok-lak --one=${phase}
+      - name: Sauvegarder les sous-pistes ${phase}
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-lok-lak-v2-${phase}
+          path: .tmp-cooking-coral/lok-lak/v2/${phase}-part-*.mp3
+          retention-days: 14
+          if-no-files-found: ignore
+          include-hidden-files: true
+          overwrite: true
+      - name: Coral V2 - ${phase} (reprenable)
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=lok-lak --one=${phase}
+      - name: Sauvegarder les sous-pistes ${phase}
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-lok-lak-v2-${phase}
+          path: .tmp-cooking-coral/lok-lak/v2/${phase}-part-*.mp3
+          retention-days: 14
+          if-no-files-found: ignore
+          include-hidden-files: true
+          overwrite: true
+      - name: Coral V2 - ${phase} (reprenable)
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=lok-lak --one=${phase}
+      - name: Sauvegarder les sous-pistes ${phase}
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-lok-lak-v2-${phase}
+          path: .tmp-cooking-coral/lok-lak/v2/${phase}-part-*.mp3
+          retention-days: 14
+          if-no-files-found: ignore
+          include-hidden-files: true
+          overwrite: true
+      - name: Coral V2 - ${phase} (reprenable)
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=lok-lak --one=${phase}
+      - name: Sauvegarder les sous-pistes ${phase}
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-lok-lak-v2-${phase}
+          path: .tmp-cooking-coral/lok-lak/v2/${phase}-part-*.mp3
+          retention-days: 14
+          if-no-files-found: ignore
+          include-hidden-files: true
+          overwrite: true
+      - name: Coral V2 - ${phase} (reprenable)
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=lok-lak --one=${phase}
+      - name: Sauvegarder les sous-pistes ${phase}
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-lok-lak-v2-${phase}
+          path: .tmp-cooking-coral/lok-lak/v2/${phase}-part-*.mp3
+          retention-days: 14
+          if-no-files-found: ignore
+          include-hidden-files: true
+          overwrite: true
+      - name: Coral V2 - ${phase} (reprenable)
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=lok-lak --one=${phase}
+      - name: Sauvegarder les sous-pistes ${phase}
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-lok-lak-v2-${phase}
+          path: .tmp-cooking-coral/lok-lak/v2/${phase}-part-*.mp3
+          retention-days: 14
+          if-no-files-found: ignore
+          include-hidden-files: true
+          overwrite: true
+      - name: Coral V2 - ${phase} (reprenable)
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=lok-lak --one=${phase}
+      - name: Sauvegarder les sous-pistes ${phase}
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-lok-lak-v2-${phase}
+          path: .tmp-cooking-coral/lok-lak/v2/${phase}-part-*.mp3
+          retention-days: 14
+          if-no-files-found: ignore
+          include-hidden-files: true
+          overwrite: true
+      - name: Assembler UN MP3 Coral V2 avec sept grands chapitres
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=lok-lak --assemble
+      - name: Controles de vrais MP3 et des horodatages
+        run: |
+          node scripts/check-new-cooking-workshop-audio.mjs
+          node scripts/check-workshop-blueprints.mjs
+          node --test tests/ateliers-cinq-recettes.test.mjs
+      - name: Conserver un artefact pour ecoute humaine (non publie)
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-lok-lak-v2-review
+          path: |
+            public/audio/workshops/lok-lak-de-la-poele-a-l-assiette/atelier-coral-v2.mp3
+            src/data/atelier-recette-audio/lok-lak-v2.json
+          retention-days: 14
+          if-no-files-found: error
+      - name: Commit uniquement les trois artefacts Lok Lak V2 dans la PR #92
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- public/audio/workshops/lok-lak-de-la-poele-a-l-assiette/atelier-coral-v2.mp3
+          git add -- src/data/atelier-recette-audio/lok-lak-v2.json src/data/atelier-recette-guides/lok-lak.json
+          git commit -m "audio(ateliers): nouveau Lok Lak V2 sept chapitres, revue humaine en attente"
+          git push origin HEAD:feat/ateliers-cinq-recettes-completes-20261020
