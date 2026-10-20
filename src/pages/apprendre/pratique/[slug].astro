@@ -24,6 +24,23 @@ const ingredientText = (item: RecipeIngredient) => [
   item.quantity, item.unit, item.name
 ].filter((part) => part !== undefined && part !== null && part !== '').join(' ');
 const minutes = guide.duration.practicalMinutes + guide.duration.preparationMinutes + guide.duration.waitingMinutes;
+const flexibleServings = guide.sourceRecipeSlug === 'lok-lak';
+// The historical recipe combines three crudités in one unscalable string. Normalize
+// their quantities only for this workshop; never alter the canonical recipe.
+const workshopIngredients: RecipeIngredient[] = flexibleServings ? [
+  ...recipe.ingredients.slice(0, 7),
+  { quantity: 1, name: 'tomate' },
+  { quantity: 0.5, name: 'concombre' },
+  { quantity: 4, name: 'feuille de salade' }
+] : recipe.ingredients;
+const ingredientNames = (item: RecipeIngredient) => {
+  if (item.name === 'gousse d’ail') return { singular: 'gousse d’ail', plural: 'gousses d’ail' };
+  if (item.name === 'citrons verts') return { singular: 'citron vert', plural: 'citrons verts' };
+  if (item.name === 'tomate') return { singular: 'tomate', plural: 'tomates' };
+  if (item.name === 'concombre') return { singular: 'concombre', plural: 'concombres' };
+  if (item.name === 'feuille de salade') return { singular: 'feuille de salade', plural: 'feuilles de salade' };
+  return { singular: item.name, plural: item.name };
+};
 const recipeHref = '/recettes/' + recipe.slug + '/';
 const heroPicture=guide.status==='release_ready'&&guide.media.finishedPreparationImage ? guide.media.finishedPreparationImage : recipe.image;
 const heroCaption=guide.status==='release_ready' ? 'Photographie de la préparation terminée.' : 'Visuel éditorial de la recette existante ; photographie finale à valider.';
@@ -66,19 +83,36 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
       <p>Ce parcours part d’une recette complète, pas de conseils isolés. À chaque étape, vous cuisinez, observez le résultat, puis apprenez quoi corriger si nécessaire.</p>
     </section>
 
-    <section id="ingredients" class="fca-section" aria-labelledby="fca-ingredients-heading">
+    <section id="ingredients" class="fca-section" aria-labelledby="fca-ingredients-heading" data-workshop-servings-root={flexibleServings ? '' : undefined} data-base-servings={flexibleServings ? recipe.baseServings : undefined}>
       <p class="fca-eyebrow">01 · Préparer</p>
       <h2 id="fca-ingredients-heading">Les ingrédients et le plan de travail.</h2>
-      <p>Quantités issues directement de la <a href={recipeHref}>recette {recipe.title}</a>, pour {recipe.baseServings} portions. Pour faire les courses, cochez les produits au fur et à mesure.</p>
+      <p>Quantités issues de la <a href={recipeHref}>recette {recipe.title}</a>{flexibleServings ? ', adaptées au nombre de personnes que vous choisissez.' : ', pour ' + recipe.baseServings + ' portions.'} Cochez les produits au fur et à mesure.</p>
+      {flexibleServings && (
+        <div class="fca-servings" aria-label="Choisir le nombre de convives">
+          <label for="fca-servings-input">Je cuisine pour</label>
+          <input id="fca-servings-input" data-workshop-servings-input type="number" inputmode="numeric" min="1" max="12" step="1" value={recipe.baseServings} />
+          <strong data-workshop-servings-summary aria-live="polite">{recipe.baseServings} personnes</strong>
+          <div class="fca-servings-presets">
+            {[2, 4, 6, 8].map((n) => <button type="button" data-workshop-serving-preset={n} aria-pressed={n===recipe.baseServings?'true':'false'}>{n} pers.</button>)}
+          </div>
+          <p>Seules les quantités de la liste changent. Les gestes et les repères de cuisson sont identiques pour tous.</p>
+        </div>
+      )}
       <div class="fca-kit">
         <section class="fca-ingredients" aria-labelledby="fca-shopping-heading">
           <h3 id="fca-shopping-heading">Liste des ingrédients</h3>
           <ul class="fca-checks">
-            {recipe.ingredients.map((ingredient) => (
-              <li>
+            {workshopIngredients.map((ingredient) => (
+              <li data-workshop-ingredient>
                 <label>
-                  <input type="checkbox" aria-label={'J’ai préparé : ' + ingredientText(ingredient)} />
-                  <span>{ingredientText(ingredient)}{ingredient.note && <small>{ingredient.note}</small>}</span>
+                  <input type="checkbox" aria-label={'Ingrédient préparé : ' + ingredient.name} />
+                  <span>
+                    {ingredient.quantity !== undefined && <span data-workshop-ingredient-quantity={flexibleServings ? '' : undefined} data-base-quantity={ingredient.quantity} data-unit={ingredient.unit ?? ''}>{ingredient.quantity}</span>}
+                    {ingredient.unit && <span> {ingredient.unit}</span>}
+                    {ingredient.quantity !== undefined && ' '}
+                    <span data-workshop-ingredient-name={flexibleServings ? '' : undefined} data-singular-name={ingredientNames(ingredient).singular} data-plural-name={ingredientNames(ingredient).plural}>{ingredient.name}</span>
+                    {ingredient.note && <small>{ingredient.note}</small>}
+                  </span>
                 </label>
               </li>
             ))}
@@ -127,7 +161,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
               <div>
                 <h4>Ce que vous faites</h4>
                 <ol>{phase.actions.map((action) => <li>{action}</li>)}</ol>
-                {phase.ingredientNames.length>0 && <p class="fca-used"><strong>Ingrédients de cette phase :</strong> {phase.ingredientNames.join(' · ')}</p>}
+                {phase.ingredientNames.length>0 && <p class="fca-used"><strong>Ingrédients de cette phase :</strong> {flexibleServings && phase.id==='preparer' ? 'bœuf tendre · tomate · concombre · feuilles de salade (quantités ci-dessus)' : phase.ingredientNames.join(' · ')}</p>}
               </div>
               <aside class="fca-observe" aria-label={'Repères : '+phase.title}>
                 <p class="fca-eyebrow">À observer</p><p>{phase.observe}</p>
@@ -157,7 +191,19 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
   </main>
   <SiteFooter />
 </BaseLayout>
+<script>
+  import { initCookingWorkshopServings } from '../../../scripts/cookingWorkshopServings';
+  initCookingWorkshopServings();
+</script>
 <style>
+  .fca-servings{display:flex;align-items:center;flex-wrap:wrap;gap:12px;padding:16px 20px;margin:20px 0;border:1px solid #ddc9a5;background:#fffaf0;border-radius:12px}
+  .fca-servings label{font-weight:700}
+  .fca-servings input{width:76px;min-height:46px;padding:6px;border:1px solid #a58b65;border-radius:6px;font-size:18px}
+  .fca-servings-presets{display:flex;gap:7px;flex-wrap:wrap}
+  .fca-servings-presets button{min-height:44px;background:white;border:1px solid #bca77f;padding:8px 12px;border-radius:24px;cursor:pointer}
+  .fca-servings-presets button[aria-pressed="true"]{background:#f1ca62;border-color:#917139}
+  .fca-servings :is(input,button):focus-visible{outline:3px solid #a77918;outline-offset:3px}
+  .fca-servings p{flex-basis:100%;margin:0;font-size:13px;color:#635747}
   .full-cooking-atelier{--ink:#302c27;--line:#e0d6c5;--paper:#faf6ed;color:var(--ink);max-width:1350px;margin:auto;padding:120px clamp(18px,4vw,65px) 90px;line-height:1.65}
   .full-cooking-atelier *{box-sizing:border-box}
   .full-cooking-atelier a{color:#735222;text-underline-offset:3px}
