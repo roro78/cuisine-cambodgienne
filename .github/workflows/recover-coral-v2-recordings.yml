@@ -1,0 +1,76 @@
+name: Cuisine - recuperer MP3 Coral V2 sauvegardes sans TTS
+# No voice generation, no production, no override of approved Lok Lak.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "feat/ateliers-cinq-recettes-completes-20261020"
+    paths:
+      - ".github/workflows/recover-coral-v2-recordings.yml"
+      - "docs/ateliers/RECOVER-V2-MP3-SAVED.txt"
+
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: cuisine-v2-artifact-import-one-at-a-time
+  cancel-in-progress: false
+jobs:
+  import_verified_mp3:
+    name: Recuperation SHA256 et rebase non destructif
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout current review branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/ateliers-cinq-recettes-completes-20261020
+          fetch-depth: 0
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Dependencies
+        run: npm install --no-audit --no-fund
+      - name: ffprobe required for real MP3 duration
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v ffprobe || { sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; }
+      - name: Download only completed five-ateliers V2 review artifacts
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 39509494616
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pattern: cuisine-cinq-v2-*-review
+          merge-multiple: true
+          path: .coral-recovery
+      - name: Validate and restore existing audio without any new TTS
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/recover-coral-v2-recordings.mjs --source=.coral-recovery
+          node scripts/check-new-cooking-workshop-audio.mjs
+          node scripts/check-workshop-blueprints.mjs
+      - name: Commit only the restored drafts and audio assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- public/audio/workshops src/data/atelier-recette-audio src/data/atelier-recette-guides
+          if git diff --cached --quiet; then
+            echo "Nothing new to restore, all confirmed MP3s already on branch."
+            exit 0
+          fi
+          git commit -m "audio(ateliers): recuperation des V2 confirmees sans double synthese"
+          for attempt in 1 2 3; do
+            git fetch origin feat/ateliers-cinq-recettes-completes-20261020
+            git rebase origin/feat/ateliers-cinq-recettes-completes-20261020
+            if git push origin HEAD:feat/ateliers-cinq-recettes-completes-20261020; then
+              echo "Recovered audio committed without rewriting other work."
+              exit 0
+            fi
+          done
+          echo "Safe fast-forward push not possible; review artifact preserved."
+          exit 1
