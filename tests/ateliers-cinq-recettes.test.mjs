@@ -47,3 +47,21 @@ test('Une source d’ingrédients, photos existantes, données privées absentes
   }
   assert.doesNotMatch(page,/n8n|resend|socialCatalog|password|OPENAI_API_KEY/);
 });
+
+test('Lok Lak V2 : sept chapitres cuisinables, MP3 antérieur conservé mais non publiable', async () => {
+  const { data, recipes, errors } = await validateBlueprintFile('src/data/atelier-recette-guides/lok-lak.json');
+  assert.deepEqual(errors, []);
+  assert.equal(data.audio.storyboardVersion, 2);
+  assert.equal(data.audio.status, 'script_only');
+  assert.equal(data.review.productionApproved, false);
+  assert.equal(data.audio.asset, undefined, 'Old MP3 must not appear as the active V2 audio');
+  assert.match(data.audio.previousAsset.sha256, /^[a-f0-9]{64}$/);
+  const plan = buildCookingAudioStoryboard(data);
+  assert.deepEqual(plan.chapters.map(c => c.id), ['intro', ...PHASE_IDS]);
+  assert.ok(plan.chapters[0].text.length >= 350, 'Welcome and preparation before starting');
+  assert.ok(plan.chapters.slice(1).every(c => c.text.length >= 650), 'Each spoken chapter must guide real gestures');
+  assert.match(plan.chapters.at(-1).text, /bon appétit/i);
+  assert.doesNotMatch(plan.chapters.map(c => c.text).join(' '), /quatre assiettes|600 grammes|300 grammes/i, 'Narration must not freeze portions');
+  assert.ok(recipes.find(r => r.slug === 'lok-lak').ingredients.length === 8, 'Canonical recipe unchanged');
+  assert.match(page, /guide[.]audio[.]status === 'script_only'/, 'Do not render superseded audio');
+});
