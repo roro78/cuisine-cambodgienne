@@ -50,6 +50,7 @@ jobs:
           node scripts/check-workshop-blueprints.mjs
           node --test tests/atelier-standard.test.mjs
           node --test tests/atelier-kroeung-page.test.mjs
+          node --test tests/ateliers-cinq-recettes.test.mjs
 
       - name: Validate all six Coral MP3s and actual chapter boundaries (offline)
         run: node scripts/check-workshop-audio.mjs
@@ -98,6 +99,11 @@ jobs:
         env:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
         run: npm run test:browser-experiences
+
+      - name: Cinq ateliers complets - QA mobile et desktop
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/ateliers-cinq-browser.test.mjs
 
       - name: Kroeung véritable atelier - navigateur mobile et ordinateur
         env:
