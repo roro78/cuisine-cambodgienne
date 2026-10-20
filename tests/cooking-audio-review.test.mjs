@@ -1,0 +1,64 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { verifyCookingAudioReview } from '../scripts/verify-cooking-audio-review.mjs';
+
+const fixture=()=>({
+  blueprint:{
+    status:'draft',
+    audio:{status:'generated_review_pending'},
+    review:{audioListeningValidated:false,mobileValidated:false,desktopValidated:false}
+  },
+  manifest:{
+    status:'audio_generated_review_pending',
+    review:{acousticListening:false,mobile:false,desktop:false}
+  }
+});
+
+test('Un MP3 généré sans écoute reste en prépublication',()=>{
+  const {blueprint,manifest}=fixture();
+  assert.deepEqual(verifyCookingAudioReview(blueprint,manifest),[]);
+});
+
+test('La fiche ne peut pas se déclarer approuvée si le manifeste refuse l’écoute',()=>{
+  const {blueprint,manifest}=fixture();
+  blueprint.review.audioListeningValidated=true;
+  assert.match(verifyCookingAudioReview(blueprint,manifest).join(' '),/Contradiction de revue acousticListening/);
+});
+
+test('Changer simplement le statut audio en validated ne suffit pas',()=>{
+  const {blueprint,manifest}=fixture();
+  blueprint.audio.status='validated';
+  assert.ok(verifyCookingAudioReview(blueprint,manifest).length>=2);
+});
+
+test('Chaque confirmation, même partielle, doit être synchronisée',()=>{
+  const {blueprint,manifest}=fixture();
+  manifest.review.acousticListening=true;
+  blueprint.review.audioListeningValidated=true;
+  assert.deepEqual(verifyCookingAudioReview(blueprint,manifest),[]);
+});
+
+test('La validation complète cohérente reste possible après les vrais contrôles humains',()=>{
+  const {blueprint,manifest}=fixture();
+  blueprint.audio.status='validated';
+  manifest.status='audio_validated';
+  for(const f of Object.keys(manifest.review))manifest.review[f]=true;
+  for(const f of Object.keys(blueprint.review))blueprint.review[f]=true;
+  assert.deepEqual(verifyCookingAudioReview(blueprint,manifest),[]);
+  blueprint.status='release_ready';
+  assert.deepEqual(verifyCookingAudioReview(blueprint,manifest),[]);
+});
+
+test('La publication reste refusée si la revue desktop manque',()=>{
+  const {blueprint,manifest}=fixture();
+  blueprint.status='release_ready';
+  manifest.review.acousticListening=blueprint.review.audioListeningValidated=true;
+  manifest.review.mobile=blueprint.review.mobileValidated=true;
+  assert.ok(verifyCookingAudioReview(blueprint,manifest).some(e=>e.includes('Publication refusée')));
+});
+
+test('Une validation déclarée uniquement par le manifeste est également interdite',()=>{
+  const {blueprint,manifest}=fixture();
+  manifest.status='audio_validated';
+  assert.ok(verifyCookingAudioReview(blueprint,manifest).some(e=>e.includes('avant validation')));
+});
