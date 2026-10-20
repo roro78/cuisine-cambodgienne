@@ -182,7 +182,7 @@
   ],
   "audio": {
     "mode": "guided-cooking",
-    "status": "script_only",
+    "status": "generated_review_pending",
     "voice": "coral",
     "intro": "Coucou, bienvenue dans notre cuisine ! Aujourd'hui, on ne va pas simplement parler d'épices : on va fabriquer ensemble un vrai kroeung jaune, cette pâte aromatique qui donne du caractère à plusieurs plats cambodgiens. À la fin, vous aurez dans un récipient votre propre pâte, bien liée, que vous pourrez incorporer dans une préparation cuite. Le geste essentiel, c'est de transformer des racines fibreuses en une pâte fine grâce à la découpe puis au pilon. Avant de commencer, choisissez votre nombre de petits pots sur la fiche et mesurez toutes les quantités affichées. Je ne vais pas vous imposer des grammages dans le son : c'est votre fiche qui fait foi. Il nous faudra un mortier stable, un pilon, une planche, un couteau, une spatule propre et un récipient refermable. On ne goûtera pas ce kroeung cru comme un plat fini. Prenez vos aises : si un geste demande plus de temps, vous pouvez faire pause et relancer l'enregistrement. Je vous accompagnerai de la première coupe au dernier coup de pilon.",
     "publicProviderMention": false,
@@ -236,7 +236,57 @@
       ],
       "scriptSha256": "ab9aab982580d321ed030f51d3a8198f07e5ff44839e5f4cd3b781a575102cc7"
     },
-    "storyboardVersion": 2
+    "storyboardVersion": 2,
+    "asset": {
+      "audioUrl": "/audio/workshops/atelier-pratique-kroeung-jaune/atelier-coral-v2.mp3",
+      "durationSec": 670.08,
+      "sha256": "c2eb01538fa68ddcef431d531376be5b4e09276e4cd14fe893608aa0fea6bbb0",
+      "chapters": [
+        {
+          "id": "intro",
+          "title": "Bienvenue et mise en place",
+          "startSec": 0,
+          "endSec": 73.656
+        },
+        {
+          "id": "installer",
+          "title": "Organiser le poste et mesurer les aromates",
+          "startSec": 73.656,
+          "endSec": 167.664
+        },
+        {
+          "id": "preparer",
+          "title": "Nettoyer et émincer les aromates",
+          "startSec": 167.664,
+          "endSec": 268.272
+        },
+        {
+          "id": "assembler",
+          "title": "Commencer avec les fibres fermes",
+          "startSec": 268.272,
+          "endSec": 366.96
+        },
+        {
+          "id": "maitriser",
+          "title": "Transformer les aromates en pâte",
+          "startSec": 366.96,
+          "endSec": 482.352
+        },
+        {
+          "id": "rectifier",
+          "title": "Évaluer et corriger la texture",
+          "startSec": 482.352,
+          "endSec": 584.016
+        },
+        {
+          "id": "terminer",
+          "title": "Conditionner la pâte et retenir le geste",
+          "startSec": 584.016,
+          "endSec": 670.08
+        }
+      ],
+      "scriptSha256": "fae92e26ba5d6778914dfc176d410782ef1b13df8a3cac33f334378ccd8bf3ed"
+    }
   },
   "media": {
     "finishedPreparationImage": "",
