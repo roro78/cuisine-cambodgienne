@@ -22,6 +22,17 @@ export interface GuidedStep {
   narrationDraft: string;
 }
 export interface GuidedWorkshop {
+  // Gates du référentiel PR #90 : statut pilote tant qu'une preuve manque.
+  release: {
+    recipeTested: boolean;
+    photoUrl: string;
+    photoRightsValidated: boolean;
+    acousticListeningValidated: boolean;
+    mobileValidated: boolean;
+    desktopValidated: boolean;
+    editorialApproved: boolean;
+    productionApproved: boolean;
+  };
   id: string;
   slug: string;
   status: GuidedWorkshopStatus;
@@ -44,6 +55,16 @@ export interface GuidedWorkshop {
 }
 
 export const tamarindGuidedWorkshop: GuidedWorkshop = {
+  release: {
+    recipeTested: false,
+    photoUrl: '',
+    photoRightsValidated: false,
+    acousticListeningValidated: false,
+    mobileValidated: false,
+    desktopValidated: false,
+    editorialApproved: false,
+    productionApproved: false
+  },
   id: 'pratique:sauce-tamarin',
   slug: 'sauce-tamarin',
   status: 'pilot_review',
