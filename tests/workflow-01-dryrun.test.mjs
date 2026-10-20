@@ -42,9 +42,9 @@ const select = (sources, history = []) => execute(workflow01, 'Choisir un conten
   $input: { all: () => history.map(json => ({ json })) },
 });
 
-test('the three workflow exports remain inactive and Workflow 01 retains 11 nodes', () => {
+test('the three workflow exports remain inactive and Workflow 01 has the insert guard', () => {
   for (const w of [workflow01, workflow02, workflow03]) assert.equal(w.active, false);
-  assert.equal(workflow01.nodes.length, 11);
+  assert.equal(workflow01.nodes.length, 12);
   assert.equal(get(workflow01, 'Choisir un contenu original').parameters.mode, 'runOnceForAllItems');
 });
 
@@ -134,13 +134,23 @@ test('approval is explicitly human and revision requires a comment', () => {
   assert.equal(decide('Inconnu')[0].json.decision, 'rejected');
 });
 
-test('duplicate-date SQL cannot return an inserted ID and no phantom approval status exists', () => {
+test('duplicate-date insert has an explicit IF guard before any Resend notification', () => {
   const insert = get(workflow01, 'Enregistrer le brouillon');
   assert.match(insert.parameters.query, /ON CONFLICT \(scheduled_date\) DO NOTHING RETURNING id/);
-  assert.notEqual(insert.alwaysOutputData, true);
+  assert.equal(insert.alwaysOutputData, true, 'emit an empty item on no inserted row so the guard can run');
   const subsequent = workflow01.connections[insert.name].main[0][0].node;
-  assert.equal(subsequent, 'Envoyer la demande de validation Resend');
-  // Structural check only. Remote n8n behavior when Postgres returns 0 items remains unverified.
+  assert.equal(subsequent, 'Brouillon inséré ?');
+  const guard = get(workflow01, subsequent);
+  assert.equal(guard.type, 'n8n-nodes-base.if');
+  const conditions = guard.parameters.conditions.conditions;
+  assert.equal(conditions.length, 1);
+  assert.equal(conditions[0].leftValue, '={{ $json.id }}');
+  assert.equal(conditions[0].operator.operation, 'exists');
+  const outputs = workflow01.connections[guard.name].main;
+  assert.equal(outputs.length, 2);
+  assert.equal(outputs[0][0].node, 'Envoyer la demande de validation Resend');
+  assert.equal(outputs[1].length, 0, 'missing id must not continue toward Resend');
+  // Structural contract only: validate the actual n8n IF runtime with a controlled test before enabling.
   assert.match(get(workflow01, 'Persister la décision humaine').parameters.query, /status='draft'/);
 });
 
