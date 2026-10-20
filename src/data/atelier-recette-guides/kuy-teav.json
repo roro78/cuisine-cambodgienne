@@ -23,7 +23,8 @@
   "equipment": [
     "Deux grandes casseroles et une passoire",
     "Une écumoire, une louche et quatre bols profonds",
-    "Une planche et un couteau pour la finition végétale"
+    "Une planche et un couteau pour la finition végétale",
+    "Un thermomètre alimentaire pour vérifier la cuisson du porc"
   ],
   "beforeStarting": [
     "Préparez 1,4 litre de bouillon de volaille ou de porc peu salé, filtré et prêt à être réchauffé.",
@@ -31,7 +32,8 @@
   ],
   "safety": [
     "Vérifiez que le porc est entièrement cuit avant tout service ou dégustation du bouillon.",
-    "Protégez-vous de la vapeur, du bouillon brûlant et des projections de la cuisson des nouilles."
+    "Protégez-vous de la vapeur, du bouillon brûlant et des projections de la cuisson des nouilles.",
+    "Pour le porc haché, vérifiez une température d'au moins 71 °C à cœur ; pour les morceaux découpés dans une pièce entière, la référence USDA est de 63 °C avec 3 minutes de repos. Ne fiez pas la sécurité à la couleur seule."
   ],
   "allergens": {
     "status": "declared",
@@ -42,7 +44,13 @@
   "sources": {
     "recipeSource": "/recettes/kuy-teav/",
     "culturalNote": "Cet atelier réalise la recette kuy-teav documentée sur Cuisine du Cambodge ; les gestes et les variantes doivent rester fidèles à cette version.",
-    "pedagogicalAdaptation": "Les pauses, critères sensoriels et corrections de gestes sont des compléments d'apprentissage ajoutés à la recette sans changer les ingrédients ni les proportions."
+    "pedagogicalAdaptation": "Les pauses, critères sensoriels et corrections de gestes sont des compléments d'apprentissage ajoutés à la recette sans changer les ingrédients ni les proportions.",
+    "safetyReferences": [
+      {
+        "title": "USDA FSIS — températures minimales de cuisson (porc)",
+        "url": "https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/safe-temperature-chart"
+      }
+    ]
   },
   "phases": [
     {
