@@ -36,7 +36,11 @@ const acousticReviewComplete=manifest.review?.acousticListening===true && manife
     <p data-cooking-transcript>{scripts[0]}</p>
   </details>
   <p class="guided-cooking-live" data-cooking-status aria-live="polite">Introduction sélectionnée.</p>
-  <p class="guided-cooking-tip">Pendant chaque geste, mettez le guide en pause. Les instructions écrites restent disponibles sans lecteur audio.</p>
+  <div class="guided-cooking-follow-row">
+    <button type="button" data-cooking-follow aria-pressed="false" aria-label="Activer le suivi des grandes étapes de la recette">◉ Suivre la narration : désactivé</button>
+    <p>Le suivi est facultatif : la page avance seulement aux grandes phases. Faites défiler librement pour le désactiver sans interrompre le son.</p>
+  </div>
+  <p class="guided-cooking-tip">Pendant les gestes, vous pouvez mettre le guide en pause et reprendre à votre rythme. Les instructions écrites restent disponibles sans audio.</p>
 </section>
 <script>
   document.querySelectorAll<HTMLElement>('[data-cooking-chapters]').forEach((root)=>{
@@ -47,12 +51,53 @@ const acousticReviewComplete=manifest.review?.acousticListening===true && manife
     const status=root.querySelector<HTMLElement>('[data-cooking-status]');
     const transcript=root.querySelector<HTMLElement>('[data-cooking-transcript]');
     let active=0;
+    let following=false;
+    let programmaticScrollUntil=0;
+    const followButton=root.querySelector<HTMLButtonElement>('[data-cooking-follow]');
+    const prefersReducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
+    const renderFollow=()=>{
+      if(!followButton)return;
+      followButton.setAttribute('aria-pressed',String(following));
+      followButton.textContent=following?'◉ Suivre la narration : activé':'◉ Suivre la narration : désactivé';
+    };
+    const scrollToChapter=(index:number)=>{
+      const target=index===0?root:document.getElementById('phase-'+chapters[index].id);
+      if(!target)return;
+      programmaticScrollUntil=Date.now()+2200;
+      target.scrollIntoView({behavior:prefersReducedMotion.matches?'auto':'smooth',block:'start'});
+    };
+    const stopFollowing=()=>{
+      if(!following)return;
+      following=false;
+      renderFollow();
+      if(status)status.textContent='Défilement libre : le suivi est désactivé, mais la narration continue.';
+    };
+    followButton?.addEventListener('click',()=>{
+      following=!following;
+      renderFollow();
+      if(following)scrollToChapter(active);
+    });
+    // Manual scrolling always wins over automatic navigation. Playback is never paused.
+    window.addEventListener('wheel',stopFollowing,{passive:true});
+    window.addEventListener('touchmove',(event)=>{
+      if(event.target instanceof Element&&event.target.closest('[data-cooking-chapters]'))return;
+      stopFollowing();
+    },{passive:true});
+    window.addEventListener('scroll',()=>{
+      if(following&&Date.now()>programmaticScrollUntil)stopFollowing();
+    },{passive:true});
+    window.addEventListener('keydown',(event)=>{
+      if(!['PageDown','PageUp','ArrowDown','ArrowUp','Home','End',' '].includes(event.key))return;
+      if(event.target instanceof Element&&event.target.closest('button,input,select,textarea,summary,a,[contenteditable]'))return;
+      stopFollowing();
+    });
     const activate=(index:number)=>{
       if(index<0||index>=chapters.length)return;
       active=index;
       buttons.forEach((button,i)=>i===index?button.setAttribute('aria-current','true'):button.removeAttribute('aria-current'));
       if(status)status.textContent='Chapitre '+(index===0?'introduction':index)+' : '+chapters[index].title;
       if(transcript)transcript.textContent=chapters[index].text;
+      if(following)scrollToChapter(index);
     };
     buttons.forEach((button,i)=>button.addEventListener('click',()=>{
       if(!audio)return;
@@ -92,5 +137,10 @@ const acousticReviewComplete=manifest.review?.acousticListening===true && manife
   .guided-cooking-transcript p{line-height:1.8}
   .guided-cooking-live{font-weight:750;font-size:13px}
   .guided-cooking-tip{font-size:13px;color:#635b51}
+  .guided-cooking-follow-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}
+  .guided-cooking-follow-row button{min-height:48px;padding:10px 15px;border-radius:24px;border:1px solid #8a632b;background:#fff;color:#443018;cursor:pointer;font-weight:700}
+  .guided-cooking-follow-row button[aria-pressed="true"]{background:#f3dfb0;border-color:#77501c}
+  .guided-cooking-follow-row button:focus-visible{outline:3px solid #987030;outline-offset:3px}
+  .guided-cooking-follow-row p{margin:0;font-size:13px;color:#635b51;flex:1;min-width:200px}
   @media(max-width:560px){.guided-cooking-chapter-list{grid-template-columns:1fr}}
 </style>
