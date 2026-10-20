@@ -16,6 +16,10 @@ for (const slug of expected) {
     assert.equal(data.status,'draft');
     assert.ok(['script_only','generated_review_pending'].includes(data.audio.status));
     assert.equal(data.review.productionApproved,false);
+    assert.ok(Array.isArray(data.sources.safetyReferences) && data.sources.safetyReferences.length>0,'Les repères cuisson/conservation doivent citer des sources');
+    assert.ok(data.sources.safetyReferences.every(ref=>/^https:\/\//.test(ref.url) && ref.title.length>15),'Chaque source de sécurité possède un titre et une URL vérifiables');
+    assert.ok(data.safety.length>=3,'Rappels de sécurité concrets disponibles dans la fiche');
+
     assert.ok(data.phases.every(p=>p.actions.length>=2 && p.check.length>25 && p.recovery.length>25));
     const plan = buildCookingAudioStoryboard(data);
     assert.equal(plan.chapters.length,7);
