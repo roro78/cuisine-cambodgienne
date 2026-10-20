@@ -48,6 +48,7 @@ jobs:
       - name: Social publication safety contract
         run: |
           node tests/social-pipeline.test.mjs
+          node --test tests/workflow-01-dryrun.test.mjs
           node --check scripts/apply-cuisine-n8n-approval-guards.mjs
 
       - name: Validate all six Coral MP3s and actual chapter boundaries (offline)
