@@ -123,7 +123,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
     <section id="ingredients" class="fca-section" aria-labelledby="fca-ingredients-heading" data-workshop-servings-root="" data-base-servings={recipe.baseServings}>
       <p class="fca-eyebrow">01 · Préparer</p>
       <h2 id="fca-ingredients-heading">Les ingrédients et le plan de travail.</h2>
-      <p>Quantités issues de la <a href={recipeHref}>recette {recipe.title}</a>{flexibleServings ? ', adaptées au nombre de personnes que vous choisissez. Une petite quantité d’huile neutre facultative est signalée séparément pour la saisie du bœuf mariné.' : ', pour ' + recipe.baseServings + ' portions.'} Cochez les produits au fur et à mesure.</p>
+      <p>Quantités issues de la <a href={recipeHref}>recette {recipe.title}</a>{', adaptées au nombre de personnes que vous choisissez.'}{guide.sourceRecipeSlug==='lok-lak' && ' Une petite quantité d’huile neutre facultative est signalée séparément pour la saisie du bœuf mariné.'} Cochez les produits au fur et à mesure.</p>
       {flexibleServings && (
         <div class="fca-servings" aria-label="Choisir le nombre de convives">
           <label for="fca-servings-input">Je cuisine pour</label>
