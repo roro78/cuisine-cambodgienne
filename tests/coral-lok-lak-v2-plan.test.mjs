@@ -41,9 +41,9 @@ test('Le feu vert TTS reste explicitement absent tant que la revue du cours est 
   const blueprint=JSON.parse(readFileSync(blueprintPath,'utf8'));
   const expectedCheckpoint='.tmp-cooking-coral/'+blueprint.slug+'/v2';
   assert.ok(workflow.includes(expectedCheckpoint),'Checkpoint path must match the real workshop slug');
-  assert.equal((workflow.match(/\\.tmp-cooking-coral\\/lok-lak-de-la-poele-a-l-assiette\\/v2/g)||[]).length,8,
+  assert.equal(workflow.split(expectedCheckpoint).length-1,8,
     'One restore and seven chapter uploads must use the same source directory');
-  assert.doesNotMatch(workflow,/\\.tmp-cooking-coral\\/lok-lak\\/v2/, 'Short recipe slug loses paid TTS checkpoints');
+  assert.equal(workflow.includes('.tmp-cooking-coral/lok-lak/v2'),false,'Never use the short recipe slug for TTS tracks');
   assert.equal((workflow.match(/if-no-files-found: error/g)||[]).length,8,
     'Every checkpoint must fail visibly when missing');
   assert.match(workflow,/GO-LOK-LAK-V2[.]txt/);
