@@ -32,7 +32,7 @@ for (const slug of expected) {
 }
 test('Une source d’ingrédients, photos existantes, données privées absentes', () => {
   assert.match(page,/workshopIngredients[.]map/);
-  assert.match(page,/recipe[.]ingredients[.]slice[(]0, 7[)]/);
+  assert.match(page,/items[.]slice[(]0,7[)]/);
   assert.match(page,/data-workshop-servings-root/);
   assert.match(page,/data-workshop-ingredient-quantity/);
   assert.match(page,/noindex=\{guide[.]status !== 'release_ready'\}/);
