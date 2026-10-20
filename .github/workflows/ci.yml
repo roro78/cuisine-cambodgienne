@@ -49,6 +49,7 @@ jobs:
         run: |
           node scripts/check-workshop-blueprints.mjs
           node --test tests/atelier-standard.test.mjs
+          node --test tests/atelier-kroeung-page.test.mjs
 
       - name: Validate all six Coral MP3s and actual chapter boundaries (offline)
         run: node scripts/check-workshop-audio.mjs
@@ -97,6 +98,11 @@ jobs:
         env:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
         run: npm run test:browser-experiences
+
+      - name: Kroeung véritable atelier - navigateur mobile et ordinateur
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/atelier-kroeung-browser.test.mjs
 
       - name: Atelier mortier mobile bottom-dock browser regression
         if: github.ref == 'refs/heads/feat/atelier-mortier-mobile-dock-slides-20261018'
