@@ -1,10 +1,8 @@
 name: Cuisine - Coral six ateliers via Render existant - ONE SHOT (no deploy)
+# One-shot generation completed on run 39467388097.
+# No automatic paid TTS call on subsequent branch changes.
 on:
-  push:
-    branches:
-      - feat/ateliers-cinq-recettes-completes-20261020
-    paths:
-      - .github/workflows/coral-cooking-workshops-one-shot.yml
+  workflow_dispatch:
 permissions:
   contents: write
   actions: read
