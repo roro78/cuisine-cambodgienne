@@ -31,8 +31,10 @@ for (const slug of expected) {
   });
 }
 test('Une source d’ingrédients, photos existantes, données privées absentes', () => {
-  assert.match(page,/recipe[.]ingredients[.]map/);
-  assert.match(page,/ingredientText[(]ingredient[)]/);
+  assert.match(page,/workshopIngredients[.]map/);
+  assert.match(page,/recipe[.]ingredients[.]slice[(]0, 7[)]/);
+  assert.match(page,/data-workshop-servings-root/);
+  assert.match(page,/data-workshop-ingredient-quantity/);
   assert.match(page,/noindex=\{guide[.]status !== 'release_ready'\}/);
   assert.match(page,/guide[.]phases[.]map/);
   assert.match(page,/Si quelque chose ne fonctionne pas/);
