@@ -9,7 +9,7 @@
   "learningGoal": "Préparer entièrement une soupe aigre-douce, cuire correctement le poisson ou le poulet et apprendre à équilibrer le tamarin sans masquer le goût du bouillon.",
   "difficulty": "Intermédiaire",
   "canonicalServings": 4,
-  "portionLabel": "4 bols de soupe Samlor Machu",
+  "portionLabel": "des bols de soupe Samlor Machu",
   "duration": {
     "preparationMinutes": 0,
     "practicalMinutes": 50,
@@ -23,7 +23,7 @@
   "equipment": [
     "Une casserole assez grande et une louche",
     "Une planche, un couteau et un tamis fin si le tamarin est préparé à partir de pulpe",
-    "Quatre bols résistants à la chaleur et une cuillère de mesure",
+    "Des bols résistants à la chaleur et une cuillère de mesure",
     "Un thermomètre alimentaire pour contrôler la protéine cuite"
   ],
   "beforeStarting": [
@@ -70,7 +70,7 @@
       "minutes": 5,
       "ingredientNames": [],
       "actions": [
-        "Mesurez 1,2 litre de bouillon peu salé et préparez la casserole, la louche et les quatre bols sans chauffer encore les ingrédients.",
+        "Mesurez le bouillon mesuré sur la fiche peu salé et préparez la casserole, la louche et les des bols sans chauffer encore les ingrédients.",
         "Réunissez le tamarin, la sauce de poisson, le sucre, les tomates, l'ananas ou la courgette et les herbes de la recette avant d'ouvrir le paquet de protéine."
       ],
       "observe": "Le bouillon est clair et peu salé ; les ingrédients sont regroupés séparément.",
@@ -93,8 +93,8 @@
         "1 petite poignée de coriandre fraîche ou de basilic asiatique"
       ],
       "actions": [
-        "Coupez les 400 grammes de poisson ou de poulet en morceaux réguliers ; tranchez les deux tomates et détaillez l'ananas en dés, ou la courgette selon la variante choisie.",
-        "Préparez deux cuillères à soupe de jus de tamarin filtré, lavez les herbes fraîches puis réservez-les séparément pour les ajouter uniquement en finition."
+        "Coupez les le poisson ou le poulet pesé sur la fiche en morceaux réguliers ; tranchez les les tomates prévues et détaillez l'ananas en dés, ou la courgette selon la variante choisie.",
+        "Préparez le jus de tamarin filtré mesuré sur la fiche, lavez les herbes fraîches puis réservez-les séparément pour les ajouter uniquement en finition."
       ],
       "observe": "Les morceaux ont des tailles proches et le tamarin est liquide, sans grosses fibres.",
       "check": "La protéine, les légumes et le tamarin sont prêts à entrer dans la casserole au bon moment.",
@@ -171,10 +171,10 @@
       "ingredientNames": [],
       "actions": [
         "Coupez le feu avant de répartir les herbes fraîches lavées et ciselées dans la soupe pour conserver leur parfum.",
-        "Versez la soupe chaude avec ses morceaux de garniture dans quatre bols résistants à la chaleur et servez sans attendre."
+        "Versez la soupe chaude avec ses morceaux de garniture dans des bols résistants à la chaleur et servez sans attendre."
       ],
       "observe": "Les herbes gardent leur couleur et leur fraîcheur, la soupe reste bien garnie.",
-      "check": "Quatre bols de soupe complète sont prêts, parfumés et acidulés sans excès.",
+      "check": "Des bols de soupe complète sont prêts, parfumés et acidulés sans excès.",
       "mistake": "Laisser bouillir longuement les herbes peut atténuer leur parfum.",
       "recovery": "Coupez le feu puis ajoutez une nouvelle petite poignée d'herbes fraîches au service.",
       "learning": "La fraîcheur ajoutée à la fin complète la cuisson et l'acidité du tamarin.",
