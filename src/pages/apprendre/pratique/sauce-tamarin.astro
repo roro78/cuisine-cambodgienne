@@ -4,7 +4,18 @@ import SiteHeader from '../../../components/SiteHeader.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
 import { tamarindGuidedWorkshop as workshop } from '../../../data/guidedWorkshops';
 import guideAudio from '../../../data/guided-workshop-audio/sauce-tamarin.json';
+import { recipes } from '../../../data/recipes';
+// @ts-ignore — vérification de release conservée en module JS pur pour les tests Node.
+import { guidedPilotReleaseBlockers } from '../../../../scripts/verify-guided-pilot-release.mjs';
 
+// Une simple bascule manuelle du statut ne doit jamais publier le pilote
+// avant conversion au contrat PR #90, preuves photo et écoute réelle.
+const releaseBlockers = guidedPilotReleaseBlockers(
+  workshop, guideAudio, recipes.some((recipe) => recipe.slug === workshop.slug)
+);
+if (workshop.status === 'validated' && releaseBlockers.length) {
+  throw new Error('NO GO tamarin : ' + releaseBlockers.join(' | '));
+}
 const total = workshop.steps.reduce((minutes, step) => minutes + step.minutes, 0);
 // This is a pilot PREVIEW: recorded MP3 verified technically, human listening still required.
 const introNarration = 'Bienvenue dans cet atelier consacré à la sauce au tamarin. Nous allons préparer une sauce à partir de sa pulpe, puis goûter plusieurs équilibres. Préparez votre matériel, avancez à votre rythme et mettez la narration en pause lorsque vous cuisinez.';
