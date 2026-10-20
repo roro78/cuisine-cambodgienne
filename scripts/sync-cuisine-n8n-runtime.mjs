@@ -158,15 +158,46 @@ export function planWorkflow(live, reviewed, index) {
   return { update, changes };
 }
 
-function asPayload(workflow) {
-  const body = {
-    name: workflow.name, nodes: workflow.nodes,
-    connections: workflow.connections, settings: workflow.settings,
-  };
-  if (Object.hasOwn(workflow, 'staticData')) body.staticData = workflow.staticData;
-  for (const field of ['description','nodeGroups','pinData']) {
-    if (Object.hasOwn(workflow, field)) body[field] = workflow[field];
+// The public API PUT schema is stricter than GET: nullable response fields and
+// internal settings may produce HTTP 400 if copied verbatim. Use a positive
+// allowlist, keeping only writable content and verifying all live metadata
+// again after the write. Never serialize empty/null pinData or a null description.
+export function asPayload(workflow) {
+  assert.ok(workflow.settings && typeof workflow.settings === 'object',
+    'Missing live workflow settings');
+  const settings = structuredClone(workflow.settings);
+  // binaryMode and credentialResolverId are internal/derived response values.
+  delete settings.binaryMode;
+  delete settings.credentialResolverId;
+  // n8n public API cannot preserve MCP exposure through PUT. Fail closed.
+  if (settings.availableInMCP === true) {
+    throw new Error('Workflow has MCP access enabled; public API update could clear it');
   }
+  delete settings.availableInMCP;
+  const allowedSettings = new Set([
+    'executionOrder', 'timezone', 'saveExecutionProgress',
+    'saveManualExecutions', 'saveDataErrorExecution',
+    'saveDataSuccessExecution', 'executionTimeout',
+    'errorWorkflow', 'callerPolicy',
+  ]);
+  for (const key of Object.keys(settings)) {
+    assert.ok(allowedSettings.has(key), 'Unsupported live setting: ' + key);
+    if (settings[key] === null) delete settings[key];
+  }
+  const body = {
+    name: workflow.name,
+    nodes: workflow.nodes,
+    connections: workflow.connections,
+    settings,
+  };
+  if (workflow.staticData != null) body.staticData = workflow.staticData;
+  if (typeof workflow.description === 'string') body.description = workflow.description;
+  if (workflow.nodeGroups != null) {
+    assert.ok(Array.isArray(workflow.nodeGroups), 'Unexpected nodeGroups type');
+    if (workflow.nodeGroups.length) body.nodeGroups = workflow.nodeGroups;
+  }
+  assert.ok(!workflow.pinData || Object.keys(workflow.pinData).length === 0,
+    'Pinned live data detected; refusing public API PUT');
   return body;
 }
 
@@ -192,7 +223,21 @@ async function sync() {
         ...options, redirect: 'error', signal: controller.signal,
         headers: { 'X-N8N-API-KEY': key, Accept: 'application/json', ...(options.headers || {}) },
       });
-      assert.ok(res.ok, 'n8n API returned HTTP ' + res.status + ' for ' + path.split('?')[0]);
+      if (!res.ok) {
+        // Never print response bodies: API errors can echo configuration values.
+        // Extract only a strictly validated schema-error classification.
+        let safeDiagnostic = '';
+        if (res.status === 400) {
+          try {
+            const data = await res.json();
+            const msg = String(data?.message || '');
+            const match = msg.match(/request\\/body(?:\\/[a-zA-Z][\\w-]*){0,4} (?:must NOT have additional properties|must be [a-zA-Z]+|is read-only)/);
+            if (match) safeDiagnostic = ' (' + match[0] + ')';
+          } catch { /* Omit malformed or unsafe error details. */ }
+        }
+        throw new Error('n8n API HTTP ' + res.status + safeDiagnostic + ' on ' +
+          path.split('?')[0] + '; no further PUT attempted');
+      }
       return res.json();
     } finally { clearTimeout(timeout); }
   }
