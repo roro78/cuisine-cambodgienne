@@ -178,7 +178,8 @@ export function asPayload(workflow) {
     'executionOrder', 'timezone', 'saveExecutionProgress',
     'saveManualExecutions', 'saveDataErrorExecution',
     'saveDataSuccessExecution', 'executionTimeout',
-    'errorWorkflow', 'callerPolicy',
+    'errorWorkflow', 'callerPolicy', 'callerIds', 'timeSavedPerExecution',
+    'redactionPolicy', 'customTelemetryTags',
   ]);
   for (const key of Object.keys(settings)) {
     assert.ok(allowedSettings.has(key), 'Unsupported live setting: ' + key);
@@ -191,9 +192,24 @@ export function asPayload(workflow) {
     settings,
   };
   if (workflow.staticData != null) body.staticData = workflow.staticData;
-  if (typeof workflow.description === 'string') body.description = workflow.description;
+  if (workflow.description != null) {
+    assert.equal(typeof workflow.description, 'string', 'Unexpected description type');
+    body.description = workflow.description;
+  }
   if (workflow.nodeGroups != null) {
     assert.ok(Array.isArray(workflow.nodeGroups), 'Unexpected nodeGroups type');
+    for (const group of workflow.nodeGroups) {
+      assert.ok(group && typeof group === 'object' && !Array.isArray(group),
+        'Unexpected node group');
+      for (const property of Object.keys(group)) {
+        assert.ok(['id', 'name', 'description', 'nodeIds'].includes(property),
+          'Unsupported node group field: ' + property);
+      }
+      assert.equal(typeof group.id, 'string', 'Invalid node group ID');
+      assert.equal(typeof group.name, 'string', 'Invalid node group name');
+      assert.ok(Array.isArray(group.nodeIds) && group.nodeIds.every(id => typeof id === 'string'),
+        'Invalid node group nodeIds');
+    }
     if (workflow.nodeGroups.length) body.nodeGroups = workflow.nodeGroups;
   }
   assert.ok(!workflow.pinData || Object.keys(workflow.pinData).length === 0,
@@ -265,6 +281,8 @@ async function sync() {
     const live = await request('/workflows/' + encodeURIComponent(id));
     const reviewed = JSON.parse(readFileSync(new URL('../automation/n8n/' + filenames[index], import.meta.url)));
     const plan = planWorkflow(live, reviewed, index);
+    // Validate every update body before any backup or PUT, not halfway through the batch.
+    if (plan.changes.length) asPayload(plan.update);
     console.log(name + ': ' + (plan.changes.length ? plan.changes.join(', ') : 'already up to date'));
     tasks.push({ name, id, index, live, reviewed, plan });
   }
@@ -290,10 +308,11 @@ async function sync() {
       new Date().toISOString().replace(/[:.]/g, '-') + '.json');
     writeFileSync(path, JSON.stringify(latest, null, 2) + '\n',
       {encoding:'utf8',mode:0o600,flag:'wx'});
+    const payload = asPayload(expected.update);
     console.log(task.name + ': private 0600 backup completed');
     await request('/workflows/' + encodeURIComponent(task.id), {
       method:'PUT', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(asPayload(expected.update)),
+      body: JSON.stringify(payload),
     });
     const after = await request('/workflows/' + encodeURIComponent(task.id));
     assert.equal(after.active, false, 'ALERT: workflow unexpectedly active');
