@@ -91,7 +91,17 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
           {recipe.substitutions && recipe.substitutions.length>0 && (
             <section><h3>Substitutions possibles</h3><ul>{recipe.substitutions.map((item)=><li>{item}</li>)}</ul></section>
           )}
-          <section><h3>Sécurité et allergènes</h3><p><strong>Allergènes à vérifier :</strong> {guide.allergens.items.join(' · ')}</p><ul>{guide.safety.map((item) => <li>{item}</li>)}</ul></section>
+          <section>
+            <h3>Sécurité et allergènes</h3>
+            <p><strong>Allergènes à vérifier :</strong> {guide.allergens.items.join(' · ')}</p>
+            <ul>{guide.safety.map((item) => <li>{item}</li>)}</ul>
+            <details class="fca-safety-sources">
+              <summary>Sources des repères de sécurité alimentaire</summary>
+              <ul>{guide.sources.safetyReferences.map((reference) => (
+                <li><a href={reference.url} target="_blank" rel="noopener noreferrer">{reference.title}</a></li>
+              ))}</ul>
+            </details>
+          </section>
         </div>
       </div>
     </section>
