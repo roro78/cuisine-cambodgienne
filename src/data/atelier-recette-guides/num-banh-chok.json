@@ -165,10 +165,60 @@
   ],
   "audio": {
     "mode": "guided-cooking",
-    "status": "script_only",
+    "status": "generated_review_pending",
     "voice": "coral",
     "intro": "Bienvenue dans l'atelier Préparer un Num Banh Chok, sauce au poisson et garnitures. Vous allez réellement préparer quatre bols de num banh chok avec nouilles de riz, sauce chaude au poisson, coco, kroeung et herbes fraîches. Votre recette comporte six phases, avec des ingrédients déjà quantifiés. Arrêtez la narration pendant chaque geste : observez et vérifiez le résultat avant de reprendre.",
-    "publicProviderMention": false
+    "publicProviderMention": false,
+    "asset": {
+      "audioUrl": "/audio/workshops/num-banh-chok-sauce-et-herbes-fraiches/atelier-coral.mp3",
+      "durationSec": 127.344,
+      "sha256": "099b435fe26f1d0a54bc35c4fad98da9950a1e8d23033a587a481f61ff114eb2",
+      "chapters": [
+        {
+          "id": "intro",
+          "title": "Bienvenue et mise en place",
+          "startSec": 0,
+          "endSec": 32.952
+        },
+        {
+          "id": "installer",
+          "title": "Rassembler la sauce, les nouilles et les herbes",
+          "startSec": 32.952,
+          "endSec": 48.48
+        },
+        {
+          "id": "preparer",
+          "title": "Préparer poisson et garnitures fraîches",
+          "startSec": 48.48,
+          "endSec": 63
+        },
+        {
+          "id": "assembler",
+          "title": "Pocher et émietter le poisson blanc",
+          "startSec": 63,
+          "endSec": 77.448
+        },
+        {
+          "id": "maitriser",
+          "title": "Construire la sauce chaude au kroeung",
+          "startSec": 77.448,
+          "endSec": 94.92
+        },
+        {
+          "id": "rectifier",
+          "title": "Cuire les nouilles et rectifier les textures",
+          "startSec": 94.92,
+          "endSec": 111.48
+        },
+        {
+          "id": "terminer",
+          "title": "Monter les bols et ajouter la fraîcheur",
+          "startSec": 111.48,
+          "endSec": 127.344
+        }
+      ],
+      "scriptSha256": "8830e51af9050773961483b2646a9abfa09b08cb846b8b780b519b64637ce6d1"
+    }
   },
   "media": {
     "finishedPreparationImage": "",
