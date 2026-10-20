@@ -70,6 +70,30 @@ jobs:
         run: |
           test -s .tmp-guided-coral-once/public/audio/workshops/piler-aromates-au-mortier/intro.mp3
           ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 .tmp-guided-coral-once/public/audio/workshops/piler-aromates-au-mortier/intro.mp3
+
+      - name: Recover successful chapter 1 from previous run (NO TTS)
+        uses: actions/download-artifact@v4
+        with:
+          name: sauce-tamarin-coral-checkpoint-etape-01
+          run-id: 39445427124
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: .tmp-guided-coral-once/public/audio/workshops/piler-aromates-au-mortier
+      - name: Recover successful chapter 2 from previous run (NO TTS)
+        uses: actions/download-artifact@v4
+        with:
+          name: sauce-tamarin-coral-checkpoint-etape-02
+          run-id: 39445427124
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: .tmp-guided-coral-once/public/audio/workshops/piler-aromates-au-mortier
+      - name: Validate both recovered chapters before continuing
+        shell: bash
+        run: |
+          set -euo pipefail
+          for part in etape-01 etape-02; do
+            f=".tmp-guided-coral-once/public/audio/workshops/piler-aromates-au-mortier/${part}.mp3"
+            test -s "$f"
+            ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$f"
+          done
       - name: Synthesize only etape-01 through IA-Coach existing Coral backend
         run: node scripts/bridge-guided-tamarin-existing-coral.mjs --render-one=etape-01
       - name: Save etape-01 immediately for safe resumption
