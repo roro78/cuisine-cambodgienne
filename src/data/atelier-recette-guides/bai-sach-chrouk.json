@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "kind": "cooking-workshop",
+  "status": "draft",
+  "slug": "bai-sach-chrouk-porc-riz-et-pickles",
+  "title": "Préparer un Bai Sach Chrouk, porc grillé et riz jasmin",
+  "sourceRecipeSlug": "bai-sach-chrouk",
+  "finalPreparation": "Quatre assiettes de Bai Sach Chrouk avec porc entièrement cuit, riz jasmin chaud et pickles de légumes.",
+  "learningGoal": "Réaliser un repas cambodgien complet, préparer une marinade équilibrée, cuire le riz et colorer le porc sans compromettre sa cuisson à cœur.",
+  "difficulty": "Intermédiaire",
+  "canonicalServings": 4,
+  "portionLabel": "4 assiettes de Bai Sach Chrouk",
+  "duration": {
+    "preparationMinutes": 0,
+    "practicalMinutes": 45,
+    "waitingMinutes": 0,
+    "waitingNote": "Tous les gestes et les temps de mise en place sont compris dans les six phases ; prolongez la cuisson ou le repos si nécessaire."
+  },
+  "recipeIngredients": {
+    "mode": "canonical-recipe",
+    "additionalTrialIngredients": []
+  },
+  "equipment": [
+    "Une poêle ou plancha adaptée aux tranches fines de porc",
+    "Une casserole à riz avec couvercle et une passoire",
+    "Un saladier de marinade, une planche propre et quatre assiettes"
+  ],
+  "beforeStarting": [
+    "Préparez 200 grammes de pickles de concombre et de carotte déjà réalisés et égouttés ; leur confection est distincte du présent atelier.",
+    "Réservez suffisamment de place au réfrigérateur pour mariner les 600 grammes de porc au moins quinze minutes."
+  ],
+  "safety": [
+    "Laissez toujours le porc mariner au réfrigérateur et ne goûtez jamais une marinade ayant touché la viande crue.",
+    "Cuisez les tranches de porc complètement et utilisez une assiette et des ustensiles propres pour le service."
+  ],
+  "allergens": {
+    "status": "declared",
+    "items": [
+      "soja (sauce soja ; vérifier blé/gluten sur étiquette)",
+      "poisson (sauce de poisson)"
+    ]
+  },
+  "sources": {
+    "recipeSource": "/recettes/bai-sach-chrouk/",
+    "culturalNote": "Cet atelier réalise la recette bai-sach-chrouk documentée sur Cuisine du Cambodge ; les gestes et les variantes doivent rester fidèles à cette version.",
+    "pedagogicalAdaptation": "Les pauses, critères sensoriels et corrections de gestes sont des compléments d'apprentissage ajoutés à la recette sans changer les ingrédients ni les proportions."
+  },
+  "phases": [
+    {
+      "id": "installer",
+      "title": "Mesurer les ingrédients et préparer le poste",
+      "minutes": 3,
+      "ingredientNames": [],
+      "actions": [
+        "Préparez le saladier pour la marinade, la casserole pour le riz et la poêle ou le gril pour le porc, avant de sortir la viande froide.",
+        "Mesurez les ingrédients de la recette : porc, sauce soja, sauce de poisson, sucre roux, ail, 320 grammes de riz cru et 200 grammes de pickles prêts."
+      ],
+      "observe": "Chaque élément a sa place et les pickles sont déjà préparés.",
+      "check": "Le poste permet de gérer cuisson du riz et saisie du porc sans confusion.",
+      "mistake": "Commencer avec des pickles non préparés impose une recette supplémentaire en plein atelier.",
+      "recovery": "Préparez ou achetez des pickles sûrs et égouttez-les avant de poursuivre.",
+      "learning": "Le Bai Sach Chrouk exige une organisation simple entre marinade, riz et viande chaude.",
+      "audioScript": "Aujourd'hui vous réaliserez l'assiette entière, avec son riz et ses pickles. Vérifiez que tout est prêt avant de toucher le porc cru. Faites pause pour installer votre plan de travail.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Lavez-vous les mains et gardez les pickles loin de la zone de préparation du porc cru."
+    },
+    {
+      "id": "preparer",
+      "title": "Préparer le porc et hacher l'ail",
+      "minutes": 6,
+      "ingredientNames": [
+        "échine ou filet de porc en tranches fines",
+        "gousses d’ail"
+      ],
+      "actions": [
+        "Épluchez et hachez les deux gousses d'ail, puis disposez les 600 grammes de tranches fines de porc dans un saladier réservé à la viande.",
+        "Vérifiez que les tranches ne sont pas trop épaisses et qu'elles peuvent être étalées dans la poêle en plusieurs fournées si nécessaire."
+      ],
+      "observe": "L'ail est finement haché et les tranches de porc sont assez régulières.",
+      "check": "La viande peut être enrobée rapidement et être cuite de manière homogène.",
+      "mistake": "Des tranches très épaisses peuvent brûler dehors avant de cuire correctement dedans.",
+      "recovery": "Recoupez ou aplatissez légèrement des tranches trop épaisses, en gardant le poste propre.",
+      "learning": "La régularité des tranches facilite la coloration et la cuisson complète.",
+      "audioScript": "Regardez l'épaisseur des tranches. Trop épaisses, elles brûleront en surface avant d'être cuites à l'intérieur. Préparez l'ail et vérifiez le porc, puis faites pause.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Manipulez le porc cru séparément du riz et des pickles."
+    },
+    {
+      "id": "assembler",
+      "title": "Mariner au frais et comprendre les saveurs",
+      "minutes": 15,
+      "ingredientNames": [
+        "sauce soja",
+        "sauce de poisson",
+        "sucre roux"
+      ],
+      "actions": [
+        "Mélangez les deux cuillères à soupe de sauce soja, la cuillère de sauce de poisson, la cuillère de sucre roux et l'ail haché dans le saladier.",
+        "Enrobez toutes les tranches de porc, couvrez puis placez au réfrigérateur au moins quinze minutes ; n'utilisez pas cette marinade crue comme sauce de service."
+      ],
+      "observe": "Chaque tranche est finement recouverte d'un mélange de sauce, sucre et ail.",
+      "check": "Le porc a reposé au frais pendant quinze minutes ou davantage, sans rester sur le plan de travail.",
+      "mistake": "Mariner à température ambiante ou réutiliser directement la sauce crue met le plat en danger.",
+      "recovery": "Replacez immédiatement la viande au frais et jetez la marinade crue non cuite.",
+      "learning": "La sauce soja sale, le sucre favorise une couleur dorée et l'ail parfume le porc.",
+      "audioScript": "Le porc s'imprègne au frais. Regardez si chaque tranche porte un film de marinade. N'oubliez pas : quinze minutes au réfrigérateur, pas sur le plan de travail. Faites pause pendant ce repos.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Ne goûtez pas une marinade qui a touché le porc cru ; respectez la chaîne du froid."
+    },
+    {
+      "id": "maitriser",
+      "title": "Cuire le riz jasmin sans le détremper",
+      "minutes": 10,
+      "ingredientNames": [
+        "riz jasmin cru",
+        "pickles égouttés de concombre et de carotte, préparés à l’avance"
+      ],
+      "actions": [
+        "Rincez les 320 grammes de riz jasmin cru à l'eau froide, mesurez l'eau et cuisez le riz en respectant les indications précises du paquet utilisé.",
+        "Pendant cette cuisson, égouttez les 200 grammes de pickles de concombre et carotte déjà préparés, puis gardez-les dans un plat propre."
+      ],
+      "observe": "Le riz absorbe l'eau et reste souple ; les pickles sont égouttés et conservent du croquant.",
+      "check": "Le riz est cuit conformément à sa variété et les pickles n'apportent pas de liquide excessif.",
+      "mistake": "Ajouter une quantité d'eau au hasard peut rendre le riz collant ou mal cuit.",
+      "recovery": "Suivez le dosage du paquet et prolongez doucement la cuisson si les grains restent fermes.",
+      "learning": "Le riz constitue la base du repas ; sa texture doit accompagner le porc et les légumes.",
+      "audioScript": "Observez le riz : il doit être cuit, mais pas noyé d'eau. Lisez le dosage sur votre paquet ; il peut varier d'un riz jasmin à l'autre. Préparez les pickles pendant ce temps.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Évitez les brûlures de vapeur en soulevant le couvercle du riz."
+    },
+    {
+      "id": "rectifier",
+      "title": "Dorer le porc en vérifiant sa cuisson",
+      "minutes": 8,
+      "ingredientNames": [],
+      "actions": [
+        "Chauffez la poêle ou le gril puis disposez les tranches de porc égouttées en une couche, sans empiler ; cuisez en plusieurs fournées si nécessaire.",
+        "Retournez les tranches pour obtenir des bords colorés et poursuivez jusqu'à cuisson complète au cœur de chaque morceau, même si cela dépasse le temps indicatif."
+      ],
+      "observe": "Les bords prennent une coloration dorée sans zones carbonisées ni intérieur cru.",
+      "check": "Le porc est entièrement cuit et légèrement caramélisé, sans être brûlé.",
+      "mistake": "Trop de tranches à la fois font rendre du jus et empêchent la coloration.",
+      "recovery": "Retirez une partie de la viande et remontez la température avant la prochaine fournée.",
+      "learning": "Saisir le porc ne suffit pas : coloration et sécurité de cuisson doivent être réunies.",
+      "audioScript": "Écoutez la poêle et regardez les bords du porc. Dorent-ils sans noircir ? Ne vous fiez pas seulement à la couleur : la cuisson doit être complète à cœur. Faites pause jusqu'à ce résultat.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Jetez la marinade crue inutilisée et n'utilisez que des ustensiles propres pour servir la viande cuite."
+    },
+    {
+      "id": "terminer",
+      "title": "Dresser l'assiette de riz, porc et pickles",
+      "minutes": 3,
+      "ingredientNames": [],
+      "actions": [
+        "Répartissez le riz jasmin chaud dans quatre assiettes, placez les tranches de porc bien cuites dessus et vérifiez que chaque portion est suffisamment garnie.",
+        "Ajoutez les pickles égouttés de carotte et concombre sur le côté, puis dégustez le contraste entre porc savoureux, riz neutre et légumes acidulés."
+      ],
+      "observe": "Les trois éléments restent distincts et chaque assiette est prête à être servie.",
+      "check": "Quatre repas complets sont dressés, avec porc cuit, riz chaud et pickles.",
+      "mistake": "Mélanger tous les pickles au riz chaud longtemps avant le service leur fait perdre leur croquant.",
+      "recovery": "Gardez-les sur le côté et apportez-les juste avant de déguster.",
+      "learning": "La composition du repas équilibre le plat principal avec le riz et un contraste frais.",
+      "audioScript": "Votre Bai Sach Chrouk est terminé. Regardez l'assiette : riz, porc doré et pickles se complètent. Prenez une bouchée associant les trois et observez l'équilibre. Bravo !",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Ne laissez pas longtemps le porc cuit à température ambiante ; réfrigérez rapidement les restes."
+    }
+  ],
+  "audio": {
+    "mode": "guided-cooking",
+    "status": "script_only",
+    "voice": "coral",
+    "intro": "Bienvenue dans l'atelier Préparer un Bai Sach Chrouk, porc grillé et riz jasmin. Vous allez réellement préparer quatre assiettes de bai sach chrouk avec porc entièrement cuit, riz jasmin chaud et pickles de légumes. Votre recette comporte six phases, avec des ingrédients déjà quantifiés. Arrêtez la narration pendant chaque geste : observez et vérifiez le résultat avant de reprendre.",
+    "publicProviderMention": false
+  },
+  "media": {
+    "finishedPreparationImage": "",
+    "imageValidated": false,
+    "rightsValidated": false,
+    "stepImagePaths": []
+  },
+  "review": {
+    "recipeValidated": false,
+    "editorialValidated": false,
+    "audioListeningValidated": false,
+    "mobileValidated": false,
+    "desktopValidated": false,
+    "productionApproved": false
+  }
+}

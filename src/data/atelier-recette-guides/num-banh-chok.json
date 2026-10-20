@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "kind": "cooking-workshop",
+  "status": "draft",
+  "slug": "num-banh-chok-sauce-et-herbes-fraiches",
+  "title": "Préparer un Num Banh Chok, sauce au poisson et garnitures",
+  "sourceRecipeSlug": "num-banh-chok",
+  "finalPreparation": "Quatre bols de Num Banh Chok avec nouilles de riz, sauce chaude au poisson, coco, kroeung et herbes fraîches.",
+  "learningGoal": "Réaliser un bol complet de nouilles cambodgiennes, réussir la sauce chaude au poisson et maîtriser le contraste avec les légumes et herbes de finition.",
+  "difficulty": "Intermédiaire",
+  "canonicalServings": 4,
+  "portionLabel": "4 bols de Num Banh Chok",
+  "duration": {
+    "preparationMinutes": 0,
+    "practicalMinutes": 70,
+    "waitingMinutes": 0,
+    "waitingNote": "Tous les gestes et les temps de mise en place sont compris dans les six phases ; prolongez la cuisson ou le repos si nécessaire."
+  },
+  "recipeIngredients": {
+    "mode": "canonical-recipe",
+    "additionalTrialIngredients": []
+  },
+  "equipment": [
+    "Deux casseroles et une grande passoire",
+    "Une planche, un couteau et une fourchette pour émietter le poisson",
+    "Quatre bols à servir et une louche propre"
+  ],
+  "beforeStarting": [
+    "Préparez 2 cuillères à soupe de kroeung jaune déjà réalisé ou acheté ; la fabrication du kroeung est un atelier distinct.",
+    "Prévoyez de l'eau potable pour pocher le poisson, cuire les nouilles et blanchir les haricots, selon les volumes nécessaires à vos casseroles."
+  ],
+  "safety": [
+    "Ne goûtez pas une sauce contenant du poisson insuffisamment cuit.",
+    "Retirez soigneusement les arêtes et manipulez les liquides chauds en évitant de vous brûler."
+  ],
+  "allergens": {
+    "status": "declared",
+    "items": [
+      "poisson (poisson blanc et sauce de poisson)"
+    ]
+  },
+  "sources": {
+    "recipeSource": "/recettes/num-banh-chok/",
+    "culturalNote": "Cet atelier réalise la recette num-banh-chok documentée sur Cuisine du Cambodge ; les gestes et les variantes doivent rester fidèles à cette version.",
+    "pedagogicalAdaptation": "Les pauses, critères sensoriels et corrections de gestes sont des compléments d'apprentissage ajoutés à la recette sans changer les ingrédients ni les proportions."
+  },
+  "phases": [
+    {
+      "id": "installer",
+      "title": "Rassembler la sauce, les nouilles et les herbes",
+      "minutes": 5,
+      "ingredientNames": [],
+      "actions": [
+        "Rassemblez les six groupes d'ingrédients de la recette et sortez deux casseroles : une pour la sauce, une autre pour les cuissons à l'eau.",
+        "Préparez également quatre bols et une passoire ; vérifiez que le kroeung jaune est déjà disponible avant de commencer la cuisson."
+      ],
+      "observe": "Le poisson, le lait de coco, le kroeung et les légumes sont clairement séparés.",
+      "check": "Le poste est prêt pour mener plusieurs cuissons sans perdre le fil.",
+      "mistake": "Commencer sans kroeung entraîne une interruption au milieu de la sauce.",
+      "recovery": "Préparez cette pâte aromatique en avance ou référez-vous à sa fiche recette.",
+      "learning": "Une préparation à composants multiples demande une mise en place lisible.",
+      "audioScript": "Vous allez réaliser tout un bol de Num Banh Chok, pas seulement laver des herbes. Repérez le poisson, la sauce coco et les nouilles. Gardez les garnitures à part. Faites pause pour organiser votre poste.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Conservez le poisson cru au frais jusqu'à son passage en cuisson."
+    },
+    {
+      "id": "preparer",
+      "title": "Préparer poisson et garnitures fraîches",
+      "minutes": 10,
+      "ingredientNames": [
+        "poisson blanc",
+        "½ concombre, 100 g de haricots verts fins et 1 poignée de menthe ou basilic asiatique"
+      ],
+      "actions": [
+        "Rincez et égouttez le concombre, les haricots verts et les feuilles de menthe ou basilic ; préparez une planche propre pour les découper au moment du service.",
+        "Vérifiez le poisson blanc et préparez la fourchette qui servira à l'émietter une fois cuit, sans mélanger ustensiles pour cru et légumes frais."
+      ],
+      "observe": "Les légumes sont propres, les feuilles fraîches et le poisson séparé des garnitures.",
+      "check": "Tous les éléments sont prêts sans contamination croisée et sans découpe précipitée.",
+      "mistake": "Poser du poisson cru sur les légumes lavés compromet leur sécurité.",
+      "recovery": "Changez de planche ou nettoyez et désinfectez-la avant de préparer les garnitures.",
+      "learning": "La fraîcheur finale se prépare dès le début, même si elle n'est ajoutée qu'à la fin.",
+      "audioScript": "Observez la différence entre le poisson cru et les herbes qui resteront fraîches. Ils ne doivent pas partager une planche souillée. Faites pause pour préparer et laver les garnitures.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Ne rincez pas inutilement le poisson cru au robinet, pour éviter les éclaboussures contaminantes."
+    },
+    {
+      "id": "assembler",
+      "title": "Pocher et émietter le poisson blanc",
+      "minutes": 15,
+      "ingredientNames": [],
+      "actions": [
+        "Mettez le poisson blanc dans une casserole d'eau à petit frémissement et laissez-le cuire complètement sans le malmener à forte ébullition.",
+        "Égouttez le poisson cuit, vérifiez et retirez les éventuelles arêtes, puis émiettez délicatement les 400 grammes à l'aide d'une fourchette propre."
+      ],
+      "observe": "Le poisson se détache en morceaux souples et ne présente plus de parties crues.",
+      "check": "La chair est cuite à cœur, émiettée et exempte d'arêtes visibles.",
+      "mistake": "Une eau à très forte ébullition abîme la chair et rend l'émiettage irrégulier.",
+      "recovery": "Baissez la température et poursuivez doucement jusqu'à cuisson complète.",
+      "learning": "Pocher doucement donne à la sauce une chair facile à incorporer.",
+      "audioScript": "Regardez le poisson se détacher : il doit être entièrement cuit et s'émietter sans effort. Retirez les arêtes avec soin. Cette texture aidera la sauce à rester délicate. Mettez pause.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Contrôlez la cuisson complète du poisson et surveillez les arêtes avant le service."
+    },
+    {
+      "id": "maitriser",
+      "title": "Construire la sauce chaude au kroeung",
+      "minutes": 15,
+      "ingredientNames": [
+        "lait de coco",
+        "kroeung jaune",
+        "sauce de poisson"
+      ],
+      "actions": [
+        "Dans une casserole propre, chauffez doucement deux cuillères à soupe de kroeung jaune pendant une minute sans les brûler, puis ajoutez 400 millilitres de lait de coco.",
+        "Incorporez le poisson déjà cuit et émietté, chauffez à petit feu et ajoutez une cuillère à soupe de sauce de poisson ; évitez une ébullition qui sépare la sauce."
+      ],
+      "observe": "La sauce est parfumée et souple, avec des miettes de poisson réparties régulièrement.",
+      "check": "La sauce chaude nappe légèrement la cuillère sans être grumeleuse ou trop liquide.",
+      "mistake": "Une chauffe violente peut concentrer la sauce et séparer le lait de coco.",
+      "recovery": "Baissez le feu et ajoutez une ou deux cuillères d'eau chaude si la sauce devient trop épaisse.",
+      "learning": "La pâte kroeung fournit les arômes, le lait de coco la rondeur et le poisson la matière.",
+      "audioScript": "Sentez l'arôme du kroeung quand il chauffe doucement. Ajoutez le coco puis le poisson déjà cuit. Le mélange doit rester souple, sans grosses bulles. Regardez la sauce sur la cuillère et faites pause.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Le poisson doit avoir été entièrement cuit avant incorporation ; évitez les projections de sauce chaude."
+    },
+    {
+      "id": "rectifier",
+      "title": "Cuire les nouilles et rectifier les textures",
+      "minutes": 15,
+      "ingredientNames": [
+        "nouilles de riz"
+      ],
+      "actions": [
+        "Faites cuire les 350 grammes de nouilles de riz selon les instructions du paquet, puis égouttez-les et rincez-les brièvement à l'eau fraîche pour stopper leur cuisson.",
+        "Blanchissez les 100 grammes de haricots verts fins dans de l'eau bouillante jusqu'à ce qu'ils soient tendres, refroidissez-les et égouttez-les ; ajustez l'épaisseur de la sauce avec un peu d'eau chaude si nécessaire."
+      ],
+      "observe": "Les nouilles se séparent sans coller et la sauce reste assez fluide pour les enrober.",
+      "check": "Les haricots sont tendres, les nouilles souples, et la sauce ni pâteuse ni aqueuse.",
+      "mistake": "Laisser patienter les nouilles trop longtemps dans l'eau chaude les rend collantes.",
+      "recovery": "Égouttez immédiatement et détendez la sauce séparément, plutôt que de trop cuire les nouilles.",
+      "learning": "Chaque composant doit conserver sa propre texture avant le dressage.",
+      "audioScript": "Touchez les nouilles avec une fourchette : elles doivent rester souples, sans devenir pâteuses. Regardez aussi votre sauce, qui doit encore couler. Faites pause pour ajuster ces deux textures.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Surveillez l'eau bouillante et utilisez une passoire résistante à la chaleur."
+    },
+    {
+      "id": "terminer",
+      "title": "Monter les bols et ajouter la fraîcheur",
+      "minutes": 10,
+      "ingredientNames": [],
+      "actions": [
+        "Émincez le demi-concombre, répartissez les nouilles dans quatre bols, puis versez dessus la sauce chaude au poisson et au lait de coco.",
+        "Ajoutez les haricots blanchis, le concombre et les feuilles de menthe ou de basilic asiatique lavées juste avant de servir pour préserver le contraste."
+      ],
+      "observe": "Le bol montre des nouilles enrobées d'une sauce chaude et des légumes frais bien distincts.",
+      "check": "Quatre bols complets sont dressés ; la garniture apporte du croquant et du parfum.",
+      "mistake": "Verser la sauce sur les herbes longtemps avant de manger les fait flétrir.",
+      "recovery": "Gardez la finition végétale pour le dernier moment, une fois les bols prêts.",
+      "learning": "Le contraste entre chaud et frais fait partie du résultat appris dans cet atelier.",
+      "audioScript": "Votre bol est presque prêt. Mettez les nouilles, versez la sauce chaude et terminez par les légumes et les herbes. Prenez une bouchée avec le tout : sentez-vous le contraste ? Faites pause pour dresser.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Servez le poisson entièrement cuit ; réfrigérez rapidement les restes non servis."
+    }
+  ],
+  "audio": {
+    "mode": "guided-cooking",
+    "status": "script_only",
+    "voice": "coral",
+    "intro": "Bienvenue dans l'atelier Préparer un Num Banh Chok, sauce au poisson et garnitures. Vous allez réellement préparer quatre bols de num banh chok avec nouilles de riz, sauce chaude au poisson, coco, kroeung et herbes fraîches. Votre recette comporte six phases, avec des ingrédients déjà quantifiés. Arrêtez la narration pendant chaque geste : observez et vérifiez le résultat avant de reprendre.",
+    "publicProviderMention": false
+  },
+  "media": {
+    "finishedPreparationImage": "",
+    "imageValidated": false,
+    "rightsValidated": false,
+    "stepImagePaths": []
+  },
+  "review": {
+    "recipeValidated": false,
+    "editorialValidated": false,
+    "audioListeningValidated": false,
+    "mobileValidated": false,
+    "desktopValidated": false,
+    "productionApproved": false
+  }
+}

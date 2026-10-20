@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "kind": "cooking-workshop",
+  "status": "draft",
+  "slug": "samlor-machu-soupe-acidulee-guidee",
+  "title": "Cuisiner un Samlor Machu et équilibrer son acidité",
+  "sourceRecipeSlug": "samlor-machu",
+  "finalPreparation": "Quatre bols de Samlor Machu, soupe cambodgienne acidulée, avec garniture cuite et herbes fraîches.",
+  "learningGoal": "Préparer entièrement une soupe aigre-douce, cuire correctement le poisson ou le poulet et apprendre à équilibrer le tamarin sans masquer le goût du bouillon.",
+  "difficulty": "Intermédiaire",
+  "canonicalServings": 4,
+  "portionLabel": "4 bols de soupe Samlor Machu",
+  "duration": {
+    "preparationMinutes": 0,
+    "practicalMinutes": 50,
+    "waitingMinutes": 0,
+    "waitingNote": "Tous les gestes et les temps de mise en place sont compris dans les six phases ; prolongez la cuisson ou le repos si nécessaire."
+  },
+  "recipeIngredients": {
+    "mode": "canonical-recipe",
+    "additionalTrialIngredients": []
+  },
+  "equipment": [
+    "Une casserole assez grande et une louche",
+    "Une planche, un couteau et un tamis fin si le tamarin est préparé à partir de pulpe",
+    "Quatre bols résistants à la chaleur et une cuillère de mesure"
+  ],
+  "beforeStarting": [
+    "Choisissez poisson ou poulet et gardez-le au frais jusqu'à la cuisson ; ne mélangez pas les deux variantes sans ajuster le temps.",
+    "Préparez 1,2 litre de bouillon maison filtré ou de bouillon prêt à l’emploi peu salé."
+  ],
+  "safety": [
+    "La soupe contenant viande ou poisson crus ne se goûte qu'après vérification de leur cuisson complète.",
+    "Manipulez le bouillon très chaud avec précaution et évitez les éclaboussures."
+  ],
+  "allergens": {
+    "status": "declared",
+    "items": [
+      "poisson (sauce de poisson, et poisson si cette variante est choisie)"
+    ]
+  },
+  "sources": {
+    "recipeSource": "/recettes/samlor-machu/",
+    "culturalNote": "Cet atelier réalise la recette samlor-machu documentée sur Cuisine du Cambodge ; les gestes et les variantes doivent rester fidèles à cette version.",
+    "pedagogicalAdaptation": "Les pauses, critères sensoriels et corrections de gestes sont des compléments d'apprentissage ajoutés à la recette sans changer les ingrédients ni les proportions."
+  },
+  "phases": [
+    {
+      "id": "installer",
+      "title": "Vérifier le bouillon et les ingrédients",
+      "minutes": 5,
+      "ingredientNames": [],
+      "actions": [
+        "Mesurez 1,2 litre de bouillon peu salé et préparez la casserole, la louche et les quatre bols sans chauffer encore les ingrédients.",
+        "Réunissez le tamarin, la sauce de poisson, le sucre, les tomates, l'ananas ou la courgette et les herbes de la recette avant d'ouvrir le paquet de protéine."
+      ],
+      "observe": "Le bouillon est clair et peu salé ; les ingrédients sont regroupés séparément.",
+      "check": "Le poste est prêt et la source d'acidité est identifiée.",
+      "mistake": "Utiliser un bouillon déjà très salé risque de déséquilibrer la soupe plus tard.",
+      "recovery": "Diluez d'abord un bouillon concentré selon son étiquette ou choisissez un bouillon peu salé.",
+      "learning": "Une soupe acidulée équilibrée commence par un bouillon qui laisse de la place au tamarin.",
+      "audioScript": "Aujourd'hui, vous préparez quatre bols de soupe Samlor Machu. Observez votre bouillon avant de cuire : est-il déjà très salé ? Préparez tous les ingrédients, puis faites pause.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Ne laissez pas le poisson ou le poulet cru à température ambiante pendant la préparation."
+    },
+    {
+      "id": "preparer",
+      "title": "Découper la garniture et préparer le tamarin",
+      "minutes": 10,
+      "ingredientNames": [
+        "poisson ou poulet",
+        "jus de tamarin filtré",
+        "2 tomates en quartiers et 150 g d’ananas frais en dés (ou 250 g de courgette)",
+        "1 petite poignée de coriandre fraîche ou de basilic asiatique"
+      ],
+      "actions": [
+        "Coupez les 400 grammes de poisson ou de poulet en morceaux réguliers ; tranchez les deux tomates et détaillez l'ananas en dés, ou la courgette selon la variante choisie.",
+        "Préparez deux cuillères à soupe de jus de tamarin filtré, lavez les herbes fraîches puis réservez-les séparément pour les ajouter uniquement en finition."
+      ],
+      "observe": "Les morceaux ont des tailles proches et le tamarin est liquide, sans grosses fibres.",
+      "check": "La protéine, les légumes et le tamarin sont prêts à entrer dans la casserole au bon moment.",
+      "mistake": "Ajouter une pulpe de tamarin non délayée rend le dosage difficile et laisse des fibres gênantes.",
+      "recovery": "Détendez la pulpe dans un peu d'eau tiède et filtrez avant de mesurer le jus requis.",
+      "learning": "La préparation des éléments séparés rend l'ajustement de l'acidité plus précis.",
+      "audioScript": "Vérifiez vos morceaux : ont-ils des tailles comparables ? Le tamarin doit être déjà filtré. Gardez les herbes de côté ; elles ne cuisent pas avec la garniture. Faites pause.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Nettoyez la planche après les aliments crus et lavez vos mains avant de toucher les herbes."
+    },
+    {
+      "id": "assembler",
+      "title": "Faire frémir doucement le bouillon",
+      "minutes": 8,
+      "ingredientNames": [
+        "bouillon de volaille ou de légumes peu salé (maison ou prêt à l’emploi)"
+      ],
+      "actions": [
+        "Versez le bouillon mesuré dans une casserole assez grande et chauffez progressivement jusqu'à obtenir de petites bulles régulières, sans ébullition violente.",
+        "Baissez le feu pour conserver un léger frémissement ; gardez la louche prête pour contrôler la chaleur avant l'ajout de la garniture."
+      ],
+      "observe": "De petites bulles montent doucement ; le niveau du bouillon ne baisse pas vite.",
+      "check": "Le bouillon frémit de façon stable sans forte réduction ni bouillonnement excessif.",
+      "mistake": "Une ébullition violente concentre le sel et agite inutilement les morceaux fragiles.",
+      "recovery": "Réduisez le feu et ajoutez un peu d'eau chaude si le bouillon a déjà beaucoup réduit.",
+      "learning": "La cuisson douce protège la garniture et conserve un bouillon équilibrable.",
+      "audioScript": "Regardez les petites bulles : la surface bouge doucement, elle ne doit pas rouler à gros bouillons. Ce frémissement est votre premier repère. Mettez sur pause pour régler le feu.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Attention à la vapeur et à la casserole remplie de bouillon très chaud."
+    },
+    {
+      "id": "maitriser",
+      "title": "Cuire complètement la garniture",
+      "minutes": 15,
+      "ingredientNames": [],
+      "actions": [
+        "Ajoutez les morceaux de poisson ou de poulet au bouillon frémissant, puis les tomates et l'ananas, ou les petits dés de courgette.",
+        "Maintenez le léger frémissement le temps nécessaire pour une cuisson complète de la protéine choisie et des légumes ; vérifiez le cœur des morceaux avant toute dégustation."
+      ],
+      "observe": "Les légumes s'attendrissent sans se désintégrer et les morceaux sont cuits jusqu'au centre.",
+      "check": "Le poisson ou le poulet est entièrement cuit et les légumes sont tendres.",
+      "mistake": "Goûter avant la cuisson complète expose à un risque microbiologique.",
+      "recovery": "Poursuivez la cuisson en maintenant un frémissement modéré puis vérifiez de nouveau.",
+      "learning": "On ne corrige le goût que lorsque la garniture est réellement cuite.",
+      "audioScript": "Le poisson et le poulet ne cuisent pas forcément aussi vite. Regardez l'intérieur des morceaux et laissez le bouillon frémir doucement jusqu'à cuisson complète. Ne goûtez surtout pas avant cette vérification.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Pour le poulet, assurez-vous d'une cuisson complète à cœur ; ne goûtez pas le bouillon avant."
+    },
+    {
+      "id": "rectifier",
+      "title": "Équilibrer la soupe avec le tamarin",
+      "minutes": 8,
+      "ingredientNames": [
+        "sauce de poisson",
+        "sucre"
+      ],
+      "actions": [
+        "Quand la garniture est bien cuite, versez une partie du jus de tamarin réservé, mélangez et goûtez prudemment une petite cuillère refroidie.",
+        "Ajoutez progressivement le reste du tamarin selon l'acidité souhaitée, puis la cuillère de sauce de poisson et la cuillère à café de sucre ; remuez et ajustez seulement après comparaison."
+      ],
+      "observe": "L'acidité du tamarin se perçoit sans écraser totalement le goût du bouillon.",
+      "check": "Vous distinguez une acidité nette, un salé présent mais modéré et une pointe de douceur.",
+      "mistake": "Verser tout le tamarin d'un coup rend difficile de revenir en arrière.",
+      "recovery": "Réservez d'abord une partie du tamarin, goûtez, puis ajoutez-en peu à peu selon le résultat.",
+      "learning": "L'équilibre aigre, salé et doux se construit par petites corrections mesurées.",
+      "audioScript": "Maintenant seulement, après cuisson complète, goûtez le bouillon. Ajoutez le tamarin progressivement. Quelle saveur arrive en premier ? L'acidité ne doit pas tout dominer. Faites pause entre chaque petit ajustement.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Laissez refroidir la cuillère prélevée avant de goûter pour éviter toute brûlure."
+    },
+    {
+      "id": "terminer",
+      "title": "Ajouter les herbes et servir la soupe",
+      "minutes": 4,
+      "ingredientNames": [],
+      "actions": [
+        "Coupez le feu avant de répartir les herbes fraîches lavées et ciselées dans la soupe pour conserver leur parfum.",
+        "Versez la soupe chaude avec ses morceaux de garniture dans quatre bols résistants à la chaleur et servez sans attendre."
+      ],
+      "observe": "Les herbes gardent leur couleur et leur fraîcheur, la soupe reste bien garnie.",
+      "check": "Quatre bols de soupe complète sont prêts, parfumés et acidulés sans excès.",
+      "mistake": "Laisser bouillir longuement les herbes peut atténuer leur parfum.",
+      "recovery": "Coupez le feu puis ajoutez une nouvelle petite poignée d'herbes fraîches au service.",
+      "learning": "La fraîcheur ajoutée à la fin complète la cuisson et l'acidité du tamarin.",
+      "audioScript": "Terminez en coupant le feu. Ajoutez la coriandre ou le basilic asiatique, puis servez. Sentez la différence entre le bouillon chaud et ces herbes fraîches. Vous avez préparé une soupe complète.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Versez le liquide chaud avec précaution ; refroidissez rapidement tout reste non consommé."
+    }
+  ],
+  "audio": {
+    "mode": "guided-cooking",
+    "status": "script_only",
+    "voice": "coral",
+    "intro": "Bienvenue dans l'atelier Cuisiner un Samlor Machu et équilibrer son acidité. Vous allez réellement préparer quatre bols de samlor machu, soupe cambodgienne acidulée, avec garniture cuite et herbes fraîches. Votre recette comporte six phases, avec des ingrédients déjà quantifiés. Arrêtez la narration pendant chaque geste : observez et vérifiez le résultat avant de reprendre.",
+    "publicProviderMention": false
+  },
+  "media": {
+    "finishedPreparationImage": "",
+    "imageValidated": false,
+    "rightsValidated": false,
+    "stepImagePaths": []
+  },
+  "review": {
+    "recipeValidated": false,
+    "editorialValidated": false,
+    "audioListeningValidated": false,
+    "mobileValidated": false,
+    "desktopValidated": false,
+    "productionApproved": false
+  }
+}

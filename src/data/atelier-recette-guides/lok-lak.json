@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "kind": "cooking-workshop",
+  "status": "draft",
+  "slug": "lok-lak-de-la-poele-a-l-assiette",
+  "title": "Réaliser un Lok Lak complet, de la saisie au service",
+  "sourceRecipeSlug": "lok-lak",
+  "finalPreparation": "Quatre assiettes de Lok Lak avec bœuf bien saisi, crudités et condiment citron vert–poivre.",
+  "learningGoal": "Maîtriser la saisie du bœuf par petites fournées, apprendre à le glacer avec sa sauce et dresser un Lok Lak complet sans détremper la viande.",
+  "difficulty": "Intermédiaire",
+  "canonicalServings": 4,
+  "portionLabel": "4 assiettes de Lok Lak",
+  "duration": {
+    "preparationMinutes": 0,
+    "practicalMinutes": 30,
+    "waitingMinutes": 0,
+    "waitingNote": "Tous les gestes et les temps de mise en place sont compris dans les six phases ; prolongez la cuisson ou le repos si nécessaire."
+  },
+  "recipeIngredients": {
+    "mode": "canonical-recipe",
+    "additionalTrialIngredients": []
+  },
+  "equipment": [
+    "Une grande poêle ou un wok, une spatule résistante",
+    "Deux bols distincts pour la sauce et le condiment",
+    "Une planche, un couteau et quatre assiettes propres"
+  ],
+  "beforeStarting": [
+    "Décongelez le bœuf au réfrigérateur si nécessaire ; gardez-le au frais jusqu'à la préparation.",
+    "Lavez la tomate, le demi-concombre et les feuilles de salade avant de commencer."
+  ],
+  "safety": [
+    "Gardez le bœuf cru à l'écart des crudités lavées.",
+    "Nettoyez couteau et planche après la viande crue, et vérifiez que les morceaux de bœuf sont suffisamment cuits avant service."
+  ],
+  "allergens": {
+    "status": "declared",
+    "items": [
+      "soja (sauce soja ; vérifier blé/gluten sur étiquette)",
+      "mollusques (sauce d’huître)"
+    ]
+  },
+  "sources": {
+    "recipeSource": "/recettes/lok-lak/",
+    "culturalNote": "Cet atelier réalise la recette lok-lak documentée sur Cuisine du Cambodge ; les gestes et les variantes doivent rester fidèles à cette version.",
+    "pedagogicalAdaptation": "Les pauses, critères sensoriels et corrections de gestes sont des compléments d'apprentissage ajoutés à la recette sans changer les ingrédients ni les proportions."
+  },
+  "phases": [
+    {
+      "id": "installer",
+      "title": "Organiser la poêle et les quatre assiettes",
+      "minutes": 3,
+      "ingredientNames": [],
+      "actions": [
+        "Placez la grande poêle, la spatule et deux bols distincts sur le plan de travail pour ne rien chercher pendant la cuisson vive.",
+        "Mesurez les huit ingrédients de la fiche Lok Lak et réservez une assiette propre pour les légumes qui ne toucheront pas le bœuf cru."
+      ],
+      "observe": "Le poste est dégagé ; les sauces et les crudités sont encore bien séparées.",
+      "check": "Tous les ingrédients sont à portée de main et la poêle est prête, mais encore froide.",
+      "mistake": "Lancer la poêle avant d'avoir préparé les assaisonnements provoque une cuisson précipitée.",
+      "recovery": "Éteignez le feu et terminez la mise en place avant de reprendre.",
+      "learning": "La saisie est rapide : le résultat dépend beaucoup de ce qui a été préparé avant.",
+      "audioScript": "Votre objectif est un Lok Lak complet, pas seulement une viande sautée. Disposez poêle, bols et assiettes. Gardez les crudités loin du bœuf cru. Lorsque tout est prêt, faites pause.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Lavez-vous les mains avant toute manipulation des aliments."
+    },
+    {
+      "id": "preparer",
+      "title": "Tailler le bœuf et préparer les crudités",
+      "minutes": 7,
+      "ingredientNames": [
+        "bœuf tendre",
+        "1 tomate, ½ concombre et 4 feuilles de salade"
+      ],
+      "actions": [
+        "Détaillez les 600 grammes de bœuf tendre en cubes réguliers et répartissez-les en deux portions d'environ 300 grammes, sans les assaisonner trop tôt.",
+        "Coupez la tomate et le demi-concombre, lavez les quatre feuilles de salade puis égouttez-les soigneusement dans un plat propre."
+      ],
+      "observe": "Les cubes de bœuf ont des tailles comparables et les crudités ne baignent pas dans l'eau.",
+      "check": "Les deux portions de bœuf sont prêtes ; les légumes sont lavés et égouttés.",
+      "mistake": "Des cubes très différents cuisent inégalement et des légumes mouillés diluent la sauce.",
+      "recovery": "Recoupez les gros cubes et séchez doucement les légumes avant de chauffer la poêle.",
+      "learning": "Tailler régulièrement permet une cuisson homogène, même à feu vif.",
+      "audioScript": "Regardez la taille des cubes de bœuf : peuvent-ils cuire au même rythme ? Faites deux petits lots. Préparez maintenant les crudités sur une autre surface. Mettez en pause le temps de terminer.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Utilisez une planche distincte ou nettoyez-la soigneusement entre viande crue et légumes."
+    },
+    {
+      "id": "assembler",
+      "title": "Mélanger la sauce et le condiment poivré",
+      "minutes": 5,
+      "ingredientNames": [
+        "sauce soja",
+        "sauce d’huître",
+        "sucre",
+        "gousse d’ail",
+        "citrons verts",
+        "poivre noir de Kampot fraîchement moulu"
+      ],
+      "actions": [
+        "Dans un bol, mélangez les deux cuillères de sauce soja, la cuillère de sauce d’huître, le sucre et la gousse d’ail hachée ; gardez cette sauce pour la fin de cuisson.",
+        "Dans un second bol, pressez les deux citrons verts et ajoutez le poivre noir de Kampot fraîchement moulu ; ce condiment sera servi séparément."
+      ],
+      "observe": "La sauce de cuisson est bien homogène et le condiment sent distinctement le citron et le poivre.",
+      "check": "Deux bols différents sont prêts ; la sauce ne touche pas encore le bœuf cru.",
+      "mistake": "Confondre les deux bols ou verser le jus de citron dans la poêle change la recette.",
+      "recovery": "Identifiez les bols avant de commencer la saisie et gardez le citron–poivre pour le service.",
+      "learning": "La sauce glacerа la viande tandis que le citron et le poivre réveilleront chaque bouchée à table.",
+      "audioScript": "Sentez les deux mélanges séparément. La sauce au soja viendra enrober le bœuf ; le citron et le poivre resteront sur la table. Évitez de les réunir. Faites pause pour finir les deux bols.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Ne goûtez pas de sauce qui aurait touché la viande crue."
+    },
+    {
+      "id": "maitriser",
+      "title": "Saisir le bœuf en deux petites fournées",
+      "minutes": 8,
+      "ingredientNames": [],
+      "actions": [
+        "Faites chauffer très fortement la poêle adaptée, ajoutez la première moitié du bœuf et laissez-la colorer sans l'entasser ; retournez les morceaux pour obtenir des faces dorées.",
+        "Retirez cette fournée dans un plat propre, remontez la température de la poêle puis saisissez la seconde portion ; poursuivez jusqu'à une cuisson sûre et adaptée à la taille des morceaux."
+      ],
+      "observe": "Vous entendez une saisie franche plutôt qu'un léger bouillonnement ; la viande dore.",
+      "check": "Les cubes portent des faces dorées, sans piscine de jus dans la poêle.",
+      "mistake": "Mettre les 600 grammes en une seule fois fait tomber la température et rend de l'eau.",
+      "recovery": "Retirez une partie de la viande, laissez évaporer l'humidité puis reprenez en plus petite fournée.",
+      "learning": "Une petite quantité garde mieux la chaleur et permet la coloration recherchée.",
+      "audioScript": "Écoutez votre poêle : elle doit grésiller. Si la viande bouillonne dans son jus, vous avez trop rempli la surface. Travaillez en deux fournées et observez les faces dorées. Faites pause pour cette cuisson.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Attention aux projections ; vérifiez que la viande est suffisamment cuite avant de servir."
+    },
+    {
+      "id": "rectifier",
+      "title": "Glacer et contrôler l'enrobage",
+      "minutes": 4,
+      "ingredientNames": [],
+      "actions": [
+        "Réunissez le bœuf saisi dans la poêle, versez la sauce soja–huître–ail préparée à part et mélangez brièvement pour que tous les cubes soient enrobés.",
+        "Laissez chauffer la sauce jusqu'à ce qu'elle nappe les morceaux, sans prolonger au point de brûler le sucre ; vérifiez la cuisson du bœuf avant d'arrêter le feu."
+      ],
+      "observe": "La sauce reste brillante et accroche aux faces dorées sans devenir noire.",
+      "check": "Le bœuf est entièrement cuit selon la préparation choisie et uniformément nappé.",
+      "mistake": "Réduire trop longtemps rend la sauce collante, amère ou brûlée.",
+      "recovery": "Baissez aussitôt le feu et retirez la poêle dès que la sauce enrobe les cubes.",
+      "learning": "La sauce termine la préparation : elle accompagne la coloration, elle ne la remplace pas.",
+      "audioScript": "Regardez maintenant la sauce : accroche-t-elle en film brillant sur le bœuf ? Remuez peu et contrôlez la cuisson. Si elle noircit, retirez vite la poêle du feu. Mettez sur pause.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "La sauce doit être bien chaude ; n'utilisez pas les ustensiles ayant touché la viande crue pour le service."
+    },
+    {
+      "id": "terminer",
+      "title": "Dresser le Lok Lak et déguster les contrastes",
+      "minutes": 3,
+      "ingredientNames": [],
+      "actions": [
+        "Répartissez les feuilles de salade, la tomate et le concombre sur quatre assiettes propres, puis posez le bœuf chaud et nappé à côté des crudités.",
+        "Présentez le condiment citron vert–poivre à part et laissez chacun tremper une bouchée pour observer la différence entre viande chaude et acidité vive."
+      ],
+      "observe": "La viande reste dorée, les légumes frais, et le condiment est séparé.",
+      "check": "Quatre assiettes complètes sont dressées et prêtes à être dégustées immédiatement.",
+      "mistake": "Verser tout le citron–poivre sur la viande à l'avance masque la saisie et ramollit les légumes.",
+      "recovery": "Servez le condiment dans son bol et ajoutez-le à chaque bouchée seulement à table.",
+      "learning": "Le plaisir du Lok Lak vient aussi du contraste de température et de goûts.",
+      "audioScript": "Votre Lok Lak est prêt. Regardez le bœuf doré, les légumes frais et le condiment à part. Goûtez une bouchée nature, puis une avec le citron et le poivre : qu'est-ce qui change ? Bravo pour cette cuisson.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Servez immédiatement sur des assiettes propres ; réfrigérez rapidement les restes non consommés."
+    }
+  ],
+  "audio": {
+    "mode": "guided-cooking",
+    "status": "script_only",
+    "voice": "coral",
+    "intro": "Bienvenue dans l'atelier Réaliser un Lok Lak complet, de la saisie au service. Vous allez réellement préparer quatre assiettes de lok lak avec bœuf bien saisi, crudités et condiment citron vert–poivre. Votre recette comporte six phases, avec des ingrédients déjà quantifiés. Arrêtez la narration pendant chaque geste : observez et vérifiez le résultat avant de reprendre.",
+    "publicProviderMention": false
+  },
+  "media": {
+    "finishedPreparationImage": "",
+    "imageValidated": false,
+    "rightsValidated": false,
+    "stepImagePaths": []
+  },
+  "review": {
+    "recipeValidated": false,
+    "editorialValidated": false,
+    "audioListeningValidated": false,
+    "mobileValidated": false,
+    "desktopValidated": false,
+    "productionApproved": false
+  }
+}

@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "kind": "cooking-workshop",
+  "status": "draft",
+  "slug": "kuy-teav-bouillon-et-nouilles",
+  "title": "Cuisiner un Kuy Teav, du bouillon au bol de nouilles",
+  "sourceRecipeSlug": "kuy-teav",
+  "finalPreparation": "Quatre bols de Kuy Teav complets : nouilles de riz, porc entièrement cuit, bouillon parfumé et garnitures fraîches.",
+  "learningGoal": "Construire un bouillon cambodgien clair et correctement assaisonné, cuire le porc et les nouilles séparément puis assembler quatre vrais bols de Kuy Teav.",
+  "difficulty": "Intermédiaire",
+  "canonicalServings": 4,
+  "portionLabel": "4 grands bols de Kuy Teav",
+  "duration": {
+    "preparationMinutes": 0,
+    "practicalMinutes": 75,
+    "waitingMinutes": 0,
+    "waitingNote": "Tous les gestes et les temps de mise en place sont compris dans les six phases ; prolongez la cuisson ou le repos si nécessaire."
+  },
+  "recipeIngredients": {
+    "mode": "canonical-recipe",
+    "additionalTrialIngredients": []
+  },
+  "equipment": [
+    "Deux grandes casseroles et une passoire",
+    "Une écumoire, une louche et quatre bols profonds",
+    "Une planche et un couteau pour la finition végétale"
+  ],
+  "beforeStarting": [
+    "Préparez 1,4 litre de bouillon de volaille ou de porc peu salé, filtré et prêt à être réchauffé.",
+    "Lavez et séparez les pousses de soja, la coriandre, la ciboule et les citrons verts."
+  ],
+  "safety": [
+    "Vérifiez que le porc est entièrement cuit avant tout service ou dégustation du bouillon.",
+    "Protégez-vous de la vapeur, du bouillon brûlant et des projections de la cuisson des nouilles."
+  ],
+  "allergens": {
+    "status": "declared",
+    "items": [
+      "poisson (sauce de poisson)"
+    ]
+  },
+  "sources": {
+    "recipeSource": "/recettes/kuy-teav/",
+    "culturalNote": "Cet atelier réalise la recette kuy-teav documentée sur Cuisine du Cambodge ; les gestes et les variantes doivent rester fidèles à cette version.",
+    "pedagogicalAdaptation": "Les pauses, critères sensoriels et corrections de gestes sont des compléments d'apprentissage ajoutés à la recette sans changer les ingrédients ni les proportions."
+  },
+  "phases": [
+    {
+      "id": "installer",
+      "title": "Vérifier le bouillon et installer les casseroles",
+      "minutes": 5,
+      "ingredientNames": [],
+      "actions": [
+        "Préparez deux casseroles distinctes : la première pour réchauffer 1,4 litre de bouillon de volaille ou de porc, la seconde pour cuire les nouilles de riz.",
+        "Mesurez tous les ingrédients, préparez la louche et les quatre bols et vérifiez que le bouillon de départ n'est pas excessivement salé."
+      ],
+      "observe": "Tout est à portée de main et les deux cuissons pourront avancer indépendamment.",
+      "check": "Le bouillon et les nouilles disposent de leurs casseroles séparées.",
+      "mistake": "Mettre les nouilles directement dans le bouillon de service peut troubler et épaissir inutilement celui-ci.",
+      "recovery": "Réservez une casserole d'eau pour les nouilles et gardez le bouillon clair.",
+      "learning": "Le montage d'un bol commence avec un bouillon maîtrisé et une organisation simple.",
+      "audioScript": "Pour votre Kuy Teav, vous aurez besoin de deux casseroles. L'une garde le bouillon clair ; l'autre accueille les nouilles. Vérifiez que le bouillon est peu salé et faites pause.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Respectez les précautions de sécurité avec les récipients profonds de liquide très chaud."
+    },
+    {
+      "id": "preparer",
+      "title": "Préparer le porc et la garniture végétale",
+      "minutes": 10,
+      "ingredientNames": [
+        "porc haché ou émincé",
+        "1 petite botte de coriandre, 2 ciboules et 100 g de pousses de soja",
+        "citrons verts"
+      ],
+      "actions": [
+        "Séparez les 300 grammes de porc haché ou émincé en morceaux qui pourront cuire complètement dans le bouillon frémissant.",
+        "Rincez les pousses de soja et la coriandre, émincez les deux ciboules et préparez les quartiers de citron vert dans un plat propre, loin du porc cru."
+      ],
+      "observe": "Les petits morceaux de porc sont prêts et les herbes, pousses et citron sont distincts.",
+      "check": "La garniture peut être servie sans contact avec des ustensiles souillés par le porc.",
+      "mistake": "Préparer les légumes sur une planche ayant porté le porc cru expose à une contamination.",
+      "recovery": "Nettoyez et désinfectez la planche ou utilisez-en une dédiée aux légumes.",
+      "learning": "Une garniture nette et fraîche complète le bouillon, mais se prépare à part.",
+      "audioScript": "Regardez votre préparation : le porc doit être prêt à cuire, tandis que les herbes resteront fraîches. Coupez les citrons, préparez les pousses de soja et faites pause.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Nettoyez soigneusement les ustensiles touchant le porc cru avant de servir les légumes."
+    },
+    {
+      "id": "assembler",
+      "title": "Assaisonner le bouillon sans le réduire",
+      "minutes": 15,
+      "ingredientNames": [
+        "bouillon de volaille ou de porc, peu salé (maison ou prêt à l’emploi)",
+        "sauce de poisson",
+        "sucre"
+      ],
+      "actions": [
+        "Versez les 1,4 litre de bouillon dans la casserole, ajoutez deux cuillères à soupe de sauce de poisson et une cuillère à café de sucre.",
+        "Portez à petit frémissement puis maintenez cette température sans faire réduire fortement le liquide, en surveillant le niveau dans la casserole."
+      ],
+      "observe": "Le bouillon reste relativement clair, avec de petites bulles et un niveau stable.",
+      "check": "Le bouillon frémit doucement et ne concentre pas exagérément le sel.",
+      "mistake": "Une longue ébullition à gros bouillons rend le bouillon plus concentré et salé.",
+      "recovery": "Diminuez le feu et, s'il a réduit, détendez progressivement avec un peu d'eau chaude.",
+      "learning": "Assaisonner avec retenue aide à conserver un bouillon agréable jusqu'au service.",
+      "audioScript": "Écoutez votre bouillon : quelques petites bulles suffisent. La sauce de poisson apporte le salé ; le sucre apporte une légère rondeur. Ne laissez pas trop réduire. Faites pause.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Le bouillon très chaud ne doit pas être goûté directement à la louche pour éviter une brûlure."
+    },
+    {
+      "id": "maitriser",
+      "title": "Cuire le porc entièrement dans le bouillon",
+      "minutes": 20,
+      "ingredientNames": [],
+      "actions": [
+        "Plongez le porc dans le bouillon qui frémit et séparez les morceaux avec une cuillère propre pour éviter les amas qui cuisent mal au centre.",
+        "Poursuivez jusqu'à cuisson complète de chaque morceau, puis retirez le porc à l'écumoire et conservez-le au chaud dans un récipient propre."
+      ],
+      "observe": "Les morceaux de porc sont cuits au centre et le liquide continue de frémir doucement.",
+      "check": "Le porc est complètement cuit et peut être réparti sans risque dans les bols.",
+      "mistake": "Retirer le porc dès que sa surface blanchit peut laisser des morceaux insuffisamment cuits.",
+      "recovery": "Remettez les morceaux dans le bouillon et poursuivez jusqu'à cuisson à cœur.",
+      "learning": "Les petits morceaux réguliers cuisent de façon plus fiable dans un bouillon calme.",
+      "audioScript": "Regardez les morceaux de porc : sont-ils séparés et cuits jusqu'au centre ? La couleur extérieure seule ne suffit pas. Prenez le temps de vérifier avant de les retirer. Mettez pause.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Ne goûtez le bouillon qu'après avoir vérifié la cuisson complète du porc."
+    },
+    {
+      "id": "rectifier",
+      "title": "Cuire les nouilles et contrôler l'assaisonnement",
+      "minutes": 15,
+      "ingredientNames": [
+        "nouilles de riz"
+      ],
+      "actions": [
+        "Dans l'autre casserole, faites cuire les 300 grammes de nouilles de riz conformément aux indications du paquet ; égouttez-les aussitôt et répartissez-les dans quatre bols.",
+        "Une fois le porc bien cuit, goûtez une petite quantité de bouillon légèrement refroidie et ajustez seulement si nécessaire sans ajouter automatiquement plus de sel."
+      ],
+      "observe": "Les nouilles sont tendres, séparées ; le bouillon garde son parfum sans être trop salé.",
+      "check": "Les quatre bols contiennent des nouilles prêtes à recevoir le bouillon chaud.",
+      "mistake": "Cuire les nouilles trop longtemps ou resaler sans goûter rend le bol lourd.",
+      "recovery": "Égouttez rapidement les nouilles et goûtez le bouillon avant toute correction.",
+      "learning": "Nouilles et bouillon se préparent séparément pour garder texture et lisibilité.",
+      "audioScript": "Vérifiez les nouilles : souples, mais pas collantes. Goûtez ensuite une petite cuillère de bouillon refroidi, uniquement après cuisson du porc. Que manque-t-il vraiment ? Faites pause.",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Ne manipulez pas la passoire au-dessus du visage ; attention à l'eau bouillante."
+    },
+    {
+      "id": "terminer",
+      "title": "Monter les bols et ajouter les aromates",
+      "minutes": 10,
+      "ingredientNames": [],
+      "actions": [
+        "Répartissez le porc entièrement cuit sur les nouilles, puis versez le bouillon brûlant de manière équitable dans les quatre bols profonds.",
+        "Présentez coriandre, ciboule, pousses de soja et quartiers de citron vert à table pour que chacun complète son bol juste avant de le manger."
+      ],
+      "observe": "Un bol de Kuy Teav associe bouillon chaud, nouilles séparées et garnitures fraîches.",
+      "check": "Quatre bols complets sont servis avec assaisonnements frais disponibles à part.",
+      "mistake": "Ajouter les herbes trop tôt pendant la cuisson leur fait perdre leur fraîcheur.",
+      "recovery": "Apportez les herbes et le citron au dernier moment plutôt que de les laisser bouillir.",
+      "learning": "La finition à table permet à chacun de doser croquant et acidité.",
+      "audioScript": "Votre Kuy Teav est prêt. Voyez les nouilles, le porc bien cuit et le bouillon ; ajoutez maintenant les aromates frais. Goûtez d'abord une cuillère de bouillon, puis avec du citron. Bravo !",
+      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "safety": "Le bouillon est brûlant ; déposez les bols sur un support stable et servez avec prudence."
+    }
+  ],
+  "audio": {
+    "mode": "guided-cooking",
+    "status": "script_only",
+    "voice": "coral",
+    "intro": "Bienvenue dans l'atelier Cuisiner un Kuy Teav, du bouillon au bol de nouilles. Vous allez réellement préparer quatre bols de kuy teav complets : nouilles de riz, porc entièrement cuit, bouillon parfumé et garnitures fraîches. Votre recette comporte six phases, avec des ingrédients déjà quantifiés. Arrêtez la narration pendant chaque geste : observez et vérifiez le résultat avant de reprendre.",
+    "publicProviderMention": false
+  },
+  "media": {
+    "finishedPreparationImage": "",
+    "imageValidated": false,
+    "rightsValidated": false,
+    "stepImagePaths": []
+  },
+  "review": {
+    "recipeValidated": false,
+    "editorialValidated": false,
+    "audioListeningValidated": false,
+    "mobileValidated": false,
+    "desktopValidated": false,
+    "productionApproved": false
+  }
+}
