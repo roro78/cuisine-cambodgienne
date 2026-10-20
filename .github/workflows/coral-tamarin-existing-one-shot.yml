@@ -22,6 +22,16 @@ jobs:
           node-version: "22"
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Install and verify MP3 measurement tools BEFORE generating any paid audio
+        shell: bash
+        run: |
+          if ! command -v ffprobe >/dev/null 2>&1 || ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          command -v ffprobe
+          command -v ffmpeg
+          ffprobe -version | head -n 1
       - name: Adapt ONLY sauce-tamarin text for the existing generator
         run: node scripts/bridge-guided-tamarin-existing-coral.mjs --prepare
       - name: Fetch the EXISTING generator code from its pinned original commit
@@ -37,6 +47,14 @@ jobs:
           node scripts/generate-workshop-audio.mjs --dry-run --workshop=piler-aromates-au-mortier --track=all --voice=coral --max-files=7
       - name: Generate ONLY seven Coral tracks via existing IA-Coach Render TTS backend
         run: node scripts/bridge-guided-tamarin-existing-coral.mjs --render
+      - name: Preserve the seven original Coral chunks BEFORE assembly
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sauce-tamarin-coral-7-original-tracks
+          path: .tmp-guided-coral-once/public/audio/workshops/piler-aromates-au-mortier/*.mp3
+          retention-days: 14
+          if-no-files-found: warn
       - name: Concatenate seven REAL MP3 tracks, measure chapters and verify output
         run: node scripts/bridge-guided-tamarin-existing-coral.mjs --assemble
       - name: Store the new MP3 and its measured chapters for review
