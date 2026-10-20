@@ -26,7 +26,7 @@ for(const slug of names){
       prev.sha256!==m.sha256 || prev.audioUrl!==m.audioUrl ||
       !Array.isArray(m.chapters) || m.chapters.length!==7)
      throw Error(slug+': superseded MP3 provenance mismatch.');
-   const f=resolve('public',m.audioUrl.replace(/^\\//,''));
+   const f=resolve('public',m.audioUrl.replace(/^\//,''));
    if(!m.audioUrl.startsWith('/audio/workshops/'+blueprint.slug+'/') || !existsSync(f) || statSync(f).size<1024)
      throw Error(slug+': superseded MP3 missing or outside atelier directory.');
    if(createHash('sha256').update(readFileSync(f)).digest('hex')!==m.sha256)
