@@ -44,7 +44,7 @@ export function initCookingWorkshopServings(): void {
         const item = quantity.closest<HTMLElement>('[data-workshop-ingredient]');
         const label = item?.querySelector<HTMLElement>('[data-workshop-ingredient-name]');
         if (label) {
-          label.textContent = (Math.abs(adjusted - 1) < 0.01)
+          label.textContent = (adjusted <= 1.001)
             ? (label.dataset.singularName || label.dataset.pluralName || '')
             : (label.dataset.pluralName || label.dataset.singularName || '');
         }
