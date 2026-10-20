@@ -62,7 +62,8 @@ jobs:
           node --test tests/atelier-kroeung-page.test.mjs
           node --test tests/ateliers-cinq-recettes.test.mjs
           node --check scripts/bridge-cooking-workshops-coral.mjs
-          node scripts/check-new-cooking-workshop-audio.mjs
+          node scripts/check-new-cooking-workshop-audio.mjs | tee /tmp/cuisine-six-new-audio-review.txt
+          grep -q '^NEW_GUIDED_AUDIO_SUMMARY 6/6 MP3 measured' /tmp/cuisine-six-new-audio-review.txt
 
       - name: Validate all six Coral MP3s and actual chapter boundaries (offline)
         run: node scripts/check-workshop-audio.mjs
