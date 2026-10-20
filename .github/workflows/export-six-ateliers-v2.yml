@@ -11,6 +11,7 @@ on:
       - "src/data/atelier-recette-audio/*-v2.json"
       - "src/data/atelier-recette-guides/*.json"
       - "src/components/CookingWorkshopAudio.astro"
+      - "src/scripts/cookingWorkshopServings.ts"
       - "src/pages/apprendre/pratique/*.astro"
 permissions:
   contents: read
