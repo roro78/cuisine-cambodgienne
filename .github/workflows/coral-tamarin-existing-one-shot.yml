@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: "22"
       - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+        run: npm install --no-audit --no-fund
       - name: Adapt ONLY sauce-tamarin text for the existing generator
         run: node scripts/bridge-guided-tamarin-existing-coral.mjs --prepare
       - name: Fetch the EXISTING generator code from its pinned original commit
