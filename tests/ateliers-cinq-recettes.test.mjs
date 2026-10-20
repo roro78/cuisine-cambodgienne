@@ -52,9 +52,10 @@ test('Lok Lak V2 : sept chapitres cuisinables, MP3 antérieur conservé mais non
   const { data, recipes, errors } = await validateBlueprintFile('src/data/atelier-recette-guides/lok-lak.json');
   assert.deepEqual(errors, []);
   assert.equal(data.audio.storyboardVersion, 2);
-  assert.equal(data.audio.status, 'script_only');
+  assert.ok(['script_only','generated_review_pending'].includes(data.audio.status));
   assert.equal(data.review.productionApproved, false);
-  assert.equal(data.audio.asset, undefined, 'Old MP3 must not appear as the active V2 audio');
+  if(data.audio.status === 'script_only') assert.equal(data.audio.asset, undefined, 'Old MP3 must not appear as the active V2 audio');
+  else assert.match(data.audio.asset.audioUrl, /atelier-coral-v2[.]mp3$/, 'V2 must never overwrite old MP3');
   assert.match(data.audio.previousAsset.sha256, /^[a-f0-9]{64}$/);
   const plan = buildCookingAudioStoryboard(data);
   assert.deepEqual(plan.chapters.map(c => c.id), ['intro', ...PHASE_IDS]);
