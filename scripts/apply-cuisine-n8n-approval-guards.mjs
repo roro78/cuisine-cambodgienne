@@ -7,7 +7,9 @@
  * Never reimports exports, touches credentials/URLs, publishes, or runs workflows.
  */
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 
 const base = process.env.N8N_BASE_URL || 'https://n8n.orvekio.com';
 const key = process.env.N8N_API_KEY;
@@ -142,6 +144,15 @@ async function main() {
     for (const field of ['description', 'nodeGroups', 'pinData']) {
       if (Object.hasOwn(latest, field)) body[field] = latest[field];
     }
+    // MiHecho precedent: preserve the complete LIVE workflow before any PUT.
+    // Includes local credential references and user-configured Meta IDs; never log its contents.
+    const backupDirectory = join(homedir(), '.local', 'share', 'cuisine-n8n-backups');
+    mkdirSync(backupDirectory, { recursive: true, mode: 0o700 });
+    const safeId = String(task.id);
+    assert.match(safeId, /^[A-Za-z0-9_-]+$/, 'Unexpected workflow ID for backup path');
+    const backupPath = join(backupDirectory, 'cuisine-' + safeId + '-' + new Date().toISOString().replace(/[:.]/g, '-') + '.json');
+    writeFileSync(backupPath, JSON.stringify(latest, null, 2) + '\\n', { encoding: 'utf8', mode: 0o600, flag: 'wx' });
+    console.log(task.spec.name + ': private local backup saved (0600) before update.');
     await request('/workflows/' + encodeURIComponent(task.id), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
