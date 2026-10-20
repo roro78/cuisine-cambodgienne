@@ -120,7 +120,7 @@ if(mode==='--plan'){
    }
    const backend='https://render-iacoach-backend.onrender.com/api/tts';
    const controller=new AbortController();
-   const timeout=setTimeout(()=>controller.abort(),100000);
+   const timeout=setTimeout(()=>controller.abort(),v2?180000:100000);
    try{
      const response=await fetch(backend,{
        method:'POST',
@@ -142,6 +142,12 @@ if(mode==='--plan'){
      renameSync(part,track);
      assertMp3(track);
      console.log('CORAL_TRACK_SAVED '+guide.slug+'/'+name+' part '+(index+1)+'/'+segments.length+' duration='+measure(track).toFixed(3)+'s');
+     // Respect potential backend rate limits; one attempt per segment, never
+     // retry an uncertain TTS response automatically after a timeout.
+     if(v2)await new Promise(resolve=>setTimeout(resolve,20000));
+   }catch(error){
+     if(error?.name==='AbortError')throw Error('CORAL_V2_TIMEOUT '+guide.slug+'/'+name+' part '+(index+1)+' : response not confirmed, stop without automatic retry.');
+     throw error;
    }finally{clearTimeout(timeout);}
  }
 }else if(mode==='--assemble'){
