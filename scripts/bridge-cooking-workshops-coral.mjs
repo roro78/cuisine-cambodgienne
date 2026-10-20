@@ -23,14 +23,14 @@ const readArg=(key)=>args.find(x=>x.startsWith('--'+key+'='))?.slice(key.length+
 const recipe=readArg('atelier');
 const allowed=new Set(['kroeung-jaune','lok-lak','samlor-machu','num-banh-chok','kuy-teav','bai-sach-chrouk']);
 if(!allowed.has(recipe))throw Error('Seuls les six ateliers-recettes approuvés pour le pilote sont autorisés.');
-const modes=['--check','--assemble',...['intro',...PHASE_IDS].map(id=>'--one='+id)];
+const modes=['--check','--plan','--assemble',...['intro',...PHASE_IDS].map(id=>'--one='+id)];
 const selected=args.filter(x=>modes.includes(x));
 if(selected.length!==1||args.length!==2)throw Error('Choisir uniquement --atelier=<recette> et --check, --one=<chapitre> ou --assemble.');
 const mode=selected[0];
 const path='src/data/atelier-recette-guides/'+recipe+'.json';
 const {data:guide,errors}=await validateBlueprintFile(path);
 if(errors.length)throw Error('Contrat culinaire invalide :\n- '+errors.join('\n- '));
-if(guide.status!=='draft'||guide.audio.status!=='script_only')throw Error('Cet atelier a déjà une narration ou est sorti du statut brouillon : STOP.');
+if(mode!=='--plan'&&(guide.status!=='draft'||guide.audio.status!=='script_only'))throw Error('Cet atelier a déjà une narration ou est sorti du statut brouillon : STOP.');
 const plan=buildCookingAudioStoryboard(guide);
 if(plan.numberOfChapters!==7||plan.chapters.some((c,i)=>c.id!==(i===0?'intro':PHASE_IDS[i-1])))throw Error('Chapitres non alignés.');
 const voiceTexts=plan.chapters.map(c=>c.text);
@@ -74,6 +74,14 @@ const tracks=plan.chapters.map((c,i)=>{
   return splitVoiceForTts(voiceTexts[i]).map((_,part)=>join(tmp,c.id+'-part-'+String(part+1).padStart(2,'0')+'.mp3'));
 });
 const chunks=tracks.flat();
+if(v2){
+ const normalized=(t)=>t.replace(/\s+/g,' ').trim();
+ for(let i=0;i<plan.chapters.length;i++){
+   const segments=splitVoiceForTts(voiceTexts[i]);
+   if(normalized(segments.join(' '))!==normalized(voiceTexts[i]))
+     throw Error('Perte de texte lors du découpage du chapitre '+plan.chapters[i].id);
+ }
+}
 const fileSha=(path)=>createHash('sha256').update(readFileSync(path)).digest('hex');
 function assertMp3(f){
  if(!existsSync(f)||statSync(f).size<1024)throw Error('MP3 absent ou vide : '+f);
@@ -86,7 +94,9 @@ function measure(f){
  if(!Number.isFinite(n)||n<=0)throw Error('Durée ffprobe invalide : '+f);
  return n;
 }
-if(mode==='--check'){
+if(mode==='--plan'){
+ console.log('CORAL_OFFLINE_PLAN '+guide.slug+' v'+(v2?2:1)+' '+chunks.length+' segments '+tracks.map((x,i)=>plan.chapters[i].id+':'+x.length).join(' '));
+}else if(mode==='--check'){
  if(existsSync(output)||existsSync(manifestPath))throw Error('Le fichier final existe déjà ; refuser toute double génération.');
  if(v2&&(!guide.audio.previousAsset||!existsSync(resolve('public',guide.audio.previousAsset.audioUrl.replace(/^\//,'')))))
    throw Error('Ancien MP3 V1 absent : migration V2 arrêtée pour protéger les archives.');
