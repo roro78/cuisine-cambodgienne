@@ -10,7 +10,7 @@
   "difficulty": "Intermédiaire",
   "portionLabel": "1 petit pot, conformément à la fiche recette",
   "duration": {
-    "preparationMinutes": 10,
+    "preparationMinutes": 0,
     "practicalMinutes": 25,
     "waitingMinutes": 0,
     "waitingNote": "Pas de cuisson : la pâte est une préparation aromatique et n'est pas un plat prêt à manger."
@@ -190,5 +190,10 @@
     "mobileValidated": false,
     "desktopValidated": false,
     "productionApproved": false
+  },
+  "canonicalServings": 1,
+  "allergens": {
+    "status": "none",
+    "items": []
   }
 }
