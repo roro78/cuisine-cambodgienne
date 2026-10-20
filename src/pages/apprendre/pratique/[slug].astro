@@ -103,7 +103,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
         <p class="fca-objective">{guide.learningGoal}</p>
         <dl class="fca-facts">
           <div><dt>Préparation guidée</dt><dd>{minutes} min indicatives</dd></div>
-          <div><dt>Résultat</dt><dd>{guide.portionLabel}</dd></div>
+          <div><dt>Rendement sélectionné</dt><dd data-workshop-servings-hero>{recipe.baseServings} {guide.sourceRecipeSlug==='samlor-machu'||guide.sourceRecipeSlug==='kuy-teav'||guide.sourceRecipeSlug==='num-banh-chok'?'bols':'assiettes'}</dd></div>
           <div><dt>Niveau</dt><dd>{guide.difficulty}</dd></div>
         </dl>
         <a class="fca-primary" href="#ingredients">Préparer vos ingrédients <span aria-hidden="true">↘</span></a>
@@ -120,7 +120,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
       <p>Ce parcours part d’une recette complète, pas de conseils isolés. À chaque étape, vous cuisinez, observez le résultat, puis apprenez quoi corriger si nécessaire.</p>
     </section>
 
-    <section id="ingredients" class="fca-section" aria-labelledby="fca-ingredients-heading" data-workshop-servings-root="" data-base-servings={recipe.baseServings}>
+    <section id="ingredients" class="fca-section" aria-labelledby="fca-ingredients-heading" data-workshop-servings-root="" data-base-servings={recipe.baseServings} data-workshop-portion-kind={guide.sourceRecipeSlug==='samlor-machu'||guide.sourceRecipeSlug==='kuy-teav'||guide.sourceRecipeSlug==='num-banh-chok'?'bol':'assiette'}>
       <p class="fca-eyebrow">01 · Préparer</p>
       <h2 id="fca-ingredients-heading">Les ingrédients et le plan de travail.</h2>
       <p>Quantités issues de la <a href={recipeHref}>recette {recipe.title}</a>{', adaptées au nombre de personnes que vous choisissez.'}{guide.sourceRecipeSlug==='lok-lak' && ' Une petite quantité d’huile neutre facultative est signalée séparément pour la saisie du bœuf mariné.'} Cochez les produits au fur et à mesure.</p>
@@ -223,6 +223,10 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
     <footer class="fca-sources">
       <h2>Origine des instructions</h2>
       <p>Ingrédients et proportions : <a href={recipeHref}>fiche {recipe.title}</a>. Les observations, les contrôles et les conseils de correction sont le prolongement pédagogique de Cuisine du Cambodge.</p>
+      <p>Recettes et variantes consultées pour préparer cet atelier :</p>
+      <ul>{guide.sources.culinaryReferences?.map(reference => (
+        <li><a href={reference.url} target="_blank" rel="noopener noreferrer">{reference.title}</a></li>
+      ))}</ul>
       <a href="/apprendre/">← Revenir aux ateliers</a>
     </footer>
   </main>
