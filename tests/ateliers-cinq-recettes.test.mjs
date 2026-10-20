@@ -62,6 +62,13 @@ test('Lok Lak V2 : sept chapitres cuisinables, MP3 antérieur conservé mais non
   assert.ok(plan.chapters[0].text.length >= 350, 'Welcome and preparation before starting');
   assert.ok(plan.chapters.slice(1).every(c => c.text.length >= 650), 'Each spoken chapter must guide real gestures');
   assert.match(plan.chapters.at(-1).text, /bon appétit/i);
+  assert.match(plan.chapters[2].text, /marinade|mariner/i, 'Découpe et marinade avant cuisson');
+  assert.match(plan.chapters[2].text, /réfrigérateur/i, 'Marinade au frais');
+  assert.match(plan.chapters[3].text, /citron|crudités/i, 'Légumes et condiment préparés pendant la marinade');
+  assert.match(plan.chapters[4].text, /bœuf.*mariné|mariné.*bœuf|marinade/i, 'On saisit le bœuf déjà mariné');
+  assert.doesNotMatch(plan.chapters[5].text, /versez.*marinade.*crue|versez.*sauce soja/i, 'Aucune marinade crue versée en fin de cuisson');
+  assert.equal(data.duration.waitingMinutes,15,'Marinade de vingt minutes dont cinq avec préparation des garnitures');
+  assert.ok(data.recipeIngredients.additionalTrialIngredients.some(i=>i.name==='huile neutre pour la saisie'),'Huile pédagogique signalée à part');
   assert.doesNotMatch(plan.chapters.map(c => c.text).join(' '), /quatre assiettes|600 grammes|300 grammes/i, 'Narration must not freeze portions');
   assert.ok(recipes.find(r => r.slug === 'lok-lak').ingredients.length === 8, 'Canonical recipe unchanged');
   assert.match(page, /guide[.]audio[.]status === 'script_only'/, 'Do not render superseded audio');
