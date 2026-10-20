@@ -1,4 +1,4 @@
-name: Coral sauce tamarin — existing generator ONE SHOT (no deploy)
+name: Coral sauce tamarin — Render existing TTS ONE SHOT (no deploy)
 on:
   push:
     branches:
@@ -6,13 +6,11 @@ on:
     paths:
       - .github/workflows/coral-tamarin-existing-one-shot.yml
 permissions:
-  contents: read
+  contents: write
 jobs:
   existing-coral-generator:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - name: Checkout pilot without touching other branches
         uses: actions/checkout@v4
@@ -37,27 +35,11 @@ jobs:
         run: |
           cd .tmp-guided-coral-once
           node scripts/generate-workshop-audio.mjs --dry-run --workshop=piler-aromates-au-mortier --track=all --voice=coral --max-files=7
-      - name: Check existing TTS authorization without showing any key
-        id: auth
-        shell: bash
-        run: |
-          if [ -n "${OPENAI_API_KEY:-}" ]; then
-            echo "available=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "available=false" >> "$GITHUB_OUTPUT"
-            echo "Existing Cuisine repository OpenAI key is absent: NO TTS CALL, NO MP3. The already-available generator was verified in dry-run." >> "$GITHUB_STEP_SUMMARY"
-          fi
-      - name: Generate Coral audio ONCE using the EXISTING generator
-        if: steps.auth.outputs.available == 'true'
-        shell: bash
-        run: |
-          cd .tmp-guided-coral-once
-          node scripts/generate-workshop-audio.mjs --generate --workshop=piler-aromates-au-mortier --track=all --voice=coral --max-files=7
+      - name: Generate ONLY seven Coral tracks via existing IA-Coach Render TTS backend
+        run: node scripts/bridge-guided-tamarin-existing-coral.mjs --render
       - name: Concatenate seven REAL MP3 tracks, measure chapters and verify output
-        if: steps.auth.outputs.available == 'true'
         run: node scripts/bridge-guided-tamarin-existing-coral.mjs --assemble
-      - name: Keep audio as private review artifact ONLY (no merge, no deploy)
-        if: steps.auth.outputs.available == 'true'
+      - name: Store the new MP3 and its measured chapters for review
         uses: actions/upload-artifact@v4
         with:
           name: sauce-tamarin-coral-review-once
@@ -66,3 +48,14 @@ jobs:
             src/data/guided-workshop-audio/sauce-tamarin.json
           retention-days: 14
           if-no-files-found: error
+      - name: Commit ONLY the new reviewed-structure MP3 on draft branch
+        shell: bash
+        run: |
+          ffmpeg -v error -i public/audio/workshops/pratique-sauce-tamarin/atelier-coral.mp3 -f null -
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- public/audio/workshops/pratique-sauce-tamarin/atelier-coral.mp3 src/data/guided-workshop-audio/sauce-tamarin.json
+          git diff --cached --name-only
+          test "$(git diff --cached --name-only | wc -l)" -eq 2
+          git commit -m "assets(ateliers): audio Coral du tamarin (revue à l'écoute requise)"
+          git push origin "HEAD:feat/atelier-guide-sauce-tamarin-pilote-20261019"
