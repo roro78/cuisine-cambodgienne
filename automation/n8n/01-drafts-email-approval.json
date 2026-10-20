@@ -125,7 +125,8 @@
         "options": {
           "queryReplacement": "={{[$json.sourceId,$json.fingerprint,JSON.stringify($json.source),$json.scheduledDate,$json.facebookCaption,$json.instagramCaption,$json.imageUrl]}}"
         }
-      }
+      },
+      "alwaysOutputData": true
     },
     {
       "id": "c2dac383-8325-58f5-a85e-41636a0faba1",
@@ -235,6 +236,40 @@
           "queryReplacement": "={{[$json.decision,$json.note,$json.id]}}"
         }
       }
+    },
+    {
+      "id": "cuisine-draft-insert-guard",
+      "name": "Brouillon inséré ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cuisine-inserted-id",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      }
     }
   ],
   "connections": {
@@ -308,7 +343,7 @@
       "main": [
         [
           {
-            "node": "Envoyer la demande de validation Resend",
+            "node": "Brouillon inséré ?",
             "type": "main",
             "index": 0
           }
@@ -346,6 +381,18 @@
             "index": 0
           }
         ]
+      ]
+    },
+    "Brouillon inséré ?": {
+      "main": [
+        [
+          {
+            "node": "Envoyer la demande de validation Resend",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
       ]
     }
   },
