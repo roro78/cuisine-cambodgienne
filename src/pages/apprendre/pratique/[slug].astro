@@ -20,9 +20,6 @@ type Guide = typeof lokLak | typeof samlorMachu | typeof numBanhChok | typeof ku
 const { guide } = Astro.props as { guide: Guide };
 const recipe = recipes.find((item) => item.slug === guide.sourceRecipeSlug);
 if (!recipe) throw new Error('Source de recette manquante pour atelier complet : ' + guide.sourceRecipeSlug);
-const ingredientText = (item: RecipeIngredient) => [
-  item.quantity, item.unit, item.name
-].filter((part) => part !== undefined && part !== null && part !== '').join(' ');
 const minutes = guide.duration.practicalMinutes + guide.duration.preparationMinutes + guide.duration.waitingMinutes;
 const flexibleServings = guide.sourceRecipeSlug === 'lok-lak';
 // The historical recipe combines three crudités in one unscalable string. Normalize
