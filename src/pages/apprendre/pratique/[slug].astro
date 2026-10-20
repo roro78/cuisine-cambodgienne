@@ -3,6 +3,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
 import { recipes } from '../../../data/recipes';
+import CookingWorkshopAudio from '../../../components/CookingWorkshopAudio.astro';
 import type { RecipeIngredient } from '../../../data/recipes';
 import lokLak from '../../../data/atelier-recette-guides/lok-lak.json';
 import samlorMachu from '../../../data/atelier-recette-guides/samlor-machu.json';
@@ -24,6 +25,9 @@ const ingredientText = (item: RecipeIngredient) => [
 ].filter((part) => part !== undefined && part !== null && part !== '').join(' ');
 const minutes = guide.duration.practicalMinutes + guide.duration.preparationMinutes + guide.duration.waitingMinutes;
 const recipeHref = '/recettes/' + recipe.slug + '/';
+const recorded = import.meta.glob('../../../data/atelier-recette-audio/*.json', { eager:true, import:'default' }) as Record<string,{atelier:string;status:string;audioUrl:string;durationSec:number;chapters:{id:string;title:string;startSec:number;endSec:number}[];review:{acousticListening:boolean;mobile:boolean;desktop:boolean}}>;
+const guideAudio = Object.values(recorded).find((manifest)=>manifest.atelier===guide.slug);
+const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioScript)];
 ---
 <BaseLayout
   title={guide.title + ' — Atelier guidé | Cuisine du Cambodge'}
@@ -90,7 +94,8 @@ const recipeHref = '/recettes/' + recipe.slug + '/';
     <section class="fca-section" id="atelier" aria-labelledby="fca-steps-heading">
       <p class="fca-eyebrow">02 · Pratiquer</p>
       <h2 id="fca-steps-heading">Vos six phases de cuisine.</h2>
-      <p>Respectez l’ordre des préparations et vérifiez les repères avant de poursuivre. Le guide MP3 sera proposé lorsque sa narration aura été contrôlée ; toute la recette est déjà accessible sans audio.</p>
+      <p>Respectez l’ordre des préparations et vérifiez les repères avant de poursuivre. La recette reste entièrement accessible par écrit, même sans MP3.</p>
+      {guideAudio ? <CookingWorkshopAudio manifest={guideAudio} scripts={audioTexts} /> : <p class="fca-preview">Le guide vocal en sept chapitres sera accessible en préécoute dès la génération technique.</p>}
       <nav class="fca-steps-nav" aria-label="Aller directement à une phase">
         {guide.phases.map((phase, i) => (
           <a href={'#phase-' + phase.id}><span>{String(i+1).padStart(2,'0')}</span>{phase.title}</a>

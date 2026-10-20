@@ -36,7 +36,10 @@ try {
       assert.equal(await page.locator('.atelier-phase').count(),6);
       assert.equal(await page.locator('.atelier-step-nav a').count(),6);
       assert.equal(await page.locator('meta[name="robots"]').getAttribute('content').then(s=>s?.includes('noindex')),true);
-      assert.equal(await page.locator('audio').count(),0,'No fake MP3 in draft');
+      const audioCount=await page.locator('[data-cooking-audio]').count();
+      assert.ok(audioCount===0||audioCount===1);
+      if(audioCount===1)assert.equal(await page.locator('[data-cooking-chapter]').count(),7);
+      else assert.equal(await page.locator('audio').count(),0,'No fake MP3 in draft');
       const topGap=await page.evaluate(()=>{
         const header=document.querySelector('[data-site-header]');
         const breadcrumb=document.querySelector('.atelier-breadcrumb');

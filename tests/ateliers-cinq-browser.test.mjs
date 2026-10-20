@@ -37,7 +37,14 @@ try{
         assert.equal(await page.locator('.fca-step').count(),6,'Phases '+slug);
         assert.equal(await page.locator('.fca-steps-nav a').count(),6,'Navigation '+slug);
         assert.equal(await page.locator('meta[name="robots"]').getAttribute('content').then(v=>v?.includes('noindex')),true,'Pilot noindex '+slug);
-        assert.equal(await page.locator('audio').count(),0,'Do not invent audio '+slug);
+        const audioCount=await page.locator('[data-cooking-audio]').count();
+        assert.ok(audioCount===0||audioCount===1,'At most one recording per atelier '+slug);
+        if(audioCount===1){
+          assert.equal(await page.locator('[data-cooking-chapter]').count(),7,'Intro + six genuine chapters');
+          assert.match(await page.locator('[data-cooking-audio]').getAttribute('src'),/\/audio\/workshops\/[^/]+\/atelier-coral[.]mp3$/);
+        }else{
+          assert.equal(await page.locator('audio').count(),0,'Do not fabricate an MP3 '+slug);
+        }
         assert.equal(await page.locator('.fca-hero-photo img').evaluate(e=>e instanceof HTMLImageElement&&e.complete&&e.naturalWidth>0),true,'Editorial photo '+slug);
         const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
         assert.ok(overflow<=3,'Horizontal scroll at '+width+' '+slug+': '+overflow);

@@ -2,6 +2,7 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
+import CookingWorkshopAudio from '../../../components/CookingWorkshopAudio.astro';
 import workshop from '../../../data/atelier-recette-guides/kroeung-jaune.json';
 import { recipes } from '../../../data/recipes';
 import type { RecipeIngredient } from '../../../data/recipes';
@@ -11,6 +12,9 @@ if (!recipe) throw new Error('La recette Kroeung jaune manque : atelier impossib
 const ingredientLine = (item: RecipeIngredient) =>
   [item.quantity, item.unit, item.name].filter((part) => part !== undefined && part !== null && part !== '').join(' ');
 const totalMinutes = workshop.duration.practicalMinutes + workshop.duration.preparationMinutes + workshop.duration.waitingMinutes;
+const recorded = import.meta.glob('../../../data/atelier-recette-audio/*.json', { eager:true, import:'default' }) as Record<string,{atelier:string;status:string;audioUrl:string;durationSec:number;chapters:{id:string;title:string;startSec:number;endSec:number}[];review:{acousticListening:boolean;mobile:boolean;desktop:boolean}}>;
+const guideAudio=Object.values(recorded).find((manifest)=>manifest.atelier===workshop.slug);
+const audioTexts=[workshop.audio.intro,...workshop.phases.map((phase)=>phase.audioScript)];
 ---
 <BaseLayout
   title={workshop.title + ' — Atelier de cuisine | Cuisine du Cambodge'}
@@ -77,7 +81,7 @@ const totalMinutes = workshop.duration.practicalMinutes + workshop.duration.prep
       <p class="eyebrow">02 · Les six phases de l’atelier</p>
       <h2 id="atelier-steps-title">Cuisinez, observez, rectifiez.</h2>
       <p>Faites chaque geste avant de passer au suivant. Les durées vous guident, mais les critères de réussite vous indiquent quand continuer.</p>
-      <p class="atelier-audio-note">Le guide vocal en sept chapitres est en préparation. Cet atelier reste réalisable entièrement par écrit, sans MP3.</p>
+      {guideAudio ? <CookingWorkshopAudio manifest={guideAudio} scripts={audioTexts} /> : <p class="atelier-audio-note">Le guide vocal en sept chapitres est en préparation. Cet atelier reste réalisable entièrement par écrit, sans MP3.</p>}
       <nav class="atelier-step-nav" aria-label="Naviguer entre les six phases">
         {workshop.phases.map((phase, i) => (
           <a href={'#phase-' + phase.id}><span>{String(i + 1).padStart(2, '0')}</span><strong>{phase.title}</strong></a>

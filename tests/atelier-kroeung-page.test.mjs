@@ -23,7 +23,7 @@ test('Atelier kroeung : vraie recette, six phases, ingrédients et rendement can
 });
 test('Un atelier non validé ne se déclare pas publiable ni enregistré', () => {
   assert.equal(workshop.status,'draft');
-  assert.equal(workshop.audio.status,'script_only');
+  assert.ok(['script_only','generated_review_pending'].includes(workshop.audio.status));
   assert.equal(workshop.review.productionApproved,false);
   assert.match(source,/noindex=\{workshop[.]status !== 'release_ready'\}/);
   assert.match(source,/sans MP3/);
