@@ -33,5 +33,11 @@ test('Une source d’ingrédients, photos existantes, données privées absentes
   assert.match(page,/guide[.]phases[.]map/);
   assert.match(page,/Si quelque chose ne fonctionne pas/);
   assert.match(page,/Ce que vous apprenez/);
+  assert.match(page,/recipe[.]substitutions[.]map/);
+  assert.match(page,/guide[.]media[.]finishedPreparationImage/);
+  for(const path of ['src/pages/apprendre/index.astro','src/pages/recettes/[slug].astro','src/pages/sitemap.xml.ts']){
+    const source=readFileSync(path,'utf8');
+    assert.match(source,/releasedCookingWorkshopGuides|getReleasedCookingWorkshopForRecipe/);
+  }
   assert.doesNotMatch(page,/n8n|resend|socialCatalog|password|OPENAI_API_KEY/);
 });

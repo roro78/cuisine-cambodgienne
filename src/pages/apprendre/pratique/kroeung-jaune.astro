@@ -12,6 +12,8 @@ if (!recipe) throw new Error('La recette Kroeung jaune manque : atelier impossib
 const ingredientLine = (item: RecipeIngredient) =>
   [item.quantity, item.unit, item.name].filter((part) => part !== undefined && part !== null && part !== '').join(' ');
 const totalMinutes = workshop.duration.practicalMinutes + workshop.duration.preparationMinutes + workshop.duration.waitingMinutes;
+const heroPicture = workshop.status==='release_ready' && workshop.media.finishedPreparationImage ? workshop.media.finishedPreparationImage : recipe.image;
+const heroCaption = workshop.status==='release_ready' ? 'Photographie du kroeung jaune terminé.' : 'Visuel de la recette existante ; photo finale à valider.';
 const recorded = import.meta.glob('../../../data/atelier-recette-audio/*.json', { eager:true, import:'default' }) as Record<string,{atelier:string;status:string;audioUrl:string;durationSec:number;chapters:{id:string;title:string;startSec:number;endSec:number}[];review:{acousticListening:boolean;mobile:boolean;desktop:boolean}}>;
 const guideAudio=Object.values(recorded).find((manifest)=>manifest.atelier===workshop.slug);
 const audioTexts=[workshop.audio.intro,...workshop.phases.map((phase)=>phase.audioScript)];
@@ -44,8 +46,8 @@ const audioTexts=[workshop.audio.intro,...workshop.phases.map((phase)=>phase.aud
         <p class="atelier-preview-note">Version de préparation éditoriale : photographie finale et guide vocal à valider avant publication.</p>
       </div>
       <figure class="atelier-hero-photo">
-        <img src={recipe.image ?? '/images/cuisine/kroeung-1600.webp'} alt={recipe.imageAlt ?? 'Pâte de kroeung et aromates frais'} width={recipe.imageWidth ?? 1200} height={recipe.imageHeight ?? 800} loading="eager" />
-        <figcaption>Visuel de la recette existante. Photo définitive de l’atelier encore à confirmer.</figcaption>
+        <img src={heroPicture ?? '/images/cuisine/kroeung-1600.webp'} alt={workshop.status==='release_ready'?workshop.finalPreparation:(recipe.imageAlt ?? 'Pâte de kroeung et aromates frais')} width={recipe.imageWidth ?? 1200} height={recipe.imageHeight ?? 800} loading="eager" />
+        <figcaption>{heroCaption}</figcaption>
       </figure>
     </header>
 
@@ -70,6 +72,9 @@ const audioTexts=[workshop.audio.intro,...workshop.phases.map((phase)=>phase.aud
         <div class="atelier-preflight">
           <section><h3>Matériel</h3><ul>{workshop.equipment.map((item) => <li>{item}</li>)}</ul></section>
           <section><h3>Avant de commencer</h3><ul>{workshop.beforeStarting.map((item) => <li>{item}</li>)}</ul></section>
+          {recipe.substitutions && recipe.substitutions.length>0 && (
+            <section><h3>Remplacements possibles</h3><ul>{recipe.substitutions.map((item)=><li>{item}</li>)}</ul></section>
+          )}
           <section><h3>À respecter</h3><ul>{workshop.safety.map((item) => <li>{item}</li>)}</ul>
             <p class="atelier-small">Allergènes : {workshop.allergens.status === 'none' ? 'aucun identifié dans cette recette ; vérifiez néanmoins les ingrédients utilisés.' : workshop.allergens.items.join(', ')}</p>
           </section>

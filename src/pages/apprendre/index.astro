@@ -5,6 +5,8 @@ import SiteFooter from '../../components/SiteFooter.astro';
 import EditorialSectionHero from '../../components/EditorialSectionHero.astro';
 import CulinaryIcon from '../../components/CulinaryIcon.astro';
 import { workshops } from '../../data/workshops';
+import { releasedCookingWorkshopGuides } from '../../data/cookingWorkshopGuides';
+import { recipes } from '../../data/recipes';
 const workshopPhotos: Record<string,string> = {
 'piler-aromates-au-mortier':'/images/cuisine/v17-mortar-hands-1600.jpg',
 'equilibrer-une-sauce':'/images/cuisine/tamarind-1600.webp',
@@ -56,6 +58,26 @@ const schema = {
       </div>
       <p>Dans chaque atelier, vous faites un geste, vous regardez ce qui change, puis vous recommencez. C’est la meilleure façon de le réussir ensuite dans une vraie recette.</p>
     </section>
+
+    {releasedCookingWorkshopGuides.length>0 && (
+      <section class="v16-workshop-list" aria-label="Ateliers de cuisine complets">
+        <div class="v19-section-intro"><p class="v16-page-kicker">Ateliers complets</p><h2>Préparez une vraie recette, du premier ingrédient au service.</h2></div>
+        {releasedCookingWorkshopGuides.map((guide, i) => {
+          const recipe=recipes.find(item=>item.slug===guide.sourceRecipeSlug);
+          return <article class="v16-workshop" data-reveal="up">
+            <div class="v16-workshop-number">{String(i+1).padStart(2,'0')}</div>
+            <div class="v16-workshop-main">
+              <div class="v16-workshop-topline"><p><CulinaryIcon name="cook" size={18}/> Atelier pratique</p>
+                <span>{guide.duration.practicalMinutes} min · {guide.difficulty}</span></div>
+              <h2>{guide.title}</h2>
+              <p class="v16-workshop-objective">{guide.finalPreparation}</p>
+              <a href={guide.sourceRecipeSlug==='kroeung-jaune' ? '/apprendre/pratique/kroeung-jaune/' : '/apprendre/pratique/'+guide.slug+'/'}>Réaliser cet atelier →</a>
+            </div>
+            {recipe?.image && <figure class="v19-workshop-shot"><img src={guide.media.finishedPreparationImage || recipe.image} alt={guide.finalPreparation} loading="lazy" width={recipe.imageWidth??1200} height={recipe.imageHeight??800}/></figure>}
+          </article>;
+        })}
+      </section>
+    )}
 
     <section class="v16-workshop-list" aria-label="Les six ateliers">
       {workshops.map((workshop) => (

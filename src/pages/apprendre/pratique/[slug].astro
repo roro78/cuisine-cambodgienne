@@ -25,6 +25,8 @@ const ingredientText = (item: RecipeIngredient) => [
 ].filter((part) => part !== undefined && part !== null && part !== '').join(' ');
 const minutes = guide.duration.practicalMinutes + guide.duration.preparationMinutes + guide.duration.waitingMinutes;
 const recipeHref = '/recettes/' + recipe.slug + '/';
+const heroPicture=guide.status==='release_ready'&&guide.media.finishedPreparationImage ? guide.media.finishedPreparationImage : recipe.image;
+const heroCaption=guide.status==='release_ready' ? 'Photographie de la préparation terminée.' : 'Visuel éditorial de la recette existante ; photographie finale à valider.';
 const recorded = import.meta.glob('../../../data/atelier-recette-audio/*.json', { eager:true, import:'default' }) as Record<string,{atelier:string;status:string;audioUrl:string;durationSec:number;chapters:{id:string;title:string;startSec:number;endSec:number}[];review:{acousticListening:boolean;mobile:boolean;desktop:boolean}}>;
 const guideAudio = Object.values(recorded).find((manifest)=>manifest.atelier===guide.slug);
 const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioScript)];
@@ -54,8 +56,8 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
         <p class="fca-preview">Cet atelier est en préproduction : photographie finale et guide vocal encore soumis à validation.</p>
       </div>
       <figure class="fca-hero-photo">
-        <img src={recipe.image ?? '/images/cuisine/v17-table-meal-1600.jpg'} alt={recipe.imageAlt ?? guide.finalPreparation} loading="eager" width={recipe.imageWidth ?? 1200} height={recipe.imageHeight ?? 800} decoding="async" />
-        <figcaption>Visuel éditorial de la recette existante ; sélection définitive à contrôler avant publication.</figcaption>
+        <img src={heroPicture ?? '/images/cuisine/v17-table-meal-1600.jpg'} alt={guide.status==='release_ready'?guide.finalPreparation:(recipe.imageAlt ?? guide.finalPreparation)} loading="eager" width={recipe.imageWidth ?? 1200} height={recipe.imageHeight ?? 800} decoding="async" />
+        <figcaption>{heroCaption}</figcaption>
       </figure>
     </header>
 
@@ -86,6 +88,9 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
         <div class="fca-kit-side">
           <section><h3>Matériel nécessaire</h3><ul>{guide.equipment.map((item) => <li>{item}</li>)}</ul></section>
           <section><h3>À préparer avant de démarrer</h3><ul>{guide.beforeStarting.map((item) => <li>{item}</li>)}</ul></section>
+          {recipe.substitutions && recipe.substitutions.length>0 && (
+            <section><h3>Substitutions possibles</h3><ul>{recipe.substitutions.map((item)=><li>{item}</li>)}</ul></section>
+          )}
           <section><h3>Sécurité et allergènes</h3><p><strong>Allergènes à vérifier :</strong> {guide.allergens.items.join(' · ')}</p><ul>{guide.safety.map((item) => <li>{item}</li>)}</ul></section>
         </div>
       </div>
