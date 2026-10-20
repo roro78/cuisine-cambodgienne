@@ -60,7 +60,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           pattern: cuisine-lok-lak-v2-*
           merge-multiple: true
-          path: .tmp-cooking-coral/lok-lak/v2
+          path: .tmp-cooking-coral/lok-lak-de-la-poele-a-l-assiette/v2
       - name: Coral V2 - intro (reprenable)
         run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=lok-lak --one=intro
       - name: Sauvegarder les sous-pistes intro
@@ -68,9 +68,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cuisine-lok-lak-v2-intro
-          path: .tmp-cooking-coral/lok-lak/v2/intro-part-*.mp3
+          path: .tmp-cooking-coral/lok-lak-de-la-poele-a-l-assiette/v2/intro-part-*.mp3
           retention-days: 14
-          if-no-files-found: ignore
+          if-no-files-found: error
           include-hidden-files: true
           overwrite: true
       - name: Coral V2 - installer (reprenable)
@@ -80,9 +80,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cuisine-lok-lak-v2-installer
-          path: .tmp-cooking-coral/lok-lak/v2/installer-part-*.mp3
+          path: .tmp-cooking-coral/lok-lak-de-la-poele-a-l-assiette/v2/installer-part-*.mp3
           retention-days: 14
-          if-no-files-found: ignore
+          if-no-files-found: error
           include-hidden-files: true
           overwrite: true
       - name: Coral V2 - preparer (reprenable)
@@ -92,9 +92,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cuisine-lok-lak-v2-preparer
-          path: .tmp-cooking-coral/lok-lak/v2/preparer-part-*.mp3
+          path: .tmp-cooking-coral/lok-lak-de-la-poele-a-l-assiette/v2/preparer-part-*.mp3
           retention-days: 14
-          if-no-files-found: ignore
+          if-no-files-found: error
           include-hidden-files: true
           overwrite: true
       - name: Coral V2 - assembler (reprenable)
@@ -104,9 +104,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cuisine-lok-lak-v2-assembler
-          path: .tmp-cooking-coral/lok-lak/v2/assembler-part-*.mp3
+          path: .tmp-cooking-coral/lok-lak-de-la-poele-a-l-assiette/v2/assembler-part-*.mp3
           retention-days: 14
-          if-no-files-found: ignore
+          if-no-files-found: error
           include-hidden-files: true
           overwrite: true
       - name: Coral V2 - maitriser (reprenable)
@@ -116,9 +116,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cuisine-lok-lak-v2-maitriser
-          path: .tmp-cooking-coral/lok-lak/v2/maitriser-part-*.mp3
+          path: .tmp-cooking-coral/lok-lak-de-la-poele-a-l-assiette/v2/maitriser-part-*.mp3
           retention-days: 14
-          if-no-files-found: ignore
+          if-no-files-found: error
           include-hidden-files: true
           overwrite: true
       - name: Coral V2 - rectifier (reprenable)
@@ -128,9 +128,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cuisine-lok-lak-v2-rectifier
-          path: .tmp-cooking-coral/lok-lak/v2/rectifier-part-*.mp3
+          path: .tmp-cooking-coral/lok-lak-de-la-poele-a-l-assiette/v2/rectifier-part-*.mp3
           retention-days: 14
-          if-no-files-found: ignore
+          if-no-files-found: error
           include-hidden-files: true
           overwrite: true
       - name: Coral V2 - terminer (reprenable)
@@ -140,9 +140,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cuisine-lok-lak-v2-terminer
-          path: .tmp-cooking-coral/lok-lak/v2/terminer-part-*.mp3
+          path: .tmp-cooking-coral/lok-lak-de-la-poele-a-l-assiette/v2/terminer-part-*.mp3
           retention-days: 14
-          if-no-files-found: ignore
+          if-no-files-found: error
           include-hidden-files: true
           overwrite: true
       - name: Assembler UN MP3 Coral V2 avec sept grands chapitres
