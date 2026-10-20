@@ -7,10 +7,11 @@ on:
       - .github/workflows/coral-tamarin-existing-one-shot.yml
 permissions:
   contents: write
+  actions: read
 jobs:
   existing-coral-generator:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 28
     steps:
       - name: Checkout pilot without touching other branches
         uses: actions/checkout@v4
@@ -45,14 +46,76 @@ jobs:
         run: |
           cd .tmp-guided-coral-once
           node scripts/generate-workshop-audio.mjs --dry-run --workshop=piler-aromates-au-mortier --track=all --voice=coral --max-files=7
-      - name: Generate ONLY seven Coral tracks via existing IA-Coach Render TTS backend
-        run: node scripts/bridge-guided-tamarin-existing-coral.mjs --render
-      - name: Preserve the seven original Coral chunks BEFORE assembly
+      - name: Restore intro from previous one-shot run (no re-synthesis)
+        uses: actions/download-artifact@v4
+        with:
+          name: sauce-tamarin-coral-7-original-tracks
+          run-id: 39438816501
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: .tmp-guided-coral-once/public/audio/workshops/piler-aromates-au-mortier
+      - name: Check recovered intro integrity before any billable request
+        shell: bash
+        run: |
+          test -s .tmp-guided-coral-once/public/audio/workshops/piler-aromates-au-mortier/intro.mp3
+          ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 .tmp-guided-coral-once/public/audio/workshops/piler-aromates-au-mortier/intro.mp3
+      - name: Synthesize only etape-01 through IA-Coach existing Coral backend
+        run: node scripts/bridge-guided-tamarin-existing-coral.mjs --render-one=etape-01
+      - name: Save etape-01 immediately for safe resumption
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: sauce-tamarin-coral-7-original-tracks
-          path: .tmp-guided-coral-once/public/audio/workshops/piler-aromates-au-mortier/*.mp3
+          name: sauce-tamarin-coral-checkpoint-etape-01
+          path: .tmp-guided-coral-once/public/audio/workshops/piler-aromates-au-mortier/etape-01.mp3
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Synthesize only etape-02 through IA-Coach existing Coral backend
+        run: node scripts/bridge-guided-tamarin-existing-coral.mjs --render-one=etape-02
+      - name: Save etape-02 immediately for safe resumption
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sauce-tamarin-coral-checkpoint-etape-02
+          path: .tmp-guided-coral-once/public/audio/workshops/piler-aromates-au-mortier/etape-02.mp3
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Synthesize only etape-03 through IA-Coach existing Coral backend
+        run: node scripts/bridge-guided-tamarin-existing-coral.mjs --render-one=etape-03
+      - name: Save etape-03 immediately for safe resumption
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sauce-tamarin-coral-checkpoint-etape-03
+          path: .tmp-guided-coral-once/public/audio/workshops/piler-aromates-au-mortier/etape-03.mp3
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Synthesize only etape-04 through IA-Coach existing Coral backend
+        run: node scripts/bridge-guided-tamarin-existing-coral.mjs --render-one=etape-04
+      - name: Save etape-04 immediately for safe resumption
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sauce-tamarin-coral-checkpoint-etape-04
+          path: .tmp-guided-coral-once/public/audio/workshops/piler-aromates-au-mortier/etape-04.mp3
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Synthesize only etape-05 through IA-Coach existing Coral backend
+        run: node scripts/bridge-guided-tamarin-existing-coral.mjs --render-one=etape-05
+      - name: Save etape-05 immediately for safe resumption
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sauce-tamarin-coral-checkpoint-etape-05
+          path: .tmp-guided-coral-once/public/audio/workshops/piler-aromates-au-mortier/etape-05.mp3
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Synthesize only etape-06 through IA-Coach existing Coral backend
+        run: node scripts/bridge-guided-tamarin-existing-coral.mjs --render-one=etape-06
+      - name: Save etape-06 immediately for safe resumption
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sauce-tamarin-coral-checkpoint-etape-06
+          path: .tmp-guided-coral-once/public/audio/workshops/piler-aromates-au-mortier/etape-06.mp3
           retention-days: 14
           if-no-files-found: warn
       - name: Concatenate seven REAL MP3 tracks, measure chapters and verify output

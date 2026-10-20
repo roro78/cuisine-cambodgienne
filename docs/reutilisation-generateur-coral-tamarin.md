@@ -9,3 +9,9 @@ Le workflow unique `.github/workflows/coral-tamarin-existing-one-shot.yml` est d
 La piste : `public/audio/workshops/pratique-sauce-tamarin/atelier-coral.mp3`. Le manifeste associé : `src/data/guided-workshop-audio/sauce-tamarin.json`. Ils restent en **audio_generated_review_pending** tant que l'écoute et le fonctionnement sur téléphone ne sont pas confirmés. Le lecteur partagé, sujet de la PR #67, n'est pas modifié.
 
 Ne pas relancer le workflow après un succès : sept appels TTS facturables sont attendus une seule fois. En cas d'échec intermédiaire, consulter les logs et l'artefact avant toute nouvelle tentative.
+
+## Reprise après l'incident d'infrastructure du 20 octobre
+
+La première synthèse a réellement produit les sept pistes via Render, mais son assemblage a échoué faute de ffprobe sur le runner ; ces sept fichiers n'avaient pas été conservés. Le run suivant a bien préinstallé ffprobe, mais son deuxième appel backend a expiré après 100 s. L'introduction du deuxième run a été conservée dans l'artefact `sauce-tamarin-coral-7-original-tracks` de l'exécution `39438816501`. **Elle est réutilisée sans la régénérer.**
+
+Le workflow restaure désormais cette piste depuis l'artefact GitHub existant, vérifie sa durée avec ffprobe puis effectue séparément les six appels restants. **Chaque chapitre est immédiatement sauvegardé dans un artefact indépendant**, permettant d'éviter des générations répétées sur une panne ultérieure. Il n'y a aucun appel récurrent, ni accès à la clé d'IA-Coach. Si un chapitre échoue, arrêter et récupérer les artefacts existants avant toute relance.

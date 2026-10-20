@@ -56,7 +56,7 @@ if (mode === '--prepare') {
   if (JSON.parse(count).steps.length !== 6) throw new Error('Intro and six steps required.');
   console.log('Guided tamarind adapter PASS: seven tracks prepared for the existing generator, no TTS calls.');
   console.log('The legacy generator script must be loaded separately into ' + sourceScript);
-} else if (mode === '--render') {
+} else if (mode === '--render' || mode.startsWith('--render-one=')) {
   // The six existing Coral tracks used this same protected OpenAI backend.
   // This branch produces exactly ONE new atelier and ONLY once per workflow run.
   if (!existsSync(sourceScript)) throw new Error('Original generator must be verified by dry-run first.');
@@ -68,13 +68,23 @@ if (mode === '--prepare') {
     throw new Error('Expected exactly one introduction and six validated chapter texts.');
   }
   const folder = join(temp, 'public/audio/workshops/piler-aromates-au-mortier');
-  if (items.some(n => existsSync(join(folder, n + '.mp3')))) {
-    throw new Error('One or more tracks already exist: refusing to regenerate or overwrite.');
-  }
   mkdirSync(folder, { recursive: true });
+  const target = mode.startsWith('--render-one=') ? mode.slice('--render-one='.length) : null;
+  if (target && !items.includes(target)) throw new Error('Unsupported Coral track: ' + target);
+  const indexes = items.map((_, i) => i).filter(i => target === null || items[i] === target);
+  if (indexes.length !== (target ? 1 : 7)) throw new Error('Unexpected number of requested tracks.');
   const backend = 'https://render-iacoach-backend.onrender.com/api/tts';
   const instructions = 'Narration culinaire naturelle en français de France, voix Coral chaleureuse, claire et posée. Garder fidèlement les quantités. Faire des pauses naturelles. Aucun effet dramatique, aucune imitation de personne.';
-  for (let i = 0; i < items.length; i++) {
+  for (const i of indexes) {
+    const existing = join(folder, items[i] + '.mp3');
+    if (existsSync(existing)) {
+      const buffer = readFileSync(existing);
+      const valid = buffer.length > 1024 &&
+        (buffer.subarray(0,3).toString() === 'ID3' || (buffer[0] === 0xff && (buffer[1] & 0xe0) === 0xe0);
+      if (!valid) throw new Error('Corrupted restored track: ' + items[i]);
+      console.log('CORAL_RESUME_SKIP_VALID_TRACK ' + items[i] + ' bytes=' + buffer.length);
+      continue;
+    }
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 100000);
     let response;
@@ -99,7 +109,7 @@ if (mode === '--prepare') {
       clearTimeout(timeout);
     }
   }
-  console.log('All seven Coral tracks generated with the EXISTING IA-Coach Render backend.');
+  console.log('Coral requested track(s) completed using the existing IA-Coach Render backend.');
 } else if (mode === '--assemble') {
   if (!existsSync(sourceScript)) throw new Error('Existing generator not supplied.');
   if (existsSync(output) || existsSync(manifestPath)) throw new Error('Audio already exists: refusing overwrite.');
@@ -159,5 +169,5 @@ if (mode === '--prepare') {
   console.log('NEW GUIDED CORAL MP3 WRITTEN; chapter boundaries measured by ffprobe.');
   console.log('durationSec=' + manifest.durationSec + ' bytes=' + bytes.length + ' sha256=' + manifest.sha256.slice(0,12));
 } else {
-  throw new Error('Use --prepare, --render (existing backend, one-shot), or --assemble.');
+  throw new Error('Use --prepare, --render-one=intro|etape-01..06, --render, or --assemble.');
 }
