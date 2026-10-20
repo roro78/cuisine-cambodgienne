@@ -35,7 +35,10 @@ const plan=buildCookingAudioStoryboard(guide);
 if(plan.numberOfChapters!==7||plan.chapters.some((c,i)=>c.id!==(i===0?'intro':PHASE_IDS[i-1])))throw Error('Chapitres non alignés.');
 const voiceTexts=plan.chapters.map(c=>c.text);
 const v2=guide.audio.storyboardVersion===2;
-if(v2&&recipe!=='lok-lak')throw Error('La V2 est limitée au pilote Lok Lak : ne pas changer les autres ateliers.');
+// Lok Lak V2 is immutable: recording already listened to and approved.
+// Only the five non-Lok-Lak blueprints explicitly upgraded to V2 are eligible.
+if(recipe==='lok-lak')throw Error('Lok Lak V2 approuvé : toute génération est interdite.');
+if(!v2)throw Error('Atelier non migré vers la narration immersive V2 : aucune génération autorisée.');
 if(voiceTexts.some(t=>typeof t!=='string'||t.length<90||t.length>(v2?4500:1200)))
   throw Error('Narration absente ou excessivement longue.');
 // The TTS backend has a hard timeout per HTTP request. Split only for generation;
