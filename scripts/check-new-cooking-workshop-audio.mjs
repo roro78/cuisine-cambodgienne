@@ -11,7 +11,8 @@ let present=0;
 let superseded=0;
 for(const slug of names){
  const blueprint=JSON.parse(readFileSync('src/data/atelier-recette-guides/'+slug+'.json','utf8'));
- const manifestFile=resolve('src/data/atelier-recette-audio',slug+'.json');
+ const isV2=blueprint.audio.storyboardVersion===2;
+ const manifestFile=resolve('src/data/atelier-recette-audio',slug+(isV2&&blueprint.audio.status!=='script_only'?'-v2':'')+'.json');
  const has=existsSync(manifestFile);
  if(blueprint.audio.status==='script_only'){
    if(!has){
