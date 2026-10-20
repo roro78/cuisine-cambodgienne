@@ -42,7 +42,7 @@ Deux petits détails pratiques : vérifiez les étiquettes des sauces si vous av
 
 La poêle reste éteinte pour l'instant. Si tous les bols, les ingrédients et les ustensiles sont prêts, parfait ! Sinon, vous pouvez faire pause le temps de vous organiser. Je vous retrouve pour la découpe et la marinade.
 
-## CHAPITRE 2 — preparer — TAILLER LE BŒUF ET LES CRUDITÉS
+## CHAPITRE 2 — preparer — TAILLER ET FAIRE MARINER LE BŒUF
 
 On s'occupe du bœuf maintenant. Sortez-le du réfrigérateur juste au moment de le préparer, et placez-le sur votre planche réservée à la viande.
 
@@ -56,7 +56,7 @@ Petite astuce : n'essayez pas de sécher ou de rincer le bœuf après l'avoir ma
 
 Voilà, votre viande se parfume tranquillement. Mettez la lecture en pause si vous avez besoin de terminer cette préparation. Quand vous revenez, on profite de ce temps de repos pour les crudités et notre condiment.
 
-## CHAPITRE 3 — assembler — LES DEUX SAUCES, DEUX RÔLES DIFFÉRENTS
+## CHAPITRE 3 — assembler — CRUDITÉS ET CONDIMENT CITRON–POIVRE
 
 Pendant que le bœuf marine au frais, on va préparer toute la fraîcheur du Lok Lak.
 
@@ -90,7 +90,7 @@ Pour du bœuf issu d'un morceau entier, la référence de sécurité de l'USDA e
 
 Prenez le temps de terminer vos fournées et de contrôler la cuisson. Faites pause si nécessaire. Ensuite, on va vérifier l'enrobage et finir notre Lok Lak sans brûler la marinade.
 
-## CHAPITRE 5 — rectifier — ENROBER SANS BRÛLER
+## CHAPITRE 5 — rectifier — CONTRÔLER L'ENROBAGE SANS BRÛLER
 
 Voilà, votre bœuf est saisi. On va maintenant regarder ce qu'il s'est passé avec la marinade.
 
