@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
   actions: read
+# Allow only one billable run of this isolated pilot at a time.
+concurrency:
+  group: coral-tamarin-single-generation
+  cancel-in-progress: false
 jobs:
   existing-coral-generator:
     runs-on: ubuntu-latest
@@ -25,6 +29,12 @@ jobs:
         run: node --check scripts/bridge-guided-tamarin-existing-coral.mjs
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Verify edited culinary instructions and six narration scripts BEFORE billable TTS
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test tests/guided-workshop-contract.test.mjs
+          node scripts/export-guided-workshop-narration.mjs --check
       - name: Install and verify MP3 measurement tools BEFORE generating any paid audio
         shell: bash
         run: |
