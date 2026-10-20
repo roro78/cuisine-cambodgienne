@@ -45,6 +45,11 @@ jobs:
       - name: Editorial regression contract
         run: npm run test:editorial
 
+      - name: Standard ateliers — recette réutilisable et guide MP3 (sans TTS)
+        run: |
+          node scripts/check-workshop-blueprints.mjs
+          node --test tests/atelier-standard.test.mjs
+
       - name: Validate all six Coral MP3s and actual chapter boundaries (offline)
         run: node scripts/check-workshop-audio.mjs
 
