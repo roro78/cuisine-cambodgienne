@@ -167,10 +167,60 @@
   ],
   "audio": {
     "mode": "guided-cooking",
-    "status": "script_only",
+    "status": "generated_review_pending",
     "voice": "coral",
     "intro": "Bienvenue dans l'atelier Réaliser un Lok Lak complet, de la saisie au service. Vous allez réellement préparer quatre assiettes de lok lak avec bœuf bien saisi, crudités et condiment citron vert–poivre. Votre recette comporte six phases, avec des ingrédients déjà quantifiés. Arrêtez la narration pendant chaque geste : observez et vérifiez le résultat avant de reprendre.",
-    "publicProviderMention": false
+    "publicProviderMention": false,
+    "asset": {
+      "audioUrl": "/audio/workshops/lok-lak-de-la-poele-a-l-assiette/atelier-coral.mp3",
+      "durationSec": 114.768,
+      "sha256": "2baa76db022364c75f0b7b293e76d336c21b7c9dbdef779e5c0aa09ae2dafe88",
+      "chapters": [
+        {
+          "id": "intro",
+          "title": "Bienvenue et mise en place",
+          "startSec": 0,
+          "endSec": 27.264
+        },
+        {
+          "id": "installer",
+          "title": "Organiser la poêle et les quatre assiettes",
+          "startSec": 27.264,
+          "endSec": 42.264
+        },
+        {
+          "id": "preparer",
+          "title": "Tailler le bœuf et préparer les crudités",
+          "startSec": 42.264,
+          "endSec": 57.192
+        },
+        {
+          "id": "assembler",
+          "title": "Mélanger la sauce et le condiment poivré",
+          "startSec": 57.192,
+          "endSec": 73.752
+        },
+        {
+          "id": "maitriser",
+          "title": "Saisir le bœuf en deux petites fournées",
+          "startSec": 73.752,
+          "endSec": 87.672
+        },
+        {
+          "id": "rectifier",
+          "title": "Glacer et contrôler l'enrobage",
+          "startSec": 87.672,
+          "endSec": 99.936
+        },
+        {
+          "id": "terminer",
+          "title": "Dresser le Lok Lak et déguster les contrastes",
+          "startSec": 99.936,
+          "endSec": 114.768
+        }
+      ],
+      "scriptSha256": "98b8b613753a2cc05f26b249f98001d622ada61621ac95be764f9d11b85b0441"
+    }
   },
   "media": {
     "finishedPreparationImage": "",
