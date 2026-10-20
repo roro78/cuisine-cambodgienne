@@ -10,11 +10,13 @@ import numBanhChok from '../../../data/atelier-recette-guides/num-banh-chok.json
 import kuyTeav from '../../../data/atelier-recette-guides/kuy-teav.json';
 import baiSachChrouk from '../../../data/atelier-recette-guides/bai-sach-chrouk.json';
 
-const guides = [lokLak, samlorMachu, numBanhChok, kuyTeav, baiSachChrouk];
 export function getStaticPaths() {
+  // Astro hoists getStaticPaths: local variables in component frontmatter are not available here.
+  const guides = [lokLak, samlorMachu, numBanhChok, kuyTeav, baiSachChrouk];
   return guides.map((guide) => ({ params: { slug: guide.slug }, props: { guide } }));
 }
-const { guide } = Astro.props as { guide: typeof guides[number] };
+type Guide = typeof lokLak | typeof samlorMachu | typeof numBanhChok | typeof kuyTeav | typeof baiSachChrouk;
+const { guide } = Astro.props as { guide: Guide };
 const recipe = recipes.find((item) => item.slug === guide.sourceRecipeSlug);
 if (!recipe) throw new Error('Source de recette manquante pour atelier complet : ' + guide.sourceRecipeSlug);
 const ingredientText = (item: RecipeIngredient) => [
