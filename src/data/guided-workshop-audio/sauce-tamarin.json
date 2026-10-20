@@ -1,0 +1,60 @@
+{
+  "atelier": "pratique:sauce-tamarin",
+  "status": "audio_generated_review_pending",
+  "sourceGenerator": "feat/atelier-immersif-audio-guide-20261017:scripts/generate-workshop-audio.mjs",
+  "model": "gpt-4o-mini-tts",
+  "sourceBackend": "render-iacoach-backend.onrender.com/api/tts",
+  "voice": "coral",
+  "audioUrl": "/audio/workshops/pratique-sauce-tamarin/atelier-coral.mp3",
+  "durationSec": 123.744,
+  "sha256": "7020be9c1d07f905fb7eb6ecf2616cf9f6d31a93d913c454a5369028ab24553d",
+  "chapters": [
+    {
+      "id": "intro",
+      "title": "Bienvenue dans l’atelier",
+      "startSec": 0,
+      "endSec": 18.432
+    },
+    {
+      "id": "extraire",
+      "title": "Délayer la pulpe de tamarin",
+      "startSec": 18.432,
+      "endSec": 32.88
+    },
+    {
+      "id": "filtrer",
+      "title": "Faire frémir et retirer les fibres si nécessaire",
+      "startSec": 32.88,
+      "endSec": 49.992
+    },
+    {
+      "id": "base",
+      "title": "Assaisonner et laisser tiédir",
+      "startSec": 49.992,
+      "endSec": 68.688
+    },
+    {
+      "id": "comparer",
+      "title": "Comparer quatre équilibres",
+      "startSec": 68.688,
+      "endSec": 89.016
+    },
+    {
+      "id": "finaliser",
+      "title": "Corriger la sauce principale",
+      "startSec": 89.016,
+      "endSec": 108.912
+    },
+    {
+      "id": "servir",
+      "title": "Servir et conserver",
+      "startSec": 108.912,
+      "endSec": 123.744
+    }
+  ],
+  "review": {
+    "acousticListening": false,
+    "mobile": false,
+    "desktop": false
+  }
+}
