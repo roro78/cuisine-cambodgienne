@@ -5,6 +5,7 @@ import { resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { PHASE_IDS } from './check-workshop-blueprints.mjs';
+import { verifyCookingAudioReview } from './verify-cooking-audio-review.mjs';
 const names=['kroeung-jaune','lok-lak','samlor-machu','num-banh-chok','kuy-teav','bai-sach-chrouk'];
 let present=0;
 for(const slug of names){
@@ -30,8 +31,8 @@ for(const slug of names){
    throw Error(slug+': chapter total does not match duration.');
  const sourceHash=createHash('sha256').update(JSON.stringify([blueprint.audio.intro,...blueprint.phases.map(p=>p.audioScript)])).digest('hex');
  if(sourceHash!==m.scriptSha256)throw Error(slug+': narration changed after generation; regeneration review needed.');
- if(m.review?.acousticListening!==false||m.review?.mobile!==false||m.review?.desktop!==false)
-   throw Error(slug+': automated job must not certify a human acoustic review.');
+ const reviewErrors=verifyCookingAudioReview(blueprint,m);
+ if(reviewErrors.length)throw Error(slug+': '+reviewErrors.join(' | '));
  const asset=blueprint.audio.asset;
  if(!asset||asset.audioUrl!==m.audioUrl||asset.sha256!==m.sha256||asset.durationSec!==m.durationSec)
    throw Error(slug+': blueprint asset and manifest diverge.');
