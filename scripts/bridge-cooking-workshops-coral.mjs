@@ -41,7 +41,7 @@ if(voiceTexts.some(t=>typeof t!=='string'||t.length<90||t.length>(v2?4500:1200))
 // The TTS backend has a hard timeout per HTTP request. Split only for generation;
 // one final MP3 still has the original seven navigable chapter boundaries.
 function splitVoiceForTts(text,maxChars=480){
-  const sentences=String(text).trim().split(/(?<=[.!?…])\\s+/u);
+  const sentences=String(text).trim().split(/(?<=[.!?…])\s+/u);
   const pieces=[];
   let current='';
   const flush=()=>{if(current.trim())pieces.push(current.trim());current='';};
@@ -49,7 +49,7 @@ function splitVoiceForTts(text,maxChars=480){
     if(!sentence.trim())continue;
     if(sentence.length>maxChars){
       flush();
-      const words=sentence.split(/\\s+/u);
+      const words=sentence.split(/\s+/u);
       for(const word of words){
         if(word.length>maxChars)throw Error('Mot incompatible avec la synthèse segmentée.');
         if(current&&current.length+word.length+1>maxChars)flush();
@@ -88,7 +88,7 @@ function measure(f){
 }
 if(mode==='--check'){
  if(existsSync(output)||existsSync(manifestPath))throw Error('Le fichier final existe déjà ; refuser toute double génération.');
- if(v2&&(!guide.audio.previousAsset||!existsSync(resolve('public',guide.audio.previousAsset.audioUrl.replace(/^\\//,'')))))
+ if(v2&&(!guide.audio.previousAsset||!existsSync(resolve('public',guide.audio.previousAsset.audioUrl.replace(/^\//,'')))))
    throw Error('Ancien MP3 V1 absent : migration V2 arrêtée pour protéger les archives.');
  console.log('CORAL_GUIDE_CONTRACT_OK '+guide.slug+' 7 chapters, '+chunks.length+' saved parts planned; 0 paid request.');
 }else if(mode.startsWith('--one=')){
@@ -119,7 +119,7 @@ if(mode==='--check'){
        signal:controller.signal
      });
      if(!response.ok)throw Error('Render IA-Coach /api/tts HTTP '+response.status+' sur '+guide.slug+'/'+name+' part '+(index+1));
-     if(!/audio\\/(mpeg|mp3)/i.test(response.headers.get('content-type')||''))throw Error('Réponse Render non audio.');
+     if(!/audio\/(mpeg|mp3)/i.test(response.headers.get('content-type')||''))throw Error('Réponse Render non audio.');
      const bytes=Buffer.from(await response.arrayBuffer());
      if(bytes.length<1024||!(bytes.subarray(0,3).toString()==='ID3'||(bytes[0]===0xff&&(bytes[1]&0xe0)===0xe0)))
        throw Error('MP3 invalide fourni par Render');
