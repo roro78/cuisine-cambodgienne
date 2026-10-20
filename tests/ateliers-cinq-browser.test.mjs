@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
@@ -43,7 +44,11 @@ try{
           assert.equal((await page.locator('[data-workshop-ingredient-quantity]').nth(7).innerText()).trim(),'½','Half a tomato for 2');
           await page.locator('[data-workshop-serving-preset="4"]').click();
           assert.equal((await page.locator('[data-workshop-ingredient-quantity]').first().innerText()).trim(),'600','Restore canonical quantity');
-          assert.equal(await page.locator('[data-cooking-audio]').count(),0,'Superseded Lok Lak MP3 cannot accompany V2 script');
+          const blueprint=JSON.parse(readFileSync('src/data/atelier-recette-guides/lok-lak.json','utf8'));
+          const expectedRecording=blueprint.audio.status==='script_only'?0:1;
+          assert.equal(await page.locator('[data-cooking-audio]').count(),expectedRecording,
+            'Do not show V1 audio with V2 script; V2 recording is shown only after synthesis');
+          if(expectedRecording===1)assert.match(await page.locator('[data-cooking-audio]').getAttribute('src'),/atelier-coral-v2[.]mp3$/, 'Serve only V2 recording');
         }
         assert.equal(await page.locator('.fca-step').count(),6,'Phases '+slug);
         assert.equal(await page.locator('.fca-steps-nav a').count(),6,'Navigation '+slug);
