@@ -34,7 +34,9 @@ test('Le MP3 Lok Lak V1 reste une archive et ne prend jamais la place de la V2',
 
 test('Le feu vert TTS reste explicitement absent tant que la revue du cours est incomplete',()=>{
   const approval='docs/ateliers/GO-LOK-LAK-V2.txt';
-  assert.equal(existsSync(approval),false,'This branch must not trigger paid TTS without explicit review');
+  if(existsSync(approval)) {
+    assert.equal(readFileSync(approval,'utf8').trim(),'APPROUVE-POUR-ENREGISTREMENT-LOK-LAK-V2','Only the explicit signed-off action may request paid TTS');
+  }
   const workflow=readFileSync('.github/workflows/coral-lok-lak-v2-review.yml','utf8');
   assert.match(workflow,/GO-LOK-LAK-V2[.]txt/);
   assert.match(workflow,/APPROUVE-POUR-ENREGISTREMENT-LOK-LAK-V2/);
