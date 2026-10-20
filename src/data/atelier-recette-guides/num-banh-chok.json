@@ -9,7 +9,7 @@
   "learningGoal": "Réaliser un bol complet de nouilles cambodgiennes, réussir la sauce chaude au poisson et maîtriser le contraste avec les légumes et herbes de finition.",
   "difficulty": "Intermédiaire",
   "canonicalServings": 4,
-  "portionLabel": "4 bols de Num Banh Chok",
+  "portionLabel": "des bols de Num Banh Chok",
   "duration": {
     "preparationMinutes": 0,
     "practicalMinutes": 70,
@@ -71,7 +71,7 @@
       "ingredientNames": [],
       "actions": [
         "Rassemblez les six groupes d'ingrédients de la recette et sortez deux casseroles : une pour la sauce, une autre pour les cuissons à l'eau.",
-        "Préparez également quatre bols et une passoire ; vérifiez que le kroeung jaune est déjà disponible avant de commencer la cuisson."
+        "Préparez également des bols et une passoire ; vérifiez que le kroeung jaune est déjà disponible avant de commencer la cuisson."
       ],
       "observe": "Le poisson, le lait de coco, le kroeung et les légumes sont clairement séparés.",
       "check": "Le poste est prêt pour mener plusieurs cuissons sans perdre le fil.",
@@ -110,7 +110,7 @@
       "ingredientNames": [],
       "actions": [
         "Mettez le poisson blanc dans une casserole d'eau à petit frémissement et laissez-le cuire complètement sans le malmener à forte ébullition.",
-        "Égouttez le poisson cuit, vérifiez et retirez les éventuelles arêtes, puis émiettez délicatement les 400 grammes à l'aide d'une fourchette propre."
+        "Égouttez le poisson cuit, vérifiez et retirez les éventuelles arêtes, puis émiettez délicatement les les quantités prévues à l'aide d'une fourchette propre."
       ],
       "observe": "Le poisson se détache en morceaux souples et ne présente plus de parties crues.",
       "check": "La chair est cuite à cœur, émiettée et exempte d'arêtes visibles.",
@@ -131,7 +131,7 @@
         "sauce de poisson"
       ],
       "actions": [
-        "Dans une casserole propre, chauffez doucement deux cuillères à soupe de kroeung jaune pendant une minute sans les brûler, puis ajoutez 400 millilitres de lait de coco.",
+        "Dans une casserole propre, chauffez doucement le kroeung jaune mesuré sur la fiche pendant une minute sans les brûler, puis ajoutez le lait de coco mesuré sur la fiche.",
         "Incorporez le poisson déjà cuit et émietté, chauffez à petit feu et ajoutez une cuillère à soupe de sauce de poisson ; évitez une ébullition qui sépare la sauce."
       ],
       "observe": "La sauce est parfumée et souple, avec des miettes de poisson réparties régulièrement.",
@@ -151,8 +151,8 @@
         "nouilles de riz"
       ],
       "actions": [
-        "Faites cuire les 350 grammes de nouilles de riz selon les instructions du paquet, puis égouttez-les et rincez-les brièvement à l'eau fraîche pour stopper leur cuisson.",
-        "Blanchissez les 100 grammes de haricots verts fins dans de l'eau bouillante jusqu'à ce qu'ils soient tendres, refroidissez-les et égouttez-les ; ajustez l'épaisseur de la sauce avec un peu d'eau chaude si nécessaire."
+        "Faites cuire les les nouilles de riz mesurées sur la fiche selon les instructions du paquet, puis égouttez-les et rincez-les brièvement à l'eau fraîche pour stopper leur cuisson.",
+        "Blanchissez les les haricots verts fins mesurés sur la fiche dans de l'eau bouillante jusqu'à ce qu'ils soient tendres, refroidissez-les et égouttez-les ; ajustez l'épaisseur de la sauce avec un peu d'eau chaude si nécessaire."
       ],
       "observe": "Les nouilles se séparent sans coller et la sauce reste assez fluide pour les enrober.",
       "check": "Les haricots sont tendres, les nouilles souples, et la sauce ni pâteuse ni aqueuse.",
@@ -169,11 +169,11 @@
       "minutes": 10,
       "ingredientNames": [],
       "actions": [
-        "Émincez le demi-concombre, répartissez les nouilles dans quatre bols, puis versez dessus la sauce chaude au poisson et au lait de coco.",
+        "Émincez le concombre prévu sur la fiche, répartissez les nouilles dans des bols, puis versez dessus la sauce chaude au poisson et au lait de coco.",
         "Ajoutez les haricots blanchis, le concombre et les feuilles de menthe ou de basilic asiatique lavées juste avant de servir pour préserver le contraste."
       ],
       "observe": "Le bol montre des nouilles enrobées d'une sauce chaude et des légumes frais bien distincts.",
-      "check": "Quatre bols complets sont dressés ; la garniture apporte du croquant et du parfum.",
+      "check": "Les bols complets sont dressés ; la garniture apporte du croquant et du parfum.",
       "mistake": "Verser la sauce sur les herbes longtemps avant de manger les fait flétrir.",
       "recovery": "Gardez la finition végétale pour le dernier moment, une fois les bols prêts.",
       "learning": "Le contraste entre chaud et frais fait partie du résultat appris dans cet atelier.",
