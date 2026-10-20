@@ -1,0 +1,68 @@
+name: Coral sauce tamarin — existing generator ONE SHOT (no deploy)
+on:
+  push:
+    branches:
+      - feat/atelier-guide-sauce-tamarin-pilote-20261019
+    paths:
+      - .github/workflows/coral-tamarin-existing-one-shot.yml
+permissions:
+  contents: read
+jobs:
+  existing-coral-generator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - name: Checkout pilot without touching other branches
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Adapt ONLY sauce-tamarin text for the existing generator
+        run: node scripts/bridge-guided-tamarin-existing-coral.mjs --prepare
+      - name: Fetch the EXISTING generator code from its pinned original commit
+        shell: bash
+        run: |
+          git show 9992b7db7befc50658b1db365d86fc62b751551a:scripts/generate-workshop-audio.mjs > .tmp-guided-coral-once/scripts/generate-workshop-audio.mjs
+          test -s .tmp-guided-coral-once/scripts/generate-workshop-audio.mjs
+          echo "Pinned existing generator found (no second TTS generator)."
+      - name: Dry run with existing generator; Coral voice, seven parts
+        shell: bash
+        run: |
+          cd .tmp-guided-coral-once
+          node scripts/generate-workshop-audio.mjs --dry-run --workshop=piler-aromates-au-mortier --track=all --voice=coral --max-files=7
+      - name: Check existing TTS authorization without showing any key
+        id: auth
+        shell: bash
+        run: |
+          if [ -n "${OPENAI_API_KEY:-}" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "Existing Cuisine repository OpenAI key is absent: NO TTS CALL, NO MP3. The already-available generator was verified in dry-run." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Generate Coral audio ONCE using the EXISTING generator
+        if: steps.auth.outputs.available == 'true'
+        shell: bash
+        run: |
+          cd .tmp-guided-coral-once
+          node scripts/generate-workshop-audio.mjs --generate --workshop=piler-aromates-au-mortier --track=all --voice=coral --max-files=7
+      - name: Concatenate seven REAL MP3 tracks, measure chapters and verify output
+        if: steps.auth.outputs.available == 'true'
+        run: node scripts/bridge-guided-tamarin-existing-coral.mjs --assemble
+      - name: Keep audio as private review artifact ONLY (no merge, no deploy)
+        if: steps.auth.outputs.available == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sauce-tamarin-coral-review-once
+          path: |
+            public/audio/workshops/pratique-sauce-tamarin/atelier-coral.mp3
+            src/data/guided-workshop-audio/sauce-tamarin.json
+          retention-days: 14
+          if-no-files-found: error
