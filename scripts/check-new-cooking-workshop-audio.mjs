@@ -8,13 +8,35 @@ import { PHASE_IDS } from './check-workshop-blueprints.mjs';
 import { verifyCookingAudioReview } from './verify-cooking-audio-review.mjs';
 const names=['kroeung-jaune','lok-lak','samlor-machu','num-banh-chok','kuy-teav','bai-sach-chrouk'];
 let present=0;
+let superseded=0;
 for(const slug of names){
  const blueprint=JSON.parse(readFileSync('src/data/atelier-recette-guides/'+slug+'.json','utf8'));
  const manifestFile=resolve('src/data/atelier-recette-audio',slug+'.json');
  const has=existsSync(manifestFile);
  if(blueprint.audio.status==='script_only'){
-   if(has)throw Error(slug+': manifest exists but audio is declared script_only.');
-   console.log('NEW_GUIDED_AUDIO_PENDING '+slug+' (no synthetic audio claimed)');
+   if(!has){
+     console.log('NEW_GUIDED_AUDIO_PENDING '+slug+' (no synthetic audio claimed)');
+     continue;
+   }
+   // Preserve and verify previously recorded MP3s, but never credit them to
+   // a V2 script that has not yet been synthesized or listened to.
+   const m=JSON.parse(readFileSync(manifestFile,'utf8'));
+   const prev=blueprint.audio.previousAsset;
+   if(!prev || m.atelier!==blueprint.slug || m.canonicalRecipe!==slug ||
+      prev.sha256!==m.sha256 || prev.audioUrl!==m.audioUrl ||
+      !Array.isArray(m.chapters) || m.chapters.length!==7)
+     throw Error(slug+': superseded MP3 provenance mismatch.');
+   const f=resolve('public',m.audioUrl.replace(/^\\//,''));
+   if(!m.audioUrl.startsWith('/audio/workshops/'+blueprint.slug+'/') || !existsSync(f) || statSync(f).size<1024)
+     throw Error(slug+': superseded MP3 missing or outside atelier directory.');
+   if(createHash('sha256').update(readFileSync(f)).digest('hex')!==m.sha256)
+     throw Error(slug+': superseded MP3 integrity mismatch.');
+   const duration=Number(execFileSync('ffprobe',['-v','error','-show_entries','format=duration','-of','default=nw=1:nk=1',f],{encoding:'utf8'}).trim());
+   if(!Number.isFinite(duration)||Math.abs(duration-m.durationSec)>0.2)
+     throw Error(slug+': superseded MP3 measured duration mismatch.');
+   superseded++;
+   present++;
+   console.log('NEW_GUIDED_AUDIO_SUPERSEDED '+slug+' '+duration.toFixed(3)+'sec (not a V2 recording)');
    continue;
  }
  if(blueprint.audio.status!=='generated_review_pending'&&blueprint.audio.status!=='validated')
@@ -46,4 +68,4 @@ for(const slug of names){
  present++;
  console.log('NEW_GUIDED_AUDIO_PASS '+slug+' '+duration.toFixed(3)+'sec');
 }
-console.log('NEW_GUIDED_AUDIO_SUMMARY '+present+'/6 MP3 measured; remaining guides stay draft.');
+console.log('NEW_GUIDED_AUDIO_SUMMARY '+present+'/6 MP3 measured; '+superseded+' superseded recording(s) excluded from V2 approval; remaining guides stay draft.');
