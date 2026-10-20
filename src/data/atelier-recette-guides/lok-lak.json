@@ -308,7 +308,7 @@
   "review": {
     "recipeValidated": false,
     "editorialValidated": false,
-    "audioListeningValidated": false,
+    "audioListeningValidated": true,
     "mobileValidated": false,
     "desktopValidated": false,
     "productionApproved": false
