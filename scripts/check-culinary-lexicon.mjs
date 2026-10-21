@@ -23,7 +23,8 @@ const forbidden=[
   {name:'Poste au lieu de plan de travail',pattern:/\bposte\b/giu},
   {name:'Bol à dresser plutôt qu’à monter',pattern:/\b(?:monter|montez|montage|assembl(?:er|ez))\s+(?:les|des|du|d’un)\s+bols?\b/giu},
   {name:'Articles dédoublés ou incompatibles',pattern:/\bles\s+(?:les|la|le)\b/giu},
-  {name:'Français incohérent',pattern:/\b(?:coupez\s+les\s+le|tranchez\s+les\s+les)\b/giu}
+  {name:'Français incohérent',pattern:/\b(?:coupez\s+les\s+le|tranchez\s+les\s+les)\b/giu},
+  {name:'Formulation artificielle ou mauvais titre de durée',pattern:/bonjour à votre plan de travail|voilà le moment du porc|choisissez vos convives|durée indicative des gestes|durée des gestes|temps de cuisine\s+\d|réservez une place au réfrigérateur|sous-préparation/giu}
 ];
 // Regression: Unicode accents must not escape the word filter.
 for(const sample of ['fabriquer','fabriqué','fabriquée','fabrication']){
@@ -48,6 +49,22 @@ for(const slug of slugs){
  if(guide.phases.length!==6||guide.audio.storyboardVersion!==2||guide.audio.editorialTextApproved!==false||
    guide.review.editorialValidated!==false){
    console.error('ECHEC_LEXIQUE validation editoriale prematuree ou structure absente : '+slug);
+   errors++;
+ }
+ const phaseSum=guide.phases.reduce((total,p)=>total+p.minutes,0);
+ if(phaseSum!==guide.duration.practicalMinutes){
+   console.error('ECHEC_DUREE les étapes ne correspondent pas à la durée annoncée : '+slug);
+   errors++;
+ }
+ const path='docs/ateliers/a-valider/'+slug+'-recette-et-narration.md';
+ const copy=existsSync(path)?readFileSync(path,'utf8'):'';
+ const spoken=[guide.audio.intro,...guide.phases.map(p=>p.audioScript)];
+ if(spoken.length!==7 || spoken.some(script=>!copy.includes(script))){
+   console.error('ECHEC_TRANSCRIPTION texte affiché et narration du générateur divergent : '+slug);
+   errors++;
+ }
+ if(guide.phases.some((phase,i)=>!copy.includes('### Étape '+(i+1)+' sur 6 — '+phase.title+' (environ '+phase.minutes+' min)'))){
+   console.error('ECHEC_FICHE étapes et durées affichées divergentes : '+slug);
    errors++;
  }
  // Current narration differs from archived Coral V2, and no stale MP3 is served.
