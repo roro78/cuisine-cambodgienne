@@ -9,8 +9,10 @@ export const legacyWorkshopRedirects=[
   ['saisir-viande-poele','/apprendre/pratique/lok-lak-de-la-poele-a-l-assiette/'],
   ['fraicheur-herbes-agrumes','/apprendre/pratique/num-banh-chok-sauce-et-herbes-fraiches/'],
   ['bouillon-leger-savoureux','/techniques/bouillon-leger-maison/'],
-  ['composer-repas-cambodgien','/apprendre/']
+  ['composer-repas-cambodgien','/culture/construire-repas-cambodgien/']
 ];
+export const legacyWorkshopAudioPaths=legacyWorkshopRedirects.map(([slug])=>
+  '/audio/workshops/'+slug+'/atelier-coral.mp3');
 export function workshopCutoverApproved(){
   return slugs.every(slug=>JSON.parse(readFileSync(
     new URL('../src/data/atelier-recette-guides/'+slug+'.json',import.meta.url),'utf8')).status==='release_ready');

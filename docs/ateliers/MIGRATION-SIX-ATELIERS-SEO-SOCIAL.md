@@ -16,17 +16,22 @@ les anciennes pages, et les six règles 301 deviennent actives dans le
 - `/apprendre/saisir-viande-poele/` → `/apprendre/pratique/lok-lak-de-la-poele-a-l-assiette/`.
 - `/apprendre/fraicheur-herbes-agrumes/` → `/apprendre/pratique/num-banh-chok-sauce-et-herbes-fraiches/`.
 - `/apprendre/bouillon-leger-savoureux/` → `/techniques/bouillon-leger-maison/` (destination technique la plus proche).
-- `/apprendre/composer-repas-cambodgien/` → `/apprendre/` (correspondance générique potentiellement faible SEO à revoir).
+- `/apprendre/composer-repas-cambodgien/` → `/culture/construire-repas-cambodgien/` (article dédié au même sujet, plutôt qu'une redirection générique).
 
 ## Contrats
 - CI : `check-workshop-blueprints`, intégrité des MP3, contrôles visuels,
-  build Astro, `build-workshop-redirects`, `check-seo-legacy-redirects`,
+  build Astro, `build-workshop-redirects`, `prune-legacy-workshop-audio`,
+  `check-seo-legacy-redirects`,
   `check-seo-sitemap-integrity`, `check-workshop-cutover`.
 - Vérifier après publication OVH **autorisée** les six 301, les cibles
   200/canonical/indexables, le sitemap et les lecteurs mobiles.
 - Catalogue n8n : le flux `social-feed.json` commute uniquement avec les pages ;
   les vieux brouillons PostgreSQL demandent une revue avant publication.
-- Ne supprimer aucun ancien MP3 avant vérification des références dans tout le
+- Après bascule validée, le script retire uniquement les six anciens MP3 du
+  `dist` destiné à OVH, après contrôle des redirections et des références
+  résiduelles dans les fichiers générés. Les fichiers source demeurent dans
+  Git jusqu'à une suppression distincte après vérification de production.
+- Ne supprimer aucun ancien MP3 source avant vérification des références dans tout le
   dépôt et dans l'hébergement ; aucune action de synthèse Coral / Meta / n8n.
 - PR #92 reste en brouillon. Aucun merge, déclenchement OVH ou activation n8n
   au titre de cette préparation.
