@@ -73,11 +73,17 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
         {chapters.map((chapter,i)=>(<li><button type="button" data-cooking-mobile-chapter={i}><span>{i===0?'Introduction':'Phase '+i+' / 6'}</span><strong>{chapter.title}</strong><small>{displayTime(chapter.startSec)}</small></button></li>))}
       </ol>
     </div>
-    <div class="guided-cooking-mobile-transcript" data-cooking-mobile-view="transcript" hidden>
-      <p data-cooking-mobile-transcript>{scripts[0]}</p>
+    <div data-cooking-mobile-view="transcript" hidden>
+      <div class="guided-cooking-mobile-transcript-toolbar">
+        <button type="button" data-cooking-mobile-transcript-follow aria-pressed="true" aria-label="Activer ou arrêter le défilement automatique du texte">Défilement du texte : activé</button>
+        <small>Suivi indicatif du chapitre, sans minutage mot à mot.</small>
+      </div>
+      <div class="guided-cooking-mobile-transcript" data-cooking-mobile-transcript-scroll tabindex="0" aria-label="Texte de la narration : défilement libre possible">
+        <p data-cooking-mobile-transcript>{scripts[0]}</p>
+      </div>
     </div>
     <div class="guided-cooking-mobile-actions">
-      <button type="button" data-cooking-mobile-follow aria-pressed="false" aria-label="Activer le suivi automatique des étapes">Suivre les étapes</button>
+      <button type="button" data-cooking-mobile-follow aria-pressed="false" aria-label="Activer le suivi automatique des étapes de la recette">Suivre la narration</button>
       <button type="button" data-cooking-mobile-stop aria-label="Arrêter le guide et revenir au début">■ Arrêter</button>
     </div>
   </div>
@@ -111,6 +117,10 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
     const sheetClock=root.querySelector<HTMLElement>('[data-cooking-sheet-clock]');
     const progress=root.querySelector<HTMLProgressElement>('[data-cooking-mobile-progress]');
     const sheetTranscript=root.querySelector<HTMLElement>('[data-cooking-mobile-transcript]');
+    const transcriptScroll=root.querySelector<HTMLElement>('[data-cooking-mobile-transcript-scroll]');
+    const transcriptFollowButton=root.querySelector<HTMLButtonElement>('[data-cooking-mobile-transcript-follow]');
+    const mobileChapterView=root.querySelector<HTMLElement>('[data-cooking-mobile-view="chapters"]');
+    let transcriptFollowing=true;
     const mobileTabs=Array.from(root.querySelectorAll<HTMLButtonElement>('[data-cooking-mobile-tab]'));
     const mobileViews=Array.from(root.querySelectorAll<HTMLElement>('[data-cooking-mobile-view]'));
     const formatTime=(seconds:number)=>Math.floor(seconds/60)+':'+String(Math.floor(seconds%60)).padStart(2,'0');
@@ -152,6 +162,8 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
       const target=tab.dataset.cookingMobileTab;
       mobileTabs.forEach(button=>button.setAttribute('aria-pressed',String(button===tab)));
       mobileViews.forEach(view=>{view.hidden=view.dataset.cookingMobileView!==target;});
+      if(target==='transcript')updateTranscriptScroll();
+      if(target==='chapters')revealCurrentChapter();
     }));
     // Native vertical swipe opens/closes the slide-up navigation.
     let touchOrigin:number|null=null;
@@ -204,7 +216,8 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
       }
       if(mobileFollow){
         mobileFollow.setAttribute('aria-pressed',String(following));
-        mobileFollow.textContent=following?'Guidage actif':'Suivre les étapes';
+        mobileFollow.textContent=following?'Suivi de la page : actif':'Suivre la narration';
+        mobileFollow.setAttribute('aria-label',following?'Désactiver le suivi de la page':'Activer le suivi de la page au rythme des étapes');
       }
     };
     const scrollToChapter=(index:number)=>{
@@ -225,7 +238,11 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
       if(following)scrollToChapter(active);
     };
     followButton?.addEventListener('click',toggleFollow);
-    mobileFollow?.addEventListener('click',toggleFollow);
+    mobileFollow?.addEventListener('click',()=>{
+      toggleFollow();
+      // The recipe must remain readable during synchronized page following.
+      if(following&&mobileViewport.matches)closeMobileSheet();
+    });
     // Manual scrolling always wins over automatic navigation. Playback is never paused.
     window.addEventListener('wheel',stopFollowing,{passive:true});
     window.addEventListener('touchmove',(event)=>{
@@ -240,13 +257,61 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
       if(event.target instanceof Element&&event.target.closest('button,input,select,textarea,summary,a,[contenteditable]'))return;
       stopFollowing();
     });
+    // Chapter positions come from the approved MP3 manifests. The transcript
+    // has no word timestamps, so its intra-chapter scroll is proportional rather
+    // than pretending to be karaoke-style word synchronization.
+    const updateTranscriptFollowLabel=()=>{
+      if(!transcriptFollowButton)return;
+      transcriptFollowButton.setAttribute('aria-pressed',String(transcriptFollowing));
+      transcriptFollowButton.textContent=transcriptFollowing
+        ? 'Défilement du texte : activé'
+        : 'Reprendre le défilement du texte';
+    };
+    const updateTranscriptScroll=()=>{
+      if(!audio||!mobileViewport.matches||!transcriptFollowing||!transcriptScroll
+          ||!mobileSheet||mobileSheet.hidden
+          ||mobileViews.find(view=>view.dataset.cookingMobileView==='transcript')?.hidden)return;
+      const chapter=chapters[active];
+      const duration=Math.max(1,chapter.endSec-chapter.startSec);
+      const fraction=Math.max(0,Math.min(1,(audio.currentTime-chapter.startSec)/duration));
+      const max=Math.max(0,transcriptScroll.scrollHeight-transcriptScroll.clientHeight);
+      transcriptScroll.scrollTop=max*fraction;
+    };
+    const revealCurrentChapter=()=>{
+      if(!mobileChapterView||mobileChapterView.hidden||!mobileSheet||mobileSheet.hidden)return;
+      const button=mobileChapterButtons[active];
+      if(!button)return;
+      const container=mobileChapterView.getBoundingClientRect();
+      const rect=button.getBoundingClientRect();
+      mobileChapterView.scrollTop+=rect.top-container.top-(container.height-rect.height)/2;
+    };
+    transcriptFollowButton?.addEventListener('click',()=>{
+      transcriptFollowing=!transcriptFollowing;
+      updateTranscriptFollowLabel();
+      if(transcriptFollowing)updateTranscriptScroll();
+    });
+    const stopTranscriptFollowing=()=>{
+      if(!transcriptFollowing)return;
+      transcriptFollowing=false;
+      updateTranscriptFollowLabel();
+      // Only the text scroll stops; the MP3 and page following continue.
+    };
+    transcriptScroll?.addEventListener('touchmove',stopTranscriptFollowing,{passive:true});
+    transcriptScroll?.addEventListener('wheel',stopTranscriptFollowing,{passive:true});
+    transcriptScroll?.addEventListener('keydown',event=>{
+      if(['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' '].includes(event.key))stopTranscriptFollowing();
+    });
     const activate=(index:number)=>{
       if(index<0||index>=chapters.length)return;
       active=index;
       buttons.forEach((button,i)=>i===index?button.setAttribute('aria-current','true'):button.removeAttribute('aria-current'));
+      mobileChapterButtons.forEach((button,i)=>i===index?button.setAttribute('aria-current','true'):button.removeAttribute('aria-current'));
       if(status)status.textContent='Chapitre '+(index===0?'introduction':index)+' : '+chapters[index].title;
       if(transcript)transcript.textContent=chapters[index].text;
       if(sheetTranscript)sheetTranscript.textContent=chapters[index].text;
+      if(transcriptScroll&&transcriptFollowing)transcriptScroll.scrollTop=0;
+      revealCurrentChapter();
+      updateTranscriptScroll();
       if(following)scrollToChapter(index);
       updateMobileDock();
     };
@@ -268,6 +333,7 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
       for(let i=1;i<chapters.length;i++)if(audio.currentTime+0.02>=chapters[i].startSec)index=i;
       if(active!==index)activate(index);
       else updateMobileDock();
+      updateTranscriptScroll();
     });
     audio?.addEventListener('error',()=>{
       if(status)status.textContent='Audio momentanément indisponible. Les instructions écrites restent accessibles.';
@@ -275,6 +341,7 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
       updateMobileDock();
     });
     renderFollow();
+    updateTranscriptFollowLabel();
     updateMobileDock();
   });
 </script>
@@ -358,7 +425,15 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
     .guided-cooking-mobile-tabs{display:flex;gap:8px;margin:10px 0}
     .guided-cooking-mobile-tabs button{flex:1;min-height:44px;border:1px solid #b49e77;border-radius:22px;background:#fff;font-weight:700}
     .guided-cooking-mobile-tabs button[aria-pressed="true"]{background:#f1ca62}
-    .guided-cooking-mobile-transcript{max-height:32vh;overflow-y:auto;line-height:1.65;font-size:14px}
+    .guided-cooking-mobile-transcript-toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:11px 0}
+    .guided-cooking-mobile-transcript-toolbar button{min-height:44px;border:1px solid #a88a59;border-radius:22px;background:#f1ca62;color:#352718;padding:8px 13px;font-weight:700}
+    .guided-cooking-mobile-transcript-toolbar button[aria-pressed="false"]{background:#fff}
+    .guided-cooking-mobile-transcript-toolbar small{font-size:11px;color:#705b3b;flex:1}
+    .guided-cooking-mobile-transcript{max-height:32vh;overflow-y:auto;overscroll-behavior:contain;line-height:1.65;font-size:14px;scrollbar-gutter:stable;padding:0 8px 4px 0}
+    .guided-cooking-mobile-transcript:focus-visible{outline:3px solid #987030;outline-offset:2px}
+    .guided-cooking-mobile-transcript p{margin:0;white-space:pre-line}
+    .guided-cooking-mobile-sheet [data-cooking-mobile-view="chapters"]{max-height:36vh;overflow-y:auto;overscroll-behavior:contain}
+    .guided-cooking-mobile-sheet [data-cooking-mobile-chapter][aria-current="true"]{background:#f4e6ce;border-left:3px solid #8c692e;padding-left:8px}
     .guided-cooking-mobile-actions{display:flex;gap:9px;padding-top:12px;border-top:1px solid #e8dac0;margin-top:12px}
     .guided-cooking-mobile-actions button{flex:1;min-height:44px;padding:7px 12px;border-radius:22px;border:1px solid #b49e77;background:#fff;font-weight:700}
     .guided-cooking-mobile-actions button[aria-pressed="true"]{background:#f1ca62}
