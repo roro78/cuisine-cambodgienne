@@ -1,6 +1,6 @@
 > **À RELIRE ET À VALIDER AVANT TOUT NOUVEL ENREGISTREMENT CORAL.**
 >
-> Les phrases de narration ci-dessous sont celles déjà enregistrées ; elles n’ont pas été approuvées. Toute modification textuelle imposera une nouvelle version audio après accord explicite.
+> Ces narrations sont corrigées et doivent encore être approuvées. Les MP3 précédents sont archivés séparément et ne correspondent plus au nouveau texte. Aucun enregistrement avant validation.
 
 # 3. Samlor Machu
 
@@ -92,7 +92,7 @@ Coupez le feu, lavez puis ciselez la coriandre ou le basilic asiatique, et ajout
 
 **Observer :** Le bouillon est clair et peu salé ; les ingrédients sont regroupés séparément.
 
-**Vérifier le résultat :** Le poste est prêt et la source d'acidité est identifiée.
+**Vérifier le résultat :** Le plan de travail est prêt et la source d'acidité est identifiée.
 
 **Éviter :** Utiliser un bouillon déjà très salé risque de déséquilibrer la soupe plus tard.
 
@@ -106,7 +106,7 @@ Coupez le feu, lavez puis ciselez la coriandre ou le basilic asiatique, et ajout
 
 **Gestes :**
 
-- Coupez les le poisson ou le poulet pesé sur la fiche en morceaux réguliers ; tranchez les les tomates prévues et détaillez l'ananas en dés, ou la courgette selon la variante choisie.
+- Coupez le poisson ou le poulet pesé sur la fiche en morceaux réguliers ; coupez les tomates prévues et détaillez l'ananas en dés, ou la courgette selon la variante choisie.
 - Préparez le jus de tamarin filtré mesuré sur la fiche, lavez les herbes fraîches puis réservez-les séparément pour les ajouter uniquement en finition.
 
 **Observer :** Les morceaux ont des tailles proches et le tamarin est liquide, sans grosses fibres.
@@ -174,7 +174,7 @@ Coupez le feu, lavez puis ciselez la coriandre ou le basilic asiatique, et ajout
 
 **Corriger :** Réservez d'abord une partie du tamarin, goûtez, puis ajoutez-en peu à peu selon le résultat.
 
-**Technique apprise :** L'équilibre aigre, salé et doux se construit par petites corrections mesurées.
+**Technique apprise :** L'équilibre entre acidité, sel et douceur se règle en goûtant et en ajustant les assaisonnements progressivement.
 
 **Précaution :** Laissez refroidir la cuillère prélevée avant de goûter pour éviter toute brûlure.
 
@@ -197,9 +197,9 @@ Coupez le feu, lavez puis ciselez la coriandre ou le basilic asiatique, et ajout
 
 **Précaution :** Versez le liquide chaud avec précaution ; refroidissez rapidement tout reste non consommé.
 
-## C — Textes intégraux des sept chapitres déjà enregistrés avec Coral V2
+## C — Sept narrations corrigées à valider avant Coral
 
-**Attention : ces textes sont reproduits sans retouche pour permettre la validation. Ils ne doivent pas être réputés approuvés du seul fait qu’un MP3 existe.**
+**Ces textes sont corrigés et non encore enregistrés. Les MP3 précédents ne correspondent plus : validation éditoriale exigée.**
 
 ### Chapitre 1 sur 7 — Introduction
 
