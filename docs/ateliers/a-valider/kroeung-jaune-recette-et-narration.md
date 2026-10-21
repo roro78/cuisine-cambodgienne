@@ -1,10 +1,10 @@
 > **À RELIRE ET À VALIDER AVANT TOUT NOUVEL ENREGISTREMENT CORAL.**
 >
-> Les phrases de narration ci-dessous sont celles déjà enregistrées ; elles n’ont pas été approuvées. Toute modification textuelle imposera une nouvelle version audio après accord explicite.
+> Les narrations ci-dessous sont corrigées et non validées. Les MP3 précédents sont conservés à part et ne correspondent plus à ces textes. Aucun nouvel enregistrement sans accord explicite.
 
 # 1. Kroeung jaune
 
-**Titre de l’atelier :** Fabriquer un kroeung jaune au mortier
+**Titre de l’atelier :** Préparer un kroeung jaune au mortier
 
 **Portions de la recette actuelle :** 1 petit pot ; **préparation :** 25 min ; **cuisson :** 0 min
 
@@ -78,7 +78,7 @@ Continuez jusqu’à ne presque plus sentir de gros morceaux sous le pilon.
 - Manier le couteau sur une planche stable.
 - Ne pas déguster la pâte aromatique crue comme si elle constituait un plat complet ; elle parfume les préparations.
 
-### Temps de cuisine 1 — Organiser le poste et mesurer les aromates
+### Temps de cuisine 1 — Préparer le plan de travail et mesurer les aromates
 
 **Gestes :**
 
@@ -87,7 +87,7 @@ Continuez jusqu’à ne presque plus sentir de gros morceaux sous le pilon.
 
 **Observer :** Chaque ingrédient est visible, identifiable et mesuré ; rien ne manque.
 
-**Vérifier le résultat :** Le poste est prêt et tous les ingrédients de la recette sont réunis.
+**Vérifier le résultat :** Le plan de travail est prêt et tous les ingrédients de la recette sont réunis.
 
 **Éviter :** Commencer à piler avant d'avoir taillé les aromates oblige à interrompre le travail.
 
@@ -192,15 +192,15 @@ Continuez jusqu’à ne presque plus sentir de gros morceaux sous le pilon.
 
 **Précaution :** Gardez la préparation propre et au frais avant son utilisation.
 
-## C — Textes intégraux des sept chapitres déjà enregistrés avec Coral V2
+## C — Sept narrations corrigées à valider avant Coral
 
-**Attention : ces textes sont reproduits sans retouche pour permettre la validation. Ils ne doivent pas être réputés approuvés du seul fait qu’un MP3 existe.**
+**Ces textes ont été corrigés. Les MP3 historiques ne correspondent plus : validation éditoriale exigée avant toute nouvelle synthèse.**
 
 ### Chapitre 1 sur 7 — Introduction
 
-Coucou, bienvenue dans notre cuisine ! Aujourd'hui, on ne va pas simplement parler d'épices : on va fabriquer ensemble un vrai kroeung jaune, cette pâte aromatique qui donne du caractère à plusieurs plats cambodgiens. À la fin, vous aurez dans un récipient votre propre pâte, bien liée, que vous pourrez incorporer dans une préparation cuite. Le geste essentiel, c'est de transformer des racines fibreuses en une pâte fine grâce à la découpe puis au pilon. Avant de commencer, choisissez votre nombre de petits pots sur la fiche et mesurez toutes les quantités affichées. Je ne vais pas vous imposer des grammages dans le son : c'est votre fiche qui fait foi. Il nous faudra un mortier stable, un pilon, une planche, un couteau, une spatule propre et un récipient refermable. On ne goûtera pas ce kroeung cru comme un plat fini. Prenez vos aises : si un geste demande plus de temps, vous pouvez faire pause et relancer l'enregistrement. Je vous accompagnerai de la première coupe au dernier coup de pilon.
+Coucou, bienvenue dans notre cuisine ! Aujourd'hui, on ne va pas simplement parler d'épices : on va préparer ensemble un vrai kroeung jaune, cette pâte aromatique qui donne du caractère à plusieurs plats cambodgiens. À la fin, vous aurez dans un récipient votre propre pâte, bien liée, que vous pourrez incorporer dans une préparation cuite. Le geste essentiel, c'est de transformer des racines fibreuses en une pâte fine grâce à la découpe puis au pilon. Avant de commencer, choisissez votre nombre de petits pots sur la fiche et mesurez toutes les quantités affichées. Je ne vais pas vous imposer des grammages dans le son : c'est votre fiche qui fait foi. Il nous faudra un mortier stable, un pilon, une planche, un couteau, une spatule propre et un récipient refermable. On ne goûtera pas ce kroeung cru comme un plat fini. Prenez vos aises : si un geste demande plus de temps, vous pouvez faire pause et relancer l'enregistrement. Je vous accompagnerai de la première coupe au dernier coup de pilon.
 
-### Chapitre 2 sur 7 — Organiser le poste et mesurer les aromates
+### Chapitre 2 sur 7 — Préparer le plan de travail et mesurer les aromates
 
 Bonjour à votre plan de travail ! Avant de toucher à la citronnelle, posez votre mortier sur une surface qui ne glisse pas. Un torchon plié et propre dessous peut aider à l'immobiliser : ce n'est pas une invitation à poser les doigts dans le bol pendant qu'on pile. Gardez le pilon à portée de main, la planche stable, le couteau bien affûté, la spatule et un récipient propre pour la fin. Regardez votre fiche et rassemblez la citronnelle, le galanga, le curcuma frais, le zeste de combava, l'ail et les échalotes. Toutes les quantités sont adaptées aux convives que vous avez choisis. Posez les aromates les plus fibreux d'un côté ; les plus tendres, comme l'ail et l'échalote, de l'autre. Cette petite organisation a une raison : si l'on commence par les ingrédients mous, ils collent au fond et les fibres dures échappent au pilon. Lavez-vous les mains et préparez une zone pour les déchets. Le curcuma colore durablement les mains et certaines surfaces : protégez votre planche si nécessaire. Si votre mortier est petit, nous travaillerons en plusieurs apports sans chercher à tout comprimer d'un coup. Prenez le temps de vérifier les aromates sur la fiche ; faites pause pour vous installer si besoin. Voilà, on peut passer aux découpes.
 
@@ -210,7 +210,7 @@ On commence par le détail qui fera vraiment la différence : la finesse de la d
 
 ### Chapitre 4 sur 7 — Commencer avec les fibres fermes
 
-Maintenant, on va construire notre pâte dans le bon ordre. Mettez dans le mortier une petite portion de citronnelle très finement émincée, puis un peu de galanga. Pas toute la préparation en une fois : le pilon doit pouvoir atteindre le fond du mortier sans que les rondelles sautent à côté. Frappez de façon contrôlée, verticalement puis légèrement en rotation, et ramenez avec la spatule les morceaux qui se collent aux parois. Attention : la spatule s'utilise seulement lorsque le pilon est arrêté. Le bruit change progressivement. Au début, on entend des coups secs et les lamelles rebondissent ; ensuite, les fibres deviennent humides, s'écrasent et adhèrent un peu au fond. C'est un excellent repère. Si la citronnelle résiste encore, ne versez pas de l'eau pour aller plus vite. Retirez les grosses fibres visibles, recoupez-les plus finement et reprenez. Ajoutez le reste de citronnelle et de galanga en petites séries, jusqu'à ce que tout ce qui est prévu sur votre fiche soit incorporé. Certaines cuisinières commencent plutôt par le galanga : les deux ordres existent. Ici, notre objectif est surtout d'écraser les parties dures avant les aromates tendres. Prenez votre temps, profitez-en pour sentir l'arôme qui se libère ; puis, si nécessaire, faites pause avant les autres ingrédients.
+Maintenant, on va préparer notre pâte en pilant les aromates dans le bon ordre. Mettez dans le mortier une petite portion de citronnelle très finement émincée, puis un peu de galanga. Pas toute la préparation en une fois : le pilon doit pouvoir atteindre le fond du mortier sans que les rondelles sautent à côté. Frappez de façon contrôlée, verticalement puis légèrement en rotation, et ramenez avec la spatule les morceaux qui se collent aux parois. Attention : la spatule s'utilise seulement lorsque le pilon est arrêté. Le bruit change progressivement. Au début, on entend des coups secs et les lamelles rebondissent ; ensuite, les fibres deviennent humides, s'écrasent et adhèrent un peu au fond. C'est un excellent repère. Si la citronnelle résiste encore, ne versez pas de l'eau pour aller plus vite. Retirez les grosses fibres visibles, recoupez-les plus finement et reprenez. Ajoutez le reste de citronnelle et de galanga en petites séries, jusqu'à ce que tout ce qui est prévu sur votre fiche soit incorporé. Certaines cuisinières commencent plutôt par le galanga : les deux ordres existent. Ici, notre objectif est surtout d'écraser les parties dures avant les aromates tendres. Prenez votre temps, profitez-en pour sentir l'arôme qui se libère ; puis, si nécessaire, faites pause avant les autres ingrédients.
 
 ### Chapitre 5 sur 7 — Transformer les aromates en pâte
 
@@ -222,7 +222,7 @@ Avant de ranger le pilon, faisons le test de la cuillère. Prélevez une petite 
 
 ### Chapitre 7 sur 7 — Conditionner la pâte et retenir le geste
 
-Et voilà, nous avons fabriqué notre kroeung jaune. Raclez la pâte avec une spatule propre, rassemblez-la dans un récipient parfaitement propre et refermez-le. Évitez d'y remettre une cuillère qui a touché d'autres aliments. Cette préparation aromatique doit être conservée au frais et utilisée rapidement, ou congelée en petites portions bien étiquetées si vous voulez en garder pour un autre jour. Ne laissez pas le pot attendre sur le plan de travail après l'atelier ; les durées exactes de conservation dépendent de la préparation et des conditions d'hygiène. Ce n'est pas une préparation qu'on déguste à la petite cuillère. Lors de votre prochain plat mijoté, vous pourrez l'incorporer selon la recette choisie et laisser les arômes se développer à la cuisson. J'aimerais que vous reteniez trois gestes : couper très fin avant de piler, travailler les fibres dures avant les aromates tendres, et juger la texture avec les yeux et la cuillère plutôt qu'avec un chronomètre. Même si votre pâte n'est pas aussi fine que celle d'un chef au premier essai, ces critères vous donnent une vraie façon de progresser. Merci d'avoir cuisiné avec moi. À bientôt pour utiliser ce kroeung dans un plat, et bonne cuisine !
+Et voilà, notre kroeung jaune est prêt. Raclez la pâte avec une spatule propre, rassemblez-la dans un récipient parfaitement propre et refermez-le. Évitez d'y remettre une cuillère qui a touché d'autres aliments. Cette préparation aromatique doit être conservée au frais et utilisée rapidement, ou congelée en petites portions bien étiquetées si vous voulez en garder pour un autre jour. Ne laissez pas le pot attendre sur le plan de travail après l'atelier ; les durées exactes de conservation dépendent de la préparation et des conditions d'hygiène. Ce n'est pas une préparation qu'on déguste à la petite cuillère. Lors de votre prochain plat mijoté, vous pourrez l'incorporer selon la recette choisie et laisser les arômes se développer à la cuisson. J'aimerais que vous reteniez trois gestes : couper très fin avant de piler, travailler les fibres dures avant les aromates tendres, et juger la texture avec les yeux et la cuillère plutôt qu'avec un chronomètre. Même si votre pâte n'est pas aussi fine que celle d'un chef au premier essai, ces critères vous donnent une vraie façon de progresser. Merci d'avoir cuisiné avec moi. À bientôt pour utiliser ce kroeung dans un plat, et bonne cuisine !
 
 ## D — Sources et validation
 
