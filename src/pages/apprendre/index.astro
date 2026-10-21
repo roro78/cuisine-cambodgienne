@@ -19,6 +19,9 @@ import '../../styles/v16-editorial.css';
 import '../../styles/v19-premium-pages.css';
 import '../../styles/editorial-shared-hero.css';
 
+// Do not promote incomplete courses. Once all six recipe-led workshops are release_ready,
+// the old six-card index is replaced rather than displayed twice.
+const fullWorkshopReplacementReady=releasedCookingWorkshopGuides.length===6;
 const schema = {
   '@context':'https://schema.org',
   '@type':'CollectionPage',
@@ -79,7 +82,8 @@ const schema = {
       </section>
     )}
 
-    <section class="v16-workshop-list" aria-label="Les six ateliers">
+    {!fullWorkshopReplacementReady && (
+    <section class="v16-workshop-list" aria-label="Les six ateliers historiques">
       {workshops.map((workshop) => (
         <article class="v16-workshop" id={'atelier-' + workshop.n} data-reveal="up">
           <div class="v16-workshop-number">{workshop.n}</div>
@@ -104,6 +108,8 @@ const schema = {
         </article>
       ))}
     </section>
+
+    )}
 
     <section class="v16-workshop-rules">
       <article><span>01</span><h2>Changez une seule chose à la fois.</h2><p>Vous sentirez beaucoup mieux ce qui améliore vraiment le goût ou la texture.</p></article>
