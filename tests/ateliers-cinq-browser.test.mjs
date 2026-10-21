@@ -35,6 +35,7 @@ try{
         assert.equal(response?.status(),200,'Route '+slug);
         assert.equal(await page.locator('h1').count(),1,'H1 '+slug);
         assert.equal(await page.locator('.fca-checks li').count(),count,'Ingredients '+slug);
+        let blueprint;
         if(true) {
           const servings=page.locator('[data-workshop-servings-root]');
           assert.equal(await servings.count(),1,'Every complete V2 course must expose a portion selector');
@@ -45,7 +46,7 @@ try{
           await page.locator('[data-workshop-serving-preset="4"]').click();
           if (slug==='lok-lak-de-la-poele-a-l-assiette') assert.equal((await page.locator('[data-workshop-ingredient-quantity]').first().innerText()).trim(),'600','Restore canonical quantity');
           const recipeslug=({ 'lok-lak-de-la-poele-a-l-assiette':'lok-lak','samlor-machu-soupe-acidulee-guidee':'samlor-machu','num-banh-chok-sauce-et-herbes-fraiches':'num-banh-chok','kuy-teav-bouillon-et-nouilles':'kuy-teav','bai-sach-chrouk-porc-riz-et-pickles':'bai-sach-chrouk' })[slug];
-          const blueprint=JSON.parse(readFileSync('src/data/atelier-recette-guides/'+recipeslug+'.json','utf8'));
+          blueprint=JSON.parse(readFileSync('src/data/atelier-recette-guides/'+recipeslug+'.json','utf8'));
           const expectedRecording=blueprint.audio.status==='script_only'?0:1;
           assert.equal(await page.locator('[data-cooking-audio]').count(),expectedRecording,
             'Never show a previous MP3 with a corrected script; the exact active asset must be present');
