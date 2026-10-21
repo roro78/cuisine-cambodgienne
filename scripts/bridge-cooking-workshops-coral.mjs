@@ -21,17 +21,22 @@ import { buildCookingAudioStoryboard } from './export-cooking-workshop-audio.mjs
 const args=process.argv.slice(2);
 const readArg=(key)=>args.find(x=>x.startsWith('--'+key+'='))?.slice(key.length+3);
 const recipe=readArg('atelier');
+const edition=readArg('edition');
+const approvedV3=edition==='approved-v3';
+if(edition && !approvedV3)throw Error('Édition audio inconnue, génération interdite.');
 const allowed=new Set(['kroeung-jaune','lok-lak','samlor-machu','num-banh-chok','kuy-teav','bai-sach-chrouk']);
 if(!allowed.has(recipe))throw Error('Seuls les six ateliers-recettes approuvés pour le pilote sont autorisés.');
 const modes=['--check','--plan','--assemble',...['intro',...PHASE_IDS].map(id=>'--one='+id)];
 const selected=args.filter(x=>modes.includes(x));
-if(selected.length!==1||args.length!==2)throw Error('Choisir uniquement --atelier=<recette> et --check, --one=<chapitre> ou --assemble.');
+if(selected.length!==1||args.length!==(edition?3:2))throw Error('Choisir --atelier, un seul mode et, si nécessaire, --edition=approved-v3.');
 const mode=selected[0];
 const path='src/data/atelier-recette-guides/'+recipe+'.json';
 const {data:guide,errors}=await validateBlueprintFile(path);
 if(errors.length)throw Error('Contrat culinaire invalide :\n- '+errors.join('\n- '));
 if(mode!=='--plan'&&(guide.status!=='draft'||guide.audio.status!=='script_only'))throw Error('Cet atelier a déjà une narration ou est sorti du statut brouillon : STOP.');
 const plan=buildCookingAudioStoryboard(guide);
+if(approvedV3 && (recipe==='lok-lak'||!guide.audio.supersededV2Asset || guide.audio.storyboardVersion!==2))
+ throw Error('V3 réservée aux cinq ateliers corrigés, Lok Lak V2 protégé.');
 if(plan.numberOfChapters!==7||plan.chapters.some((c,i)=>c.id!==(i===0?'intro':PHASE_IDS[i-1])))throw Error('Chapitres non alignés.');
 const voiceTexts=plan.chapters.map(c=>c.text);
 const forbiddenCulinaryVocabulary=/(?<!\p{L})(?:fabriqu\p{L}*|fabrication\p{L}*|constru\p{L}*|chantier\p{L}*|poste)(?!\p{L})/iu;
@@ -79,10 +84,10 @@ function splitVoiceForTts(text,maxChars=480){
   if(!pieces.length||pieces.some(x=>x.length>maxChars))throw Error('Sous-segmentation audio V2 invalide.');
   return pieces;
 }
-const tmp=resolve('.tmp-cooking-coral',guide.slug,...(v2?['v2']:[]));
-const filename=v2?'atelier-coral-v2.mp3':'atelier-coral.mp3';
+const tmp=resolve('.tmp-cooking-coral',guide.slug,approvedV3?'v3':v2?'v2':'v1');
+const filename=approvedV3?'atelier-coral-v3.mp3':v2?'atelier-coral-v2.mp3':'atelier-coral.mp3';
 const output=resolve('public/audio/workshops',guide.slug,filename);
-const manifestPath=resolve('src/data/atelier-recette-audio',recipe+(v2?'-v2':'')+'.json');
+const manifestPath=resolve('src/data/atelier-recette-audio',recipe+(approvedV3?'-v3':v2?'-v2':'')+'.json');
 const tracks=plan.chapters.map((c,i)=>{
   if(!v2)return [join(tmp,c.id+'.mp3')];
   return splitVoiceForTts(voiceTexts[i]).map((text,part)=>{
@@ -112,7 +117,7 @@ function measure(f){
  return n;
 }
 if(mode==='--plan'){
- console.log('CORAL_OFFLINE_PLAN '+guide.slug+' v'+(v2?2:1)+' '+chunks.length+' segments '+tracks.map((x,i)=>plan.chapters[i].id+':'+x.length).join(' '));
+ console.log('CORAL_OFFLINE_PLAN '+guide.slug+' v'+(approvedV3?3:v2?2:1)+' '+chunks.length+' segments '+tracks.map((x,i)=>plan.chapters[i].id+':'+x.length).join(' '));
 }else if(mode==='--check'){
  if(existsSync(output)||existsSync(manifestPath))throw Error('Le fichier final existe déjà ; refuser toute double génération.');
  // The superseded short V1 recording has been deliberately removed.
@@ -187,6 +192,8 @@ if(mode==='--plan'){
    scriptSha256:createHash('sha256').update(JSON.stringify(voiceTexts)).digest('hex')};
  const manifest={atelier:guide.slug,canonicalRecipe:guide.sourceRecipeSlug,status:'audio_generated_review_pending',voice:'coral',
    ...asset,review:{acousticListening:false,mobile:false,desktop:false},sourceBackend:'render-iacoach-backend.onrender.com/api/tts'};
+ if(approvedV3 && (!guide.audio.approvedScriptSha256||guide.audio.approvedScriptSha256!==asset.scriptSha256))
+   throw Error('STOP : MP3 et narration éditoriale approuvée divergent.');
  guide.audio.asset=asset;
  guide.audio.status='generated_review_pending';
  mkdirSync(dirname(manifestPath),{recursive:true});
