@@ -1,0 +1,51 @@
+name: Publication unique OVH - six ateliers approuves 2026-10-21
+on:
+  push:
+    branches: [main]
+    paths:
+      - docs/ateliers/DECLENCHEMENT-OVH-SIX-ATELIERS-20261021.md
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: publication-unique-ateliers-20261021
+  cancel-in-progress: false
+
+jobs:
+  dispatch-approved-release:
+    name: Lancer une fois la publication SHA-pinned
+    if: github.repository == 'roro78/cuisine-cambodgienne'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout authorized release
+        uses: actions/checkout@v4
+      - name: Verify owner authorization and one-time marker
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$(git log -1 --pretty=%s)" = "release: authorized one-time OVH dispatch for six workshops"
+          grep -Fq 'AUTORISATION_FINALE=OUI' docs/ateliers/DECLENCHEMENT-OVH-SIX-ATELIERS-20261021.md
+          node --input-type=module -e '
+            import {readFileSync} from "node:fs";
+            const slugs=["kroeung-jaune","lok-lak","samlor-machu","num-banh-chok","kuy-teav","bai-sach-chrouk"];
+            for(const slug of slugs){
+              const g=JSON.parse(readFileSync("src/data/atelier-recette-guides/"+slug+".json","utf8"));
+              if(g.status!=="release_ready"||g.review.productionApproved!==true||g.review.audioListeningValidated!==true||
+                 g.releaseAuthorization?.ownerApproved!==true||g.media.imageValidated!==true||!g.audio.asset?.audioUrl)
+                throw Error("Unapproved workshop: "+slug);
+            }
+            console.log("OWNER_APPROVED_SIX_WORKSHOPS_CONFIRMED");
+          '
+      - name: Trigger existing manual OVH workflow once with exact SHA
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PINNED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          gh workflow run deploy-ovh.yml -R "$GITHUB_REPOSITORY" --ref main -f expected_source_sha="$PINNED_SHA"
+          echo "ONE_SHOT_OVH_DISPATCH_SENT $PINNED_SHA"
