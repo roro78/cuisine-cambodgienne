@@ -98,6 +98,9 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
     const transcript=root.querySelector<HTMLElement>('[data-cooking-transcript]');
     let active=0;
     let following=false;
+    // Mobile narration follows the six large recipe sections by default
+    // only after playback starts. Manual scrolling or the button opts out.
+    let manualFollowChoice=false;
     let programmaticScrollUntil=0;
     const followButton=root.querySelector<HTMLButtonElement>('[data-cooking-follow]');
     const mobileDock=root.querySelector<HTMLElement>('[data-cooking-mobile-dock]');
@@ -199,15 +202,33 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
       audio.currentTime=0;
       audioStarted=false;
       following=false;
+      manualFollowChoice=false;
       closeMobileSheet();
       renderFollow();
       updateMobileDock();
     });
-    audio?.addEventListener('play',()=>{audioStarted=true;updateMobileDock();});
+    audio?.addEventListener('play',()=>{
+      audioStarted=true;
+      // Autostart large-section page following on mobile. Never override a
+      // deliberate manual-scroll or "stop following" decision.
+      if(mobileViewport.matches && !manualFollowChoice){
+        following=true;
+        renderFollow();
+        closeMobileSheet();
+        scrollToChapter(active);
+      }
+      updateMobileDock();
+    });
     audio?.addEventListener('pause',updateMobileDock);
     audio?.addEventListener('loadedmetadata',updateMobileDock);
     audio?.addEventListener('seeked',updateMobileDock);
-    audio?.addEventListener('ended',()=>{audioStarted=false;updateMobileDock();});
+    audio?.addEventListener('ended',()=>{
+      audioStarted=false;
+      following=false;
+      manualFollowChoice=false;
+      renderFollow();
+      updateMobileDock();
+    });
     const prefersReducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
     const renderFollow=()=>{
       if(followButton){
@@ -221,7 +242,7 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
       }
     };
     const scrollToChapter=(index:number)=>{
-      const target=index===0?root:document.getElementById('phase-'+chapters[index].id);
+      const target=index===0?(document.getElementById('atelier')||root):document.getElementById('phase-'+chapters[index].id);
       if(!target)return;
       programmaticScrollUntil=Date.now()+2200;
       target.scrollIntoView({behavior:prefersReducedMotion.matches?'auto':'smooth',block:'start'});
@@ -229,10 +250,12 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
     const stopFollowing=()=>{
       if(!following)return;
       following=false;
+      manualFollowChoice=true;
       renderFollow();
       if(status)status.textContent='Défilement libre : le suivi est désactivé, mais la narration continue.';
     };
     const toggleFollow=()=>{
+      manualFollowChoice=true;
       following=!following;
       renderFollow();
       if(following)scrollToChapter(active);
