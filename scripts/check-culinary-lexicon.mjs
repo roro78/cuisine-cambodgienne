@@ -22,6 +22,7 @@ const forbidden=[
   {name:'Vocabulaire de construction hors cuisine',pattern:/\b(?:constru\p{L}*|chantier\p{L}*|maçonnerie|bétonnage)\b/giu},
   {name:'Poste au lieu de plan de travail',pattern:/\bposte\b/giu},
   {name:'Bol à dresser plutôt qu’à monter',pattern:/\b(?:monter|montez|montage|assembl(?:er|ez))\s+(?:les|des|du|d’un)\s+bols?\b/giu},
+  {name:'Articles dédoublés ou incompatibles',pattern:/\bles\s+(?:les|la|le)\b/giu},
   {name:'Français incohérent',pattern:/\b(?:coupez\s+les\s+le|tranchez\s+les\s+les)\b/giu}
 ];
 let errors=0;
