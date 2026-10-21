@@ -191,7 +191,7 @@
   ],
   "audio": {
     "mode": "guided-cooking",
-    "status": "script_only",
+    "status": "generated_review_pending",
     "voice": "coral",
     "intro": "Bonjour et bienvenue ! Aujourd'hui, nous préparons un Bai Sach Chrouk : du porc finement coupé, mariné puis doré, servi avec du riz jasmin et des pickles croquants. Ce n'est pas juste une cuisson de viande : on va organiser tout un repas cambodgien, avec le contraste entre le sucré-salé du porc, le riz tendre et les légumes acidulés. Choisissez d'abord le nombre de convives sur votre fiche et mesurez les quantités qui s'affichent. Dans cet enregistrement, je nomme les ingrédients et les repères techniques, en suivant les quantités adaptées au nombre de personnes choisi. Prenez votre casserole à riz, une passoire, une grande poêle ou plancha, un saladier pour la marinade, une planche, un couteau, une spatule, un thermomètre alimentaire et des assiettes propres. Nous laisserons la viande mariner au froid, puis nous cuisinerons le riz pendant ce repos. Vous pourrez mettre l'audio en pause aux moments utiles : vous avancez à votre rythme. On cuisine ensemble, tranquillement et dans le bon ordre.",
     "publicProviderMention": false,
@@ -249,7 +249,57 @@
     "editorialTextApproved": true,
     "approvedScriptSha256": "e3a32fcf9991fe92347fe3214ed45ef7b49e12f946d3aa2f8e047c0625e2b887",
     "editorialApprovalDate": "2026-10-21",
-    "editorialApprovalScope": "recette_fiche_et_7_scripts_texte_uniquement"
+    "editorialApprovalScope": "recette_fiche_et_7_scripts_texte_uniquement",
+    "asset": {
+      "audioUrl": "/audio/workshops/bai-sach-chrouk-porc-riz-et-pickles/atelier-coral-v3.mp3",
+      "durationSec": 665.664,
+      "sha256": "4fa0b8cbfc8106daf6fb19ce558940b5f731ea7faaf82172837f310b4013606a",
+      "chapters": [
+        {
+          "id": "intro",
+          "title": "Bienvenue et mise en place",
+          "startSec": 0,
+          "endSec": 78.96
+        },
+        {
+          "id": "installer",
+          "title": "Mesurer les ingrédients et préparer le plan de travail",
+          "startSec": 78.96,
+          "endSec": 176.136
+        },
+        {
+          "id": "preparer",
+          "title": "Préparer le porc et hacher l'ail",
+          "startSec": 176.136,
+          "endSec": 262.056
+        },
+        {
+          "id": "assembler",
+          "title": "Mariner au frais et comprendre les saveurs",
+          "startSec": 262.056,
+          "endSec": 362.976
+        },
+        {
+          "id": "maitriser",
+          "title": "Cuire le riz jasmin sans le détremper",
+          "startSec": 362.976,
+          "endSec": 467.208
+        },
+        {
+          "id": "rectifier",
+          "title": "Dorer le porc en vérifiant sa cuisson",
+          "startSec": 467.208,
+          "endSec": 574.512
+        },
+        {
+          "id": "terminer",
+          "title": "Dresser l'assiette de riz, porc et pickles",
+          "startSec": 574.512,
+          "endSec": 665.664
+        }
+      ],
+      "scriptSha256": "e3a32fcf9991fe92347fe3214ed45ef7b49e12f946d3aa2f8e047c0625e2b887"
+    }
   },
   "media": {
     "finishedPreparationImage": "",
