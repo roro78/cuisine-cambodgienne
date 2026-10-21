@@ -1,0 +1,43 @@
+name: One-time OVH atelier chapter selection release - 2026-10-21
+on:
+  push:
+    branches: [main]
+    paths:
+      - docs/ateliers/DECLENCHEMENT-OVH-CHAPITRE-VERS-ETAPE-20261021.md
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: one-time-atelier-manual-chapter-20261021
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    name: Dispatch validated chapter navigation fix via official OVH workflow
+    if: github.repository == 'roro78/cuisine-cambodgienne'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify exact owner-authorized one-time release
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$(git log -1 --pretty=%s)" = "release: one-time OVH chapter-to-section navigation"
+          grep -Fq 'AUTORISATION_NAVIGATION_CHAPITRES=OUI' docs/ateliers/DECLENCHEMENT-OVH-CHAPITRE-VERS-ETAPE-20261021.md
+          grep -Fq 'if(following||scrollRequested)scrollToChapter(index)' src/components/CookingWorkshopAudio.astro
+          grep -Fq 'activate(i,true)' src/components/CookingWorkshopAudio.astro
+          test -f tests/ateliers-cinq-browser.test.mjs
+          test -f tests/atelier-kroeung-browser.test.mjs
+      - name: Publish exact approved main SHA through existing manual OVH workflow
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          gh workflow run deploy-ovh.yml -R "$GITHUB_REPOSITORY" --ref main -f expected_source_sha="$SOURCE_SHA"
+          echo "ONE_TIME_ATELIER_CHAPTER_PUBLISH_DISPATCHED $SOURCE_SHA"
