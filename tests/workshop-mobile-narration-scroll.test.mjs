@@ -15,6 +15,9 @@ test('Mobile narrative text scroll follows the actual audio chapter timeline, wi
 });
 test('Large-step page follow is a separate user decision that closes the mobile sheet',()=>{
   assert.match(audio,/mobileFollow\?\.addEventListener\('click'/);
+  assert.match(audio,/mobileViewport\.matches && !manualFollowChoice/);
+  assert.match(audio,/manualFollowChoice=true/);
+  assert.match(audio,/audio\?\.addEventListener\('play'/);
   assert.match(audio,/if\(following&&mobileViewport\.matches\)closeMobileSheet\(\)/);
   assert.match(audio,/if\(following\)scrollToChapter\(index\)/);
   assert.match(audio,/window\.addEventListener\('wheel',stopFollowing/);
