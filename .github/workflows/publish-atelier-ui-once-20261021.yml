@@ -1,0 +1,44 @@
+name: One-time OVH atelier UI fixes - 2026-10-21
+on:
+  push:
+    branches: [main]
+    paths:
+      - docs/ateliers/DECLENCHEMENT-OVH-FIX-MOBILE-20261021.md
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: one-time-atelier-ui-release-20261021
+  cancel-in-progress: false
+
+jobs:
+  dispatch-approved-ui:
+    name: Release the approved UI correction through existing OVH job
+    if: github.repository == 'roro78/cuisine-cambodgienne'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout release source
+        uses: actions/checkout@v4
+      - name: Verify explicit one-time owner request and code
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$(git log -1 --pretty=%s)" = "release: one-time OVH atelier mobile UI fix"
+          grep -Fq 'AUTORISATION_CORRECTIONS_ATELIERS=OUI' docs/ateliers/DECLENCHEMENT-OVH-FIX-MOBILE-20261021.md
+          grep -Fq 'Temps à prévoir :' 'src/pages/apprendre/pratique/[slug].astro'
+          grep -Fq 'data-cooking-mobile-dock data-visible="true"' src/components/CookingWorkshopAudio.astro
+          grep -Fq 'data-workshop-custom-count hidden' 'src/pages/apprendre/pratique/[slug].astro'
+          test -f src/data/atelier-recette-guides/lok-lak.json
+      - name: Dispatch existing pinned OVH workflow exactly once
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PINNED_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run deploy-ovh.yml -R "$GITHUB_REPOSITORY" --ref main -f expected_source_sha="$PINNED_SHA"
+          echo "ONE_SHOT_OVH_UI_DISPATCH_SENT $PINNED_SHA"
