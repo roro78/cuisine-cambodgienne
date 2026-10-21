@@ -59,7 +59,8 @@ for (const name of names){
   summary.push('| '+guide.title+' | OUI | '+(current?'OUI, préécoute':'NON')+' | '+duration+' |');
   const out=['# '+guide.title,'','Statut : '+guide.status+'. '+(current?'MP3 V2 en préécoute, écoute humaine non attestée.':'Texte corrige a approuver ; les anciens MP3 sont archives hors de ce dossier, et aucun MP3 ne correspond encore au script corrige.'),'',
     'Recette : '+recipe.title+' — origine : src/data/recipes.ts.','Objectif : '+guide.learningGoal,'Résultat : '+guide.finalPreparation,
-    'Durée pratique indicative : '+guide.duration.practicalMinutes+' min.','',
+    'Durée estimée de l’atelier : environ '+guide.duration.practicalMinutes+' min.','',
+    'Cuisson et repos : '+guide.duration.waitingNote,'',
     '## Matériel',...guide.equipment.map(x=>'- '+x),'',
     '## Avant de commencer',...guide.beforeStarting.map(x=>'- '+x),'',
     '## Ingrédients adaptables','',
@@ -73,20 +74,21 @@ for (const name of names){
   }
   if(name==='samlor-machu')out.push('','**Variante : choisir soit l’ananas, soit la courgette (ne pas additionner les deux).**');
   out.push('','## Allergènes',...(guide.allergens.items.length?guide.allergens.items.map(x=>'- '+x):['Aucun identifié pour la recette, vérifier les produits choisis.']),
-    '','## Sécurité',...guide.safety.map(x=>'- '+x),'','## Six phases à réaliser');
-  for(const phase of guide.phases){
-    out.push('','### '+phase.title+' — '+phase.minutes+' min','',...phase.actions.map(x=>'- '+x),'',
-      '**Observation :** '+phase.observe,'**Réussite :** '+phase.check,'**Erreur :** '+phase.mistake,
-      '**Correction :** '+phase.recovery,'**Savoir-faire :** '+phase.learning,'**Précaution :** '+phase.safety);
+    '','## Sécurité',...guide.safety.map(x=>'- '+x),'','## Six étapes de préparation');
+  for(const [i,phase] of guide.phases.entries()){
+    out.push('','### Étape '+(i+1)+' sur 6 — '+phase.title+' (environ '+phase.minutes+' min)','',
+      '**À faire :**','',...phase.actions.map(x=>'- '+x),'',
+      '**À observer :** '+phase.observe,'**Résultat attendu :** '+phase.check,'**À éviter :** '+phase.mistake,
+      '**Si besoin :** '+phase.recovery,'**Ce que vous apprenez :** '+phase.learning,'**Précaution :** '+phase.safety);
   }
-  out.push('','## Voix Coral — sept chapitres complets','','### Introduction','',guide.audio.intro);
-  for(const phase of guide.phases)out.push('','### '+phase.id+' — '+phase.title,'',phase.audioScript);
+  out.push('','## Narration corrigée — sept chapitres à valider avant l’enregistrement','','### Chapitre 1 sur 7 — Introduction','',guide.audio.intro);
+  for(const [i,phase] of guide.phases.entries())out.push('','### Chapitre '+(i+2)+' sur 7 — '+phase.title,'',phase.audioScript);
   if(current){
     out.push('','## Chapitrage MP3 mesuré','',
       '| Chapitre | Début (s) | Fin (s) |','|---|---:|---:|',
       ...current.chapters.map(c=>'| '+c.id+' | '+c.startSec+' | '+c.endSec+' |'),
       '','**MP3 :** '+current.audioUrl,'**SHA-256 :** '+current.sha256);
-  }else out.push('','## MP3 V2','','En attente de synthèse ou assemblage. Ne pas utiliser la V1 pour ce nouveau script.');
+  }else out.push('','## MP3 V2','','Ces textes sont en attente de validation écrite avant tout nouvel enregistrement. Les MP3 précédents sont conservés séparément et ne correspondent plus à ces textes.');
   out.push('','## Sources de cuisine','',...((guide.sources.culinaryReferences||[]).map(x=>'- '+x.title+' : '+x.url)),
     '','## Sources de sécurité','',...((guide.sources.safetyReferences||[]).map(x=>'- '+x.title+' : '+x.url)),
     '','**Ce cours reste en brouillon sans validation d’écoute, essai culinaire ou publication OVH.**');
