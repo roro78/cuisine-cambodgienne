@@ -4,3 +4,5 @@ Portée de la validation explicite : cinq recettes corrigées, cinq fiches édit
 Démarrage autonome de la synthèse Coral V3 autorisé dans la branche de revue de la PR #92.
 Aucune validation d'écoute humaine des futurs MP3, de photographie, de navigation réelle ou de publication OVH n'est prétendue.
 La version Lok Lak V2 approuvée reste strictement inchangée et les pistes existantes sont protégées.
+
+Relance technique du 21 octobre 2026 : installation des dépendances avant contrôle. Aucune régénération précédente n'a commencé.
