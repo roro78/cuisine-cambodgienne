@@ -48,8 +48,12 @@ try{
           const blueprint=JSON.parse(readFileSync('src/data/atelier-recette-guides/'+recipeslug+'.json','utf8'));
           const expectedRecording=blueprint.audio.status==='script_only'?0:1;
           assert.equal(await page.locator('[data-cooking-audio]').count(),expectedRecording,
-            'Do not show V1 audio with V2 script; V2 recording is shown only after synthesis');
-          if(expectedRecording===1)assert.match(await page.locator('[data-cooking-audio]').getAttribute('src'),/atelier-coral-v2[.]mp3$/, 'Serve only V2 recording');
+            'Never show a previous MP3 with a corrected script; the exact active asset must be present');
+          if(expectedRecording===1){
+            const activeSrc=await page.locator('[data-cooking-audio]').getAttribute('src');
+            assert.equal(activeSrc,blueprint.audio.asset.audioUrl,'Serve only the exact active MP3 matching the approved script');
+            assert.match(activeSrc,/atelier-coral-v[23][.]mp3$/,'Never serve obsolete V1');
+          }
         }
         assert.equal(await page.locator('.fca-step').count(),6,'Phases '+slug);
         assert.equal(await page.locator('.fca-steps-nav a').count(),6,'Navigation '+slug);
@@ -70,7 +74,7 @@ try{
         assert.ok(audioCount===0||audioCount===1,'At most one recording per atelier '+slug);
         if(audioCount===1){
           assert.equal(await page.locator('[data-cooking-chapter]').count(),7,'Intro + six genuine chapters');
-          assert.match(await page.locator('[data-cooking-audio]').getAttribute('src'),/\/audio\/workshops\/[^/]+\/atelier-coral(?:-v2)?[.]mp3$/);
+          assert.match(await page.locator('[data-cooking-audio]').getAttribute('src'),/\/audio\/workshops\/[^/]+\/atelier-coral-v[23][.]mp3$/);
           const chapterOne=page.locator('[data-cooking-chapter]').nth(1);
           await chapterOne.click();
           assert.equal(await chapterOne.getAttribute('aria-current'),'true','Selecting phase updates the active audio chapter');
