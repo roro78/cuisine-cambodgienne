@@ -5,6 +5,7 @@
  * courses and their exact review documents. Does not touch legacy audio.
  */
 import { readFileSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 
 const slugs=['kroeung-jaune','bai-sach-chrouk','samlor-machu','kuy-teav','num-banh-chok'];
 const files=[
@@ -73,5 +74,47 @@ for(const slug of slugs){
    errors++;
  }
 }
+
+const audioPreserve={
+  'kroeung-jaune':'c2eb01538fa68ddcef431d531376be5b4e09276e4cd14fe893608aa0fea6bbb0',
+  'bai-sach-chrouk':'0ca5aaad4443805f1e2360ac9921d53c27750df8ac72c1e117a901c9f8b71c8d',
+  'samlor-machu':'0846b9969bf2d204722c48eae791d335252261952416aeb874e8c6dcfe1fecde',
+  'kuy-teav':'6818c905bd8ef4495b34f284bc7394a69274563cc4ee98920f672e726fd71987',
+  'num-banh-chok':'69b467288ef3c23ef2d6b914d395d9f54175372085ee3c52fe1019489a30e1d1',
+  'lok-lak':'d3f5558c07f7aff5c4c57ccf7c662544079744dc0fa8223ec869a6b061d0912e'
+};
+for(const [slug,expectedSha] of Object.entries(audioPreserve)){
+  const guide=JSON.parse(readFileSync('src/data/atelier-recette-guides/'+slug+'.json','utf8'));
+  const dir='public/audio/workshops/'+guide.slug+'/';
+  const stale=dir+'atelier-coral.mp3';
+  const staleManifest='src/data/atelier-recette-audio/'+slug+'.json';
+  if(existsSync(stale)||existsSync(staleManifest)||guide.audio.previousAsset){
+    console.error('ECHEC_MP3_V1_SUPPRESSION ancien media encore present : '+slug);
+    errors++;
+  }
+  const live=dir+'atelier-coral-v2.mp3';
+  const manifestPath='src/data/atelier-recette-audio/'+slug+'-v2.json';
+  if(!existsSync(live)||!existsSync(manifestPath)){
+    console.error('ECHEC_MP3_V2_PROTECTION nouvel enregistrement absent : '+slug);
+    errors++;
+    continue;
+  }
+  const m=JSON.parse(readFileSync(manifestPath,'utf8'));
+  const actualSha=createHash('sha256').update(readFileSync(live)).digest('hex');
+  const reference=slug==='lok-lak'?guide.audio.asset:guide.audio.supersededV2Asset;
+  if(m.sha256!==expectedSha||actualSha!==expectedSha||m.audioUrl!=='/audio/workshops/'+guide.slug+'/atelier-coral-v2.mp3'||
+     reference?.sha256!==expectedSha||reference.audioUrl!==m.audioUrl||m.chapters?.length!==7){
+    console.error('ECHEC_MP3_V2_PROTECTION piste nouvelle modifiee, mal referencee ou manquante : '+slug);
+    errors++;
+  }
+}
+for(const name of ['piler-aromates-au-mortier','saisir-viande-poele',
+  'bouillon-leger-savoureux','composer-repas-cambodgien','equilibrer-une-sauce','fraicheur-herbes-agrumes']){
+  if(!existsSync('public/audio/workshops/'+name+'/atelier-coral.mp3')){
+    console.error('ECHEC_AUDIO_AUTRES_ATELIERS piste utilisee ailleurs supprimee : '+name);
+    errors++;
+  }
+}
+
 if(errors)process.exitCode=1;
 else console.log('CONTROLE_LEXIQUE_CULINAIRE_OK '+files.length+' fichiers, cinq fiches recette, cinq scripts de sept chapitres, aucun jargon interdit, 0 nouveau MP3.');
