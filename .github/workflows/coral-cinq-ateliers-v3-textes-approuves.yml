@@ -26,6 +26,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install dependencies for offline editorial contracts
+        run: npm install --no-audit --no-fund
       - name: Written user approval without TTS or deployment
         shell: bash
         run: |
