@@ -64,6 +64,7 @@ jobs:
           node --check scripts/bridge-cooking-workshops-coral.mjs
           node --test tests/coral-lok-lak-v2-plan.test.mjs
           node --test tests/cooking-audio-review.test.mjs
+          node --test tests/workshop-mobile-narration-scroll.test.mjs
           node scripts/check-new-cooking-workshop-audio.mjs | tee /tmp/cuisine-six-new-audio-review.txt
           grep -q '^NEW_GUIDED_AUDIO_SUMMARY 6/6 MP3 measured' /tmp/cuisine-six-new-audio-review.txt
 
