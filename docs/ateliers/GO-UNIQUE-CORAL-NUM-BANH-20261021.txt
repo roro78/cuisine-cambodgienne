@@ -1,0 +1,5 @@
+AUTORISATION_UTILISATEUR_CORAL_NUM_BANH_UN_SEGMENT_2026-10-21
+Portée: exactement une requête facturable gpt-4o-mini-tts pour Num Banh Chok, introduction, partie 1/3.
+Après mise en production du correctif backend Render PR #326.
+Aucune réémission automatique, aucune génération des 24 autres segments, aucune fusion ni déploiement OVH.
+Conserver le MP3 ou le marqueur de résultat incertain en artefact.
