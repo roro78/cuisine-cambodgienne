@@ -182,7 +182,7 @@
   ],
   "audio": {
     "mode": "guided-cooking",
-    "status": "script_only",
+    "status": "generated_review_pending",
     "voice": "coral",
     "intro": "Coucou, bienvenue dans notre cuisine ! Aujourd'hui, on ne va pas simplement parler d'épices : on va préparer ensemble un vrai kroeung jaune, cette pâte aromatique qui donne du caractère à plusieurs plats cambodgiens. À la fin, vous aurez dans un récipient votre propre pâte, bien liée, que vous pourrez incorporer dans une préparation cuite. Aujourd'hui, nous allons apprendre à transformer des racines fibreuses en une pâte fine grâce à la découpe puis au pilon. Avant de commencer, indiquez le nombre de petits pots à préparer sur la fiche et mesurez toutes les quantités affichées. Retrouvez les quantités exactes de chaque ingrédient sur la fiche, selon le nombre de pots que vous préparez. Il nous faudra un mortier stable, un pilon, une planche, un couteau, une spatule propre et un récipient refermable. On ne goûtera pas ce kroeung cru comme un plat fini. Prenez vos aises : si un geste demande plus de temps, vous pouvez faire pause et relancer l'enregistrement. Je vous accompagnerai de la première coupe au dernier coup de pilon.",
     "publicProviderMention": false,
@@ -240,7 +240,57 @@
     "editorialTextApproved": true,
     "approvedScriptSha256": "24eff330c8390231d83fedd59ecf8b93f19431e3550aaf82a663615bc2eb12a2",
     "editorialApprovalDate": "2026-10-21",
-    "editorialApprovalScope": "recette_fiche_et_7_scripts_texte_uniquement"
+    "editorialApprovalScope": "recette_fiche_et_7_scripts_texte_uniquement",
+    "asset": {
+      "audioUrl": "/audio/workshops/atelier-pratique-kroeung-jaune/atelier-coral-v3.mp3",
+      "durationSec": 664.728,
+      "sha256": "d1f4002f7585b112583a22c017359570f6e78e10745dc17ea949b650addf9408",
+      "chapters": [
+        {
+          "id": "intro",
+          "title": "Bienvenue et mise en place",
+          "startSec": 0,
+          "endSec": 71.112
+        },
+        {
+          "id": "installer",
+          "title": "Préparer le plan de travail et mesurer les aromates",
+          "startSec": 71.112,
+          "endSec": 163.176
+        },
+        {
+          "id": "preparer",
+          "title": "Nettoyer et émincer les aromates",
+          "startSec": 163.176,
+          "endSec": 260.856
+        },
+        {
+          "id": "assembler",
+          "title": "Commencer avec les fibres fermes",
+          "startSec": 260.856,
+          "endSec": 363.024
+        },
+        {
+          "id": "maitriser",
+          "title": "Transformer les aromates en pâte",
+          "startSec": 363.024,
+          "endSec": 473.496
+        },
+        {
+          "id": "rectifier",
+          "title": "Évaluer et corriger la texture",
+          "startSec": 473.496,
+          "endSec": 578.712
+        },
+        {
+          "id": "terminer",
+          "title": "Mettre le kroeung en pot et retenir le geste",
+          "startSec": 578.712,
+          "endSec": 664.728
+        }
+      ],
+      "scriptSha256": "24eff330c8390231d83fedd59ecf8b93f19431e3550aaf82a663615bc2eb12a2"
+    }
   },
   "media": {
     "finishedPreparationImage": "",
