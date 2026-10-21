@@ -31,10 +31,11 @@ if(!allowed.has(recipe))throw Error('Seuls les six ateliers-recettes approuvés 
 const modes=['--check','--plan','--assemble',...['intro',...PHASE_IDS].map(id=>'--one='+id)];
 const selected=args.filter(x=>modes.includes(x));
 if(selected.length!==1||args.length!==(edition?3:2)+(partArg!==undefined?1:0))throw Error('Arguments refusés, pas de synthèse autorisée.');
+const mode=selected[0];
 if(approvedV3 && mode.startsWith('--one=') && partArg===undefined)
  throw Error('STOP QUOTA : en V3, --part=N obligatoire pour isoler chaque appel payant.');
 if(partArg!==undefined && !mode.startsWith('--one='))throw Error('--part n’est autorisé que pour une piste unique.');
-const mode=selected[0];
+
 const path='src/data/atelier-recette-guides/'+recipe+'.json';
 const {data:guide,errors}=await validateBlueprintFile(path);
 if(errors.length)throw Error('Contrat culinaire invalide :\n- '+errors.join('\n- '));
