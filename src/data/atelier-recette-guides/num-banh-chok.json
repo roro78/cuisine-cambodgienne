@@ -27,8 +27,8 @@
     "Un thermomètre alimentaire pour contrôler le poisson poché"
   ],
   "beforeStarting": [
-    "Choisissez vos convives, puis mesurez tous les ingrédients sur la fiche.",
-    "Le kroeung jaune est une sous-préparation à faire avant ce cours (voir atelier Kroeung jaune) ou à acheter : il doit être préparé avant cet atelier.",
+    "Indiquez le nombre de personnes à table, puis mesurez les ingrédients sur la fiche.",
+    "Le kroeung jaune doit être prêt avant de commencer : vous pouvez le préparer grâce à l'atelier consacré au mortier, ou en utiliser un acheté.",
     "Prévoyez de l'eau potable pour pocher le poisson, cuire les nouilles et blanchir les haricots, des ustensiles propres et un moyen de retirer les arêtes."
   ],
   "safety": [
@@ -79,7 +79,7 @@
       "recovery": "Préparez cette pâte aromatique en avance ou référez-vous à sa fiche recette.",
       "learning": "Une préparation à composants multiples demande une mise en place lisible.",
       "audioScript": "Plaçons tout à portée de main avant de commencer. La première casserole servira à pocher le poisson, puis à préparer la sauce parfumée ; la seconde accueillera l'eau des nouilles et des haricots verts. Prévoyez la passoire, une louche, une écumoire, une fourchette pour émietter le poisson, un couteau, une planche propre et des bols profonds. Sur la fiche, vérifiez les nouilles de riz, le poisson blanc, le lait de coco, le kroeung jaune, la sauce de poisson et les garnitures : concombre, haricots verts fins et herbes fraîches. Préparez les quantités pour les convives de votre choix. Attention à une chose essentielle : le kroeung jaune est une véritable sous-préparation, une pâte de citronnelle, galanga, curcuma, ail, échalote et combava ; il doit être déjà fait ou acheté. Vous pouvez suivre l'atelier spécifique du kroeung pour le préparer à l'avance. Le lait de coco apporte une note douce et ronde dans notre variante ; certaines versions du Num Banh Chok l'utilisent peu ou pas du tout. Ne confondons pas recette choisie et définition unique du plat. Vérifiez les allergènes, notamment le poisson et la sauce de poisson. Gardez les légumes frais loin de la zone de travail du poisson cru, avec une planche et des ustensiles nettoyés. Vous pouvez mettre le guide en pause pour terminer la mise en place. Puis nous allons préparer le poisson et les légumes.",
-      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "pausePrompt": "Vérifiez que tout est prêt avant de poursuivre.",
       "safety": "Conservez le poisson cru au frais jusqu'à son passage en cuisson."
     },
     {
@@ -100,7 +100,7 @@
       "recovery": "Changez de planche ou nettoyez et désinfectez-la avant de préparer les garnitures.",
       "learning": "La fraîcheur finale se prépare dès le début, même si elle n'est ajoutée qu'à la fin.",
       "audioScript": "Commençons par les légumes, pendant que tout est encore propre. Lavez les herbes fraîches à l'eau potable, puis égouttez-les sans les écraser. Rincez le concombre, vérifiez sa peau et préparez-le pour une découpe fine au dernier moment. Les haricots verts fins doivent être équeutés ; nous les blanchirons plus tard, pour qu'ils restent tendres mais encore agréables à croquer. Placez les végétaux sur un plat propre réservé aux garnitures. Le poisson attend au réfrigérateur jusqu'à l'instant de le pocher. S'il est déjà en filet, vérifiez les arêtes avec les doigts propres ou une pince adaptée en suivant le sens de la chair. S'il y a de grandes différences d'épaisseur, prévoyez de surveiller le morceau le plus épais de plus près. Nous ne rinçons pas inutilement le poisson cru sous un robinet ouvert : des éclaboussures pourraient contaminer les herbes prêtes à manger. Nettoyez aussitôt toute surface touchée par le poisson, ainsi que les mains et le couteau. Vérifiez aussi le lait de coco : remuez la boîte fermée avant ouverture ou homogénéisez son contenu dans un bol propre si la crème et l'eau se sont séparées. Cette séparation peut être naturelle et ne signifie pas qu'il faut tout faire bouillir violemment. Prenez votre temps et mettez pause si les légumes ne sont pas prêts. Ensuite, nous allons pocher délicatement notre poisson.",
-      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "pausePrompt": "Terminez les découpes avant de continuer.",
       "safety": "Ne rincez pas inutilement le poisson cru au robinet, pour éviter les éclaboussures contaminantes."
     },
     {
@@ -118,7 +118,7 @@
       "recovery": "Baissez la température et poursuivez doucement jusqu'à cuisson complète.",
       "learning": "Pocher doucement donne à la sauce une chair facile à incorporer.",
       "audioScript": "Remplissez une casserole d'eau potable en quantité suffisante pour couvrir le poisson ; cette eau sert seulement à pocher le poisson ; elle ne sera pas versée dans les bols. Chauffez jusqu'à un petit frémissement. Posez doucement le poisson dans le liquide ; on veut une cuisson calme qui respecte les fibres de la chair. Une ébullition agressive peut casser les morceaux et les dessécher. Surveillez le plus épais plutôt que de faire confiance à un temps universel. Pour le poisson, la température de référence USDA est de soixante-trois degrés à cœur ; un thermomètre est préférable. La chair doit pouvoir se séparer en lamelles, mais ce repère visuel ne remplace pas toujours un contrôle de température. Sortez le poisson dans un récipient propre avec une écumoire et laissez-le tiédir juste assez pour pouvoir le manipuler sans vous brûler. Égouttez et émiettez avec une fourchette ; vérifiez soigneusement les éventuelles arêtes, surtout si les morceaux proviennent d'un poisson avec peau et squelette. Rien ne doit finir dans le bol par accident. Si la chair s'écrase totalement, réduisez la durée la prochaine fois, mais ne servez jamais un centre encore cru. Réservez cette chair cuite au chaud, sans la laisser attendre longuement à température ambiante. Vous pouvez faire pause pour finir le contrôle des arêtes. Passons ensuite au kroeung et au coco.",
-      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "pausePrompt": "Prenez le temps de terminer cette préparation.",
       "safety": "Contrôlez la cuisson complète du poisson et surveillez les arêtes avant le service."
     },
     {
@@ -131,8 +131,8 @@
         "sauce de poisson"
       ],
       "actions": [
-        "Dans une casserole propre, chauffez doucement le kroeung jaune mesuré sur la fiche pendant une minute sans les brûler, puis ajoutez le lait de coco mesuré sur la fiche.",
-        "Incorporez le poisson déjà cuit et émietté, chauffez à petit feu et ajoutez une cuillère à soupe de sauce de poisson ; évitez une ébullition qui sépare la sauce."
+        "Dans une casserole propre, chauffez doucement le kroeung jaune mesuré sur la fiche pendant une minute sans le brûler, puis ajoutez le lait de coco mesuré sur la fiche.",
+        "Incorporez le poisson déjà cuit et émietté, chauffez à petit feu et ajoutez la sauce de poisson dans la quantité indiquée sur la fiche ; évitez une ébullition qui sépare la sauce."
       ],
       "observe": "La sauce est parfumée et souple, avec des miettes de poisson réparties régulièrement.",
       "check": "La sauce chaude nappe légèrement la cuillère sans être grumeleuse ou trop liquide.",
@@ -140,7 +140,7 @@
       "recovery": "Baissez le feu et ajoutez une ou deux cuillères d'eau chaude si la sauce devient trop épaisse.",
       "learning": "La pâte kroeung fournit les arômes, le lait de coco la rondeur et le poisson la matière.",
       "audioScript": "Prenez maintenant une casserole propre à fond suffisamment épais. Chauffez à feu doux la pâte de kroeung jaune déjà préparée, en remuant doucement avec une spatule. Il faut réveiller ses parfums, pas faire noircir la citronnelle et l'ail. Si la pâte accroche, baissez le feu immédiatement ; n'ajoutez pas au hasard une grande quantité d'huile qui n'est pas prévue dans votre fiche. Remuez constamment pendant ce court moment, puis versez progressivement le lait de coco mesuré sur la fiche. Mélangez pour délier la pâte aromatique ; le lait de coco peut se présenter avec une partie épaisse et une partie liquide, mais l'ensemble doit redevenir souple. Ajoutez le poisson entièrement cuit et émietté, et répartissez-le délicatement sans le réduire en poussière. Assaisonnez ensuite avec la sauce de poisson selon la fiche. Maintenez un petit frémissement : le mélange doit rester chaud et nappant, sans gros bouillons qui risquent de faire trancher le lait de coco ou de rendre le poisson sec. Regardez la cuillère : une bonne sauce laisse une pellicule légère, puis s'écoule assez facilement. Si elle est trop épaisse, ajoutez progressivement un peu d'eau potable chaude comme indiqué dans les étapes de la recette. Si elle est devenue trop liquide, laissez-la réduire doucement sans surcuire le poisson, ou servez-la comme une sauce plus fluide, sans inventer un épaississant. Prenez votre temps pour obtenir ce résultat ; vous pouvez mettre pause si votre sauce demande quelques minutes de plus.",
-      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "pausePrompt": "Attendez le bon résultat de cuisson avant de passer à la suite.",
       "safety": "Le poisson doit avoir été entièrement cuit avant incorporation ; évitez les projections de sauce chaude."
     },
     {
@@ -160,7 +160,7 @@
       "recovery": "Égouttez immédiatement et détendez la sauce séparément, plutôt que de trop cuire les nouilles.",
       "learning": "Chaque composant doit conserver sa propre texture avant le dressage.",
       "audioScript": "Pendant que la sauce reste chaude à feu très doux, faites cuire les nouilles de riz dans la deuxième casserole selon les indications du paquet. Les nouilles fraîches et les nouilles sèches n'ont pas la même vitesse ; la meilleure référence est leur texture, souple mais encore distincte. Égouttez-les aussitôt et rincez-les très brièvement à l'eau fraîche si la notice le recommande, pour arrêter la cuisson sans les refroidir complètement au point de ruiner le service. Si elles collent, séparez-les délicatement plutôt que de prolonger leur séjour dans l'eau bouillante. Blanchissez ensuite les haricots verts fins dans de l'eau frémissante propre jusqu'à ce qu'ils soient suffisamment tendres, puis refroidissez-les rapidement et égouttez-les. Selon leur épaisseur, quelques minutes peuvent suffire, mais mordez-en un seulement s'il est cuit et servi dans de bonnes conditions. Goûtez une petite cuillère de sauce tiédie : la sauce de poisson a déjà apporté du sel, on n'ajoute pas automatiquement une deuxième portion. Si la sauce est trop salée, allongez-la progressivement avec un peu d'eau chaude et contrôlez à nouveau sa texture ; si elle manque de parfum, vérifiez d'abord que le kroeung a eu le temps de diffuser ses arômes. Le lait de coco ne doit pas devenir une soupe lourde. Prenez le temps de terminer les nouilles et la sauce ; une pause est tout à fait possible. Puis on dressera sans attendre.",
-      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "pausePrompt": "Vérifiez le résultat et ajustez-le si nécessaire.",
       "safety": "Surveillez l'eau bouillante et utilisez une passoire résistante à la chaleur."
     },
     {
@@ -178,7 +178,7 @@
       "recovery": "Gardez la finition végétale pour le dernier moment, une fois les bols prêts.",
       "learning": "Le contraste entre chaud et frais fait partie du résultat appris dans cet atelier.",
       "audioScript": "Nous pouvons enfin dresser les bols. Émincez finement le concombre sur une planche propre et préparez les herbes lavées. Répartissez d'abord les nouilles de riz, encore souples et bien égouttées, dans les bols. Versez dessus la sauce chaude au poisson et au lait de coco ; elle doit traverser les nouilles, pas former une masse épaisse posée au-dessus. Ajoutez les haricots verts blanchis, le concombre frais et les feuilles de menthe ou de basilic asiatique. Gardez ces végétaux distincts pour que chacun retrouve du croquant et une note végétale. Regardez le résultat : une sauce qui enrobe, un poisson sans arêtes, des nouilles séparées et des garnitures fraîches. Goûtez ensemble une bouchée de sauce et de nouilles, puis avec du concombre ; c'est là que la douceur du coco rencontre le parfum du kroeung. Vous avez aujourd'hui appris à pocher un poisson, contrôler les arêtes, préparer une sauce aromatique délicate et choisir le bon moment pour cuire les nouilles. Ce sont des gestes que vous pourrez refaire avec d'autres préparations. Servez sans attendre et mettez rapidement au frais les restes qui ne sont pas consommés. Merci d'avoir cuisiné avec moi, et bon appétit !",
-      "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
+      "pausePrompt": "Servez ou conservez la préparation selon les conseils de la fiche.",
       "safety": "Servez le poisson entièrement cuit ; réfrigérez rapidement les restes non servis."
     }
   ],
