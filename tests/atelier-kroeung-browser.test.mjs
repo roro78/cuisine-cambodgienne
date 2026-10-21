@@ -50,6 +50,15 @@ try {
           await page.locator('[data-cooking-mobile-tab="transcript"]').click();
           assert.ok((await page.locator('[data-cooking-mobile-transcript]').innerText()).length>90);
           await page.locator('[data-cooking-mobile-close]').click();
+          await page.locator('[data-cooking-audio]').evaluate(el=>el.dispatchEvent(new Event('play')));
+          assert.equal(await page.locator('[data-cooking-mobile-follow]').getAttribute('aria-pressed'),'true','Kroeung auto-follow enabled by MP3 playback');
+          await page.locator('[data-cooking-audio]').evaluate(el=>{
+            const c=JSON.parse(el.closest('[data-cooking-chapters]').dataset.cookingChapters);
+            el.currentTime=c[2].startSec+0.2;
+            el.dispatchEvent(new Event('timeupdate'));
+          });
+          const current=await page.locator('#phase-'+workshop.phases[1].id).evaluate(el=>({top:el.getBoundingClientRect().top,height:window.innerHeight}));
+          assert.ok(current.top>=0&&current.top<current.height*.7,'Kroeung page advances with MP3 phase 2: '+JSON.stringify(current));
         }else{
           assert.equal(await page.locator('.guided-cooking-audio-head').isVisible(),true);
           assert.equal(await page.locator('[data-cooking-mobile-dock]').isVisible(),false);
