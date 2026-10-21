@@ -39,7 +39,7 @@ if(partArg!==undefined && !mode.startsWith('--one='))throw Error('--part n’est
 const path='src/data/atelier-recette-guides/'+recipe+'.json';
 const {data:guide,errors}=await validateBlueprintFile(path);
 if(errors.length)throw Error('Contrat culinaire invalide :\n- '+errors.join('\n- '));
-if(mode!=='--plan'&&(guide.status!=='draft'||guide.audio.status!=='script_only'))throw Error('Cet atelier a déjà une narration ou est sorti du statut brouillon : STOP.');
+if(mode!=='--plan'&&(guide.status!=='draft'||guide.audio.status!=='script_only'))throw Error('Une narration existe déjà pour cet atelier ou le brouillon a été fermé : STOP, refuser toute double génération.');
 const plan=buildCookingAudioStoryboard(guide);
 if(approvedV3 && (recipe==='lok-lak'||!guide.audio.supersededV2Asset || guide.audio.storyboardVersion!==2))
  throw Error('V3 réservée aux cinq ateliers corrigés, Lok Lak V2 protégé.');
