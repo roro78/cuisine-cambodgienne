@@ -36,6 +36,11 @@ for(const slug of names){
    const duration=Number(execFileSync('ffprobe',['-v','error','-show_entries','format=duration','-of','default=nw=1:nk=1',f],{encoding:'utf8'}).trim());
    if(!Number.isFinite(duration)||Math.abs(duration-m.durationSec)>0.2)
      throw Error(slug+': superseded MP3 measured duration mismatch.');
+   if(supersededV2){
+     const sourceHash=createHash('sha256').update(JSON.stringify([blueprint.audio.intro,...blueprint.phases.map(p=>p.audioScript)])).digest('hex');
+     if(m.scriptSha256===sourceHash)throw Error(slug+': narration V2 archivée est identique au brouillon corrigé.');
+     if(blueprint.audio.asset)throw Error(slug+': une ancienne piste ne doit pas être affichée.');
+   }
    superseded++;
    present++;
    console.log('NEW_GUIDED_AUDIO_SUPERSEDED '+slug+' '+duration.toFixed(3)+'sec (not a V2 recording)');
