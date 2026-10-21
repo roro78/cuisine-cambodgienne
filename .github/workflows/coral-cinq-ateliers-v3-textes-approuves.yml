@@ -103,7 +103,11 @@ jobs:
           set -euo pipefail
           SLUG=$(node -e "const j=require('./src/data/atelier-recette-guides/${{ matrix.atelier }}.json');process.stdout.write(j.slug)")
           mkdir -p ".tmp-cooking-coral/$SLUG/v3"
-          find .tmp-cooking-coral-restore -type f -name '*.mp3' -exec cp -n {} ".tmp-cooking-coral/$SLUG/v3/" \;
+          if [ -d .tmp-cooking-coral-restore ]; then
+            find .tmp-cooking-coral-restore -type f -name '*.mp3' -exec cp -n {} ".tmp-cooking-coral/$SLUG/v3/" \;
+          else
+            echo "No saved V3 fragments from the previous attempt; proceed without restoration."
+          fi
       - name: Coral V3 - intro, approved script only
         run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --one=intro
       - name: Save completed intro segments
