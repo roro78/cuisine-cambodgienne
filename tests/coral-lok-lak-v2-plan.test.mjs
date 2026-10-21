@@ -4,7 +4,6 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync, existsSync } from 'node:fs';
 
 const blueprintPath='src/data/atelier-recette-guides/lok-lak.json';
-const previousManifestPath='src/data/atelier-recette-audio/lok-lak.json';
 const v2ManifestPath='src/data/atelier-recette-audio/lok-lak-v2.json';
 const v1Mp3Path='public/audio/workshops/lok-lak-de-la-poele-a-l-assiette/atelier-coral.mp3';
 
@@ -17,19 +16,16 @@ test('Lok Lak V2 : plan Coral hors ligne en petits segments, sept grandes phases
   for(const id of ids)assert.match(out,new RegExp('\\b'+id+':\\d+\\b'),'Plan includes '+id);
 });
 
-test('Le MP3 Lok Lak V1 reste une archive et ne prend jamais la place de la V2',()=>{
+test('Le Lok Lak V2 reste intact ; ancienne capsule V1 supprimée',()=>{
   const b=JSON.parse(readFileSync(blueprintPath,'utf8'));
-  const old=JSON.parse(readFileSync(previousManifestPath,'utf8'));
+  const v2=JSON.parse(readFileSync(v2ManifestPath,'utf8'));
   assert.equal(b.audio.storyboardVersion,2);
-  assert.equal(old.sha256,b.audio.previousAsset.sha256);
-  assert.ok(existsSync(v1Mp3Path),'Do not delete or replace original draft recording');
-  if(b.audio.status==='script_only'){
-    assert.equal(b.audio.asset,undefined,'Do not attach the old recording to the new lesson');
-    assert.equal(existsSync(v2ManifestPath),false,'V2 manifest is not created before synthesis');
-  }else{
-    assert.equal(b.audio.asset.audioUrl,'/audio/workshops/lok-lak-de-la-poele-a-l-assiette/atelier-coral-v2.mp3');
-    assert.ok(existsSync(v2ManifestPath),'V2 manifest must be distinct from the V1 one');
-  }
+  assert.equal(b.audio.previousAsset,undefined,'Aucune piste V1 archivée dans la fiche');
+  assert.equal(existsSync(v1Mp3Path),false,'La courte V1 obsolète a été retirée');
+  assert.equal(existsSync('src/data/atelier-recette-audio/lok-lak.json'),false);
+  assert.equal(b.audio.asset.audioUrl,'/audio/workshops/lok-lak-de-la-poele-a-l-assiette/atelier-coral-v2.mp3');
+  assert.equal(b.audio.asset.sha256,v2.sha256);
+  assert.ok(existsSync('public'+v2.audioUrl),'Le MP3 V2 validé doit être présent');
 });
 
 test('Le feu vert TTS reste explicitement absent tant que la revue du cours est incomplete',()=>{
