@@ -2,11 +2,9 @@ name: Cuisine - cinq ateliers Coral V3 sur textes approuves
 # Text approval only, no implicit human listening or OVH production authorization.
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - "feat/ateliers-cinq-recettes-completes-20261020"
-    paths:
-      - "docs/ateliers/GO-V3-TEXTES-APPROUVES.txt"
+# Legacy batch workflow disabled to prevent uncontrolled repeat billing.
+# Use only the manually gated segment workflow for Num Banh Chok.
+
 permissions:
   contents: write
   actions: read
@@ -15,6 +13,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   approve_written_text:
+    if: false # Stop all paid or approval replays from this superseded workflow.
     name: Approuver les textes exacts seulement
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -52,6 +51,7 @@ jobs:
           done
           exit 1
   synthesise_five:
+    if: false # Stop the five-at-a-time TTS batch, it is no longer authorized.
     name: "Coral V3 ${{ matrix.atelier }}"
     needs: approve_written_text
     runs-on: ubuntu-latest
