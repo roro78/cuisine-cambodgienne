@@ -118,6 +118,6 @@ summary.push('','## Contenu du ZIP','','- FICHES-ATELIERS : six cours complets M
 '- src/data/atelier-recette-audio et public/audio/workshops : uniquement les MP3 encore associes au script actif. Les pistes obsoletes ne sont pas exportees comme guide valide.',
 '- src/pages/apprendre/pratique et src/components : pages sources Astro et mini-lecteur mobile synchronisé.',
 '- docs/ateliers : référentiels obligatoires et étalon Lok Lak.',
-'','**Aucun ancien MP3 des cinq scripts corriges n'est fourni comme s'il correspondait aux nouveaux textes. Aucune nouvelle synthese, aucun deploiement OVH ni publication Meta.**');
+'','**Aucun ancien MP3 des cinq scripts corrigés n’est fourni comme s’il correspondait aux nouveaux textes. Aucune nouvelle synthese, aucun deploiement OVH ni publication Meta.**');
 writeFileSync(join(base,'LIRE-EN-PREMIER.md'),summary.join('\n')+'\n');
 console.log('EXPORT_SIX_COURSES_SUCCESS',names.length,'courses,',summary.filter(x=>x.includes('| OUI, préécoute')).length,'V2 recordings');
