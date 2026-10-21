@@ -53,7 +53,7 @@ jobs:
           if(guide.audio.status!=='script_only'||!guide.audio.editorialTextApproved||!guide.review.editorialValidated){
             throw Error('Unexpected editorial status or current recording');
           }
-          const sentences=guide.audio.intro.trim().split(/(?<=[.!?…])\\s+/u);
+          const sentences=guide.audio.intro.trim().split(/(?<=[.!?…])\s+/u);
           let part='';
           for(const sentence of sentences){
             if(part&&part.length+sentence.length+1>480)break;
