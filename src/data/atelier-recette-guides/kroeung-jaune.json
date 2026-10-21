@@ -36,7 +36,7 @@
   "sources": {
     "recipeSource": "/recettes/kroeung-jaune/",
     "culturalNote": "La pâte aromatique kroeung se rencontre sous différentes compositions ; l'atelier reprend uniquement la version jaune déjà documentée dans le site. Vérifié le 21 octobre 2026 : Chef Nak propose un ordre de pilage où le galanga précède la citronnelle ; Cambodianess signale aussi des variantes d'ingrédients. Aucun ordre unique n'est présenté comme obligatoire.",
-    "pedagogicalAdaptation": "Ce parcours approfondit la recette Kroeung jaune : organisation du plan de travail, tailles des aromates, pilage en plusieurs apports, observation de la texture et conditionnement final. Les quantités proviennent de la recette de référence.",
+    "pedagogicalAdaptation": "Ce parcours approfondit la recette Kroeung jaune : organisation du plan de travail, tailles des aromates, pilage en plusieurs apports, observation de la texture et mise en pot et conservation. Les quantités proviennent de la recette de référence.",
     "culinaryReferences": [
       {
         "title": "Chef Nak — Cambodian Kroeung",
@@ -163,7 +163,7 @@
     },
     {
       "id": "terminer",
-      "title": "Conditionner la pâte et retenir le geste",
+      "title": "Mettre le kroeung en pot et retenir le geste",
       "minutes": 2,
       "ingredientNames": [],
       "actions": [
@@ -176,7 +176,7 @@
       "recovery": "Employez-la comme aromate dans une recette complète, par exemple un amok correctement cuit.",
       "learning": "Le geste peut être réutilisé dans plusieurs recettes cambodgiennes.",
       "audioScript": "Et voilà, notre kroeung jaune est prêt. Raclez la pâte avec une spatule propre, rassemblez-la dans un récipient parfaitement propre et refermez-le. Évitez d'y remettre une cuillère qui a touché d'autres aliments. Cette préparation aromatique doit être conservée au frais et utilisée rapidement, ou congelée en petites portions bien étiquetées si vous voulez en garder pour un autre jour. Ne laissez pas le pot attendre sur le plan de travail après l'atelier ; les durées exactes de conservation dépendent de la préparation et des conditions d'hygiène. Ce n'est pas une préparation qu'on déguste à la petite cuillère. Lors de votre prochain plat mijoté, vous pourrez l'incorporer selon la recette choisie et laisser les arômes se développer à la cuisson. J'aimerais que vous reteniez trois gestes : couper très fin avant de piler, travailler les fibres dures avant les aromates tendres, et juger la texture avec les yeux et la cuillère plutôt qu'avec un chronomètre. Même si votre pâte n'est pas aussi fine que celle d'un chef au premier essai, ces critères vous donnent une vraie façon de progresser. Merci d'avoir cuisiné avec moi. À bientôt pour utiliser ce kroeung dans un plat, et bonne cuisine !",
-      "pausePrompt": "Terminez le conditionnement de la pâte avant de passer à une autre recette.",
+      "pausePrompt": "Terminez la mise en pot de la pâte avant de passer à une autre recette.",
       "safety": "Gardez la préparation propre et au frais avant son utilisation."
     }
   ],
@@ -229,7 +229,7 @@
         },
         {
           "id": "terminer",
-          "title": "Conditionner la pâte et retenir le geste",
+          "title": "Mettre le kroeung en pot et retenir le geste",
           "startSec": 118.008,
           "endSec": 137.52
         }
@@ -280,7 +280,7 @@
         },
         {
           "id": "terminer",
-          "title": "Conditionner la pâte et retenir le geste",
+          "title": "Mettre le kroeung en pot et retenir le geste",
           "startSec": 584.016,
           "endSec": 670.08
         }
