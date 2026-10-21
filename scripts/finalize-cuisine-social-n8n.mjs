@@ -101,6 +101,35 @@ export function summarizeChildResult(result) {
   if (result.status === 0) return { status: 'PASS', proof: 'safe synchronizer completed' };
   return { status: 'FAIL', proof: 'safe synchronizer stopped; consult its terminal output (no automatic retry)' };
 }
+const repairNodeNames = new Set(['Persister la décision humaine', 'Persister publication Instagram']);
+
+export function summarizeCredentialRepairResult(result) {
+  if (result.error?.code === 'ETIMEDOUT') return { status: 'FAIL', reason: 'CREDENTIAL_REPAIR_TIMEOUT' };
+  const line = String(result.stdout || '').split(/\r?\n/)
+    .find(item => item.startsWith('CREDENTIAL_REPAIR_RESULT '));
+  if (!line) return { status: 'FAIL', reason: 'CREDENTIAL_REPAIR_REPORT_MISSING' };
+  try {
+    const parsed = JSON.parse(line.slice('CREDENTIAL_REPAIR_RESULT '.length));
+    assert.ok(['PASS', 'FAIL'].includes(parsed.status), 'Invalid repair status');
+    assert.equal(parsed.synchronizationRepeated, false, 'General synchronization was unexpectedly repeated');
+    if (parsed.status === 'FAIL') {
+      assert.match(parsed.reason, /^[A-Z0-9_]+$/, 'Unsafe repair failure reason');
+      return { status: 'FAIL', reason: parsed.reason, synchronizationRepeated: false };
+    }
+    assert.equal(parsed.postgresReferenceCount, 9, 'Unexpected PostgreSQL reference count');
+    assert.equal(parsed.workflowsInactive, true, 'Workflow inactivity was not verified');
+    assert.ok([0, 1, 2].includes(parsed.backupsCreated), 'Unexpected backup count');
+    assert.equal(parsed.corrections.length, 2, 'Unexpected credential correction count');
+    for (const item of parsed.corrections) {
+      assert.match(item.workflow, /^Workflow 0[13]$/, 'Unexpected workflow in repair result');
+      assert.ok(repairNodeNames.has(item.node), 'Unexpected node in repair result');
+      assert.ok(['attach-existing', 'already-correct'].includes(item.action), 'Unexpected repair action');
+    }
+    return parsed;
+  } catch {
+    return { status: 'FAIL', reason: 'CREDENTIAL_REPAIR_REPORT_INVALID' };
+  }
+}
 
 function safeFailure(error) {
   const message = String(error?.message || '');
@@ -115,6 +144,13 @@ function runSynchronizer(apply) {
     cwd: process.cwd(), env: process.env, encoding: 'utf8', timeout: 180000, maxBuffer: 1024 * 1024,
   });
   return summarizeChildResult(result);
+}
+function runCredentialRepair() {
+  const result = spawnSync(process.execPath,
+    ['scripts/repair-cuisine-n8n-postgres-credentials.mjs', '--apply'], {
+      cwd: process.cwd(), env: process.env, encoding: 'utf8', timeout: 120000, maxBuffer: 1024 * 1024,
+    });
+  return summarizeCredentialRepairResult(result);
 }
 
 function makeClient() {
@@ -189,25 +225,33 @@ function writeReport(report) {
 }
 
 export async function main(args = process.argv.slice(2)) {
-  assert.ok(args.every(arg => arg === '--apply-safe') && args.length <= 1,
-    'Only optional --apply-safe is allowed');
+  assert.ok(args.every(arg => ['--apply-safe', '--repair-postgres-credentials'].includes(arg)) && args.length <= 1,
+    'Only one optional safe operation is allowed');
   const applySafe = args.includes('--apply-safe');
-  const report = { schemaVersion: 1, generatedAt: new Date().toISOString(), mode: applySafe ? 'apply-safe' : 'read-only',
+  const repairCredentials = args.includes('--repair-postgres-credentials');
+  const mode = repairCredentials ? 'repair-postgres-credentials' : (applySafe ? 'apply-safe' : 'read-only');
+  const report = { schemaVersion: 2, generatedAt: new Date().toISOString(), mode,
     safeguards: { workflowsActivated: false, workflowsExecuted: false, emailsSent: false, metaCallsMade: false, credentialsLogged: false },
-    synchronization: [], workflows: [], components: [], verdict: 'BLOQUÉ' };
+    synchronization: [], credentialRepair: null, workflows: [], components: [], verdict: 'BLOQUÉ' };
   try {
-    const dryRun = runSynchronizer(false);
-    report.synchronization.push({ phase: 'preflight dry-run', ...dryRun });
-    if (dryRun.status !== 'PASS') throw new Error('preflight failed');
-    if (applySafe) {
-      const apply = runSynchronizer(true);
-      report.synchronization.push({ phase: 'reviewed technical changes only', ...apply });
-      if (apply.status !== 'PASS') throw new Error('safe apply failed');
-    }
-    const finalDryRun = runSynchronizer(false);
-    report.synchronization.push({ phase: 'final idempotence dry-run', ...finalDryRun });
-    if (finalDryRun.status !== 'PASS') throw new Error('final dry-run failed');
-    const live = await loadLiveWorkflows(makeClient());
+    if (repairCredentials) {
+      report.synchronization.push({ phase: 'general synchronization', status: 'PASS',
+        proof: 'not repeated; prior successful synchronization retained' });
+      report.credentialRepair = runCredentialRepair();
+      if (report.credentialRepair.status !== 'PASS') throw new Error('credential repair failed');
+    } else {
+      const dryRun = runSynchronizer(false);
+      report.synchronization.push({ phase: 'preflight dry-run', ...dryRun });
+      if (dryRun.status !== 'PASS') throw new Error('preflight failed');
+      if (applySafe) {
+        const apply = runSynchronizer(true);
+        report.synchronization.push({ phase: 'reviewed technical changes only', ...apply });
+        if (apply.status !== 'PASS') throw new Error('safe apply failed');
+      }
+      const finalDryRun = runSynchronizer(false);
+      report.synchronization.push({ phase: 'final idempotence dry-run', ...finalDryRun });
+      if (finalDryRun.status !== 'PASS') throw new Error('final dry-run failed');
+    }    const live = await loadLiveWorkflows(makeClient());
     report.workflows = live.map(inspectLiveWorkflow);
     report.components = reportComponents(report.workflows);
     report.verdict = report.components.some(item => item.status === 'FAIL') ? 'BLOQUÉ' :

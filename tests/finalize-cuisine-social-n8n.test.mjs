@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { inspectLiveWorkflow, summarizeChildResult, workflowNames } from '../scripts/finalize-cuisine-social-n8n.mjs';
+import { inspectLiveWorkflow, summarizeChildResult, summarizeCredentialRepairResult,
+  workflowNames } from '../scripts/finalize-cuisine-social-n8n.mjs';
 
 const load = filename => JSON.parse(readFileSync(new URL('../automation/n8n/' + filename, import.meta.url), 'utf8'));
 const names = ['01-drafts-email-approval.json', '02-publish-approved.json', '03-reconcile-instagram.json'];
@@ -59,4 +60,19 @@ test('child-process results stay coarse and do not retain child output', () => {
     { status: 'PASS', proof: 'safe synchronizer completed' });
   assert.deepEqual(summarizeChildResult({ status: 1, stdout: 'secret', stderr: 'secret' }),
     { status: 'FAIL', proof: 'safe synchronizer stopped; consult its terminal output (no automatic retry)' });
+});
+test('credential repair summary accepts only the safe nine-reference result', () => {
+  const safe = { status: 'PASS', corrections: [
+    { workflow: 'Workflow 01', node: 'Persister la décision humaine', action: 'attach-existing' },
+    { workflow: 'Workflow 03', node: 'Persister publication Instagram', action: 'attach-existing' },
+  ], postgresReferenceCount: 9, workflowsInactive: true, backupsCreated: 2,
+  synchronizationRepeated: false };
+  assert.deepEqual(summarizeCredentialRepairResult({ stdout:
+    'CREDENTIAL_REPAIR_RESULT ' + JSON.stringify(safe) + '\n', status: 0 }), safe);
+  assert.deepEqual(summarizeCredentialRepairResult({ stdout:
+    'CREDENTIAL_REPAIR_RESULT ' + JSON.stringify({ status: 'FAIL',
+      reason: 'EXISTING_CREDENTIAL_IDS_DIVERGE', synchronizationRepeated: false }) + '\n', status: 1 }),
+  { status: 'FAIL', reason: 'EXISTING_CREDENTIAL_IDS_DIVERGE', synchronizationRepeated: false });
+  assert.deepEqual(summarizeCredentialRepairResult({ stdout: 'secret output', status: 1 }),
+    { status: 'FAIL', reason: 'CREDENTIAL_REPAIR_REPORT_MISSING' });
 });
