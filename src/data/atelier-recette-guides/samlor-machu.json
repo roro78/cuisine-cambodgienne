@@ -74,7 +74,7 @@
         "Réunissez le tamarin, la sauce de poisson, le sucre, les tomates, l'ananas ou la courgette et les herbes de la recette avant d'ouvrir le paquet de protéine."
       ],
       "observe": "Le bouillon est clair et peu salé ; les ingrédients sont regroupés séparément.",
-      "check": "Le poste est prêt et la source d'acidité est identifiée.",
+      "check": "Le plan de travail est prêt et la source d'acidité est identifiée.",
       "mistake": "Utiliser un bouillon déjà très salé risque de déséquilibrer la soupe plus tard.",
       "recovery": "Diluez d'abord un bouillon concentré selon son étiquette ou choisissez un bouillon peu salé.",
       "learning": "Une soupe acidulée équilibrée commence par un bouillon qui laisse de la place au tamarin.",
@@ -93,7 +93,7 @@
         "1 petite poignée de coriandre fraîche ou de basilic asiatique"
       ],
       "actions": [
-        "Coupez les le poisson ou le poulet pesé sur la fiche en morceaux réguliers ; tranchez les les tomates prévues et détaillez l'ananas en dés, ou la courgette selon la variante choisie.",
+        "Coupez le poisson ou le poulet pesé sur la fiche en morceaux réguliers ; coupez les tomates prévues et détaillez l'ananas en dés, ou la courgette selon la variante choisie.",
         "Préparez le jus de tamarin filtré mesuré sur la fiche, lavez les herbes fraîches puis réservez-les séparément pour les ajouter uniquement en finition."
       ],
       "observe": "Les morceaux ont des tailles proches et le tamarin est liquide, sans grosses fibres.",
@@ -159,7 +159,7 @@
       "check": "Vous distinguez une acidité nette, un salé présent mais modéré et une pointe de douceur.",
       "mistake": "Verser tout le tamarin d'un coup rend difficile de revenir en arrière.",
       "recovery": "Réservez d'abord une partie du tamarin, goûtez, puis ajoutez-en peu à peu selon le résultat.",
-      "learning": "L'équilibre aigre, salé et doux se construit par petites corrections mesurées.",
+      "learning": "L'équilibre entre acidité, sel et douceur se règle en goûtant et en ajustant les assaisonnements progressivement.",
       "audioScript": "C'est ici qu'on apprend le vrai équilibre du Samlor Machu. Une fois la garniture cuite sans risque, prélevez un peu de bouillon avec une cuillère propre et laissez-le tiédir avant de goûter. Commencez par une petite partie du jus de tamarin déjà mesuré sur votre fiche, mélangez doucement et goûtez de nouveau. Cherchez une acidité nette, fruitée, qui réveille le palais mais laisse encore percevoir le fond et les légumes. Si vous versez tout d'un coup, impossible de retirer le tamarin ; on peut seulement diluer, au prix d'un changement de texture et de concentration. Ajoutez ensuite la sauce de poisson, qui apporte le salé, puis le sucre pour arrondir, toujours selon les quantités indiquées. Comparez après chaque apport, pas les trois à la fois. Une soupe trop acide ? Ajoutez un peu de bouillon peu salé ou d'eau chaude, puis réévaluez doucement le sucre. Trop salée ? La dilution est plus efficace qu'une dose supplémentaire de sucre ; surveillez la quantité totale de soupe. Trop fade ? Vérifiez d'abord si c'est de l'acidité, du sel ou du parfum qui manque. N'ajoutez jamais une seconde fois l'ensemble des assaisonnements par automatisme. Laissez le bouillon revenir à température de service et vérifiez que tous les éléments cuits sont prêts. Vous pouvez prendre un moment pour goûter et corriger ; ensuite, nous finirons aux herbes.",
       "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
       "safety": "Laissez refroidir la cuillère prélevée avant de goûter pour éviter toute brûlure."
@@ -185,7 +185,7 @@
   ],
   "audio": {
     "mode": "guided-cooking",
-    "status": "generated_review_pending",
+    "status": "script_only",
     "voice": "coral",
     "intro": "Bonjour ! Aujourd'hui, je vous accompagne pour préparer un Samlor Machu, cette soupe cambodgienne acidulée qui demande de la précision, mais pas de complication. On va cuire une garniture de poisson ou de poulet dans un bouillon léger, ajouter les légumes, puis équilibrer le tamarin, la sauce de poisson et une touche de sucre. Notre grand savoir-faire du jour : obtenir une acidité vive sans rendre la soupe agressive. Choisissez le nombre de convives sur la fiche et préparez les quantités qui s'affichent ; je ne prononcerai pas les portions dans l'audio. Il nous faut une grande casserole, une louche, une planche, un couteau, un tamis et un petit bol si le tamarin est à filtrer, un thermomètre de cuisine et des bols résistants à la chaleur. Nous travaillerons avec un bouillon réellement préparé ou prêt à l'emploi, pas avec un fond mystérieux. Vous pouvez mettre pause pour couper, filtrer ou vérifier une cuisson : l'enregistrement continue tant que vous ne l'arrêtez pas vous-même. Allez, on prépare cette soupe ensemble.",
     "publicProviderMention": false,
@@ -240,7 +240,7 @@
       "scriptSha256": "e74414199e4c7778d9c89df1e117fece9ccb7b90ca7e7452b944ce79545a401d"
     },
     "storyboardVersion": 2,
-    "asset": {
+    "supersededV2Asset": {
       "audioUrl": "/audio/workshops/samlor-machu-soupe-acidulee-guidee/atelier-coral-v2.mp3",
       "durationSec": 673.32,
       "sha256": "0846b9969bf2d204722c48eae791d335252261952416aeb874e8c6dcfe1fecde",
@@ -289,7 +289,8 @@
         }
       ],
       "scriptSha256": "37e67bde6104f46054d31e3254a17aee883b91c21aaaf369e226859ab8d27a68"
-    }
+    },
+    "editorialTextApproved": false
   },
   "media": {
     "finishedPreparationImage": "",
