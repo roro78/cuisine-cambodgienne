@@ -102,7 +102,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
         <p class="fca-intro">{guide.finalPreparation}</p>
         <p class="fca-objective">{guide.learningGoal}</p>
         <dl class="fca-facts">
-          <div><dt>Préparation guidée</dt><dd>{minutes} min indicatives</dd></div>
+          <div><dt>Durée estimée de l’atelier</dt><dd>{minutes} min indicatives</dd></div>
           <div><dt>Rendement sélectionné</dt><dd data-workshop-servings-hero>{recipe.baseServings} {guide.sourceRecipeSlug==='samlor-machu'||guide.sourceRecipeSlug==='kuy-teav'||guide.sourceRecipeSlug==='num-banh-chok'?'bols':'assiettes'}</dd></div>
           <div><dt>Niveau</dt><dd>{guide.difficulty}</dd></div>
         </dl>
@@ -179,10 +179,11 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
 
     <section class="fca-section" id="atelier" aria-labelledby="fca-steps-heading">
       <p class="fca-eyebrow">02 · Pratiquer</p>
-      <h2 id="fca-steps-heading">Vos six phases de cuisine.</h2>
+      <h2 id="fca-steps-heading">La recette, étape par étape.</h2>
+      <p><strong>Repère de durée :</strong> {guide.duration.waitingNote}</p>
       <p>Respectez l’ordre des préparations et vérifiez les repères avant de poursuivre. {guide.sourceRecipeSlug==='lok-lak' ? 'Prévoyez environ vingt minutes de marinade au réfrigérateur : profitez-en pour préparer les crudités et le condiment.' : ''} La recette reste entièrement accessible par écrit, même sans MP3.</p>
-      {guideAudio ? <CookingWorkshopAudio manifest={guideAudio} scripts={audioTexts} /> : <p class="fca-preview">Le guide vocal en sept chapitres sera accessible en préécoute dès la génération technique.</p>}
-      <nav class="fca-steps-nav" aria-label="Aller directement à une phase">
+      {guideAudio ? <CookingWorkshopAudio manifest={guideAudio} scripts={audioTexts} /> : <p class="fca-preview">La narration sera proposée après validation des textes et nouvel enregistrement.</p>}
+      <nav class="fca-steps-nav" aria-label="Aller directement à une étape">
         {guide.phases.map((phase, i) => (
           <a href={'#phase-' + phase.id}><span>{String(i+1).padStart(2,'0')}</span>{phase.title}</a>
         ))}
@@ -192,13 +193,13 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
           <article class="fca-step" id={'phase-' + phase.id} aria-labelledby={'fca-step-'+phase.id}>
             <header class="fca-step-head">
               <span>{String(i+1).padStart(2,'0')}</span>
-              <div><p class="fca-eyebrow">Phase {i+1} sur 6 · {phase.minutes} min estimatives</p><h3 id={'fca-step-'+phase.id}>{phase.title}</h3></div>
+              <div><p class="fca-eyebrow">Étape {i+1} sur 6 · environ {phase.minutes} min</p><h3 id={'fca-step-'+phase.id}>{phase.title}</h3></div>
             </header>
             <div class="fca-step-grid">
               <div>
                 <h4>Ce que vous faites</h4>
                 <ol>{phase.actions.map((action) => <li>{action}</li>)}</ol>
-                {phase.ingredientNames.length>0 && <p class="fca-used"><strong>Ingrédients de cette phase :</strong> {guide.sourceRecipeSlug==='lok-lak' && phase.id==='assembler' ? 'tomate · concombre · feuilles de salade · citrons verts · poivre de Kampot (quantités ci-dessus)' : phase.ingredientNames.join(' · ')}</p>}
+                {phase.ingredientNames.length>0 && <p class="fca-used"><strong>Ingrédients de cette étape :</strong> {guide.sourceRecipeSlug==='lok-lak' && phase.id==='assembler' ? 'tomate · concombre · feuilles de salade · citrons verts · poivre de Kampot (quantités ci-dessus)' : phase.ingredientNames.join(' · ')}</p>}
               </div>
               <aside class="fca-observe" aria-label={'Repères : '+phase.title}>
                 <p class="fca-eyebrow">À observer</p><p>{phase.observe}</p>
@@ -208,7 +209,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
             </div>
             <div class="fca-why"><strong>Ce que vous apprenez</strong><span>{phase.learning}</span></div>
             <p class="fca-safety"><strong>Précaution :</strong> {phase.safety}</p>
-            {i < guide.phases.length-1 && <a class="fca-next" href={'#phase-'+guide.phases[i+1].id}>Passer à la phase suivante →</a>}
+            {i < guide.phases.length-1 && <a class="fca-next" href={'#phase-'+guide.phases[i+1].id}>Passer à l’étape suivante →</a>}
           </article>
         ))}
       </div>
