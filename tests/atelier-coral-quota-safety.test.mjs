@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+// Strictly offline regression suite. It must NEVER send a request to Render/OpenAI.
+import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
+import {readFileSync,writeFileSync,mkdirSync,rmSync,existsSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {dirname,join} from 'node:path';
+const slug='num-banh-chok';
+const base=['scripts/bridge-cooking-workshops-coral.mjs','--atelier='+slug,'--edition=approved-v3'];
+const call=(a)=>spawnSync(process.execPath,[...base,...a],{encoding:'utf8',timeout:30000});
+const goodPlan=call(['--plan']);
+assert.equal(goodPlan.status,0,'Offline plan should pass');
+assert.match(goodPlan.stdout,/v3 25 segments/);
+const check=call(['--check']);
+assert.equal(check.status,0,'Offline safety check should pass');
+const multi=call(['--one=intro']);
+assert.notEqual(multi.status,0);
+assert.match(multi.stderr,/STOP QUOTA/,'Whole chapter MUST NOT trigger a sequence of paid requests');
+const illegal=call(['--one=intro','--part=999']);
+assert.notEqual(illegal.status,0);
+assert.match(illegal.stderr,/Partie inexistante/);
+const guide=JSON.parse(readFileSync('src/data/atelier-recette-guides/'+slug+'.json','utf8'));
+const sentenceList=guide.audio.intro.trim().split(/(?<=[.!?…])\s+/u);
+let first='';
+for(const sentence of sentenceList){
+  if(first && first.length+sentence.length+1>480)break;
+  first+=(first?' ':'')+sentence;
+}
+assert.ok(first.length>0&&first.length<=480);
+const tag=createHash('sha256').update(first).digest('hex').slice(0,16);
+const marker=join('.tmp-cooking-coral',guide.slug,'v3','intro-part-01-'+tag+'.mp3.uncertain.json');
+assert.equal(existsSync(marker),false,'No prior ambiguous request should already be present in clean CI');
+mkdirSync(dirname(marker),{recursive:true});
+try{
+  writeFileSync(marker,JSON.stringify({status:'uncertain_paid_request',retryAuthorized:false})+'\n');
+  const guarded=call(['--one=intro','--part=1']);
+  assert.notEqual(guarded.status,0);
+  assert.match(guarded.stderr,/STOP QUOTA/);
+  const offlineCheck=call(['--check']);
+  assert.notEqual(offlineCheck.status,0);
+  assert.match(offlineCheck.stderr,/STOP QUOTA/);
+} finally{
+  rmSync(marker,{force:true});
+}
+console.log('PASS: NO_NETWORK_NO_TTS cost guard, single segment, uncertain marker and offline preflight');
