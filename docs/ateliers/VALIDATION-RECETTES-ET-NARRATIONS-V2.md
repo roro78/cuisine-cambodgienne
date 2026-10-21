@@ -179,7 +179,7 @@ Continuez jusqu’à ne presque plus sentir de gros morceaux sous le pilon.
 
 **Précaution :** Ne goûtez pas le mélange cru comme un plat terminé.
 
-### Temps de cuisine 6 — Conditionner la pâte et retenir le geste
+### Temps de cuisine 6 — Mettre le kroeung en pot et retenir le geste
 
 **Gestes :**
 
@@ -226,7 +226,7 @@ Voici le cœur de l'atelier : faire passer notre base fibreuse au stade d'une p�
 
 Avant de ranger le pilon, faisons le test de la cuillère. Prélevez une petite portion de pâte avec une cuillère propre, étalez-la légèrement sur le dos de la cuillère et regardez ce qui se passe. Une bonne pâte est humide, assez homogène, et se tient sans laisser de longues fibres visibles. Si un fil de citronnelle dépasse, c'est un indice utile : remettez cette partie dans le mortier et pilez encore, ou coupez les fibres récalcitrantes avant de recommencer. Si des petits éclats de galanga restent durs, le même principe s'applique. Inutile d'ajouter beaucoup de liquide : vous affaibliriez la concentration aromatique et la pâte se conserverait moins facilement. Si au contraire la pâte est déjà très humide parce que les échalotes ont rendu leur eau, travaillez-la en petites portions pour mieux répartir les fibres plutôt que d'ajouter un ingrédient non prévu. Approchez la cuillère de votre nez : on doit distinguer une fraîcheur citronnée, puis le caractère terreux du curcuma, sans odeur anormale. Le parfum seul ne garantit évidemment pas l'innocuité. N'allez pas goûter cette préparation crue comme si c'était une sauce prête à servir : notre kroeung est destiné à entrer dans un plat cuisiné. Vérifiez votre résultat calmement ; la bonne correction est celle que vous comprenez. Si nécessaire, faites pause pour achever le dernier pilage.
 
-### Chapitre 7 sur 7 — Conditionner la pâte et retenir le geste
+### Chapitre 7 sur 7 — Mettre le kroeung en pot et retenir le geste
 
 Et voilà, notre kroeung jaune est prêt. Raclez la pâte avec une spatule propre, rassemblez-la dans un récipient parfaitement propre et refermez-le. Évitez d'y remettre une cuillère qui a touché d'autres aliments. Cette préparation aromatique doit être conservée au frais et utilisée rapidement, ou congelée en petites portions bien étiquetées si vous voulez en garder pour un autre jour. Ne laissez pas le pot attendre sur le plan de travail après l'atelier ; les durées exactes de conservation dépendent de la préparation et des conditions d'hygiène. Ce n'est pas une préparation qu'on déguste à la petite cuillère. Lors de votre prochain plat mijoté, vous pourrez l'incorporer selon la recette choisie et laisser les arômes se développer à la cuisson. J'aimerais que vous reteniez trois gestes : couper très fin avant de piler, travailler les fibres dures avant les aromates tendres, et juger la texture avec les yeux et la cuillère plutôt qu'avec un chronomètre. Même si votre pâte n'est pas aussi fine que celle d'un chef au premier essai, ces critères vous donnent une vraie façon de progresser. Merci d'avoir cuisiné avec moi. À bientôt pour utiliser ce kroeung dans un plat, et bonne cuisine !
 
@@ -342,7 +342,7 @@ Répartissez le riz jasmin chaud dans quatre assiettes. Déposez le porc entièr
 
 **Gestes :**
 
-- Épluchez et hachez les les gousses d'ail prévues sur la fiche, puis disposez les tranches fines de porc mesurées selon la fiche dans un saladier réservé à la viande.
+- Épluchez et hachez les gousses d'ail prévues sur la fiche, puis disposez les tranches fines de porc mesurées selon la fiche dans un saladier réservé à la viande.
 - Vérifiez que les tranches ne sont pas trop épaisses et qu'elles peuvent être étalées dans la poêle en plusieurs fournées si nécessaire.
 
 **Observer :** L'ail est finement haché et les tranches de porc sont assez régulières.
@@ -816,8 +816,8 @@ Rincez les pousses de soja et la coriandre, puis émincez la coriandre et les de
 
 **Gestes :**
 
-- Séparez les la quantité de porc haché ou émincé adaptée aux convives en morceaux qui pourront cuire complètement dans le bouillon frémissant.
-- Rincez les pousses de soja et la coriandre, émincez les les ciboules prévues et préparez les quartiers de citron vert dans un plat propre, loin du porc cru.
+- Séparez la quantité de porc haché ou émincé adaptée aux convives en morceaux qui pourront cuire complètement dans le bouillon frémissant.
+- Rincez les pousses de soja et la coriandre, émincez les ciboules prévues et préparez les quartiers de citron vert dans un plat propre, loin du porc cru.
 
 **Observer :** Les petits morceaux de porc sont prêts et les herbes, pousses et citron sont distincts.
 
@@ -835,7 +835,7 @@ Rincez les pousses de soja et la coriandre, puis émincez la coriandre et les de
 
 **Gestes :**
 
-- Versez les le bouillon mesuré sur la fiche dans la casserole, ajoutez la sauce de poisson mesurée sur la fiche et une cuillère à café de sucre.
+- Versez le bouillon mesuré sur la fiche dans la casserole, ajoutez la sauce de poisson mesurée sur la fiche et une cuillère à café de sucre.
 - Portez à petit frémissement puis maintenez cette température sans faire réduire fortement le liquide, en surveillant le niveau dans la casserole.
 
 **Observer :** Le bouillon reste relativement clair, avec de petites bulles et un niveau stable.
@@ -873,7 +873,7 @@ Rincez les pousses de soja et la coriandre, puis émincez la coriandre et les de
 
 **Gestes :**
 
-- Dans l'autre casserole, faites cuire les les nouilles de riz mesurées sur la fiche conformément aux indications du paquet ; égouttez-les aussitôt et répartissez-les dans des bols.
+- Dans l'autre casserole, faites cuire les nouilles de riz mesurées sur la fiche conformément aux indications du paquet ; égouttez-les aussitôt et répartissez-les dans des bols.
 - Une fois le porc bien cuit, goûtez une petite quantité de bouillon légèrement refroidie et ajustez seulement si nécessaire sans ajouter automatiquement plus de sel.
 
 **Observer :** Les nouilles sont tendres, séparées ; le bouillon garde son parfum sans être trop salé.
@@ -921,7 +921,7 @@ On se donne un plan de travail bien organisé. Posez deux casseroles sur la plaq
 
 ### Chapitre 3 sur 7 — Préparer le porc et la garniture végétale
 
-Préparons maintenant les éléments qui finiront dans le bol. Sortez le porc frais juste avant de le travailler. S'il est haché, défaites les blocs en petites portions pour qu'il n'y ait pas de grosses boulettes crues au milieu. S'il est émincé, faites de fines lanières régulières, suffisamment petites pour cuire dans le bouillon frémissant. Ne tranchez pas sur la même planche que les crudités sans avoir lavé planche, couteau et mains. Rincez les pousses de soja et les feuilles de coriandre dans de l'eau potable, puis égouttez-les soigneusement. Émincez la ciboule en fines rondelles et préparez des quartiers de citron vert. Ne pressez pas tous les citrons dans le bouillon maintenant : chacun ajustera l'acidité à table. Les pousses de soja se servent fraîches dans certaines versions ; pour les personnes vulnérables, notamment femmes enceintes ou personnes immunodéprimées, préférez les cuire à cœur plutôt que les servir crues, car les graines germées présentent des risques microbiologiques. Placez les garnitures sur un plat propre séparé. Vérifiez vos nouilles : fraîches ou sèches, elles n'ont pas toujours le même temps de cuisson. Lisez le paquet avant d'allumer le feu. Prenez le temps de terminer vos découpes et faites pause si besoin. Nous allons commencer avec un bouillon clair.
+Préparons maintenant les éléments qui finiront dans le bol. Sortez le porc frais juste avant de le travailler. S'il est haché, séparez le porc haché en petites portions pour qu'il n'y ait pas de grosses boulettes crues au milieu. S'il est émincé, faites de fines lanières régulières, suffisamment petites pour cuire dans le bouillon frémissant. Ne tranchez pas sur la même planche que les crudités sans avoir lavé planche, couteau et mains. Rincez les pousses de soja et les feuilles de coriandre dans de l'eau potable, puis égouttez-les soigneusement. Émincez la ciboule en fines rondelles et préparez des quartiers de citron vert. Ne pressez pas tous les citrons dans le bouillon maintenant : chacun ajustera l'acidité à table. Les pousses de soja se servent fraîches dans certaines versions ; pour les personnes vulnérables, notamment femmes enceintes ou personnes immunodéprimées, préférez les cuire à cœur plutôt que les servir crues, car les graines germées présentent des risques microbiologiques. Placez les garnitures sur un plat propre séparé. Vérifiez vos nouilles : fraîches ou sèches, elles n'ont pas toujours le même temps de cuisson. Lisez le paquet avant d'allumer le feu. Prenez le temps de terminer vos découpes et faites pause si besoin. Nous allons commencer avec un bouillon clair.
 
 ### Chapitre 4 sur 7 — Assaisonner le bouillon sans le réduire
 
@@ -1071,7 +1071,7 @@ Blanchissez les 100 g de haricots verts fins dans l’eau bouillante jusqu’à 
 **Gestes :**
 
 - Mettez le poisson blanc dans une casserole d'eau à petit frémissement et laissez-le cuire complètement sans le malmener à forte ébullition.
-- Égouttez le poisson cuit, vérifiez et retirez les éventuelles arêtes, puis émiettez délicatement les les quantités prévues à l'aide d'une fourchette propre.
+- Égouttez le poisson cuit, vérifiez et retirez les éventuelles arêtes, puis émiettez délicatement le poisson à l'aide d'une fourchette propre.
 
 **Observer :** Le poisson se détache en morceaux souples et ne présente plus de parties crues.
 
@@ -1108,8 +1108,8 @@ Blanchissez les 100 g de haricots verts fins dans l’eau bouillante jusqu’à 
 
 **Gestes :**
 
-- Faites cuire les les nouilles de riz mesurées sur la fiche selon les instructions du paquet, puis égouttez-les et rincez-les brièvement à l'eau fraîche pour stopper leur cuisson.
-- Blanchissez les les haricots verts fins mesurés sur la fiche dans de l'eau bouillante jusqu'à ce qu'ils soient tendres, refroidissez-les et égouttez-les ; ajustez l'épaisseur de la sauce avec un peu d'eau chaude si nécessaire.
+- Faites cuire les nouilles de riz mesurées sur la fiche selon les instructions du paquet, puis égouttez-les et rincez-les brièvement à l'eau fraîche pour stopper leur cuisson.
+- Blanchissez les haricots verts fins mesurés sur la fiche dans de l'eau bouillante jusqu'à ce qu'ils soient tendres, refroidissez-les et égouttez-les ; ajustez l'épaisseur de la sauce avec un peu d'eau chaude si nécessaire.
 
 **Observer :** Les nouilles se séparent sans coller et la sauce reste assez fluide pour les enrober.
 
@@ -1160,11 +1160,11 @@ Commençons par les légumes, pendant que tout est encore propre. Lavez les herb
 
 ### Chapitre 4 sur 7 — Pocher et émietter le poisson blanc
 
-Remplissez une casserole d'eau potable en quantité suffisante pour couvrir le poisson ; cette eau est nécessaire à la technique mais ne fait pas partie d'une quantité de bouillon de service imposée par la recette. Chauffez jusqu'à un petit frémissement. Posez doucement le poisson dans le liquide ; on veut une cuisson calme qui respecte les fibres de la chair. Une ébullition agressive peut casser les morceaux et les dessécher. Surveillez le plus épais plutôt que de faire confiance à un temps universel. Pour le poisson, la température de référence USDA est de soixante-trois degrés à cœur ; un thermomètre est préférable. La chair doit pouvoir se séparer en lamelles, mais ce repère visuel ne remplace pas toujours un contrôle de température. Sortez le poisson dans un récipient propre avec une écumoire et laissez-le tiédir juste assez pour pouvoir le manipuler sans vous brûler. Égouttez et émiettez avec une fourchette ; vérifiez soigneusement les éventuelles arêtes, surtout si les morceaux proviennent d'un poisson avec peau et squelette. Rien ne doit finir dans le bol par accident. Si la chair s'écrase totalement, réduisez la durée la prochaine fois, mais ne servez jamais un centre encore cru. Réservez cette chair cuite au chaud, sans la laisser attendre longuement à température ambiante. Vous pouvez faire pause pour finir le contrôle des arêtes. Passons ensuite au kroeung et au coco.
+Remplissez une casserole d'eau potable en quantité suffisante pour couvrir le poisson ; cette eau sert seulement à pocher le poisson ; elle ne sera pas versée dans les bols. Chauffez jusqu'à un petit frémissement. Posez doucement le poisson dans le liquide ; on veut une cuisson calme qui respecte les fibres de la chair. Une ébullition agressive peut casser les morceaux et les dessécher. Surveillez le plus épais plutôt que de faire confiance à un temps universel. Pour le poisson, la température de référence USDA est de soixante-trois degrés à cœur ; un thermomètre est préférable. La chair doit pouvoir se séparer en lamelles, mais ce repère visuel ne remplace pas toujours un contrôle de température. Sortez le poisson dans un récipient propre avec une écumoire et laissez-le tiédir juste assez pour pouvoir le manipuler sans vous brûler. Égouttez et émiettez avec une fourchette ; vérifiez soigneusement les éventuelles arêtes, surtout si les morceaux proviennent d'un poisson avec peau et squelette. Rien ne doit finir dans le bol par accident. Si la chair s'écrase totalement, réduisez la durée la prochaine fois, mais ne servez jamais un centre encore cru. Réservez cette chair cuite au chaud, sans la laisser attendre longuement à température ambiante. Vous pouvez faire pause pour finir le contrôle des arêtes. Passons ensuite au kroeung et au coco.
 
 ### Chapitre 5 sur 7 — Préparer la sauce chaude au kroeung
 
-Prenez maintenant une casserole propre à fond suffisamment épais. Chauffez à feu doux la pâte de kroeung jaune déjà préparée, en remuant doucement avec une spatule. Il faut réveiller ses parfums, pas faire noircir la citronnelle et l'ail. Si la pâte accroche, baissez le feu immédiatement ; n'ajoutez pas au hasard une grande quantité d'huile qui ne figure pas dans la recette source. Remuez constamment pendant ce court moment, puis versez progressivement le lait de coco mesuré sur la fiche. Mélangez pour délier la pâte aromatique ; le lait de coco peut se présenter avec une partie épaisse et une partie liquide, mais l'ensemble doit redevenir souple. Ajoutez le poisson entièrement cuit et émietté, et répartissez-le délicatement sans le réduire en poussière. Assaisonnez ensuite avec la sauce de poisson selon la fiche. Maintenez un petit frémissement : le mélange doit rester chaud et nappant, sans gros bouillons qui risquent de faire trancher le lait de coco ou de rendre le poisson sec. Regardez la cuillère : une bonne sauce laisse une pellicule légère, puis s'écoule assez facilement. Si elle est trop épaisse, ajoutez progressivement un peu d'eau potable chaude comme indiqué dans les étapes de la recette. Si elle est devenue trop liquide, laissez-la réduire doucement sans surcuire le poisson, ou servez-la comme une sauce plus fluide, sans inventer un épaississant. Prenez votre temps pour obtenir ce résultat ; vous pouvez mettre pause si votre sauce demande quelques minutes de plus.
+Prenez maintenant une casserole propre à fond suffisamment épais. Chauffez à feu doux la pâte de kroeung jaune déjà préparée, en remuant doucement avec une spatule. Il faut réveiller ses parfums, pas faire noircir la citronnelle et l'ail. Si la pâte accroche, baissez le feu immédiatement ; n'ajoutez pas au hasard une grande quantité d'huile qui n'est pas prévue dans votre fiche. Remuez constamment pendant ce court moment, puis versez progressivement le lait de coco mesuré sur la fiche. Mélangez pour délier la pâte aromatique ; le lait de coco peut se présenter avec une partie épaisse et une partie liquide, mais l'ensemble doit redevenir souple. Ajoutez le poisson entièrement cuit et émietté, et répartissez-le délicatement sans le réduire en poussière. Assaisonnez ensuite avec la sauce de poisson selon la fiche. Maintenez un petit frémissement : le mélange doit rester chaud et nappant, sans gros bouillons qui risquent de faire trancher le lait de coco ou de rendre le poisson sec. Regardez la cuillère : une bonne sauce laisse une pellicule légère, puis s'écoule assez facilement. Si elle est trop épaisse, ajoutez progressivement un peu d'eau potable chaude comme indiqué dans les étapes de la recette. Si elle est devenue trop liquide, laissez-la réduire doucement sans surcuire le poisson, ou servez-la comme une sauce plus fluide, sans inventer un épaississant. Prenez votre temps pour obtenir ce résultat ; vous pouvez mettre pause si votre sauce demande quelques minutes de plus.
 
 ### Chapitre 6 sur 7 — Cuire les nouilles et rectifier les textures
 
