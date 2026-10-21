@@ -38,21 +38,24 @@ for (const name of names){
   const recipe=recipes.find(x=>x.slug===name);
   if(!recipe)throw Error('Recette canonique absente '+name);
   copy(path);
-  const m2='src/data/atelier-recette-audio/'+name+'-v2.json';
+  const edition=guide.audio.asset?.audioUrl?.endsWith('/atelier-coral-v3.mp3')?'-v3':'-v2';
+  const currentManifest='src/data/atelier-recette-audio/'+name+edition+'.json';
   let current=null;
-  if(guide.audio.status!=='script_only' && copy(m2,true)){
-    const m=JSON.parse(readFileSync(m2,'utf8'));
+  if(guide.audio.status!=='script_only' && copy(currentManifest,true)){
+    const m=JSON.parse(readFileSync(currentManifest,'utf8'));
     const file='public'+m.audioUrl;
-    if(!existsSync(file))throw Error('Manifeste V2 sans MP3 '+name);
-    if(statSync(file).size<1024)throw Error('MP3 V2 vide '+name);
-    if(createHash('sha256').update(readFileSync(file)).digest('hex')!==m.sha256)throw Error('MP3 V2 altéré '+name);
-    if(m.chapters.length!==7||m.chapters.some((x,i)=>x.id!==ids[i]))throw Error('Horodatages V2 incomplets '+name);
+    if(!existsSync(file))throw Error('Manifeste '+edition+' sans MP3 '+name);
+    if(m.audioUrl!==guide.audio.asset?.audioUrl)throw Error('Ancien MP3 non conforme au script actif '+name);
+    if(statSync(file).size<1024)throw Error('MP3 '+edition+' vide '+name);
+    if(createHash('sha256').update(readFileSync(file)).digest('hex')!==m.sha256||m.sha256!==guide.audio.asset?.sha256)
+      throw Error('MP3 '+edition+' altéré '+name);
+    if(m.chapters.length!==7||m.chapters.some((x,i)=>x.id!==ids[i]))throw Error('Horodatages incomplets '+name);
     copy(file);current=m;
   }
   if(recipe.image)copy('public'+recipe.image,true);
   const duration=current?Math.floor(current.durationSec/60)+' min '+Math.round(current.durationSec%60)+' s':'non généré';
   summary.push('| '+guide.title+' | OUI | '+(current?'OUI, préécoute':'NON')+' | '+duration+' |');
-  const out=['# '+guide.title,'','Statut : '+guide.status+'. '+(current?'MP3 V2 en préécoute, écoute humaine non attestée.':'Texte corrige a approuver ; les anciens MP3 sont archives hors de ce dossier, et aucun MP3 ne correspond encore au script corrige.'),'',
+  const out=['# '+guide.title,'','Statut : '+guide.status+'. '+(current?'MP3 de la version courante en préécoute, écoute humaine non attestée.':'Texte corrige a approuver ; les anciens MP3 sont archives hors de ce dossier, et aucun MP3 ne correspond encore au script corrige.'),'',
     'Recette : '+recipe.title+' — origine : src/data/recipes.ts.','Objectif : '+guide.learningGoal,'Résultat : '+guide.finalPreparation,
     'Durée estimée de l’atelier : environ '+guide.duration.practicalMinutes+' min.','',
     'Cuisson et repos : '+guide.duration.waitingNote,'',
