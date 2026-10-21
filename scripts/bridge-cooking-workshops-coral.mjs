@@ -157,7 +157,7 @@ if(mode==='--plan'){
      requestDispatched=true;
      const response=await fetch(backend,{
        method:'POST',
-       headers:{'Content-Type':'application/json',Accept:'audio/mpeg'},
+       headers:{'Content-Type':'application/json',Accept:'audio/mpeg', ...(approvedV3?{'X-Cuisine-Coral-Client':'approved-v3'}:{})},
        body:JSON.stringify({
          text:segments[index],voice:'coral',speed:0.93,format:'mp3',
          instructions:'Narration culinaire naturelle en français de France. Voix féminine Coral chaleureuse et spontanée. Expliquer le geste comme une vraie cuisinière encourageante, avec un rythme convivial. Ne pas inventer de quantités ni prétendre interagir en direct.'
