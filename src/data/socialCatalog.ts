@@ -87,7 +87,9 @@ export function getSocialCatalog(): SocialSource[] {
             : `/apprendre/pratique/${guide.slug}/`,
           guide.learningGoal,
           [guide.finalPreparation, ...guide.phases.slice(0, 3).map(phase => phase.learning)],
-          guide.media.finishedPreparationImage || undefined
+          guide.media.finishedPreparationImage || undefined,
+          'illustration',
+          [full('/recettes/'+guide.sourceRecipeSlug+'/')]
         ))
       : workshops.map(workshop => {
           const image = workshop.slug === 'piler-aromates-au-mortier'

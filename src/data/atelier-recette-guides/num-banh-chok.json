@@ -295,8 +295,8 @@
     }
   },
   "media": {
-    "finishedPreparationImage": "",
-    "imageValidated": false,
+    "finishedPreparationImage": "/images/cuisine/v19-num-banh-chok-1440.webp",
+    "imageValidated": true,
     "rightsValidated": false,
     "stepImagePaths": []
   },

@@ -296,8 +296,8 @@
     }
   },
   "media": {
-    "finishedPreparationImage": "",
-    "imageValidated": false,
+    "finishedPreparationImage": "/images/cuisine/v18-samlor-machu.webp",
+    "imageValidated": true,
     "rightsValidated": false,
     "stepImagePaths": []
   },

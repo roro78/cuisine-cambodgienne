@@ -11,8 +11,8 @@ const recipe = recipes.find((item) => item.slug === workshop.sourceRecipeSlug);
 if (!recipe) throw new Error('La recette Kroeung jaune manque : atelier impossible à compiler.');
 // Each ingredient is displayed with a live-scaled numeric amount; the canonical source stays untouched.
 const totalMinutes = workshop.duration.practicalMinutes + workshop.duration.preparationMinutes + workshop.duration.waitingMinutes;
-const heroPicture = workshop.status==='release_ready' && workshop.media.finishedPreparationImage ? workshop.media.finishedPreparationImage : recipe.image;
-const heroCaption = workshop.status==='release_ready' ? 'Photographie du kroeung jaune terminé.' : 'Visuel de la recette existante ; photo finale à valider.';
+const heroPicture = workshop.media.finishedPreparationImage || recipe.image;
+const heroCaption = 'Visuel éditorial du kroeung jaune préparé au mortier.';
 const recorded = import.meta.glob('../../../data/atelier-recette-audio/*.json', { eager:true, import:'default' }) as Record<string,{atelier:string;status:string;audioUrl:string;durationSec:number;chapters:{id:string;title:string;startSec:number;endSec:number}[];review:{acousticListening:boolean;mobile:boolean;desktop:boolean}}>;
 const currentAsset=(workshop.audio as {asset?:{audioUrl:string;sha256:string}}).asset;
 const guideAudio=workshop.audio.status==='script_only'||!currentAsset ? undefined
@@ -45,10 +45,10 @@ const audioTexts=[workshop.audio.intro,...workshop.phases.map((phase)=>phase.aud
           <a class="atelier-action" href="#ingredients">Préparer les ingrédients <span aria-hidden="true">↘</span></a>
           <a href={'/recettes/' + recipe.slug + '/'}>Lire la fiche recette</a>
         </div>
-        <p class="atelier-preview-note">Atelier en préproduction : narration approuvée à l’écoute ; photographie finale et contrôles mobile/ordinateur à valider avant publication.</p>
+        <p class="atelier-preview-note">Atelier en préproduction : narration approuvée à l’écoute ; contrôles d’affichage mobile/ordinateur à finaliser avant publication.</p>
       </div>
       <figure class="atelier-hero-photo">
-        <img src={heroPicture ?? '/images/cuisine/kroeung-1600.webp'} alt={workshop.status==='release_ready'?workshop.finalPreparation:(recipe.imageAlt ?? 'Pâte de kroeung et aromates frais')} width={recipe.imageWidth ?? 1200} height={recipe.imageHeight ?? 800} loading="eager" />
+        <img src={heroPicture ?? '/images/cuisine/kroeung-1600.webp'} alt={workshop.finalPreparation} width={recipe.imageWidth ?? 1200} height={recipe.imageHeight ?? 800} loading="eager" />
         <figcaption>{heroCaption}</figcaption>
       </figure>
     </header>

@@ -71,8 +71,8 @@ const ingredientNames = (item: RecipeIngredient) => {
   return { singular: item.name, plural: item.name };
 };
 const recipeHref = '/recettes/' + recipe.slug + '/';
-const heroPicture=guide.status==='release_ready'&&guide.media.finishedPreparationImage ? guide.media.finishedPreparationImage : recipe.image;
-const heroCaption=guide.status==='release_ready' ? 'Photographie de la préparation terminée.' : 'Visuel éditorial de la recette existante ; photographie finale à valider.';
+const heroPicture=guide.media.finishedPreparationImage || recipe.image;
+const heroCaption='Visuel éditorial de la préparation.';
 const recorded = import.meta.glob('../../../data/atelier-recette-audio/*.json', { eager:true, import:'default' }) as Record<string,{atelier:string;status:string;audioUrl:string;sha256:string;durationSec:number;chapters:{id:string;title:string;startSec:number;endSec:number}[];review:{acousticListening:boolean;mobile:boolean;desktop:boolean}}>;
 // Typed as optional: the V2 script-only Lok Lak deliberately has no current asset.
 const currentAudioAsset=(guide.audio as {asset?: {sha256:string; audioUrl:string}}).asset;
@@ -107,10 +107,10 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
           <div><dt>Niveau</dt><dd>{guide.difficulty}</dd></div>
         </dl>
         <a class="fca-primary" href="#ingredients">Préparer vos ingrédients <span aria-hidden="true">↘</span></a>
-        {guide.status !== 'release_ready' && <p class="fca-preview">Cet atelier est en préproduction : narration écoutée et approuvée ; photographies et contrôles mobile/ordinateur restent à valider.</p>}
+        {guide.status !== 'release_ready' && <p class="fca-preview">Cet atelier est en préproduction : narration écoutée et approuvée ; contrôles d’affichage sur mobile et ordinateur restent à finaliser.</p>}
       </div>
       <figure class="fca-hero-photo">
-        <img src={heroPicture ?? '/images/cuisine/v17-table-meal-1600.jpg'} alt={guide.status==='release_ready'?guide.finalPreparation:(recipe.imageAlt ?? guide.finalPreparation)} loading="eager" width={recipe.imageWidth ?? 1200} height={recipe.imageHeight ?? 800} decoding="async" />
+        <img src={heroPicture ?? '/images/cuisine/v17-table-meal-1600.jpg'} alt={guide.finalPreparation} loading="eager" width={recipe.imageWidth ?? 1200} height={recipe.imageHeight ?? 800} decoding="async" />
         <figcaption>{heroCaption}</figcaption>
       </figure>
     </header>

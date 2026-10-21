@@ -106,6 +106,12 @@ jobs:
           node scripts/check-seo-sitemap-integrity.mjs
           node scripts/check-workshop-cutover.mjs
 
+      - name: Approved images and editorial captions (offline)
+        run: node --test tests/workshop-approved-images.test.mjs
+
+      - name: Future release cutover simulation (isolated, no deployment)
+        run: node scripts/simulate-six-workshop-release.mjs
+
       - name: Built pages and deployment boundaries
         run: npm run test:built-experiences
         
