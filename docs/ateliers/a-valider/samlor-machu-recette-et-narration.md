@@ -56,150 +56,152 @@ Après avoir vérifié que le poisson ou le poulet est complètement cuit, ajout
 
 Coupez le feu, lavez puis ciselez la coriandre ou le basilic asiatique, et ajoutez cette poignée d’herbes juste avant de servir.
 
-## B — Atelier pratique, à relire et corriger
+## B — Atelier de cuisine, étape par étape
 
 **Objectif :** Préparer entièrement une soupe aigre-douce, cuire correctement le poisson ou le poulet et apprendre à équilibrer le tamarin sans masquer le goût du bouillon.
 
-**Préparation attendue :** Quatre bols de Samlor Machu, soupe cambodgienne acidulée, avec garniture cuite et herbes fraîches.
+**Préparation que vous allez obtenir :** Quatre bols de Samlor Machu, soupe cambodgienne acidulée, avec garniture cuite et herbes fraîches.
 
-**Durée indicative des gestes :** 50 min
+**Durée estimée de l'atelier :** environ 50 min. Le temps varie selon la quantité préparée et votre rythme.
 
-**Matériel :**
+**Repère pour les temps de cuisson ou de repos :** Tous les gestes et les temps de mise en place sont compris dans les six phases ; prolongez la cuisson ou le repos si nécessaire.
+
+### Matériel
 
 - Une casserole assez grande et une louche
 - Une planche, un couteau et un tamis fin si le tamarin est préparé à partir de pulpe
 - Des bols résistants à la chaleur et une cuillère de mesure
 - Un thermomètre alimentaire pour contrôler la protéine cuite
 
-**Avant de cuisiner :**
+### Avant de commencer
 
-- Choisissez poisson OU poulet, mesurez les quantités de convives sur la fiche et gardez la protéine au froid.
+- Choisissez poisson OU poulet, mesurez les quantités indiquées sur la fiche pour le nombre de personnes choisi et gardez la protéine au froid.
 - Préparez un bouillon léger peu salé : maison préalablement cuit puis filtré et réfrigéré, OU bouillon prêt à l'emploi dilué selon son étiquette. Le fond doit être réellement disponible avant de commencer.
 - Pour du tamarin en pulpe, prévoir eau chaude potable et tamis afin d'en obtenir un jus filtré, à mesurer ensuite selon la fiche.
 
-**Précautions :**
+### Précautions alimentaires
 
 - La soupe contenant viande ou poisson crus ne se goûte qu'après vérification de leur cuisson complète.
 - Manipulez le bouillon très chaud avec précaution et évitez les éclaboussures.
 - Si vous choisissez le poulet, vérifiez au thermomètre au moins 74 °C à cœur ; pour le poisson, visez au moins 63 °C. Contrôlez les morceaux les plus épais avant toute dégustation de la soupe.
 
-### Temps de cuisine 1 — Vérifier le bouillon et les ingrédients
+### Étape 1 sur 6 — Vérifier le bouillon et les ingrédients (environ 5 min)
 
-**Gestes :**
+**À faire :**
 
-- Mesurez le bouillon mesuré sur la fiche peu salé et préparez la casserole, la louche et les des bols sans chauffer encore les ingrédients.
+- Mesurez le bouillon indiqué sur la fiche peu salé et préparez la casserole, la louche et les bols sans chauffer encore les ingrédients.
 - Réunissez le tamarin, la sauce de poisson, le sucre, les tomates, l'ananas ou la courgette et les herbes de la recette avant d'ouvrir le paquet de protéine.
 
-**Observer :** Le bouillon est clair et peu salé ; les ingrédients sont regroupés séparément.
+**À observer :** Le bouillon est clair et peu salé ; les ingrédients sont regroupés séparément.
 
-**Vérifier le résultat :** Le plan de travail est prêt et la source d'acidité est identifiée.
+**Résultat attendu :** Le plan de travail est prêt et la source d'acidité est identifiée.
 
-**Éviter :** Utiliser un bouillon déjà très salé risque de déséquilibrer la soupe plus tard.
+**À éviter :** Utiliser un bouillon déjà très salé risque de déséquilibrer la soupe plus tard.
 
-**Corriger :** Diluez d'abord un bouillon concentré selon son étiquette ou choisissez un bouillon peu salé.
+**Si besoin, comment corriger :** Diluez d'abord un bouillon concentré selon son étiquette ou choisissez un bouillon peu salé.
 
-**Technique apprise :** Une soupe acidulée équilibrée commence par un bouillon qui laisse de la place au tamarin.
+**Ce que vous apprenez :** Une soupe acidulée équilibrée commence par un bouillon qui laisse de la place au tamarin.
 
 **Précaution :** Ne laissez pas le poisson ou le poulet cru à température ambiante pendant la préparation.
 
-### Temps de cuisine 2 — Découper la garniture et préparer le tamarin
+### Étape 2 sur 6 — Découper la garniture et préparer le tamarin (environ 10 min)
 
-**Gestes :**
+**À faire :**
 
 - Coupez le poisson ou le poulet pesé sur la fiche en morceaux réguliers ; coupez les tomates prévues et détaillez l'ananas en dés, ou la courgette selon la variante choisie.
 - Préparez le jus de tamarin filtré mesuré sur la fiche, lavez les herbes fraîches puis réservez-les séparément pour les ajouter uniquement en finition.
 
-**Observer :** Les morceaux ont des tailles proches et le tamarin est liquide, sans grosses fibres.
+**À observer :** Les morceaux ont des tailles proches et le tamarin est liquide, sans grosses fibres.
 
-**Vérifier le résultat :** La protéine, les légumes et le tamarin sont prêts à entrer dans la casserole au bon moment.
+**Résultat attendu :** La protéine, les légumes et le tamarin sont prêts à entrer dans la casserole au bon moment.
 
-**Éviter :** Ajouter une pulpe de tamarin non délayée rend le dosage difficile et laisse des fibres gênantes.
+**À éviter :** Ajouter une pulpe de tamarin non délayée rend le dosage difficile et laisse des fibres gênantes.
 
-**Corriger :** Détendez la pulpe dans un peu d'eau tiède et filtrez avant de mesurer le jus requis.
+**Si besoin, comment corriger :** Détendez la pulpe dans un peu d'eau tiède et filtrez avant de mesurer le jus requis.
 
-**Technique apprise :** La préparation des éléments séparés rend l'ajustement de l'acidité plus précis.
+**Ce que vous apprenez :** La préparation des éléments séparés rend l'ajustement de l'acidité plus précis.
 
 **Précaution :** Nettoyez la planche après les aliments crus et lavez vos mains avant de toucher les herbes.
 
-### Temps de cuisine 3 — Faire frémir doucement le bouillon
+### Étape 3 sur 6 — Faire frémir doucement le bouillon (environ 8 min)
 
-**Gestes :**
+**À faire :**
 
 - Versez le bouillon mesuré dans une casserole assez grande et chauffez progressivement jusqu'à obtenir de petites bulles régulières, sans ébullition violente.
 - Baissez le feu pour conserver un léger frémissement ; gardez la louche prête pour contrôler la chaleur avant l'ajout de la garniture.
 
-**Observer :** De petites bulles montent doucement ; le niveau du bouillon ne baisse pas vite.
+**À observer :** De petites bulles montent doucement ; le niveau du bouillon ne baisse pas vite.
 
-**Vérifier le résultat :** Le bouillon frémit de façon stable sans forte réduction ni bouillonnement excessif.
+**Résultat attendu :** Le bouillon frémit de façon stable sans forte réduction ni bouillonnement excessif.
 
-**Éviter :** Une ébullition violente concentre le sel et agite inutilement les morceaux fragiles.
+**À éviter :** Une ébullition violente concentre le sel et agite inutilement les morceaux fragiles.
 
-**Corriger :** Réduisez le feu et ajoutez un peu d'eau chaude si le bouillon a déjà beaucoup réduit.
+**Si besoin, comment corriger :** Réduisez le feu et ajoutez un peu d'eau chaude si le bouillon a déjà beaucoup réduit.
 
-**Technique apprise :** La cuisson douce protège la garniture et conserve un bouillon équilibrable.
+**Ce que vous apprenez :** La cuisson douce protège la garniture et conserve un bouillon équilibrable.
 
 **Précaution :** Attention à la vapeur et à la casserole remplie de bouillon très chaud.
 
-### Temps de cuisine 4 — Cuire complètement la garniture
+### Étape 4 sur 6 — Cuire complètement la garniture (environ 15 min)
 
-**Gestes :**
+**À faire :**
 
 - Ajoutez les morceaux de poisson ou de poulet au bouillon frémissant, puis les tomates et l'ananas, ou les petits dés de courgette.
 - Maintenez le léger frémissement le temps nécessaire pour une cuisson complète de la protéine choisie et des légumes ; vérifiez le cœur des morceaux avant toute dégustation.
 
-**Observer :** Les légumes s'attendrissent sans se désintégrer et les morceaux sont cuits jusqu'au centre.
+**À observer :** Les légumes s'attendrissent sans se désintégrer et les morceaux sont cuits jusqu'au centre.
 
-**Vérifier le résultat :** Le poisson ou le poulet est entièrement cuit et les légumes sont tendres.
+**Résultat attendu :** Le poisson ou le poulet est entièrement cuit et les légumes sont tendres.
 
-**Éviter :** Goûter avant la cuisson complète expose à un risque microbiologique.
+**À éviter :** Goûter avant la cuisson complète expose à un risque microbiologique.
 
-**Corriger :** Poursuivez la cuisson en maintenant un frémissement modéré puis vérifiez de nouveau.
+**Si besoin, comment corriger :** Poursuivez la cuisson en maintenant un frémissement modéré puis vérifiez de nouveau.
 
-**Technique apprise :** On ne corrige le goût que lorsque la garniture est réellement cuite.
+**Ce que vous apprenez :** On ne corrige le goût que lorsque la garniture est réellement cuite.
 
 **Précaution :** Pour le poulet, assurez-vous d'une cuisson complète à cœur ; ne goûtez pas le bouillon avant.
 
-### Temps de cuisine 5 — Équilibrer la soupe avec le tamarin
+### Étape 5 sur 6 — Équilibrer la soupe avec le tamarin (environ 8 min)
 
-**Gestes :**
+**À faire :**
 
 - Quand la garniture est bien cuite, versez une partie du jus de tamarin réservé, mélangez et goûtez prudemment une petite cuillère refroidie.
-- Ajoutez progressivement le reste du tamarin selon l'acidité souhaitée, puis la cuillère de sauce de poisson et la cuillère à café de sucre ; remuez et ajustez seulement après comparaison.
+- Ajoutez progressivement le reste du tamarin selon l'acidité souhaitée, puis la sauce de poisson et le sucre selon les quantités indiquées sur la fiche ; remuez et ajustez seulement après comparaison.
 
-**Observer :** L'acidité du tamarin se perçoit sans écraser totalement le goût du bouillon.
+**À observer :** L'acidité du tamarin se perçoit sans écraser totalement le goût du bouillon.
 
-**Vérifier le résultat :** Vous distinguez une acidité nette, un salé présent mais modéré et une pointe de douceur.
+**Résultat attendu :** Vous distinguez une acidité nette, un salé présent mais modéré et une pointe de douceur.
 
-**Éviter :** Verser tout le tamarin d'un coup rend difficile de revenir en arrière.
+**À éviter :** Verser tout le tamarin d'un coup rend difficile de revenir en arrière.
 
-**Corriger :** Réservez d'abord une partie du tamarin, goûtez, puis ajoutez-en peu à peu selon le résultat.
+**Si besoin, comment corriger :** Réservez d'abord une partie du tamarin, goûtez, puis ajoutez-en peu à peu selon le résultat.
 
-**Technique apprise :** L'équilibre entre acidité, sel et douceur se règle en goûtant et en ajustant les assaisonnements progressivement.
+**Ce que vous apprenez :** L'équilibre entre acidité, sel et douceur se règle en goûtant et en ajustant les assaisonnements progressivement.
 
 **Précaution :** Laissez refroidir la cuillère prélevée avant de goûter pour éviter toute brûlure.
 
-### Temps de cuisine 6 — Ajouter les herbes et servir la soupe
+### Étape 6 sur 6 — Ajouter les herbes et servir la soupe (environ 4 min)
 
-**Gestes :**
+**À faire :**
 
 - Coupez le feu avant de répartir les herbes fraîches lavées et ciselées dans la soupe pour conserver leur parfum.
 - Versez la soupe chaude avec ses morceaux de garniture dans des bols résistants à la chaleur et servez sans attendre.
 
-**Observer :** Les herbes gardent leur couleur et leur fraîcheur, la soupe reste bien garnie.
+**À observer :** Les herbes gardent leur couleur et leur fraîcheur, la soupe reste bien garnie.
 
-**Vérifier le résultat :** Des bols de soupe complète sont prêts, parfumés et acidulés sans excès.
+**Résultat attendu :** Des bols de soupe complète sont prêts, parfumés et acidulés sans excès.
 
-**Éviter :** Laisser bouillir longuement les herbes peut atténuer leur parfum.
+**À éviter :** Laisser bouillir longuement les herbes peut atténuer leur parfum.
 
-**Corriger :** Coupez le feu puis ajoutez une nouvelle petite poignée d'herbes fraîches au service.
+**Si besoin, comment corriger :** Coupez le feu puis ajoutez une nouvelle petite poignée d'herbes fraîches au service.
 
-**Technique apprise :** La fraîcheur ajoutée à la fin complète la cuisson et l'acidité du tamarin.
+**Ce que vous apprenez :** La fraîcheur ajoutée à la fin complète la cuisson et l'acidité du tamarin.
 
 **Précaution :** Versez le liquide chaud avec précaution ; refroidissez rapidement tout reste non consommé.
 
-## C — Sept narrations corrigées à valider avant Coral
+## C — Narration complète à valider avant tout nouvel enregistrement
 
-**Ces textes sont corrigés et non encore enregistrés. Les MP3 précédents ne correspondent plus : validation éditoriale exigée.**
+**Ces sept textes ont été relus, mais ne sont pas encore approuvés. Les précédents MP3 restent archivés et ne doivent pas accompagner ce nouveau texte.**
 
 ### Chapitre 1 sur 7 — Introduction
 
