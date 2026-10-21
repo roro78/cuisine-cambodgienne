@@ -198,56 +198,6 @@
     "intro": "Bonjour, et bienvenue dans notre atelier Cuisine du Cambodge !\n\nAujourd'hui, on prépare un délicieux Lok Lak. On va mariner des cubes de bœuf, les saisir en petites fournées, puis les servir avec des crudités bien fraîches et une petite sauce au citron vert et au poivre de Kampot.\n\nVous allez voir, les secrets de ce plat, ce sont des morceaux réguliers, une marinade bien répartie, et surtout une poêle qui reste suffisamment chaude. Et je vous partagerai mes petites astuces si la viande rend de l'eau ou si la sauce colore trop vite.\n\nAvant de démarrer, choisissez votre nombre de convives sur la fiche, puis préparez les quantités indiquées : elles changent selon les personnes à table. Moi, dans l'audio, je vous guiderai sur les gestes et les temps, sans vous imposer de grammages.\n\nIl faudra compter environ vingt minutes de marinade au réfrigérateur. On profitera de ce temps pour préparer les légumes et le condiment. Vous êtes libre de mettre l'enregistrement en pause : je continuerai simplement l'explication et vous relancerez la lecture quand vous serez prêt.\n\nAllez, on cuisine ensemble !",
     "publicProviderMention": false,
     "storyboardVersion": 2,
-    "previousAsset": {
-      "audioUrl": "/audio/workshops/lok-lak-de-la-poele-a-l-assiette/atelier-coral.mp3",
-      "durationSec": 114.768,
-      "sha256": "2baa76db022364c75f0b7b293e76d336c21b7c9dbdef779e5c0aa09ae2dafe88",
-      "chapters": [
-        {
-          "id": "intro",
-          "title": "Bienvenue et mise en place",
-          "startSec": 0,
-          "endSec": 27.264
-        },
-        {
-          "id": "installer",
-          "title": "Organiser la poêle et les quatre assiettes",
-          "startSec": 27.264,
-          "endSec": 42.264
-        },
-        {
-          "id": "preparer",
-          "title": "Tailler le bœuf et préparer les crudités",
-          "startSec": 42.264,
-          "endSec": 57.192
-        },
-        {
-          "id": "assembler",
-          "title": "Mélanger la sauce et le condiment poivré",
-          "startSec": 57.192,
-          "endSec": 73.752
-        },
-        {
-          "id": "maitriser",
-          "title": "Saisir le bœuf en deux petites fournées",
-          "startSec": 73.752,
-          "endSec": 87.672
-        },
-        {
-          "id": "rectifier",
-          "title": "Glacer et contrôler l'enrobage",
-          "startSec": 87.672,
-          "endSec": 99.936
-        },
-        {
-          "id": "terminer",
-          "title": "Dresser le Lok Lak et déguster les contrastes",
-          "startSec": 99.936,
-          "endSec": 114.768
-        }
-      ],
-      "scriptSha256": "98b8b613753a2cc05f26b249f98001d622ada61621ac95be764f9d11b85b0441"
-    },
     "asset": {
       "audioUrl": "/audio/workshops/lok-lak-de-la-poele-a-l-assiette/atelier-coral-v2.mp3",
       "durationSec": 789.936,
