@@ -6,3 +6,5 @@ Aucune validation d'écoute humaine des futurs MP3, de photographie, de navigati
 La version Lok Lak V2 approuvée reste strictement inchangée et les pistes existantes sont protégées.
 
 Relance technique du 21 octobre 2026 : installation des dépendances avant contrôle. Aucune régénération précédente n'a commencé.
+
+Reprise autonome après correctif du workflow : ignorer l'absence de fragments audio du premier échec. Les textes approuvés et le Lok Lak V2 restent intacts.
