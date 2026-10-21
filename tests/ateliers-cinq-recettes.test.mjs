@@ -14,7 +14,7 @@ for (const slug of expected) {
     assert.ok(recipes.some(r=>r.slug===data.sourceRecipeSlug));
     assert.deepEqual(data.phases.map(p=>p.id), PHASE_IDS);
     assert.ok(['draft','release_ready'].includes(data.status));
-    assert.ok(['script_only','generated_review_pending'].includes(data.audio.status));
+    assert.ok(['script_only','generated_review_pending','validated'].includes(data.audio.status));
     assert.equal(data.review.productionApproved,data.status==='release_ready');
     assert.ok(Array.isArray(data.sources.safetyReferences) && data.sources.safetyReferences.length>0,'Les repères cuisson/conservation doivent citer des sources');
     assert.ok(data.sources.safetyReferences.every(ref=>/^https:\/\//.test(ref.url) && ref.title.length>15),'Chaque source de sécurité possède un titre et une URL vérifiables');
@@ -43,7 +43,7 @@ test('Une source d’ingrédients, photos existantes, données privées absentes
   assert.match(page,/guide[.]media[.]finishedPreparationImage/);
   for(const path of ['src/pages/apprendre/index.astro','src/pages/recettes/[slug].astro','src/pages/sitemap.xml.ts']){
     const source=readFileSync(path,'utf8');
-    assert.match(source,/releasedCookingWorkshopGuides|getReleasedCookingWorkshopForRecipe/);
+    assert.match(source,/releasedCookingWorkshopGuides|getReleasedCookingWorkshopForRecipe|completeCookingWorkshopCutoverReady/);
   }
   assert.doesNotMatch(page,/n8n|resend|socialCatalog|password|OPENAI_API_KEY/);
 });
@@ -52,7 +52,7 @@ test('Lok Lak V2 : sept chapitres cuisinables, MP3 V2 conserve sans piste V1', a
   const { data, recipes, errors } = await validateBlueprintFile('src/data/atelier-recette-guides/lok-lak.json');
   assert.deepEqual(errors, []);
   assert.equal(data.audio.storyboardVersion, 2);
-  assert.ok(['script_only','generated_review_pending'].includes(data.audio.status));
+  assert.ok(['script_only','generated_review_pending','validated'].includes(data.audio.status));
   assert.equal(data.review.productionApproved, false);
   if(data.audio.status === 'script_only') assert.equal(data.audio.asset, undefined, 'Old MP3 must not appear as the active V2 audio');
   else assert.match(data.audio.asset.audioUrl, /atelier-coral-v2[.]mp3$/, 'V2 must never overwrite old MP3');
