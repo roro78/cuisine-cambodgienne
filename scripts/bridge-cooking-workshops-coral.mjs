@@ -23,12 +23,17 @@ const readArg=(key)=>args.find(x=>x.startsWith('--'+key+'='))?.slice(key.length+
 const recipe=readArg('atelier');
 const edition=readArg('edition');
 const approvedV3=edition==='approved-v3';
+const partArg=readArg('part');
+if(partArg!==undefined && (!approvedV3 || !/^[1-9][0-9]*$/.test(partArg)))throw Error('Le contrôle --part est réservé à V3 et attend un index positif.');
 if(edition && !approvedV3)throw Error('Édition audio inconnue, génération interdite.');
 const allowed=new Set(['kroeung-jaune','lok-lak','samlor-machu','num-banh-chok','kuy-teav','bai-sach-chrouk']);
 if(!allowed.has(recipe))throw Error('Seuls les six ateliers-recettes approuvés pour le pilote sont autorisés.');
 const modes=['--check','--plan','--assemble',...['intro',...PHASE_IDS].map(id=>'--one='+id)];
 const selected=args.filter(x=>modes.includes(x));
-if(selected.length!==1||args.length!==(edition?3:2))throw Error('Choisir --atelier, un seul mode et, si nécessaire, --edition=approved-v3.');
+if(selected.length!==1||args.length!==(edition?3:2)+(partArg!==undefined?1:0))throw Error('Arguments refusés, pas de synthèse autorisée.');
+if(approvedV3 && mode.startsWith('--one=') && partArg===undefined)
+ throw Error('STOP QUOTA : en V3, --part=N obligatoire pour isoler chaque appel payant.');
+if(partArg!==undefined && !mode.startsWith('--one='))throw Error('--part n’est autorisé que pour une piste unique.');
 const mode=selected[0];
 const path='src/data/atelier-recette-guides/'+recipe+'.json';
 const {data:guide,errors}=await validateBlueprintFile(path);
@@ -130,8 +135,12 @@ if(mode==='--plan'){
  if(i<0)throw Error('Chapitre inconnu');
  mkdirSync(tmp,{recursive:true});
  const segments=v2?splitVoiceForTts(voiceTexts[i]):[voiceTexts[i]];
- for(let index=0;index<segments.length;index++){
+ if(partArg!==undefined && Number(partArg)>segments.length)throw Error('Partie inexistante ; aucun appel payant.');
+ const indexes=partArg!==undefined?[Number(partArg)-1]:segments.map((_,i)=>i);
+ for(const index of indexes){
    const track=tracks[i][index];
+   const uncertain=track+'.uncertain.json';
+   if(existsSync(uncertain))throw Error('STOP QUOTA : tentative précédente au résultat incertain pour '+guide.slug+'/'+name+' part '+(index+1)+'. Inspection humaine requise avant toute réémission.');
    if(existsSync(track)){
      assertMp3(track);measure(track);
      console.log('CORAL_ALREADY_SAVED_SKIP '+guide.slug+'/'+name+' part '+(index+1)+'/'+segments.length);
@@ -139,8 +148,11 @@ if(mode==='--plan'){
    }
    const backend='https://render-iacoach-backend.onrender.com/api/tts';
    const controller=new AbortController();
-   const timeout=setTimeout(()=>controller.abort(),v2?180000:100000);
+   // The backend is permitted to fail fast; never retransmit a request with unknown result.
+   const timeout=setTimeout(()=>controller.abort(),approvedV3?90000:v2?180000:100000);
+   let requestDispatched=false;
    try{
+     requestDispatched=true;
      const response=await fetch(backend,{
        method:'POST',
        headers:{'Content-Type':'application/json',Accept:'audio/mpeg'},
@@ -165,7 +177,20 @@ if(mode==='--plan'){
      // retry an uncertain TTS response automatically after a timeout.
      if(v2)await new Promise(resolve=>setTimeout(resolve,20000));
    }catch(error){
-     if(error?.name==='AbortError')throw Error('CORAL_V2_TIMEOUT '+guide.slug+'/'+name+' part '+(index+1)+' : response not confirmed, stop without automatic retry.');
+     // Persist an immutable uncertainty marker for every request that could have
+     // reached the billing provider. The CI artifact must preserve this marker.
+     // In particular, a 408/502/503/504 or a connection abort is not free to retry.
+     if(requestDispatched){
+       writeFileSync(uncertain,JSON.stringify({
+         status:'uncertain_paid_request',
+         atelier:recipe,chapter:name,part:index+1,
+         textSha256:createHash('sha256').update(segments[index]).digest('hex'),
+         reason:error?.name==='AbortError'?'client_timeout':'request_failed_after_dispatch',
+         createdAt:new Date().toISOString(),
+         retryAuthorized:false
+       },null,2)+'\n',{flag:'wx'});
+     }
+     if(error?.name==='AbortError')throw Error('STOP_QUOTA_UNCERTAIN '+guide.slug+'/'+name+' part '+(index+1)+' : résultat inconnu, NE PAS relancer automatiquement.');
      throw error;
    }finally{clearTimeout(timeout);}
  }
