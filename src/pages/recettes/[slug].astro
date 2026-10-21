@@ -9,7 +9,7 @@ import GlossaryStrip from '../../components/GlossaryStrip.astro';
 import { getGlossaryEntries } from '../../data/glossary';
 import { imageSrcSet } from '../../utils/images';
 import { getWorkshopsForRecipe } from '../../data/workshops';
-import { getReleasedCookingWorkshopForRecipe, getIntegratedCookingWorkshopForRecipe } from '../../data/cookingWorkshopGuides';
+import { getReleasedCookingWorkshopForRecipe, getIntegratedCookingWorkshopForRecipe, completeCookingWorkshopCutoverReady } from '../../data/cookingWorkshopGuides';
 import { getTechniqueGuidesForRecipe } from '../../data/recipeTechniques';
 import '../../styles/recipe-techniques.css';
 import '../../styles/recipe-v15.css';
@@ -323,7 +323,7 @@ const recipeSchema = {
       </section>
     )}
 
-    {relatedWorkshops.length > 0 && completeCookingWorkshops.length === 0 && (
+    {!completeCookingWorkshopCutoverReady && relatedWorkshops.length > 0 && completeCookingWorkshops.length === 0 && (
       <section class="recipe-workshops" data-reveal="up">
         <p class="eyebrow">Envie de comprendre le geste ?</p>
         <h2>Apprenez le geste, puis essayez-le dans cette recette.</h2>

@@ -57,7 +57,7 @@ try{
         }
         assert.equal(await page.locator('.fca-step').count(),6,'Phases '+slug);
         assert.equal(await page.locator('.fca-steps-nav a').count(),6,'Navigation '+slug);
-        assert.equal(await page.locator('meta[name="robots"]').getAttribute('content').then(v=>v?.includes('noindex')),true,'Pilot noindex '+slug);
+        assert.equal(await page.locator('meta[name="robots"]').getAttribute('content').then(v=>v?.includes('noindex')),blueprint.status!=='release_ready','Pilot noindex '+slug);
         const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
         assert.ok(overflow<=3,'Horizontal scroll at '+width+' '+slug+': '+overflow);
         // Portion selectors above scroll to the ingredient area on mobile.

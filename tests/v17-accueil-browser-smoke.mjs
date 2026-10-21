@@ -5,6 +5,10 @@ import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright-core';
 
 const port=4341;
+const mortarWorkshopStates=await Promise.all(['kroeung-jaune','lok-lak','samlor-machu','num-banh-chok','kuy-teav','bai-sach-chrouk']
+  .map(async slug=>JSON.parse(await fs.readFile(new URL('../src/data/atelier-recette-guides/'+slug+'.json',import.meta.url),'utf8')).status));
+const mortarWorkshopTarget=mortarWorkshopStates.every(status=>status==='release_ready')
+  ? '/apprendre/pratique/kroeung-jaune/' : '/apprendre/piler-aromates-au-mortier/';
 const base='http://127.0.0.1:'+port;
 // Keep the full responsive assertions in CI while avoiding 20-minute
 // cinematic recordings. Detailed screenshots/videos remain opt-in locally.
@@ -102,7 +106,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
     assert.equal(await page.locator('.v17r h2').count(),6);
     const chapters=['hero','market','palette','gestures','table','dessert','finale'];
     for(const chapter of chapters)assert.equal(await page.locator('.v17r-'+chapter).count(),1);
-    const links=['/recettes/','/ingredients/','/glossaire/','/apprendre/','/recettes/chek-ktis/','/apprendre/piler-aromates-au-mortier/'];
+    const links=['/recettes/','/ingredients/','/glossaire/','/apprendre/','/recettes/chek-ktis/',mortarWorkshopTarget];
     for(const href of links)assert.ok(await page.locator('a[href="'+href+'"]').count()>0,'Missing '+href);
     const angkorImage=page.locator('.v17r-finale-landscape img');
     assert.equal(await angkorImage.getAttribute('src'),'/images/cuisine/v17-angkor-sunset-1600.jpg');
@@ -547,7 +551,7 @@ async function run(width,height,{noJs=false,reduced=false,screenshot=false}={}){
           height:rect?.height,photoHeight:photoRect?.height,
           wordCount:words?.length,copyWidth:copyRect?.width,
           shade:shade?getComputedStyle(shade).backgroundImage:'',
-          articleLink:!!copy?.querySelector('a[href="/apprendre/piler-aromates-au-mortier/"]')
+          articleLink:!!copy?.querySelector('a[href^="/apprendre/"]')
         };
       });
       assert.ok(cinema.width>0 && Math.abs(cinema.photoWidth-cinema.width)<3 &&

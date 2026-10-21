@@ -22,8 +22,9 @@ assert.equal((page.match(/<h2\b/g)||[]).length,6);
 for(const selector of ['v17r-hero','v17r-market','v17r-palette','v17r-gestures','v17r-table','v17r-dessert','v17r-finale']){
   assert.match(page,new RegExp('class="'+selector+'(?:\\s|\")'));
 }
-const requiredLinks=['/recettes/','/ingredients/','/glossaire/','/apprendre/','/culture/construire-repas-cambodgien/','/recettes/chek-ktis/','/apprendre/piler-aromates-au-mortier/'];
+const requiredLinks=['/recettes/','/ingredients/','/glossaire/','/apprendre/','/culture/construire-repas-cambodgien/','/recettes/chek-ktis/'];
 for(const href of requiredLinks)assert.ok(page.includes('href="'+href+'"'),'Missing genuine CTA '+href);
+assert.ok(page.includes('completeCookingWorkshopCutoverReady') && page.includes("'/apprendre/pratique/kroeung-jaune/'") && page.includes("'/apprendre/piler-aromates-au-mortier/'"),'Mortar CTA must follow the release gate');
 for(const href of ['/recettes/','/glossaire/','/apprendre/','/culture/','/a-propos/'])assert.ok(header.includes('href="'+href+'"'),'Existing header changed '+href);
 for(const href of ['/ingredients/','/credits-photos/'])assert.ok(footer.includes('href="'+href+'"'),'Existing footer changed '+href);
 for(const path of [...page.matchAll(/(?:src|href)=\{?(?:hero|market|kampot|tamarind|lokLak)\}?/g)])assert.ok(path);

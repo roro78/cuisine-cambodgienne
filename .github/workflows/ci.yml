@@ -100,8 +100,10 @@ jobs:
       - name: Verify copied Apache SEO redirect file
         run: |
           cp public/.htaccess dist/.htaccess
+          node scripts/build-workshop-redirects.mjs
           node scripts/check-seo-legacy-redirects.mjs
           node scripts/check-seo-sitemap-integrity.mjs
+          node scripts/check-workshop-cutover.mjs
 
       - name: Built pages and deployment boundaries
         run: npm run test:built-experiences

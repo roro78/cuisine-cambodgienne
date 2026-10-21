@@ -9,6 +9,7 @@ import WorkshopChapterPlayer from '../../components/WorkshopChapterPlayer.astro'
 import { getWorkshopAudio } from '../../data/workshop-audio';
 import { getWorkshopLearning } from '../../data/workshopLearning';
 import { workshops } from '../../data/workshops';
+import { completeCookingWorkshopCutoverReady } from '../../data/cookingWorkshopGuides';
 import type { Workshop } from '../../data/workshops';
 import { recipes } from '../../data/recipes';
 import { getGlossaryEntries } from '../../data/glossary';
@@ -19,7 +20,7 @@ import '../../styles/workshop-tutorial-v21.css';
 import '../../styles/workshop-shapes-v22.css';
 
 export function getStaticPaths() {
-  return workshops.map((workshop: Workshop) => ({
+  return (completeCookingWorkshopCutoverReady ? [] : workshops).map((workshop: Workshop) => ({
     params: { slug: workshop.slug },
     props: { workshop }
   }));

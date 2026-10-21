@@ -3,6 +3,7 @@ import { recipes } from './recipes';
 import { ingredientGuides } from './ingredients';
 import { cultureArticles } from './culture';
 import { workshops } from './workshops';
+import { releasedCookingWorkshopGuides, completeCookingWorkshopCutoverReady } from './cookingWorkshopGuides';
 import { recipeTechniqueGuides } from './recipeTechniques';
 
 export type SocialSourceKind = 'recette' | 'ingredient' | 'culture' | 'atelier' | 'technique';
@@ -78,17 +79,25 @@ export function getSocialCatalog(): SocialSource[] {
       [article.sections[0]?.paragraphs[0], ...article.sections.map(section => section.title)],
       article.socialImage ?? article.image, article.socialImage ? 'illustration' : 'article', article.sources.map(source => source.url)
     )),
-    ...workshops.map(workshop => {
-      // Only the mortier atelier has its own approved, on-page step photo in the catalog.
-      // Other lessons must get a suitable, rights-reviewed visual before Instagram publishing.
-      const image = workshop.slug === 'piler-aromates-au-mortier'
-        ? '/images/workshops/mortier-etape-03.webp'
-        : undefined;
-      return create(
-        'atelier', workshop.slug, workshop.title, `/apprendre/${workshop.slug}/`, workshop.intro,
-        [workshop.objective, ...workshop.outcomes.slice(0, 3)], image
-      );
-    }),
+    ...(completeCookingWorkshopCutoverReady
+      ? releasedCookingWorkshopGuides.map(guide => create(
+          'atelier', guide.slug, guide.title,
+          guide.sourceRecipeSlug === 'kroeung-jaune'
+            ? '/apprendre/pratique/kroeung-jaune/'
+            : `/apprendre/pratique/${guide.slug}/`,
+          guide.learningGoal,
+          [guide.finalPreparation, ...guide.phases.slice(0, 3).map(phase => phase.learning)],
+          guide.media.finishedPreparationImage || undefined
+        ))
+      : workshops.map(workshop => {
+          const image = workshop.slug === 'piler-aromates-au-mortier'
+            ? '/images/workshops/mortier-etape-03.webp'
+            : undefined;
+          return create(
+            'atelier', workshop.slug, workshop.title, `/apprendre/${workshop.slug}/`, workshop.intro,
+            [workshop.objective, ...workshop.outcomes.slice(0, 3)], image
+          );
+        })),
     ...recipeTechniqueGuides.map(technique => create(
       'technique', technique.slug, technique.title, `/techniques/${technique.slug}/`, technique.description,
       [technique.introduction, ...technique.steps.slice(0, 2).map(step => `${step.title} : ${step.text}`)],

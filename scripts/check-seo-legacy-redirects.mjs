@@ -1,3 +1,4 @@
+import { expectedWorkshopHtaccess, workshopCutoverApproved, legacyWorkshopRedirects, workshopRedirectRule } from './workshop-cutover-seo.mjs';
 // SEO contract: one-hop historical links + canonical HTTPS/www + compiled OVH output.
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
@@ -58,7 +59,11 @@ assert.ok(index.includes('restoredRecipes.map'), 'Catalog missing historical rec
 
 if (existsSync('dist/')) {
   assert.ok(existsSync('dist/.htaccess'), 'Compiled Apache redirect file missing');
-  assert.equal(read('dist/.htaccess'), apache, 'Compiled .htaccess differs from source');
+  assert.equal(read('dist/.htaccess'), expectedWorkshopHtaccess(apache), 'Compiled .htaccess differs from gated source');
+  if(workshopCutoverApproved()){
+    for(const [from,to] of legacyWorkshopRedirects)
+      assert.ok(read('dist/.htaccess').includes(workshopRedirectRule(from,to)),'Missing workshop 301 '+from);
+  } else assert.ok(!read('dist/.htaccess').includes('RewriteRule ^apprendre/'),'Early 301 to a noindex draft');
   for (const file of [
     'dist/recettes/curry-poulet-khmer/index.html',
     'dist/recettes/nom-krob-totim/index.html',

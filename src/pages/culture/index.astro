@@ -4,6 +4,7 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import EditorialSectionHero from '../../components/EditorialSectionHero.astro';
 import { cultureArticles } from '../../data/culture';
+import { completeCookingWorkshopCutoverReady } from '../../data/cookingWorkshopGuides';
 import { imageSrcSet } from '../../utils/images';
 import '../../styles/v16-editorial.css';
 import '../../styles/v19-premium-pages.css';
@@ -32,7 +33,7 @@ const culinaryPath = [
     step: '02 · Essayer',
     title: 'Prendre le pilon en main',
     text: 'Au mortier, observez la texture et le parfum qui changent au fil du geste.',
-    href: '/apprendre/piler-aromates-au-mortier/',
+    href: completeCookingWorkshopCutoverReady ? '/apprendre/pratique/kroeung-jaune/' : '/apprendre/piler-aromates-au-mortier/',
     action: 'Suivre l’atelier'
   },
   {

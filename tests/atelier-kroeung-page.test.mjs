@@ -23,9 +23,9 @@ test('Atelier kroeung : vraie recette, six phases, ingrédients et rendement can
   assert.match(source, /Utiliser le kroeung dans un Amok Trey/);
 });
 test('Un atelier non validé ne se déclare pas publiable ni enregistré', () => {
-  assert.equal(workshop.status,'draft');
+  assert.ok(['draft','release_ready'].includes(workshop.status));
   assert.ok(['script_only','generated_review_pending'].includes(workshop.audio.status));
-  assert.equal(workshop.review.productionApproved,false);
+  assert.equal(workshop.review.productionApproved,workshop.status==='release_ready');
   assert.match(source,/noindex=\{workshop[.]status !== 'release_ready'\}/);
   assert.match(source,/La nouvelle narration est en préparation/);
   assert.match(source,/guideAudio \? <CookingWorkshopAudio/);

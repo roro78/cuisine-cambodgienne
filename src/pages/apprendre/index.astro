@@ -5,7 +5,7 @@ import SiteFooter from '../../components/SiteFooter.astro';
 import EditorialSectionHero from '../../components/EditorialSectionHero.astro';
 import CulinaryIcon from '../../components/CulinaryIcon.astro';
 import { workshops } from '../../data/workshops';
-import { integratedCookingWorkshopGuides, releasedCookingWorkshopGuides } from '../../data/cookingWorkshopGuides';
+import { integratedCookingWorkshopGuides, completeCookingWorkshopCutoverReady } from '../../data/cookingWorkshopGuides';
 import { recipes } from '../../data/recipes';
 const workshopPhotos: Record<string,string> = {
 'piler-aromates-au-mortier':'/images/cuisine/v17-mortar-hands-1600.jpg',
@@ -21,7 +21,7 @@ import '../../styles/editorial-shared-hero.css';
 
 // Do not promote incomplete courses. Once all six recipe-led workshops are release_ready,
 // the old six-card index is replaced rather than displayed twice.
-const fullWorkshopReplacementReady=integratedCookingWorkshopGuides.length===6 && (releasedCookingWorkshopGuides.length===6 || integratedCookingWorkshopGuides.every(guide=>guide.review.audioListeningValidated));
+const fullWorkshopReplacementReady=completeCookingWorkshopCutoverReady;
 const schema = {
   '@context':'https://schema.org',
   '@type':'CollectionPage',
