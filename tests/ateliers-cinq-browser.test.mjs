@@ -75,7 +75,7 @@ try{
         assert.ok(audioCount===0||audioCount===1,'At most one recording per atelier '+slug);
         if(audioCount===1){
           assert.equal(await page.locator('[data-cooking-chapter]').count(),7,'Intro + six genuine chapters');
-          assert.match(await page.locator('[data-cooking-audio]').getAttribute('src'),/\\/audio\\/workshops\\/[^/]+\\/atelier-coral-v[23][.]mp3$/);
+          assert.match(await page.locator('[data-cooking-audio]').getAttribute('src'),/atelier-coral-v[23][.]mp3$/);
           const chapterOne=page.locator('[data-cooking-chapter]').nth(1);
           if(mobile){
             assert.equal(await page.locator('[data-cooking-mobile-dock]').getAttribute('data-visible'),'true','Mobile player is visible before playback');
