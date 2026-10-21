@@ -59,6 +59,14 @@ try {
           });
           const current=await page.locator('#phase-'+workshop.phases[1].id).evaluate(el=>({top:el.getBoundingClientRect().top,height:window.innerHeight}));
           assert.ok(current.top>=0&&current.top<current.height*.7,'Kroeung page advances with MP3 phase 2: '+JSON.stringify(current));
+          await page.evaluate(()=>window.dispatchEvent(new WheelEvent('wheel',{deltaY:120})));
+          assert.equal(await page.locator('[data-cooking-mobile-follow]').getAttribute('aria-pressed'),'false','Kroeung free scrolling disables following');
+          await page.locator('[data-cooking-mobile-steps]').click();
+          await page.locator('[data-cooking-mobile-chapter]').nth(4).click();
+          assert.equal(await page.locator('[data-cooking-mobile-sheet]').isVisible(),false);
+          const selected=await page.locator('#phase-'+workshop.phases[3].id).evaluate(el=>({top:el.getBoundingClientRect().top,height:innerHeight}));
+          assert.ok(selected.top>=-2&&selected.top<selected.height*.72,'Kroeung selected chapter 4 must scroll page: '+JSON.stringify(selected));
+          assert.equal(await page.locator('[data-cooking-mobile-follow]').getAttribute('aria-pressed'),'false','Manual chapter jump preserves disabled auto-follow');
         }else{
           assert.equal(await page.locator('.guided-cooking-audio-head').isVisible(),true);
           assert.equal(await page.locator('[data-cooking-mobile-dock]').isVisible(),false);

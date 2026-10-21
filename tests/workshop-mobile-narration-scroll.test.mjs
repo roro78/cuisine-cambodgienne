@@ -19,7 +19,9 @@ test('Large-step page follow is a separate user decision that closes the mobile 
   assert.match(audio,/manualFollowChoice=true/);
   assert.match(audio,/audio\?\.addEventListener\('play'/);
   assert.match(audio,/if\(following&&mobileViewport\.matches\)closeMobileSheet\(\)/);
-  assert.match(audio,/if\(following\)scrollToChapter\(index\)/);
+  assert.match(audio,/if\(following\|\|scrollRequested\)scrollToChapter\(index\)/);
+  assert.match(audio,/activate\(i,true\)/);
+  assert.match(audio,/closeMobileSheet\(\);\s*mobileSteps\?\.focus\(\{preventScroll:true\}\);\s*jumpToChapter\(i\)/);
   assert.match(audio,/window\.addEventListener\('wheel',stopFollowing/);
   assert.match(audio,/window\.addEventListener\('touchmove'/);
   assert.match(audio,/prefersReducedMotion\.matches\?'auto':'smooth'/);

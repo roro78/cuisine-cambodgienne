@@ -89,6 +89,14 @@ try{
             await chapterOne.click();
           }
           assert.equal(await chapterOne.getAttribute('aria-current'),'true','Selecting phase updates active audio chapter');
+          if(!mobile){
+            // A deliberate desktop click now jumps to the matching recipe
+            // section, even with automatic follow initially disabled.
+            assert.equal(await page.locator('[data-cooking-follow]').getAttribute('aria-pressed'),'false');
+            const first=await page.locator('#phase-'+JSON.parse(await page.locator('[data-cooking-chapters]').getAttribute('data-cooking-chapters'))[1].id)
+              .evaluate(el=>({top:el.getBoundingClientRect().top,height:innerHeight}));
+            assert.ok(first.top>=-2&&first.top<first.height*.72,'Desktop manual chapter scroll lands on phase 1: '+JSON.stringify(first));
+          }
           const follow=mobile?page.locator('[data-cooking-mobile-follow]'):page.locator('[data-cooking-follow]');
           if(mobile){
             // Playback itself enables automatic page following by default.
@@ -110,6 +118,18 @@ try{
             assert.equal(await follow.getAttribute('aria-pressed'),'false','Manual scroll cancels automatic page following');
             await page.locator('[data-cooking-audio]').evaluate(el=>el.dispatchEvent(new Event('play')));
             assert.equal(await follow.getAttribute('aria-pressed'),'false','Playback does not undo manual user opt-out');
+            // Selecting a chapter must always slide to its corresponding
+            // section, regardless of the automatic-follow preference.
+            await page.locator('[data-cooking-mobile-steps]').click();
+            await page.locator('[data-cooking-mobile-chapter]').nth(2).click();
+            assert.equal(await page.locator('[data-cooking-mobile-sheet]').isVisible(),false,'Chapter selection closes the sheet before moving the page');
+            const selected=JSON.parse(await page.locator('[data-cooking-chapters]').getAttribute('data-cooking-chapters'))[2];
+            const position=await page.locator('#phase-'+selected.id)
+              .evaluate(el=>({top:el.getBoundingClientRect().top,height:innerHeight}));
+            assert.ok(position.top>=-2&&position.top<position.height*.72,'Manual mobile chapter click must scroll to the selected section: '+JSON.stringify(position));
+            assert.equal(await follow.getAttribute('aria-pressed'),'false','One explicit jump must not reenable ongoing automatic follow');
+            const seek=await page.locator('[data-cooking-audio]').evaluate(el=>el.currentTime);
+            assert.ok(Math.abs(seek-selected.startSec)<2,'Audio and page must jump to same chapter: '+seek+' vs '+selected.startSec);
             await page.locator('[data-cooking-mobile-steps]').click();
             await follow.click();
             assert.equal(await follow.getAttribute('aria-pressed'),'true','Following can be explicitly restored');
