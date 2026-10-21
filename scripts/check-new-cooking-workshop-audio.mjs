@@ -12,7 +12,8 @@ let superseded=0;
 for(const slug of names){
  const blueprint=JSON.parse(readFileSync('src/data/atelier-recette-guides/'+slug+'.json','utf8'));
  const isV2=blueprint.audio.storyboardVersion===2;
- const manifestFile=resolve('src/data/atelier-recette-audio',slug+(isV2&&blueprint.audio.status!=='script_only'?'-v2':'')+'.json');
+ const supersededV2=blueprint.audio.status==='script_only'&&!!blueprint.audio.supersededV2Asset;
+ const manifestFile=resolve('src/data/atelier-recette-audio',slug+(isV2&&(blueprint.audio.status!=='script_only'||supersededV2)?'-v2':'')+'.json');
  const has=existsSync(manifestFile);
  if(blueprint.audio.status==='script_only'){
    if(!has){
@@ -22,7 +23,7 @@ for(const slug of names){
    // Preserve and verify previously recorded MP3s, but never credit them to
    // a V2 script that has not yet been synthesized or listened to.
    const m=JSON.parse(readFileSync(manifestFile,'utf8'));
-   const prev=blueprint.audio.previousAsset;
+   const prev=supersededV2?blueprint.audio.supersededV2Asset:blueprint.audio.previousAsset;
    if(!prev || m.atelier!==blueprint.slug || m.canonicalRecipe!==slug ||
       prev.sha256!==m.sha256 || prev.audioUrl!==m.audioUrl ||
       !Array.isArray(m.chapters) || m.chapters.length!==7)
