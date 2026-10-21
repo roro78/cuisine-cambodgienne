@@ -173,7 +173,7 @@ Continuez jusqu’à ne presque plus sentir de gros morceaux sous le pilon.
 
 **Précaution :** Ne goûtez pas le mélange cru comme un plat terminé.
 
-### Temps de cuisine 6 — Conditionner la pâte et retenir le geste
+### Temps de cuisine 6 — Mettre le kroeung en pot et retenir le geste
 
 **Gestes :**
 
@@ -220,7 +220,7 @@ Voici le cœur de l'atelier : faire passer notre base fibreuse au stade d'une p�
 
 Avant de ranger le pilon, faisons le test de la cuillère. Prélevez une petite portion de pâte avec une cuillère propre, étalez-la légèrement sur le dos de la cuillère et regardez ce qui se passe. Une bonne pâte est humide, assez homogène, et se tient sans laisser de longues fibres visibles. Si un fil de citronnelle dépasse, c'est un indice utile : remettez cette partie dans le mortier et pilez encore, ou coupez les fibres récalcitrantes avant de recommencer. Si des petits éclats de galanga restent durs, le même principe s'applique. Inutile d'ajouter beaucoup de liquide : vous affaibliriez la concentration aromatique et la pâte se conserverait moins facilement. Si au contraire la pâte est déjà très humide parce que les échalotes ont rendu leur eau, travaillez-la en petites portions pour mieux répartir les fibres plutôt que d'ajouter un ingrédient non prévu. Approchez la cuillère de votre nez : on doit distinguer une fraîcheur citronnée, puis le caractère terreux du curcuma, sans odeur anormale. Le parfum seul ne garantit évidemment pas l'innocuité. N'allez pas goûter cette préparation crue comme si c'était une sauce prête à servir : notre kroeung est destiné à entrer dans un plat cuisiné. Vérifiez votre résultat calmement ; la bonne correction est celle que vous comprenez. Si nécessaire, faites pause pour achever le dernier pilage.
 
-### Chapitre 7 sur 7 — Conditionner la pâte et retenir le geste
+### Chapitre 7 sur 7 — Mettre le kroeung en pot et retenir le geste
 
 Et voilà, notre kroeung jaune est prêt. Raclez la pâte avec une spatule propre, rassemblez-la dans un récipient parfaitement propre et refermez-le. Évitez d'y remettre une cuillère qui a touché d'autres aliments. Cette préparation aromatique doit être conservée au frais et utilisée rapidement, ou congelée en petites portions bien étiquetées si vous voulez en garder pour un autre jour. Ne laissez pas le pot attendre sur le plan de travail après l'atelier ; les durées exactes de conservation dépendent de la préparation et des conditions d'hygiène. Ce n'est pas une préparation qu'on déguste à la petite cuillère. Lors de votre prochain plat mijoté, vous pourrez l'incorporer selon la recette choisie et laisser les arômes se développer à la cuisson. J'aimerais que vous reteniez trois gestes : couper très fin avant de piler, travailler les fibres dures avant les aromates tendres, et juger la texture avec les yeux et la cuillère plutôt qu'avec un chronomètre. Même si votre pâte n'est pas aussi fine que celle d'un chef au premier essai, ces critères vous donnent une vraie façon de progresser. Merci d'avoir cuisiné avec moi. À bientôt pour utiliser ce kroeung dans un plat, et bonne cuisine !
 
