@@ -94,6 +94,8 @@ try{
           await follow.click();
           assert.equal(await follow.getAttribute('aria-pressed'),'true','Following enabled');
           if(mobile){
+            assert.equal(await page.locator('[data-cooking-mobile-sheet]').isVisible(),false,'Follow closes the sheet to show the corresponding recipe step');
+            await page.locator('[data-cooking-mobile-steps]').click();
             await page.locator('[data-cooking-mobile-chapter]').nth(3).click();
           } else await page.locator('[data-cooking-chapter]').nth(3).click();
           assert.equal(await page.locator('#phase-assembler').count(),1,'Large phase target exists');
@@ -110,15 +112,37 @@ try{
             await page.locator('[data-cooking-mobile-tab="transcript"]').click();
             assert.equal(await page.locator('[data-cooking-mobile-transcript]').isVisible(),true,'Mobile transcript is accessible');
             assert.ok((await page.locator('[data-cooking-mobile-transcript]').innerText()).length>90);
+            const transcriptAuto=page.locator('[data-cooking-mobile-transcript-follow]');
+            assert.equal(await transcriptAuto.getAttribute('aria-pressed'),'true','Transcript auto-scroll is on by default');
+            if(width===360 && slug==='lok-lak-de-la-poele-a-l-assiette'){
+              // Drive playback to the middle of chapter three from the actual
+              // approved timeline. No MP3 synthesis or network generation.
+              await page.locator('[data-cooking-audio]').evaluate(audio=>{
+                const root=audio.closest('[data-cooking-chapters]');
+                const c=JSON.parse(root.dataset.cookingChapters)[3];
+                audio.currentTime=c.startSec+(c.endSec-c.startSec)*.7;
+                audio.dispatchEvent(new Event('timeupdate'));
+              });
+              const scroll=await page.locator('[data-cooking-mobile-transcript-scroll]').evaluate(el=>({top:el.scrollTop,height:el.clientHeight,total:el.scrollHeight}));
+              assert.ok(scroll.total>scroll.height,'Long spoken transcript has an independently scrollable area');
+              assert.ok(scroll.top>2,'Transcript must automatically scroll at actual chapter playback time');
+              await page.locator('[data-cooking-mobile-transcript-scroll]').evaluate(el=>el.dispatchEvent(new WheelEvent('wheel',{deltaY:160,bubbles:true})));
+              assert.equal(await transcriptAuto.getAttribute('aria-pressed'),'false','Manual transcript scrolling disengages auto-scroll');
+              await transcriptAuto.click();
+              assert.equal(await transcriptAuto.getAttribute('aria-pressed'),'true','Transcript following can be reenabled');
+            }
             await page.locator('[data-cooking-mobile-tab="chapters"]').click();
+            assert.equal(await page.locator('[data-cooking-mobile-chapter]').nth(3).getAttribute('aria-current'),'true','Current spoken chapter highlighted in mobile sheet');
             await page.locator('[data-cooking-mobile-chapter]').nth(2).click();
             assert.equal(await page.locator('[data-cooking-chapter]').nth(2).getAttribute('aria-current'),'true','Chapter selection updates original track');
             assert.equal(await page.locator('[data-cooking-mobile-sheet]').isVisible(),false,'Sheet closes after selecting chapter');
             await page.locator('[data-cooking-mobile-steps]').click();
             await follow.click();
             assert.equal(await follow.getAttribute('aria-pressed'),'true','Follow can be reenabled');
+            assert.equal(await page.locator('[data-cooking-mobile-sheet]').isVisible(),false,'Recipe stays visible in following mode');
             await page.locator('[data-cooking-mobile-transcript]').evaluate(el=>el.dispatchEvent(new Event('touchmove',{bubbles:true})));
-            assert.equal(await follow.getAttribute('aria-pressed'),'false','Manual touch stops follow without pausing');
+            assert.equal(await follow.getAttribute('aria-pressed'),'false','Manual touch stops page follow without pausing');
+            await page.locator('[data-cooking-mobile-steps]').click();
             await page.locator('[data-cooking-mobile-stop]').click();
             assert.equal(await page.locator('[data-cooking-mobile-dock]').getAttribute('data-visible'),'true','Player remains ready after Stop');
           } else {
