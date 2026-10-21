@@ -37,7 +37,7 @@ const audioTexts=[workshop.audio.intro,...workshop.phases.map((phase)=>phase.aud
         <p class="atelier-intro">{workshop.finalPreparation}</p>
         <p>{workshop.learningGoal}. Le résultat est une préparation complète, prête à parfumer un plat cuisiné.</p>
         <dl class="atelier-stats">
-          <div><dt>Durée des gestes</dt><dd>{totalMinutes} min</dd></div>
+          <div><dt>Temps de préparation estimé</dt><dd>{totalMinutes} min</dd></div>
           <div><dt>Rendement</dt><dd data-workshop-servings-hero>{recipe.baseServings} petit pot</dd></div>
           <div><dt>Niveau</dt><dd>{workshop.difficulty}</dd></div>
         </dl>
@@ -97,11 +97,11 @@ const audioTexts=[workshop.audio.intro,...workshop.phases.map((phase)=>phase.aud
     </section>
 
     <section id="etapes" class="atelier-section" aria-labelledby="atelier-steps-title">
-      <p class="eyebrow">02 · Les six phases de l’atelier</p>
+      <p class="eyebrow">02 · Les six étapes de l’atelier</p>
       <h2 id="atelier-steps-title">Cuisinez, observez, rectifiez.</h2>
-      <p>Faites chaque geste avant de passer au suivant. Les durées vous guident, mais les critères de réussite vous indiquent quand continuer.</p>
+      <p>Les temps indiqués sont des estimations : poursuivez chaque préparation jusqu’à obtenir la bonne texture, même si vous avez besoin de quelques minutes de plus.</p>
       {guideAudio ? <CookingWorkshopAudio manifest={guideAudio} scripts={audioTexts} /> : <p class="atelier-audio-note">Le guide vocal en sept chapitres est en préparation. Cet atelier reste réalisable entièrement par écrit, sans MP3.</p>}
-      <nav class="atelier-step-nav" aria-label="Naviguer entre les six phases">
+      <nav class="atelier-step-nav" aria-label="Naviguer entre les six étapes">
         {workshop.phases.map((phase, i) => (
           <a href={'#phase-' + phase.id}><span>{String(i + 1).padStart(2, '0')}</span><strong>{phase.title}</strong></a>
         ))}
@@ -111,7 +111,7 @@ const audioTexts=[workshop.audio.intro,...workshop.phases.map((phase)=>phase.aud
           <article class="atelier-phase" id={'phase-' + phase.id} aria-labelledby={'phase-title-' + phase.id}>
             <div class="atelier-phase-heading">
               <span class="atelier-phase-number">{String(index + 1).padStart(2, '0')}</span>
-              <div><p class="eyebrow">Phase {index + 1} sur 6 · {phase.minutes} min</p><h3 id={'phase-title-' + phase.id}>{phase.title}</h3></div>
+              <div><p class="eyebrow">Étape {index + 1} sur 6 · environ {phase.minutes} min</p><h3 id={'phase-title-' + phase.id}>{phase.title}</h3></div>
             </div>
             <div class="atelier-phase-columns">
               <div>
@@ -129,7 +129,7 @@ const audioTexts=[workshop.audio.intro,...workshop.phases.map((phase)=>phase.aud
             </div>
             <p class="atelier-learning"><strong>Pourquoi ce geste ?</strong> {phase.learning}</p>
             <p class="atelier-small"><strong>Précaution :</strong> {phase.safety}</p>
-            {index < workshop.phases.length - 1 && <a class="atelier-next" href={'#phase-' + workshop.phases[index + 1].id}>Phase suivante <span aria-hidden="true">→</span></a>}
+            {index < workshop.phases.length - 1 && <a class="atelier-next" href={'#phase-' + workshop.phases[index + 1].id}>Étape suivante <span aria-hidden="true">→</span></a>}
           </article>
         ))}
       </div>
