@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { buildFinalReport, evaluateMeta, evaluateResend,
+import { buildFinalReport, buildN8nOnlyResult, evaluateMeta, evaluateResend,
   extractLiveIntegrationConfig } from '../scripts/verify-cuisine-integrations-readonly.mjs';
 
 const files = ['01-drafts-email-approval.json', '02-publish-approved.json', '03-reconcile-instagram.json'];
@@ -87,6 +87,30 @@ test('Meta evaluation identifies missing permissions and mismatched Instagram as
   assert.ok(result.facebookPermissions.missing.includes('pages_manage_posts'));
   assert.ok(result.instagramPermissions.missing.includes('instagram_content_publish'));
 });
+test('n8n-only result confirms existing configuration and blocks secret-dependent checks', () => {
+  const result = buildN8nOnlyResult();
+  assert.equal(result.status, 'BLOCKED');
+  assert.equal(result.n8nConfiguration.status, 'PASS');
+  assert.equal(result.n8nConfiguration.metaCredentialReferences.status, 'PASS');
+  assert.equal(result.n8nConfiguration.metaEndpoints.status, 'PASS');
+  assert.equal(result.meta.token.status, 'BLOCKED');
+  assert.equal(result.meta.facebookPermissions.status, 'BLOCKED');
+  assert.equal(result.meta.instagramPermissions.status, 'BLOCKED');
+  assert.equal(result.safeguards.externalIntegrationApisCalled, false);
+  assert.equal(result.safeguards.publicationEndpointsCalled, false);
+});
+
+test('n8n-only final report separates configuration proof from token validity', () => {
+  extractLiveIntegrationConfig(liveWorkflows());
+  const result = buildN8nOnlyResult();
+  const report = buildFinalReport(result, { status: 'PASS OFFLINE', proof: 'simulated' });
+  assert.equal(report.mode, 'n8n-config-only');
+  assert.equal(report.verdict, 'BLOQUÉ');
+  assert.equal(report.components.find(item => item.component === 'Configuration n8n Meta').status, 'PASS');
+  assert.equal(report.components.find(item => item.component === 'Jeton Facebook').status, 'BLOCKED');
+  assert.equal(report.security.externalIntegrationApisCalled, false);
+});
+
 test('final report uses only the required status vocabulary and blocks unproven token durability', () => {
   const result = { status: 'BLOCKED', resend: { status: 'PASS',
     domain: { status: 'PASS', proof: 'verified' }, recipient: { status: 'PASS', proof: 'configured' } },

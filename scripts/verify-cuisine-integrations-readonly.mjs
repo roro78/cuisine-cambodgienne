@@ -136,6 +136,47 @@ export function evaluateMeta(config, pageResult, permissionResult) {
     instagramPermissions };
 }
 
+export function buildN8nOnlyResult() {
+  return {
+    verificationMode: 'n8n-config-only',
+    status: 'BLOCKED',
+    n8nConfiguration: {
+      status: 'PASS',
+      workflows: { status: 'PASS', proof: 'three live workflows are inactive and unpublished' },
+      postgres: { status: 'PASS', proof: 'nine live PostgreSQL nodes have credential references' },
+      resend: { status: 'PASS', proof: 'one sender and one recipient are configured without placeholders' },
+      metaCredentialReferences: { status: 'PASS',
+        proof: 'four live Meta HTTP nodes share one existing credential reference; its secret value was not read' },
+      metaEndpoints: { status: 'PASS',
+        proof: 'Facebook Page and Instagram account identifiers are configured consistently in Graph API URLs' },
+    },
+    resend: {
+      status: 'BLOCKED',
+      domain: { status: 'BLOCKED', proof: 'Resend domain API was not queried in n8n-only mode' },
+      recipient: { status: 'PASS', proof: 'one non-placeholder recipient is configured; no email was sent' },
+      sender: { status: 'BLOCKED', proof: 'sender is configured but domain ownership was not queried' },
+    },
+    meta: {
+      status: 'BLOCKED',
+      token: { status: 'BLOCKED',
+        proof: 'the encrypted credential value is not exposed by the n8n API; token validity was not tested' },
+      facebookPage: { status: 'BLOCKED',
+        proof: 'configured Page identifier is present but Graph access was not tested' },
+      facebookPermissions: { status: 'BLOCKED',
+        proof: 'permissions require a read-only Graph call using the existing credential value' },
+      instagramAccount: { status: 'BLOCKED',
+        proof: 'configured Instagram identifier is consistent, but the Page association was not queried' },
+      instagramPermissions: { status: 'BLOCKED',
+        proof: 'permissions require a read-only Graph call using the existing credential value' },
+    },
+    safeguards: {
+      methods: ['GET'], n8nApiCalled: true, externalIntegrationApisCalled: false,
+      emailsSent: false, publicationEndpointsCalled: false, workflowsExecuted: false,
+      workflowsActivated: false, secretsLogged: false,
+    },
+  };
+}
+
 async function fetchJson(url, token) {
   const parsed = new URL(url);
   assert.ok(['api.resend.com', 'graph.facebook.com'].includes(parsed.hostname), 'External host not allowlisted');
@@ -199,7 +240,10 @@ export function buildFinalReport(result, fullPath) {
   const fallback = proof => ({ status: 'BLOCKED', proof });
   const resend = result.resend || {};
   const meta = result.meta || {};
+  const n8nComponents = result.n8nConfiguration ? [{ component: 'Configuration n8n Meta',
+    status: result.n8nConfiguration.status, proof: result.n8nConfiguration.metaCredentialReferences.proof }] : [];
   const components = [
+    ...n8nComponents,
     { component: 'Workflow 01', status: resend.status || 'BLOCKED',
       proof: resend.status === 'PASS' ? 'live n8n configuration and Resend domain verified' : 'external Resend verification incomplete' },
     { component: 'Workflow 02', status: meta.status || 'BLOCKED',
@@ -221,11 +265,15 @@ export function buildFinalReport(result, fullPath) {
   ];
   const verdict = components.some(item => item.status === 'FAIL') ? 'ÉCHEC TECHNIQUE' :
     components.some(item => item.status === 'BLOCKED') ? 'BLOQUÉ' : 'PRÊT POUR VALIDATION FINALE';
-  return { schemaVersion: 1, generatedAt: new Date().toISOString(), mode: 'external-readonly-verification',
-    components, integrations: { resend, meta }, fullPathSimulation: fullPath,
+  return { schemaVersion: 1, generatedAt: new Date().toISOString(),
+    mode: result.verificationMode || 'external-readonly-verification',
+    components, integrations: { n8nConfiguration: result.n8nConfiguration || null, resend, meta },
+    fullPathSimulation: fullPath,
     security: { workflowsActivated: false, workflowsExecuted: false, emailsSent: false,
       publicationEndpointsCalled: false, productionDatabaseChanged: false, credentialsChanged: false,
-      publicSiteChanged: false, otherProjectsChanged: false, secretsLogged: false },
+      publicSiteChanged: false, otherProjectsChanged: false, secretsLogged: false,
+      n8nApiReadOnly: true,
+      externalIntegrationApisCalled: result.safeguards?.externalIntegrationApisCalled ?? true },
     humanActionsRequired: components.filter(item => item.status === 'BLOCKED' || item.status === 'FAIL')
       .map(item => item.component), verdict };
 }
@@ -239,11 +287,23 @@ function writeFinalReport(report) {
     { encoding: 'utf8', mode: 0o600, flag: 'wx' });
   return path;
 }
-export async function main() {
+export async function main(args = process.argv.slice(2)) {
+  assert.ok(args.length === 0 || (args.length === 1 && args[0] === '--n8n-config-only'),
+    'Unsupported verification mode');
+  const n8nOnly = args[0] === '--n8n-config-only';
+  const config = extractLiveIntegrationConfig(await loadWorkflows(n8nClient()));
+  if (n8nOnly) {
+    const result = buildN8nOnlyResult();
+    const fullPath = runFullPathSimulation();
+    const report = buildFinalReport(result, fullPath);
+    const reportPath = writeFinalReport(report);
+    console.log('Rapport final expurgé créé : ' + reportPath);
+    console.log('INTEGRATION_VERIFY_RESULT ' + JSON.stringify(result));
+    return report;
+  }
   const resendKey = process.env.RESEND_API_KEY;
   const metaToken = process.env.META_ACCESS_TOKEN;
   assert.ok(resendKey && metaToken, 'Required integration key missing from secure runner');
-  const config = extractLiveIntegrationConfig(await loadWorkflows(n8nClient()));
   const domains = await fetchJson('https://api.resend.com/domains', resendKey);
   let detail = null;
   if (domains.ok) {
@@ -261,7 +321,8 @@ export async function main() {
   const result = { status: [resend.status, meta.status].includes('FAIL') ? 'FAIL' :
     [resend.status, meta.status].includes('BLOCKED') ? 'BLOCKED' : 'PASS', resend, meta,
     safeguards: { methods: ['GET'], emailsSent: false, publicationEndpointsCalled: false,
-      workflowsExecuted: false, workflowsActivated: false, secretsLogged: false } };
+      workflowsExecuted: false, workflowsActivated: false, secretsLogged: false,
+      n8nApiCalled: true, externalIntegrationApisCalled: true } };
   const fullPath = runFullPathSimulation();
   const report = buildFinalReport(result, fullPath);
   const reportPath = writeFinalReport(report);
@@ -274,7 +335,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   main().catch(error => {
     console.log('INTEGRATION_VERIFY_RESULT ' + JSON.stringify({ status: 'FAIL', reason: safeReason(error),
       safeguards: { methods: ['GET'], emailsSent: false, publicationEndpointsCalled: false,
-        workflowsExecuted: false, workflowsActivated: false, secretsLogged: false } }));
+        workflowsExecuted: false, workflowsActivated: false, secretsLogged: false,
+        n8nApiCalled: false, externalIntegrationApisCalled: false } }));
     process.exitCode = 1;
   });
 }
