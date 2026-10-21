@@ -11,15 +11,19 @@ const call=(a)=>spawnSync(process.execPath,[...base,...a],{encoding:'utf8',timeo
 const goodPlan=call(['--plan']);
 assert.equal(goodPlan.status,0,'Offline plan should pass');
 assert.match(goodPlan.stdout,/v3 25 segments/);
+const guide=JSON.parse(readFileSync('src/data/atelier-recette-guides/'+slug+'.json','utf8'));
+const completed=guide.audio.status==='generated_review_pending';
 const check=call(['--check']);
-assert.equal(check.status,0,'Offline safety check should pass');
+if(completed){
+ assert.notEqual(check.status,0,'Completed guide MUST NOT allow a second synthesis');
+ assert.match(check.stderr,/existe déjà|refuser toute double génération/);
+}else assert.equal(check.status,0,'Offline safety check should pass before synthesis');
 const multi=call(['--one=intro']);
 assert.notEqual(multi.status,0);
 assert.match(multi.stderr,/STOP QUOTA/,'Whole chapter MUST NOT trigger a sequence of paid requests');
 const illegal=call(['--one=intro','--part=999']);
 assert.notEqual(illegal.status,0);
-assert.match(illegal.stderr,/Partie inexistante/);
-const guide=JSON.parse(readFileSync('src/data/atelier-recette-guides/'+slug+'.json','utf8'));
+assert.match(illegal.stderr,completed?/déjà assemblé|existe déjà/:/Partie inexistante/);
 const sentenceList=guide.audio.intro.trim().split(/(?<=[.!?…])\s+/u);
 let first='';
 for(const sentence of sentenceList){
@@ -35,10 +39,10 @@ try{
   writeFileSync(marker,JSON.stringify({status:'uncertain_paid_request',retryAuthorized:false})+'\n');
   const guarded=call(['--one=intro','--part=1']);
   assert.notEqual(guarded.status,0);
-  assert.match(guarded.stderr,/STOP QUOTA/);
+  assert.match(guarded.stderr,completed?/déjà assemblé|existe déjà/:/STOP QUOTA/);
   const offlineCheck=call(['--check']);
   assert.notEqual(offlineCheck.status,0);
-  assert.match(offlineCheck.stderr,/STOP QUOTA/);
+  assert.match(offlineCheck.stderr,completed?/existe déjà|double génération/:/STOP QUOTA/);
 } finally{
   rmSync(marker,{force:true});
 }
