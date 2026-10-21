@@ -1,0 +1,1 @@
+Validation HORS LIGNE du fragment Num Banh Chok deja obtenu avec le seul appel payant autorise. Run 39629603778, artefact 12359115073. Aucun appel OpenAI ou Render, verifier ffprobe + ffmpeg + empreinte texte et conserver la preuve dans GitHub Actions. Ne pas rejouer le workflow payant.
