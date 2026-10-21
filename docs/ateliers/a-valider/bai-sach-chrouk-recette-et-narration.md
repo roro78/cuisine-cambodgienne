@@ -1,6 +1,6 @@
 > **À RELIRE ET À VALIDER AVANT TOUT NOUVEL ENREGISTREMENT CORAL.**
 >
-> Les phrases de narration ci-dessous sont celles déjà enregistrées ; elles n’ont pas été approuvées. Toute modification textuelle imposera une nouvelle version audio après accord explicite.
+> Les narrations ci-dessous sont corrigées et non validées. Les MP3 précédents sont conservés à part et ne correspondent plus à ces textes. Aucun nouvel enregistrement sans accord explicite.
 
 # 2. Bai Sach Chrouk
 
@@ -82,7 +82,7 @@ Répartissez le riz jasmin chaud dans quatre assiettes. Déposez le porc entièr
 - Pour les tranches de porc issues d'un morceau entier, vérifiez au thermomètre au moins 63 °C à cœur et laissez reposer 3 minutes avant de servir ; si vous utilisez du porc haché, visez 71 °C.
 - Servez le riz dès qu'il est cuit ou refroidissez-le rapidement puis réfrigérez-le : du riz laissé tiédir longtemps peut favoriser Bacillus cereus, et le simple réchauffage ne garantit pas l'élimination des toxines.
 
-### Temps de cuisine 1 — Mesurer les ingrédients et préparer le poste
+### Temps de cuisine 1 — Mesurer les ingrédients et préparer le plan de travail
 
 **Gestes :**
 
@@ -91,7 +91,7 @@ Répartissez le riz jasmin chaud dans quatre assiettes. Déposez le porc entièr
 
 **Observer :** Chaque élément a sa place et les pickles sont déjà préparés.
 
-**Vérifier le résultat :** Le poste permet de gérer cuisson du riz et saisie du porc sans confusion.
+**Vérifier le résultat :** Le plan de travail permet de suivre cuisson du riz et saisie du porc sans confusion.
 
 **Éviter :** Commencer avec des pickles non préparés impose une recette supplémentaire en plein atelier.
 
@@ -114,7 +114,7 @@ Répartissez le riz jasmin chaud dans quatre assiettes. Déposez le porc entièr
 
 **Éviter :** Des tranches très épaisses peuvent brûler dehors avant de cuire correctement dedans.
 
-**Corriger :** Recoupez ou aplatissez légèrement des tranches trop épaisses, en gardant le poste propre.
+**Corriger :** Recoupez ou aplatissez légèrement des tranches trop épaisses, en gardant les ustensiles et le plan de travail propres.
 
 **Technique apprise :** La régularité des tranches facilite la coloration et la cuisson complète.
 
@@ -196,17 +196,17 @@ Répartissez le riz jasmin chaud dans quatre assiettes. Déposez le porc entièr
 
 **Précaution :** Ne laissez pas longtemps le porc cuit à température ambiante ; réfrigérez rapidement les restes.
 
-## C — Textes intégraux des sept chapitres déjà enregistrés avec Coral V2
+## C — Sept narrations corrigées à valider avant Coral
 
-**Attention : ces textes sont reproduits sans retouche pour permettre la validation. Ils ne doivent pas être réputés approuvés du seul fait qu’un MP3 existe.**
+**Ces textes ont été corrigés. Les MP3 historiques ne correspondent plus : validation éditoriale exigée avant toute nouvelle synthèse.**
 
 ### Chapitre 1 sur 7 — Introduction
 
 Bonjour et bienvenue ! Aujourd'hui, nous préparons un Bai Sach Chrouk : du porc finement coupé, mariné puis doré, servi avec du riz jasmin et des pickles croquants. Ce n'est pas juste une cuisson de viande : on va organiser tout un repas cambodgien, avec le contraste entre le sucré-salé du porc, le riz tendre et les légumes acidulés. Choisissez d'abord le nombre de convives sur votre fiche et mesurez les quantités qui s'affichent. Dans cet enregistrement, je nomme les ingrédients et les repères techniques, sans vous imposer une quantité pour quatre personnes. Prenez votre casserole à riz, une passoire, une grande poêle ou plancha, un saladier pour la marinade, une planche, un couteau, une spatule, un thermomètre alimentaire et des assiettes propres. Nous laisserons la viande mariner au froid, puis nous cuisinerons le riz pendant ce repos. Vous pourrez mettre l'audio en pause aux moments utiles : rien ne se déclenche tout seul. On cuisine ensemble, tranquillement et dans le bon ordre.
 
-### Chapitre 2 sur 7 — Mesurer les ingrédients et préparer le poste
+### Chapitre 2 sur 7 — Mesurer les ingrédients et préparer le plan de travail
 
-On installe notre poste avant de manipuler la viande. Placez devant vous le saladier de marinade, la poêle encore éteinte, la casserole et son couvercle, la passoire, une spatule, une planche stable et un couteau propre. Prévoyez aussi un thermomètre si vous en avez un, une pince réservée au porc cru et une autre propre pour le service. Du côté des ingrédients, retrouvez sur la fiche les fines tranches de porc, l'ail, la sauce soja, la sauce de poisson et le sucre roux ; à part, le riz jasmin cru et les pickles de concombre et carotte. La fiche précise les quantités correspondant à votre table. Pour cette version, les pickles sont une préparation préalable : ne les improvisez pas en versant du vinaigre directement sur l'assiette. Ils doivent déjà avoir été préparés et égouttés ; je vous explique plus loin leur rôle et comment contrôler leur texture. Si vous les faites vous-même, utilisez une recette de pickles express au réfrigérateur avec des légumes propres et une saumure vinaigrée adaptée, pas une conservation en bocaux à température ambiante. Vérifiez sur les étiquettes la présence possible de blé dans la sauce soja et de poisson dans la sauce de poisson. Gardez le cru éloigné des garnitures prêtes à manger. Faites pause pour tout mesurer et installer votre coin de cuisine ; on commence par l'ail et le porc.
+On prépare notre plan de travail avant de manipuler la viande. Placez devant vous le saladier de marinade, la poêle encore éteinte, la casserole et son couvercle, la passoire, une spatule, une planche stable et un couteau propre. Prévoyez aussi un thermomètre si vous en avez un, une pince réservée au porc cru et une autre propre pour le service. Du côté des ingrédients, retrouvez sur la fiche les fines tranches de porc, l'ail, la sauce soja, la sauce de poisson et le sucre roux ; à part, le riz jasmin cru et les pickles de concombre et carotte. La fiche précise les quantités correspondant à votre table. Pour cette version, les pickles sont une préparation préalable : ne les improvisez pas en versant du vinaigre directement sur l'assiette. Ils doivent déjà avoir été préparés et égouttés ; je vous explique plus loin leur rôle et comment contrôler leur texture. Si vous les faites vous-même, utilisez une recette de pickles express au réfrigérateur avec des légumes propres et une saumure vinaigrée adaptée, pas une conservation en bocaux à température ambiante. Vérifiez sur les étiquettes la présence possible de blé dans la sauce soja et de poisson dans la sauce de poisson. Gardez le cru éloigné des garnitures prêtes à manger. Faites pause pour tout mesurer et installer votre coin de cuisine ; on commence par l'ail et le porc.
 
 ### Chapitre 3 sur 7 — Préparer le porc et hacher l'ail
 
