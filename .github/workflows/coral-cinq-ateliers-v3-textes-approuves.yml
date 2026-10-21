@@ -1,0 +1,217 @@
+name: Cuisine - cinq ateliers Coral V3 sur textes approuves
+# Text approval only, no implicit human listening or OVH production authorization.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "feat/ateliers-cinq-recettes-completes-20261020"
+    paths:
+      - "docs/ateliers/GO-V3-TEXTES-APPROUVES.txt"
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: cuisine-cinq-coral-v3-once
+  cancel-in-progress: false
+jobs:
+  approve_written_text:
+    name: Approuver les textes exacts seulement
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/ateliers-cinq-recettes-completes-20261020
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Written user approval without TTS or deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fxq 'UTILISATEUR-VALIDATION-RECETTES-ET-35-TEXTES-CORAL-2026-10-21' docs/ateliers/GO-V3-TEXTES-APPROUVES.txt
+          node scripts/approve-five-cooking-workshops.mjs
+          node scripts/check-culinary-lexicon.mjs
+          node scripts/check-workshop-blueprints.mjs
+      - name: Commit text approval only, no media or production changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- src/data/atelier-recette-guides
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "review(ateliers): scripts et recettes approuves; ecoute non certifiee"
+          for attempt in 1 2 3; do
+            git fetch origin feat/ateliers-cinq-recettes-completes-20261020
+            git rebase origin/feat/ateliers-cinq-recettes-completes-20261020
+            if git push origin HEAD:feat/ateliers-cinq-recettes-completes-20261020; then exit 0; fi
+          done
+          exit 1
+  synthesise_five:
+    name: "Coral V3 ${{ matrix.atelier }}"
+    needs: approve_written_text
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        atelier: [kroeung-jaune, bai-sach-chrouk, samlor-machu, kuy-teav, num-banh-chok]
+    steps:
+      - name: Checkout latest PR branch with text approval
+        uses: actions/checkout@v4
+        with:
+          ref: feat/ateliers-cinq-recettes-completes-20261020
+          fetch-depth: 0
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Dependencies
+        run: npm install --no-audit --no-fund
+      - name: ffmpeg and ffprobe
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -qq -y ffmpeg
+          fi
+      - name: Offline editorial, audio V3 and source approvals
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/check-workshop-blueprints.mjs
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --check
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --plan
+      - name: Download fragments from rerun only, never double voice requests
+        if: github.run_attempt > 1
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pattern: cuisine-cinq-v3-${{ matrix.atelier }}-*
+          merge-multiple: true
+          path: .tmp-cooking-coral-restore/
+      - name: Restore saved V3 parts into correct recipe directory
+        if: github.run_attempt > 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          SLUG=$(node -e "const j=require('./src/data/atelier-recette-guides/${{ matrix.atelier }}.json');process.stdout.write(j.slug)")
+          mkdir -p ".tmp-cooking-coral/$SLUG/v3"
+          find .tmp-cooking-coral-restore -type f -name '*.mp3' -exec cp -n {} ".tmp-cooking-coral/$SLUG/v3/" \;
+      - name: Coral V3 - intro, approved script only
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --one=intro
+      - name: Save completed intro segments
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-cinq-v3-${{ matrix.atelier }}-intro
+          path: .tmp-cooking-coral/*/v3/intro-part-*.mp3
+          retention-days: 30
+          if-no-files-found: warn
+          overwrite: true
+      - name: Coral V3 - installer, approved script only
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --one=installer
+      - name: Save completed installer segments
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-cinq-v3-${{ matrix.atelier }}-installer
+          path: .tmp-cooking-coral/*/v3/installer-part-*.mp3
+          retention-days: 30
+          if-no-files-found: warn
+          overwrite: true
+      - name: Coral V3 - preparer, approved script only
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --one=preparer
+      - name: Save completed preparer segments
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-cinq-v3-${{ matrix.atelier }}-preparer
+          path: .tmp-cooking-coral/*/v3/preparer-part-*.mp3
+          retention-days: 30
+          if-no-files-found: warn
+          overwrite: true
+      - name: Coral V3 - assembler, approved script only
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --one=assembler
+      - name: Save completed assembler segments
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-cinq-v3-${{ matrix.atelier }}-assembler
+          path: .tmp-cooking-coral/*/v3/assembler-part-*.mp3
+          retention-days: 30
+          if-no-files-found: warn
+          overwrite: true
+      - name: Coral V3 - maitriser, approved script only
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --one=maitriser
+      - name: Save completed maitriser segments
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-cinq-v3-${{ matrix.atelier }}-maitriser
+          path: .tmp-cooking-coral/*/v3/maitriser-part-*.mp3
+          retention-days: 30
+          if-no-files-found: warn
+          overwrite: true
+      - name: Coral V3 - rectifier, approved script only
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --one=rectifier
+      - name: Save completed rectifier segments
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-cinq-v3-${{ matrix.atelier }}-rectifier
+          path: .tmp-cooking-coral/*/v3/rectifier-part-*.mp3
+          retention-days: 30
+          if-no-files-found: warn
+          overwrite: true
+      - name: Coral V3 - terminer, approved script only
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --one=terminer
+      - name: Save completed terminer segments
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-cinq-v3-${{ matrix.atelier }}-terminer
+          path: .tmp-cooking-coral/*/v3/terminer-part-*.mp3
+          retention-days: 30
+          if-no-files-found: warn
+          overwrite: true
+      - name: Assemble exactly seven navigable chapters
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --assemble
+      - name: Save complete MP3 before commit for recovery
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-cinq-v3-${{ matrix.atelier }}-review
+          path: |
+            public/audio/workshops/*/atelier-coral-v3.mp3
+            src/data/atelier-recette-audio/${{ matrix.atelier }}-v3.json
+          retention-days: 60
+          if-no-files-found: error
+      - name: Seven chapters, SHA, editorial script and MP3 QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/check-new-cooking-workshop-audio.mjs
+          node scripts/check-culinary-lexicon.mjs
+          node scripts/check-workshop-blueprints.mjs
+      - name: Save only current V3 MP3, manifest and validated text
+        shell: bash
+        run: |
+          set -euo pipefail
+          SLUG=$(node -e "const j=require('./src/data/atelier-recette-guides/${{ matrix.atelier }}.json');process.stdout.write(j.slug)")
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "public/audio/workshops/$SLUG/atelier-coral-v3.mp3"
+          git add -- "src/data/atelier-recette-audio/${{ matrix.atelier }}-v3.json" "src/data/atelier-recette-guides/${{ matrix.atelier }}.json"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "audio(ateliers): nouvelle Coral V3 ${{ matrix.atelier }}, 7 chapitres, ecoute a verifier"
+          for attempt in 1 2 3; do
+            git fetch origin feat/ateliers-cinq-recettes-completes-20261020
+            git rebase origin/feat/ateliers-cinq-recettes-completes-20261020
+            if git push origin HEAD:feat/ateliers-cinq-recettes-completes-20261020; then exit 0; fi
+          done
+          echo "Confirmed audio remains available in artifacts; no force push."
+          exit 1
