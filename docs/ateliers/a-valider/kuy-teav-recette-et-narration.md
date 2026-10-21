@@ -108,8 +108,8 @@ Rincez les pousses de soja et la coriandre, puis émincez la coriandre et les de
 
 **Gestes :**
 
-- Séparez les la quantité de porc haché ou émincé adaptée aux convives en morceaux qui pourront cuire complètement dans le bouillon frémissant.
-- Rincez les pousses de soja et la coriandre, émincez les les ciboules prévues et préparez les quartiers de citron vert dans un plat propre, loin du porc cru.
+- Séparez la quantité de porc haché ou émincé adaptée aux convives en morceaux qui pourront cuire complètement dans le bouillon frémissant.
+- Rincez les pousses de soja et la coriandre, émincez les ciboules prévues et préparez les quartiers de citron vert dans un plat propre, loin du porc cru.
 
 **Observer :** Les petits morceaux de porc sont prêts et les herbes, pousses et citron sont distincts.
 
@@ -127,7 +127,7 @@ Rincez les pousses de soja et la coriandre, puis émincez la coriandre et les de
 
 **Gestes :**
 
-- Versez les le bouillon mesuré sur la fiche dans la casserole, ajoutez la sauce de poisson mesurée sur la fiche et une cuillère à café de sucre.
+- Versez le bouillon mesuré sur la fiche dans la casserole, ajoutez la sauce de poisson mesurée sur la fiche et une cuillère à café de sucre.
 - Portez à petit frémissement puis maintenez cette température sans faire réduire fortement le liquide, en surveillant le niveau dans la casserole.
 
 **Observer :** Le bouillon reste relativement clair, avec de petites bulles et un niveau stable.
@@ -165,7 +165,7 @@ Rincez les pousses de soja et la coriandre, puis émincez la coriandre et les de
 
 **Gestes :**
 
-- Dans l'autre casserole, faites cuire les les nouilles de riz mesurées sur la fiche conformément aux indications du paquet ; égouttez-les aussitôt et répartissez-les dans des bols.
+- Dans l'autre casserole, faites cuire les nouilles de riz mesurées sur la fiche conformément aux indications du paquet ; égouttez-les aussitôt et répartissez-les dans des bols.
 - Une fois le porc bien cuit, goûtez une petite quantité de bouillon légèrement refroidie et ajustez seulement si nécessaire sans ajouter automatiquement plus de sel.
 
 **Observer :** Les nouilles sont tendres, séparées ; le bouillon garde son parfum sans être trop salé.
@@ -213,7 +213,7 @@ On se donne un plan de travail bien organisé. Posez deux casseroles sur la plaq
 
 ### Chapitre 3 sur 7 — Préparer le porc et la garniture végétale
 
-Préparons maintenant les éléments qui finiront dans le bol. Sortez le porc frais juste avant de le travailler. S'il est haché, défaites les blocs en petites portions pour qu'il n'y ait pas de grosses boulettes crues au milieu. S'il est émincé, faites de fines lanières régulières, suffisamment petites pour cuire dans le bouillon frémissant. Ne tranchez pas sur la même planche que les crudités sans avoir lavé planche, couteau et mains. Rincez les pousses de soja et les feuilles de coriandre dans de l'eau potable, puis égouttez-les soigneusement. Émincez la ciboule en fines rondelles et préparez des quartiers de citron vert. Ne pressez pas tous les citrons dans le bouillon maintenant : chacun ajustera l'acidité à table. Les pousses de soja se servent fraîches dans certaines versions ; pour les personnes vulnérables, notamment femmes enceintes ou personnes immunodéprimées, préférez les cuire à cœur plutôt que les servir crues, car les graines germées présentent des risques microbiologiques. Placez les garnitures sur un plat propre séparé. Vérifiez vos nouilles : fraîches ou sèches, elles n'ont pas toujours le même temps de cuisson. Lisez le paquet avant d'allumer le feu. Prenez le temps de terminer vos découpes et faites pause si besoin. Nous allons commencer avec un bouillon clair.
+Préparons maintenant les éléments qui finiront dans le bol. Sortez le porc frais juste avant de le travailler. S'il est haché, séparez le porc haché en petites portions pour qu'il n'y ait pas de grosses boulettes crues au milieu. S'il est émincé, faites de fines lanières régulières, suffisamment petites pour cuire dans le bouillon frémissant. Ne tranchez pas sur la même planche que les crudités sans avoir lavé planche, couteau et mains. Rincez les pousses de soja et les feuilles de coriandre dans de l'eau potable, puis égouttez-les soigneusement. Émincez la ciboule en fines rondelles et préparez des quartiers de citron vert. Ne pressez pas tous les citrons dans le bouillon maintenant : chacun ajustera l'acidité à table. Les pousses de soja se servent fraîches dans certaines versions ; pour les personnes vulnérables, notamment femmes enceintes ou personnes immunodéprimées, préférez les cuire à cœur plutôt que les servir crues, car les graines germées présentent des risques microbiologiques. Placez les garnitures sur un plat propre séparé. Vérifiez vos nouilles : fraîches ou sèches, elles n'ont pas toujours le même temps de cuisson. Lisez le paquet avant d'allumer le feu. Prenez le temps de terminer vos découpes et faites pause si besoin. Nous allons commencer avec un bouillon clair.
 
 ### Chapitre 4 sur 7 — Assaisonner le bouillon sans le réduire
 
