@@ -34,6 +34,17 @@ if(mode!=='--plan'&&(guide.status!=='draft'||guide.audio.status!=='script_only')
 const plan=buildCookingAudioStoryboard(guide);
 if(plan.numberOfChapters!==7||plan.chapters.some((c,i)=>c.id!==(i===0?'intro':PHASE_IDS[i-1])))throw Error('Chapitres non alignés.');
 const voiceTexts=plan.chapters.map(c=>c.text);
+const forbiddenCulinaryVocabulary=/\b(?:fabriqu\p{L}*|fabrication\p{L}*|constru\p{L}*|chantier\p{L}*|poste)\b/iu;
+if(forbiddenCulinaryVocabulary.test(guide.title+' '+voiceTexts.join(' ')))
+ throw Error('Texte vocal non conforme au vocabulaire culinaire : corriger les sept chapitres AVANT Coral.');
+const actualVoiceScriptSha256=createHash('sha256').update(JSON.stringify(voiceTexts)).digest('hex');
+const requiresTextApproval=mode.startsWith('--one=')||mode==='--assemble';
+if(requiresTextApproval && !(guide.review?.recipeValidated===true &&
+ guide.review?.editorialValidated===true &&
+ guide.audio?.editorialTextApproved===true &&
+ guide.audio?.approvedScriptSha256===actualVoiceScriptSha256))
+ throw Error('STOP CORAL : recette et sept textes non valides explicitement. Aucun appel TTS sans accord editorial et empreinte du script approuve.');
+
 const v2=guide.audio.storyboardVersion===2;
 // Lok Lak V2 is immutable: recording already listened to and approved.
 // Only the five non-Lok-Lak blueprints explicitly upgraded to V2 are eligible.
