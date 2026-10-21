@@ -182,7 +182,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
       <h2 id="fca-steps-heading">La recette, étape par étape.</h2>
       <p><strong>Repère de durée :</strong> {guide.duration.waitingNote}</p>
       <p>Respectez l’ordre des préparations et vérifiez les repères avant de poursuivre. {guide.sourceRecipeSlug==='lok-lak' ? 'Prévoyez environ vingt minutes de marinade au réfrigérateur : profitez-en pour préparer les crudités et le condiment.' : ''} La recette reste entièrement accessible par écrit, même sans MP3.</p>
-      {guideAudio ? <CookingWorkshopAudio manifest={guideAudio} scripts={audioTexts} /> : <p class="fca-preview">La narration sera proposée après validation des textes et nouvel enregistrement.</p>}
+      {guideAudio ? <CookingWorkshopAudio manifest={guideAudio} scripts={audioTexts} /> : <p class="fca-preview">{guide.review.editorialValidated ? "Textes validés. La nouvelle narration audio est en préparation ; suivez les étapes écrites en attendant." : "La narration sera proposée après validation des textes et enregistrement."}</p>}
       <nav class="fca-steps-nav" aria-label="Aller directement à une étape">
         {guide.phases.map((phase, i) => (
           <a href={'#phase-' + phase.id}><span>{String(i+1).padStart(2,'0')}</span>{phase.title}</a>
