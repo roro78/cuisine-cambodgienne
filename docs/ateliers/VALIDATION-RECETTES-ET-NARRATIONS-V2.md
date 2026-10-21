@@ -2,15 +2,15 @@
 
 **Document de validation ÉDITORIALE AVANT toute nouvelle génération audio — NON VALIDÉ.**
 
-Ce document reproduit le texte des cinq recettes canoniques et les 35 chapitres narratifs réellement transmis à Coral V2. Les MP3 déjà créés sont des enregistrements de préécoute, pas des textes approuvés. **Aucune nouvelle synthèse ne doit être lancée avant ton accord explicite sur les textes corrigés.**
+Ce document présente les cinq recettes de référence et 35 chapitres corrigés. Il s'agit d'une version éditoriale à valider avant toute nouvelle synthèse Coral. Les anciens MP3 ne correspondent plus à ce texte.
 
-**Vocabulaire à revoir :** « fabriquer une recette » → « préparer un plat » ; « construire une sauce » → « préparer / faire mijoter / lier une sauce » ; « monter les bols » → « dresser les bols » ; « poste » → « plan de travail ». Certains mots comme « monter » sont légitimes quand ils décrivent les bulles du bouillon ou une technique culinaire : chaque correction doit suivre le geste réel.
+**Lexique corrigé :** préparations, gestes, cuissons, assaisonnements et dressage. Les formulations empruntées à d'autres métiers ont été retirées.
 
 ---
 
 # 1. Kroeung jaune
 
-**Titre de l’atelier :** Fabriquer un kroeung jaune au mortier
+**Titre de l’atelier :** Préparer un kroeung jaune au mortier
 
 **Portions de la recette actuelle :** 1 petit pot ; **préparation :** 25 min ; **cuisson :** 0 min
 
@@ -84,7 +84,7 @@ Continuez jusqu’à ne presque plus sentir de gros morceaux sous le pilon.
 - Manier le couteau sur une planche stable.
 - Ne pas déguster la pâte aromatique crue comme si elle constituait un plat complet ; elle parfume les préparations.
 
-### Temps de cuisine 1 — Organiser le poste et mesurer les aromates
+### Temps de cuisine 1 — Préparer le plan de travail et mesurer les aromates
 
 **Gestes :**
 
@@ -93,7 +93,7 @@ Continuez jusqu’à ne presque plus sentir de gros morceaux sous le pilon.
 
 **Observer :** Chaque ingrédient est visible, identifiable et mesuré ; rien ne manque.
 
-**Vérifier le résultat :** Le poste est prêt et tous les ingrédients de la recette sont réunis.
+**Vérifier le résultat :** Le plan de travail est prêt et tous les ingrédients de la recette sont réunis.
 
 **Éviter :** Commencer à piler avant d'avoir taillé les aromates oblige à interrompre le travail.
 
@@ -198,15 +198,15 @@ Continuez jusqu’à ne presque plus sentir de gros morceaux sous le pilon.
 
 **Précaution :** Gardez la préparation propre et au frais avant son utilisation.
 
-## C — Textes intégraux des sept chapitres déjà enregistrés avec Coral V2
+## C — Sept narrations corrigées à valider avant Coral
 
-**Attention : ces textes sont reproduits sans retouche pour permettre la validation. Ils ne doivent pas être réputés approuvés du seul fait qu’un MP3 existe.**
+**Ces textes ont été corrigés. Les MP3 historiques ne correspondent plus : validation éditoriale exigée avant toute nouvelle synthèse.**
 
 ### Chapitre 1 sur 7 — Introduction
 
-Coucou, bienvenue dans notre cuisine ! Aujourd'hui, on ne va pas simplement parler d'épices : on va fabriquer ensemble un vrai kroeung jaune, cette pâte aromatique qui donne du caractère à plusieurs plats cambodgiens. À la fin, vous aurez dans un récipient votre propre pâte, bien liée, que vous pourrez incorporer dans une préparation cuite. Le geste essentiel, c'est de transformer des racines fibreuses en une pâte fine grâce à la découpe puis au pilon. Avant de commencer, choisissez votre nombre de petits pots sur la fiche et mesurez toutes les quantités affichées. Je ne vais pas vous imposer des grammages dans le son : c'est votre fiche qui fait foi. Il nous faudra un mortier stable, un pilon, une planche, un couteau, une spatule propre et un récipient refermable. On ne goûtera pas ce kroeung cru comme un plat fini. Prenez vos aises : si un geste demande plus de temps, vous pouvez faire pause et relancer l'enregistrement. Je vous accompagnerai de la première coupe au dernier coup de pilon.
+Coucou, bienvenue dans notre cuisine ! Aujourd'hui, on ne va pas simplement parler d'épices : on va préparer ensemble un vrai kroeung jaune, cette pâte aromatique qui donne du caractère à plusieurs plats cambodgiens. À la fin, vous aurez dans un récipient votre propre pâte, bien liée, que vous pourrez incorporer dans une préparation cuite. Le geste essentiel, c'est de transformer des racines fibreuses en une pâte fine grâce à la découpe puis au pilon. Avant de commencer, choisissez votre nombre de petits pots sur la fiche et mesurez toutes les quantités affichées. Je ne vais pas vous imposer des grammages dans le son : c'est votre fiche qui fait foi. Il nous faudra un mortier stable, un pilon, une planche, un couteau, une spatule propre et un récipient refermable. On ne goûtera pas ce kroeung cru comme un plat fini. Prenez vos aises : si un geste demande plus de temps, vous pouvez faire pause et relancer l'enregistrement. Je vous accompagnerai de la première coupe au dernier coup de pilon.
 
-### Chapitre 2 sur 7 — Organiser le poste et mesurer les aromates
+### Chapitre 2 sur 7 — Préparer le plan de travail et mesurer les aromates
 
 Bonjour à votre plan de travail ! Avant de toucher à la citronnelle, posez votre mortier sur une surface qui ne glisse pas. Un torchon plié et propre dessous peut aider à l'immobiliser : ce n'est pas une invitation à poser les doigts dans le bol pendant qu'on pile. Gardez le pilon à portée de main, la planche stable, le couteau bien affûté, la spatule et un récipient propre pour la fin. Regardez votre fiche et rassemblez la citronnelle, le galanga, le curcuma frais, le zeste de combava, l'ail et les échalotes. Toutes les quantités sont adaptées aux convives que vous avez choisis. Posez les aromates les plus fibreux d'un côté ; les plus tendres, comme l'ail et l'échalote, de l'autre. Cette petite organisation a une raison : si l'on commence par les ingrédients mous, ils collent au fond et les fibres dures échappent au pilon. Lavez-vous les mains et préparez une zone pour les déchets. Le curcuma colore durablement les mains et certaines surfaces : protégez votre planche si nécessaire. Si votre mortier est petit, nous travaillerons en plusieurs apports sans chercher à tout comprimer d'un coup. Prenez le temps de vérifier les aromates sur la fiche ; faites pause pour vous installer si besoin. Voilà, on peut passer aux découpes.
 
@@ -216,7 +216,7 @@ On commence par le détail qui fera vraiment la différence : la finesse de la d
 
 ### Chapitre 4 sur 7 — Commencer avec les fibres fermes
 
-Maintenant, on va construire notre pâte dans le bon ordre. Mettez dans le mortier une petite portion de citronnelle très finement émincée, puis un peu de galanga. Pas toute la préparation en une fois : le pilon doit pouvoir atteindre le fond du mortier sans que les rondelles sautent à côté. Frappez de façon contrôlée, verticalement puis légèrement en rotation, et ramenez avec la spatule les morceaux qui se collent aux parois. Attention : la spatule s'utilise seulement lorsque le pilon est arrêté. Le bruit change progressivement. Au début, on entend des coups secs et les lamelles rebondissent ; ensuite, les fibres deviennent humides, s'écrasent et adhèrent un peu au fond. C'est un excellent repère. Si la citronnelle résiste encore, ne versez pas de l'eau pour aller plus vite. Retirez les grosses fibres visibles, recoupez-les plus finement et reprenez. Ajoutez le reste de citronnelle et de galanga en petites séries, jusqu'à ce que tout ce qui est prévu sur votre fiche soit incorporé. Certaines cuisinières commencent plutôt par le galanga : les deux ordres existent. Ici, notre objectif est surtout d'écraser les parties dures avant les aromates tendres. Prenez votre temps, profitez-en pour sentir l'arôme qui se libère ; puis, si nécessaire, faites pause avant les autres ingrédients.
+Maintenant, on va préparer notre pâte en pilant les aromates dans le bon ordre. Mettez dans le mortier une petite portion de citronnelle très finement émincée, puis un peu de galanga. Pas toute la préparation en une fois : le pilon doit pouvoir atteindre le fond du mortier sans que les rondelles sautent à côté. Frappez de façon contrôlée, verticalement puis légèrement en rotation, et ramenez avec la spatule les morceaux qui se collent aux parois. Attention : la spatule s'utilise seulement lorsque le pilon est arrêté. Le bruit change progressivement. Au début, on entend des coups secs et les lamelles rebondissent ; ensuite, les fibres deviennent humides, s'écrasent et adhèrent un peu au fond. C'est un excellent repère. Si la citronnelle résiste encore, ne versez pas de l'eau pour aller plus vite. Retirez les grosses fibres visibles, recoupez-les plus finement et reprenez. Ajoutez le reste de citronnelle et de galanga en petites séries, jusqu'à ce que tout ce qui est prévu sur votre fiche soit incorporé. Certaines cuisinières commencent plutôt par le galanga : les deux ordres existent. Ici, notre objectif est surtout d'écraser les parties dures avant les aromates tendres. Prenez votre temps, profitez-en pour sentir l'arôme qui se libère ; puis, si nécessaire, faites pause avant les autres ingrédients.
 
 ### Chapitre 5 sur 7 — Transformer les aromates en pâte
 
@@ -228,7 +228,7 @@ Avant de ranger le pilon, faisons le test de la cuillère. Prélevez une petite 
 
 ### Chapitre 7 sur 7 — Conditionner la pâte et retenir le geste
 
-Et voilà, nous avons fabriqué notre kroeung jaune. Raclez la pâte avec une spatule propre, rassemblez-la dans un récipient parfaitement propre et refermez-le. Évitez d'y remettre une cuillère qui a touché d'autres aliments. Cette préparation aromatique doit être conservée au frais et utilisée rapidement, ou congelée en petites portions bien étiquetées si vous voulez en garder pour un autre jour. Ne laissez pas le pot attendre sur le plan de travail après l'atelier ; les durées exactes de conservation dépendent de la préparation et des conditions d'hygiène. Ce n'est pas une préparation qu'on déguste à la petite cuillère. Lors de votre prochain plat mijoté, vous pourrez l'incorporer selon la recette choisie et laisser les arômes se développer à la cuisson. J'aimerais que vous reteniez trois gestes : couper très fin avant de piler, travailler les fibres dures avant les aromates tendres, et juger la texture avec les yeux et la cuillère plutôt qu'avec un chronomètre. Même si votre pâte n'est pas aussi fine que celle d'un chef au premier essai, ces critères vous donnent une vraie façon de progresser. Merci d'avoir cuisiné avec moi. À bientôt pour utiliser ce kroeung dans un plat, et bonne cuisine !
+Et voilà, notre kroeung jaune est prêt. Raclez la pâte avec une spatule propre, rassemblez-la dans un récipient parfaitement propre et refermez-le. Évitez d'y remettre une cuillère qui a touché d'autres aliments. Cette préparation aromatique doit être conservée au frais et utilisée rapidement, ou congelée en petites portions bien étiquetées si vous voulez en garder pour un autre jour. Ne laissez pas le pot attendre sur le plan de travail après l'atelier ; les durées exactes de conservation dépendent de la préparation et des conditions d'hygiène. Ce n'est pas une préparation qu'on déguste à la petite cuillère. Lors de votre prochain plat mijoté, vous pourrez l'incorporer selon la recette choisie et laisser les arômes se développer à la cuisson. J'aimerais que vous reteniez trois gestes : couper très fin avant de piler, travailler les fibres dures avant les aromates tendres, et juger la texture avec les yeux et la cuillère plutôt qu'avec un chronomètre. Même si votre pâte n'est pas aussi fine que celle d'un chef au premier essai, ces critères vous donnent une vraie façon de progresser. Merci d'avoir cuisiné avec moi. À bientôt pour utiliser ce kroeung dans un plat, et bonne cuisine !
 
 ## D — Sources et validation
 
@@ -319,7 +319,7 @@ Répartissez le riz jasmin chaud dans quatre assiettes. Déposez le porc entièr
 - Pour les tranches de porc issues d'un morceau entier, vérifiez au thermomètre au moins 63 °C à cœur et laissez reposer 3 minutes avant de servir ; si vous utilisez du porc haché, visez 71 °C.
 - Servez le riz dès qu'il est cuit ou refroidissez-le rapidement puis réfrigérez-le : du riz laissé tiédir longtemps peut favoriser Bacillus cereus, et le simple réchauffage ne garantit pas l'élimination des toxines.
 
-### Temps de cuisine 1 — Mesurer les ingrédients et préparer le poste
+### Temps de cuisine 1 — Mesurer les ingrédients et préparer le plan de travail
 
 **Gestes :**
 
@@ -328,7 +328,7 @@ Répartissez le riz jasmin chaud dans quatre assiettes. Déposez le porc entièr
 
 **Observer :** Chaque élément a sa place et les pickles sont déjà préparés.
 
-**Vérifier le résultat :** Le poste permet de gérer cuisson du riz et saisie du porc sans confusion.
+**Vérifier le résultat :** Le plan de travail permet de suivre cuisson du riz et saisie du porc sans confusion.
 
 **Éviter :** Commencer avec des pickles non préparés impose une recette supplémentaire en plein atelier.
 
@@ -351,7 +351,7 @@ Répartissez le riz jasmin chaud dans quatre assiettes. Déposez le porc entièr
 
 **Éviter :** Des tranches très épaisses peuvent brûler dehors avant de cuire correctement dedans.
 
-**Corriger :** Recoupez ou aplatissez légèrement des tranches trop épaisses, en gardant le poste propre.
+**Corriger :** Recoupez ou aplatissez légèrement des tranches trop épaisses, en gardant les ustensiles et le plan de travail propres.
 
 **Technique apprise :** La régularité des tranches facilite la coloration et la cuisson complète.
 
@@ -433,17 +433,17 @@ Répartissez le riz jasmin chaud dans quatre assiettes. Déposez le porc entièr
 
 **Précaution :** Ne laissez pas longtemps le porc cuit à température ambiante ; réfrigérez rapidement les restes.
 
-## C — Textes intégraux des sept chapitres déjà enregistrés avec Coral V2
+## C — Sept narrations corrigées à valider avant Coral
 
-**Attention : ces textes sont reproduits sans retouche pour permettre la validation. Ils ne doivent pas être réputés approuvés du seul fait qu’un MP3 existe.**
+**Ces textes ont été corrigés. Les MP3 historiques ne correspondent plus : validation éditoriale exigée avant toute nouvelle synthèse.**
 
 ### Chapitre 1 sur 7 — Introduction
 
 Bonjour et bienvenue ! Aujourd'hui, nous préparons un Bai Sach Chrouk : du porc finement coupé, mariné puis doré, servi avec du riz jasmin et des pickles croquants. Ce n'est pas juste une cuisson de viande : on va organiser tout un repas cambodgien, avec le contraste entre le sucré-salé du porc, le riz tendre et les légumes acidulés. Choisissez d'abord le nombre de convives sur votre fiche et mesurez les quantités qui s'affichent. Dans cet enregistrement, je nomme les ingrédients et les repères techniques, sans vous imposer une quantité pour quatre personnes. Prenez votre casserole à riz, une passoire, une grande poêle ou plancha, un saladier pour la marinade, une planche, un couteau, une spatule, un thermomètre alimentaire et des assiettes propres. Nous laisserons la viande mariner au froid, puis nous cuisinerons le riz pendant ce repos. Vous pourrez mettre l'audio en pause aux moments utiles : rien ne se déclenche tout seul. On cuisine ensemble, tranquillement et dans le bon ordre.
 
-### Chapitre 2 sur 7 — Mesurer les ingrédients et préparer le poste
+### Chapitre 2 sur 7 — Mesurer les ingrédients et préparer le plan de travail
 
-On installe notre poste avant de manipuler la viande. Placez devant vous le saladier de marinade, la poêle encore éteinte, la casserole et son couvercle, la passoire, une spatule, une planche stable et un couteau propre. Prévoyez aussi un thermomètre si vous en avez un, une pince réservée au porc cru et une autre propre pour le service. Du côté des ingrédients, retrouvez sur la fiche les fines tranches de porc, l'ail, la sauce soja, la sauce de poisson et le sucre roux ; à part, le riz jasmin cru et les pickles de concombre et carotte. La fiche précise les quantités correspondant à votre table. Pour cette version, les pickles sont une préparation préalable : ne les improvisez pas en versant du vinaigre directement sur l'assiette. Ils doivent déjà avoir été préparés et égouttés ; je vous explique plus loin leur rôle et comment contrôler leur texture. Si vous les faites vous-même, utilisez une recette de pickles express au réfrigérateur avec des légumes propres et une saumure vinaigrée adaptée, pas une conservation en bocaux à température ambiante. Vérifiez sur les étiquettes la présence possible de blé dans la sauce soja et de poisson dans la sauce de poisson. Gardez le cru éloigné des garnitures prêtes à manger. Faites pause pour tout mesurer et installer votre coin de cuisine ; on commence par l'ail et le porc.
+On prépare notre plan de travail avant de manipuler la viande. Placez devant vous le saladier de marinade, la poêle encore éteinte, la casserole et son couvercle, la passoire, une spatule, une planche stable et un couteau propre. Prévoyez aussi un thermomètre si vous en avez un, une pince réservée au porc cru et une autre propre pour le service. Du côté des ingrédients, retrouvez sur la fiche les fines tranches de porc, l'ail, la sauce soja, la sauce de poisson et le sucre roux ; à part, le riz jasmin cru et les pickles de concombre et carotte. La fiche précise les quantités correspondant à votre table. Pour cette version, les pickles sont une préparation préalable : ne les improvisez pas en versant du vinaigre directement sur l'assiette. Ils doivent déjà avoir été préparés et égouttés ; je vous explique plus loin leur rôle et comment contrôler leur texture. Si vous les faites vous-même, utilisez une recette de pickles express au réfrigérateur avec des légumes propres et une saumure vinaigrée adaptée, pas une conservation en bocaux à température ambiante. Vérifiez sur les étiquettes la présence possible de blé dans la sauce soja et de poisson dans la sauce de poisson. Gardez le cru éloigné des garnitures prêtes à manger. Faites pause pour tout mesurer et installer votre coin de cuisine ; on commence par l'ail et le porc.
 
 ### Chapitre 3 sur 7 — Préparer le porc et hacher l'ail
 
@@ -564,7 +564,7 @@ Coupez le feu, lavez puis ciselez la coriandre ou le basilic asiatique, et ajout
 
 **Observer :** Le bouillon est clair et peu salé ; les ingrédients sont regroupés séparément.
 
-**Vérifier le résultat :** Le poste est prêt et la source d'acidité est identifiée.
+**Vérifier le résultat :** Le plan de travail est prêt et la source d'acidité est identifiée.
 
 **Éviter :** Utiliser un bouillon déjà très salé risque de déséquilibrer la soupe plus tard.
 
@@ -578,7 +578,7 @@ Coupez le feu, lavez puis ciselez la coriandre ou le basilic asiatique, et ajout
 
 **Gestes :**
 
-- Coupez les le poisson ou le poulet pesé sur la fiche en morceaux réguliers ; tranchez les les tomates prévues et détaillez l'ananas en dés, ou la courgette selon la variante choisie.
+- Coupez le poisson ou le poulet pesé sur la fiche en morceaux réguliers ; coupez les tomates prévues et détaillez l'ananas en dés, ou la courgette selon la variante choisie.
 - Préparez le jus de tamarin filtré mesuré sur la fiche, lavez les herbes fraîches puis réservez-les séparément pour les ajouter uniquement en finition.
 
 **Observer :** Les morceaux ont des tailles proches et le tamarin est liquide, sans grosses fibres.
@@ -646,7 +646,7 @@ Coupez le feu, lavez puis ciselez la coriandre ou le basilic asiatique, et ajout
 
 **Corriger :** Réservez d'abord une partie du tamarin, goûtez, puis ajoutez-en peu à peu selon le résultat.
 
-**Technique apprise :** L'équilibre aigre, salé et doux se construit par petites corrections mesurées.
+**Technique apprise :** L'équilibre entre acidité, sel et douceur se règle en goûtant et en ajustant les assaisonnements progressivement.
 
 **Précaution :** Laissez refroidir la cuillère prélevée avant de goûter pour éviter toute brûlure.
 
@@ -669,9 +669,9 @@ Coupez le feu, lavez puis ciselez la coriandre ou le basilic asiatique, et ajout
 
 **Précaution :** Versez le liquide chaud avec précaution ; refroidissez rapidement tout reste non consommé.
 
-## C — Textes intégraux des sept chapitres déjà enregistrés avec Coral V2
+## C — Sept narrations corrigées à valider avant Coral
 
-**Attention : ces textes sont reproduits sans retouche pour permettre la validation. Ils ne doivent pas être réputés approuvés du seul fait qu’un MP3 existe.**
+**Ces textes ont été corrigés. Les MP3 historiques ne correspondent plus : validation éditoriale exigée avant toute nouvelle synthèse.**
 
 ### Chapitre 1 sur 7 — Introduction
 
@@ -758,7 +758,7 @@ Faites cuire les 300 g de nouilles de riz dans une autre casserole en suivant la
 
 **À éviter :** Les laisser attendre dans l’eau chaude les rend molles.
 
-**4. Monter les bols**
+**4. Dresser les bols**
 
 Répartissez nouilles et porc, puis versez le bouillon brûlant.
 
@@ -768,7 +768,7 @@ Rincez les pousses de soja et la coriandre, puis émincez la coriandre et les de
 
 ## B — Atelier pratique, à relire et corriger
 
-**Objectif :** Construire un bouillon cambodgien clair et correctement assaisonné, cuire le porc et les nouilles séparément puis assembler quatre vrais bols de Kuy Teav.
+**Objectif :** Préparer un bouillon cambodgien clair et correctement assaisonné, cuire le porc et les nouilles séparément puis dresser des bols généreux de Kuy Teav.
 
 **Préparation attendue :** Quatre bols de Kuy Teav complets : nouilles de riz, porc entièrement cuit, bouillon parfumé et garnitures fraîches.
 
@@ -808,7 +808,7 @@ Rincez les pousses de soja et la coriandre, puis émincez la coriandre et les de
 
 **Corriger :** Réservez une casserole d'eau pour les nouilles et gardez le bouillon clair.
 
-**Technique apprise :** Le montage d'un bol commence avec un bouillon maîtrisé et une organisation simple.
+**Technique apprise :** Le dressage d'un bol commence avec un bouillon maîtrisé et une organisation simple.
 
 **Précaution :** Respectez les précautions de sécurité avec les récipients profonds de liquide très chaud.
 
@@ -888,7 +888,7 @@ Rincez les pousses de soja et la coriandre, puis émincez la coriandre et les de
 
 **Précaution :** Ne manipulez pas la passoire au-dessus du visage ; attention à l'eau bouillante.
 
-### Temps de cuisine 6 — Monter les bols et ajouter les aromates
+### Temps de cuisine 6 — Dresser les bols et ajouter les aromates
 
 **Gestes :**
 
@@ -907,17 +907,17 @@ Rincez les pousses de soja et la coriandre, puis émincez la coriandre et les de
 
 **Précaution :** Le bouillon est brûlant ; déposez les bols sur un support stable et servez avec prudence.
 
-## C — Textes intégraux des sept chapitres déjà enregistrés avec Coral V2
+## C — Sept narrations corrigées à valider avant Coral
 
-**Attention : ces textes sont reproduits sans retouche pour permettre la validation. Ils ne doivent pas être réputés approuvés du seul fait qu’un MP3 existe.**
+**Ces textes ont été corrigés. Les MP3 historiques ne correspondent plus : validation éditoriale exigée avant toute nouvelle synthèse.**
 
 ### Chapitre 1 sur 7 — Introduction
 
-Coucou ! Aujourd'hui, on prépare un Kuy Teav, un grand bol de nouilles de riz avec du porc, un bouillon parfumé et des garnitures fraîches. Vous allez apprendre à organiser trois textures qui n'ont pas le même rythme : le bouillon doit rester clair et chaud, le porc doit être correctement cuit et les nouilles doivent rester souples, jamais transformées en pâte. Choisissez vos convives sur la fiche et mesurez les ingrédients en conséquence. Dans cette piste préenregistrée, les quantités varient avec votre fiche ; je vais vous guider plutôt sur les gestes et les repères. Il vous faut deux casseroles, une passoire, une écumoire, une louche, une planche et un couteau, un thermomètre si possible et des bols de service. Notre recette part d'un bouillon de porc ou de volaille déjà prêt, maison ou du commerce ; sa longue fabrication éventuelle ne tient pas dans le temps de cet atelier, et je vais expliquer comment le choisir et le préparer pour le service. Vous pourrez mettre en pause pendant la cuisson et reprendre à votre rythme. Allez, on s'y met !
+Coucou ! Aujourd'hui, on prépare un Kuy Teav, un grand bol de nouilles de riz avec du porc, un bouillon parfumé et des garnitures fraîches. Vous allez apprendre à organiser trois textures qui n'ont pas le même rythme : le bouillon doit rester clair et chaud, le porc doit être correctement cuit et les nouilles doivent rester souples, jamais transformées en pâte. Choisissez vos convives sur la fiche et mesurez les ingrédients en conséquence. Dans cette piste préenregistrée, les quantités varient avec votre fiche ; je vais vous guider plutôt sur les gestes et les repères. Il vous faut deux casseroles, une passoire, une écumoire, une louche, une planche et un couteau, un thermomètre si possible et des bols de service. Notre recette part d'un bouillon de porc ou de volaille déjà prêt, maison ou du commerce ; sa préparation traditionnelle ne tient pas dans le temps de cet atelier, et je vais expliquer comment le choisir et le préparer pour le service. Vous pourrez mettre en pause pendant la cuisson et reprendre à votre rythme. Allez, on s'y met !
 
 ### Chapitre 2 sur 7 — Vérifier le bouillon et installer les casseroles
 
-On se donne un plan de travail bien organisé. Posez deux casseroles sur la plaque encore éteinte : la première accueillera le bouillon et le porc, la seconde servira uniquement pour les nouilles. Mettez une passoire résistante à la chaleur près de l'évier, une louche, une écumoire, le couteau, la planche, un thermomètre alimentaire si vous en avez un, et des bols profonds propres. Sur la fiche, mesurez vos nouilles de riz, le porc haché ou émincé, le bouillon, la sauce de poisson, le sucre, la coriandre, la ciboule, les pousses de soja et les citrons verts. Le bouillon doit être une vraie base liquide déjà préparée. Si vous l'avez fait vous-même à l'avance avec des os ou des morceaux de porc et des aromates, il doit avoir été correctement cuit, filtré et conservé au frais. Sinon, choisissez un bouillon prêt à l'emploi de volaille ou de porc, peu salé, puis reconstituez-le exactement selon son étiquette avant de le mesurer. Les versions traditionnelles peuvent mijoter des heures ; ici, on ne prétend pas les fabriquer en quelques minutes. Vérifiez la liste des ingrédients du bouillon et de la sauce de poisson pour les allergies. Gardez le porc cru d'un côté, les herbes fraîches de l'autre ; les ustensiles de service ne toucheront pas la viande crue. Vous pouvez mettre pause pour installer vos deux zones de cuisson. Lorsque tout est prêt, préparons les garnitures.
+On se donne un plan de travail bien organisé. Posez deux casseroles sur la plaque encore éteinte : la première accueillera le bouillon et le porc, la seconde servira uniquement pour les nouilles. Mettez une passoire résistante à la chaleur près de l'évier, une louche, une écumoire, le couteau, la planche, un thermomètre alimentaire si vous en avez un, et des bols profonds propres. Sur la fiche, mesurez vos nouilles de riz, le porc haché ou émincé, le bouillon, la sauce de poisson, le sucre, la coriandre, la ciboule, les pousses de soja et les citrons verts. Le bouillon doit être une vraie base liquide déjà préparée. Si vous l'avez fait vous-même à l'avance avec des os ou des morceaux de porc et des aromates, il doit avoir été correctement cuit, filtré et conservé au frais. Sinon, choisissez un bouillon prêt à l'emploi de volaille ou de porc, peu salé, puis reconstituez-le exactement selon son étiquette avant de le mesurer. Les versions traditionnelles peuvent mijoter des heures ; ici, on ne prétend pas les préparer en quelques minutes. Vérifiez la liste des ingrédients du bouillon et de la sauce de poisson pour les allergies. Gardez le porc cru d'un côté, les herbes fraîches de l'autre ; les ustensiles de service ne toucheront pas la viande crue. Vous pouvez mettre pause pour installer vos deux zones de cuisson. Lorsque tout est prêt, préparons les garnitures.
 
 ### Chapitre 3 sur 7 — Préparer le porc et la garniture végétale
 
@@ -933,11 +933,11 @@ Nous allons cuire le porc directement dans ce bouillon, une technique simple si 
 
 ### Chapitre 6 sur 7 — Cuire les nouilles et contrôler l'assaisonnement
 
-Allumez maintenant la seconde casserole pour les nouilles. Faites chauffer suffisamment d'eau potable et suivez la notice de votre paquet : les nouilles de riz sèches demandent parfois un trempage, les fraîches souvent une cuisson très brève. Remuez délicatement pour séparer les brins sans les écraser, puis prélevez-en un et vérifiez qu'il est souple mais encore distinct. Égouttez aussitôt dans une passoire résistante à la chaleur ; attention aux nuages de vapeur. Si les nouilles collent entre elles, détachez-les délicatement sans les laisser recuire longtemps, sinon elles se défont. Pendant ce temps, le bouillon peut rester chaud à petit frémissement. Lorsque le porc a atteint une cuisson sûre, prélevez une petite cuillère de bouillon et laissez-la refroidir avant de goûter. Est-ce trop salé ? Ajoutez progressivement un peu de bouillon peu salé ou d'eau chaude, plutôt que du sucre en excès. Trop fade ? Ajoutez une petite quantité de sauce de poisson, mélangez et regoûtez, sans répéter tout le dosage initial. Si le niveau du bouillon a baissé, complétez de façon mesurée. Ne mettez pas les nouilles cuites dans la grande casserole à attendre : elles gonfleraient et brouilleraient le bouillon. Faites une pause si les nouilles demandent votre attention ; nous terminerons le montage juste après.
+Allumez maintenant la seconde casserole pour les nouilles. Faites chauffer suffisamment d'eau potable et suivez la notice de votre paquet : les nouilles de riz sèches demandent parfois un trempage, les fraîches souvent une cuisson très brève. Remuez délicatement pour séparer les brins sans les écraser, puis prélevez-en un et vérifiez qu'il est souple mais encore distinct. Égouttez aussitôt dans une passoire résistante à la chaleur ; attention aux nuages de vapeur. Si les nouilles collent entre elles, détachez-les délicatement sans les laisser recuire longtemps, sinon elles se défont. Pendant ce temps, le bouillon peut rester chaud à petit frémissement. Lorsque le porc a atteint une cuisson sûre, prélevez une petite cuillère de bouillon et laissez-la refroidir avant de goûter. Est-ce trop salé ? Ajoutez progressivement un peu de bouillon peu salé ou d'eau chaude, plutôt que du sucre en excès. Trop fade ? Ajoutez une petite quantité de sauce de poisson, mélangez et regoûtez, sans répéter tout le dosage initial. Si le niveau du bouillon a baissé, complétez de façon mesurée. Ne mettez pas les nouilles cuites dans la grande casserole à attendre : elles gonfleraient et brouilleraient le bouillon. Faites une pause si les nouilles demandent votre attention ; nous terminerons le dressage juste après.
 
-### Chapitre 7 sur 7 — Monter les bols et ajouter les aromates
+### Chapitre 7 sur 7 — Dresser les bols et ajouter les aromates
 
-Il ne reste qu'à monter les bols. Répartissez d'abord les nouilles égouttées dans des récipients profonds et stables. Posez par-dessus le porc entièrement cuit, puis versez le bouillon bien chaud à la louche, sans éclabousser. Ajoutez au dernier moment la ciboule, la coriandre et les pousses de soja lavées ou cuites selon le public qui va manger. Servez les quartiers de citron vert à part : une pression suffit parfois à réveiller les parfums. Regardez ce contraste : les nouilles restent séparées, les garnitures apportent de la fraîcheur et le bouillon relie le tout sans devenir trop salé. Vous pouvez goûter une bouchée de nouilles, puis une cuillère de bouillon, pour comprendre leur équilibre. Un Kuy Teav réussi n'a pas besoin d'être très compliqué, mais l'ordre compte. Préparer son stock en avance, cuire correctement la viande, égoutter les nouilles à temps et terminer les herbes au service : voilà les gestes essentiels. S'il vous reste du bouillon et du porc, réfrigérez rapidement les restes ; conservez de préférence les nouilles séparément pour éviter qu'elles ne deviennent molles. Merci d'avoir cuisiné avec moi. Je vous souhaite une très belle dégustation, et bon appétit !
+Il ne reste qu'à dresser les bols. Répartissez d'abord les nouilles égouttées dans des récipients profonds et stables. Posez par-dessus le porc entièrement cuit, puis versez le bouillon bien chaud à la louche, sans éclabousser. Ajoutez au dernier moment la ciboule, la coriandre et les pousses de soja lavées ou cuites selon le public qui va manger. Servez les quartiers de citron vert à part : une pression suffit parfois à réveiller les parfums. Regardez ce contraste : les nouilles restent séparées, les garnitures apportent de la fraîcheur et le bouillon relie le tout sans devenir trop salé. Vous pouvez goûter une bouchée de nouilles, puis une cuillère de bouillon, pour comprendre leur équilibre. Un Kuy Teav réussi n'a pas besoin d'être très compliqué, mais l'ordre compte. Préparer son stock en avance, cuire correctement la viande, égoutter les nouilles à temps et terminer les herbes au service : voilà les gestes essentiels. S'il vous reste du bouillon et du porc, réfrigérez rapidement les restes ; conservez de préférence les nouilles séparément pour éviter qu'elles ne deviennent molles. Merci d'avoir cuisiné avec moi. Je vous souhaite une très belle dégustation, et bon appétit !
 
 ## D — Sources et validation
 
@@ -1019,7 +1019,7 @@ Blanchissez les 100 g de haricots verts fins dans l’eau bouillante jusqu’à 
 **Avant de cuisiner :**
 
 - Choisissez vos convives, puis mesurez tous les ingrédients sur la fiche.
-- Le kroeung jaune est une sous-préparation à faire avant ce cours (voir atelier Kroeung jaune) ou à acheter : il n'est pas fabriqué pendant cet atelier.
+- Le kroeung jaune est une sous-préparation à faire avant ce cours (voir atelier Kroeung jaune) ou à acheter : il doit être préparé avant cet atelier.
 - Prévoyez de l'eau potable pour pocher le poisson, cuire les nouilles et blanchir les haricots, des ustensiles propres et un moyen de retirer les arêtes.
 
 **Précautions :**
@@ -1037,7 +1037,7 @@ Blanchissez les 100 g de haricots verts fins dans l’eau bouillante jusqu’à 
 
 **Observer :** Le poisson, le lait de coco, le kroeung et les légumes sont clairement séparés.
 
-**Vérifier le résultat :** Le poste est prêt pour mener plusieurs cuissons sans perdre le fil.
+**Vérifier le résultat :** Le plan de travail est prêt pour mener plusieurs cuissons sans perdre le fil.
 
 **Éviter :** Commencer sans kroeung entraîne une interruption au milieu de la sauce.
 
@@ -1085,7 +1085,7 @@ Blanchissez les 100 g de haricots verts fins dans l’eau bouillante jusqu’à 
 
 **Précaution :** Contrôlez la cuisson complète du poisson et surveillez les arêtes avant le service.
 
-### Temps de cuisine 4 — Construire la sauce chaude au kroeung
+### Temps de cuisine 4 — Préparer la sauce chaude au kroeung
 
 **Gestes :**
 
@@ -1123,7 +1123,7 @@ Blanchissez les 100 g de haricots verts fins dans l’eau bouillante jusqu’à 
 
 **Précaution :** Surveillez l'eau bouillante et utilisez une passoire résistante à la chaleur.
 
-### Temps de cuisine 6 — Monter les bols et ajouter la fraîcheur
+### Temps de cuisine 6 — Dresser les bols et ajouter la fraîcheur
 
 **Gestes :**
 
@@ -1142,17 +1142,17 @@ Blanchissez les 100 g de haricots verts fins dans l’eau bouillante jusqu’à 
 
 **Précaution :** Servez le poisson entièrement cuit ; réfrigérez rapidement les restes non servis.
 
-## C — Textes intégraux des sept chapitres déjà enregistrés avec Coral V2
+## C — Sept narrations corrigées à valider avant Coral
 
-**Attention : ces textes sont reproduits sans retouche pour permettre la validation. Ils ne doivent pas être réputés approuvés du seul fait qu’un MP3 existe.**
+**Ces textes ont été corrigés. Les MP3 historiques ne correspondent plus : validation éditoriale exigée avant toute nouvelle synthèse.**
 
 ### Chapitre 1 sur 7 — Introduction
 
-Bonjour et bienvenue dans notre atelier Cuisine du Cambodge ! Aujourd'hui nous réalisons un Num Banh Chok, avec des nouilles de riz, une sauce chaude au poisson et au kroeung jaune, du lait de coco et beaucoup de fraîcheur. Notre objectif, c'est de maîtriser l'ordre des préparations : pocher le poisson sans le dessécher, l'émietter en retirant les arêtes, construire une sauce parfumée mais fluide, puis dresser avec des légumes croquants. Ce plat existe en plusieurs variantes cambodgiennes ; nous suivrons celle de notre fiche, avec du coco et du kroeung jaune. Choisissez votre nombre de convives et préparez les quantités sur la fiche. Le son accompagne vos gestes, pas les grammages qui changent avec les portions. Sortez deux casseroles, une passoire, une écumoire, une louche, une planche, un couteau, une fourchette, un thermomètre si possible et des bols propres. Le kroeung doit être préparé avant le cours ou acheté prêt ; on ne va pas prétendre le fabriquer ici en quelques secondes. Je vous préviendrai lorsqu'une pause est utile. Allez, on commence !
+Bonjour et bienvenue dans notre atelier Cuisine du Cambodge ! Aujourd'hui nous réalisons un Num Banh Chok, avec des nouilles de riz, une sauce chaude au poisson et au kroeung jaune, du lait de coco et beaucoup de fraîcheur. Notre objectif, c'est de maîtriser l'ordre des préparations : pocher le poisson sans le dessécher, l'émietter en retirant les arêtes, préparer une sauce parfumée et fluide, puis dresser avec des légumes croquants. Ce plat existe en plusieurs variantes cambodgiennes ; nous suivrons celle de notre fiche, avec du coco et du kroeung jaune. Choisissez votre nombre de convives et préparez les quantités sur la fiche. Le son accompagne vos gestes, pas les grammages qui changent avec les portions. Sortez deux casseroles, une passoire, une écumoire, une louche, une planche, un couteau, une fourchette, un thermomètre si possible et des bols propres. Le kroeung doit être préparé avant le cours ou acheté prêt ; on ne va pas prétendre le préparer ici en quelques secondes. Je vous préviendrai lorsqu'une pause est utile. Allez, on commence !
 
 ### Chapitre 2 sur 7 — Rassembler la sauce, les nouilles et les herbes
 
-Plaçons tout à portée de main avant de commencer. La première casserole servira à pocher le poisson, puis à préparer la sauce parfumée ; la seconde accueillera l'eau des nouilles et des haricots verts. Prévoyez la passoire, une louche, une écumoire, une fourchette pour émietter le poisson, un couteau, une planche propre et des bols profonds. Sur la fiche, vérifiez les nouilles de riz, le poisson blanc, le lait de coco, le kroeung jaune, la sauce de poisson et les garnitures : concombre, haricots verts fins et herbes fraîches. Préparez les quantités pour les convives de votre choix. Attention à une chose essentielle : le kroeung jaune est une véritable sous-préparation, une pâte de citronnelle, galanga, curcuma, ail, échalote et combava ; il doit être déjà fait ou acheté. Vous pouvez suivre l'atelier spécifique du kroeung pour le fabriquer en avance. Le lait de coco apporte une note douce et ronde dans notre variante ; certaines versions du Num Banh Chok l'utilisent peu ou pas du tout. Ne confondons pas recette choisie et définition unique du plat. Vérifiez les allergènes, notamment le poisson et la sauce de poisson. Gardez les légumes frais loin de la zone de travail du poisson cru, avec une planche et des ustensiles nettoyés. Vous pouvez mettre le guide en pause pour terminer la mise en place. Puis nous allons préparer le poisson et les légumes.
+Plaçons tout à portée de main avant de commencer. La première casserole servira à pocher le poisson, puis à préparer la sauce parfumée ; la seconde accueillera l'eau des nouilles et des haricots verts. Prévoyez la passoire, une louche, une écumoire, une fourchette pour émietter le poisson, un couteau, une planche propre et des bols profonds. Sur la fiche, vérifiez les nouilles de riz, le poisson blanc, le lait de coco, le kroeung jaune, la sauce de poisson et les garnitures : concombre, haricots verts fins et herbes fraîches. Préparez les quantités pour les convives de votre choix. Attention à une chose essentielle : le kroeung jaune est une véritable sous-préparation, une pâte de citronnelle, galanga, curcuma, ail, échalote et combava ; il doit être déjà fait ou acheté. Vous pouvez suivre l'atelier spécifique du kroeung pour le préparer à l'avance. Le lait de coco apporte une note douce et ronde dans notre variante ; certaines versions du Num Banh Chok l'utilisent peu ou pas du tout. Ne confondons pas recette choisie et définition unique du plat. Vérifiez les allergènes, notamment le poisson et la sauce de poisson. Gardez les légumes frais loin de la zone de travail du poisson cru, avec une planche et des ustensiles nettoyés. Vous pouvez mettre le guide en pause pour terminer la mise en place. Puis nous allons préparer le poisson et les légumes.
 
 ### Chapitre 3 sur 7 — Préparer poisson et garnitures fraîches
 
@@ -1162,7 +1162,7 @@ Commençons par les légumes, pendant que tout est encore propre. Lavez les herb
 
 Remplissez une casserole d'eau potable en quantité suffisante pour couvrir le poisson ; cette eau est nécessaire à la technique mais ne fait pas partie d'une quantité de bouillon de service imposée par la recette. Chauffez jusqu'à un petit frémissement. Posez doucement le poisson dans le liquide ; on veut une cuisson calme qui respecte les fibres de la chair. Une ébullition agressive peut casser les morceaux et les dessécher. Surveillez le plus épais plutôt que de faire confiance à un temps universel. Pour le poisson, la température de référence USDA est de soixante-trois degrés à cœur ; un thermomètre est préférable. La chair doit pouvoir se séparer en lamelles, mais ce repère visuel ne remplace pas toujours un contrôle de température. Sortez le poisson dans un récipient propre avec une écumoire et laissez-le tiédir juste assez pour pouvoir le manipuler sans vous brûler. Égouttez et émiettez avec une fourchette ; vérifiez soigneusement les éventuelles arêtes, surtout si les morceaux proviennent d'un poisson avec peau et squelette. Rien ne doit finir dans le bol par accident. Si la chair s'écrase totalement, réduisez la durée la prochaine fois, mais ne servez jamais un centre encore cru. Réservez cette chair cuite au chaud, sans la laisser attendre longuement à température ambiante. Vous pouvez faire pause pour finir le contrôle des arêtes. Passons ensuite au kroeung et au coco.
 
-### Chapitre 5 sur 7 — Construire la sauce chaude au kroeung
+### Chapitre 5 sur 7 — Préparer la sauce chaude au kroeung
 
 Prenez maintenant une casserole propre à fond suffisamment épais. Chauffez à feu doux la pâte de kroeung jaune déjà préparée, en remuant doucement avec une spatule. Il faut réveiller ses parfums, pas faire noircir la citronnelle et l'ail. Si la pâte accroche, baissez le feu immédiatement ; n'ajoutez pas au hasard une grande quantité d'huile qui ne figure pas dans la recette source. Remuez constamment pendant ce court moment, puis versez progressivement le lait de coco mesuré sur la fiche. Mélangez pour délier la pâte aromatique ; le lait de coco peut se présenter avec une partie épaisse et une partie liquide, mais l'ensemble doit redevenir souple. Ajoutez le poisson entièrement cuit et émietté, et répartissez-le délicatement sans le réduire en poussière. Assaisonnez ensuite avec la sauce de poisson selon la fiche. Maintenez un petit frémissement : le mélange doit rester chaud et nappant, sans gros bouillons qui risquent de faire trancher le lait de coco ou de rendre le poisson sec. Regardez la cuillère : une bonne sauce laisse une pellicule légère, puis s'écoule assez facilement. Si elle est trop épaisse, ajoutez progressivement un peu d'eau potable chaude comme indiqué dans les étapes de la recette. Si elle est devenue trop liquide, laissez-la réduire doucement sans surcuire le poisson, ou servez-la comme une sauce plus fluide, sans inventer un épaississant. Prenez votre temps pour obtenir ce résultat ; vous pouvez mettre pause si votre sauce demande quelques minutes de plus.
 
@@ -1170,9 +1170,9 @@ Prenez maintenant une casserole propre à fond suffisamment épais. Chauffez à 
 
 Pendant que la sauce reste chaude à feu très doux, faites cuire les nouilles de riz dans la deuxième casserole selon les indications du paquet. Les nouilles fraîches et les nouilles sèches n'ont pas la même vitesse ; la meilleure référence est leur texture, souple mais encore distincte. Égouttez-les aussitôt et rincez-les très brièvement à l'eau fraîche si la notice le recommande, pour arrêter la cuisson sans les refroidir complètement au point de ruiner le service. Si elles collent, séparez-les délicatement plutôt que de prolonger leur séjour dans l'eau bouillante. Blanchissez ensuite les haricots verts fins dans de l'eau frémissante propre jusqu'à ce qu'ils soient suffisamment tendres, puis refroidissez-les rapidement et égouttez-les. Selon leur épaisseur, quelques minutes peuvent suffire, mais mordez-en un seulement s'il est cuit et servi dans de bonnes conditions. Goûtez une petite cuillère de sauce tiédie : la sauce de poisson a déjà apporté du sel, on n'ajoute pas automatiquement une deuxième portion. Si la sauce est trop salée, allongez-la progressivement avec un peu d'eau chaude et contrôlez à nouveau sa texture ; si elle manque de parfum, vérifiez d'abord que le kroeung a eu le temps de diffuser ses arômes. Le lait de coco ne doit pas devenir une soupe lourde. Prenez le temps de terminer les nouilles et la sauce ; une pause est tout à fait possible. Puis on dressera sans attendre.
 
-### Chapitre 7 sur 7 — Monter les bols et ajouter la fraîcheur
+### Chapitre 7 sur 7 — Dresser les bols et ajouter la fraîcheur
 
-Nous pouvons enfin assembler les bols. Émincez finement le concombre sur une planche propre et préparez les herbes lavées. Répartissez d'abord les nouilles de riz, encore souples et bien égouttées, dans les bols. Versez dessus la sauce chaude au poisson et au lait de coco ; elle doit traverser les nouilles, pas former une masse épaisse posée au-dessus. Ajoutez les haricots verts blanchis, le concombre frais et les feuilles de menthe ou de basilic asiatique. Gardez ces végétaux distincts pour que chacun retrouve du croquant et une note végétale. Regardez le résultat : une sauce qui enrobe, un poisson sans arêtes, des nouilles séparées et des garnitures fraîches. Goûtez ensemble une bouchée de sauce et de nouilles, puis avec du concombre ; c'est là que la douceur du coco rencontre le parfum du kroeung. Vous avez aujourd'hui appris à pocher un poisson, contrôler les arêtes, construire une sauce aromatique délicate et choisir le bon moment pour cuire les nouilles. Ce sont des gestes que vous pourrez refaire avec d'autres préparations. Servez sans attendre et mettez rapidement au frais les restes qui ne sont pas consommés. Merci d'avoir cuisiné avec moi, et bon appétit !
+Nous pouvons enfin dresser les bols. Émincez finement le concombre sur une planche propre et préparez les herbes lavées. Répartissez d'abord les nouilles de riz, encore souples et bien égouttées, dans les bols. Versez dessus la sauce chaude au poisson et au lait de coco ; elle doit traverser les nouilles, pas former une masse épaisse posée au-dessus. Ajoutez les haricots verts blanchis, le concombre frais et les feuilles de menthe ou de basilic asiatique. Gardez ces végétaux distincts pour que chacun retrouve du croquant et une note végétale. Regardez le résultat : une sauce qui enrobe, un poisson sans arêtes, des nouilles séparées et des garnitures fraîches. Goûtez ensemble une bouchée de sauce et de nouilles, puis avec du concombre ; c'est là que la douceur du coco rencontre le parfum du kroeung. Vous avez aujourd'hui appris à pocher un poisson, contrôler les arêtes, préparer une sauce aromatique délicate et choisir le bon moment pour cuire les nouilles. Ce sont des gestes que vous pourrez refaire avec d'autres préparations. Servez sans attendre et mettez rapidement au frais les restes qui ne sont pas consommés. Merci d'avoir cuisiné avec moi, et bon appétit !
 
 ## D — Sources et validation
 
