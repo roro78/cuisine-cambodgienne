@@ -59,156 +59,158 @@ Continuez jusqu’à ne presque plus sentir de gros morceaux sous le pilon.
 
 **Repère :** La pâte se tient et les longues fibres deviennent difficiles à distinguer.
 
-## B — Atelier pratique, à relire et corriger
+## B — Atelier de cuisine, étape par étape
 
 **Objectif :** Émincer finement puis piler la citronnelle, le galanga et le curcuma pour obtenir une pâte liée plutôt qu'un amas de fibres
 
-**Préparation attendue :** Un petit pot de pâte aromatique kroeung jaune, prêt à parfumer une préparation cuite
+**Préparation que vous allez obtenir :** Un petit pot de pâte aromatique kroeung jaune, prêt à parfumer une préparation cuite
 
-**Durée indicative des gestes :** 25 min
+**Durée estimée de l'atelier :** environ 25 min. Le temps varie selon la quantité préparée et votre rythme.
 
-**Matériel :**
+**Repère pour les temps de cuisson ou de repos :** Pas de cuisson : la pâte est une préparation aromatique et n'est pas un plat prêt à manger.
+
+### Matériel
 
 - 1 mortier et son pilon
 - 1 couteau bien aiguisé et une planche
 - 1 petite spatule propre
 - 1 récipient propre et refermable
 
-**Avant de cuisiner :**
+### Avant de commencer
 
-- Choisir le nombre de convives sur la fiche et mesurer tous les aromates de la recette source.
+- Choisir le nombre de petits pots à préparer sur la fiche et mesurer tous les aromates de la recette de référence.
 - Prévoir un plan de travail stable, des mains propres et un récipient refermable pour le résultat.
 
-**Précautions :**
+### Précautions alimentaires
 
 - Manier le couteau sur une planche stable.
 - Ne pas déguster la pâte aromatique crue comme si elle constituait un plat complet ; elle parfume les préparations.
 
-### Temps de cuisine 1 — Préparer le plan de travail et mesurer les aromates
+### Étape 1 sur 6 — Préparer le plan de travail et mesurer les aromates (environ 3 min)
 
-**Gestes :**
+**À faire :**
 
 - Placez le mortier, la planche et un récipient propre à portée de main avant de sortir les aromates.
-- Regroupez et mesurez tous les ingrédients selon la fiche Kroeung jaune, en gardant les quantités originales.
+- Regroupez et mesurez tous les ingrédients selon la fiche Kroeung jaune, en suivant les quantités adaptées au nombre de pots choisi.
 
-**Observer :** Chaque ingrédient est visible, identifiable et mesuré ; rien ne manque.
+**À observer :** Chaque ingrédient est visible, identifiable et mesuré ; rien ne manque.
 
-**Vérifier le résultat :** Le plan de travail est prêt et tous les ingrédients de la recette sont réunis.
+**Résultat attendu :** Le plan de travail est prêt et tous les ingrédients de la recette sont réunis.
 
-**Éviter :** Commencer à piler avant d'avoir taillé les aromates oblige à interrompre le travail.
+**À éviter :** Commencer à piler avant d'avoir taillé les aromates oblige à interrompre le travail.
 
-**Corriger :** Reposez le pilon, complétez la mise en place puis reprenez calmement.
+**Si besoin, comment corriger :** Reposez le pilon, complétez la mise en place puis reprenez calmement.
 
-**Technique apprise :** La mise en place évite de manquer un parfum essentiel.
+**Ce que vous apprenez :** La mise en place évite de manquer un parfum essentiel.
 
 **Précaution :** Travaillez sur une planche stable.
 
-### Temps de cuisine 2 — Nettoyer et émincer les aromates
+### Étape 2 sur 6 — Nettoyer et émincer les aromates (environ 7 min)
 
-**Gestes :**
+**À faire :**
 
 - Retirez les enveloppes dures de citronnelle et gardez la partie tendre, puis émincez-la très finement.
 - Pelez et émincez galanga, curcuma, ail et échalotes ; prélevez uniquement le zeste vert du combava.
 
-**Observer :** Les morceaux fibreux sont très petits ; pas de longues lanières de citronnelle.
+**À observer :** Les morceaux fibreux sont très petits ; pas de longues lanières de citronnelle.
 
-**Vérifier le résultat :** Chaque aromate est prêt à être écrasé sans s'enrouler autour du pilon.
+**Résultat attendu :** Chaque aromate est prêt à être écrasé sans s'enrouler autour du pilon.
 
-**Éviter :** De gros morceaux de citronnelle restent durs malgré le pilage.
+**À éviter :** De gros morceaux de citronnelle restent durs malgré le pilage.
 
-**Corriger :** Arrêtez le pilage et retaillez ces morceaux plus finement.
+**Si besoin, comment corriger :** Arrêtez le pilage et retaillez ces morceaux plus finement.
 
-**Technique apprise :** La qualité de la coupe détermine la texture finale.
+**Ce que vous apprenez :** La qualité de la coupe détermine la texture finale.
 
 **Précaution :** Gardez les doigts repliés et coupez sur une planche fixe.
 
-### Temps de cuisine 3 — Commencer avec les fibres fermes
+### Étape 3 sur 6 — Commencer avec les fibres fermes (environ 3 min)
 
-**Gestes :**
+**À faire :**
 
 - Placez une petite quantité de citronnelle émincée et de galanga dans le fond du mortier.
 - Écrasez en petites séries et ramenez les morceaux au centre. Répétez jusqu’à incorporer toute la citronnelle et tout le galanga prévus par la recette ; n’en laissez pas de côté avant de passer aux autres aromates.
 
-**Observer :** Les petits morceaux cessent de rebondir et commencent à s'écraser.
+**À observer :** Les petits morceaux cessent de rebondir et commencent à s'écraser.
 
-**Vérifier le résultat :** La citronnelle et le galanga s'assouplissent et adhèrent au fond du mortier.
+**Résultat attendu :** La citronnelle et le galanga s'assouplissent et adhèrent au fond du mortier.
 
-**Éviter :** Un mortier surchargé laisse les morceaux rouler sans s'écraser.
+**À éviter :** Un mortier surchargé laisse les morceaux rouler sans s'écraser.
 
-**Corriger :** Travaillez de plus petites portions et rassemblez les morceaux avec une spatule.
+**Si besoin, comment corriger :** Travaillez de plus petites portions et rassemblez les morceaux avec une spatule.
 
-**Technique apprise :** L'ordre et le volume de pilage ont un effet réel sur la texture.
+**Ce que vous apprenez :** L'ordre et le volume de pilage ont un effet réel sur la texture.
 
 **Précaution :** Gardez les doigts hors du mortier pendant les coups de pilon.
 
-### Temps de cuisine 4 — Transformer les aromates en pâte
+### Étape 4 sur 6 — Transformer les aromates en pâte (environ 5 min)
 
-**Gestes :**
+**À faire :**
 
 - Ajoutez progressivement le curcuma, le zeste de combava, l'ail et les échalotes finement taillés.
 - Pilez et raclez les parois entre chaque ajout jusqu'à obtenir une pâte humide qui se rassemble.
 
-**Observer :** Le parfum se fond et la pâte commence à se tenir, sans gros morceaux visibles.
+**À observer :** Le parfum se fond et la pâte commence à se tenir, sans gros morceaux visibles.
 
-**Vérifier le résultat :** La pâte est homogène, souple et liée au lieu de rester sèche et émiettée.
+**Résultat attendu :** La pâte est homogène, souple et liée au lieu de rester sèche et émiettée.
 
-**Éviter :** Ajouter tous les ingrédients d'un coup rend le travail irrégulier.
+**À éviter :** Ajouter tous les ingrédients d'un coup rend le travail irrégulier.
 
-**Corriger :** Revenez à des ajouts progressifs et continuez à écraser les zones fibreuses.
+**Si besoin, comment corriger :** Revenez à des ajouts progressifs et continuez à écraser les zones fibreuses.
 
-**Technique apprise :** Le mortier transforme à la fois la granulométrie et l'expression des arômes.
+**Ce que vous apprenez :** Le pilage affine progressivement la pâte et libère les arômes des ingrédients.
 
 **Précaution :** Attention aux éclaboussures de curcuma et aux coups de pilon.
 
-### Temps de cuisine 5 — Évaluer et corriger la texture
+### Étape 5 sur 6 — Évaluer et corriger la texture (environ 5 min)
 
-**Gestes :**
+**À faire :**
 
 - Prélevez avec une cuillère propre une noisette de pâte pour en observer la régularité et les fibres visibles.
 - Si la pâte reste grossière, remettez-la au mortier et pilez de nouveau par petites quantités sans diluer inutilement.
 
-**Observer :** Les longues fibres sont difficiles à distinguer et la pâte se tient sur la cuillère.
+**À observer :** Les longues fibres sont difficiles à distinguer et la pâte se tient sur la cuillère.
 
-**Vérifier le résultat :** La pâte est suffisamment fine pour être mélangée sans laisser de longs filaments.
+**Résultat attendu :** La pâte est suffisamment fine pour être mélangée sans laisser de longs filaments.
 
-**Éviter :** Confondre un parfum puissant avec une pâte déjà assez fine.
+**À éviter :** Confondre un parfum puissant avec une pâte déjà assez fine.
 
-**Corriger :** Fiez-vous à la texture : repilez si des fibres longues subsistent.
+**Si besoin, comment corriger :** Fiez-vous à la texture : repilez si des fibres longues subsistent.
 
-**Technique apprise :** On décide d'arrêter à partir de repères visuels et tactiles sûrs, non d'un minuteur.
+**Ce que vous apprenez :** On décide d'arrêter à partir de repères visuels et tactiles sûrs, non d'un minuteur.
 
 **Précaution :** Ne goûtez pas le mélange cru comme un plat terminé.
 
-### Temps de cuisine 6 — Mettre le kroeung en pot et retenir le geste
+### Étape 6 sur 6 — Mettre le kroeung en pot et retenir le geste (environ 2 min)
 
-**Gestes :**
+**À faire :**
 
 - Transférez la pâte dans un récipient propre, et refermez-le pour préparer la recette à laquelle elle servira.
 - Comparez la texture obtenue à celle du début et retenez les gestes qui ont le plus aidé : couper fin et piler en petites portions.
 
-**Observer :** Le kroeung jaune forme une pâte régulière, prête à être incorporée à une préparation cuite.
+**À observer :** Le kroeung jaune forme une pâte régulière, prête à être incorporée à une préparation cuite.
 
-**Vérifier le résultat :** Vous repartez avec une préparation finie et savez quels gestes la rendent fine.
+**Résultat attendu :** Vous repartez avec une préparation finie et savez quels gestes la rendent fine.
 
-**Éviter :** Présenter la pâte comme un plat indépendant à déguster immédiatement.
+**À éviter :** Présenter la pâte comme un plat indépendant à déguster immédiatement.
 
-**Corriger :** Employez-la comme aromate dans une recette complète, par exemple un amok correctement cuit.
+**Si besoin, comment corriger :** Employez-la comme aromate dans une recette complète, par exemple un amok correctement cuit.
 
-**Technique apprise :** Le geste peut être réutilisé dans plusieurs recettes cambodgiennes.
+**Ce que vous apprenez :** Le geste peut être réutilisé dans plusieurs recettes cambodgiennes.
 
 **Précaution :** Gardez la préparation propre et au frais avant son utilisation.
 
-## C — Sept narrations corrigées à valider avant Coral
+## C — Narration complète à valider avant tout nouvel enregistrement
 
-**Ces textes ont été corrigés. Les MP3 historiques ne correspondent plus : validation éditoriale exigée avant toute nouvelle synthèse.**
+**Ces sept textes ont été relus, mais ne sont pas encore approuvés. Les précédents MP3 restent archivés et ne doivent pas accompagner ce nouveau texte.**
 
 ### Chapitre 1 sur 7 — Introduction
 
-Coucou, bienvenue dans notre cuisine ! Aujourd'hui, on ne va pas simplement parler d'épices : on va préparer ensemble un vrai kroeung jaune, cette pâte aromatique qui donne du caractère à plusieurs plats cambodgiens. À la fin, vous aurez dans un récipient votre propre pâte, bien liée, que vous pourrez incorporer dans une préparation cuite. Le geste essentiel, c'est de transformer des racines fibreuses en une pâte fine grâce à la découpe puis au pilon. Avant de commencer, choisissez votre nombre de petits pots sur la fiche et mesurez toutes les quantités affichées. Je ne vais pas vous imposer des grammages dans le son : c'est votre fiche qui fait foi. Il nous faudra un mortier stable, un pilon, une planche, un couteau, une spatule propre et un récipient refermable. On ne goûtera pas ce kroeung cru comme un plat fini. Prenez vos aises : si un geste demande plus de temps, vous pouvez faire pause et relancer l'enregistrement. Je vous accompagnerai de la première coupe au dernier coup de pilon.
+Coucou, bienvenue dans notre cuisine ! Aujourd'hui, on ne va pas simplement parler d'épices : on va préparer ensemble un vrai kroeung jaune, cette pâte aromatique qui donne du caractère à plusieurs plats cambodgiens. À la fin, vous aurez dans un récipient votre propre pâte, bien liée, que vous pourrez incorporer dans une préparation cuite. Aujourd'hui, nous allons apprendre à transformer des racines fibreuses en une pâte fine grâce à la découpe puis au pilon. Avant de commencer, indiquez le nombre de petits pots à préparer sur la fiche et mesurez toutes les quantités affichées. Retrouvez les quantités exactes de chaque ingrédient sur la fiche, selon le nombre de pots que vous préparez. Il nous faudra un mortier stable, un pilon, une planche, un couteau, une spatule propre et un récipient refermable. On ne goûtera pas ce kroeung cru comme un plat fini. Prenez vos aises : si un geste demande plus de temps, vous pouvez faire pause et relancer l'enregistrement. Je vous accompagnerai de la première coupe au dernier coup de pilon.
 
 ### Chapitre 2 sur 7 — Préparer le plan de travail et mesurer les aromates
 
-Bonjour à votre plan de travail ! Avant de toucher à la citronnelle, posez votre mortier sur une surface qui ne glisse pas. Un torchon plié et propre dessous peut aider à l'immobiliser : ce n'est pas une invitation à poser les doigts dans le bol pendant qu'on pile. Gardez le pilon à portée de main, la planche stable, le couteau bien affûté, la spatule et un récipient propre pour la fin. Regardez votre fiche et rassemblez la citronnelle, le galanga, le curcuma frais, le zeste de combava, l'ail et les échalotes. Toutes les quantités sont adaptées aux convives que vous avez choisis. Posez les aromates les plus fibreux d'un côté ; les plus tendres, comme l'ail et l'échalote, de l'autre. Cette petite organisation a une raison : si l'on commence par les ingrédients mous, ils collent au fond et les fibres dures échappent au pilon. Lavez-vous les mains et préparez une zone pour les déchets. Le curcuma colore durablement les mains et certaines surfaces : protégez votre planche si nécessaire. Si votre mortier est petit, nous travaillerons en plusieurs apports sans chercher à tout comprimer d'un coup. Prenez le temps de vérifier les aromates sur la fiche ; faites pause pour vous installer si besoin. Voilà, on peut passer aux découpes.
+Commençons par préparer tout ce dont nous avons besoin. Avant de toucher à la citronnelle, posez votre mortier sur une surface qui ne glisse pas. Un torchon propre et plié peut aider à le stabiliser. Gardez toujours les doigts hors du mortier lorsque vous pilez. Gardez le pilon à portée de main, la planche stable, le couteau bien affûté, la spatule et un récipient propre pour la fin. Regardez votre fiche et rassemblez la citronnelle, le galanga, le curcuma frais, le zeste de combava, l'ail et les échalotes. Les quantités correspondent au nombre de pots indiqué sur votre fiche. Posez les aromates les plus fibreux d'un côté ; les plus tendres, comme l'ail et l'échalote, de l'autre. Cette petite organisation a une raison : si l'on commence par les ingrédients mous, ils collent au fond et les fibres dures échappent au pilon. Lavez-vous les mains et préparez une zone pour les déchets. Le curcuma colore durablement les mains et certaines surfaces : protégez votre planche si nécessaire. Si votre mortier est petit, nous travaillerons en plusieurs apports sans chercher à tout comprimer d'un coup. Prenez le temps de vérifier les aromates sur la fiche ; faites pause pour vous installer si besoin. Voilà, on peut passer aux découpes.
 
 ### Chapitre 3 sur 7 — Nettoyer et émincer les aromates
 
@@ -236,6 +238,8 @@ Et voilà, notre kroeung jaune est prêt. Raclez la pâte avec une spatule propr
 - [Cambodianess — How to Make Khmer Lemongrass Paste (Taste of Angkor)](https://cambodianess.com/article/how-to-make-khmer-lemongrass-paste)
 
 **Validation souhaitée :** ingrédients, quantités, authenticité, préparation, ordre des gestes, sécurité, lexique exclusivement culinaire, narration agréable et pauses de cuisine.
+
+---
 
 ---
 
@@ -291,159 +295,161 @@ Grillez ou poêlez le porc à feu vif jusqu’à obtenir des bords bien colorés
 
 Répartissez le riz jasmin chaud dans quatre assiettes. Déposez le porc entièrement cuit et caramélisé dessus, puis ajoutez les 200 g de pickles égouttés sur le côté.
 
-## B — Atelier pratique, à relire et corriger
+## B — Atelier de cuisine, étape par étape
 
 **Objectif :** Réaliser un repas cambodgien complet, préparer une marinade équilibrée, cuire le riz et colorer le porc sans compromettre sa cuisson à cœur.
 
-**Préparation attendue :** Quatre assiettes de Bai Sach Chrouk avec porc entièrement cuit, riz jasmin chaud et pickles de légumes.
+**Préparation que vous allez obtenir :** Des assiettes de Bai Sach Chrouk avec porc entièrement cuit, riz jasmin chaud et pickles de légumes.
 
-**Durée indicative des gestes :** 45 min
+**Durée estimée de l'atelier :** environ 45 min. Le temps varie selon la quantité préparée et votre rythme.
 
-**Matériel :**
+**Repère pour les temps de cuisson ou de repos :** Comptez au moins 15 minutes de marinade au réfrigérateur. Profitez de ce temps pour cuire le riz : l'attente n'est pas ajoutée deux fois à la durée totale.
+
+### Matériel
 
 - Une poêle ou plancha adaptée aux tranches fines de porc
 - Une casserole à riz avec couvercle et une passoire
 - Un saladier de marinade, une planche propre et des assiettes propres
 - Un thermomètre alimentaire pour vérifier la cuisson du porc
 
-**Avant de cuisiner :**
+### Avant de commencer
 
-- Choisissez vos convives et mesurez les ingrédients sur la fiche, notamment le riz et les tranches de porc.
-- Les pickles de concombre et de carotte de la recette sont une sous-préparation à réaliser à l'avance ou à acheter préparée ; ils doivent être prêts et égouttés avant l'atelier.
-- Réservez une place au réfrigérateur pour la marinade du porc pendant au moins quinze minutes.
+- Indiquez le nombre de personnes à table et mesurez les ingrédients sur la fiche, notamment le riz et les tranches de porc.
+- Préparez les pickles de concombre et de carotte à l'avance, ou choisissez des pickles prêts à servir. Égouttez-les avant de commencer.
+- Le porc devra mariner au réfrigérateur pendant au moins quinze minutes. Prévoyez suffisamment de place pour le saladier couvert.
 
-**Précautions :**
+### Précautions alimentaires
 
 - Laissez toujours le porc mariner au réfrigérateur et ne goûtez jamais une marinade ayant touché la viande crue.
 - Cuisez les tranches de porc complètement et utilisez une assiette et des ustensiles propres pour le service.
 - Pour les tranches de porc issues d'un morceau entier, vérifiez au thermomètre au moins 63 °C à cœur et laissez reposer 3 minutes avant de servir ; si vous utilisez du porc haché, visez 71 °C.
 - Servez le riz dès qu'il est cuit ou refroidissez-le rapidement puis réfrigérez-le : du riz laissé tiédir longtemps peut favoriser Bacillus cereus, et le simple réchauffage ne garantit pas l'élimination des toxines.
 
-### Temps de cuisine 1 — Mesurer les ingrédients et préparer le plan de travail
+### Étape 1 sur 6 — Mesurer les ingrédients et préparer le plan de travail (environ 3 min)
 
-**Gestes :**
+**À faire :**
 
 - Préparez le saladier pour la marinade, la casserole pour le riz et la poêle ou le gril pour le porc, avant de sortir la viande froide.
 - Mesurez les ingrédients de la recette : porc, sauce soja, sauce de poisson, sucre roux, ail, quantité de riz cru indiquée sur la fiche et pickles prévus sur la fiche prêts.
 
-**Observer :** Chaque élément a sa place et les pickles sont déjà préparés.
+**À observer :** Chaque élément a sa place et les pickles sont déjà préparés.
 
-**Vérifier le résultat :** Le plan de travail permet de suivre cuisson du riz et saisie du porc sans confusion.
+**Résultat attendu :** Le plan de travail permet de suivre cuisson du riz et saisie du porc sans confusion.
 
-**Éviter :** Commencer avec des pickles non préparés impose une recette supplémentaire en plein atelier.
+**À éviter :** Commencer avec des pickles non préparés impose une recette supplémentaire en plein atelier.
 
-**Corriger :** Préparez ou achetez des pickles sûrs et égouttez-les avant de poursuivre.
+**Si besoin, comment corriger :** Préparez ou achetez des pickles sûrs et égouttez-les avant de poursuivre.
 
-**Technique apprise :** Le Bai Sach Chrouk exige une organisation simple entre marinade, riz et viande chaude.
+**Ce que vous apprenez :** Le Bai Sach Chrouk exige une organisation simple entre marinade, riz et viande chaude.
 
 **Précaution :** Lavez-vous les mains et gardez les pickles loin de la zone de préparation du porc cru.
 
-### Temps de cuisine 2 — Préparer le porc et hacher l'ail
+### Étape 2 sur 6 — Préparer le porc et hacher l'ail (environ 6 min)
 
-**Gestes :**
+**À faire :**
 
 - Épluchez et hachez les gousses d'ail prévues sur la fiche, puis disposez les tranches fines de porc mesurées selon la fiche dans un saladier réservé à la viande.
 - Vérifiez que les tranches ne sont pas trop épaisses et qu'elles peuvent être étalées dans la poêle en plusieurs fournées si nécessaire.
 
-**Observer :** L'ail est finement haché et les tranches de porc sont assez régulières.
+**À observer :** L'ail est finement haché et les tranches de porc sont assez régulières.
 
-**Vérifier le résultat :** La viande peut être enrobée rapidement et être cuite de manière homogène.
+**Résultat attendu :** La viande peut être enrobée rapidement et être cuite de manière homogène.
 
-**Éviter :** Des tranches très épaisses peuvent brûler dehors avant de cuire correctement dedans.
+**À éviter :** Des tranches très épaisses peuvent brûler dehors avant de cuire correctement dedans.
 
-**Corriger :** Recoupez ou aplatissez légèrement des tranches trop épaisses, en gardant les ustensiles et le plan de travail propres.
+**Si besoin, comment corriger :** Recoupez ou aplatissez légèrement des tranches trop épaisses, en gardant les ustensiles et le plan de travail propres.
 
-**Technique apprise :** La régularité des tranches facilite la coloration et la cuisson complète.
+**Ce que vous apprenez :** La régularité des tranches facilite la coloration et la cuisson complète.
 
 **Précaution :** Manipulez le porc cru séparément du riz et des pickles.
 
-### Temps de cuisine 3 — Mariner au frais et comprendre les saveurs
+### Étape 3 sur 6 — Mariner au frais et comprendre les saveurs (environ 5 min)
 
-**Gestes :**
+**À faire :**
 
-- Mélangez les deux cuillères à soupe de sauce soja, la cuillère de sauce de poisson, la cuillère de sucre roux et l'ail haché dans le saladier.
+- Mélangez dans le saladier la sauce soja, la sauce de poisson, le sucre roux et l'ail haché, dans les quantités indiquées sur votre fiche.
 - Enrobez toutes les tranches de porc, couvrez puis placez au réfrigérateur au moins quinze minutes ; n'utilisez pas cette marinade crue comme sauce de service.
 
-**Observer :** Chaque tranche est finement recouverte d'un mélange de sauce, sucre et ail.
+**À observer :** Chaque tranche est finement recouverte d'un mélange de sauce, sucre et ail.
 
-**Vérifier le résultat :** Le porc a reposé au frais pendant quinze minutes ou davantage, sans rester sur le plan de travail.
+**Résultat attendu :** Le porc reste au réfrigérateur au moins quinze minutes pendant la cuisson du riz.
 
-**Éviter :** Mariner à température ambiante ou réutiliser directement la sauce crue met le plat en danger.
+**À éviter :** Mariner à température ambiante ou réutiliser directement la sauce crue met le plat en danger.
 
-**Corriger :** Replacez immédiatement la viande au frais et jetez la marinade crue non cuite.
+**Si besoin, comment corriger :** Replacez immédiatement la viande au frais et jetez la marinade crue non cuite.
 
-**Technique apprise :** La sauce soja sale, le sucre favorise une couleur dorée et l'ail parfume le porc.
+**Ce que vous apprenez :** Une marinade au frais parfume le porc. Pendant ce temps, on peut cuire le riz et préparer les pickles.
 
 **Précaution :** Ne goûtez pas une marinade qui a touché le porc cru ; respectez la chaîne du froid.
 
-### Temps de cuisine 4 — Cuire le riz jasmin sans le détremper
+### Étape 4 sur 6 — Cuire le riz jasmin sans le détremper (environ 20 min)
 
-**Gestes :**
+**À faire :**
 
-- Rincez les riz jasmin cru mesuré sur la fiche à l'eau froide, mesurez l'eau et cuisez le riz en respectant les indications précises du paquet utilisé.
+- Rincez le riz jasmin prévu sur la fiche, mesurez l'eau et faites cuire le riz en suivant les indications précises du paquet utilisé.
 - Pendant cette cuisson, égouttez les pickles prévus sur la fiche de concombre et carotte déjà préparés, puis gardez-les dans un plat propre.
 
-**Observer :** Le riz absorbe l'eau et reste souple ; les pickles sont égouttés et conservent du croquant.
+**À observer :** Le riz absorbe l'eau et reste souple ; les pickles sont égouttés et conservent du croquant.
 
-**Vérifier le résultat :** Le riz est cuit conformément à sa variété et les pickles n'apportent pas de liquide excessif.
+**Résultat attendu :** Le riz est cuit conformément à sa variété et les pickles n'apportent pas de liquide excessif.
 
-**Éviter :** Ajouter une quantité d'eau au hasard peut rendre le riz collant ou mal cuit.
+**À éviter :** Ajouter une quantité d'eau au hasard peut rendre le riz collant ou mal cuit.
 
-**Corriger :** Suivez le dosage du paquet et prolongez doucement la cuisson si les grains restent fermes.
+**Si besoin, comment corriger :** Suivez le dosage du paquet et prolongez doucement la cuisson si les grains restent fermes.
 
-**Technique apprise :** Le riz constitue la base du repas ; sa texture doit accompagner le porc et les légumes.
+**Ce que vous apprenez :** Le riz constitue la base du repas ; sa texture doit accompagner le porc et les légumes.
 
 **Précaution :** Évitez les brûlures de vapeur en soulevant le couvercle du riz.
 
-### Temps de cuisine 5 — Dorer le porc en vérifiant sa cuisson
+### Étape 5 sur 6 — Dorer le porc en vérifiant sa cuisson (environ 8 min)
 
-**Gestes :**
+**À faire :**
 
 - Chauffez la poêle ou le gril puis disposez les tranches de porc égouttées en une couche, sans empiler ; cuisez en plusieurs fournées si nécessaire.
 - Retournez les tranches pour obtenir des bords colorés et poursuivez jusqu'à cuisson complète au cœur de chaque morceau, même si cela dépasse le temps indicatif.
 
-**Observer :** Les bords prennent une coloration dorée sans zones carbonisées ni intérieur cru.
+**À observer :** Les bords prennent une coloration dorée sans zones carbonisées ni intérieur cru.
 
-**Vérifier le résultat :** Le porc est entièrement cuit et légèrement caramélisé, sans être brûlé.
+**Résultat attendu :** Le porc est entièrement cuit et légèrement caramélisé, sans être brûlé.
 
-**Éviter :** Trop de tranches à la fois font rendre du jus et empêchent la coloration.
+**À éviter :** Trop de tranches à la fois font rendre du jus et empêchent la coloration.
 
-**Corriger :** Retirez une partie de la viande et remontez la température avant la prochaine fournée.
+**Si besoin, comment corriger :** Retirez une partie de la viande et remontez la température avant la prochaine fournée.
 
-**Technique apprise :** Saisir le porc ne suffit pas : coloration et sécurité de cuisson doivent être réunies.
+**Ce que vous apprenez :** Saisir le porc ne suffit pas : coloration et sécurité de cuisson doivent être réunies.
 
 **Précaution :** Jetez la marinade crue inutilisée et n'utilisez que des ustensiles propres pour servir la viande cuite.
 
-### Temps de cuisine 6 — Dresser l'assiette de riz, porc et pickles
+### Étape 6 sur 6 — Dresser l'assiette de riz, porc et pickles (environ 3 min)
 
-**Gestes :**
+**À faire :**
 
 - Répartissez le riz jasmin chaud dans des assiettes propres, placez les tranches de porc bien cuites dessus et vérifiez que chaque portion est suffisamment garnie.
 - Ajoutez les pickles égouttés de carotte et concombre sur le côté, puis dégustez le contraste entre porc savoureux, riz neutre et légumes acidulés.
 
-**Observer :** Les trois éléments restent distincts et chaque assiette est prête à être servie.
+**À observer :** Les trois éléments restent distincts et chaque assiette est prête à être servie.
 
-**Vérifier le résultat :** Les repas préparés sont dressés, avec porc cuit, riz chaud et pickles.
+**Résultat attendu :** Les repas préparés sont dressés, avec porc cuit, riz chaud et pickles.
 
-**Éviter :** Mélanger tous les pickles au riz chaud longtemps avant le service leur fait perdre leur croquant.
+**À éviter :** Mélanger tous les pickles au riz chaud longtemps avant le service leur fait perdre leur croquant.
 
-**Corriger :** Gardez-les sur le côté et apportez-les juste avant de déguster.
+**Si besoin, comment corriger :** Gardez-les sur le côté et apportez-les juste avant de déguster.
 
-**Technique apprise :** La composition du repas équilibre le plat principal avec le riz et un contraste frais.
+**Ce que vous apprenez :** La composition du repas équilibre le plat principal avec le riz et un contraste frais.
 
 **Précaution :** Ne laissez pas longtemps le porc cuit à température ambiante ; réfrigérez rapidement les restes.
 
-## C — Sept narrations corrigées à valider avant Coral
+## C — Narration complète à valider avant tout nouvel enregistrement
 
-**Ces textes ont été corrigés. Les MP3 historiques ne correspondent plus : validation éditoriale exigée avant toute nouvelle synthèse.**
+**Ces sept textes ont été relus, mais ne sont pas encore approuvés. Les précédents MP3 restent archivés et ne doivent pas accompagner ce nouveau texte.**
 
 ### Chapitre 1 sur 7 — Introduction
 
-Bonjour et bienvenue ! Aujourd'hui, nous préparons un Bai Sach Chrouk : du porc finement coupé, mariné puis doré, servi avec du riz jasmin et des pickles croquants. Ce n'est pas juste une cuisson de viande : on va organiser tout un repas cambodgien, avec le contraste entre le sucré-salé du porc, le riz tendre et les légumes acidulés. Choisissez d'abord le nombre de convives sur votre fiche et mesurez les quantités qui s'affichent. Dans cet enregistrement, je nomme les ingrédients et les repères techniques, sans vous imposer une quantité pour quatre personnes. Prenez votre casserole à riz, une passoire, une grande poêle ou plancha, un saladier pour la marinade, une planche, un couteau, une spatule, un thermomètre alimentaire et des assiettes propres. Nous laisserons la viande mariner au froid, puis nous cuisinerons le riz pendant ce repos. Vous pourrez mettre l'audio en pause aux moments utiles : rien ne se déclenche tout seul. On cuisine ensemble, tranquillement et dans le bon ordre.
+Bonjour et bienvenue ! Aujourd'hui, nous préparons un Bai Sach Chrouk : du porc finement coupé, mariné puis doré, servi avec du riz jasmin et des pickles croquants. Ce n'est pas juste une cuisson de viande : on va organiser tout un repas cambodgien, avec le contraste entre le sucré-salé du porc, le riz tendre et les légumes acidulés. Choisissez d'abord le nombre de convives sur votre fiche et mesurez les quantités qui s'affichent. Dans cet enregistrement, je nomme les ingrédients et les repères techniques, en suivant les quantités adaptées au nombre de personnes choisi. Prenez votre casserole à riz, une passoire, une grande poêle ou plancha, un saladier pour la marinade, une planche, un couteau, une spatule, un thermomètre alimentaire et des assiettes propres. Nous laisserons la viande mariner au froid, puis nous cuisinerons le riz pendant ce repos. Vous pourrez mettre l'audio en pause aux moments utiles : vous avancez à votre rythme. On cuisine ensemble, tranquillement et dans le bon ordre.
 
 ### Chapitre 2 sur 7 — Mesurer les ingrédients et préparer le plan de travail
 
-On prépare notre plan de travail avant de manipuler la viande. Placez devant vous le saladier de marinade, la poêle encore éteinte, la casserole et son couvercle, la passoire, une spatule, une planche stable et un couteau propre. Prévoyez aussi un thermomètre si vous en avez un, une pince réservée au porc cru et une autre propre pour le service. Du côté des ingrédients, retrouvez sur la fiche les fines tranches de porc, l'ail, la sauce soja, la sauce de poisson et le sucre roux ; à part, le riz jasmin cru et les pickles de concombre et carotte. La fiche précise les quantités correspondant à votre table. Pour cette version, les pickles sont une préparation préalable : ne les improvisez pas en versant du vinaigre directement sur l'assiette. Ils doivent déjà avoir été préparés et égouttés ; je vous explique plus loin leur rôle et comment contrôler leur texture. Si vous les faites vous-même, utilisez une recette de pickles express au réfrigérateur avec des légumes propres et une saumure vinaigrée adaptée, pas une conservation en bocaux à température ambiante. Vérifiez sur les étiquettes la présence possible de blé dans la sauce soja et de poisson dans la sauce de poisson. Gardez le cru éloigné des garnitures prêtes à manger. Faites pause pour tout mesurer et installer votre coin de cuisine ; on commence par l'ail et le porc.
+On prépare notre plan de travail avant de manipuler la viande. Placez devant vous le saladier de marinade, la poêle encore éteinte, la casserole et son couvercle, la passoire, une spatule, une planche stable et un couteau propre. Prévoyez aussi un thermomètre si vous en avez un, une pince réservée au porc cru et une autre propre pour le service. Du côté des ingrédients, retrouvez sur la fiche les fines tranches de porc, l'ail, la sauce soja, la sauce de poisson et le sucre roux ; à part, le riz jasmin cru et les pickles de concombre et carotte. La fiche précise les quantités correspondant à votre table. Pour cette recette, les pickles doivent déjà être préparés. Un filet de vinaigre sur les légumes ne remplace pas une vraie préparation de pickles. Ils doivent déjà avoir été préparés et égouttés ; je vous explique plus loin leur rôle et comment contrôler leur texture. Si vous les faites vous-même, utilisez une recette de pickles express au réfrigérateur avec des légumes propres et une saumure vinaigrée adaptée, pas une conservation en bocaux à température ambiante. Vérifiez sur les étiquettes la présence possible de blé dans la sauce soja et de poisson dans la sauce de poisson. Gardez le cru éloigné des garnitures prêtes à manger. Faites pause pour tout mesurer et installer votre coin de cuisine ; on commence par l'ail et le porc.
 
 ### Chapitre 3 sur 7 — Préparer le porc et hacher l'ail
 
@@ -451,15 +457,15 @@ Passons à la viande. Gardez le porc au réfrigérateur jusqu'au moment de trava
 
 ### Chapitre 4 sur 7 — Mariner au frais et comprendre les saveurs
 
-Dans le saladier, réunissez maintenant la sauce soja, la sauce de poisson, le sucre roux et l'ail haché, en utilisant les mesures visibles sur la fiche. Remuez jusqu'à répartir le sucre, puis retournez les tranches de porc dans cette marinade pour les enduire de tous les côtés. La sauce soja apporte du corps, la sauce de poisson une profondeur salée, le sucre aide à caraméliser, et l'ail donne du relief. Cherchez une couche fine sur chaque tranche, pas une flaque de liquide sous une pile de viande. Couvrez votre saladier et placez-le au réfrigérateur pendant au moins quinze minutes. Surtout, pas de marinade sur le plan de travail à température ambiante. Une fois qu'elle a touché le porc cru, on ne la goûte pas, et on ne la verse pas froide dans les assiettes. Pendant ce repos, égouttez les pickles de concombre et de carotte qui sont prévus sur votre fiche : ils doivent rester croquants, sans baigner dans leur vinaigre. Si leur goût est trop agressif, ne compensez pas directement dans l'assiette ; égouttez mieux et ajustez lors de leur propre préparation la prochaine fois. Nettoyez la zone de la viande, puis préparez votre riz et son eau selon l'indication de son paquet. Vous pouvez faire pause jusqu'à ce que la marinade ait eu le temps d'agir. Le prochain geste, c'est cuire le riz correctement.
+Dans le saladier, réunissez maintenant la sauce soja, la sauce de poisson, le sucre roux et l'ail haché, en utilisant les mesures visibles sur la fiche. Remuez jusqu'à répartir le sucre, puis retournez les tranches de porc dans cette marinade pour les enduire de tous les côtés. La sauce soja apporte du corps, la sauce de poisson une profondeur salée, le sucre aide à caraméliser, et l'ail donne du relief. Cherchez une couche fine sur chaque tranche, pas une flaque de liquide sous une pile de viande. Couvrez votre saladier et placez-le au réfrigérateur pendant au moins quinze minutes. Surtout, pas de marinade sur le plan de travail à température ambiante. Une fois qu'elle a touché le porc cru, on ne la goûte pas, et on ne la verse pas froide dans les assiettes. Pendant ce repos, égouttez les pickles de concombre et de carotte qui sont prévus sur votre fiche : ils doivent rester croquants, sans baigner dans leur vinaigre. Si leur goût est trop agressif, ne compensez pas directement dans l'assiette ; égouttez mieux et ajustez lors de leur propre préparation la prochaine fois. Nettoyez la zone de la viande, puis préparez votre riz et son eau selon l'indication de son paquet. Vous pouvez faire pause jusqu'à ce que la marinade ait eu le temps d'agir. Pendant que le porc marine, nous allons cuire le riz.
 
 ### Chapitre 5 sur 7 — Cuire le riz jasmin sans le détremper
 
-Le riz jasmin va devenir notre base douce et chaude. Versez-le dans un grand récipient ou une passoire fine et rincez-le à l'eau froide, si les instructions de votre variété le recommandent, jusqu'à éliminer une partie de l'amidon de surface. Laissez-le s'égoutter. Mettez le riz et l'eau dans la casserole selon le rapport indiqué sur l'emballage ; je ne donne pas de volume figé, car la quantité dépend du nombre de convives et du riz choisi. Amenez à ébullition, puis baissez à feu doux et couvrez selon le mode de cuisson retenu. Évitez de soulever le couvercle toutes les trente secondes : la vapeur qui s'échappe perturbe l'absorption. Quand le riz est cuit, les grains doivent être tendres, ni croquants ni noyés dans de l'eau. S'il reste trop d'eau, poursuivez doucement selon le paquet sans gratter un fond attaché ; s'il est encore ferme, vérifiez prudemment le liquide nécessaire. Aérez délicatement avec une fourchette propre et maintenez au chaud seulement si le service suit rapidement. Le riz cuit ne doit pas traîner tiède pendant des heures : Bacillus cereus peut se multiplier si on le garde dans de mauvaises conditions, et le réchauffage n'annule pas forcément ses toxines. Si vous le conservez, refroidissez rapidement et réfrigérez. Pendant que le riz termine sa cuisson, vous pouvez faire une pause. Nous allons ensuite saisir le porc mariné.
+Le riz jasmin va devenir notre base douce et chaude. Versez-le dans un grand récipient ou une passoire fine et rincez-le à l'eau froide, si les instructions de votre variété le recommandent, jusqu'à éliminer une partie de l'amidon de surface. Laissez-le s'égoutter. Mettez le riz et l'eau dans la casserole selon le rapport indiqué sur l'emballage ; je ne donne pas de volume figé, car la quantité dépend du nombre de convives et du riz choisi. Amenez à ébullition, puis baissez à feu doux et couvrez selon le mode de cuisson retenu. Évitez de soulever le couvercle toutes les trente secondes : la vapeur qui s'échappe perturbe l'absorption. Quand le riz est cuit, les grains doivent être tendres, ni croquants ni noyés dans de l'eau. S'il reste trop d'eau, poursuivez doucement selon le paquet sans gratter un fond attaché ; s'il est encore ferme, vérifiez prudemment le liquide nécessaire. Aérez délicatement avec une fourchette propre et maintenez au chaud seulement si le service suit rapidement. Le riz cuit ne doit pas traîner tiède pendant des heures : Bacillus cereus peut se multiplier si on le garde dans de mauvaises conditions, et le réchauffage n'annule pas forcément ses toxines. Si vous le conservez, refroidissez rapidement et réfrigérez. Pendant que le riz termine sa cuisson, vous pouvez faire une pause. Dès que le riz est prêt, nous passerons à la cuisson du porc mariné.
 
 ### Chapitre 6 sur 7 — Dorer le porc en vérifiant sa cuisson
 
-Voilà le moment du porc. Sortez les tranches marinées du froid juste avant la cuisson et laissez l'excès de marinade s'égoutter dans le saladier. Chauffez la poêle ou la plancha de façon à obtenir un grésillement net sans fumée abondante. Disposez les tranches à plat, sans les superposer ; si la poêle est petite, faites plusieurs fournées. Regardez les bords : ils vont peu à peu dorer. Retournez chaque tranche avec une pince propre quand la première face a pris couleur. Le sucre contenu dans la marinade colore vite : si des zones deviennent noires ou sentent le brûlé, baissez le feu et retirez les dépôts carbonisés plutôt que de les racler sur la viande. Si le porc rend beaucoup de jus, il est probable que la poêle soit trop chargée. Enlevez une partie des tranches, laissez l'humidité se réduire puis reprenez par petites fournées. La couleur dorée ne suffit pas pour affirmer que le porc est cuit à cœur. Pour des tranches provenant d'un morceau entier, le repère USDA est au moins soixante-trois degrés au centre et trois minutes de repos ; pour du porc haché, c'est soixante et onze degrés. Vérifiez la catégorie réelle de votre viande et utilisez un thermomètre si possible. Ne remettez pas la viande cuite dans le saladier cru et jetez la marinade inutilisée. Vous pouvez mettre le guide en pause pour finir chaque fournée sans précipitation. On termine ensuite notre assiette complète.
+Passons maintenant à la cuisson du porc mariné. Sortez les tranches marinées du froid juste avant la cuisson et laissez l'excès de marinade s'égoutter dans le saladier. Chauffez la poêle ou la plancha de façon à obtenir un grésillement net sans fumée abondante. Disposez les tranches à plat, sans les superposer ; si la poêle est petite, faites plusieurs fournées. Regardez les bords : ils vont peu à peu dorer. Retournez chaque tranche avec une pince propre quand la première face a pris couleur. Le sucre contenu dans la marinade colore vite : si des zones deviennent noires ou sentent le brûlé, baissez le feu et retirez les dépôts carbonisés plutôt que de les racler sur la viande. Si le porc rend beaucoup de jus, il est probable que la poêle soit trop chargée. Enlevez une partie des tranches, laissez l'humidité se réduire puis reprenez par petites fournées. La couleur dorée ne suffit pas pour affirmer que le porc est cuit à cœur. Pour des tranches provenant d'un morceau entier, le repère USDA est au moins soixante-trois degrés au centre et trois minutes de repos ; pour du porc haché, c'est soixante et onze degrés. Vérifiez la catégorie réelle de votre viande et utilisez un thermomètre si possible. Ne remettez pas la viande cuite dans le saladier cru et jetez la marinade inutilisée. Vous pouvez mettre le guide en pause pour finir chaque fournée sans précipitation. On termine ensuite notre assiette complète.
 
 ### Chapitre 7 sur 7 — Dresser l'assiette de riz, porc et pickles
 
@@ -471,6 +477,8 @@ Voilà le moment du porc. Sortez les tranches marinées du froid juste avant la 
 - [Cambodian Cookbook — Bai Sach Chrouk](https://cambodiancookbook.com/recipes/bai-sach-chrouk/)
 
 **Validation souhaitée :** ingrédients, quantités, authenticité, préparation, ordre des gestes, sécurité, lexique exclusivement culinaire, narration agréable et pauses de cuisine.
+
+---
 
 ---
 
@@ -528,150 +536,152 @@ Après avoir vérifié que le poisson ou le poulet est complètement cuit, ajout
 
 Coupez le feu, lavez puis ciselez la coriandre ou le basilic asiatique, et ajoutez cette poignée d’herbes juste avant de servir.
 
-## B — Atelier pratique, à relire et corriger
+## B — Atelier de cuisine, étape par étape
 
 **Objectif :** Préparer entièrement une soupe aigre-douce, cuire correctement le poisson ou le poulet et apprendre à équilibrer le tamarin sans masquer le goût du bouillon.
 
-**Préparation attendue :** Quatre bols de Samlor Machu, soupe cambodgienne acidulée, avec garniture cuite et herbes fraîches.
+**Préparation que vous allez obtenir :** Quatre bols de Samlor Machu, soupe cambodgienne acidulée, avec garniture cuite et herbes fraîches.
 
-**Durée indicative des gestes :** 50 min
+**Durée estimée de l'atelier :** environ 50 min. Le temps varie selon la quantité préparée et votre rythme.
 
-**Matériel :**
+**Repère pour les temps de cuisson ou de repos :** Tous les gestes et les temps de mise en place sont compris dans les six phases ; prolongez la cuisson ou le repos si nécessaire.
+
+### Matériel
 
 - Une casserole assez grande et une louche
 - Une planche, un couteau et un tamis fin si le tamarin est préparé à partir de pulpe
 - Des bols résistants à la chaleur et une cuillère de mesure
 - Un thermomètre alimentaire pour contrôler la protéine cuite
 
-**Avant de cuisiner :**
+### Avant de commencer
 
-- Choisissez poisson OU poulet, mesurez les quantités de convives sur la fiche et gardez la protéine au froid.
+- Choisissez poisson OU poulet, mesurez les quantités indiquées sur la fiche pour le nombre de personnes choisi et gardez la protéine au froid.
 - Préparez un bouillon léger peu salé : maison préalablement cuit puis filtré et réfrigéré, OU bouillon prêt à l'emploi dilué selon son étiquette. Le fond doit être réellement disponible avant de commencer.
 - Pour du tamarin en pulpe, prévoir eau chaude potable et tamis afin d'en obtenir un jus filtré, à mesurer ensuite selon la fiche.
 
-**Précautions :**
+### Précautions alimentaires
 
 - La soupe contenant viande ou poisson crus ne se goûte qu'après vérification de leur cuisson complète.
 - Manipulez le bouillon très chaud avec précaution et évitez les éclaboussures.
 - Si vous choisissez le poulet, vérifiez au thermomètre au moins 74 °C à cœur ; pour le poisson, visez au moins 63 °C. Contrôlez les morceaux les plus épais avant toute dégustation de la soupe.
 
-### Temps de cuisine 1 — Vérifier le bouillon et les ingrédients
+### Étape 1 sur 6 — Vérifier le bouillon et les ingrédients (environ 5 min)
 
-**Gestes :**
+**À faire :**
 
-- Mesurez le bouillon mesuré sur la fiche peu salé et préparez la casserole, la louche et les des bols sans chauffer encore les ingrédients.
+- Mesurez le bouillon indiqué sur la fiche peu salé et préparez la casserole, la louche et les bols sans chauffer encore les ingrédients.
 - Réunissez le tamarin, la sauce de poisson, le sucre, les tomates, l'ananas ou la courgette et les herbes de la recette avant d'ouvrir le paquet de protéine.
 
-**Observer :** Le bouillon est clair et peu salé ; les ingrédients sont regroupés séparément.
+**À observer :** Le bouillon est clair et peu salé ; les ingrédients sont regroupés séparément.
 
-**Vérifier le résultat :** Le plan de travail est prêt et la source d'acidité est identifiée.
+**Résultat attendu :** Le plan de travail est prêt et la source d'acidité est identifiée.
 
-**Éviter :** Utiliser un bouillon déjà très salé risque de déséquilibrer la soupe plus tard.
+**À éviter :** Utiliser un bouillon déjà très salé risque de déséquilibrer la soupe plus tard.
 
-**Corriger :** Diluez d'abord un bouillon concentré selon son étiquette ou choisissez un bouillon peu salé.
+**Si besoin, comment corriger :** Diluez d'abord un bouillon concentré selon son étiquette ou choisissez un bouillon peu salé.
 
-**Technique apprise :** Une soupe acidulée équilibrée commence par un bouillon qui laisse de la place au tamarin.
+**Ce que vous apprenez :** Une soupe acidulée équilibrée commence par un bouillon qui laisse de la place au tamarin.
 
 **Précaution :** Ne laissez pas le poisson ou le poulet cru à température ambiante pendant la préparation.
 
-### Temps de cuisine 2 — Découper la garniture et préparer le tamarin
+### Étape 2 sur 6 — Découper la garniture et préparer le tamarin (environ 10 min)
 
-**Gestes :**
+**À faire :**
 
 - Coupez le poisson ou le poulet pesé sur la fiche en morceaux réguliers ; coupez les tomates prévues et détaillez l'ananas en dés, ou la courgette selon la variante choisie.
 - Préparez le jus de tamarin filtré mesuré sur la fiche, lavez les herbes fraîches puis réservez-les séparément pour les ajouter uniquement en finition.
 
-**Observer :** Les morceaux ont des tailles proches et le tamarin est liquide, sans grosses fibres.
+**À observer :** Les morceaux ont des tailles proches et le tamarin est liquide, sans grosses fibres.
 
-**Vérifier le résultat :** La protéine, les légumes et le tamarin sont prêts à entrer dans la casserole au bon moment.
+**Résultat attendu :** La protéine, les légumes et le tamarin sont prêts à entrer dans la casserole au bon moment.
 
-**Éviter :** Ajouter une pulpe de tamarin non délayée rend le dosage difficile et laisse des fibres gênantes.
+**À éviter :** Ajouter une pulpe de tamarin non délayée rend le dosage difficile et laisse des fibres gênantes.
 
-**Corriger :** Détendez la pulpe dans un peu d'eau tiède et filtrez avant de mesurer le jus requis.
+**Si besoin, comment corriger :** Détendez la pulpe dans un peu d'eau tiède et filtrez avant de mesurer le jus requis.
 
-**Technique apprise :** La préparation des éléments séparés rend l'ajustement de l'acidité plus précis.
+**Ce que vous apprenez :** La préparation des éléments séparés rend l'ajustement de l'acidité plus précis.
 
 **Précaution :** Nettoyez la planche après les aliments crus et lavez vos mains avant de toucher les herbes.
 
-### Temps de cuisine 3 — Faire frémir doucement le bouillon
+### Étape 3 sur 6 — Faire frémir doucement le bouillon (environ 8 min)
 
-**Gestes :**
+**À faire :**
 
 - Versez le bouillon mesuré dans une casserole assez grande et chauffez progressivement jusqu'à obtenir de petites bulles régulières, sans ébullition violente.
 - Baissez le feu pour conserver un léger frémissement ; gardez la louche prête pour contrôler la chaleur avant l'ajout de la garniture.
 
-**Observer :** De petites bulles montent doucement ; le niveau du bouillon ne baisse pas vite.
+**À observer :** De petites bulles montent doucement ; le niveau du bouillon ne baisse pas vite.
 
-**Vérifier le résultat :** Le bouillon frémit de façon stable sans forte réduction ni bouillonnement excessif.
+**Résultat attendu :** Le bouillon frémit de façon stable sans forte réduction ni bouillonnement excessif.
 
-**Éviter :** Une ébullition violente concentre le sel et agite inutilement les morceaux fragiles.
+**À éviter :** Une ébullition violente concentre le sel et agite inutilement les morceaux fragiles.
 
-**Corriger :** Réduisez le feu et ajoutez un peu d'eau chaude si le bouillon a déjà beaucoup réduit.
+**Si besoin, comment corriger :** Réduisez le feu et ajoutez un peu d'eau chaude si le bouillon a déjà beaucoup réduit.
 
-**Technique apprise :** La cuisson douce protège la garniture et conserve un bouillon équilibrable.
+**Ce que vous apprenez :** La cuisson douce protège la garniture et conserve un bouillon équilibrable.
 
 **Précaution :** Attention à la vapeur et à la casserole remplie de bouillon très chaud.
 
-### Temps de cuisine 4 — Cuire complètement la garniture
+### Étape 4 sur 6 — Cuire complètement la garniture (environ 15 min)
 
-**Gestes :**
+**À faire :**
 
 - Ajoutez les morceaux de poisson ou de poulet au bouillon frémissant, puis les tomates et l'ananas, ou les petits dés de courgette.
 - Maintenez le léger frémissement le temps nécessaire pour une cuisson complète de la protéine choisie et des légumes ; vérifiez le cœur des morceaux avant toute dégustation.
 
-**Observer :** Les légumes s'attendrissent sans se désintégrer et les morceaux sont cuits jusqu'au centre.
+**À observer :** Les légumes s'attendrissent sans se désintégrer et les morceaux sont cuits jusqu'au centre.
 
-**Vérifier le résultat :** Le poisson ou le poulet est entièrement cuit et les légumes sont tendres.
+**Résultat attendu :** Le poisson ou le poulet est entièrement cuit et les légumes sont tendres.
 
-**Éviter :** Goûter avant la cuisson complète expose à un risque microbiologique.
+**À éviter :** Goûter avant la cuisson complète expose à un risque microbiologique.
 
-**Corriger :** Poursuivez la cuisson en maintenant un frémissement modéré puis vérifiez de nouveau.
+**Si besoin, comment corriger :** Poursuivez la cuisson en maintenant un frémissement modéré puis vérifiez de nouveau.
 
-**Technique apprise :** On ne corrige le goût que lorsque la garniture est réellement cuite.
+**Ce que vous apprenez :** On ne corrige le goût que lorsque la garniture est réellement cuite.
 
 **Précaution :** Pour le poulet, assurez-vous d'une cuisson complète à cœur ; ne goûtez pas le bouillon avant.
 
-### Temps de cuisine 5 — Équilibrer la soupe avec le tamarin
+### Étape 5 sur 6 — Équilibrer la soupe avec le tamarin (environ 8 min)
 
-**Gestes :**
+**À faire :**
 
 - Quand la garniture est bien cuite, versez une partie du jus de tamarin réservé, mélangez et goûtez prudemment une petite cuillère refroidie.
-- Ajoutez progressivement le reste du tamarin selon l'acidité souhaitée, puis la cuillère de sauce de poisson et la cuillère à café de sucre ; remuez et ajustez seulement après comparaison.
+- Ajoutez progressivement le reste du tamarin selon l'acidité souhaitée, puis la sauce de poisson et le sucre selon les quantités indiquées sur la fiche ; remuez et ajustez seulement après comparaison.
 
-**Observer :** L'acidité du tamarin se perçoit sans écraser totalement le goût du bouillon.
+**À observer :** L'acidité du tamarin se perçoit sans écraser totalement le goût du bouillon.
 
-**Vérifier le résultat :** Vous distinguez une acidité nette, un salé présent mais modéré et une pointe de douceur.
+**Résultat attendu :** Vous distinguez une acidité nette, un salé présent mais modéré et une pointe de douceur.
 
-**Éviter :** Verser tout le tamarin d'un coup rend difficile de revenir en arrière.
+**À éviter :** Verser tout le tamarin d'un coup rend difficile de revenir en arrière.
 
-**Corriger :** Réservez d'abord une partie du tamarin, goûtez, puis ajoutez-en peu à peu selon le résultat.
+**Si besoin, comment corriger :** Réservez d'abord une partie du tamarin, goûtez, puis ajoutez-en peu à peu selon le résultat.
 
-**Technique apprise :** L'équilibre entre acidité, sel et douceur se règle en goûtant et en ajustant les assaisonnements progressivement.
+**Ce que vous apprenez :** L'équilibre entre acidité, sel et douceur se règle en goûtant et en ajustant les assaisonnements progressivement.
 
 **Précaution :** Laissez refroidir la cuillère prélevée avant de goûter pour éviter toute brûlure.
 
-### Temps de cuisine 6 — Ajouter les herbes et servir la soupe
+### Étape 6 sur 6 — Ajouter les herbes et servir la soupe (environ 4 min)
 
-**Gestes :**
+**À faire :**
 
 - Coupez le feu avant de répartir les herbes fraîches lavées et ciselées dans la soupe pour conserver leur parfum.
 - Versez la soupe chaude avec ses morceaux de garniture dans des bols résistants à la chaleur et servez sans attendre.
 
-**Observer :** Les herbes gardent leur couleur et leur fraîcheur, la soupe reste bien garnie.
+**À observer :** Les herbes gardent leur couleur et leur fraîcheur, la soupe reste bien garnie.
 
-**Vérifier le résultat :** Des bols de soupe complète sont prêts, parfumés et acidulés sans excès.
+**Résultat attendu :** Des bols de soupe complète sont prêts, parfumés et acidulés sans excès.
 
-**Éviter :** Laisser bouillir longuement les herbes peut atténuer leur parfum.
+**À éviter :** Laisser bouillir longuement les herbes peut atténuer leur parfum.
 
-**Corriger :** Coupez le feu puis ajoutez une nouvelle petite poignée d'herbes fraîches au service.
+**Si besoin, comment corriger :** Coupez le feu puis ajoutez une nouvelle petite poignée d'herbes fraîches au service.
 
-**Technique apprise :** La fraîcheur ajoutée à la fin complète la cuisson et l'acidité du tamarin.
+**Ce que vous apprenez :** La fraîcheur ajoutée à la fin complète la cuisson et l'acidité du tamarin.
 
 **Précaution :** Versez le liquide chaud avec précaution ; refroidissez rapidement tout reste non consommé.
 
-## C — Sept narrations corrigées à valider avant Coral
+## C — Narration complète à valider avant tout nouvel enregistrement
 
-**Ces textes ont été corrigés. Les MP3 historiques ne correspondent plus : validation éditoriale exigée avant toute nouvelle synthèse.**
+**Ces sept textes ont été relus, mais ne sont pas encore approuvés. Les précédents MP3 restent archivés et ne doivent pas accompagner ce nouveau texte.**
 
 ### Chapitre 1 sur 7 — Introduction
 
@@ -707,6 +717,8 @@ Voilà notre soupe : le bouillon est clair ou légèrement coloré par les légu
 - [Northern Illinois University — Samlor Machu Trey](https://seasite.niu.edu/khmer/food/main_dish/main_dish_text.htm)
 
 **Validation souhaitée :** ingrédients, quantités, authenticité, préparation, ordre des gestes, sécurité, lexique exclusivement culinaire, narration agréable et pauses de cuisine.
+
+---
 
 ---
 
@@ -766,154 +778,156 @@ Répartissez nouilles et porc, puis versez le bouillon brûlant.
 
 Rincez les pousses de soja et la coriandre, puis émincez la coriandre et les deux ciboules. Coupez les deux citrons verts en quartiers. Répartissez les pousses, la coriandre, la ciboule et les quartiers de citron autour des bols pour que chacun les ajoute à son goût.
 
-## B — Atelier pratique, à relire et corriger
+## B — Atelier de cuisine, étape par étape
 
-**Objectif :** Préparer un bouillon cambodgien clair et correctement assaisonné, cuire le porc et les nouilles séparément puis dresser des bols généreux de Kuy Teav.
+**Objectif :** préparer un bouillon cambodgien clair et correctement assaisonné, cuire le porc et les nouilles séparément puis dresser des bols généreux de Kuy Teav.
 
-**Préparation attendue :** Quatre bols de Kuy Teav complets : nouilles de riz, porc entièrement cuit, bouillon parfumé et garnitures fraîches.
+**Préparation que vous allez obtenir :** Quatre bols de Kuy Teav complets : nouilles de riz, porc entièrement cuit, bouillon parfumé et garnitures fraîches.
 
-**Durée indicative des gestes :** 75 min
+**Durée estimée de l'atelier :** environ 75 min. Le temps varie selon la quantité préparée et votre rythme.
 
-**Matériel :**
+**Repère pour les temps de cuisson ou de repos :** Tous les gestes et les temps de mise en place sont compris dans les six phases ; prolongez la cuisson ou le repos si nécessaire.
+
+### Matériel
 
 - Deux grandes casseroles et une passoire
 - Une écumoire, une louche et des bols profonds
 - Une planche et un couteau pour la finition végétale
 - Un thermomètre alimentaire pour vérifier la cuisson du porc
 
-**Avant de cuisiner :**
+### Avant de commencer
 
-- Choisissez les convives et mesurez les quantités de nouilles, porc, sauces, sucre et herbes indiquées sur la fiche.
-- Le bouillon de porc ou de volaille peu salé est une sous-préparation obligatoire : fond maison cuit/filtré/conservé au frais en amont, ou bouillon prêt à l'emploi reconstitué selon l'étiquette puis mesuré.
+- Indiquez le nombre de personnes à table et mesurez les quantités de nouilles, porc, sauces, sucre et herbes indiquées sur la fiche.
+- Le bouillon de porc ou de volaille peu salé est une préparation à prévoir à l'avance obligatoire : fond maison cuit/filtré/conservé au frais en amont, ou bouillon prêt à l'emploi reconstitué selon l'étiquette puis mesuré.
 - Lavez, séparez et égouttez les garnitures fraîches ; si vous cuisinez pour des personnes vulnérables, prévoyez de cuire les pousses germées au lieu de les servir crues.
 
-**Précautions :**
+### Précautions alimentaires
 
 - Vérifiez que le porc est entièrement cuit avant tout service ou dégustation du bouillon.
 - Protégez-vous de la vapeur, du bouillon brûlant et des projections de la cuisson des nouilles.
 - Pour le porc haché, vérifiez une température d'au moins 71 °C à cœur ; pour les morceaux découpés dans une pièce entière, la référence USDA est de 63 °C avec 3 minutes de repos. Ne fiez pas la sécurité à la couleur seule.
 
-### Temps de cuisine 1 — Vérifier le bouillon et installer les casseroles
+### Étape 1 sur 6 — Vérifier le bouillon et installer les casseroles (environ 5 min)
 
-**Gestes :**
+**À faire :**
 
 - Préparez deux casseroles distinctes : la première pour réchauffer le bouillon mesuré sur la fiche de volaille ou de porc, la seconde pour cuire les nouilles de riz.
-- Mesurez tous les ingrédients, préparez la louche et les des bols et vérifiez que le bouillon de départ n'est pas excessivement salé.
+- Mesurez tous les ingrédients, préparez la louche et les bols et vérifiez que le bouillon de départ n'est pas excessivement salé.
 
-**Observer :** Tout est à portée de main et les deux cuissons pourront avancer indépendamment.
+**À observer :** Tout est à portée de main et les deux cuissons pourront avancer indépendamment.
 
-**Vérifier le résultat :** Le bouillon et les nouilles disposent de leurs casseroles séparées.
+**Résultat attendu :** Le bouillon et les nouilles disposent de leurs casseroles séparées.
 
-**Éviter :** Mettre les nouilles directement dans le bouillon de service peut troubler et épaissir inutilement celui-ci.
+**À éviter :** Mettre les nouilles directement dans le bouillon de service peut troubler et épaissir inutilement celui-ci.
 
-**Corriger :** Réservez une casserole d'eau pour les nouilles et gardez le bouillon clair.
+**Si besoin, comment corriger :** Réservez une casserole d'eau pour les nouilles et gardez le bouillon clair.
 
-**Technique apprise :** Le dressage d'un bol commence avec un bouillon maîtrisé et une organisation simple.
+**Ce que vous apprenez :** Le dressage d'un bol commence avec un bouillon maîtrisé et une organisation simple.
 
 **Précaution :** Respectez les précautions de sécurité avec les récipients profonds de liquide très chaud.
 
-### Temps de cuisine 2 — Préparer le porc et la garniture végétale
+### Étape 2 sur 6 — Préparer le porc et la garniture végétale (environ 10 min)
 
-**Gestes :**
+**À faire :**
 
 - Séparez la quantité de porc haché ou émincé adaptée aux convives en morceaux qui pourront cuire complètement dans le bouillon frémissant.
 - Rincez les pousses de soja et la coriandre, émincez les ciboules prévues et préparez les quartiers de citron vert dans un plat propre, loin du porc cru.
 
-**Observer :** Les petits morceaux de porc sont prêts et les herbes, pousses et citron sont distincts.
+**À observer :** Les petits morceaux de porc sont prêts et les herbes, pousses et citron sont distincts.
 
-**Vérifier le résultat :** La garniture peut être servie sans contact avec des ustensiles souillés par le porc.
+**Résultat attendu :** La garniture peut être servie sans contact avec des ustensiles souillés par le porc.
 
-**Éviter :** Préparer les légumes sur une planche ayant porté le porc cru expose à une contamination.
+**À éviter :** Préparer les légumes sur une planche ayant porté le porc cru expose à une contamination.
 
-**Corriger :** Nettoyez et désinfectez la planche ou utilisez-en une dédiée aux légumes.
+**Si besoin, comment corriger :** Nettoyez et désinfectez la planche ou utilisez-en une dédiée aux légumes.
 
-**Technique apprise :** Une garniture nette et fraîche complète le bouillon, mais se prépare à part.
+**Ce que vous apprenez :** Une garniture nette et fraîche complète le bouillon, mais se prépare à part.
 
 **Précaution :** Nettoyez soigneusement les ustensiles touchant le porc cru avant de servir les légumes.
 
-### Temps de cuisine 3 — Assaisonner le bouillon sans le réduire
+### Étape 3 sur 6 — Assaisonner le bouillon sans le réduire (environ 15 min)
 
-**Gestes :**
+**À faire :**
 
-- Versez le bouillon mesuré sur la fiche dans la casserole, ajoutez la sauce de poisson mesurée sur la fiche et une cuillère à café de sucre.
+- Versez le bouillon mesuré sur la fiche dans la casserole, ajoutez la sauce de poisson et le sucre en suivant les quantités de la fiche.
 - Portez à petit frémissement puis maintenez cette température sans faire réduire fortement le liquide, en surveillant le niveau dans la casserole.
 
-**Observer :** Le bouillon reste relativement clair, avec de petites bulles et un niveau stable.
+**À observer :** Le bouillon reste relativement clair, avec de petites bulles et un niveau stable.
 
-**Vérifier le résultat :** Le bouillon frémit doucement et ne concentre pas exagérément le sel.
+**Résultat attendu :** Le bouillon frémit doucement et ne concentre pas exagérément le sel.
 
-**Éviter :** Une longue ébullition à gros bouillons rend le bouillon plus concentré et salé.
+**À éviter :** Une longue ébullition à gros bouillons rend le bouillon plus concentré et salé.
 
-**Corriger :** Diminuez le feu et, s'il a réduit, détendez progressivement avec un peu d'eau chaude.
+**Si besoin, comment corriger :** Diminuez le feu et, s'il a réduit, détendez progressivement avec un peu d'eau chaude.
 
-**Technique apprise :** Assaisonner avec retenue aide à conserver un bouillon agréable jusqu'au service.
+**Ce que vous apprenez :** Assaisonner avec retenue aide à conserver un bouillon agréable jusqu'au service.
 
 **Précaution :** Le bouillon très chaud ne doit pas être goûté directement à la louche pour éviter une brûlure.
 
-### Temps de cuisine 4 — Cuire le porc entièrement dans le bouillon
+### Étape 4 sur 6 — Cuire le porc entièrement dans le bouillon (environ 20 min)
 
-**Gestes :**
+**À faire :**
 
 - Plongez le porc dans le bouillon qui frémit et séparez les morceaux avec une cuillère propre pour éviter les amas qui cuisent mal au centre.
 - Poursuivez jusqu'à cuisson complète de chaque morceau, puis retirez le porc à l'écumoire et conservez-le au chaud dans un récipient propre.
 
-**Observer :** Les morceaux de porc sont cuits au centre et le liquide continue de frémir doucement.
+**À observer :** Les morceaux de porc sont cuits au centre et le liquide continue de frémir doucement.
 
-**Vérifier le résultat :** Le porc est complètement cuit et peut être réparti sans risque dans les bols.
+**Résultat attendu :** Le porc est complètement cuit et peut être réparti sans risque dans les bols.
 
-**Éviter :** Retirer le porc dès que sa surface blanchit peut laisser des morceaux insuffisamment cuits.
+**À éviter :** Retirer le porc dès que sa surface blanchit peut laisser des morceaux insuffisamment cuits.
 
-**Corriger :** Remettez les morceaux dans le bouillon et poursuivez jusqu'à cuisson à cœur.
+**Si besoin, comment corriger :** Remettez les morceaux dans le bouillon et poursuivez jusqu'à cuisson à cœur.
 
-**Technique apprise :** Les petits morceaux réguliers cuisent de façon plus fiable dans un bouillon calme.
+**Ce que vous apprenez :** Les petits morceaux réguliers cuisent de façon plus fiable dans un bouillon calme.
 
 **Précaution :** Ne goûtez le bouillon qu'après avoir vérifié la cuisson complète du porc.
 
-### Temps de cuisine 5 — Cuire les nouilles et contrôler l'assaisonnement
+### Étape 5 sur 6 — Cuire les nouilles et contrôler l'assaisonnement (environ 15 min)
 
-**Gestes :**
+**À faire :**
 
 - Dans l'autre casserole, faites cuire les nouilles de riz mesurées sur la fiche conformément aux indications du paquet ; égouttez-les aussitôt et répartissez-les dans des bols.
 - Une fois le porc bien cuit, goûtez une petite quantité de bouillon légèrement refroidie et ajustez seulement si nécessaire sans ajouter automatiquement plus de sel.
 
-**Observer :** Les nouilles sont tendres, séparées ; le bouillon garde son parfum sans être trop salé.
+**À observer :** Les nouilles sont tendres, séparées ; le bouillon garde son parfum sans être trop salé.
 
-**Vérifier le résultat :** Les des bols contiennent des nouilles prêtes à recevoir le bouillon chaud.
+**Résultat attendu :** Les bols contiennent des nouilles prêtes à recevoir le bouillon chaud.
 
-**Éviter :** Cuire les nouilles trop longtemps ou resaler sans goûter rend le bol lourd.
+**À éviter :** Cuire les nouilles trop longtemps ou resaler sans goûter rend le bol lourd.
 
-**Corriger :** Égouttez rapidement les nouilles et goûtez le bouillon avant toute correction.
+**Si besoin, comment corriger :** Égouttez rapidement les nouilles et goûtez le bouillon avant toute correction.
 
-**Technique apprise :** Nouilles et bouillon se préparent séparément pour garder texture et lisibilité.
+**Ce que vous apprenez :** Nouilles et bouillon se préparent séparément pour garder texture et lisibilité.
 
 **Précaution :** Ne manipulez pas la passoire au-dessus du visage ; attention à l'eau bouillante.
 
-### Temps de cuisine 6 — Dresser les bols et ajouter les aromates
+### Étape 6 sur 6 — Dresser les bols et ajouter les aromates (environ 10 min)
 
-**Gestes :**
+**À faire :**
 
-- Répartissez le porc entièrement cuit sur les nouilles, puis versez le bouillon brûlant de manière équitable dans les des bols profonds.
+- Répartissez le porc entièrement cuit sur les nouilles, puis versez le bouillon brûlant de manière équitable dans les bols profonds.
 - Présentez coriandre, ciboule, pousses de soja et quartiers de citron vert à table pour que chacun complète son bol juste avant de le manger.
 
-**Observer :** Un bol de Kuy Teav associe bouillon chaud, nouilles séparées et garnitures fraîches.
+**À observer :** Un bol de Kuy Teav associe bouillon chaud, nouilles séparées et garnitures fraîches.
 
-**Vérifier le résultat :** Les bols complets sont servis avec assaisonnements frais disponibles à part.
+**Résultat attendu :** Les bols complets sont servis avec assaisonnements frais disponibles à part.
 
-**Éviter :** Ajouter les herbes trop tôt pendant la cuisson leur fait perdre leur fraîcheur.
+**À éviter :** Ajouter les herbes trop tôt pendant la cuisson leur fait perdre leur fraîcheur.
 
-**Corriger :** Apportez les herbes et le citron au dernier moment plutôt que de les laisser bouillir.
+**Si besoin, comment corriger :** Apportez les herbes et le citron au dernier moment plutôt que de les laisser bouillir.
 
-**Technique apprise :** La finition à table permet à chacun de doser croquant et acidité.
+**Ce que vous apprenez :** La finition à table permet à chacun de doser croquant et acidité.
 
 **Précaution :** Le bouillon est brûlant ; déposez les bols sur un support stable et servez avec prudence.
 
-## C — Sept narrations corrigées à valider avant Coral
+## C — Narration complète à valider avant tout nouvel enregistrement
 
-**Ces textes ont été corrigés. Les MP3 historiques ne correspondent plus : validation éditoriale exigée avant toute nouvelle synthèse.**
+**Ces sept textes ont été relus, mais ne sont pas encore approuvés. Les précédents MP3 restent archivés et ne doivent pas accompagner ce nouveau texte.**
 
 ### Chapitre 1 sur 7 — Introduction
 
-Coucou ! Aujourd'hui, on prépare un Kuy Teav, un grand bol de nouilles de riz avec du porc, un bouillon parfumé et des garnitures fraîches. Vous allez apprendre à organiser trois textures qui n'ont pas le même rythme : le bouillon doit rester clair et chaud, le porc doit être correctement cuit et les nouilles doivent rester souples, jamais transformées en pâte. Choisissez vos convives sur la fiche et mesurez les ingrédients en conséquence. Dans cette piste préenregistrée, les quantités varient avec votre fiche ; je vais vous guider plutôt sur les gestes et les repères. Il vous faut deux casseroles, une passoire, une écumoire, une louche, une planche et un couteau, un thermomètre si possible et des bols de service. Notre recette part d'un bouillon de porc ou de volaille déjà prêt, maison ou du commerce ; sa préparation traditionnelle ne tient pas dans le temps de cet atelier, et je vais expliquer comment le choisir et le préparer pour le service. Vous pourrez mettre en pause pendant la cuisson et reprendre à votre rythme. Allez, on s'y met !
+Coucou ! Aujourd'hui, on prépare un Kuy Teav, un grand bol de nouilles de riz avec du porc, un bouillon parfumé et des garnitures fraîches. Vous allez apprendre à organiser trois textures qui n'ont pas le même rythme : le bouillon doit rester clair et chaud, le porc doit être correctement cuit et les nouilles doivent rester souples, jamais transformées en pâte. Indiquez le nombre de personnes à table sur la fiche et mesurez les ingrédients en conséquence. Dans cette piste préenregistrée, les quantités varient avec votre fiche ; je vais vous guider plutôt sur les gestes et les repères. Il vous faut deux casseroles, une passoire, une écumoire, une louche, une planche et un couteau, un thermomètre si possible et des bols de service. Notre recette part d'un bouillon de porc ou de volaille déjà prêt, maison ou du commerce ; sa préparation traditionnelle ne tient pas dans le temps de cet atelier, et je vais expliquer comment le choisir et le préparer pour le service. Vous pourrez mettre en pause pendant la cuisson et reprendre à votre rythme. Allez, on s'y met !
 
 ### Chapitre 2 sur 7 — Vérifier le bouillon et installer les casseroles
 
@@ -933,7 +947,7 @@ Nous allons cuire le porc directement dans ce bouillon, une technique simple si 
 
 ### Chapitre 6 sur 7 — Cuire les nouilles et contrôler l'assaisonnement
 
-Allumez maintenant la seconde casserole pour les nouilles. Faites chauffer suffisamment d'eau potable et suivez la notice de votre paquet : les nouilles de riz sèches demandent parfois un trempage, les fraîches souvent une cuisson très brève. Remuez délicatement pour séparer les brins sans les écraser, puis prélevez-en un et vérifiez qu'il est souple mais encore distinct. Égouttez aussitôt dans une passoire résistante à la chaleur ; attention aux nuages de vapeur. Si les nouilles collent entre elles, détachez-les délicatement sans les laisser recuire longtemps, sinon elles se défont. Pendant ce temps, le bouillon peut rester chaud à petit frémissement. Lorsque le porc a atteint une cuisson sûre, prélevez une petite cuillère de bouillon et laissez-la refroidir avant de goûter. Est-ce trop salé ? Ajoutez progressivement un peu de bouillon peu salé ou d'eau chaude, plutôt que du sucre en excès. Trop fade ? Ajoutez une petite quantité de sauce de poisson, mélangez et regoûtez, sans répéter tout le dosage initial. Si le niveau du bouillon a baissé, complétez de façon mesurée. Ne mettez pas les nouilles cuites dans la grande casserole à attendre : elles gonfleraient et brouilleraient le bouillon. Faites une pause si les nouilles demandent votre attention ; nous terminerons le dressage juste après.
+Allumez maintenant la seconde casserole pour les nouilles. Faites chauffer suffisamment d'eau potable et suivez la notice de votre paquet : les nouilles de riz sèches demandent parfois un trempage, les fraîches souvent une cuisson très brève. Remuez délicatement pour séparer les brins sans les écraser, puis prélevez-en un et vérifiez qu'il est souple mais encore distinct. Égouttez aussitôt dans une passoire résistante à la chaleur ; attention aux nuages de vapeur. Si les nouilles collent entre elles, détachez-les délicatement sans les laisser recuire longtemps, sinon elles se défont. Pendant ce temps, le bouillon peut rester chaud à petit frémissement. Lorsque le porc a atteint une cuisson sûre, prélevez une petite cuillère de bouillon et laissez-la refroidir avant de goûter. Est-ce trop salé ? Ajoutez progressivement un peu de bouillon peu salé ou d'eau chaude, plutôt que du sucre en excès. Trop fade ? Ajoutez une petite quantité de sauce de poisson, mélangez et regoûtez, sans répéter tout le dosage initial. Si le niveau du bouillon a baissé, complétez de façon mesurée. Ne mettez pas les nouilles cuites dans la grande casserole à attendre : elles gonfleraient et brouilleraient le bouillon. Faites une pause si les nouilles demandent votre attention ; nous dresserons les bols juste après.
 
 ### Chapitre 7 sur 7 — Dresser les bols et ajouter les aromates
 
@@ -945,6 +959,8 @@ Il ne reste qu'à dresser les bols. Répartissez d'abord les nouilles égouttée
 - [The Southeast Asian Table — Kuy Teav](https://thesoutheastasiantables.com/recipes/cambodia/kuy-teav-noodle-soup)
 
 **Validation souhaitée :** ingrédients, quantités, authenticité, préparation, ordre des gestes, sécurité, lexique exclusivement culinaire, narration agréable et pauses de cuisine.
+
+---
 
 ---
 
@@ -1001,150 +1017,152 @@ Cuisez les 350 g de nouilles de riz selon les indications du paquet, puis égout
 
 Blanchissez les 100 g de haricots verts fins dans l’eau bouillante jusqu’à ce qu’ils soient tendres, puis rafraîchissez-les et égouttez-les. Émincez le demi-concombre et lavez les feuilles de menthe ou de basilic. Répartissez les nouilles dans les bols, versez la sauce chaude au poisson et ajoutez les légumes et les herbes.
 
-## B — Atelier pratique, à relire et corriger
+## B — Atelier de cuisine, étape par étape
 
 **Objectif :** Réaliser un bol complet de nouilles cambodgiennes, réussir la sauce chaude au poisson et maîtriser le contraste avec les légumes et herbes de finition.
 
-**Préparation attendue :** Quatre bols de Num Banh Chok avec nouilles de riz, sauce chaude au poisson, coco, kroeung et herbes fraîches.
+**Préparation que vous allez obtenir :** Quatre bols de Num Banh Chok avec nouilles de riz, sauce chaude au poisson, coco, kroeung et herbes fraîches.
 
-**Durée indicative des gestes :** 70 min
+**Durée estimée de l'atelier :** environ 70 min. Le temps varie selon la quantité préparée et votre rythme.
 
-**Matériel :**
+**Repère pour les temps de cuisson ou de repos :** Tous les gestes et les temps de mise en place sont compris dans les six phases ; prolongez la cuisson ou le repos si nécessaire.
+
+### Matériel
 
 - Deux casseroles et une grande passoire
 - Une planche, un couteau et une fourchette pour émietter le poisson
 - Des bols à servir et une louche propre
 - Un thermomètre alimentaire pour contrôler le poisson poché
 
-**Avant de cuisiner :**
+### Avant de commencer
 
-- Choisissez vos convives, puis mesurez tous les ingrédients sur la fiche.
-- Le kroeung jaune est une sous-préparation à faire avant ce cours (voir atelier Kroeung jaune) ou à acheter : il doit être préparé avant cet atelier.
+- Indiquez le nombre de personnes à table, puis mesurez les ingrédients sur la fiche.
+- Le kroeung jaune doit être prêt avant de commencer : vous pouvez le préparer grâce à l'atelier consacré au mortier, ou en utiliser un acheté.
 - Prévoyez de l'eau potable pour pocher le poisson, cuire les nouilles et blanchir les haricots, des ustensiles propres et un moyen de retirer les arêtes.
 
-**Précautions :**
+### Précautions alimentaires
 
 - Ne goûtez pas une sauce contenant du poisson insuffisamment cuit.
 - Retirez soigneusement les arêtes et manipulez les liquides chauds en évitant de vous brûler.
 - Vérifiez que le poisson atteint au moins 63 °C à cœur avec un thermomètre avant de l'émietter ; retirez ensuite soigneusement les arêtes.
 
-### Temps de cuisine 1 — Rassembler la sauce, les nouilles et les herbes
+### Étape 1 sur 6 — Rassembler la sauce, les nouilles et les herbes (environ 5 min)
 
-**Gestes :**
+**À faire :**
 
 - Rassemblez les six groupes d'ingrédients de la recette et sortez deux casseroles : une pour la sauce, une autre pour les cuissons à l'eau.
 - Préparez également des bols et une passoire ; vérifiez que le kroeung jaune est déjà disponible avant de commencer la cuisson.
 
-**Observer :** Le poisson, le lait de coco, le kroeung et les légumes sont clairement séparés.
+**À observer :** Le poisson, le lait de coco, le kroeung et les légumes sont clairement séparés.
 
-**Vérifier le résultat :** Le plan de travail est prêt pour mener plusieurs cuissons sans perdre le fil.
+**Résultat attendu :** Le plan de travail est prêt pour mener plusieurs cuissons sans perdre le fil.
 
-**Éviter :** Commencer sans kroeung entraîne une interruption au milieu de la sauce.
+**À éviter :** Commencer sans kroeung entraîne une interruption au milieu de la sauce.
 
-**Corriger :** Préparez cette pâte aromatique en avance ou référez-vous à sa fiche recette.
+**Si besoin, comment corriger :** Préparez cette pâte aromatique en avance ou référez-vous à sa fiche recette.
 
-**Technique apprise :** Une préparation à composants multiples demande une mise en place lisible.
+**Ce que vous apprenez :** Une préparation à composants multiples demande une mise en place lisible.
 
 **Précaution :** Conservez le poisson cru au frais jusqu'à son passage en cuisson.
 
-### Temps de cuisine 2 — Préparer poisson et garnitures fraîches
+### Étape 2 sur 6 — Préparer poisson et garnitures fraîches (environ 10 min)
 
-**Gestes :**
+**À faire :**
 
 - Rincez et égouttez le concombre, les haricots verts et les feuilles de menthe ou basilic ; préparez une planche propre pour les découper au moment du service.
 - Vérifiez le poisson blanc et préparez la fourchette qui servira à l'émietter une fois cuit, sans mélanger ustensiles pour cru et légumes frais.
 
-**Observer :** Les légumes sont propres, les feuilles fraîches et le poisson séparé des garnitures.
+**À observer :** Les légumes sont propres, les feuilles fraîches et le poisson séparé des garnitures.
 
-**Vérifier le résultat :** Tous les éléments sont prêts sans contamination croisée et sans découpe précipitée.
+**Résultat attendu :** Tous les éléments sont prêts sans contamination croisée et sans découpe précipitée.
 
-**Éviter :** Poser du poisson cru sur les légumes lavés compromet leur sécurité.
+**À éviter :** Poser du poisson cru sur les légumes lavés compromet leur sécurité.
 
-**Corriger :** Changez de planche ou nettoyez et désinfectez-la avant de préparer les garnitures.
+**Si besoin, comment corriger :** Changez de planche ou nettoyez et désinfectez-la avant de préparer les garnitures.
 
-**Technique apprise :** La fraîcheur finale se prépare dès le début, même si elle n'est ajoutée qu'à la fin.
+**Ce que vous apprenez :** La fraîcheur finale se prépare dès le début, même si elle n'est ajoutée qu'à la fin.
 
 **Précaution :** Ne rincez pas inutilement le poisson cru au robinet, pour éviter les éclaboussures contaminantes.
 
-### Temps de cuisine 3 — Pocher et émietter le poisson blanc
+### Étape 3 sur 6 — Pocher et émietter le poisson blanc (environ 15 min)
 
-**Gestes :**
+**À faire :**
 
 - Mettez le poisson blanc dans une casserole d'eau à petit frémissement et laissez-le cuire complètement sans le malmener à forte ébullition.
 - Égouttez le poisson cuit, vérifiez et retirez les éventuelles arêtes, puis émiettez délicatement le poisson à l'aide d'une fourchette propre.
 
-**Observer :** Le poisson se détache en morceaux souples et ne présente plus de parties crues.
+**À observer :** Le poisson se détache en morceaux souples et ne présente plus de parties crues.
 
-**Vérifier le résultat :** La chair est cuite à cœur, émiettée et exempte d'arêtes visibles.
+**Résultat attendu :** La chair est cuite à cœur, émiettée et exempte d'arêtes visibles.
 
-**Éviter :** Une eau à très forte ébullition abîme la chair et rend l'émiettage irrégulier.
+**À éviter :** Une eau à très forte ébullition abîme la chair et rend l'émiettage irrégulier.
 
-**Corriger :** Baissez la température et poursuivez doucement jusqu'à cuisson complète.
+**Si besoin, comment corriger :** Baissez la température et poursuivez doucement jusqu'à cuisson complète.
 
-**Technique apprise :** Pocher doucement donne à la sauce une chair facile à incorporer.
+**Ce que vous apprenez :** Pocher doucement donne à la sauce une chair facile à incorporer.
 
 **Précaution :** Contrôlez la cuisson complète du poisson et surveillez les arêtes avant le service.
 
-### Temps de cuisine 4 — Préparer la sauce chaude au kroeung
+### Étape 4 sur 6 — Préparer la sauce chaude au kroeung (environ 15 min)
 
-**Gestes :**
+**À faire :**
 
-- Dans une casserole propre, chauffez doucement le kroeung jaune mesuré sur la fiche pendant une minute sans les brûler, puis ajoutez le lait de coco mesuré sur la fiche.
-- Incorporez le poisson déjà cuit et émietté, chauffez à petit feu et ajoutez une cuillère à soupe de sauce de poisson ; évitez une ébullition qui sépare la sauce.
+- Dans une casserole propre, chauffez doucement le kroeung jaune mesuré sur la fiche pendant une minute sans le brûler, puis ajoutez le lait de coco mesuré sur la fiche.
+- Incorporez le poisson déjà cuit et émietté, chauffez à petit feu et ajoutez la sauce de poisson dans la quantité indiquée sur la fiche ; évitez une ébullition qui sépare la sauce.
 
-**Observer :** La sauce est parfumée et souple, avec des miettes de poisson réparties régulièrement.
+**À observer :** La sauce est parfumée et souple, avec des miettes de poisson réparties régulièrement.
 
-**Vérifier le résultat :** La sauce chaude nappe légèrement la cuillère sans être grumeleuse ou trop liquide.
+**Résultat attendu :** La sauce chaude nappe légèrement la cuillère sans être grumeleuse ou trop liquide.
 
-**Éviter :** Une chauffe violente peut concentrer la sauce et séparer le lait de coco.
+**À éviter :** Une chauffe violente peut concentrer la sauce et séparer le lait de coco.
 
-**Corriger :** Baissez le feu et ajoutez une ou deux cuillères d'eau chaude si la sauce devient trop épaisse.
+**Si besoin, comment corriger :** Baissez le feu et ajoutez une ou deux cuillères d'eau chaude si la sauce devient trop épaisse.
 
-**Technique apprise :** La pâte kroeung fournit les arômes, le lait de coco la rondeur et le poisson la matière.
+**Ce que vous apprenez :** La pâte kroeung fournit les arômes, le lait de coco la rondeur et le poisson la matière.
 
 **Précaution :** Le poisson doit avoir été entièrement cuit avant incorporation ; évitez les projections de sauce chaude.
 
-### Temps de cuisine 5 — Cuire les nouilles et rectifier les textures
+### Étape 5 sur 6 — Cuire les nouilles et rectifier les textures (environ 15 min)
 
-**Gestes :**
+**À faire :**
 
 - Faites cuire les nouilles de riz mesurées sur la fiche selon les instructions du paquet, puis égouttez-les et rincez-les brièvement à l'eau fraîche pour stopper leur cuisson.
 - Blanchissez les haricots verts fins mesurés sur la fiche dans de l'eau bouillante jusqu'à ce qu'ils soient tendres, refroidissez-les et égouttez-les ; ajustez l'épaisseur de la sauce avec un peu d'eau chaude si nécessaire.
 
-**Observer :** Les nouilles se séparent sans coller et la sauce reste assez fluide pour les enrober.
+**À observer :** Les nouilles se séparent sans coller et la sauce reste assez fluide pour les enrober.
 
-**Vérifier le résultat :** Les haricots sont tendres, les nouilles souples, et la sauce ni pâteuse ni aqueuse.
+**Résultat attendu :** Les haricots sont tendres, les nouilles souples, et la sauce ni pâteuse ni aqueuse.
 
-**Éviter :** Laisser patienter les nouilles trop longtemps dans l'eau chaude les rend collantes.
+**À éviter :** Laisser patienter les nouilles trop longtemps dans l'eau chaude les rend collantes.
 
-**Corriger :** Égouttez immédiatement et détendez la sauce séparément, plutôt que de trop cuire les nouilles.
+**Si besoin, comment corriger :** Égouttez immédiatement et détendez la sauce séparément, plutôt que de trop cuire les nouilles.
 
-**Technique apprise :** Chaque composant doit conserver sa propre texture avant le dressage.
+**Ce que vous apprenez :** Chaque composant doit conserver sa propre texture avant le dressage.
 
 **Précaution :** Surveillez l'eau bouillante et utilisez une passoire résistante à la chaleur.
 
-### Temps de cuisine 6 — Dresser les bols et ajouter la fraîcheur
+### Étape 6 sur 6 — Dresser les bols et ajouter la fraîcheur (environ 10 min)
 
-**Gestes :**
+**À faire :**
 
 - Émincez le concombre prévu sur la fiche, répartissez les nouilles dans des bols, puis versez dessus la sauce chaude au poisson et au lait de coco.
 - Ajoutez les haricots blanchis, le concombre et les feuilles de menthe ou de basilic asiatique lavées juste avant de servir pour préserver le contraste.
 
-**Observer :** Le bol montre des nouilles enrobées d'une sauce chaude et des légumes frais bien distincts.
+**À observer :** Le bol montre des nouilles enrobées d'une sauce chaude et des légumes frais bien distincts.
 
-**Vérifier le résultat :** Les bols complets sont dressés ; la garniture apporte du croquant et du parfum.
+**Résultat attendu :** Les bols complets sont dressés ; la garniture apporte du croquant et du parfum.
 
-**Éviter :** Verser la sauce sur les herbes longtemps avant de manger les fait flétrir.
+**À éviter :** Verser la sauce sur les herbes longtemps avant de manger les fait flétrir.
 
-**Corriger :** Gardez la finition végétale pour le dernier moment, une fois les bols prêts.
+**Si besoin, comment corriger :** Gardez la finition végétale pour le dernier moment, une fois les bols prêts.
 
-**Technique apprise :** Le contraste entre chaud et frais fait partie du résultat appris dans cet atelier.
+**Ce que vous apprenez :** Le contraste entre chaud et frais fait partie du résultat appris dans cet atelier.
 
 **Précaution :** Servez le poisson entièrement cuit ; réfrigérez rapidement les restes non servis.
 
-## C — Sept narrations corrigées à valider avant Coral
+## C — Narration complète à valider avant tout nouvel enregistrement
 
-**Ces textes ont été corrigés. Les MP3 historiques ne correspondent plus : validation éditoriale exigée avant toute nouvelle synthèse.**
+**Ces sept textes ont été relus, mais ne sont pas encore approuvés. Les précédents MP3 restent archivés et ne doivent pas accompagner ce nouveau texte.**
 
 ### Chapitre 1 sur 7 — Introduction
 
@@ -1182,4 +1200,3 @@ Nous pouvons enfin dresser les bols. Émincez finement le concombre sur une plan
 **Validation souhaitée :** ingrédients, quantités, authenticité, préparation, ordre des gestes, sécurité, lexique exclusivement culinaire, narration agréable et pauses de cuisine.
 
 ---
-
