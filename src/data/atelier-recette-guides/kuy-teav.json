@@ -189,56 +189,6 @@
     "voice": "coral",
     "intro": "Coucou ! Aujourd'hui, on prépare un Kuy Teav, un grand bol de nouilles de riz avec du porc, un bouillon parfumé et des garnitures fraîches. Vous allez apprendre à organiser trois textures qui n'ont pas le même rythme : le bouillon doit rester clair et chaud, le porc doit être correctement cuit et les nouilles doivent rester souples, jamais transformées en pâte. Indiquez le nombre de personnes à table sur la fiche et mesurez les ingrédients en conséquence. Dans cette piste préenregistrée, les quantités varient avec votre fiche ; je vais vous guider plutôt sur les gestes et les repères. Il vous faut deux casseroles, une passoire, une écumoire, une louche, une planche et un couteau, un thermomètre si possible et des bols de service. Notre recette part d'un bouillon de porc ou de volaille déjà prêt, maison ou du commerce ; sa préparation traditionnelle ne tient pas dans le temps de cet atelier, et je vais expliquer comment le choisir et le préparer pour le service. Vous pourrez mettre en pause pendant la cuisson et reprendre à votre rythme. Allez, on s'y met !",
     "publicProviderMention": false,
-    "previousAsset": {
-      "audioUrl": "/audio/workshops/kuy-teav-bouillon-et-nouilles/atelier-coral.mp3",
-      "durationSec": 110.568,
-      "sha256": "9ee2c940ceb39ff3981ec7629268082aa7248ad1d2b180ebc1139dea60823e00",
-      "chapters": [
-        {
-          "id": "intro",
-          "title": "Bienvenue et mise en place",
-          "startSec": 0,
-          "endSec": 31.992
-        },
-        {
-          "id": "installer",
-          "title": "Vérifier le bouillon et installer les casseroles",
-          "startSec": 31.992,
-          "endSec": 44.568
-        },
-        {
-          "id": "preparer",
-          "title": "Préparer le porc et la garniture végétale",
-          "startSec": 44.568,
-          "endSec": 56.712
-        },
-        {
-          "id": "assembler",
-          "title": "Assaisonner le bouillon sans le réduire",
-          "startSec": 56.712,
-          "endSec": 69.456
-        },
-        {
-          "id": "maitriser",
-          "title": "Cuire le porc entièrement dans le bouillon",
-          "startSec": 69.456,
-          "endSec": 82.296
-        },
-        {
-          "id": "rectifier",
-          "title": "Cuire les nouilles et contrôler l'assaisonnement",
-          "startSec": 82.296,
-          "endSec": 95.568
-        },
-        {
-          "id": "terminer",
-          "title": "Dresser les bols et ajouter les aromates",
-          "startSec": 95.568,
-          "endSec": 110.568
-        }
-      ],
-      "scriptSha256": "a69bcd13de5f71bd48e96e85b631ea394984f95cd0cfd2da2ebca97f52cfdc41"
-    },
     "storyboardVersion": 2,
     "supersededV2Asset": {
       "audioUrl": "/audio/workshops/kuy-teav-bouillon-et-nouilles/atelier-coral-v2.mp3",
