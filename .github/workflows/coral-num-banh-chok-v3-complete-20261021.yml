@@ -490,7 +490,7 @@ jobs:
           node scripts/check-new-cooking-workshop-audio.mjs
           node scripts/check-culinary-lexicon.mjs
           node scripts/check-workshop-blueprints.mjs
-          npm run test:editorial
+          # Full CI follows the branch commit and checks the completed status.
       - name: Commit only Num Banh Chok V3, without changing the other five MP3s
         shell: bash
         run: |
