@@ -185,7 +185,7 @@
   ],
   "audio": {
     "mode": "guided-cooking",
-    "status": "script_only",
+    "status": "generated_review_pending",
     "voice": "coral",
     "intro": "Bonjour ! Aujourd'hui, je vous accompagne pour préparer un Samlor Machu, cette soupe cambodgienne acidulée qui demande de la précision, mais pas de complication. On va cuire une garniture de poisson ou de poulet dans un bouillon léger, ajouter les légumes, puis équilibrer le tamarin, la sauce de poisson et une touche de sucre. Notre grand savoir-faire du jour : obtenir une acidité vive sans rendre la soupe agressive. Choisissez le nombre de convives sur la fiche et préparez les quantités qui s'affichent ; je ne prononcerai pas les portions dans l'audio. Il nous faut une grande casserole, une louche, une planche, un couteau, un tamis et un petit bol si le tamarin est à filtrer, un thermomètre de cuisine et des bols résistants à la chaleur. Nous travaillerons avec un bouillon réellement préparé ou prêt à l'emploi, pas avec un fond mystérieux. Vous pouvez mettre pause pour couper, filtrer ou vérifier une cuisson : l'enregistrement continue tant que vous ne l'arrêtez pas vous-même. Allez, on prépare cette soupe ensemble.",
     "publicProviderMention": false,
@@ -243,7 +243,57 @@
     "editorialTextApproved": true,
     "approvedScriptSha256": "37e67bde6104f46054d31e3254a17aee883b91c21aaaf369e226859ab8d27a68",
     "editorialApprovalDate": "2026-10-21",
-    "editorialApprovalScope": "recette_fiche_et_7_scripts_texte_uniquement"
+    "editorialApprovalScope": "recette_fiche_et_7_scripts_texte_uniquement",
+    "asset": {
+      "audioUrl": "/audio/workshops/samlor-machu-soupe-acidulee-guidee/atelier-coral-v3.mp3",
+      "durationSec": 663.744,
+      "sha256": "4a9be00b9c944448624406302416dbd1aa8c2bc2e33e6d549f0cbafd48779df4",
+      "chapters": [
+        {
+          "id": "intro",
+          "title": "Bienvenue et mise en place",
+          "startSec": 0,
+          "endSec": 73.776
+        },
+        {
+          "id": "installer",
+          "title": "Vérifier le bouillon et les ingrédients",
+          "startSec": 73.776,
+          "endSec": 167.592
+        },
+        {
+          "id": "preparer",
+          "title": "Découper la garniture et préparer le tamarin",
+          "startSec": 167.592,
+          "endSec": 268.392
+        },
+        {
+          "id": "assembler",
+          "title": "Faire frémir doucement le bouillon",
+          "startSec": 268.392,
+          "endSec": 364.728
+        },
+        {
+          "id": "maitriser",
+          "title": "Cuire complètement la garniture",
+          "startSec": 364.728,
+          "endSec": 467.352
+        },
+        {
+          "id": "rectifier",
+          "title": "Équilibrer la soupe avec le tamarin",
+          "startSec": 467.352,
+          "endSec": 572.808
+        },
+        {
+          "id": "terminer",
+          "title": "Ajouter les herbes et servir la soupe",
+          "startSec": 572.808,
+          "endSec": 663.744
+        }
+      ],
+      "scriptSha256": "37e67bde6104f46054d31e3254a17aee883b91c21aaaf369e226859ab8d27a68"
+    }
   },
   "media": {
     "finishedPreparationImage": "",

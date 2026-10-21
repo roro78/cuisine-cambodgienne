@@ -1,0 +1,60 @@
+{
+  "atelier": "samlor-machu-soupe-acidulee-guidee",
+  "canonicalRecipe": "samlor-machu",
+  "status": "audio_generated_review_pending",
+  "voice": "coral",
+  "audioUrl": "/audio/workshops/samlor-machu-soupe-acidulee-guidee/atelier-coral-v3.mp3",
+  "durationSec": 663.744,
+  "sha256": "4a9be00b9c944448624406302416dbd1aa8c2bc2e33e6d549f0cbafd48779df4",
+  "chapters": [
+    {
+      "id": "intro",
+      "title": "Bienvenue et mise en place",
+      "startSec": 0,
+      "endSec": 73.776
+    },
+    {
+      "id": "installer",
+      "title": "Vérifier le bouillon et les ingrédients",
+      "startSec": 73.776,
+      "endSec": 167.592
+    },
+    {
+      "id": "preparer",
+      "title": "Découper la garniture et préparer le tamarin",
+      "startSec": 167.592,
+      "endSec": 268.392
+    },
+    {
+      "id": "assembler",
+      "title": "Faire frémir doucement le bouillon",
+      "startSec": 268.392,
+      "endSec": 364.728
+    },
+    {
+      "id": "maitriser",
+      "title": "Cuire complètement la garniture",
+      "startSec": 364.728,
+      "endSec": 467.352
+    },
+    {
+      "id": "rectifier",
+      "title": "Équilibrer la soupe avec le tamarin",
+      "startSec": 467.352,
+      "endSec": 572.808
+    },
+    {
+      "id": "terminer",
+      "title": "Ajouter les herbes et servir la soupe",
+      "startSec": 572.808,
+      "endSec": 663.744
+    }
+  ],
+  "scriptSha256": "37e67bde6104f46054d31e3254a17aee883b91c21aaaf369e226859ab8d27a68",
+  "review": {
+    "acousticListening": false,
+    "mobile": false,
+    "desktop": false
+  },
+  "sourceBackend": "render-iacoach-backend.onrender.com/api/tts"
+}
