@@ -72,7 +72,7 @@
   "phases": [
     {
       "id": "installer",
-      "title": "Mesurer les ingrédients et préparer le poste",
+      "title": "Mesurer les ingrédients et préparer le plan de travail",
       "minutes": 3,
       "ingredientNames": [],
       "actions": [
@@ -80,11 +80,11 @@
         "Mesurez les ingrédients de la recette : porc, sauce soja, sauce de poisson, sucre roux, ail, quantité de riz cru indiquée sur la fiche et pickles prévus sur la fiche prêts."
       ],
       "observe": "Chaque élément a sa place et les pickles sont déjà préparés.",
-      "check": "Le poste permet de gérer cuisson du riz et saisie du porc sans confusion.",
+      "check": "Le plan de travail permet de suivre cuisson du riz et saisie du porc sans confusion.",
       "mistake": "Commencer avec des pickles non préparés impose une recette supplémentaire en plein atelier.",
       "recovery": "Préparez ou achetez des pickles sûrs et égouttez-les avant de poursuivre.",
       "learning": "Le Bai Sach Chrouk exige une organisation simple entre marinade, riz et viande chaude.",
-      "audioScript": "On installe notre poste avant de manipuler la viande. Placez devant vous le saladier de marinade, la poêle encore éteinte, la casserole et son couvercle, la passoire, une spatule, une planche stable et un couteau propre. Prévoyez aussi un thermomètre si vous en avez un, une pince réservée au porc cru et une autre propre pour le service. Du côté des ingrédients, retrouvez sur la fiche les fines tranches de porc, l'ail, la sauce soja, la sauce de poisson et le sucre roux ; à part, le riz jasmin cru et les pickles de concombre et carotte. La fiche précise les quantités correspondant à votre table. Pour cette version, les pickles sont une préparation préalable : ne les improvisez pas en versant du vinaigre directement sur l'assiette. Ils doivent déjà avoir été préparés et égouttés ; je vous explique plus loin leur rôle et comment contrôler leur texture. Si vous les faites vous-même, utilisez une recette de pickles express au réfrigérateur avec des légumes propres et une saumure vinaigrée adaptée, pas une conservation en bocaux à température ambiante. Vérifiez sur les étiquettes la présence possible de blé dans la sauce soja et de poisson dans la sauce de poisson. Gardez le cru éloigné des garnitures prêtes à manger. Faites pause pour tout mesurer et installer votre coin de cuisine ; on commence par l'ail et le porc.",
+      "audioScript": "On prépare notre plan de travail avant de manipuler la viande. Placez devant vous le saladier de marinade, la poêle encore éteinte, la casserole et son couvercle, la passoire, une spatule, une planche stable et un couteau propre. Prévoyez aussi un thermomètre si vous en avez un, une pince réservée au porc cru et une autre propre pour le service. Du côté des ingrédients, retrouvez sur la fiche les fines tranches de porc, l'ail, la sauce soja, la sauce de poisson et le sucre roux ; à part, le riz jasmin cru et les pickles de concombre et carotte. La fiche précise les quantités correspondant à votre table. Pour cette version, les pickles sont une préparation préalable : ne les improvisez pas en versant du vinaigre directement sur l'assiette. Ils doivent déjà avoir été préparés et égouttés ; je vous explique plus loin leur rôle et comment contrôler leur texture. Si vous les faites vous-même, utilisez une recette de pickles express au réfrigérateur avec des légumes propres et une saumure vinaigrée adaptée, pas une conservation en bocaux à température ambiante. Vérifiez sur les étiquettes la présence possible de blé dans la sauce soja et de poisson dans la sauce de poisson. Gardez le cru éloigné des garnitures prêtes à manger. Faites pause pour tout mesurer et installer votre coin de cuisine ; on commence par l'ail et le porc.",
       "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
       "safety": "Lavez-vous les mains et gardez les pickles loin de la zone de préparation du porc cru."
     },
@@ -103,7 +103,7 @@
       "observe": "L'ail est finement haché et les tranches de porc sont assez régulières.",
       "check": "La viande peut être enrobée rapidement et être cuite de manière homogène.",
       "mistake": "Des tranches très épaisses peuvent brûler dehors avant de cuire correctement dedans.",
-      "recovery": "Recoupez ou aplatissez légèrement des tranches trop épaisses, en gardant le poste propre.",
+      "recovery": "Recoupez ou aplatissez légèrement des tranches trop épaisses, en gardant les ustensiles et le plan de travail propres.",
       "learning": "La régularité des tranches facilite la coloration et la cuisson complète.",
       "audioScript": "Passons à la viande. Gardez le porc au réfrigérateur jusqu'au moment de travailler. Épluchez l'ail et hachez-le très finement : de gros morceaux brûleraient vite sur la poêle chaude, surtout en présence du sucre de la marinade. Vérifiez ensuite l'épaisseur de vos tranches de porc. Elles doivent être plutôt fines et régulières pour dorer sans rester crues au centre. Si certaines sont plus épaisses, posez-les bien à plat et recoupez-les prudemment. Ne les écrasez pas brutalement et n'utilisez pas la planche des crudités sans l'avoir soigneusement nettoyée. Disposez les tranches dans le saladier réservé au porc. Elles doivent être séparables les unes des autres, pas collées en une boule. Ce détail nous aidera à faire passer la marinade partout. Si vous utilisez du filet, évitez les cuissons prolongées qui l'assèchent ; avec de l'échine, gardez une épaisseur régulière pour faire fondre légèrement le gras. À ce stade, ne chauffez pas encore la poêle. Lavez-vous les mains et nettoyez les surfaces qui ont touché la viande. Prenez le temps de terminer la découpe et l'ail ; vous pouvez mettre le guide en pause. Ensuite, on va parfumer le porc avant de le saisir.",
       "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
@@ -191,7 +191,7 @@
   ],
   "audio": {
     "mode": "guided-cooking",
-    "status": "generated_review_pending",
+    "status": "script_only",
     "voice": "coral",
     "intro": "Bonjour et bienvenue ! Aujourd'hui, nous préparons un Bai Sach Chrouk : du porc finement coupé, mariné puis doré, servi avec du riz jasmin et des pickles croquants. Ce n'est pas juste une cuisson de viande : on va organiser tout un repas cambodgien, avec le contraste entre le sucré-salé du porc, le riz tendre et les légumes acidulés. Choisissez d'abord le nombre de convives sur votre fiche et mesurez les quantités qui s'affichent. Dans cet enregistrement, je nomme les ingrédients et les repères techniques, sans vous imposer une quantité pour quatre personnes. Prenez votre casserole à riz, une passoire, une grande poêle ou plancha, un saladier pour la marinade, une planche, un couteau, une spatule, un thermomètre alimentaire et des assiettes propres. Nous laisserons la viande mariner au froid, puis nous cuisinerons le riz pendant ce repos. Vous pourrez mettre l'audio en pause aux moments utiles : rien ne se déclenche tout seul. On cuisine ensemble, tranquillement et dans le bon ordre.",
     "publicProviderMention": false,
@@ -208,7 +208,7 @@
         },
         {
           "id": "installer",
-          "title": "Mesurer les ingrédients et préparer le poste",
+          "title": "Mesurer les ingrédients et préparer le plan de travail",
           "startSec": 30.864,
           "endSec": 45.312
         },
@@ -246,7 +246,7 @@
       "scriptSha256": "28b24c106c347d8e13a81d6a5312ebae578c9f675d60da4c375f98697173aeff"
     },
     "storyboardVersion": 2,
-    "asset": {
+    "supersededV2Asset": {
       "audioUrl": "/audio/workshops/bai-sach-chrouk-porc-riz-et-pickles/atelier-coral-v2.mp3",
       "durationSec": 656.184,
       "sha256": "0ca5aaad4443805f1e2360ac9921d53c27750df8ac72c1e117a901c9f8b71c8d",
@@ -259,7 +259,7 @@
         },
         {
           "id": "installer",
-          "title": "Mesurer les ingrédients et préparer le poste",
+          "title": "Mesurer les ingrédients et préparer le plan de travail",
           "startSec": 76.32,
           "endSec": 176.04
         },
@@ -295,7 +295,8 @@
         }
       ],
       "scriptSha256": "5fdc702309715027855da4a79bae5ae55d65a30bf3d670e57fc71a1edba78e0f"
-    }
+    },
+    "editorialTextApproved": false
   },
   "media": {
     "finishedPreparationImage": "",
