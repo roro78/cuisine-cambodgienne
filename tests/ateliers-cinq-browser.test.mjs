@@ -90,14 +90,37 @@ try{
           }
           assert.equal(await chapterOne.getAttribute('aria-current'),'true','Selecting phase updates active audio chapter');
           const follow=mobile?page.locator('[data-cooking-mobile-follow]'):page.locator('[data-cooking-follow]');
-          if(mobile)await page.locator('[data-cooking-mobile-steps]').click();
-          await follow.click();
-          assert.equal(await follow.getAttribute('aria-pressed'),'true','Following enabled');
           if(mobile){
-            assert.equal(await page.locator('[data-cooking-mobile-sheet]').isVisible(),false,'Follow closes the sheet to show the corresponding recipe step');
+            // Playback itself enables automatic page following by default.
+            await page.locator('[data-cooking-audio]').evaluate(el=>el.dispatchEvent(new Event('play')));
+            assert.equal(await follow.getAttribute('aria-pressed'),'true','Mobile playback auto-enables chapter-to-page scroll');
+            // Simulate the moment MP3 reaches the next large section without
+            // synthesizing or decoding any new audio.
+            await page.locator('[data-cooking-audio]').evaluate(audio=>{
+              const chapters=JSON.parse(audio.closest('[data-cooking-chapters]').dataset.cookingChapters);
+              audio.currentTime=chapters[3].startSec+0.1;
+              audio.dispatchEvent(new Event('timeupdate'));
+            });
+            const view=await page.locator('#phase-assembler').evaluate(el=>({top:el.getBoundingClientRect().top,viewport:window.innerHeight}));
+            assert.ok(view.top>=0 && view.top<view.viewport*0.7,
+              'MP3 phase transition must scroll entire mobile recipe page to next section: '+JSON.stringify(view));
+            // A manual gesture overrides automatic navigation and resuming
+            // playback does not steal the screen back.
+            await page.evaluate(()=>window.dispatchEvent(new WheelEvent('wheel',{deltaY:130})));
+            assert.equal(await follow.getAttribute('aria-pressed'),'false','Manual scroll cancels automatic page following');
+            await page.locator('[data-cooking-audio]').evaluate(el=>el.dispatchEvent(new Event('play')));
+            assert.equal(await follow.getAttribute('aria-pressed'),'false','Playback does not undo manual user opt-out');
+            await page.locator('[data-cooking-mobile-steps]').click();
+            await follow.click();
+            assert.equal(await follow.getAttribute('aria-pressed'),'true','Following can be explicitly restored');
+            assert.equal(await page.locator('[data-cooking-mobile-sheet]').isVisible(),false,'Following closes sheet to show recipe');
             await page.locator('[data-cooking-mobile-steps]').click();
             await page.locator('[data-cooking-mobile-chapter]').nth(3).click();
-          } else await page.locator('[data-cooking-chapter]').nth(3).click();
+          } else {
+            await follow.click();
+            assert.equal(await follow.getAttribute('aria-pressed'),'true','Desktop following remains manual');
+            await page.locator('[data-cooking-chapter]').nth(3).click();
+          }
           assert.equal(await page.locator('#phase-assembler').count(),1,'Large phase target exists');
           await page.evaluate(()=>window.dispatchEvent(new WheelEvent('wheel',{deltaY:130})));
           assert.equal(await follow.getAttribute('aria-pressed'),'false','Manual scrolling stops following');
