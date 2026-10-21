@@ -16,7 +16,7 @@ concurrency:
 jobs:
   unique_segment:
     name: Un seul segment approuve, sans boucle ni second essai
-    if: ${{ github.run_attempt == 1 }}
+    if: false # Le segment approuve a ete emis et valide; relance future impossible.
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
