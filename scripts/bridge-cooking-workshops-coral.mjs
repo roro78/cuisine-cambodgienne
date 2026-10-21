@@ -34,7 +34,7 @@ if(mode!=='--plan'&&(guide.status!=='draft'||guide.audio.status!=='script_only')
 const plan=buildCookingAudioStoryboard(guide);
 if(plan.numberOfChapters!==7||plan.chapters.some((c,i)=>c.id!==(i===0?'intro':PHASE_IDS[i-1])))throw Error('Chapitres non alignés.');
 const voiceTexts=plan.chapters.map(c=>c.text);
-const forbiddenCulinaryVocabulary=/\b(?:fabriqu\p{L}*|fabrication\p{L}*|constru\p{L}*|chantier\p{L}*|poste)\b/iu;
+const forbiddenCulinaryVocabulary=/(?<!\p{L})(?:fabriqu\p{L}*|fabrication\p{L}*|constru\p{L}*|chantier\p{L}*|poste)(?!\p{L})/iu;
 if(forbiddenCulinaryVocabulary.test(guide.title+' '+voiceTexts.join(' ')))
  throw Error('Texte vocal non conforme au vocabulaire culinaire : corriger les sept chapitres AVANT Coral.');
 const actualVoiceScriptSha256=createHash('sha256').update(JSON.stringify(voiceTexts)).digest('hex');
