@@ -65,6 +65,9 @@ try {
         }
       }
       else assert.equal(await page.locator('audio').count(),0,'No fake MP3 in draft');
+      // The MP3 following test deliberately scrolled the page to a recipe
+      // phase. Restore the top before checking the breadcrumb under the header.
+      await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
       const topGap=await page.evaluate(()=>{
         const header=document.querySelector('[data-site-header]');
         const breadcrumb=document.querySelector('.atelier-breadcrumb');
