@@ -53,156 +53,158 @@ Continuez jusqu’à ne presque plus sentir de gros morceaux sous le pilon.
 
 **Repère :** La pâte se tient et les longues fibres deviennent difficiles à distinguer.
 
-## B — Atelier pratique, à relire et corriger
+## B — Atelier de cuisine, étape par étape
 
 **Objectif :** Émincer finement puis piler la citronnelle, le galanga et le curcuma pour obtenir une pâte liée plutôt qu'un amas de fibres
 
-**Préparation attendue :** Un petit pot de pâte aromatique kroeung jaune, prêt à parfumer une préparation cuite
+**Préparation que vous allez obtenir :** Un petit pot de pâte aromatique kroeung jaune, prêt à parfumer une préparation cuite
 
-**Durée indicative des gestes :** 25 min
+**Durée estimée de l'atelier :** environ 25 min. Le temps varie selon la quantité préparée et votre rythme.
 
-**Matériel :**
+**Repère pour les temps de cuisson ou de repos :** Pas de cuisson : la pâte est une préparation aromatique et n'est pas un plat prêt à manger.
+
+### Matériel
 
 - 1 mortier et son pilon
 - 1 couteau bien aiguisé et une planche
 - 1 petite spatule propre
 - 1 récipient propre et refermable
 
-**Avant de cuisiner :**
+### Avant de commencer
 
-- Choisir le nombre de convives sur la fiche et mesurer tous les aromates de la recette source.
+- Choisir le nombre de petits pots à préparer sur la fiche et mesurer tous les aromates de la recette de référence.
 - Prévoir un plan de travail stable, des mains propres et un récipient refermable pour le résultat.
 
-**Précautions :**
+### Précautions alimentaires
 
 - Manier le couteau sur une planche stable.
 - Ne pas déguster la pâte aromatique crue comme si elle constituait un plat complet ; elle parfume les préparations.
 
-### Temps de cuisine 1 — Préparer le plan de travail et mesurer les aromates
+### Étape 1 sur 6 — Préparer le plan de travail et mesurer les aromates (environ 3 min)
 
-**Gestes :**
+**À faire :**
 
 - Placez le mortier, la planche et un récipient propre à portée de main avant de sortir les aromates.
-- Regroupez et mesurez tous les ingrédients selon la fiche Kroeung jaune, en gardant les quantités originales.
+- Regroupez et mesurez tous les ingrédients selon la fiche Kroeung jaune, en suivant les quantités adaptées au nombre de pots choisi.
 
-**Observer :** Chaque ingrédient est visible, identifiable et mesuré ; rien ne manque.
+**À observer :** Chaque ingrédient est visible, identifiable et mesuré ; rien ne manque.
 
-**Vérifier le résultat :** Le plan de travail est prêt et tous les ingrédients de la recette sont réunis.
+**Résultat attendu :** Le plan de travail est prêt et tous les ingrédients de la recette sont réunis.
 
-**Éviter :** Commencer à piler avant d'avoir taillé les aromates oblige à interrompre le travail.
+**À éviter :** Commencer à piler avant d'avoir taillé les aromates oblige à interrompre le travail.
 
-**Corriger :** Reposez le pilon, complétez la mise en place puis reprenez calmement.
+**Si besoin, comment corriger :** Reposez le pilon, complétez la mise en place puis reprenez calmement.
 
-**Technique apprise :** La mise en place évite de manquer un parfum essentiel.
+**Ce que vous apprenez :** La mise en place évite de manquer un parfum essentiel.
 
 **Précaution :** Travaillez sur une planche stable.
 
-### Temps de cuisine 2 — Nettoyer et émincer les aromates
+### Étape 2 sur 6 — Nettoyer et émincer les aromates (environ 7 min)
 
-**Gestes :**
+**À faire :**
 
 - Retirez les enveloppes dures de citronnelle et gardez la partie tendre, puis émincez-la très finement.
 - Pelez et émincez galanga, curcuma, ail et échalotes ; prélevez uniquement le zeste vert du combava.
 
-**Observer :** Les morceaux fibreux sont très petits ; pas de longues lanières de citronnelle.
+**À observer :** Les morceaux fibreux sont très petits ; pas de longues lanières de citronnelle.
 
-**Vérifier le résultat :** Chaque aromate est prêt à être écrasé sans s'enrouler autour du pilon.
+**Résultat attendu :** Chaque aromate est prêt à être écrasé sans s'enrouler autour du pilon.
 
-**Éviter :** De gros morceaux de citronnelle restent durs malgré le pilage.
+**À éviter :** De gros morceaux de citronnelle restent durs malgré le pilage.
 
-**Corriger :** Arrêtez le pilage et retaillez ces morceaux plus finement.
+**Si besoin, comment corriger :** Arrêtez le pilage et retaillez ces morceaux plus finement.
 
-**Technique apprise :** La qualité de la coupe détermine la texture finale.
+**Ce que vous apprenez :** La qualité de la coupe détermine la texture finale.
 
 **Précaution :** Gardez les doigts repliés et coupez sur une planche fixe.
 
-### Temps de cuisine 3 — Commencer avec les fibres fermes
+### Étape 3 sur 6 — Commencer avec les fibres fermes (environ 3 min)
 
-**Gestes :**
+**À faire :**
 
 - Placez une petite quantité de citronnelle émincée et de galanga dans le fond du mortier.
 - Écrasez en petites séries et ramenez les morceaux au centre. Répétez jusqu’à incorporer toute la citronnelle et tout le galanga prévus par la recette ; n’en laissez pas de côté avant de passer aux autres aromates.
 
-**Observer :** Les petits morceaux cessent de rebondir et commencent à s'écraser.
+**À observer :** Les petits morceaux cessent de rebondir et commencent à s'écraser.
 
-**Vérifier le résultat :** La citronnelle et le galanga s'assouplissent et adhèrent au fond du mortier.
+**Résultat attendu :** La citronnelle et le galanga s'assouplissent et adhèrent au fond du mortier.
 
-**Éviter :** Un mortier surchargé laisse les morceaux rouler sans s'écraser.
+**À éviter :** Un mortier surchargé laisse les morceaux rouler sans s'écraser.
 
-**Corriger :** Travaillez de plus petites portions et rassemblez les morceaux avec une spatule.
+**Si besoin, comment corriger :** Travaillez de plus petites portions et rassemblez les morceaux avec une spatule.
 
-**Technique apprise :** L'ordre et le volume de pilage ont un effet réel sur la texture.
+**Ce que vous apprenez :** L'ordre et le volume de pilage ont un effet réel sur la texture.
 
 **Précaution :** Gardez les doigts hors du mortier pendant les coups de pilon.
 
-### Temps de cuisine 4 — Transformer les aromates en pâte
+### Étape 4 sur 6 — Transformer les aromates en pâte (environ 5 min)
 
-**Gestes :**
+**À faire :**
 
 - Ajoutez progressivement le curcuma, le zeste de combava, l'ail et les échalotes finement taillés.
 - Pilez et raclez les parois entre chaque ajout jusqu'à obtenir une pâte humide qui se rassemble.
 
-**Observer :** Le parfum se fond et la pâte commence à se tenir, sans gros morceaux visibles.
+**À observer :** Le parfum se fond et la pâte commence à se tenir, sans gros morceaux visibles.
 
-**Vérifier le résultat :** La pâte est homogène, souple et liée au lieu de rester sèche et émiettée.
+**Résultat attendu :** La pâte est homogène, souple et liée au lieu de rester sèche et émiettée.
 
-**Éviter :** Ajouter tous les ingrédients d'un coup rend le travail irrégulier.
+**À éviter :** Ajouter tous les ingrédients d'un coup rend le travail irrégulier.
 
-**Corriger :** Revenez à des ajouts progressifs et continuez à écraser les zones fibreuses.
+**Si besoin, comment corriger :** Revenez à des ajouts progressifs et continuez à écraser les zones fibreuses.
 
-**Technique apprise :** Le mortier transforme à la fois la granulométrie et l'expression des arômes.
+**Ce que vous apprenez :** Le pilage affine progressivement la pâte et libère les arômes des ingrédients.
 
 **Précaution :** Attention aux éclaboussures de curcuma et aux coups de pilon.
 
-### Temps de cuisine 5 — Évaluer et corriger la texture
+### Étape 5 sur 6 — Évaluer et corriger la texture (environ 5 min)
 
-**Gestes :**
+**À faire :**
 
 - Prélevez avec une cuillère propre une noisette de pâte pour en observer la régularité et les fibres visibles.
 - Si la pâte reste grossière, remettez-la au mortier et pilez de nouveau par petites quantités sans diluer inutilement.
 
-**Observer :** Les longues fibres sont difficiles à distinguer et la pâte se tient sur la cuillère.
+**À observer :** Les longues fibres sont difficiles à distinguer et la pâte se tient sur la cuillère.
 
-**Vérifier le résultat :** La pâte est suffisamment fine pour être mélangée sans laisser de longs filaments.
+**Résultat attendu :** La pâte est suffisamment fine pour être mélangée sans laisser de longs filaments.
 
-**Éviter :** Confondre un parfum puissant avec une pâte déjà assez fine.
+**À éviter :** Confondre un parfum puissant avec une pâte déjà assez fine.
 
-**Corriger :** Fiez-vous à la texture : repilez si des fibres longues subsistent.
+**Si besoin, comment corriger :** Fiez-vous à la texture : repilez si des fibres longues subsistent.
 
-**Technique apprise :** On décide d'arrêter à partir de repères visuels et tactiles sûrs, non d'un minuteur.
+**Ce que vous apprenez :** On décide d'arrêter à partir de repères visuels et tactiles sûrs, non d'un minuteur.
 
 **Précaution :** Ne goûtez pas le mélange cru comme un plat terminé.
 
-### Temps de cuisine 6 — Mettre le kroeung en pot et retenir le geste
+### Étape 6 sur 6 — Mettre le kroeung en pot et retenir le geste (environ 2 min)
 
-**Gestes :**
+**À faire :**
 
 - Transférez la pâte dans un récipient propre, et refermez-le pour préparer la recette à laquelle elle servira.
 - Comparez la texture obtenue à celle du début et retenez les gestes qui ont le plus aidé : couper fin et piler en petites portions.
 
-**Observer :** Le kroeung jaune forme une pâte régulière, prête à être incorporée à une préparation cuite.
+**À observer :** Le kroeung jaune forme une pâte régulière, prête à être incorporée à une préparation cuite.
 
-**Vérifier le résultat :** Vous repartez avec une préparation finie et savez quels gestes la rendent fine.
+**Résultat attendu :** Vous repartez avec une préparation finie et savez quels gestes la rendent fine.
 
-**Éviter :** Présenter la pâte comme un plat indépendant à déguster immédiatement.
+**À éviter :** Présenter la pâte comme un plat indépendant à déguster immédiatement.
 
-**Corriger :** Employez-la comme aromate dans une recette complète, par exemple un amok correctement cuit.
+**Si besoin, comment corriger :** Employez-la comme aromate dans une recette complète, par exemple un amok correctement cuit.
 
-**Technique apprise :** Le geste peut être réutilisé dans plusieurs recettes cambodgiennes.
+**Ce que vous apprenez :** Le geste peut être réutilisé dans plusieurs recettes cambodgiennes.
 
 **Précaution :** Gardez la préparation propre et au frais avant son utilisation.
 
-## C — Sept narrations corrigées à valider avant Coral
+## C — Narration complète à valider avant tout nouvel enregistrement
 
-**Ces textes ont été corrigés. Les MP3 historiques ne correspondent plus : validation éditoriale exigée avant toute nouvelle synthèse.**
+**Ces sept textes ont été relus, mais ne sont pas encore approuvés. Les précédents MP3 restent archivés et ne doivent pas accompagner ce nouveau texte.**
 
 ### Chapitre 1 sur 7 — Introduction
 
-Coucou, bienvenue dans notre cuisine ! Aujourd'hui, on ne va pas simplement parler d'épices : on va préparer ensemble un vrai kroeung jaune, cette pâte aromatique qui donne du caractère à plusieurs plats cambodgiens. À la fin, vous aurez dans un récipient votre propre pâte, bien liée, que vous pourrez incorporer dans une préparation cuite. Le geste essentiel, c'est de transformer des racines fibreuses en une pâte fine grâce à la découpe puis au pilon. Avant de commencer, choisissez votre nombre de petits pots sur la fiche et mesurez toutes les quantités affichées. Je ne vais pas vous imposer des grammages dans le son : c'est votre fiche qui fait foi. Il nous faudra un mortier stable, un pilon, une planche, un couteau, une spatule propre et un récipient refermable. On ne goûtera pas ce kroeung cru comme un plat fini. Prenez vos aises : si un geste demande plus de temps, vous pouvez faire pause et relancer l'enregistrement. Je vous accompagnerai de la première coupe au dernier coup de pilon.
+Coucou, bienvenue dans notre cuisine ! Aujourd'hui, on ne va pas simplement parler d'épices : on va préparer ensemble un vrai kroeung jaune, cette pâte aromatique qui donne du caractère à plusieurs plats cambodgiens. À la fin, vous aurez dans un récipient votre propre pâte, bien liée, que vous pourrez incorporer dans une préparation cuite. Aujourd'hui, nous allons apprendre à transformer des racines fibreuses en une pâte fine grâce à la découpe puis au pilon. Avant de commencer, indiquez le nombre de petits pots à préparer sur la fiche et mesurez toutes les quantités affichées. Retrouvez les quantités exactes de chaque ingrédient sur la fiche, selon le nombre de pots que vous préparez. Il nous faudra un mortier stable, un pilon, une planche, un couteau, une spatule propre et un récipient refermable. On ne goûtera pas ce kroeung cru comme un plat fini. Prenez vos aises : si un geste demande plus de temps, vous pouvez faire pause et relancer l'enregistrement. Je vous accompagnerai de la première coupe au dernier coup de pilon.
 
 ### Chapitre 2 sur 7 — Préparer le plan de travail et mesurer les aromates
 
-Bonjour à votre plan de travail ! Avant de toucher à la citronnelle, posez votre mortier sur une surface qui ne glisse pas. Un torchon plié et propre dessous peut aider à l'immobiliser : ce n'est pas une invitation à poser les doigts dans le bol pendant qu'on pile. Gardez le pilon à portée de main, la planche stable, le couteau bien affûté, la spatule et un récipient propre pour la fin. Regardez votre fiche et rassemblez la citronnelle, le galanga, le curcuma frais, le zeste de combava, l'ail et les échalotes. Toutes les quantités sont adaptées aux convives que vous avez choisis. Posez les aromates les plus fibreux d'un côté ; les plus tendres, comme l'ail et l'échalote, de l'autre. Cette petite organisation a une raison : si l'on commence par les ingrédients mous, ils collent au fond et les fibres dures échappent au pilon. Lavez-vous les mains et préparez une zone pour les déchets. Le curcuma colore durablement les mains et certaines surfaces : protégez votre planche si nécessaire. Si votre mortier est petit, nous travaillerons en plusieurs apports sans chercher à tout comprimer d'un coup. Prenez le temps de vérifier les aromates sur la fiche ; faites pause pour vous installer si besoin. Voilà, on peut passer aux découpes.
+Commençons par préparer tout ce dont nous avons besoin. Avant de toucher à la citronnelle, posez votre mortier sur une surface qui ne glisse pas. Un torchon propre et plié peut aider à le stabiliser. Gardez toujours les doigts hors du mortier lorsque vous pilez. Gardez le pilon à portée de main, la planche stable, le couteau bien affûté, la spatule et un récipient propre pour la fin. Regardez votre fiche et rassemblez la citronnelle, le galanga, le curcuma frais, le zeste de combava, l'ail et les échalotes. Les quantités correspondent au nombre de pots indiqué sur votre fiche. Posez les aromates les plus fibreux d'un côté ; les plus tendres, comme l'ail et l'échalote, de l'autre. Cette petite organisation a une raison : si l'on commence par les ingrédients mous, ils collent au fond et les fibres dures échappent au pilon. Lavez-vous les mains et préparez une zone pour les déchets. Le curcuma colore durablement les mains et certaines surfaces : protégez votre planche si nécessaire. Si votre mortier est petit, nous travaillerons en plusieurs apports sans chercher à tout comprimer d'un coup. Prenez le temps de vérifier les aromates sur la fiche ; faites pause pour vous installer si besoin. Voilà, on peut passer aux découpes.
 
 ### Chapitre 3 sur 7 — Nettoyer et émincer les aromates
 
