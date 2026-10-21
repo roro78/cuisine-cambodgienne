@@ -12,7 +12,6 @@ export const releasedCookingWorkshopGuides=cookingWorkshopGuides.filter(guide=>g
 // publiables : photos, droits et tests de navigation restent indépendants de l'écoute.
 const audioApprovedGuides=cookingWorkshopGuides.filter(guide=>
   guide.review.audioListeningValidated===true &&
-  guide.review.recipeValidated===true &&
   guide.review.editorialValidated===true &&
   Boolean(guide.audio.asset));
 export const integratedCookingWorkshopGuides=audioApprovedGuides.length===6

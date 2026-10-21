@@ -256,7 +256,7 @@
     "stepImagePaths": []
   },
   "review": {
-    "recipeValidated": true,
+    "recipeValidated": false,
     "editorialValidated": true,
     "audioListeningValidated": true,
     "mobileValidated": false,
