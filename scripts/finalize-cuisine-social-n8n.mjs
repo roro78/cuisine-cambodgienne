@@ -23,9 +23,13 @@ const validStatuses = new Set(['PASS', 'PASS OFFLINE', 'BLOCKED', 'FAIL']);
 const reviewed = index => JSON.parse(readFileSync(new URL(
   '../automation/n8n/' + filenames[index], import.meta.url), 'utf8'));
 const node = (workflow, name) => workflow.nodes.find(item => item.name === name);
-const hasCredentialReference = item => Object.values(item?.credentials || {}).some(value =>
-  value && typeof value === 'object' && typeof value.id === 'string' && value.id.length > 0 &&
-  typeof value.name === 'string' && value.name.length > 0);
+const credentialReferenceShape = item => {
+  const references = Object.values(item?.credentials || {}).filter(value => value && typeof value === 'object');
+  const hasId = references.some(value => typeof value.id === 'string' && value.id.length > 0);
+  const hasName = references.some(value => typeof value.name === 'string' && value.name.length > 0);
+  return hasId ? (hasName ? 'id-and-name' : 'id-only') : (hasName ? 'name-only' : 'missing');
+};
+const hasCredentialReference = item => credentialReferenceShape(item).startsWith('id-');
 const graphNodes = workflow => workflow.nodes.filter(item =>
   typeof item.parameters?.url === 'string' && item.parameters.url.includes('graph.facebook.com'));
 const hasPlaceholder = value => /CONFIGURER_[A-Z_]+/.test(value);
@@ -59,9 +63,11 @@ export function inspectLiveWorkflow(workflow, index) {
   }
 
   const postgresNodes = workflow?.nodes?.filter(item => item.type === 'n8n-nodes-base.postgres') || [];
+  const postgresProof = postgresNodes.map((item, position) =>
+    'PostgreSQL node ' + (position + 1) + ': ' + credentialReferenceShape(item)).join('; ');
   checks.push(check('PostgreSQL credential references', postgresNodes.length > 0 &&
     postgresNodes.every(hasCredentialReference) ? 'PASS' : 'FAIL',
-  'all live PostgreSQL nodes reference a named credential'));
+  postgresProof || 'no live PostgreSQL node found'));
 
   if (index === 0) {
     const resend = node(workflow, 'Envoyer la demande de validation Resend');

@@ -29,6 +29,16 @@ test('live inspection accepts reviewed inactive workflows with credential refere
   }
 });
 
+test('an n8n credential reference remains valid when the API omits its display name', () => {
+  const workflow = live(0);
+  for (const item of workflow.nodes) for (const reference of Object.values(item.credentials || {})) {
+    delete reference.name;
+  }
+  const postgres = inspectLiveWorkflow(workflow, 0).checks.find(item =>
+    item.name === 'PostgreSQL credential references');
+  assert.equal(postgres.status, 'PASS');
+  assert.match(postgres.proof, /id-only/);
+});
 test('live inspection rejects placeholders, activation and missing credentials without exposing values', () => {
   const active = live(1);
   active.active = true;
