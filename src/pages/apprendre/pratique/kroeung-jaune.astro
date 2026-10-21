@@ -45,7 +45,7 @@ const audioTexts=[workshop.audio.intro,...workshop.phases.map((phase)=>phase.aud
           <a class="atelier-action" href="#ingredients">Préparer les ingrédients <span aria-hidden="true">↘</span></a>
           <a href={'/recettes/' + recipe.slug + '/'}>Lire la fiche recette</a>
         </div>
-        <p class="atelier-preview-note">Version de préparation éditoriale : photographie finale et guide vocal à valider avant publication.</p>
+        <p class="atelier-preview-note">Atelier en préproduction : narration approuvée à l’écoute ; photographie finale et contrôles mobile/ordinateur à valider avant publication.</p>
       </div>
       <figure class="atelier-hero-photo">
         <img src={heroPicture ?? '/images/cuisine/kroeung-1600.webp'} alt={workshop.status==='release_ready'?workshop.finalPreparation:(recipe.imageAlt ?? 'Pâte de kroeung et aromates frais')} width={recipe.imageWidth ?? 1200} height={recipe.imageHeight ?? 800} loading="eager" />

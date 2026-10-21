@@ -99,3 +99,11 @@ Pour **chaque** photographie, obtenir avant validation : photographe/ayant droit
 - [ ] Publication OVH **manuelle et explicitement autorisée**, puis contrôle de l'URL réelle et possibilité de retour arrière.
 
 **Verdict actuel : NO GO production.** Ne pas modifier la PR #89, les anciennes recettes ni les six MP3 historiques. Ne pas relancer Coral pour corriger seulement des libellés ou une photo.
+
+## VALIDATION ÉCOUTE DES SIX GUIDES — 21 OCTOBRE 2026
+
+L'utilisateur confirme avoir écouté et approuvé les six enregistrements actifs : Kroeung jaune V3, Lok Lak V2, Samlor Machu V3, Num Banh Chok V3, Kuy Teav V3, Bai Sach Chrouk V3.
+
+Approbation enregistrée dans les six fiches (`review.audioListeningValidated=true`) et dans chaque manifeste courant (`review.acousticListening=true`). Les empreintes SHA-256 des MP3 restent inchangées.
+
+L'intégration de la nouvelle collection et des liens recettes est préparée en préproduction. Les six fiches restent `draft` et `noindex` ; photographies, droits, QA mobile/desktop et publication non attestés, aucune fusion, aucune action OVH ni synthèse Coral. Ne supprimer les archives MP3 qu'après audit des références et remplacement des routes historiques.

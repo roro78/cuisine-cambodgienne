@@ -107,7 +107,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
           <div><dt>Niveau</dt><dd>{guide.difficulty}</dd></div>
         </dl>
         <a class="fca-primary" href="#ingredients">Préparer vos ingrédients <span aria-hidden="true">↘</span></a>
-        {guide.status !== 'release_ready' && <p class="fca-preview">Cet atelier est en préproduction : photographie finale et guide vocal encore soumis à validation.</p>}
+        {guide.status !== 'release_ready' && <p class="fca-preview">Cet atelier est en préproduction : narration écoutée et approuvée ; photographies et contrôles mobile/ordinateur restent à valider.</p>}
       </div>
       <figure class="fca-hero-photo">
         <img src={heroPicture ?? '/images/cuisine/v17-table-meal-1600.jpg'} alt={guide.status==='release_ready'?guide.finalPreparation:(recipe.imageAlt ?? guide.finalPreparation)} loading="eager" width={recipe.imageWidth ?? 1200} height={recipe.imageHeight ?? 800} decoding="async" />

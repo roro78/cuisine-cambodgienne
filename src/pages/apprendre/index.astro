@@ -5,7 +5,7 @@ import SiteFooter from '../../components/SiteFooter.astro';
 import EditorialSectionHero from '../../components/EditorialSectionHero.astro';
 import CulinaryIcon from '../../components/CulinaryIcon.astro';
 import { workshops } from '../../data/workshops';
-import { releasedCookingWorkshopGuides } from '../../data/cookingWorkshopGuides';
+import { integratedCookingWorkshopGuides, releasedCookingWorkshopGuides } from '../../data/cookingWorkshopGuides';
 import { recipes } from '../../data/recipes';
 const workshopPhotos: Record<string,string> = {
 'piler-aromates-au-mortier':'/images/cuisine/v17-mortar-hands-1600.jpg',
@@ -21,7 +21,7 @@ import '../../styles/editorial-shared-hero.css';
 
 // Do not promote incomplete courses. Once all six recipe-led workshops are release_ready,
 // the old six-card index is replaced rather than displayed twice.
-const fullWorkshopReplacementReady=releasedCookingWorkshopGuides.length===6;
+const fullWorkshopReplacementReady=integratedCookingWorkshopGuides.length===6 && (releasedCookingWorkshopGuides.length===6 || integratedCookingWorkshopGuides.every(guide=>guide.review.audioListeningValidated));
 const schema = {
   '@context':'https://schema.org',
   '@type':'CollectionPage',
@@ -62,10 +62,10 @@ const schema = {
       <p>Dans chaque atelier, vous faites un geste, vous regardez ce qui change, puis vous recommencez. C’est la meilleure façon de le réussir ensuite dans une vraie recette.</p>
     </section>
 
-    {releasedCookingWorkshopGuides.length>0 && (
+    {integratedCookingWorkshopGuides.length>0 && (
       <section class="v16-workshop-list" aria-label="Ateliers de cuisine complets">
         <div class="v19-section-intro"><p class="v16-page-kicker">Ateliers complets</p><h2>Préparez une vraie recette, du premier ingrédient au service.</h2></div>
-        {releasedCookingWorkshopGuides.map((guide, i) => {
+        {integratedCookingWorkshopGuides.map((guide, i) => {
           const recipe=recipes.find(item=>item.slug===guide.sourceRecipeSlug);
           return <article class="v16-workshop" data-reveal="up">
             <div class="v16-workshop-number">{String(i+1).padStart(2,'0')}</div>

@@ -52,7 +52,7 @@
   ],
   "scriptSha256": "b92575e467a9c61b9668ae260d5ca02f10a547c91b7344cec857a36b601f7d6e",
   "review": {
-    "acousticListening": false,
+    "acousticListening": true,
     "mobile": false,
     "desktop": false
   },

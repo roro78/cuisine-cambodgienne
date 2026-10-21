@@ -7,6 +7,7 @@ if(manifest.chapters.length!==7 || scripts.length!==7)throw Error('Lecteur ateli
 const chapters=manifest.chapters.map((chapter,i)=>({...chapter,text:scripts[i]}));
 const displayTime=(s:number)=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
 const acousticReviewComplete=manifest.review?.acousticListening===true && manifest.review?.mobile===true && manifest.review?.desktop===true;
+const acousticListeningApproved=manifest.review?.acousticListening===true;
 ---
 <section class="guided-cooking-audio" data-cooking-chapters={JSON.stringify(chapters)} aria-labelledby="guided-cooking-title">
   <div class="guided-cooking-audio-head">
@@ -15,7 +16,7 @@ const acousticReviewComplete=manifest.review?.acousticListening===true && manife
       <h2 id="guided-cooking-title">Votre guide audio en sept chapitres.</h2>
       <p>{displayTime(manifest.durationSec)} · une introduction puis six phases de cuisine, à votre rythme.</p>
     </div>
-    <small class="guided-cooking-review">{acousticReviewComplete ? 'Guide vocal validé à l’écoute' : 'En préécoute · validation sonore à terminer'}</small>
+    <small class="guided-cooking-review">{acousticReviewComplete ? 'Guide vocal et navigation validés' : acousticListeningApproved ? 'Narration approuvée · tests mobile/ordinateur à terminer' : 'En préécoute · validation sonore à terminer'}</small>
   </div>
   <audio src={manifest.audioUrl} controls preload="metadata" data-cooking-audio aria-label="Guide vocal de l’atelier">
     Ce navigateur ne prend pas en charge la lecture du guide audio.
