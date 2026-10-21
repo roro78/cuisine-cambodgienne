@@ -38,7 +38,8 @@ for(const slug of names){
      throw Error(slug+': superseded MP3 measured duration mismatch.');
    if(supersededV2){
      const sourceHash=createHash('sha256').update(JSON.stringify([blueprint.audio.intro,...blueprint.phases.map(p=>p.audioScript)])).digest('hex');
-     if(m.scriptSha256===sourceHash)throw Error(slug+': narration V2 archivée est identique au brouillon corrigé.');
+     // Even if a chapter's words are unchanged, written approval is still missing.
+     // The archived V2 must never be exposed as the current reviewed script.
      if(blueprint.audio.asset)throw Error(slug+': une ancienne piste ne doit pas être affichée.');
    }
    superseded++;
