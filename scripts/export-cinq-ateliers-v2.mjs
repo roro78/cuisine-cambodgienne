@@ -38,13 +38,8 @@ for (const name of names){
   const recipe=recipes.find(x=>x.slug===name);
   if(!recipe)throw Error('Recette canonique absente '+name);
   copy(path);
-  const m1='src/data/atelier-recette-audio/'+name+'.json';
   const m2='src/data/atelier-recette-audio/'+name+'-v2.json';
   let current=null;
-  if(guide.audio.status!=='script_only' && copy(m1,true)){
-    const m=JSON.parse(readFileSync(m1,'utf8'));
-    if(m.audioUrl)copy('public'+m.audioUrl,true);
-  }
   if(guide.audio.status!=='script_only' && copy(m2,true)){
     const m=JSON.parse(readFileSync(m2,'utf8'));
     const file='public'+m.audioUrl;
@@ -117,7 +112,7 @@ const required=[
 required.forEach(x=>copy(x));
 summary.push('','## Contenu du ZIP','','- FICHES-ATELIERS : six cours complets Markdown, avec ingrédients adaptables, gestes, remédiations, sept scripts et sources.',
 '- src/data/atelier-recette-guides : les six fichiers JSON originaux des nouveaux cours.',
-'- src/data/atelier-recette-audio et public/audio/workshops : uniquement les MP3 encore associes au script actif. Les pistes obsoletes ne sont pas exportees comme guide valide.',
+'- src/data/atelier-recette-audio et public/audio/workshops : seules les V2 actives sont exportées ; les capsules courtes V1 obsolètes ont été retirées.',
 '- src/pages/apprendre/pratique et src/components : pages sources Astro et mini-lecteur mobile synchronisé.',
 '- docs/ateliers : référentiels obligatoires et étalon Lok Lak.',
 '','**Aucun ancien MP3 des cinq scripts corrigés n’est fourni comme s’il correspondait aux nouveaux textes. Aucune nouvelle synthese, aucun deploiement OVH ni publication Meta.**');
