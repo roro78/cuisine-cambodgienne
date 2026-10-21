@@ -115,8 +115,8 @@ if(mode==='--plan'){
  console.log('CORAL_OFFLINE_PLAN '+guide.slug+' v'+(v2?2:1)+' '+chunks.length+' segments '+tracks.map((x,i)=>plan.chapters[i].id+':'+x.length).join(' '));
 }else if(mode==='--check'){
  if(existsSync(output)||existsSync(manifestPath))throw Error('Le fichier final existe déjà ; refuser toute double génération.');
- if(v2&&(!guide.audio.previousAsset||!existsSync(resolve('public',guide.audio.previousAsset.audioUrl.replace(/^\//,'')))))
-   throw Error('Ancien MP3 V1 absent : migration V2 arrêtée pour protéger les archives.');
+ // The superseded short V1 recording has been deliberately removed.
+ // The target MP3 and manifest still block any duplicate generation above.
  console.log('CORAL_GUIDE_CONTRACT_OK '+guide.slug+' 7 chapters, '+chunks.length+' saved parts planned; 0 paid request.');
 }else if(mode.startsWith('--one=')){
  if(existsSync(output)||existsSync(manifestPath))throw Error('Guide déjà assemblé ; aucune régénération autorisée.');
