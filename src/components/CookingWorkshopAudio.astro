@@ -242,7 +242,7 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
       }
     };
     const scrollToChapter=(index:number)=>{
-      const target=index===0?(document.getElementById('atelier')||root):document.getElementById('phase-'+chapters[index].id);
+      const target=index===0?(document.getElementById('ingredients')||root):document.getElementById('phase-'+chapters[index].id);
       if(!target)return;
       programmaticScrollUntil=Date.now()+2200;
       target.scrollIntoView({behavior:prefersReducedMotion.matches?'auto':'smooth',block:'start'});
