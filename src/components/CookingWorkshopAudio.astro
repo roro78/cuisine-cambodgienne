@@ -324,7 +324,7 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
     transcriptScroll?.addEventListener('keydown',event=>{
       if(['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' '].includes(event.key))stopTranscriptFollowing();
     });
-    const activate=(index:number)=>{
+    const activate=(index:number, scrollRequested=false)=>{
       if(index<0||index>=chapters.length)return;
       active=index;
       buttons.forEach((button,i)=>i===index?button.setAttribute('aria-current','true'):button.removeAttribute('aria-current'));
@@ -335,21 +335,26 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
       if(transcriptScroll&&transcriptFollowing)transcriptScroll.scrollTop=0;
       revealCurrentChapter();
       updateTranscriptScroll();
-      if(following)scrollToChapter(index);
+      // An explicit chapter selection always goes to its recipe section,
+      // even when automatic page following has been intentionally disabled.
+      // Timeline-driven phase changes still follow only when "following" is on.
+      if(following||scrollRequested)scrollToChapter(index);
       updateMobileDock();
     };
     const jumpToChapter=(i:number)=>{
-      if(!audio)return;
+      if(!audio||i<0||i>=chapters.length)return;
       audio.currentTime=chapters[i].startSec;
-      activate(i);
+      activate(i,true);
       void audio.play().catch(()=>{
         if(status)status.textContent='Chapitre sélectionné. Appuyez sur Lecture pour démarrer.';
       });
     };
     buttons.forEach((button,i)=>button.addEventListener('click',()=>jumpToChapter(i)));
     mobileChapterButtons.forEach((button,i)=>button.addEventListener('click',()=>{
-      jumpToChapter(i);
+      // Release the overlay and its focus before smooth-scrolling the page.
       closeMobileSheet();
+      mobileSteps?.focus({preventScroll:true});
+      jumpToChapter(i);
     }));
     audio?.addEventListener('timeupdate',()=>{
       let index=0;
