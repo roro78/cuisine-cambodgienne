@@ -18,13 +18,18 @@ const files=[
   ...slugs.map(s=>'docs/ateliers/a-valider/'+s+'-recette-et-narration.md')
 ];
 const forbidden=[
-  {name:'Vocabulaire de fabrication au lieu de préparation culinaire',pattern:/\b(?:fabriqu\p{L}*|fabrication\p{L}*)\b/giu},
-  {name:'Vocabulaire de construction hors cuisine',pattern:/\b(?:constru\p{L}*|chantier\p{L}*|maçonnerie|bétonnage)\b/giu},
+  {name:'Vocabulaire de fabrication au lieu de préparation culinaire',pattern:/(?<!\p{L})(?:fabriqu\p{L}*|fabrication\p{L}*)(?!\p{L})/giu},
+  {name:'Vocabulaire de construction hors cuisine',pattern:/(?<!\p{L})(?:constru\p{L}*|chantier\p{L}*|maçonnerie|bétonnage)(?!\p{L})/giu},
   {name:'Poste au lieu de plan de travail',pattern:/\bposte\b/giu},
   {name:'Bol à dresser plutôt qu’à monter',pattern:/\b(?:monter|montez|montage|assembl(?:er|ez))\s+(?:les|des|du|d’un)\s+bols?\b/giu},
   {name:'Articles dédoublés ou incompatibles',pattern:/\bles\s+(?:les|la|le)\b/giu},
   {name:'Français incohérent',pattern:/\b(?:coupez\s+les\s+le|tranchez\s+les\s+les)\b/giu}
 ];
+// Regression: Unicode accents must not escape the word filter.
+for(const sample of ['fabriquer','fabriqué','fabriquée','fabrication']){
+ forbidden[0].pattern.lastIndex=0;
+ if(!forbidden[0].pattern.test(sample))throw Error('Filtre lexical incomplet pour '+sample);
+}
 let errors=0;
 for(const path of files){
  if(!existsSync(path)){console.error('ECHEC_LEXIQUE fichier introuvable '+path);errors++;continue;}
