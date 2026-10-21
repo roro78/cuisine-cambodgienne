@@ -25,6 +25,18 @@ export function initCookingWorkshopServings(): void {
     const summary = root.querySelector<HTMLElement>('[data-workshop-servings-summary]');
     const quantities = [...root.querySelectorAll<HTMLElement>('[data-workshop-ingredient-quantity]')];
     const presets = [...root.querySelectorAll<HTMLButtonElement>('[data-workshop-serving-preset]')];
+    const customToggle = root.querySelector<HTMLButtonElement>('[data-workshop-custom-toggle]');
+    const customPanel = root.querySelector<HTMLElement>('[data-workshop-custom-count]');
+    const closeCustom = () => {
+      if (customPanel) customPanel.hidden = true;
+      customToggle?.setAttribute('aria-expanded', 'false');
+    };
+    customToggle?.addEventListener('click', () => {
+      if (!customPanel) return;
+      customPanel.hidden = !customPanel.hidden;
+      customToggle.setAttribute('aria-expanded', String(!customPanel.hidden));
+      if (!customPanel.hidden) input?.focus();
+    });
     if (!Number.isFinite(base) || base <= 0 || !input || !summary || !quantities.length) return;
     root.dataset.servingsEnhanced = 'true';
 
@@ -71,7 +83,10 @@ export function initCookingWorkshopServings(): void {
       render();
     };
     input.addEventListener('change', () => select(Number(input.value)));
-    presets.forEach((button) => button.addEventListener('click', () => select(Number(button.dataset.workshopServingPreset))));
+    presets.forEach((button) => button.addEventListener('click', () => {
+      select(Number(button.dataset.workshopServingPreset));
+      closeCustom();
+    }));
     render();
   });
 }

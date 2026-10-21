@@ -40,7 +40,21 @@ try {
       assert.equal(await page.locator('meta[name="robots"]').getAttribute('content').then(s=>s?.includes('noindex')),workshop.status!=='release_ready');
       const audioCount=await page.locator('[data-cooking-audio]').count();
       assert.ok(audioCount===0||audioCount===1);
-      if(audioCount===1)assert.equal(await page.locator('[data-cooking-chapter]').count(),7);
+      if(audioCount===1){
+        assert.equal(await page.locator('[data-cooking-chapter]').count(),7);
+        if(mobile){
+          assert.equal(await page.locator('[data-cooking-mobile-dock]').isVisible(),true,'Kroeung mini-player visible before playback');
+          assert.equal(await page.locator('.guided-cooking-audio-head').isVisible(),false,'Large mobile audio block hidden');
+          await page.locator('[data-cooking-mobile-steps]').click();
+          assert.equal(await page.locator('[data-cooking-mobile-chapter]').count(),7);
+          await page.locator('[data-cooking-mobile-tab="transcript"]').click();
+          assert.ok((await page.locator('[data-cooking-mobile-transcript]').innerText()).length>90);
+          await page.locator('[data-cooking-mobile-close]').click();
+        }else{
+          assert.equal(await page.locator('.guided-cooking-audio-head').isVisible(),true);
+          assert.equal(await page.locator('[data-cooking-mobile-dock]').isVisible(),false);
+        }
+      }
       else assert.equal(await page.locator('audio').count(),0,'No fake MP3 in draft');
       const topGap=await page.evaluate(()=>{
         const header=document.querySelector('[data-site-header]');

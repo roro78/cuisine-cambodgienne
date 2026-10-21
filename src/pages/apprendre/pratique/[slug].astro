@@ -126,11 +126,15 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
       <p>Quantités issues de la <a href={recipeHref}>recette {recipe.title}</a>{', adaptées au nombre de personnes que vous choisissez.'}{guide.sourceRecipeSlug==='lok-lak' && ' Une petite quantité d’huile neutre facultative est signalée séparément pour la saisie du bœuf mariné.'} Cochez les produits au fur et à mesure.</p>
       {flexibleServings && (
         <div class="fca-servings" aria-label="Choisir le nombre de convives">
-          <label for="fca-servings-input">Je cuisine pour</label>
-          <input id="fca-servings-input" data-workshop-servings-input type="number" inputmode="numeric" min="1" max="12" step="1" value={recipe.baseServings} />
+          <span class="fca-servings-prompt">Je cuisine pour</span>
           <strong data-workshop-servings-summary aria-live="polite">{recipe.baseServings} personnes</strong>
           <div class="fca-servings-presets">
             {[2, 4, 6, 8].map((n) => <button type="button" data-workshop-serving-preset={n} aria-pressed={n===recipe.baseServings?'true':'false'}>{n} pers.</button>)}
+          </div>
+          <button class="fca-custom-toggle" type="button" data-workshop-custom-toggle aria-controls="fca-custom-servings" aria-expanded="false">Autre nombre</button>
+          <div id="fca-custom-servings" class="fca-custom-servings" data-workshop-custom-count hidden>
+            <label for="fca-servings-input">Nombre de personnes (1 à 12)</label>
+            <input id="fca-servings-input" data-workshop-servings-input type="number" inputmode="numeric" min="1" max="12" step="1" value={recipe.baseServings} />
           </div>
           <p>Seules les quantités de la liste changent. Les gestes et les repères de cuisson restent les mêmes, mais le nombre de fournées et le temps de cuisson peuvent évoluer.</p>
         </div>
@@ -180,7 +184,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
     <section class="fca-section" id="atelier" aria-labelledby="fca-steps-heading">
       <p class="fca-eyebrow">02 · Pratiquer</p>
       <h2 id="fca-steps-heading">La recette, étape par étape.</h2>
-      <p><strong>Repère de durée :</strong> {guide.duration.waitingNote}</p>
+      <p><strong>Temps à prévoir :</strong> {guide.duration.waitingNote}</p>
       <p>Respectez l’ordre des préparations et vérifiez les repères avant de poursuivre. {guide.sourceRecipeSlug==='lok-lak' ? 'Prévoyez environ vingt minutes de marinade au réfrigérateur : profitez-en pour préparer les crudités et le condiment.' : ''} La recette reste entièrement accessible par écrit, même sans MP3.</p>
       {guideAudio ? <CookingWorkshopAudio manifest={guideAudio} scripts={audioTexts} /> : <p class="fca-preview">{guide.review.editorialValidated ? "Textes validés. La nouvelle narration audio est en préparation ; suivez les étapes écrites en attendant." : "La narration sera proposée après validation des textes et enregistrement."}</p>}
       <nav class="fca-steps-nav" aria-label="Aller directement à une étape">
@@ -239,7 +243,10 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
 </script>
 <style>
   .fca-servings{display:flex;align-items:center;flex-wrap:wrap;gap:12px;padding:16px 20px;margin:20px 0;border:1px solid #ddc9a5;background:#fffaf0;border-radius:12px}
-  .fca-servings label{font-weight:700}
+  .fca-servings label,.fca-servings-prompt{font-weight:700}
+  .fca-servings .fca-custom-toggle{min-height:44px;border:1px solid #bca77f;border-radius:24px;background:#fff;padding:8px 12px;color:#473b2c;cursor:pointer}
+  .fca-servings .fca-custom-servings{display:flex;gap:10px;align-items:center;flex-wrap:wrap;flex-basis:100%}
+  .fca-servings .fca-custom-servings[hidden]{display:none}
   .fca-servings input{width:76px;min-height:46px;padding:6px;border:1px solid #a58b65;border-radius:6px;font-size:18px}
   .fca-servings-presets{display:flex;gap:7px;flex-wrap:wrap}
   .fca-servings-presets button{min-height:44px;background:white;border:1px solid #bca77f;padding:8px 12px;border-radius:24px;cursor:pointer}

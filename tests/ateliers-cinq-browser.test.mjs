@@ -75,42 +75,60 @@ try{
         assert.ok(audioCount===0||audioCount===1,'At most one recording per atelier '+slug);
         if(audioCount===1){
           assert.equal(await page.locator('[data-cooking-chapter]').count(),7,'Intro + six genuine chapters');
-          assert.match(await page.locator('[data-cooking-audio]').getAttribute('src'),/\/audio\/workshops\/[^/]+\/atelier-coral-v[23][.]mp3$/);
+          assert.match(await page.locator('[data-cooking-audio]').getAttribute('src'),/atelier-coral-v[23][.]mp3$/);
           const chapterOne=page.locator('[data-cooking-chapter]').nth(1);
-          await chapterOne.click();
-          assert.equal(await chapterOne.getAttribute('aria-current'),'true','Selecting phase updates the active audio chapter');
-          const follow=page.locator('[data-cooking-follow]');
+          if(mobile){
+            assert.equal(await page.locator('[data-cooking-mobile-dock]').getAttribute('data-visible'),'true','Mobile player is visible before playback');
+            assert.equal(await page.locator('.guided-cooking-audio-head').isVisible(),false,'Big audio block hidden on mobile');
+            assert.equal(await page.locator('[data-cooking-mobile-progress]').count(),1,'Mobile progress exists');
+            await page.locator('[data-cooking-mobile-steps]').click();
+            await page.locator('[data-cooking-mobile-chapter]').nth(1).click();
+          } else {
+            assert.equal(await page.locator('.guided-cooking-audio-head').isVisible(),true,'Desktop full audio layout preserved');
+            assert.equal(await page.locator('[data-cooking-mobile-dock]').isVisible(),false,'Dock absent on desktop');
+            await chapterOne.click();
+          }
+          assert.equal(await chapterOne.getAttribute('aria-current'),'true','Selecting phase updates active audio chapter');
+          const follow=mobile?page.locator('[data-cooking-mobile-follow]'):page.locator('[data-cooking-follow]');
+          if(mobile)await page.locator('[data-cooking-mobile-steps]').click();
           await follow.click();
           assert.equal(await follow.getAttribute('aria-pressed'),'true','Following enabled');
-          await page.locator('[data-cooking-chapter]').nth(3).click();
+          if(mobile){
+            await page.locator('[data-cooking-mobile-chapter]').nth(3).click();
+          } else await page.locator('[data-cooking-chapter]').nth(3).click();
           assert.equal(await page.locator('#phase-assembler').count(),1,'Large phase target exists');
           await page.evaluate(()=>window.dispatchEvent(new WheelEvent('wheel',{deltaY:130})));
           assert.equal(await follow.getAttribute('aria-pressed'),'false','Manual scrolling stops following');
-          assert.equal(await page.locator('[data-cooking-audio]').count(),1,'Playback element retained');
-          assert.equal(await page.locator('[data-cooking-chapter]').first().getAttribute('aria-current'),null,'Introduction is deselected');
-          if (mobile) {
-            // Simulate the media play notification independently of Chromium audio decoding.
+          assert.equal(await page.locator('[data-cooking-audio]').count(),1,'Only one audio element');
+          assert.equal(await page.locator('[data-cooking-chapter]').first().getAttribute('aria-current'),null,'Introduction deselected');
+          if(mobile){
             await page.locator('[data-cooking-audio]').evaluate(el=>el.dispatchEvent(new Event('play')));
-            assert.equal(await page.locator('[data-cooking-mobile-dock]').getAttribute('data-visible'),'true','Mobile controls stay on-screen during a phase');
+            assert.equal(await page.locator('[data-cooking-mobile-dock]').getAttribute('data-visible'),'true','Mobile player stays fixed during playback');
             await page.locator('[data-cooking-mobile-steps]').click();
-            assert.equal(await page.locator('[data-cooking-mobile-sheet]').isVisible(),true,'Mobile chapter sheet opens over the current phase');
-            assert.equal(await page.locator('[data-cooking-mobile-chapter]').count(),7,'Seven reachable mobile chapters');
+            assert.equal(await page.locator('[data-cooking-mobile-sheet]').isVisible(),true,'Sliding sheet opens');
+            assert.equal(await page.locator('[data-cooking-mobile-chapter]').count(),7,'Seven chapters in sheet');
+            await page.locator('[data-cooking-mobile-tab="transcript"]').click();
+            assert.equal(await page.locator('[data-cooking-mobile-transcript]').isVisible(),true,'Mobile transcript is accessible');
+            assert.ok((await page.locator('[data-cooking-mobile-transcript]').innerText()).length>90);
+            await page.locator('[data-cooking-mobile-tab="chapters"]').click();
             await page.locator('[data-cooking-mobile-chapter]').nth(2).click();
-            assert.equal(await page.locator('[data-cooking-chapter]').nth(2).getAttribute('aria-current'),'true','Mobile chapter selector updates the active track');
-            assert.equal(await page.locator('[data-cooking-mobile-sheet]').isVisible(),false,'Mobile chapters close after selection');
-            await page.locator('[data-cooking-follow]').click();
-            assert.equal(await page.locator('[data-cooking-follow]').getAttribute('aria-pressed'),'true','Follow can be reenabled');
-            await page.locator('[data-cooking-transcript]').evaluate(el=>el.dispatchEvent(new Event('touchmove',{bubbles:true})));
-            assert.equal(await page.locator('[data-cooking-follow]').getAttribute('aria-pressed'),'false','Touch scrolling transcript cancels follow without pausing');
+            assert.equal(await page.locator('[data-cooking-chapter]').nth(2).getAttribute('aria-current'),'true','Chapter selection updates original track');
+            assert.equal(await page.locator('[data-cooking-mobile-sheet]').isVisible(),false,'Sheet closes after selecting chapter');
+            await page.locator('[data-cooking-mobile-steps]').click();
+            await follow.click();
+            assert.equal(await follow.getAttribute('aria-pressed'),'true','Follow can be reenabled');
+            await page.locator('[data-cooking-mobile-transcript]').evaluate(el=>el.dispatchEvent(new Event('touchmove',{bubbles:true})));
+            assert.equal(await follow.getAttribute('aria-pressed'),'false','Manual touch stops follow without pausing');
             await page.locator('[data-cooking-mobile-stop]').click();
-            assert.equal(await page.locator('[data-cooking-mobile-dock]').getAttribute('data-visible'),'false','Mobile dock can be dismissed');
+            assert.equal(await page.locator('[data-cooking-mobile-dock]').getAttribute('data-visible'),'true','Player remains ready after Stop');
+          } else {
+            await page.locator('.guided-cooking-transcript summary').click();
+            assert.ok((await page.locator('[data-cooking-transcript]').innerText()).length>90,'Desktop transcript remains accessible');
           }
-          await page.locator('.guided-cooking-transcript summary').click();
-          assert.ok((await page.locator('[data-cooking-transcript]').innerText()).length>90,'Opened chapter transcription remains accessible');
           if(width===360){
             const url=await page.locator('[data-cooking-audio]').getAttribute('src');
             const audioResponse=await page.request.get(base+url,{headers:{Range:'bytes=0-1023'}});
-            assert.ok([200,206].includes(audioResponse.status()),'Recorded MP3 is served by the built site: '+slug);
+            assert.ok([200,206].includes(audioResponse.status()),'Recorded MP3 is served by built site: '+slug);
             await audioResponse.dispose();
           }
         }else{
