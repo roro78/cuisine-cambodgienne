@@ -19,6 +19,25 @@ RewriteRule ^nom-krob-totim-dessert-cambodgien-tapioca/?$ https://www.cuisine-du
 RewriteCond %{HTTP_HOST} ^(www[.])?cuisine-du-cambodge[.]com$ [NC]
 RewriteRule ^recette-cambodgienne-samla-mchou-yuan/?$ https://www.cuisine-du-cambodge.com/recettes/samla-mchou-yuon/ [R=301,L,NE]
 
+# Migration des six ateliers : 301 actifs apres validation complete
+RewriteCond %{HTTP_HOST} ^(www[.])?cuisine-du-cambodge[.]com$ [NC]
+RewriteRule ^apprendre/piler-aromates-au-mortier/?$ https://www.cuisine-du-cambodge.com/apprendre/pratique/kroeung-jaune/ [R=301,L,NE]
+
+RewriteCond %{HTTP_HOST} ^(www[.])?cuisine-du-cambodge[.]com$ [NC]
+RewriteRule ^apprendre/equilibrer-une-sauce/?$ https://www.cuisine-du-cambodge.com/apprendre/pratique/samlor-machu-soupe-acidulee-guidee/ [R=301,L,NE]
+
+RewriteCond %{HTTP_HOST} ^(www[.])?cuisine-du-cambodge[.]com$ [NC]
+RewriteRule ^apprendre/saisir-viande-poele/?$ https://www.cuisine-du-cambodge.com/apprendre/pratique/lok-lak-de-la-poele-a-l-assiette/ [R=301,L,NE]
+
+RewriteCond %{HTTP_HOST} ^(www[.])?cuisine-du-cambodge[.]com$ [NC]
+RewriteRule ^apprendre/fraicheur-herbes-agrumes/?$ https://www.cuisine-du-cambodge.com/apprendre/pratique/num-banh-chok-sauce-et-herbes-fraiches/ [R=301,L,NE]
+
+RewriteCond %{HTTP_HOST} ^(www[.])?cuisine-du-cambodge[.]com$ [NC]
+RewriteRule ^apprendre/bouillon-leger-savoureux/?$ https://www.cuisine-du-cambodge.com/techniques/bouillon-leger-maison/ [R=301,L,NE]
+
+RewriteCond %{HTTP_HOST} ^(www[.])?cuisine-du-cambodge[.]com$ [NC]
+RewriteRule ^apprendre/composer-repas-cambodgien/?$ https://www.cuisine-du-cambodge.com/culture/construire-repas-cambodgien/ [R=301,L,NE]
+
 # Ancien domaine sans www : conserver le chemin demandé et les paramètres UTM.
 RewriteCond %{HTTP_HOST} ^cuisine-du-cambodge[.]com$ [NC]
 RewriteRule ^(.*)$ https://www.cuisine-du-cambodge.com/$1 [R=301,L,NE]
