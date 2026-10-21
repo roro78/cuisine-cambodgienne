@@ -188,56 +188,6 @@
     "voice": "coral",
     "intro": "Bonjour et bienvenue dans notre atelier Cuisine du Cambodge ! Aujourd'hui nous réalisons un Num Banh Chok, avec des nouilles de riz, une sauce chaude au poisson et au kroeung jaune, du lait de coco et beaucoup de fraîcheur. Notre objectif, c'est de maîtriser l'ordre des préparations : pocher le poisson sans le dessécher, l'émietter en retirant les arêtes, préparer une sauce parfumée et fluide, puis dresser avec des légumes croquants. Ce plat existe en plusieurs variantes cambodgiennes ; nous suivrons celle de notre fiche, avec du coco et du kroeung jaune. Choisissez votre nombre de convives et préparez les quantités sur la fiche. Le son accompagne vos gestes, pas les grammages qui changent avec les portions. Sortez deux casseroles, une passoire, une écumoire, une louche, une planche, un couteau, une fourchette, un thermomètre si possible et des bols propres. Le kroeung doit être préparé avant le cours ou acheté prêt ; on ne va pas prétendre le préparer ici en quelques secondes. Je vous préviendrai lorsqu'une pause est utile. Allez, on commence !",
     "publicProviderMention": false,
-    "previousAsset": {
-      "audioUrl": "/audio/workshops/num-banh-chok-sauce-et-herbes-fraiches/atelier-coral.mp3",
-      "durationSec": 127.344,
-      "sha256": "099b435fe26f1d0a54bc35c4fad98da9950a1e8d23033a587a481f61ff114eb2",
-      "chapters": [
-        {
-          "id": "intro",
-          "title": "Bienvenue et mise en place",
-          "startSec": 0,
-          "endSec": 32.952
-        },
-        {
-          "id": "installer",
-          "title": "Rassembler la sauce, les nouilles et les herbes",
-          "startSec": 32.952,
-          "endSec": 48.48
-        },
-        {
-          "id": "preparer",
-          "title": "Préparer poisson et garnitures fraîches",
-          "startSec": 48.48,
-          "endSec": 63
-        },
-        {
-          "id": "assembler",
-          "title": "Pocher et émietter le poisson blanc",
-          "startSec": 63,
-          "endSec": 77.448
-        },
-        {
-          "id": "maitriser",
-          "title": "Préparer la sauce chaude au kroeung",
-          "startSec": 77.448,
-          "endSec": 94.92
-        },
-        {
-          "id": "rectifier",
-          "title": "Cuire les nouilles et rectifier les textures",
-          "startSec": 94.92,
-          "endSec": 111.48
-        },
-        {
-          "id": "terminer",
-          "title": "Dresser les bols et ajouter la fraîcheur",
-          "startSec": 111.48,
-          "endSec": 127.344
-        }
-      ],
-      "scriptSha256": "8830e51af9050773961483b2646a9abfa09b08cb846b8b780b519b64637ce6d1"
-    },
     "storyboardVersion": 2,
     "supersededV2Asset": {
       "audioUrl": "/audio/workshops/num-banh-chok-sauce-et-herbes-fraiches/atelier-coral-v2.mp3",
