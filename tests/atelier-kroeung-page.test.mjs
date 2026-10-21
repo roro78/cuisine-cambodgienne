@@ -27,7 +27,8 @@ test('Un atelier non validé ne se déclare pas publiable ni enregistré', () =>
   assert.ok(['script_only','generated_review_pending'].includes(workshop.audio.status));
   assert.equal(workshop.review.productionApproved,false);
   assert.match(source,/noindex=\{workshop[.]status !== 'release_ready'\}/);
-  assert.match(source,/sans MP3/);
+  assert.match(source,/La nouvelle narration est en préparation/);
+  assert.match(source,/guideAudio \? <CookingWorkshopAudio/);
   assert.ok(!source.includes('<WorkshopChapterPlayer'));
   assert.ok(!source.includes('Voix IA'));
   const plan = buildCookingAudioStoryboard(workshop);
