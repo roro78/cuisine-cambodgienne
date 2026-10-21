@@ -47,8 +47,9 @@ for(const path of files){
 }
 for(const slug of slugs){
  const guide=JSON.parse(readFileSync('src/data/atelier-recette-guides/'+slug+'.json','utf8'));
- if(guide.phases.length!==6||guide.audio.storyboardVersion!==2||guide.audio.editorialTextApproved!==false||
-   guide.review.editorialValidated!==false){
+ if(guide.phases.length!==6||guide.audio.storyboardVersion!==2||
+   guide.audio.editorialTextApproved!==guide.review.editorialValidated ||
+   guide.audio.editorialTextApproved!==guide.review.recipeValidated){
    console.error('ECHEC_LEXIQUE validation editoriale prematuree ou structure absente : '+slug);
    errors++;
  }
@@ -69,7 +70,8 @@ for(const slug of slugs){
    errors++;
  }
  // Current narration differs from archived Coral V2, and no stale MP3 is served.
- if(guide.audio.supersededV2Asset && (guide.audio.status!=='script_only'||guide.audio.asset)){
+ if(guide.audio.supersededV2Asset && ((guide.audio.status==='script_only'&&guide.audio.asset)||
+   (guide.audio.status!=='script_only' && !guide.audio.asset))){
    console.error('ECHEC_LEXIQUE ancien MP3 Coral V2 visible avec texte retouche : '+slug);
    errors++;
  }
@@ -91,6 +93,27 @@ for(const [slug,expectedSha] of Object.entries(audioPreserve)){
   if(existsSync(stale)||existsSync(staleManifest)||guide.audio.previousAsset){
     console.error('ECHEC_MP3_V1_SUPPRESSION ancien media encore present : '+slug);
     errors++;
+  }
+  const v3=dir+'atelier-coral-v3.mp3';
+  const v3Manifest='src/data/atelier-recette-audio/'+slug+'-v3.json';
+  if(guide.audio.status==='script_only'&&(existsSync(v3)||existsSync(v3Manifest))){
+    console.error('ECHEC_AUDIO_V3 dossier brouillon et piste V3 ne correspondent pas : '+slug);
+    errors++;
+  }
+  if(guide.audio.status!=='script_only'&&slug!=='lok-lak'){
+    if(!existsSync(v3)||!existsSync(v3Manifest)||guide.audio.asset?.audioUrl!=='/audio/workshops/'+guide.slug+'/atelier-coral-v3.mp3'){
+      console.error('ECHEC_AUDIO_V3 MP3 et manifeste V3 requis apres validation : '+slug);
+      errors++;
+    } else {
+      const newer=JSON.parse(readFileSync(v3Manifest,'utf8'));
+      const v3Sha=createHash('sha256').update(readFileSync(v3)).digest('hex');
+      const currentScriptSha=createHash('sha256').update(JSON.stringify([guide.audio.intro,...guide.phases.map(p=>p.audioScript)])).digest('hex');
+      if(v3Sha!==newer.sha256||newer.sha256!==guide.audio.asset.sha256||
+         newer.scriptSha256!==currentScriptSha||guide.audio.approvedScriptSha256!==currentScriptSha||newer.chapters.length!==7){
+         console.error('ECHEC_AUDIO_V3 texte, MP3 et manifeste V3 incoherents : '+slug);
+         errors++;
+      }
+    }
   }
   const live=dir+'atelier-coral-v2.mp3';
   const manifestPath='src/data/atelier-recette-audio/'+slug+'-v2.json';
