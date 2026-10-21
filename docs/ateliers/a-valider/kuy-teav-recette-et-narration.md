@@ -58,154 +58,156 @@ Répartissez nouilles et porc, puis versez le bouillon brûlant.
 
 Rincez les pousses de soja et la coriandre, puis émincez la coriandre et les deux ciboules. Coupez les deux citrons verts en quartiers. Répartissez les pousses, la coriandre, la ciboule et les quartiers de citron autour des bols pour que chacun les ajoute à son goût.
 
-## B — Atelier pratique, à relire et corriger
+## B — Atelier de cuisine, étape par étape
 
-**Objectif :** Préparer un bouillon cambodgien clair et correctement assaisonné, cuire le porc et les nouilles séparément puis dresser des bols généreux de Kuy Teav.
+**Objectif :** préparer un bouillon cambodgien clair et correctement assaisonné, cuire le porc et les nouilles séparément puis dresser des bols généreux de Kuy Teav.
 
-**Préparation attendue :** Quatre bols de Kuy Teav complets : nouilles de riz, porc entièrement cuit, bouillon parfumé et garnitures fraîches.
+**Préparation que vous allez obtenir :** Quatre bols de Kuy Teav complets : nouilles de riz, porc entièrement cuit, bouillon parfumé et garnitures fraîches.
 
-**Durée indicative des gestes :** 75 min
+**Durée estimée de l'atelier :** environ 75 min. Le temps varie selon la quantité préparée et votre rythme.
 
-**Matériel :**
+**Repère pour les temps de cuisson ou de repos :** Tous les gestes et les temps de mise en place sont compris dans les six phases ; prolongez la cuisson ou le repos si nécessaire.
+
+### Matériel
 
 - Deux grandes casseroles et une passoire
 - Une écumoire, une louche et des bols profonds
 - Une planche et un couteau pour la finition végétale
 - Un thermomètre alimentaire pour vérifier la cuisson du porc
 
-**Avant de cuisiner :**
+### Avant de commencer
 
-- Choisissez les convives et mesurez les quantités de nouilles, porc, sauces, sucre et herbes indiquées sur la fiche.
-- Le bouillon de porc ou de volaille peu salé est une sous-préparation obligatoire : fond maison cuit/filtré/conservé au frais en amont, ou bouillon prêt à l'emploi reconstitué selon l'étiquette puis mesuré.
+- Indiquez le nombre de personnes à table et mesurez les quantités de nouilles, porc, sauces, sucre et herbes indiquées sur la fiche.
+- Le bouillon de porc ou de volaille peu salé est une préparation à prévoir à l'avance obligatoire : fond maison cuit/filtré/conservé au frais en amont, ou bouillon prêt à l'emploi reconstitué selon l'étiquette puis mesuré.
 - Lavez, séparez et égouttez les garnitures fraîches ; si vous cuisinez pour des personnes vulnérables, prévoyez de cuire les pousses germées au lieu de les servir crues.
 
-**Précautions :**
+### Précautions alimentaires
 
 - Vérifiez que le porc est entièrement cuit avant tout service ou dégustation du bouillon.
 - Protégez-vous de la vapeur, du bouillon brûlant et des projections de la cuisson des nouilles.
 - Pour le porc haché, vérifiez une température d'au moins 71 °C à cœur ; pour les morceaux découpés dans une pièce entière, la référence USDA est de 63 °C avec 3 minutes de repos. Ne fiez pas la sécurité à la couleur seule.
 
-### Temps de cuisine 1 — Vérifier le bouillon et installer les casseroles
+### Étape 1 sur 6 — Vérifier le bouillon et installer les casseroles (environ 5 min)
 
-**Gestes :**
+**À faire :**
 
 - Préparez deux casseroles distinctes : la première pour réchauffer le bouillon mesuré sur la fiche de volaille ou de porc, la seconde pour cuire les nouilles de riz.
-- Mesurez tous les ingrédients, préparez la louche et les des bols et vérifiez que le bouillon de départ n'est pas excessivement salé.
+- Mesurez tous les ingrédients, préparez la louche et les bols et vérifiez que le bouillon de départ n'est pas excessivement salé.
 
-**Observer :** Tout est à portée de main et les deux cuissons pourront avancer indépendamment.
+**À observer :** Tout est à portée de main et les deux cuissons pourront avancer indépendamment.
 
-**Vérifier le résultat :** Le bouillon et les nouilles disposent de leurs casseroles séparées.
+**Résultat attendu :** Le bouillon et les nouilles disposent de leurs casseroles séparées.
 
-**Éviter :** Mettre les nouilles directement dans le bouillon de service peut troubler et épaissir inutilement celui-ci.
+**À éviter :** Mettre les nouilles directement dans le bouillon de service peut troubler et épaissir inutilement celui-ci.
 
-**Corriger :** Réservez une casserole d'eau pour les nouilles et gardez le bouillon clair.
+**Si besoin, comment corriger :** Réservez une casserole d'eau pour les nouilles et gardez le bouillon clair.
 
-**Technique apprise :** Le dressage d'un bol commence avec un bouillon maîtrisé et une organisation simple.
+**Ce que vous apprenez :** Le dressage d'un bol commence avec un bouillon maîtrisé et une organisation simple.
 
 **Précaution :** Respectez les précautions de sécurité avec les récipients profonds de liquide très chaud.
 
-### Temps de cuisine 2 — Préparer le porc et la garniture végétale
+### Étape 2 sur 6 — Préparer le porc et la garniture végétale (environ 10 min)
 
-**Gestes :**
+**À faire :**
 
 - Séparez la quantité de porc haché ou émincé adaptée aux convives en morceaux qui pourront cuire complètement dans le bouillon frémissant.
 - Rincez les pousses de soja et la coriandre, émincez les ciboules prévues et préparez les quartiers de citron vert dans un plat propre, loin du porc cru.
 
-**Observer :** Les petits morceaux de porc sont prêts et les herbes, pousses et citron sont distincts.
+**À observer :** Les petits morceaux de porc sont prêts et les herbes, pousses et citron sont distincts.
 
-**Vérifier le résultat :** La garniture peut être servie sans contact avec des ustensiles souillés par le porc.
+**Résultat attendu :** La garniture peut être servie sans contact avec des ustensiles souillés par le porc.
 
-**Éviter :** Préparer les légumes sur une planche ayant porté le porc cru expose à une contamination.
+**À éviter :** Préparer les légumes sur une planche ayant porté le porc cru expose à une contamination.
 
-**Corriger :** Nettoyez et désinfectez la planche ou utilisez-en une dédiée aux légumes.
+**Si besoin, comment corriger :** Nettoyez et désinfectez la planche ou utilisez-en une dédiée aux légumes.
 
-**Technique apprise :** Une garniture nette et fraîche complète le bouillon, mais se prépare à part.
+**Ce que vous apprenez :** Une garniture nette et fraîche complète le bouillon, mais se prépare à part.
 
 **Précaution :** Nettoyez soigneusement les ustensiles touchant le porc cru avant de servir les légumes.
 
-### Temps de cuisine 3 — Assaisonner le bouillon sans le réduire
+### Étape 3 sur 6 — Assaisonner le bouillon sans le réduire (environ 15 min)
 
-**Gestes :**
+**À faire :**
 
-- Versez le bouillon mesuré sur la fiche dans la casserole, ajoutez la sauce de poisson mesurée sur la fiche et une cuillère à café de sucre.
+- Versez le bouillon mesuré sur la fiche dans la casserole, ajoutez la sauce de poisson et le sucre en suivant les quantités de la fiche.
 - Portez à petit frémissement puis maintenez cette température sans faire réduire fortement le liquide, en surveillant le niveau dans la casserole.
 
-**Observer :** Le bouillon reste relativement clair, avec de petites bulles et un niveau stable.
+**À observer :** Le bouillon reste relativement clair, avec de petites bulles et un niveau stable.
 
-**Vérifier le résultat :** Le bouillon frémit doucement et ne concentre pas exagérément le sel.
+**Résultat attendu :** Le bouillon frémit doucement et ne concentre pas exagérément le sel.
 
-**Éviter :** Une longue ébullition à gros bouillons rend le bouillon plus concentré et salé.
+**À éviter :** Une longue ébullition à gros bouillons rend le bouillon plus concentré et salé.
 
-**Corriger :** Diminuez le feu et, s'il a réduit, détendez progressivement avec un peu d'eau chaude.
+**Si besoin, comment corriger :** Diminuez le feu et, s'il a réduit, détendez progressivement avec un peu d'eau chaude.
 
-**Technique apprise :** Assaisonner avec retenue aide à conserver un bouillon agréable jusqu'au service.
+**Ce que vous apprenez :** Assaisonner avec retenue aide à conserver un bouillon agréable jusqu'au service.
 
 **Précaution :** Le bouillon très chaud ne doit pas être goûté directement à la louche pour éviter une brûlure.
 
-### Temps de cuisine 4 — Cuire le porc entièrement dans le bouillon
+### Étape 4 sur 6 — Cuire le porc entièrement dans le bouillon (environ 20 min)
 
-**Gestes :**
+**À faire :**
 
 - Plongez le porc dans le bouillon qui frémit et séparez les morceaux avec une cuillère propre pour éviter les amas qui cuisent mal au centre.
 - Poursuivez jusqu'à cuisson complète de chaque morceau, puis retirez le porc à l'écumoire et conservez-le au chaud dans un récipient propre.
 
-**Observer :** Les morceaux de porc sont cuits au centre et le liquide continue de frémir doucement.
+**À observer :** Les morceaux de porc sont cuits au centre et le liquide continue de frémir doucement.
 
-**Vérifier le résultat :** Le porc est complètement cuit et peut être réparti sans risque dans les bols.
+**Résultat attendu :** Le porc est complètement cuit et peut être réparti sans risque dans les bols.
 
-**Éviter :** Retirer le porc dès que sa surface blanchit peut laisser des morceaux insuffisamment cuits.
+**À éviter :** Retirer le porc dès que sa surface blanchit peut laisser des morceaux insuffisamment cuits.
 
-**Corriger :** Remettez les morceaux dans le bouillon et poursuivez jusqu'à cuisson à cœur.
+**Si besoin, comment corriger :** Remettez les morceaux dans le bouillon et poursuivez jusqu'à cuisson à cœur.
 
-**Technique apprise :** Les petits morceaux réguliers cuisent de façon plus fiable dans un bouillon calme.
+**Ce que vous apprenez :** Les petits morceaux réguliers cuisent de façon plus fiable dans un bouillon calme.
 
 **Précaution :** Ne goûtez le bouillon qu'après avoir vérifié la cuisson complète du porc.
 
-### Temps de cuisine 5 — Cuire les nouilles et contrôler l'assaisonnement
+### Étape 5 sur 6 — Cuire les nouilles et contrôler l'assaisonnement (environ 15 min)
 
-**Gestes :**
+**À faire :**
 
 - Dans l'autre casserole, faites cuire les nouilles de riz mesurées sur la fiche conformément aux indications du paquet ; égouttez-les aussitôt et répartissez-les dans des bols.
 - Une fois le porc bien cuit, goûtez une petite quantité de bouillon légèrement refroidie et ajustez seulement si nécessaire sans ajouter automatiquement plus de sel.
 
-**Observer :** Les nouilles sont tendres, séparées ; le bouillon garde son parfum sans être trop salé.
+**À observer :** Les nouilles sont tendres, séparées ; le bouillon garde son parfum sans être trop salé.
 
-**Vérifier le résultat :** Les des bols contiennent des nouilles prêtes à recevoir le bouillon chaud.
+**Résultat attendu :** Les bols contiennent des nouilles prêtes à recevoir le bouillon chaud.
 
-**Éviter :** Cuire les nouilles trop longtemps ou resaler sans goûter rend le bol lourd.
+**À éviter :** Cuire les nouilles trop longtemps ou resaler sans goûter rend le bol lourd.
 
-**Corriger :** Égouttez rapidement les nouilles et goûtez le bouillon avant toute correction.
+**Si besoin, comment corriger :** Égouttez rapidement les nouilles et goûtez le bouillon avant toute correction.
 
-**Technique apprise :** Nouilles et bouillon se préparent séparément pour garder texture et lisibilité.
+**Ce que vous apprenez :** Nouilles et bouillon se préparent séparément pour garder texture et lisibilité.
 
 **Précaution :** Ne manipulez pas la passoire au-dessus du visage ; attention à l'eau bouillante.
 
-### Temps de cuisine 6 — Dresser les bols et ajouter les aromates
+### Étape 6 sur 6 — Dresser les bols et ajouter les aromates (environ 10 min)
 
-**Gestes :**
+**À faire :**
 
-- Répartissez le porc entièrement cuit sur les nouilles, puis versez le bouillon brûlant de manière équitable dans les des bols profonds.
+- Répartissez le porc entièrement cuit sur les nouilles, puis versez le bouillon brûlant de manière équitable dans les bols profonds.
 - Présentez coriandre, ciboule, pousses de soja et quartiers de citron vert à table pour que chacun complète son bol juste avant de le manger.
 
-**Observer :** Un bol de Kuy Teav associe bouillon chaud, nouilles séparées et garnitures fraîches.
+**À observer :** Un bol de Kuy Teav associe bouillon chaud, nouilles séparées et garnitures fraîches.
 
-**Vérifier le résultat :** Les bols complets sont servis avec assaisonnements frais disponibles à part.
+**Résultat attendu :** Les bols complets sont servis avec assaisonnements frais disponibles à part.
 
-**Éviter :** Ajouter les herbes trop tôt pendant la cuisson leur fait perdre leur fraîcheur.
+**À éviter :** Ajouter les herbes trop tôt pendant la cuisson leur fait perdre leur fraîcheur.
 
-**Corriger :** Apportez les herbes et le citron au dernier moment plutôt que de les laisser bouillir.
+**Si besoin, comment corriger :** Apportez les herbes et le citron au dernier moment plutôt que de les laisser bouillir.
 
-**Technique apprise :** La finition à table permet à chacun de doser croquant et acidité.
+**Ce que vous apprenez :** La finition à table permet à chacun de doser croquant et acidité.
 
 **Précaution :** Le bouillon est brûlant ; déposez les bols sur un support stable et servez avec prudence.
 
-## C — Sept narrations corrigées à valider avant Coral
+## C — Narration complète à valider avant tout nouvel enregistrement
 
-**Ces textes sont corrigés et non encore enregistrés. Les MP3 précédents ne correspondent plus : validation éditoriale exigée.**
+**Ces sept textes ont été relus, mais ne sont pas encore approuvés. Les précédents MP3 restent archivés et ne doivent pas accompagner ce nouveau texte.**
 
 ### Chapitre 1 sur 7 — Introduction
 
-Coucou ! Aujourd'hui, on prépare un Kuy Teav, un grand bol de nouilles de riz avec du porc, un bouillon parfumé et des garnitures fraîches. Vous allez apprendre à organiser trois textures qui n'ont pas le même rythme : le bouillon doit rester clair et chaud, le porc doit être correctement cuit et les nouilles doivent rester souples, jamais transformées en pâte. Choisissez vos convives sur la fiche et mesurez les ingrédients en conséquence. Dans cette piste préenregistrée, les quantités varient avec votre fiche ; je vais vous guider plutôt sur les gestes et les repères. Il vous faut deux casseroles, une passoire, une écumoire, une louche, une planche et un couteau, un thermomètre si possible et des bols de service. Notre recette part d'un bouillon de porc ou de volaille déjà prêt, maison ou du commerce ; sa préparation traditionnelle ne tient pas dans le temps de cet atelier, et je vais expliquer comment le choisir et le préparer pour le service. Vous pourrez mettre en pause pendant la cuisson et reprendre à votre rythme. Allez, on s'y met !
+Coucou ! Aujourd'hui, on prépare un Kuy Teav, un grand bol de nouilles de riz avec du porc, un bouillon parfumé et des garnitures fraîches. Vous allez apprendre à organiser trois textures qui n'ont pas le même rythme : le bouillon doit rester clair et chaud, le porc doit être correctement cuit et les nouilles doivent rester souples, jamais transformées en pâte. Indiquez le nombre de personnes à table sur la fiche et mesurez les ingrédients en conséquence. Dans cette piste préenregistrée, les quantités varient avec votre fiche ; je vais vous guider plutôt sur les gestes et les repères. Il vous faut deux casseroles, une passoire, une écumoire, une louche, une planche et un couteau, un thermomètre si possible et des bols de service. Notre recette part d'un bouillon de porc ou de volaille déjà prêt, maison ou du commerce ; sa préparation traditionnelle ne tient pas dans le temps de cet atelier, et je vais expliquer comment le choisir et le préparer pour le service. Vous pourrez mettre en pause pendant la cuisson et reprendre à votre rythme. Allez, on s'y met !
 
 ### Chapitre 2 sur 7 — Vérifier le bouillon et installer les casseroles
 
@@ -225,7 +227,7 @@ Nous allons cuire le porc directement dans ce bouillon, une technique simple si 
 
 ### Chapitre 6 sur 7 — Cuire les nouilles et contrôler l'assaisonnement
 
-Allumez maintenant la seconde casserole pour les nouilles. Faites chauffer suffisamment d'eau potable et suivez la notice de votre paquet : les nouilles de riz sèches demandent parfois un trempage, les fraîches souvent une cuisson très brève. Remuez délicatement pour séparer les brins sans les écraser, puis prélevez-en un et vérifiez qu'il est souple mais encore distinct. Égouttez aussitôt dans une passoire résistante à la chaleur ; attention aux nuages de vapeur. Si les nouilles collent entre elles, détachez-les délicatement sans les laisser recuire longtemps, sinon elles se défont. Pendant ce temps, le bouillon peut rester chaud à petit frémissement. Lorsque le porc a atteint une cuisson sûre, prélevez une petite cuillère de bouillon et laissez-la refroidir avant de goûter. Est-ce trop salé ? Ajoutez progressivement un peu de bouillon peu salé ou d'eau chaude, plutôt que du sucre en excès. Trop fade ? Ajoutez une petite quantité de sauce de poisson, mélangez et regoûtez, sans répéter tout le dosage initial. Si le niveau du bouillon a baissé, complétez de façon mesurée. Ne mettez pas les nouilles cuites dans la grande casserole à attendre : elles gonfleraient et brouilleraient le bouillon. Faites une pause si les nouilles demandent votre attention ; nous terminerons le dressage juste après.
+Allumez maintenant la seconde casserole pour les nouilles. Faites chauffer suffisamment d'eau potable et suivez la notice de votre paquet : les nouilles de riz sèches demandent parfois un trempage, les fraîches souvent une cuisson très brève. Remuez délicatement pour séparer les brins sans les écraser, puis prélevez-en un et vérifiez qu'il est souple mais encore distinct. Égouttez aussitôt dans une passoire résistante à la chaleur ; attention aux nuages de vapeur. Si les nouilles collent entre elles, détachez-les délicatement sans les laisser recuire longtemps, sinon elles se défont. Pendant ce temps, le bouillon peut rester chaud à petit frémissement. Lorsque le porc a atteint une cuisson sûre, prélevez une petite cuillère de bouillon et laissez-la refroidir avant de goûter. Est-ce trop salé ? Ajoutez progressivement un peu de bouillon peu salé ou d'eau chaude, plutôt que du sucre en excès. Trop fade ? Ajoutez une petite quantité de sauce de poisson, mélangez et regoûtez, sans répéter tout le dosage initial. Si le niveau du bouillon a baissé, complétez de façon mesurée. Ne mettez pas les nouilles cuites dans la grande casserole à attendre : elles gonfleraient et brouilleraient le bouillon. Faites une pause si les nouilles demandent votre attention ; nous dresserons les bols juste après.
 
 ### Chapitre 7 sur 7 — Dresser les bols et ajouter les aromates
 
