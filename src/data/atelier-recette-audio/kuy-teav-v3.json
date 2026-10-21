@@ -1,0 +1,60 @@
+{
+  "atelier": "kuy-teav-bouillon-et-nouilles",
+  "canonicalRecipe": "kuy-teav",
+  "status": "audio_generated_review_pending",
+  "voice": "coral",
+  "audioUrl": "/audio/workshops/kuy-teav-bouillon-et-nouilles/atelier-coral-v3.mp3",
+  "durationSec": 649.944,
+  "sha256": "4bdacf5febec8ddccb733576e446594802987edd09c37bb659c266793659f7a6",
+  "chapters": [
+    {
+      "id": "intro",
+      "title": "Bienvenue et mise en place",
+      "startSec": 0,
+      "endSec": 76.656
+    },
+    {
+      "id": "installer",
+      "title": "Vérifier le bouillon et installer les casseroles",
+      "startSec": 76.656,
+      "endSec": 176.784
+    },
+    {
+      "id": "preparer",
+      "title": "Préparer le porc et la garniture végétale",
+      "startSec": 176.784,
+      "endSec": 271.704
+    },
+    {
+      "id": "assembler",
+      "title": "Assaisonner le bouillon sans le réduire",
+      "startSec": 271.704,
+      "endSec": 366.048
+    },
+    {
+      "id": "maitriser",
+      "title": "Cuire le porc entièrement dans le bouillon",
+      "startSec": 366.048,
+      "endSec": 465.744
+    },
+    {
+      "id": "rectifier",
+      "title": "Cuire les nouilles et contrôler l'assaisonnement",
+      "startSec": 465.744,
+      "endSec": 560.928
+    },
+    {
+      "id": "terminer",
+      "title": "Dresser les bols et ajouter les aromates",
+      "startSec": 560.928,
+      "endSec": 649.944
+    }
+  ],
+  "scriptSha256": "b92575e467a9c61b9668ae260d5ca02f10a547c91b7344cec857a36b601f7d6e",
+  "review": {
+    "acousticListening": false,
+    "mobile": false,
+    "desktop": false
+  },
+  "sourceBackend": "render-iacoach-backend.onrender.com/api/tts"
+}
