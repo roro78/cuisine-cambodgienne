@@ -287,7 +287,7 @@ export const workshops: Workshop[] = [
       'Garder le parfum des herbes jusqu’au moment de servir.'
     ],
     prepare: [
-      '400 ml de bouillon de volaille ou de légumes déjà préparé, filtré et peu salé, maison ou prêt à l’emploi. La fabrication du bouillon n’est pas comprise dans les 50 minutes de cet exercice.',
+      '400 ml de bouillon de volaille ou de légumes déjà préparé, filtré et peu salé, maison ou prêt à l’emploi. La préparation du bouillon n’est pas comprise dans les 50 minutes de cet exercice.',
       'Deux petites tasses pour comparer les échantillons tiédis, une cuillère propre et un peu de sauce de poisson ou de sel pour rectifier uniquement après la réduction.',
       '2 brins de coriandre ou 1 petite ciboule et 1 quartier de citron vert, à ajouter uniquement hors du feu.'
     ],
