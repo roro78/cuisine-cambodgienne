@@ -100,7 +100,7 @@ const audioTexts=[workshop.audio.intro,...workshop.phases.map((phase)=>phase.aud
       <p class="eyebrow">02 · Les six étapes de l’atelier</p>
       <h2 id="atelier-steps-title">Cuisinez, observez, rectifiez.</h2>
       <p>Les temps indiqués sont des estimations : poursuivez chaque préparation jusqu’à obtenir la bonne texture, même si vous avez besoin de quelques minutes de plus.</p>
-      {guideAudio ? <CookingWorkshopAudio manifest={guideAudio} scripts={audioTexts} /> : <p class="atelier-audio-note">Le guide vocal en sept chapitres est en préparation. Cet atelier reste réalisable entièrement par écrit, sans MP3.</p>}
+      {guideAudio ? <CookingWorkshopAudio manifest={guideAudio} scripts={audioTexts} /> : <p class="atelier-audio-note">{workshop.review.editorialValidated ? "Textes validés. La nouvelle narration est en préparation : suivez la fiche écrite en attendant." : "La narration en sept chapitres est en préparation. La fiche reste utilisable par écrit."}</p>}
       <nav class="atelier-step-nav" aria-label="Naviguer entre les six étapes">
         {workshop.phases.map((phase, i) => (
           <a href={'#phase-' + phase.id}><span>{String(i + 1).padStart(2, '0')}</span><strong>{phase.title}</strong></a>
