@@ -105,7 +105,7 @@ Répartissez le riz jasmin chaud dans quatre assiettes. Déposez le porc entièr
 
 **Gestes :**
 
-- Épluchez et hachez les les gousses d'ail prévues sur la fiche, puis disposez les tranches fines de porc mesurées selon la fiche dans un saladier réservé à la viande.
+- Épluchez et hachez les gousses d'ail prévues sur la fiche, puis disposez les tranches fines de porc mesurées selon la fiche dans un saladier réservé à la viande.
 - Vérifiez que les tranches ne sont pas trop épaisses et qu'elles peuvent être étalées dans la poêle en plusieurs fournées si nécessaire.
 
 **Observer :** L'ail est finement haché et les tranches de porc sont assez régulières.
