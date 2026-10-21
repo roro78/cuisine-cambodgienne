@@ -186,56 +186,6 @@
     "voice": "coral",
     "intro": "Coucou, bienvenue dans notre cuisine ! Aujourd'hui, on ne va pas simplement parler d'épices : on va préparer ensemble un vrai kroeung jaune, cette pâte aromatique qui donne du caractère à plusieurs plats cambodgiens. À la fin, vous aurez dans un récipient votre propre pâte, bien liée, que vous pourrez incorporer dans une préparation cuite. Aujourd'hui, nous allons apprendre à transformer des racines fibreuses en une pâte fine grâce à la découpe puis au pilon. Avant de commencer, indiquez le nombre de petits pots à préparer sur la fiche et mesurez toutes les quantités affichées. Retrouvez les quantités exactes de chaque ingrédient sur la fiche, selon le nombre de pots que vous préparez. Il nous faudra un mortier stable, un pilon, une planche, un couteau, une spatule propre et un récipient refermable. On ne goûtera pas ce kroeung cru comme un plat fini. Prenez vos aises : si un geste demande plus de temps, vous pouvez faire pause et relancer l'enregistrement. Je vous accompagnerai de la première coupe au dernier coup de pilon.",
     "publicProviderMention": false,
-    "previousAsset": {
-      "audioUrl": "/audio/workshops/atelier-pratique-kroeung-jaune/atelier-coral.mp3",
-      "durationSec": 137.52,
-      "sha256": "059e3cf0a5a1b09d04e525bf26ef66d76d7857ea4bc3422245d6d5a4e840d4ab",
-      "chapters": [
-        {
-          "id": "intro",
-          "title": "Bienvenue et mise en place",
-          "startSec": 0,
-          "endSec": 20.208
-        },
-        {
-          "id": "installer",
-          "title": "Préparer le plan de travail et mesurer les aromates",
-          "startSec": 20.208,
-          "endSec": 38.16
-        },
-        {
-          "id": "preparer",
-          "title": "Nettoyer et émincer les aromates",
-          "startSec": 38.16,
-          "endSec": 57.24
-        },
-        {
-          "id": "assembler",
-          "title": "Commencer avec les fibres fermes",
-          "startSec": 57.24,
-          "endSec": 76.152
-        },
-        {
-          "id": "maitriser",
-          "title": "Transformer les aromates en pâte",
-          "startSec": 76.152,
-          "endSec": 97.104
-        },
-        {
-          "id": "rectifier",
-          "title": "Évaluer et corriger la texture",
-          "startSec": 97.104,
-          "endSec": 118.008
-        },
-        {
-          "id": "terminer",
-          "title": "Mettre le kroeung en pot et retenir le geste",
-          "startSec": 118.008,
-          "endSec": 137.52
-        }
-      ],
-      "scriptSha256": "ab9aab982580d321ed030f51d3a8198f07e5ff44839e5f4cd3b781a575102cc7"
-    },
     "storyboardVersion": 2,
     "supersededV2Asset": {
       "audioUrl": "/audio/workshops/atelier-pratique-kroeung-jaune/atelier-coral-v2.mp3",
