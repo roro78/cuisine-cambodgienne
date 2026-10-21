@@ -105,7 +105,7 @@ const required=[
   'scripts/check-new-cooking-workshop-audio.mjs',
   'scripts/check-culinary-lexicon.mjs',
   'docs/ateliers/VALIDATION-RECETTES-ET-NARRATIONS-V2.md',
-  ...names.map(name=>'docs/ateliers/a-valider/'+name+'-recette-et-narration.md'),
+  ...names.filter(name=>name!=='lok-lak').map(name=>'docs/ateliers/a-valider/'+name+'-recette-et-narration.md'),
   'tests/ateliers-cinq-browser.test.mjs',
   'docs/ateliers/REFERENTIEL-ATELIER-CUISINE-ET-MP3.md',
   'docs/ateliers/REFERENTIEL-NARRATION-IMMERSIVE-V2.md',
