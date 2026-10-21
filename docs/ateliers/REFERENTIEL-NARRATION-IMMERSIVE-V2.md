@@ -4,6 +4,15 @@
 
 **STATUT : RÉFÉRENTIEL RÉUTILISABLE POUR TOUS LES FUTURS ATELIERS.** Ce document complète le [référentiel structurel des ateliers et MP3](./REFERENTIEL-ATELIER-CUISINE-ET-MP3.md) fusionné en PR #90. **En matière de narration immersive, de durée et de quantités vocales, cette V2 prime sur les recommandations de longueur des anciennes capsules.** Les contraintes de sources, recette réelle, photographies et droits, sécurité, six phases et publication de PR #90 restent obligatoires.
 
+## Contrat lexical bloquant — avant approbation, avant Coral
+
+Une recette ou un atelier se **prépare** et se **cuisine** : on coupe, émince, pile, mélange, fait revenir, laisse mijoter, rectifie l'assaisonnement et dresse. Le mot **« fabriquer »** et toutes ses flexions, ainsi que « fabrication », sont **interdits dans tout contenu éditorial de recette, fiche pratique et narration**. Ne pas écrire non plus « construire une sauce », « construire un bouillon », « chantier », « poste » (dire « plan de travail »), « monter les bols » (dire « dresser les bols »). Les identifiants internes `installer`, `preparer`, `assembler`, `maitriser`, `rectifier`, `terminer` restent stables ; ce ne sont pas des titres obligatoires pour le visiteur.
+
+**Ordre non négociable** : recette et ingrédients contrôlés → fiche pratique complète → sept textes parlés lisibles remis à l'utilisateur → **approbation explicite des textes** → synthèse Coral → écoute et contrôle des chapitres sur mobile. L'existence d'un MP3 ne vaut jamais approbation. Modifier une phrase parlée invalide l'association au MP3 précédent, lequel doit être conservé séparément, sans lecture sous le nouveau script.
+
+Le contrôle automatique `node scripts/check-culinary-lexicon.mjs` bloque le catalogue et les fiches de revue s'il trouve du vocabulaire de chantier ou une narration modifiée encore associée à une ancienne piste. La passerelle TTS exige en plus les validations humaines et l'empreinte exacte du script approuvé avant tout appel audio.
+
+
 ## 1. Modèle réellement approuvé
 
 **Atelier étalon : Lok Lak V2, bœuf MARINÉ AVANT SAISIE.** Le script de référence est [lok-lak-coral-v2-preproduction.md](./scripts/lok-lak-coral-v2-preproduction.md) et les champs parlés réellement enregistrés figurent dans `src/data/atelier-recette-guides/lok-lak.json`. Sa piste est `public/audio/workshops/lok-lak-de-la-poele-a-l-assiette/atelier-coral-v2.mp3`, **789,936 secondes (13 min 10 s)**, sept chapitres. SHA-256 : `d3f5558c07f7aff5c4c57ccf7c662544079744dc0fa8223ec869a6b061d0912e`.
