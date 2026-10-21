@@ -62,6 +62,7 @@ try {
           await page.evaluate(()=>window.dispatchEvent(new WheelEvent('wheel',{deltaY:120})));
           assert.equal(await page.locator('[data-cooking-mobile-follow]').getAttribute('aria-pressed'),'false','Kroeung free scrolling disables following');
           await page.locator('[data-cooking-mobile-steps]').click();
+          await page.locator('[data-cooking-mobile-tab="chapters"]').click();
           await page.locator('[data-cooking-mobile-chapter]').nth(4).click();
           assert.equal(await page.locator('[data-cooking-mobile-sheet]').isVisible(),false);
           const selected=await page.locator('#phase-'+workshop.phases[3].id).evaluate(el=>({top:el.getBoundingClientRect().top,height:innerHeight}));
