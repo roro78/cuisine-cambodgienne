@@ -55,150 +55,152 @@ Cuisez les 350 g de nouilles de riz selon les indications du paquet, puis égout
 
 Blanchissez les 100 g de haricots verts fins dans l’eau bouillante jusqu’à ce qu’ils soient tendres, puis rafraîchissez-les et égouttez-les. Émincez le demi-concombre et lavez les feuilles de menthe ou de basilic. Répartissez les nouilles dans les bols, versez la sauce chaude au poisson et ajoutez les légumes et les herbes.
 
-## B — Atelier pratique, à relire et corriger
+## B — Atelier de cuisine, étape par étape
 
 **Objectif :** Réaliser un bol complet de nouilles cambodgiennes, réussir la sauce chaude au poisson et maîtriser le contraste avec les légumes et herbes de finition.
 
-**Préparation attendue :** Quatre bols de Num Banh Chok avec nouilles de riz, sauce chaude au poisson, coco, kroeung et herbes fraîches.
+**Préparation que vous allez obtenir :** Quatre bols de Num Banh Chok avec nouilles de riz, sauce chaude au poisson, coco, kroeung et herbes fraîches.
 
-**Durée indicative des gestes :** 70 min
+**Durée estimée de l'atelier :** environ 70 min. Le temps varie selon la quantité préparée et votre rythme.
 
-**Matériel :**
+**Repère pour les temps de cuisson ou de repos :** Tous les gestes et les temps de mise en place sont compris dans les six phases ; prolongez la cuisson ou le repos si nécessaire.
+
+### Matériel
 
 - Deux casseroles et une grande passoire
 - Une planche, un couteau et une fourchette pour émietter le poisson
 - Des bols à servir et une louche propre
 - Un thermomètre alimentaire pour contrôler le poisson poché
 
-**Avant de cuisiner :**
+### Avant de commencer
 
-- Choisissez vos convives, puis mesurez tous les ingrédients sur la fiche.
-- Le kroeung jaune est une sous-préparation à faire avant ce cours (voir atelier Kroeung jaune) ou à acheter : il doit être préparé avant cet atelier.
+- Indiquez le nombre de personnes à table, puis mesurez les ingrédients sur la fiche.
+- Le kroeung jaune doit être prêt avant de commencer : vous pouvez le préparer grâce à l'atelier consacré au mortier, ou en utiliser un acheté.
 - Prévoyez de l'eau potable pour pocher le poisson, cuire les nouilles et blanchir les haricots, des ustensiles propres et un moyen de retirer les arêtes.
 
-**Précautions :**
+### Précautions alimentaires
 
 - Ne goûtez pas une sauce contenant du poisson insuffisamment cuit.
 - Retirez soigneusement les arêtes et manipulez les liquides chauds en évitant de vous brûler.
 - Vérifiez que le poisson atteint au moins 63 °C à cœur avec un thermomètre avant de l'émietter ; retirez ensuite soigneusement les arêtes.
 
-### Temps de cuisine 1 — Rassembler la sauce, les nouilles et les herbes
+### Étape 1 sur 6 — Rassembler la sauce, les nouilles et les herbes (environ 5 min)
 
-**Gestes :**
+**À faire :**
 
 - Rassemblez les six groupes d'ingrédients de la recette et sortez deux casseroles : une pour la sauce, une autre pour les cuissons à l'eau.
 - Préparez également des bols et une passoire ; vérifiez que le kroeung jaune est déjà disponible avant de commencer la cuisson.
 
-**Observer :** Le poisson, le lait de coco, le kroeung et les légumes sont clairement séparés.
+**À observer :** Le poisson, le lait de coco, le kroeung et les légumes sont clairement séparés.
 
-**Vérifier le résultat :** Le plan de travail est prêt pour mener plusieurs cuissons sans perdre le fil.
+**Résultat attendu :** Le plan de travail est prêt pour mener plusieurs cuissons sans perdre le fil.
 
-**Éviter :** Commencer sans kroeung entraîne une interruption au milieu de la sauce.
+**À éviter :** Commencer sans kroeung entraîne une interruption au milieu de la sauce.
 
-**Corriger :** Préparez cette pâte aromatique en avance ou référez-vous à sa fiche recette.
+**Si besoin, comment corriger :** Préparez cette pâte aromatique en avance ou référez-vous à sa fiche recette.
 
-**Technique apprise :** Une préparation à composants multiples demande une mise en place lisible.
+**Ce que vous apprenez :** Une préparation à composants multiples demande une mise en place lisible.
 
 **Précaution :** Conservez le poisson cru au frais jusqu'à son passage en cuisson.
 
-### Temps de cuisine 2 — Préparer poisson et garnitures fraîches
+### Étape 2 sur 6 — Préparer poisson et garnitures fraîches (environ 10 min)
 
-**Gestes :**
+**À faire :**
 
 - Rincez et égouttez le concombre, les haricots verts et les feuilles de menthe ou basilic ; préparez une planche propre pour les découper au moment du service.
 - Vérifiez le poisson blanc et préparez la fourchette qui servira à l'émietter une fois cuit, sans mélanger ustensiles pour cru et légumes frais.
 
-**Observer :** Les légumes sont propres, les feuilles fraîches et le poisson séparé des garnitures.
+**À observer :** Les légumes sont propres, les feuilles fraîches et le poisson séparé des garnitures.
 
-**Vérifier le résultat :** Tous les éléments sont prêts sans contamination croisée et sans découpe précipitée.
+**Résultat attendu :** Tous les éléments sont prêts sans contamination croisée et sans découpe précipitée.
 
-**Éviter :** Poser du poisson cru sur les légumes lavés compromet leur sécurité.
+**À éviter :** Poser du poisson cru sur les légumes lavés compromet leur sécurité.
 
-**Corriger :** Changez de planche ou nettoyez et désinfectez-la avant de préparer les garnitures.
+**Si besoin, comment corriger :** Changez de planche ou nettoyez et désinfectez-la avant de préparer les garnitures.
 
-**Technique apprise :** La fraîcheur finale se prépare dès le début, même si elle n'est ajoutée qu'à la fin.
+**Ce que vous apprenez :** La fraîcheur finale se prépare dès le début, même si elle n'est ajoutée qu'à la fin.
 
 **Précaution :** Ne rincez pas inutilement le poisson cru au robinet, pour éviter les éclaboussures contaminantes.
 
-### Temps de cuisine 3 — Pocher et émietter le poisson blanc
+### Étape 3 sur 6 — Pocher et émietter le poisson blanc (environ 15 min)
 
-**Gestes :**
+**À faire :**
 
 - Mettez le poisson blanc dans une casserole d'eau à petit frémissement et laissez-le cuire complètement sans le malmener à forte ébullition.
 - Égouttez le poisson cuit, vérifiez et retirez les éventuelles arêtes, puis émiettez délicatement le poisson à l'aide d'une fourchette propre.
 
-**Observer :** Le poisson se détache en morceaux souples et ne présente plus de parties crues.
+**À observer :** Le poisson se détache en morceaux souples et ne présente plus de parties crues.
 
-**Vérifier le résultat :** La chair est cuite à cœur, émiettée et exempte d'arêtes visibles.
+**Résultat attendu :** La chair est cuite à cœur, émiettée et exempte d'arêtes visibles.
 
-**Éviter :** Une eau à très forte ébullition abîme la chair et rend l'émiettage irrégulier.
+**À éviter :** Une eau à très forte ébullition abîme la chair et rend l'émiettage irrégulier.
 
-**Corriger :** Baissez la température et poursuivez doucement jusqu'à cuisson complète.
+**Si besoin, comment corriger :** Baissez la température et poursuivez doucement jusqu'à cuisson complète.
 
-**Technique apprise :** Pocher doucement donne à la sauce une chair facile à incorporer.
+**Ce que vous apprenez :** Pocher doucement donne à la sauce une chair facile à incorporer.
 
 **Précaution :** Contrôlez la cuisson complète du poisson et surveillez les arêtes avant le service.
 
-### Temps de cuisine 4 — Préparer la sauce chaude au kroeung
+### Étape 4 sur 6 — Préparer la sauce chaude au kroeung (environ 15 min)
 
-**Gestes :**
+**À faire :**
 
-- Dans une casserole propre, chauffez doucement le kroeung jaune mesuré sur la fiche pendant une minute sans les brûler, puis ajoutez le lait de coco mesuré sur la fiche.
-- Incorporez le poisson déjà cuit et émietté, chauffez à petit feu et ajoutez une cuillère à soupe de sauce de poisson ; évitez une ébullition qui sépare la sauce.
+- Dans une casserole propre, chauffez doucement le kroeung jaune mesuré sur la fiche pendant une minute sans le brûler, puis ajoutez le lait de coco mesuré sur la fiche.
+- Incorporez le poisson déjà cuit et émietté, chauffez à petit feu et ajoutez la sauce de poisson dans la quantité indiquée sur la fiche ; évitez une ébullition qui sépare la sauce.
 
-**Observer :** La sauce est parfumée et souple, avec des miettes de poisson réparties régulièrement.
+**À observer :** La sauce est parfumée et souple, avec des miettes de poisson réparties régulièrement.
 
-**Vérifier le résultat :** La sauce chaude nappe légèrement la cuillère sans être grumeleuse ou trop liquide.
+**Résultat attendu :** La sauce chaude nappe légèrement la cuillère sans être grumeleuse ou trop liquide.
 
-**Éviter :** Une chauffe violente peut concentrer la sauce et séparer le lait de coco.
+**À éviter :** Une chauffe violente peut concentrer la sauce et séparer le lait de coco.
 
-**Corriger :** Baissez le feu et ajoutez une ou deux cuillères d'eau chaude si la sauce devient trop épaisse.
+**Si besoin, comment corriger :** Baissez le feu et ajoutez une ou deux cuillères d'eau chaude si la sauce devient trop épaisse.
 
-**Technique apprise :** La pâte kroeung fournit les arômes, le lait de coco la rondeur et le poisson la matière.
+**Ce que vous apprenez :** La pâte kroeung fournit les arômes, le lait de coco la rondeur et le poisson la matière.
 
 **Précaution :** Le poisson doit avoir été entièrement cuit avant incorporation ; évitez les projections de sauce chaude.
 
-### Temps de cuisine 5 — Cuire les nouilles et rectifier les textures
+### Étape 5 sur 6 — Cuire les nouilles et rectifier les textures (environ 15 min)
 
-**Gestes :**
+**À faire :**
 
 - Faites cuire les nouilles de riz mesurées sur la fiche selon les instructions du paquet, puis égouttez-les et rincez-les brièvement à l'eau fraîche pour stopper leur cuisson.
 - Blanchissez les haricots verts fins mesurés sur la fiche dans de l'eau bouillante jusqu'à ce qu'ils soient tendres, refroidissez-les et égouttez-les ; ajustez l'épaisseur de la sauce avec un peu d'eau chaude si nécessaire.
 
-**Observer :** Les nouilles se séparent sans coller et la sauce reste assez fluide pour les enrober.
+**À observer :** Les nouilles se séparent sans coller et la sauce reste assez fluide pour les enrober.
 
-**Vérifier le résultat :** Les haricots sont tendres, les nouilles souples, et la sauce ni pâteuse ni aqueuse.
+**Résultat attendu :** Les haricots sont tendres, les nouilles souples, et la sauce ni pâteuse ni aqueuse.
 
-**Éviter :** Laisser patienter les nouilles trop longtemps dans l'eau chaude les rend collantes.
+**À éviter :** Laisser patienter les nouilles trop longtemps dans l'eau chaude les rend collantes.
 
-**Corriger :** Égouttez immédiatement et détendez la sauce séparément, plutôt que de trop cuire les nouilles.
+**Si besoin, comment corriger :** Égouttez immédiatement et détendez la sauce séparément, plutôt que de trop cuire les nouilles.
 
-**Technique apprise :** Chaque composant doit conserver sa propre texture avant le dressage.
+**Ce que vous apprenez :** Chaque composant doit conserver sa propre texture avant le dressage.
 
 **Précaution :** Surveillez l'eau bouillante et utilisez une passoire résistante à la chaleur.
 
-### Temps de cuisine 6 — Dresser les bols et ajouter la fraîcheur
+### Étape 6 sur 6 — Dresser les bols et ajouter la fraîcheur (environ 10 min)
 
-**Gestes :**
+**À faire :**
 
 - Émincez le concombre prévu sur la fiche, répartissez les nouilles dans des bols, puis versez dessus la sauce chaude au poisson et au lait de coco.
 - Ajoutez les haricots blanchis, le concombre et les feuilles de menthe ou de basilic asiatique lavées juste avant de servir pour préserver le contraste.
 
-**Observer :** Le bol montre des nouilles enrobées d'une sauce chaude et des légumes frais bien distincts.
+**À observer :** Le bol montre des nouilles enrobées d'une sauce chaude et des légumes frais bien distincts.
 
-**Vérifier le résultat :** Les bols complets sont dressés ; la garniture apporte du croquant et du parfum.
+**Résultat attendu :** Les bols complets sont dressés ; la garniture apporte du croquant et du parfum.
 
-**Éviter :** Verser la sauce sur les herbes longtemps avant de manger les fait flétrir.
+**À éviter :** Verser la sauce sur les herbes longtemps avant de manger les fait flétrir.
 
-**Corriger :** Gardez la finition végétale pour le dernier moment, une fois les bols prêts.
+**Si besoin, comment corriger :** Gardez la finition végétale pour le dernier moment, une fois les bols prêts.
 
-**Technique apprise :** Le contraste entre chaud et frais fait partie du résultat appris dans cet atelier.
+**Ce que vous apprenez :** Le contraste entre chaud et frais fait partie du résultat appris dans cet atelier.
 
 **Précaution :** Servez le poisson entièrement cuit ; réfrigérez rapidement les restes non servis.
 
-## C — Sept narrations corrigées à valider avant Coral
+## C — Narration complète à valider avant tout nouvel enregistrement
 
-**Ces textes sont corrigés et non encore enregistrés. Les MP3 précédents ne correspondent plus : validation éditoriale exigée.**
+**Ces sept textes ont été relus, mais ne sont pas encore approuvés. Les précédents MP3 restent archivés et ne doivent pas accompagner ce nouveau texte.**
 
 ### Chapitre 1 sur 7 — Introduction
 
