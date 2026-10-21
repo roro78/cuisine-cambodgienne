@@ -41,11 +41,11 @@ for (const name of names){
   const m1='src/data/atelier-recette-audio/'+name+'.json';
   const m2='src/data/atelier-recette-audio/'+name+'-v2.json';
   let current=null;
-  if(copy(m1,true)){
+  if(guide.audio.status!=='script_only' && copy(m1,true)){
     const m=JSON.parse(readFileSync(m1,'utf8'));
     if(m.audioUrl)copy('public'+m.audioUrl,true);
   }
-  if(copy(m2,true)){
+  if(guide.audio.status!=='script_only' && copy(m2,true)){
     const m=JSON.parse(readFileSync(m2,'utf8'));
     const file='public'+m.audioUrl;
     if(!existsSync(file))throw Error('Manifeste V2 sans MP3 '+name);
@@ -57,7 +57,7 @@ for (const name of names){
   if(recipe.image)copy('public'+recipe.image,true);
   const duration=current?Math.floor(current.durationSec/60)+' min '+Math.round(current.durationSec%60)+' s':'non généré';
   summary.push('| '+guide.title+' | OUI | '+(current?'OUI, préécoute':'NON')+' | '+duration+' |');
-  const out=['# '+guide.title,'','Statut : '+guide.status+'. '+(current?'MP3 V2 en préécoute, écoute humaine non attestée.':'Script V2 complet, MP3 V2 non encore livré.'),'',
+  const out=['# '+guide.title,'','Statut : '+guide.status+'. '+(current?'MP3 V2 en préécoute, écoute humaine non attestée.':'Texte corrige a approuver ; les anciens MP3 sont archives hors de ce dossier, et aucun MP3 ne correspond encore au script corrige.'),'',
     'Recette : '+recipe.title+' — origine : src/data/recipes.ts.','Objectif : '+guide.learningGoal,'Résultat : '+guide.finalPreparation,
     'Durée pratique indicative : '+guide.duration.practicalMinutes+' min.','',
     '## Matériel',...guide.equipment.map(x=>'- '+x),'',
@@ -103,6 +103,9 @@ const required=[
   'scripts/bridge-cooking-workshops-coral.mjs',
   'scripts/check-workshop-blueprints.mjs',
   'scripts/check-new-cooking-workshop-audio.mjs',
+  'scripts/check-culinary-lexicon.mjs',
+  'docs/ateliers/VALIDATION-RECETTES-ET-NARRATIONS-V2.md',
+  ...names.map(name=>'docs/ateliers/a-valider/'+name+'-recette-et-narration.md'),
   'tests/ateliers-cinq-browser.test.mjs',
   'docs/ateliers/REFERENTIEL-ATELIER-CUISINE-ET-MP3.md',
   'docs/ateliers/REFERENTIEL-NARRATION-IMMERSIVE-V2.md',
@@ -112,9 +115,9 @@ const required=[
 required.forEach(x=>copy(x));
 summary.push('','## Contenu du ZIP','','- FICHES-ATELIERS : six cours complets Markdown, avec ingrédients adaptables, gestes, remédiations, sept scripts et sources.',
 '- src/data/atelier-recette-guides : les six fichiers JSON originaux des nouveaux cours.',
-'- src/data/atelier-recette-audio et public/audio/workshops : manifestes et MP3 réellement disponibles (V1 et V2 distinctes).',
+'- src/data/atelier-recette-audio et public/audio/workshops : uniquement les MP3 encore associes au script actif. Les pistes obsoletes ne sont pas exportees comme guide valide.',
 '- src/pages/apprendre/pratique et src/components : pages sources Astro et mini-lecteur mobile synchronisé.',
 '- docs/ateliers : référentiels obligatoires et étalon Lok Lak.',
-'','**Aucun MP3 manquant n’est simulé. Aucun fichier de réseau social, PR #88, production OVH, secret ou clé n’est ajouté.**');
+'','**Aucun ancien MP3 des cinq scripts corriges n'est fourni comme s'il correspondait aux nouveaux textes. Aucune nouvelle synthese, aucun deploiement OVH ni publication Meta.**');
 writeFileSync(join(base,'LIRE-EN-PREMIER.md'),summary.join('\n')+'\n');
 console.log('EXPORT_SIX_COURSES_SUCCESS',names.length,'courses,',summary.filter(x=>x.includes('| OUI, préécoute')).length,'V2 recordings');
