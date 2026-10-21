@@ -240,7 +240,10 @@
       ],
       "scriptSha256": "37e67bde6104f46054d31e3254a17aee883b91c21aaaf369e226859ab8d27a68"
     },
-    "editorialTextApproved": false
+    "editorialTextApproved": true,
+    "approvedScriptSha256": "37e67bde6104f46054d31e3254a17aee883b91c21aaaf369e226859ab8d27a68",
+    "editorialApprovalDate": "2026-10-21",
+    "editorialApprovalScope": "recette_fiche_et_7_scripts_texte_uniquement"
   },
   "media": {
     "finishedPreparationImage": "",
@@ -249,8 +252,8 @@
     "stepImagePaths": []
   },
   "review": {
-    "recipeValidated": false,
-    "editorialValidated": false,
+    "recipeValidated": true,
+    "editorialValidated": true,
     "audioListeningValidated": false,
     "mobileValidated": false,
     "desktopValidated": false,
