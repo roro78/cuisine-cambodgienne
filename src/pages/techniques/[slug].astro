@@ -4,6 +4,7 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import EditorialSectionHero from '../../components/EditorialSectionHero.astro';
 import { recipeTechniqueGuides } from '../../data/recipeTechniques';
+import { completeCookingWorkshopCutoverReady } from '../../data/cookingWorkshopGuides';
 import type { RecipeTechniqueGuide } from '../../data/recipeTechniques';
 import { recipes } from '../../data/recipes';
 import '../../styles/v16-editorial.css';
@@ -21,6 +22,10 @@ export function getStaticPaths() {
 const { guide } = Astro.props as { guide: RecipeTechniqueGuide };
 const url = `https://www.cuisine-du-cambodge.com/techniques/${guide.slug}/`;
 const linkedRecipes = recipes.filter((recipe) => guide.recipeSlugs.includes(recipe.slug));
+const linkedWorkshopHref = !guide.workshopSlug ? undefined :
+  completeCookingWorkshopCutoverReady && guide.workshopSlug === 'bouillon-leger-savoureux'
+    ? '/apprendre/pratique/kuy-teav-bouillon-et-nouilles/'
+    : `/apprendre/${guide.workshopSlug}/`;
 
 const howToSchema = {
   '@context': 'https://schema.org',
@@ -127,8 +132,8 @@ const breadcrumbSchema = {
               <em>Voir la recette →</em>
             </a>
           ))}
-          {guide.workshopSlug && (
-            <a href={`/apprendre/${guide.workshopSlug}/`}>
+          {linkedWorkshopHref && (
+            <a href={linkedWorkshopHref}>
               <span>Atelier culinaire</span>
               <strong>Approfondir la technique</strong>
               <p>Retrouvez les gestes et les repères de goût dans un atelier guidé.</p>

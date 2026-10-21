@@ -13,6 +13,12 @@ export const legacyWorkshopRedirects=[
 ];
 export const legacyWorkshopAudioPaths=legacyWorkshopRedirects.map(([slug])=>
   '/audio/workshops/'+slug+'/atelier-coral.mp3');
+// Five obsolete V2 previews are still recorded for provenance, but must not be
+// exported once the new V3 files have been fully approved for publication.
+export const supersededV2WorkshopAudioPaths=slugs
+  .map(slug=>JSON.parse(readFileSync(new URL('../src/data/atelier-recette-guides/'+slug+'.json',import.meta.url),'utf8')).audio?.supersededV2Asset?.audioUrl)
+  .filter(Boolean);
+export const retiredWorkshopAudioPaths=[...new Set([...legacyWorkshopAudioPaths,...supersededV2WorkshopAudioPaths])];
 export function workshopCutoverApproved(){
   return slugs.every(slug=>JSON.parse(readFileSync(
     new URL('../src/data/atelier-recette-guides/'+slug+'.json',import.meta.url),'utf8')).status==='release_ready');

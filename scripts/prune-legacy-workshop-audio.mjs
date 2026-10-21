@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import { existsSync, readdirSync, readFileSync, unlinkSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { legacyWorkshopAudioPaths, legacyWorkshopRedirects, workshopCutoverApproved, workshopRedirectRule } from './workshop-cutover-seo.mjs';
+import { retiredWorkshopAudioPaths, legacyWorkshopRedirects, workshopCutoverApproved, workshopRedirectRule } from './workshop-cutover-seo.mjs';
 
 if (!workshopCutoverApproved()) {
   console.log('PASS: draft cutover; historic MP3s retained in deployment build');
@@ -27,7 +27,7 @@ for(const [slug,target] of legacyWorkshopRedirects){
   assert.ok(apache.includes(workshopRedirectRule(slug,target)),'Permanent redirect missing: '+slug);
 }
 const files=scan(DIST);
-for(const media of legacyWorkshopAudioPaths){
+for(const media of retiredWorkshopAudioPaths){
   const oldAsset=resolve(DIST,media.slice(1));
   assert.ok(oldAsset.startsWith(DIST+'/'),'Unexpected audio path');
   for(const file of files){
@@ -39,4 +39,4 @@ for(const media of legacyWorkshopAudioPaths){
     unlinkSync(oldAsset);
   }
 }
-console.log('PASS: six unreferenced superseded MP3s excluded from release build; approved audio untouched');
+console.log('PASS: '+retiredWorkshopAudioPaths.length+' unreferenced superseded MP3s excluded from release build; approved audio untouched');

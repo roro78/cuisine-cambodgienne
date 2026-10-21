@@ -27,7 +27,7 @@ les anciennes pages, et les six règles 301 deviennent actives dans le
   200/canonical/indexables, le sitemap et les lecteurs mobiles.
 - Catalogue n8n : le flux `social-feed.json` commute uniquement avec les pages ;
   les vieux brouillons PostgreSQL demandent une revue avant publication.
-- Après bascule validée, le script retire uniquement les six anciens MP3 du
+- Après bascule validée, le script retire uniquement les onze anciens MP3 du
   `dist` destiné à OVH, après contrôle des redirections et des références
   résiduelles dans les fichiers générés. Les fichiers source demeurent dans
   Git jusqu'à une suppression distincte après vérification de production.
@@ -48,4 +48,8 @@ Les six fiches pointent désormais vers les images déjà présentes dans le dé
 
 L'approbation des **visuels** est attestée (`imageValidated=true`). Elle ne constitue pas à elle seule une preuve juridique des droits (`rightsValidated=false`) ou une autorisation de mise en ligne (`productionApproved=false`). Ne présenter aucune illustration comme une photographie documentaire d'un essai culinaire effectué.
 
-La CI utilise `scripts/simulate-six-workshop-release.mjs` pour **simuler de manière temporaire** les six statuts `release_ready`, vérifier une reconstruction complète, les 301, les PDF/MP3 indexables, la suppression des vieux médias du dossier construit et les six nouveaux liens sociaux. La simulation restaure strictement les guides et les fichiers `dist` initiaux dans tous les cas. Elle ne constitue **pas** une publication ou une validation humaine réelle.
+La CI utilise `scripts/simulate-six-workshop-release.mjs` pour **simuler de manière temporaire** les six statuts `release_ready`, vérifier une reconstruction complète, les 301, les nouvelles pages indexables et leurs MP3, la suppression des vieux médias du dossier construit et les six nouveaux liens sociaux. La simulation restaure strictement les guides et les fichiers `dist` initiaux dans tous les cas. Elle ne constitue **pas** une publication ou une validation humaine réelle.
+
+### Correctifs de la simulation
+
+Le test a révélé deux liens vers les anciens ateliers malgré leur disparition. Correction *dans les modèles de présentation*, sans toucher au contenu original des carnets : la page consacrée au riz propose les ateliers actuels ; la fiche technique du bouillon renvoie vers le nouvel atelier Kuy Teav. Le lot de nettoyage couvre désormais les **6 MP3 historiques + 5 V2 remplacés** dans le dossier OVH uniquement, jamais les six versions approuvées en source.

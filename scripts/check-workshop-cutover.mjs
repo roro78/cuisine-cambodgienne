@@ -2,15 +2,22 @@
 import assert from 'node:assert/strict';
 import { existsSync,readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { legacyWorkshopRedirects,legacyWorkshopAudioPaths,workshopCutoverApproved,expectedWorkshopHtaccess } from './workshop-cutover-seo.mjs';
+import { legacyWorkshopRedirects,retiredWorkshopAudioPaths,workshopCutoverApproved,expectedWorkshopHtaccess } from './workshop-cutover-seo.mjs';
 const ready=workshopCutoverApproved(),read=p=>readFileSync(p,'utf8');
 const page=p=>join('dist',p.replace(/^\//,''),'index.html');
 const sitemap=read('dist/sitemap.xml');
 const listing=read(page('/apprendre/'));
 const social=JSON.parse(read('dist/social-feed.json')).items.filter(item=>item.kind==='atelier');
 assert.equal(social.length,6,'Expected six active workshop sources');
+if(ready){
+ for(const item of social){
+   assert.ok(item.imageUrl,'Released workshop must have a generated social JPEG: '+item.id);
+   assert.ok(existsSync(join('dist',new URL(item.imageUrl).pathname.slice(1))),'Missing released social image '+item.id);
+ }
+}
 assert.equal(read('dist/.htaccess'),expectedWorkshopHtaccess(read('public/.htaccess')),'Gated Apache rules mismatch');
-for(const path of legacyWorkshopAudioPaths)
+assert.equal(retiredWorkshopAudioPaths.length,11,'Only six previous workshop recordings and five outdated V2 files may be pruned');
+for(const path of retiredWorkshopAudioPaths)
   assert.equal(existsSync(join('dist',path.replace(/^\//,''))),!ready,
     'Superseded MP3 incorrectly retained or removed: '+path);
 for(const [slug,target] of legacyWorkshopRedirects){
