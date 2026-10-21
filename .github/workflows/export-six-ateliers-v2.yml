@@ -13,11 +13,13 @@ on:
       - "src/components/CookingWorkshopAudio.astro"
       - "src/scripts/cookingWorkshopServings.ts"
       - "src/pages/apprendre/pratique/*.astro"
+      - "docs/ateliers/a-valider/*.md"
+      - "docs/ateliers/VALIDATION-RECETTES-ET-NARRATIONS-V2.md"
 permissions:
   contents: read
 jobs:
   complete_review_package:
-    name: Six fiches, vrais MP3, transcriptions et lecteur mobile
+    name: Six fiches corrigees, sept chapitres, lecteur mobile
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
