@@ -1,0 +1,6 @@
+AUTORISATION_UTILISATEUR_CORAL_NUM_BANH_COMPLET_2026-10-21
+Instruction du 21 octobre 2026 : livrer l'atelier Num Banh Chok complet avec ses sept chapitres de narration ; un nouvel appel payant est autorisé quand il est nécessaire.
+Le premier segment confirmé dans le run GitHub 39629603778 doit être vérifié et réutilisé sans double facturation s'il correspond au script validé.
+Le workflow unique peut produire jusqu'à 24 segments supplémentaires, exactement un appel par segment, sans aucune relance d'une réponse incertaine.
+Chaque MP3 ou erreur incertaine doit être sauvegardé aussitôt en artefact afin de préserver les crédits. Assemblage hors ligne ; validation d'intégrité, minutages et hash avant liaison au lecteur.
+Les quatre autres V3 et le Lok Lak V2 doivent rester intacts. PR #92 uniquement. Ni fusion ni déploiement OVH sans contrôle.

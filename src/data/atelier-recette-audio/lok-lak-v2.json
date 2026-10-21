@@ -1,0 +1,60 @@
+{
+  "atelier": "lok-lak-de-la-poele-a-l-assiette",
+  "canonicalRecipe": "lok-lak",
+  "status": "audio_generated_review_pending",
+  "voice": "coral",
+  "audioUrl": "/audio/workshops/lok-lak-de-la-poele-a-l-assiette/atelier-coral-v2.mp3",
+  "durationSec": 789.936,
+  "sha256": "d3f5558c07f7aff5c4c57ccf7c662544079744dc0fa8223ec869a6b061d0912e",
+  "chapters": [
+    {
+      "id": "intro",
+      "title": "Bienvenue et mise en place",
+      "startSec": 0,
+      "endSec": 80.832
+    },
+    {
+      "id": "installer",
+      "title": "Préparer le matériel et repérer les ingrédients",
+      "startSec": 80.832,
+      "endSec": 172.344
+    },
+    {
+      "id": "preparer",
+      "title": "Tailler le bœuf et le faire mariner",
+      "startSec": 172.344,
+      "endSec": 291.048
+    },
+    {
+      "id": "assembler",
+      "title": "Préparer les crudités et le condiment citron–poivre",
+      "startSec": 291.048,
+      "endSec": 408.288
+    },
+    {
+      "id": "maitriser",
+      "title": "Saisir les cubes de bœuf marinés en petites fournées",
+      "startSec": 408.288,
+      "endSec": 586.728
+    },
+    {
+      "id": "rectifier",
+      "title": "Contrôler la cuisson et l'enrobage de la marinade",
+      "startSec": 586.728,
+      "endSec": 703.056
+    },
+    {
+      "id": "terminer",
+      "title": "Dresser le Lok Lak et servir le condiment",
+      "startSec": 703.056,
+      "endSec": 789.936
+    }
+  ],
+  "scriptSha256": "76e6b936985e42f27e96138733930d34d24586deb190e33e9010e5c5e6416a00",
+  "review": {
+    "acousticListening": true,
+    "mobile": false,
+    "desktop": false
+  },
+  "sourceBackend": "render-iacoach-backend.onrender.com/api/tts"
+}

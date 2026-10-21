@@ -1,0 +1,60 @@
+{
+  "atelier": "num-banh-chok-sauce-et-herbes-fraiches",
+  "canonicalRecipe": "num-banh-chok",
+  "status": "audio_generated_review_pending",
+  "voice": "coral",
+  "audioUrl": "/audio/workshops/num-banh-chok-sauce-et-herbes-fraiches/atelier-coral-v3.mp3",
+  "durationSec": 620.976,
+  "sha256": "54c1f4fe4dd86b4eefb934d3e10e56cc5c8864891262ad3b9dfda887941ff6d5",
+  "chapters": [
+    {
+      "id": "intro",
+      "title": "Bienvenue et mise en place",
+      "startSec": 0,
+      "endSec": 78.936
+    },
+    {
+      "id": "installer",
+      "title": "Rassembler la sauce, les nouilles et les herbes",
+      "startSec": 78.936,
+      "endSec": 151.488
+    },
+    {
+      "id": "preparer",
+      "title": "Préparer poisson et garnitures fraîches",
+      "startSec": 151.488,
+      "endSec": 245.832
+    },
+    {
+      "id": "assembler",
+      "title": "Pocher et émietter le poisson blanc",
+      "startSec": 245.832,
+      "endSec": 314.856
+    },
+    {
+      "id": "maitriser",
+      "title": "Préparer la sauce chaude au kroeung",
+      "startSec": 314.856,
+      "endSec": 427.056
+    },
+    {
+      "id": "rectifier",
+      "title": "Cuire les nouilles et rectifier les textures",
+      "startSec": 427.056,
+      "endSec": 533.976
+    },
+    {
+      "id": "terminer",
+      "title": "Dresser les bols et ajouter la fraîcheur",
+      "startSec": 533.976,
+      "endSec": 620.976
+    }
+  ],
+  "scriptSha256": "87d3e967a852d9cf3d15d1800acc48f809ba4c0ab79af1c5e6e87484b345912e",
+  "review": {
+    "acousticListening": true,
+    "mobile": false,
+    "desktop": false
+  },
+  "sourceBackend": "render-iacoach-backend.onrender.com/api/tts"
+}

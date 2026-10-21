@@ -115,7 +115,14 @@ export function validateWorkshopBlueprint(atelier, recipes, options = {}) {
     }
     for (const field of ['observe', 'check', 'mistake', 'recovery', 'learning', 'safety']) requireText(phase[field], phase.id + '.' + field, 24);
     requireText(phase.audioScript, phase.id + '.audioScript', 90);
-    if (typeof phase.audioScript === 'string' && phase.audioScript.length > 1200) errors.push('Chapitre trop long à relire : ' + phase.id);
+    // A complete voice-led lesson needs more detail than the original two-minute capsules.
+    // The stricter minimum applies only to explicitly upgraded V2 storyboards.
+    const v2 = atelier.audio?.storyboardVersion === 2;
+    const maxAudioCharacters = v2 ? 4500 : 1200;
+    if (typeof phase.audioScript === 'string' && phase.audioScript.length > maxAudioCharacters)
+      errors.push('Chapitre trop long à relire : ' + phase.id + ' (' + phase.audioScript.length + ' caractères).');
+    if (v2 && (typeof phase.audioScript !== 'string' || phase.audioScript.length < 650))
+      errors.push('Chapitre V2 trop court pour accompagner un geste entier : ' + phase.id);
     const normalize = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
     const narration = normalize(phase.audioScript);
     if (phase.actions?.some(action => {
@@ -137,6 +144,8 @@ export function validateWorkshopBlueprint(atelier, recipes, options = {}) {
   if (audio.status !== 'script_only' && audio.status !== 'generated_review_pending' && audio.status !== 'validated') errors.push('audio.status invalide.');
   if (audio.voice !== 'coral') errors.push('Voix non prise en charge : seul coral est autorisé par le générateur existant.');
   requireText(audio.intro, 'audio.intro', 100);
+  if (audio.storyboardVersion === 2 && audio.intro.trim().length < 350)
+    errors.push('Introduction V2 trop brève pour accueillir et orienter l’utilisateur.');
   if (audio.publicProviderMention !== false) errors.push('Ne pas afficher le nom du fournisseur de voix.');
   const media = atelier.media || {};
   requireText(typeof media.finishedPreparationImage === 'string' ? media.finishedPreparationImage : null, 'media.finishedPreparationImage', 0);
@@ -175,8 +184,24 @@ export function validateWorkshopBlueprint(atelier, recipes, options = {}) {
         } catch { errors.push('NO GO : ffprobe obligatoire pour mesurer le MP3 avant publication.'); }
       }
     }
-    if (audio.status !== 'validated' || !media.finishedPreparationImage || !media.imageValidated || !media.rightsValidated ||
-        Object.values(review).some(value => value !== true)) errors.push('NO GO : gate final incomplet (audio, images, droits, validation humaine, tests).');
+    // Two distinct paths: exhaustive review, or the owner's explicit release
+    // decision after source-based culinary checks and listening approval.
+    // The owner path never changes unperformed checks into fictitious passes.
+    const consent=atelier.releaseAuthorization;
+    const ownerApproved=consent?.ownerApproved===true &&
+      consent.approvedOn==='2026-10-21' &&
+      consent.sourceBasedRecipeReviewAccepted===true &&
+      consent.acceptsPendingPhysicalDeviceQA===true &&
+      consent.authorizesExistingIllustrations===true &&
+      review.productionApproved===true &&
+      review.editorialValidated===true &&
+      review.audioListeningValidated===true &&
+      audio.status==='generated_review_pending' &&
+      Boolean(media.finishedPreparationImage) && media.imageValidated===true;
+    const fullyReviewed=audio.status==='validated' && Boolean(media.finishedPreparationImage) &&
+      media.imageValidated===true && media.rightsValidated===true &&
+      Object.values(review).every(value=>value===true);
+    if (!fullyReviewed && !ownerApproved) errors.push('NO GO : accord de publication explicite absent et gate complet non valide.');
   }
   if ((atelier.status === 'release_ready' || options.checkMediaFiles) && media.finishedPreparationImage) {
     const root = resolve('public');

@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { cultureArticles } from '../../data/culture';
+import { completeCookingWorkshopCutoverReady } from '../../data/cookingWorkshopGuides';
 import type { CultureArticle } from '../../data/culture';
 import { recipes } from '../../data/recipes';
 import { ingredientGuides } from '../../data/ingredients';
@@ -138,7 +139,7 @@ const breadcrumbSchema = {
           <p class="eyebrow">De la rizière à votre cuisine</p>
           <h2>Et maintenant, passons à table.</h2>
           <p>Apprenez à associer le riz, un plat chaud, des légumes et un condiment : un petit exercice pour comprendre un repas cambodgien.</p>
-          <a href="/apprendre/composer-repas-cambodgien/">Découvrir l’atelier « Composer un repas » →</a>
+          <a href={completeCookingWorkshopCutoverReady ? '/apprendre/' : '/apprendre/composer-repas-cambodgien/'}>{completeCookingWorkshopCutoverReady ? 'Découvrir les six ateliers de cuisine →' : 'Découvrir l’atelier « Composer un repas » →'}</a>
         </aside>
       )}
       <aside class="source-box">

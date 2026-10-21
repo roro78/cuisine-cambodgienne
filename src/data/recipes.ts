@@ -278,13 +278,13 @@ export const recipes: Recipe[] = [
       { title: 'Assaisonner le bouillon', text: 'Versez 1,4 l de bouillon de volaille ou de porc peu salé dans une casserole (maison ou prêt à l’emploi). Ajoutez les 2 c. à soupe de sauce de poisson et la cuillerée à café de sucre. Portez à petit frémissement sans laisser réduire fortement.', cue: 'Le bouillon doit être savoureux mais rester clair et léger.' },
       { title: 'Cuire la garniture', text: 'Ajoutez les 300 g de porc haché ou émincé au bouillon frémissant, en séparant bien les morceaux, et faites-les cuire complètement. Retirez le porc avec une écumoire et réservez-le au chaud.', cue: 'Le porc doit être entièrement cuit avant d’être réparti dans les bols.' },
       { title: 'Cuire les nouilles', text: 'Faites cuire les 300 g de nouilles de riz dans une autre casserole en suivant la durée indiquée sur le paquet. Égouttez immédiatement et répartissez-les dans quatre bols.', mistake: 'Les laisser attendre dans l’eau chaude les rend molles.' },
-      { title: 'Monter les bols', text: 'Répartissez nouilles et porc, puis versez le bouillon brûlant.' },
+      { title: 'Dresser les bols', text: 'Répartissez nouilles et porc, puis versez le bouillon brûlant.' },
       { title: 'Finir à table', text: 'Rincez les pousses de soja et la coriandre, puis émincez la coriandre et les deux ciboules. Coupez les deux citrons verts en quartiers. Répartissez les pousses, la coriandre, la ciboule et les quartiers de citron autour des bols pour que chacun les ajoute à son goût.' }
     ],
     keyPoints: ['Bouillon frémissant, pas bouillant à gros bouillons', 'Nouilles cuites à part', 'Herbes ajoutées au dernier moment'],
     substitutions: ['Un bon bouillon maison ou peu salé du commerce convient pour commencer.'],
     equipment: ['Grande casserole', 'Passoire'],
-    faqs: [{ question: 'Pourquoi mes nouilles deviennent-elles molles ?', answer: 'Elles ont trop attendu dans l’eau chaude. Cuisez-les juste avant de monter les bols.' }],
+    faqs: [{ question: 'Pourquoi mes nouilles deviennent-elles molles ?', answer: 'Elles ont trop attendu dans l’eau chaude. Cuisez-les juste avant de dresser les bols.' }],
     tags: ['soupe', 'nouilles', 'bouillon', 'street food'],
     image: '/images/cuisine/v18-kuy-teav.webp',
     imageAlt: 'Kuy Teav, soupe de nouilles khmère servie avec des tranches de viande et de la coriandre',
@@ -343,7 +343,7 @@ export const recipes: Recipe[] = [
     context: 'Pour qu’il soit vraiment bon, il faut garder le pain croustillant, les pickles bien égouttés et les herbes fraîches jusqu’au dernier moment.',
     beforeYouStart: 'Égouttez soigneusement les pickles, préparez la coriandre et la sauce, puis réchauffez les baguettes juste avant de garnir.',
     prepHeading: 'Des pickles bien égouttés',
-    servingTip: 'Servez aussitôt après le montage : la croûte reste croustillante et les légumes conservent leur fraîcheur.',
+    servingTip: 'Servez aussitôt après le dressage : la croûte reste croustillante et les légumes conservent leur fraîcheur.',
     servingHeading: 'Un sandwich à croquer sans attendre',
     baseServings: 4,
     prepTime: '20 min',
@@ -538,7 +538,7 @@ export const recipes: Recipe[] = [
     steps: [
       { title: 'Griller le riz', text: 'Dans une poêle sèche, faites blondir le riz en remuant puis laissez refroidir et réduisez en poudre assez fine.', duration: '5–7 min', cue: 'Le riz sent légèrement la noisette et ne doit pas brûler.', mistake: 'Un riz noirci apporte de l’amertume.' },
       { title: 'Réveiller les aromates', text: 'Faites chauffer le kroeung dans une grande casserole avec quelques cuillerées d’eau pendant une minute.', cue: 'Les aromates parfument la vapeur sans attacher au fond.' },
-      { title: 'Construire le bouillon', text: 'Versez les 1,2 l d’eau ou de bouillon non salé sur le kroeung, puis ajoutez les cubes de potiron ou de courge, les morceaux d’aubergine et les haricots longs coupés en tronçons. Laissez frémir environ 15 minutes.', duration: '15 min', cue: 'Les légumes commencent à s’attendrir mais gardent leur forme.' },
+      { title: 'Préparer le bouillon', text: 'Versez les 1,2 l d’eau ou de bouillon non salé sur le kroeung, puis ajoutez les cubes de potiron ou de courge, les morceaux d’aubergine et les haricots longs coupés en tronçons. Laissez frémir environ 15 minutes.', duration: '15 min', cue: 'Les légumes commencent à s’attendrir mais gardent leur forme.' },
       { title: 'Cuire le poisson', text: 'Ajoutez le poisson, laissez frémir doucement jusqu’à cuisson complète, puis incorporez le riz grillé moulu.', duration: '8–12 min', cue: 'Le poisson est opaque et se détache facilement.', mistake: 'Une forte ébullition casse les morceaux de poisson.' },
       { title: 'Finir les légumes et assaisonner', text: 'Ajoutez les 100 g d’épinards ou de feuilles vertes tendres et laissez cuire encore deux minutes. Versez la cuillerée à soupe de sauce de poisson, remuez puis servez avec les feuilles de basilic asiatique ou la coriandre.', cue: 'Le bouillon est légèrement lié et les légumes restent distincts.' }
     ],

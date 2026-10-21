@@ -1,0 +1,60 @@
+{
+  "atelier": "bai-sach-chrouk-porc-riz-et-pickles",
+  "canonicalRecipe": "bai-sach-chrouk",
+  "status": "audio_generated_review_pending",
+  "voice": "coral",
+  "audioUrl": "/audio/workshops/bai-sach-chrouk-porc-riz-et-pickles/atelier-coral-v3.mp3",
+  "durationSec": 665.664,
+  "sha256": "4fa0b8cbfc8106daf6fb19ce558940b5f731ea7faaf82172837f310b4013606a",
+  "chapters": [
+    {
+      "id": "intro",
+      "title": "Bienvenue et mise en place",
+      "startSec": 0,
+      "endSec": 78.96
+    },
+    {
+      "id": "installer",
+      "title": "Mesurer les ingrédients et préparer le plan de travail",
+      "startSec": 78.96,
+      "endSec": 176.136
+    },
+    {
+      "id": "preparer",
+      "title": "Préparer le porc et hacher l'ail",
+      "startSec": 176.136,
+      "endSec": 262.056
+    },
+    {
+      "id": "assembler",
+      "title": "Mariner au frais et comprendre les saveurs",
+      "startSec": 262.056,
+      "endSec": 362.976
+    },
+    {
+      "id": "maitriser",
+      "title": "Cuire le riz jasmin sans le détremper",
+      "startSec": 362.976,
+      "endSec": 467.208
+    },
+    {
+      "id": "rectifier",
+      "title": "Dorer le porc en vérifiant sa cuisson",
+      "startSec": 467.208,
+      "endSec": 574.512
+    },
+    {
+      "id": "terminer",
+      "title": "Dresser l'assiette de riz, porc et pickles",
+      "startSec": 574.512,
+      "endSec": 665.664
+    }
+  ],
+  "scriptSha256": "e3a32fcf9991fe92347fe3214ed45ef7b49e12f946d3aa2f8e047c0625e2b887",
+  "review": {
+    "acousticListening": true,
+    "mobile": false,
+    "desktop": false
+  },
+  "sourceBackend": "render-iacoach-backend.onrender.com/api/tts"
+}

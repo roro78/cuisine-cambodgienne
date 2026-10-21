@@ -45,11 +45,27 @@ jobs:
       - name: Editorial regression contract
         run: npm run test:editorial
 
+      - name: Enable ffprobe for real MP3 integrity checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          ffprobe -version | head -n 1
+
       - name: Standard ateliers — recette réutilisable et guide MP3 (sans TTS)
         run: |
           node scripts/check-workshop-blueprints.mjs
           node --test tests/atelier-standard.test.mjs
           node --test tests/atelier-kroeung-page.test.mjs
+          node --test tests/ateliers-cinq-recettes.test.mjs
+          node --check scripts/bridge-cooking-workshops-coral.mjs
+          node --test tests/coral-lok-lak-v2-plan.test.mjs
+          node --test tests/cooking-audio-review.test.mjs
+          node scripts/check-new-cooking-workshop-audio.mjs | tee /tmp/cuisine-six-new-audio-review.txt
+          grep -q '^NEW_GUIDED_AUDIO_SUMMARY 6/6 MP3 measured' /tmp/cuisine-six-new-audio-review.txt
 
       - name: Validate all six Coral MP3s and actual chapter boundaries (offline)
         run: node scripts/check-workshop-audio.mjs
@@ -84,8 +100,17 @@ jobs:
       - name: Verify copied Apache SEO redirect file
         run: |
           cp public/.htaccess dist/.htaccess
+          node scripts/build-workshop-redirects.mjs
+          node scripts/prune-legacy-workshop-audio.mjs
           node scripts/check-seo-legacy-redirects.mjs
           node scripts/check-seo-sitemap-integrity.mjs
+          node scripts/check-workshop-cutover.mjs
+
+      - name: Approved images and editorial captions (offline)
+        run: node --test tests/workshop-approved-images.test.mjs
+
+      - name: Future release cutover simulation (isolated, no deployment)
+        run: node scripts/simulate-six-workshop-release.mjs
 
       - name: Built pages and deployment boundaries
         run: npm run test:built-experiences
@@ -98,6 +123,11 @@ jobs:
         env:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
         run: npm run test:browser-experiences
+
+      - name: Cinq ateliers complets - QA mobile et desktop
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/ateliers-cinq-browser.test.mjs
 
       - name: Kroeung véritable atelier - navigateur mobile et ordinateur
         env:

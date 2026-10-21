@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { workshopCutoverApproved, legacyWorkshopRedirects } from './workshop-cutover-seo.mjs';
 
 /**
  * Checks the actual Astro build output, not merely source templates.
@@ -38,12 +39,29 @@ const workshopSlugs = [
   'bouillon-leger-savoureux',
   'composer-repas-cambodgien'
 ];
-for (const slug of workshopSlugs) requirePage('/apprendre/' + slug + '/', 'Workshop ' + slug);
+const newWorkshopRoutes = [
+  '/apprendre/pratique/kroeung-jaune/',
+  '/apprendre/pratique/lok-lak-de-la-poele-a-l-assiette/',
+  '/apprendre/pratique/samlor-machu-soupe-acidulee-guidee/',
+  '/apprendre/pratique/num-banh-chok-sauce-et-herbes-fraiches/',
+  '/apprendre/pratique/kuy-teav-bouillon-et-nouilles/',
+  '/apprendre/pratique/bai-sach-chrouk-porc-riz-et-pickles/'
+];
+const released=workshopCutoverApproved();
+const workshopRoutes=released?newWorkshopRoutes:workshopSlugs.map(s=>'/apprendre/'+s+'/');
+for(const route of workshopRoutes)requirePage(route,'Workshop '+route);
+if(released){
+  for(const [oldSlug] of legacyWorkshopRedirects){
+    const old=path.join(root,'apprendre',oldSlug,'index.html');
+    if(fs.existsSync(old))fails.push('Retired workshop must be absent: '+oldSlug);
+  }
+}
 const sitemap = path.join(root, 'sitemap.xml');
 if (!fs.existsSync(sitemap)) fails.push('Sitemap was not generated');
 else {
   const content = fs.readFileSync(sitemap, 'utf8');
-  for (const slug of workshopSlugs) if (!content.includes('/apprendre/' + slug + '/')) fails.push('Sitemap omits ' + slug);
+  for(const route of workshopRoutes)if(!content.includes(route))fails.push('Sitemap omits '+route);
+  if(released)for(const slug of workshopSlugs)if(content.includes('/apprendre/'+slug+'/'))fails.push('Old workshop still indexed: '+slug);
   if (content.includes('/experiences/')) fails.push('Unlaunched experiences must stay out of sitemap');
 }
 const amok = requirePage('/recettes/amok-trey/', 'Public Amok safety');
@@ -54,5 +72,5 @@ if (fails.length) {
   console.error('Built experiences smoke FAILED:\n' + fails.map((fail) => '- ' + fail).join('\n'));
   process.exitCode = 1;
 } else {
-  console.log('Built experiences smoke: PASS (3 prelaunch pages, 6 workshops, 2 safe public recipes, sitemap)');
+  console.log('Built experiences smoke: PASS (3 prelaunch pages, 6 '+(released?'released':'legacy')+' workshops, 2 safe public recipes, sitemap)');
 }

@@ -1,0 +1,54 @@
+name: Cuisine - Coral Num Banh Chok - un seul segment autorise
+# User approved exactly ONE paid segment after Render PR #326 deployed.
+# No retry on Github "Re-run": job is restricted to run_attempt == 1.
+on:
+  push:
+    branches:
+      - feat/ateliers-cinq-recettes-completes-20261020
+    paths:
+      - docs/ateliers/GO-UNIQUE-CORAL-NUM-BANH-20261021.txt
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: cuisine-num-banh-test-payant-unique-20261021
+  cancel-in-progress: false
+jobs:
+  unique_segment:
+    name: Un seul segment approuve, sans boucle ni second essai
+    if: false # Le segment approuve a ete emis et valide; relance future impossible.
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/ateliers-cinq-recettes-completes-20261020
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Preflight gratuit et autorisation explicite
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fxq 'AUTORISATION_UTILISATEUR_CORAL_NUM_BANH_UN_SEGMENT_2026-10-21' docs/ateliers/GO-UNIQUE-CORAL-NUM-BANH-20261021.txt
+          node tests/atelier-coral-quota-safety.test.mjs
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --check
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --plan
+          node -e "const x=require('./src/data/atelier-recette-guides/num-banh-chok.json');if(x.audio.status!=='script_only'||x.audio.editorialTextApproved!==true||x.review.editorialValidated!==true||x.audio.asset) process.exit(1)"
+      - name: UN appel payant au proxy Coral - chapitre intro, partie 1 sur 3
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=intro --part=1
+      - name: Conserver MP3 confirme OU marqueur de facturation incertaine
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-01
+          path: |
+            .tmp-cooking-coral/*/v3/intro-part-01-*.mp3
+            .tmp-cooking-coral/*/v3/intro-part-01-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn

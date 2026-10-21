@@ -14,7 +14,8 @@ test('Atelier kroeung : vraie recette, six phases, ingrédients et rendement can
   assert.equal(workshop.canonicalServings, recipe.baseServings);
   assert.deepEqual(workshop.phases.map((phase) => phase.id), PHASE_IDS);
   assert.match(source, /recipe[.]ingredients[.]map/);
-  assert.match(source, /ingredientLine[(]item[)]/);
+  assert.match(source, /data-workshop-ingredient-quantity/);
+  assert.match(source, /data-workshop-portion-kind="pot"/);
   assert.match(source, /Ce que vous faites/);
   assert.match(workshop.phases[2].actions.join(' '), /toute la citronnelle et tout le galanga/);
   assert.match(source, /Comment savoir si c’est réussi/);
@@ -22,11 +23,12 @@ test('Atelier kroeung : vraie recette, six phases, ingrédients et rendement can
   assert.match(source, /Utiliser le kroeung dans un Amok Trey/);
 });
 test('Un atelier non validé ne se déclare pas publiable ni enregistré', () => {
-  assert.equal(workshop.status,'draft');
-  assert.equal(workshop.audio.status,'script_only');
-  assert.equal(workshop.review.productionApproved,false);
+  assert.ok(['draft','release_ready'].includes(workshop.status));
+  assert.ok(['script_only','generated_review_pending','validated'].includes(workshop.audio.status));
+  assert.equal(workshop.review.productionApproved,workshop.status==='release_ready');
   assert.match(source,/noindex=\{workshop[.]status !== 'release_ready'\}/);
-  assert.match(source,/sans MP3/);
+  assert.match(source,/La nouvelle narration est en préparation/);
+  assert.match(source,/guideAudio \? <CookingWorkshopAudio/);
   assert.ok(!source.includes('<WorkshopChapterPlayer'));
   assert.ok(!source.includes('Voix IA'));
   const plan = buildCookingAudioStoryboard(workshop);

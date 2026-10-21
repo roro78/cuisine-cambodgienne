@@ -1,0 +1,51 @@
+name: Cuisine - pack fichiers complets des six ateliers V2
+# Read-only export for Android. No TTS, no deploy, no merge.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "feat/ateliers-cinq-recettes-completes-20261020"
+    paths:
+      - ".github/workflows/export-six-ateliers-v2.yml"
+      - "scripts/export-cinq-ateliers-v2.mjs"
+      - "src/data/atelier-recette-audio/*-v2.json"
+      - "src/data/atelier-recette-guides/*.json"
+      - "src/components/CookingWorkshopAudio.astro"
+      - "src/scripts/cookingWorkshopServings.ts"
+      - "src/pages/apprendre/pratique/*.astro"
+      - "docs/ateliers/a-valider/*.md"
+      - "docs/ateliers/VALIDATION-RECETTES-ET-NARRATIONS-V2.md"
+permissions:
+  contents: read
+jobs:
+  complete_review_package:
+    name: Six fiches corrigees, sept chapitres, lecteur mobile
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout commit exact
+        uses: actions/checkout@v4
+      - name: Install Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build complete offline-readable workshop documents
+        run: |
+          set -euo pipefail
+          node scripts/export-cinq-ateliers-v2.mjs
+          test -f atelier-review/LIRE-EN-PREMIER.md
+          test -f atelier-review/FICHES-ATELIERS/kroeung-jaune-COURS-COMPLET.md
+          test -f atelier-review/FICHES-ATELIERS/bai-sach-chrouk-COURS-COMPLET.md
+          test -f atelier-review/FICHES-ATELIERS/samlor-machu-COURS-COMPLET.md
+          test -f atelier-review/FICHES-ATELIERS/kuy-teav-COURS-COMPLET.md
+          test -f atelier-review/FICHES-ATELIERS/num-banh-chok-COURS-COMPLET.md
+          test -f atelier-review/FICHES-ATELIERS/lok-lak-COURS-COMPLET.md
+      - name: Downloadable Android ZIP (GitHub Actions artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: CUISINE-DU-CAMBODGE-SIX-ATELIERS-DOSSIER-COMPLET
+          path: atelier-review/
+          retention-days: 60
+          if-no-files-found: error

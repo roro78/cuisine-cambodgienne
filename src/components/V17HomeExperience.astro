@@ -1,4 +1,5 @@
 ---
+import { completeCookingWorkshopCutoverReady } from '../data/cookingWorkshopGuides';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { recipes } from '../data/recipes';
@@ -131,7 +132,7 @@ interface Props { preview?: boolean; }
           <p class="v17r-kicker">02 — Le savoir-faire</p>
           <h2 id="v17r-gestures-title"><span class="v17r-gesture-word">COUPER.</span><span class="v17r-gesture-word v17r-gesture-word--accent"><em>PILER.</em></span><span class="v17r-gesture-word">SENTIR.</span></h2>
           <p>Au mortier, les aromates s’écrasent, se mêlent et libèrent leurs parfums. Découvrez le geste qui donne vie au kroeung.</p>
-          <a class="v17r-pill" href="/apprendre/piler-aromates-au-mortier/">Découvrir le geste <span aria-hidden="true">↗</span></a>
+          <a class="v17r-pill" href={completeCookingWorkshopCutoverReady ? '/apprendre/pratique/kroeung-jaune/' : '/apprendre/piler-aromates-au-mortier/'}>Découvrir le geste <span aria-hidden="true">↗</span></a>
         </div>
         <div class="v17r-gestures-progress" aria-hidden="true"><span></span></div>
       </section>

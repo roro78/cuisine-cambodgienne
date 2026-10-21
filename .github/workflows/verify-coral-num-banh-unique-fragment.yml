@@ -1,0 +1,74 @@
+name: Cuisine - verifier fragment Coral confirme sans quota
+# An offline check of the one segment uploaded after the successful HTTP response.
+# No TTS script is invoked. No OpenAI or Render requests. No merge or deploy.
+on:
+  push:
+    branches:
+      - feat/ateliers-cinq-recettes-completes-20261020
+    paths:
+      - docs/ateliers/GO-VERIFY-NUM-BANH-FRAGMENT-20261021.txt
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verify_saved_mp3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/ateliers-cinq-recettes-completes-20261020
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Installer ffmpeg/ffprobe localement seulement
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          ffprobe -version | head -n 1
+      - name: Recupérer le fragment conserve dans le run payant antérieur
+        uses: actions/download-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-01
+          run-id: 39629603778
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: .saved-coral-confirmed
+      - name: Controle du seul MP3 recu, du texte source et de l'integrite audio
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find .saved-coral-confirmed -type f -name '*.mp3' | wc -l)" -eq 1
+          test "$(find .saved-coral-confirmed -type f -name '*.uncertain.json' | wc -l)" -eq 0
+          FILE="$(find .saved-coral-confirmed -type f -name '*.mp3' -print -quit)"
+          export SAVED_MP3="$FILE"
+          node --input-type=module <<'NODE'
+          import {readFileSync} from 'node:fs';
+          import {basename} from 'node:path';
+          import {createHash} from 'node:crypto';
+          const guide=JSON.parse(readFileSync('src/data/atelier-recette-guides/num-banh-chok.json','utf8'));
+          if(guide.audio.status!=='script_only'||!guide.audio.editorialTextApproved||!guide.review.editorialValidated){
+            throw Error('Unexpected editorial status or current recording');
+          }
+          const sentences=guide.audio.intro.trim().split(/(?<=[.!?…])\s+/u);
+          let part='';
+          for(const sentence of sentences){
+            if(part&&part.length+sentence.length+1>480)break;
+            part+=(part?' ':'')+sentence;
+          }
+          const hash=createHash('sha256').update(part).digest('hex').slice(0,16);
+          const expected='intro-part-01-'+hash+'.mp3';
+          const received=basename(process.env.SAVED_MP3);
+          if(received!==expected)throw Error('Source SHA mismatch: '+received);
+          const content=readFileSync(process.env.SAVED_MP3);
+          if(content.length<30000)throw Error('Audio too short');
+          console.log('AUDIO_SHA256='+createHash('sha256').update(content).digest('hex'));
+          console.log('SOURCE_HASH='+hash);
+          console.log('SAVED_BYTES='+content.length);
+          NODE
+          ffprobe -v error -show_entries format=duration,size,format_name -of default=noprint_wrappers=1 "$FILE"
+          ffmpeg -v error -i "$FILE" -f null -
+          echo "PASS_CORAL_NUM_BANH_FRAGMENT_CONFIRMED_NO_TTS"

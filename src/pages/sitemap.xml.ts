@@ -4,6 +4,7 @@ import { restoredRecipes } from '../data/restoredRecipes';
 import { ingredientGuides } from '../data/ingredients';
 import { cultureArticles } from '../data/culture';
 import { workshops } from '../data/workshops';
+import { releasedCookingWorkshopGuides, completeCookingWorkshopCutoverReady } from '../data/cookingWorkshopGuides';
 import { recipeTechniqueGuides } from '../data/recipeTechniques';
 
 const staticPaths = ['/', '/recettes/', '/ingredients/', '/culture/', '/apprendre/', '/a-propos/', '/glossaire/', '/credits-photos/'];
@@ -16,7 +17,8 @@ export const GET: APIRoute = ({ site }) => {
     ...restoredRecipes.map((recipe) => `/recettes/${recipe.slug}/`),
     ...ingredientGuides.map((ingredient) => `/ingredients/${ingredient.slug}/`),
     ...cultureArticles.map((article) => `/culture/${article.slug}/`),
-    ...workshops.map((workshop) => `/apprendre/${workshop.slug}/`),
+    ...(!completeCookingWorkshopCutoverReady ? workshops.map((workshop) => `/apprendre/${workshop.slug}/`) : []),
+    ...releasedCookingWorkshopGuides.map((guide) => guide.sourceRecipeSlug==='kroeung-jaune' ? '/apprendre/pratique/kroeung-jaune/' : `/apprendre/pratique/${guide.slug}/`),
     ...recipeTechniqueGuides.map((guide) => `/techniques/${guide.slug}/`)
   ];
 

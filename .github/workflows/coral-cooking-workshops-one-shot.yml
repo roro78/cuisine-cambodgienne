@@ -1,0 +1,182 @@
+name: Cuisine - Coral six ateliers via Render existant - ONE SHOT (no deploy)
+# One-shot generation completed on run 39467388097.
+# No automatic paid TTS call on subsequent branch changes.
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: cuisine-six-coral-one-shot-20261020
+  cancel-in-progress: false
+jobs:
+  generate:
+    name: "Atelier guide vocal ${{ matrix.atelier }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        # Only unfinished workshops. Three complete guides were already committed
+        # by run 39464869618 and must never be regenerated.
+        atelier:
+          - kroeung-jaune
+          - lok-lak
+          - bai-sach-chrouk
+    steps:
+      - name: Checkout isolated draft branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Dependencies
+        run: npm install --no-audit --no-fund
+      - name: MP3 measurement tools before any paid requests
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          command -v ffmpeg
+          command -v ffprobe
+      - name: Verify culinary contract and secure Coral adapter before TTS
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/bridge-cooking-workshops-coral.mjs
+          node scripts/check-workshop-blueprints.mjs
+          node scripts/check-workshop-audio.mjs
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --check
+      # A rerun restores already-synthesized chapter artifacts from the
+      # SAME workflow run, to avoid paying for the same successful track twice.
+      # No matching artifacts on the first attempt is expected.
+      - name: Restore checkpoints from earlier attempt (if any)
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pattern: cooking-coral-${{ matrix.atelier }}-*
+          merge-multiple: true
+          path: .tmp-cooking-coral
+
+      - name: "Generate only intro via existing Render Coral (resume-safe)"
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --one=intro
+      - name: "Checkpoint intro immediately"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cooking-coral-${{ matrix.atelier }}-intro
+          path: .tmp-cooking-coral/**/intro.mp3
+          retention-days: 14
+          if-no-files-found: ignore
+          include-hidden-files: true
+          overwrite: true
+      - name: "Generate only installer via existing Render Coral (resume-safe)"
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --one=installer
+      - name: "Checkpoint installer immediately"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cooking-coral-${{ matrix.atelier }}-installer
+          path: .tmp-cooking-coral/**/installer.mp3
+          retention-days: 14
+          if-no-files-found: ignore
+          include-hidden-files: true
+          overwrite: true
+      - name: "Generate only preparer via existing Render Coral (resume-safe)"
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --one=preparer
+      - name: "Checkpoint preparer immediately"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cooking-coral-${{ matrix.atelier }}-preparer
+          path: .tmp-cooking-coral/**/preparer.mp3
+          retention-days: 14
+          if-no-files-found: ignore
+          include-hidden-files: true
+          overwrite: true
+      - name: "Generate only assembler via existing Render Coral (resume-safe)"
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --one=assembler
+      - name: "Checkpoint assembler immediately"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cooking-coral-${{ matrix.atelier }}-assembler
+          path: .tmp-cooking-coral/**/assembler.mp3
+          retention-days: 14
+          if-no-files-found: ignore
+          include-hidden-files: true
+          overwrite: true
+      - name: "Generate only maitriser via existing Render Coral (resume-safe)"
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --one=maitriser
+      - name: "Checkpoint maitriser immediately"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cooking-coral-${{ matrix.atelier }}-maitriser
+          path: .tmp-cooking-coral/**/maitriser.mp3
+          retention-days: 14
+          if-no-files-found: ignore
+          include-hidden-files: true
+          overwrite: true
+      - name: "Generate only rectifier via existing Render Coral (resume-safe)"
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --one=rectifier
+      - name: "Checkpoint rectifier immediately"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cooking-coral-${{ matrix.atelier }}-rectifier
+          path: .tmp-cooking-coral/**/rectifier.mp3
+          retention-days: 14
+          if-no-files-found: ignore
+          include-hidden-files: true
+          overwrite: true
+      - name: "Generate only terminer via existing Render Coral (resume-safe)"
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --one=terminer
+      - name: "Checkpoint terminer immediately"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cooking-coral-${{ matrix.atelier }}-terminer
+          path: .tmp-cooking-coral/**/terminer.mp3
+          retention-days: 14
+          if-no-files-found: ignore
+          include-hidden-files: true
+          overwrite: true
+      - name: Assemble measured seven-chapter MP3, manifest and blueprint binding
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --assemble
+      - name: Validate all existing and newly measured MP3 files (offline)
+        run: |
+          node scripts/check-new-cooking-workshop-audio.mjs
+          node scripts/check-workshop-audio.mjs
+      - name: Store MP3 + manifest for acoustic listening
+        uses: actions/upload-artifact@v4
+        with:
+          name: cooking-coral-${{ matrix.atelier }}-review
+          path: |
+            public/audio/workshops/**/atelier-coral.mp3
+            src/data/atelier-recette-audio/*.json
+          retention-days: 14
+          if-no-files-found: error
+      - name: Commit only THIS new workshop's assets (never historical MP3s or social workflows)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "src/data/atelier-recette-guides/${{ matrix.atelier }}.json" "src/data/atelier-recette-audio/${{ matrix.atelier }}.json"
+          git add -- public/audio/workshops/*/atelier-coral.mp3
+          test "$(git diff --cached --name-only | wc -l)" -eq 3
+          if git diff --cached --name-only | grep -E '(automation/|social|workflows/|workshop-audio/piler-aromates-au-mortier|workshop-audio/equilibrer-une-sauce|workshop-audio/saisir-viande-poele)'; then
+            echo "Protected path modified: STOP"; exit 1
+          fi
+          git commit -m "assets(ateliers): guide Coral complet de ${{ matrix.atelier }} - revue acoustique requise"
+          git fetch origin feat/ateliers-cinq-recettes-completes-20261020
+          git rebase origin/feat/ateliers-cinq-recettes-completes-20261020
+          git push origin "HEAD:feat/ateliers-cinq-recettes-completes-20261020"

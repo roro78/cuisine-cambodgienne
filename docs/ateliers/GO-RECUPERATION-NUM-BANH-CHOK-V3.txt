@@ -1,0 +1,3 @@
+Reprendre exclusivement Num Banh Chok V3 sur les sept textes approuvés (21 octobre 2026).
+Erreur précédente: CORAL_V2_TIMEOUT en assembler part 2/4, après 11 segments enregistrés mais non archivés; anciens segments non récupérables, ne pas prétendre les réutiliser.
+Le workflow ciblé doit préserver les segments réellement validés dans des artefacts incluant les fichiers cachés, même après échec. Pas d'autre recette, pas de Lok Lak, pas de production ni de publication, pas de fusion.

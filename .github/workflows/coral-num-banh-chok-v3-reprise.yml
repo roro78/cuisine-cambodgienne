@@ -1,0 +1,495 @@
+name: Cuisine - Num Banh Chok V3 - quota protege
+# No automatic cost. No push trigger. Only explicit manual authorization,
+# bounded segment budget, one paid request per step, no automatic retries.
+on:
+  workflow_dispatch:
+    inputs:
+      authorize_paid_tts:
+        description: 'Saisir OUI_J_AUTORISE pour des segments payants; NON = audit gratuit'
+        required: true
+        default: NON
+        type: string
+      max_new_segments:
+        description: 'Budget MAXIMAL de segments dans ce lancement (0..25); 0 = aucun appel payant'
+        required: true
+        default: '0'
+        type: string
+      resume_run_id:
+        description: 'ID du run avec fragments déjà confirmés, ou 0 pour un premier essai'
+        required: true
+        default: '0'
+        type: string
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: cuisine-num-banh-v3-manual-budget
+  cancel-in-progress: false
+jobs:
+  offline_check:
+    name: Prévol gratuit, aucune requête Coral
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/ateliers-cinq-recettes-completes-20261020
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Contrats et garde quota sans internet payant
+        run: |
+          set -euo pipefail
+          node scripts/check-workshop-blueprints.mjs
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --check
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --plan
+          node tests/atelier-coral-quota-safety.test.mjs
+  pay_with_limit:
+    needs: offline_check
+    name: Synthèse volontaire bornée, 25 segments maximum
+    if: ${{ inputs.authorize_paid_tts == 'OUI_J_AUTORISE' && inputs.max_new_segments != '0' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/ateliers-cinq-recettes-completes-20261020
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Installer FFmpeg et FFprobe avant tout appel payant
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          command -v ffprobe
+          command -v ffmpeg
+      - name: Budget validé avant toute requête payante
+        shell: bash
+        env:
+          LIMIT: ${{ inputs.max_new_segments }}
+        run: |
+          set -euo pipefail
+          [[ "$LIMIT" =~ ^([1-9]|1[0-9]|2[0-5])$ ]] || { echo "STOP: budget invalide"; exit 1; }
+          echo "Plafond de $LIMIT appels possibles, zero nouvel appel automatique apres echec."
+      - name: Refuser une nouvelle facturation si des segments existent sans restauration
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FROM_RUN: ${{ inputs.resume_run_id }}
+        run: |
+          set -euo pipefail
+          if [ "$FROM_RUN" = '0' ]; then
+            SAVED=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?per_page=100" \
+              --jq '[.artifacts[] | select(.expired == false) | select(.name | startswith("cuisine-num-banh-v3-confirmed-"))] | length')
+            if [ "$SAVED" -gt 0 ]; then
+              echo "STOP QUOTA : $SAVED segment(s) deja sauvegardes; fournir le run_id d'origine avant toute nouvelle generation."
+              exit 1
+            fi
+          fi
+      - name: Restore confirmed segments from an earlier authorized run
+        if: ${{ inputs.resume_run_id != '0' }}
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.resume_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pattern: cuisine-num-banh-v3-confirmed-*
+          merge-multiple: true
+          path: .tmp-cooking-coral-restore
+      - name: Restore and refuse ambiguous requests without triggering Coral
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -d .tmp-cooking-coral-restore ]; then
+            SLUG=$(node -e "process.stdout.write(require('./src/data/atelier-recette-guides/num-banh-chok.json').slug)")
+            mkdir -p ".tmp-cooking-coral/$SLUG/v3"
+            find .tmp-cooking-coral-restore -type f \( -name '*.mp3' -o -name '*.uncertain.json' \) -exec cp -n {} ".tmp-cooking-coral/$SLUG/v3/" \;
+          fi
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --check
+      - name: Coral segment 1 sur 25 - intro 1/3
+        if: ${{ fromJSON(inputs.max_new_segments) >= 1 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=intro --part=1
+      - name: Archiver segment 1 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 1 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-01
+          path: |
+            .tmp-cooking-coral/*/v3/intro-part-01-*.mp3
+            .tmp-cooking-coral/*/v3/intro-part-01-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 2 sur 25 - intro 2/3
+        if: ${{ fromJSON(inputs.max_new_segments) >= 2 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=intro --part=2
+      - name: Archiver segment 2 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 2 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-02
+          path: |
+            .tmp-cooking-coral/*/v3/intro-part-02-*.mp3
+            .tmp-cooking-coral/*/v3/intro-part-02-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 3 sur 25 - intro 3/3
+        if: ${{ fromJSON(inputs.max_new_segments) >= 3 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=intro --part=3
+      - name: Archiver segment 3 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 3 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-03
+          path: |
+            .tmp-cooking-coral/*/v3/intro-part-03-*.mp3
+            .tmp-cooking-coral/*/v3/intro-part-03-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 4 sur 25 - installer 1/4
+        if: ${{ fromJSON(inputs.max_new_segments) >= 4 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=installer --part=1
+      - name: Archiver segment 4 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 4 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-04
+          path: |
+            .tmp-cooking-coral/*/v3/installer-part-01-*.mp3
+            .tmp-cooking-coral/*/v3/installer-part-01-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 5 sur 25 - installer 2/4
+        if: ${{ fromJSON(inputs.max_new_segments) >= 5 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=installer --part=2
+      - name: Archiver segment 5 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 5 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-05
+          path: |
+            .tmp-cooking-coral/*/v3/installer-part-02-*.mp3
+            .tmp-cooking-coral/*/v3/installer-part-02-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 6 sur 25 - installer 3/4
+        if: ${{ fromJSON(inputs.max_new_segments) >= 6 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=installer --part=3
+      - name: Archiver segment 6 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 6 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-06
+          path: |
+            .tmp-cooking-coral/*/v3/installer-part-03-*.mp3
+            .tmp-cooking-coral/*/v3/installer-part-03-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 7 sur 25 - installer 4/4
+        if: ${{ fromJSON(inputs.max_new_segments) >= 7 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=installer --part=4
+      - name: Archiver segment 7 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 7 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-07
+          path: |
+            .tmp-cooking-coral/*/v3/installer-part-04-*.mp3
+            .tmp-cooking-coral/*/v3/installer-part-04-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 8 sur 25 - preparer 1/3
+        if: ${{ fromJSON(inputs.max_new_segments) >= 8 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=preparer --part=1
+      - name: Archiver segment 8 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 8 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-08
+          path: |
+            .tmp-cooking-coral/*/v3/preparer-part-01-*.mp3
+            .tmp-cooking-coral/*/v3/preparer-part-01-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 9 sur 25 - preparer 2/3
+        if: ${{ fromJSON(inputs.max_new_segments) >= 9 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=preparer --part=2
+      - name: Archiver segment 9 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 9 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-09
+          path: |
+            .tmp-cooking-coral/*/v3/preparer-part-02-*.mp3
+            .tmp-cooking-coral/*/v3/preparer-part-02-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 10 sur 25 - preparer 3/3
+        if: ${{ fromJSON(inputs.max_new_segments) >= 10 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=preparer --part=3
+      - name: Archiver segment 10 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 10 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-10
+          path: |
+            .tmp-cooking-coral/*/v3/preparer-part-03-*.mp3
+            .tmp-cooking-coral/*/v3/preparer-part-03-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 11 sur 25 - assembler 1/4
+        if: ${{ fromJSON(inputs.max_new_segments) >= 11 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=assembler --part=1
+      - name: Archiver segment 11 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 11 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-11
+          path: |
+            .tmp-cooking-coral/*/v3/assembler-part-01-*.mp3
+            .tmp-cooking-coral/*/v3/assembler-part-01-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 12 sur 25 - assembler 2/4
+        if: ${{ fromJSON(inputs.max_new_segments) >= 12 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=assembler --part=2
+      - name: Archiver segment 12 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 12 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-12
+          path: |
+            .tmp-cooking-coral/*/v3/assembler-part-02-*.mp3
+            .tmp-cooking-coral/*/v3/assembler-part-02-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 13 sur 25 - assembler 3/4
+        if: ${{ fromJSON(inputs.max_new_segments) >= 13 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=assembler --part=3
+      - name: Archiver segment 13 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 13 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-13
+          path: |
+            .tmp-cooking-coral/*/v3/assembler-part-03-*.mp3
+            .tmp-cooking-coral/*/v3/assembler-part-03-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 14 sur 25 - assembler 4/4
+        if: ${{ fromJSON(inputs.max_new_segments) >= 14 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=assembler --part=4
+      - name: Archiver segment 14 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 14 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-14
+          path: |
+            .tmp-cooking-coral/*/v3/assembler-part-04-*.mp3
+            .tmp-cooking-coral/*/v3/assembler-part-04-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 15 sur 25 - maitriser 1/4
+        if: ${{ fromJSON(inputs.max_new_segments) >= 15 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=maitriser --part=1
+      - name: Archiver segment 15 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 15 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-15
+          path: |
+            .tmp-cooking-coral/*/v3/maitriser-part-01-*.mp3
+            .tmp-cooking-coral/*/v3/maitriser-part-01-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 16 sur 25 - maitriser 2/4
+        if: ${{ fromJSON(inputs.max_new_segments) >= 16 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=maitriser --part=2
+      - name: Archiver segment 16 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 16 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-16
+          path: |
+            .tmp-cooking-coral/*/v3/maitriser-part-02-*.mp3
+            .tmp-cooking-coral/*/v3/maitriser-part-02-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 17 sur 25 - maitriser 3/4
+        if: ${{ fromJSON(inputs.max_new_segments) >= 17 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=maitriser --part=3
+      - name: Archiver segment 17 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 17 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-17
+          path: |
+            .tmp-cooking-coral/*/v3/maitriser-part-03-*.mp3
+            .tmp-cooking-coral/*/v3/maitriser-part-03-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 18 sur 25 - maitriser 4/4
+        if: ${{ fromJSON(inputs.max_new_segments) >= 18 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=maitriser --part=4
+      - name: Archiver segment 18 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 18 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-18
+          path: |
+            .tmp-cooking-coral/*/v3/maitriser-part-04-*.mp3
+            .tmp-cooking-coral/*/v3/maitriser-part-04-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 19 sur 25 - rectifier 1/4
+        if: ${{ fromJSON(inputs.max_new_segments) >= 19 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=rectifier --part=1
+      - name: Archiver segment 19 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 19 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-19
+          path: |
+            .tmp-cooking-coral/*/v3/rectifier-part-01-*.mp3
+            .tmp-cooking-coral/*/v3/rectifier-part-01-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 20 sur 25 - rectifier 2/4
+        if: ${{ fromJSON(inputs.max_new_segments) >= 20 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=rectifier --part=2
+      - name: Archiver segment 20 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 20 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-20
+          path: |
+            .tmp-cooking-coral/*/v3/rectifier-part-02-*.mp3
+            .tmp-cooking-coral/*/v3/rectifier-part-02-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 21 sur 25 - rectifier 3/4
+        if: ${{ fromJSON(inputs.max_new_segments) >= 21 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=rectifier --part=3
+      - name: Archiver segment 21 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 21 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-21
+          path: |
+            .tmp-cooking-coral/*/v3/rectifier-part-03-*.mp3
+            .tmp-cooking-coral/*/v3/rectifier-part-03-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 22 sur 25 - rectifier 4/4
+        if: ${{ fromJSON(inputs.max_new_segments) >= 22 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=rectifier --part=4
+      - name: Archiver segment 22 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 22 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-22
+          path: |
+            .tmp-cooking-coral/*/v3/rectifier-part-04-*.mp3
+            .tmp-cooking-coral/*/v3/rectifier-part-04-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 23 sur 25 - terminer 1/3
+        if: ${{ fromJSON(inputs.max_new_segments) >= 23 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=terminer --part=1
+      - name: Archiver segment 23 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 23 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-23
+          path: |
+            .tmp-cooking-coral/*/v3/terminer-part-01-*.mp3
+            .tmp-cooking-coral/*/v3/terminer-part-01-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 24 sur 25 - terminer 2/3
+        if: ${{ fromJSON(inputs.max_new_segments) >= 24 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=terminer --part=2
+      - name: Archiver segment 24 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 24 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-24
+          path: |
+            .tmp-cooking-coral/*/v3/terminer-part-02-*.mp3
+            .tmp-cooking-coral/*/v3/terminer-part-02-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Coral segment 25 sur 25 - terminer 3/3
+        if: ${{ fromJSON(inputs.max_new_segments) >= 25 }}
+        run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=terminer --part=3
+      - name: Archiver segment 25 ou marqueur de resultat incertain
+        if: ${{ always() && fromJSON(inputs.max_new_segments) >= 25 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-25
+          path: |
+            .tmp-cooking-coral/*/v3/terminer-part-03-*.mp3
+            .tmp-cooking-coral/*/v3/terminer-part-03-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Assemblage GRATUIT sur les segments deja confirmés
+        if: ${{ fromJSON(inputs.max_new_segments) == 25 }}
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --assemble
+          node scripts/check-new-cooking-workshop-audio.mjs
+          node scripts/check-culinary-lexicon.mjs
+          node scripts/check-workshop-blueprints.mjs
+      - name: Archiver le MP3 final avant de toucher au dépôt
+        if: ${{ fromJSON(inputs.max_new_segments) == 25 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-final
+          path: |
+            public/audio/workshops/num-banh-chok-sauce-et-herbes-fraiches/atelier-coral-v3.mp3
+            src/data/atelier-recette-audio/num-banh-chok-v3.json
+          retention-days: 90
+          if-no-files-found: error
+      - name: Commit du seul nouveau MP3 V3 après vérification
+        if: ${{ fromJSON(inputs.max_new_segments) == 25 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- public/audio/workshops/num-banh-chok-sauce-et-herbes-fraiches/atelier-coral-v3.mp3
+          git add -- src/data/atelier-recette-audio/num-banh-chok-v3.json src/data/atelier-recette-guides/num-banh-chok.json
+          git commit -m "audio(ateliers): Num Banh Chok V3, sept chapitres vérifiés"
+          git fetch origin feat/ateliers-cinq-recettes-completes-20261020
+          git rebase origin/feat/ateliers-cinq-recettes-completes-20261020
+          git push origin HEAD:feat/ateliers-cinq-recettes-completes-20261020

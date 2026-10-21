@@ -2,15 +2,23 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
+import CookingWorkshopAudio from '../../../components/CookingWorkshopAudio.astro';
 import workshop from '../../../data/atelier-recette-guides/kroeung-jaune.json';
 import { recipes } from '../../../data/recipes';
 import type { RecipeIngredient } from '../../../data/recipes';
 
 const recipe = recipes.find((item) => item.slug === workshop.sourceRecipeSlug);
 if (!recipe) throw new Error('La recette Kroeung jaune manque : atelier impossible à compiler.');
-const ingredientLine = (item: RecipeIngredient) =>
-  [item.quantity, item.unit, item.name].filter((part) => part !== undefined && part !== null && part !== '').join(' ');
+// Each ingredient is displayed with a live-scaled numeric amount; the canonical source stays untouched.
 const totalMinutes = workshop.duration.practicalMinutes + workshop.duration.preparationMinutes + workshop.duration.waitingMinutes;
+const heroPicture = workshop.media.finishedPreparationImage || recipe.image;
+const heroCaption = 'Visuel éditorial du kroeung jaune préparé au mortier.';
+const recorded = import.meta.glob('../../../data/atelier-recette-audio/*.json', { eager:true, import:'default' }) as Record<string,{atelier:string;status:string;audioUrl:string;durationSec:number;chapters:{id:string;title:string;startSec:number;endSec:number}[];review:{acousticListening:boolean;mobile:boolean;desktop:boolean}}>;
+const currentAsset=(workshop.audio as {asset?:{audioUrl:string;sha256:string}}).asset;
+const guideAudio=workshop.audio.status==='script_only'||!currentAsset ? undefined
+  : Object.values(recorded).find((manifest)=>
+      manifest.atelier===workshop.slug && manifest.audioUrl===currentAsset.audioUrl && (manifest as {sha256?:string}).sha256===currentAsset.sha256);
+const audioTexts=[workshop.audio.intro,...workshop.phases.map((phase)=>phase.audioScript)];
 ---
 <BaseLayout
   title={workshop.title + ' — Atelier de cuisine | Cuisine du Cambodge'}
@@ -29,43 +37,58 @@ const totalMinutes = workshop.duration.practicalMinutes + workshop.duration.prep
         <p class="atelier-intro">{workshop.finalPreparation}</p>
         <p>{workshop.learningGoal}. Le résultat est une préparation complète, prête à parfumer un plat cuisiné.</p>
         <dl class="atelier-stats">
-          <div><dt>Durée des gestes</dt><dd>{totalMinutes} min</dd></div>
-          <div><dt>Rendement</dt><dd>{workshop.portionLabel}</dd></div>
+          <div><dt>Temps de préparation estimé</dt><dd>{totalMinutes} min</dd></div>
+          <div><dt>Rendement</dt><dd data-workshop-servings-hero>{recipe.baseServings} petit pot</dd></div>
           <div><dt>Niveau</dt><dd>{workshop.difficulty}</dd></div>
         </dl>
         <div class="atelier-hero-links">
           <a class="atelier-action" href="#ingredients">Préparer les ingrédients <span aria-hidden="true">↘</span></a>
           <a href={'/recettes/' + recipe.slug + '/'}>Lire la fiche recette</a>
         </div>
-        <p class="atelier-preview-note">Version de préparation éditoriale : photographie finale et guide vocal à valider avant publication.</p>
+        <p class="atelier-preview-note">Atelier en préproduction : narration approuvée à l’écoute ; contrôles d’affichage mobile/ordinateur à finaliser avant publication.</p>
       </div>
       <figure class="atelier-hero-photo">
-        <img src={recipe.image ?? '/images/cuisine/kroeung-1600.webp'} alt={recipe.imageAlt ?? 'Pâte de kroeung et aromates frais'} width={recipe.imageWidth ?? 1200} height={recipe.imageHeight ?? 800} loading="eager" />
-        <figcaption>Visuel de la recette existante. Photo définitive de l’atelier encore à confirmer.</figcaption>
+        <img src={heroPicture ?? '/images/cuisine/kroeung-1600.webp'} alt={workshop.finalPreparation} width={recipe.imageWidth ?? 1200} height={recipe.imageHeight ?? 800} loading="eager" />
+        <figcaption>{heroCaption}</figcaption>
       </figure>
     </header>
 
     <section class="atelier-goal" aria-labelledby="atelier-goal-title">
-      <div><p class="eyebrow">Ce que vous allez fabriquer</p><h2 id="atelier-goal-title">Une véritable pâte de kroeung jaune.</h2></div>
+      <div><p class="eyebrow">Ce que vous allez préparer</p><h2 id="atelier-goal-title">Une véritable pâte de kroeung jaune.</h2></div>
       <p>Vous préparerez les aromates, apprendrez pourquoi les fibres se coupent finement et découvrirez comment leur texture évolue au mortier. À la fin, vous saurez reconnaître une pâte liée, fine et très parfumée.</p>
     </section>
 
-    <section id="ingredients" class="atelier-section" aria-labelledby="atelier-ingredients-title">
+    <section id="ingredients" class="atelier-section" aria-labelledby="atelier-ingredients-title" data-workshop-servings-root="" data-base-servings={recipe.baseServings} data-workshop-portion-kind="pot">
       <p class="eyebrow">01 · Tout réunir avant de cuisiner</p>
       <h2 id="atelier-ingredients-title">La liste des ingrédients et le matériel.</h2>
       <p>Les quantités sont reprises automatiquement de la <a href={'/recettes/' + recipe.slug + '/'}>recette Kroeung jaune</a>. L’atelier utilise exactement cette base.</p>
+      <div class="atelier-servings" aria-label="Choisir le rendement en petits pots">
+        <label for="kroeung-pot-count">Je prépare</label>
+        <input id="kroeung-pot-count" data-workshop-servings-input type="number" min="1" max="12" step="1" value={recipe.baseServings} />
+        <strong data-workshop-servings-summary aria-live="polite">1 petit pot</strong>
+        <div>
+          {[1,2,4,6].map(n=><button type="button" data-workshop-serving-preset={n} aria-pressed={n===recipe.baseServings?'true':'false'}>{n} pot{n>1?'s':''}</button>)}
+        </div>
+      </div>
       <div class="atelier-kit-grid">
         <div class="atelier-kit-panel">
-          <h3>Ingrédients · {recipe.servingsLabel ?? String(recipe.baseServings) + ' portion(s)'}</h3>
+          <h3>Ingrédients · quantités pour le rendement choisi</h3>
           <ul class="atelier-checklist">
             {recipe.ingredients.map((item) => (
-              <li><label><input type="checkbox" /><span>{ingredientLine(item)}{item.note && <small>{item.note}</small>}</span></label></li>
+              <li data-workshop-ingredient><label><input type="checkbox" /><span>
+                {item.quantity!==undefined && <span data-workshop-ingredient-quantity="" data-base-quantity={item.quantity} data-unit={item.unit??''}>{item.quantity}</span>}
+                {item.unit && ' '+item.unit} {item.name}
+                {item.note && <small>{item.note}</small>}
+              </span></label></li>
             ))}
           </ul>
         </div>
         <div class="atelier-preflight">
           <section><h3>Matériel</h3><ul>{workshop.equipment.map((item) => <li>{item}</li>)}</ul></section>
           <section><h3>Avant de commencer</h3><ul>{workshop.beforeStarting.map((item) => <li>{item}</li>)}</ul></section>
+          {recipe.substitutions && recipe.substitutions.length>0 && (
+            <section><h3>Remplacements possibles</h3><ul>{recipe.substitutions.map((item)=><li>{item}</li>)}</ul></section>
+          )}
           <section><h3>À respecter</h3><ul>{workshop.safety.map((item) => <li>{item}</li>)}</ul>
             <p class="atelier-small">Allergènes : {workshop.allergens.status === 'none' ? 'aucun identifié dans cette recette ; vérifiez néanmoins les ingrédients utilisés.' : workshop.allergens.items.join(', ')}</p>
           </section>
@@ -74,11 +97,11 @@ const totalMinutes = workshop.duration.practicalMinutes + workshop.duration.prep
     </section>
 
     <section id="etapes" class="atelier-section" aria-labelledby="atelier-steps-title">
-      <p class="eyebrow">02 · Les six phases de l’atelier</p>
+      <p class="eyebrow">02 · Les six étapes de l’atelier</p>
       <h2 id="atelier-steps-title">Cuisinez, observez, rectifiez.</h2>
-      <p>Faites chaque geste avant de passer au suivant. Les durées vous guident, mais les critères de réussite vous indiquent quand continuer.</p>
-      <p class="atelier-audio-note">Le guide vocal en sept chapitres est en préparation. Cet atelier reste réalisable entièrement par écrit, sans MP3.</p>
-      <nav class="atelier-step-nav" aria-label="Naviguer entre les six phases">
+      <p>Les temps indiqués sont des estimations : poursuivez chaque préparation jusqu’à obtenir la bonne texture, même si vous avez besoin de quelques minutes de plus.</p>
+      {guideAudio ? <CookingWorkshopAudio manifest={guideAudio} scripts={audioTexts} /> : <p class="atelier-audio-note">{workshop.review.editorialValidated ? "Textes validés. La nouvelle narration est en préparation : suivez la fiche écrite en attendant." : "La narration en sept chapitres est en préparation. La fiche reste utilisable par écrit."}</p>}
+      <nav class="atelier-step-nav" aria-label="Naviguer entre les six étapes">
         {workshop.phases.map((phase, i) => (
           <a href={'#phase-' + phase.id}><span>{String(i + 1).padStart(2, '0')}</span><strong>{phase.title}</strong></a>
         ))}
@@ -88,7 +111,7 @@ const totalMinutes = workshop.duration.practicalMinutes + workshop.duration.prep
           <article class="atelier-phase" id={'phase-' + phase.id} aria-labelledby={'phase-title-' + phase.id}>
             <div class="atelier-phase-heading">
               <span class="atelier-phase-number">{String(index + 1).padStart(2, '0')}</span>
-              <div><p class="eyebrow">Phase {index + 1} sur 6 · {phase.minutes} min</p><h3 id={'phase-title-' + phase.id}>{phase.title}</h3></div>
+              <div><p class="eyebrow">Étape {index + 1} sur 6 · environ {phase.minutes} min</p><h3 id={'phase-title-' + phase.id}>{phase.title}</h3></div>
             </div>
             <div class="atelier-phase-columns">
               <div>
@@ -106,7 +129,7 @@ const totalMinutes = workshop.duration.practicalMinutes + workshop.duration.prep
             </div>
             <p class="atelier-learning"><strong>Pourquoi ce geste ?</strong> {phase.learning}</p>
             <p class="atelier-small"><strong>Précaution :</strong> {phase.safety}</p>
-            {index < workshop.phases.length - 1 && <a class="atelier-next" href={'#phase-' + workshop.phases[index + 1].id}>Phase suivante <span aria-hidden="true">→</span></a>}
+            {index < workshop.phases.length - 1 && <a class="atelier-next" href={'#phase-' + workshop.phases[index + 1].id}>Étape suivante <span aria-hidden="true">→</span></a>}
           </article>
         ))}
       </div>
@@ -122,13 +145,25 @@ const totalMinutes = workshop.duration.practicalMinutes + workshop.duration.prep
     <footer class="atelier-sources">
       <h2>Sources de l’atelier</h2>
       <p>Les ingrédients, proportions et gestes de base viennent de la <a href={'/recettes/' + recipe.slug + '/'}>recette Kroeung jaune</a>. Les critères d’observation et les exercices pédagogiques complètent cette préparation.</p>
+      <p>Références culinaires et variantes consultées :</p>
+      <ul>{workshop.sources.culinaryReferences.map(reference=>(<li><a href={reference.url} target="_blank" rel="noopener noreferrer">{reference.title}</a></li>))}</ul>
       <a href="/apprendre/">← Retour aux ateliers</a>
     </footer>
   </main>
   <SiteFooter />
 </BaseLayout>
-
+<script>
+  import { initCookingWorkshopServings } from '../../../scripts/cookingWorkshopServings';
+  initCookingWorkshopServings();
+</script>
 <style>
+  .atelier-servings{display:flex;align-items:center;flex-wrap:wrap;gap:12px;padding:16px 20px;background:#fffaf0;border:1px solid #decba7;border-radius:12px;margin:20px 0}
+  .atelier-servings label{font-weight:700}
+  .atelier-servings input{width:76px;min-height:46px;font-size:18px;padding:6px}
+  .atelier-servings div{display:flex;gap:7px;flex-wrap:wrap}
+  .atelier-servings button{min-height:44px;border:1px solid #a88f64;border-radius:24px;background:white;padding:8px 14px}
+  .atelier-servings button[aria-pressed='true']{background:#f1ca62}
+
   .cooking-atelier{--ink:#302e28;--border:#ddd4c6;--paper:#faf6ef;max-width:1340px;margin:auto;padding:125px clamp(18px,4.2vw,64px) 85px;color:var(--ink);line-height:1.65}
   .cooking-atelier *{box-sizing:border-box}
   .cooking-atelier a{color:#76531d;text-underline-offset:3px}

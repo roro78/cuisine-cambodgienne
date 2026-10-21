@@ -1,0 +1,4 @@
+MISSION-CINQ-ATELIERS-V2-AUTORISEE-20261021
+
+Ce marqueur technique déclenche une seule génération de préécoute Coral V2 pour les cinq ateliers sur la branche PR #92, en application de la mission du propriétaire dans cette conversation. Ce n'est pas une preuve de validation humaine des scripts ou de l'écoute.
+Aucun merge, aucune publication OVH, aucun autre projet. Les MP3 restent draft/review_pending.

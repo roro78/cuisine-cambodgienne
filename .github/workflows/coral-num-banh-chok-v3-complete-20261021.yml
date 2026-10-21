@@ -1,0 +1,512 @@
+name: Cuisine - Num Banh Chok V3 complet (une seule execution)
+# Explicit user approval: complete the seven chapters even if new API credits are spent.
+# One attempt per segment, no automatic retry, 90-day checkpoint retention.
+# NEVER change Lok Lak, other ateliers, OVH or production.
+on:
+  push:
+    branches:
+      - feat/ateliers-cinq-recettes-completes-20261020
+    paths:
+      - docs/ateliers/GO-NUM-BANH-V3-COMPLET-20261021.txt
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: cuisine-num-banh-v3-complete-user-authorized-20261021
+  cancel-in-progress: false
+jobs:
+  complete_once:
+    name: Générer 24 segments manquants, assembler le MP3 approuvé
+    if: ${{ github.run_attempt == 1 && github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout review branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/ateliers-cinq-recettes-completes-20261020
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install project dependencies for offline validation
+        run: npm install --no-audit --no-fund
+      - name: Install local FFmpeg and FFprobe before any paid request
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          fi
+          command -v ffmpeg
+          command -v ffprobe
+      - name: Check 7 approved scripts and anti-quota regression WITHOUT any TTS
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fxq 'AUTORISATION_UTILISATEUR_CORAL_NUM_BANH_COMPLET_2026-10-21' docs/ateliers/GO-NUM-BANH-V3-COMPLET-20261021.txt
+          node scripts/check-workshop-blueprints.mjs
+          node tests/atelier-coral-quota-safety.test.mjs
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --check
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --plan
+      - name: Restore FIRST confirmed MP3 from prior successful test, no duplicate charge
+        uses: actions/download-artifact@v4
+        with:
+          name: cuisine-num-banh-v3-confirmed-01
+          run-id: 39629603778
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: .saved-coral-confirmed
+      - name: SHA-verify preserved first segment and copy into V3 workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find .saved-coral-confirmed -type f -name '*.mp3' | wc -l)" -eq 1
+          test "$(find .saved-coral-confirmed -type f -name '*.uncertain.json' | wc -l)" -eq 0
+          FILE="$(find .saved-coral-confirmed -type f -name '*.mp3' -print -quit)"
+          SLUG="$(node -e "process.stdout.write(require('./src/data/atelier-recette-guides/num-banh-chok.json').slug)")"
+          mkdir -p ".tmp-cooking-coral/$SLUG/v3"
+          export FILE
+          node --input-type=module <<'NODE'
+          import {readFileSync,statSync} from 'node:fs';
+          import {basename} from 'node:path';
+          import {createHash} from 'node:crypto';
+          const guide=JSON.parse(readFileSync('src/data/atelier-recette-guides/num-banh-chok.json','utf8'));
+          const ss=guide.audio.intro.trim().split(/(?<=[.!?…])\s+/u);
+          let part='';
+          for(const line of ss){if(part&&part.length+line.length+1>480)break;part+=(part?' ':'')+line}
+          const hash=createHash('sha256').update(part).digest('hex').slice(0,16);
+          if(basename(process.env.FILE)!=='intro-part-01-'+hash+'.mp3'||statSync(process.env.FILE).size<30000)
+            throw Error('STOP - MP3 conserve ne correspond pas au script approuve');
+          console.log('FIRST_MP3_SAVED_QUALITY_OK '+hash+' bytes='+statSync(process.env.FILE).size);
+          NODE
+          cp -n "$FILE" ".tmp-cooking-coral/$SLUG/v3/"
+          ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$FILE"
+          ffmpeg -v error -i "$FILE" -f null -
+          # Idempotent check: this command MUST skip the TTS call because MP3 is present.
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=intro --part=1
+      - name: "Coral 02/25 - intro 2/3"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=intro --part=2
+      - name: "Checkpoint 02/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-02
+          path: |
+            .tmp-cooking-coral/*/v3/intro-part-02-*.mp3
+            .tmp-cooking-coral/*/v3/intro-part-02-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 03/25 - intro 3/3"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=intro --part=3
+      - name: "Checkpoint 03/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-03
+          path: |
+            .tmp-cooking-coral/*/v3/intro-part-03-*.mp3
+            .tmp-cooking-coral/*/v3/intro-part-03-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 04/25 - installer 1/4"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=installer --part=1
+      - name: "Checkpoint 04/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-04
+          path: |
+            .tmp-cooking-coral/*/v3/installer-part-01-*.mp3
+            .tmp-cooking-coral/*/v3/installer-part-01-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 05/25 - installer 2/4"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=installer --part=2
+      - name: "Checkpoint 05/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-05
+          path: |
+            .tmp-cooking-coral/*/v3/installer-part-02-*.mp3
+            .tmp-cooking-coral/*/v3/installer-part-02-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 06/25 - installer 3/4"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=installer --part=3
+      - name: "Checkpoint 06/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-06
+          path: |
+            .tmp-cooking-coral/*/v3/installer-part-03-*.mp3
+            .tmp-cooking-coral/*/v3/installer-part-03-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 07/25 - installer 4/4"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=installer --part=4
+      - name: "Checkpoint 07/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-07
+          path: |
+            .tmp-cooking-coral/*/v3/installer-part-04-*.mp3
+            .tmp-cooking-coral/*/v3/installer-part-04-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 08/25 - preparer 1/3"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=preparer --part=1
+      - name: "Checkpoint 08/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-08
+          path: |
+            .tmp-cooking-coral/*/v3/preparer-part-01-*.mp3
+            .tmp-cooking-coral/*/v3/preparer-part-01-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 09/25 - preparer 2/3"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=preparer --part=2
+      - name: "Checkpoint 09/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-09
+          path: |
+            .tmp-cooking-coral/*/v3/preparer-part-02-*.mp3
+            .tmp-cooking-coral/*/v3/preparer-part-02-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 10/25 - preparer 3/3"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=preparer --part=3
+      - name: "Checkpoint 10/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-10
+          path: |
+            .tmp-cooking-coral/*/v3/preparer-part-03-*.mp3
+            .tmp-cooking-coral/*/v3/preparer-part-03-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 11/25 - assembler 1/4"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=assembler --part=1
+      - name: "Checkpoint 11/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-11
+          path: |
+            .tmp-cooking-coral/*/v3/assembler-part-01-*.mp3
+            .tmp-cooking-coral/*/v3/assembler-part-01-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 12/25 - assembler 2/4"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=assembler --part=2
+      - name: "Checkpoint 12/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-12
+          path: |
+            .tmp-cooking-coral/*/v3/assembler-part-02-*.mp3
+            .tmp-cooking-coral/*/v3/assembler-part-02-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 13/25 - assembler 3/4"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=assembler --part=3
+      - name: "Checkpoint 13/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-13
+          path: |
+            .tmp-cooking-coral/*/v3/assembler-part-03-*.mp3
+            .tmp-cooking-coral/*/v3/assembler-part-03-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 14/25 - assembler 4/4"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=assembler --part=4
+      - name: "Checkpoint 14/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-14
+          path: |
+            .tmp-cooking-coral/*/v3/assembler-part-04-*.mp3
+            .tmp-cooking-coral/*/v3/assembler-part-04-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 15/25 - maitriser 1/4"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=maitriser --part=1
+      - name: "Checkpoint 15/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-15
+          path: |
+            .tmp-cooking-coral/*/v3/maitriser-part-01-*.mp3
+            .tmp-cooking-coral/*/v3/maitriser-part-01-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 16/25 - maitriser 2/4"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=maitriser --part=2
+      - name: "Checkpoint 16/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-16
+          path: |
+            .tmp-cooking-coral/*/v3/maitriser-part-02-*.mp3
+            .tmp-cooking-coral/*/v3/maitriser-part-02-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 17/25 - maitriser 3/4"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=maitriser --part=3
+      - name: "Checkpoint 17/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-17
+          path: |
+            .tmp-cooking-coral/*/v3/maitriser-part-03-*.mp3
+            .tmp-cooking-coral/*/v3/maitriser-part-03-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 18/25 - maitriser 4/4"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=maitriser --part=4
+      - name: "Checkpoint 18/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-18
+          path: |
+            .tmp-cooking-coral/*/v3/maitriser-part-04-*.mp3
+            .tmp-cooking-coral/*/v3/maitriser-part-04-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 19/25 - rectifier 1/4"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=rectifier --part=1
+      - name: "Checkpoint 19/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-19
+          path: |
+            .tmp-cooking-coral/*/v3/rectifier-part-01-*.mp3
+            .tmp-cooking-coral/*/v3/rectifier-part-01-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 20/25 - rectifier 2/4"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=rectifier --part=2
+      - name: "Checkpoint 20/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-20
+          path: |
+            .tmp-cooking-coral/*/v3/rectifier-part-02-*.mp3
+            .tmp-cooking-coral/*/v3/rectifier-part-02-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 21/25 - rectifier 3/4"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=rectifier --part=3
+      - name: "Checkpoint 21/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-21
+          path: |
+            .tmp-cooking-coral/*/v3/rectifier-part-03-*.mp3
+            .tmp-cooking-coral/*/v3/rectifier-part-03-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 22/25 - rectifier 4/4"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=rectifier --part=4
+      - name: "Checkpoint 22/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-22
+          path: |
+            .tmp-cooking-coral/*/v3/rectifier-part-04-*.mp3
+            .tmp-cooking-coral/*/v3/rectifier-part-04-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 23/25 - terminer 1/3"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=terminer --part=1
+      - name: "Checkpoint 23/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-23
+          path: |
+            .tmp-cooking-coral/*/v3/terminer-part-01-*.mp3
+            .tmp-cooking-coral/*/v3/terminer-part-01-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 24/25 - terminer 2/3"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=terminer --part=2
+      - name: "Checkpoint 24/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-24
+          path: |
+            .tmp-cooking-coral/*/v3/terminer-part-02-*.mp3
+            .tmp-cooking-coral/*/v3/terminer-part-02-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+      - name: "Coral 25/25 - terminer 3/3"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --one=terminer --part=3
+      - name: "Checkpoint 25/25 - MP3 ou appel incertain"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-checkpoint-25
+          path: |
+            .tmp-cooking-coral/*/v3/terminer-part-03-*.mp3
+            .tmp-cooking-coral/*/v3/terminer-part-03-*.mp3.uncertain.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: warn
+
+      - name: Concatenate the 25 verified MP3s into one seven-chapter workshop
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/bridge-cooking-workshops-coral.mjs --atelier=num-banh-chok --edition=approved-v3 --assemble
+      - name: Save final full MP3 and manifest BEFORE any Git operation
+        uses: actions/upload-artifact@v4
+        with:
+          name: num-banh-v3-seven-chapters-complete
+          path: |
+            public/audio/workshops/num-banh-chok-sauce-et-herbes-fraiches/atelier-coral-v3.mp3
+            src/data/atelier-recette-audio/num-banh-chok-v3.json
+          retention-days: 90
+          if-no-files-found: error
+      - name: Validate chapter timestamps, approved script SHA, protected audio and recipe
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/check-new-cooking-workshop-audio.mjs
+          node scripts/check-culinary-lexicon.mjs
+          node scripts/check-workshop-blueprints.mjs
+          # Full CI follows the branch commit and checks the completed status.
+      - name: Commit only Num Banh Chok V3, without changing the other five MP3s
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- public/audio/workshops/num-banh-chok-sauce-et-herbes-fraiches/atelier-coral-v3.mp3
+          git add -- src/data/atelier-recette-audio/num-banh-chok-v3.json src/data/atelier-recette-guides/num-banh-chok.json
+          git commit -m "audio(ateliers): Num Banh Chok V3 complet - 7 chapitres approuves"
+          for n in 1 2 3; do
+            git fetch origin feat/ateliers-cinq-recettes-completes-20261020
+            git rebase origin/feat/ateliers-cinq-recettes-completes-20261020
+            if git push origin HEAD:feat/ateliers-cinq-recettes-completes-20261020; then
+              echo "COMPLETE_NUM_BANH_V3_SAVED_REVIEW_ONLY"
+              exit 0
+            fi
+          done
+          echo "Git push impossible sans force; MP3 complet sauvegardé en artefact."
+          exit 1

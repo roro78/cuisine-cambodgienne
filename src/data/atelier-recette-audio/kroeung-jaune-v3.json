@@ -1,0 +1,60 @@
+{
+  "atelier": "atelier-pratique-kroeung-jaune",
+  "canonicalRecipe": "kroeung-jaune",
+  "status": "audio_generated_review_pending",
+  "voice": "coral",
+  "audioUrl": "/audio/workshops/atelier-pratique-kroeung-jaune/atelier-coral-v3.mp3",
+  "durationSec": 664.728,
+  "sha256": "d1f4002f7585b112583a22c017359570f6e78e10745dc17ea949b650addf9408",
+  "chapters": [
+    {
+      "id": "intro",
+      "title": "Bienvenue et mise en place",
+      "startSec": 0,
+      "endSec": 71.112
+    },
+    {
+      "id": "installer",
+      "title": "Préparer le plan de travail et mesurer les aromates",
+      "startSec": 71.112,
+      "endSec": 163.176
+    },
+    {
+      "id": "preparer",
+      "title": "Nettoyer et émincer les aromates",
+      "startSec": 163.176,
+      "endSec": 260.856
+    },
+    {
+      "id": "assembler",
+      "title": "Commencer avec les fibres fermes",
+      "startSec": 260.856,
+      "endSec": 363.024
+    },
+    {
+      "id": "maitriser",
+      "title": "Transformer les aromates en pâte",
+      "startSec": 363.024,
+      "endSec": 473.496
+    },
+    {
+      "id": "rectifier",
+      "title": "Évaluer et corriger la texture",
+      "startSec": 473.496,
+      "endSec": 578.712
+    },
+    {
+      "id": "terminer",
+      "title": "Mettre le kroeung en pot et retenir le geste",
+      "startSec": 578.712,
+      "endSec": 664.728
+    }
+  ],
+  "scriptSha256": "24eff330c8390231d83fedd59ecf8b93f19431e3550aaf82a663615bc2eb12a2",
+  "review": {
+    "acousticListening": true,
+    "mobile": false,
+    "desktop": false
+  },
+  "sourceBackend": "render-iacoach-backend.onrender.com/api/tts"
+}
