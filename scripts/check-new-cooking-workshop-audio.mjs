@@ -13,7 +13,8 @@ for(const slug of names){
  const blueprint=JSON.parse(readFileSync('src/data/atelier-recette-guides/'+slug+'.json','utf8'));
  const isV2=blueprint.audio.storyboardVersion===2;
  const supersededV2=blueprint.audio.status==='script_only'&&!!blueprint.audio.supersededV2Asset;
- const manifestFile=resolve('src/data/atelier-recette-audio',slug+(isV2&&(blueprint.audio.status!=='script_only'||supersededV2)?'-v2':'')+'.json');
+ const approvedV3=slug!=='lok-lak'&&blueprint.audio.status!=='script_only'&&blueprint.audio.asset?.audioUrl?.endsWith('/atelier-coral-v3.mp3');
+ const manifestFile=resolve('src/data/atelier-recette-audio',slug+(approvedV3?'-v3':isV2&&(blueprint.audio.status!=='script_only'||supersededV2)?'-v2':'')+'.json');
  const has=existsSync(manifestFile);
  if(blueprint.audio.status==='script_only'){
    if(!has){
@@ -61,6 +62,8 @@ for(const slug of names){
    throw Error(slug+': chapter total does not match duration.');
  const sourceHash=createHash('sha256').update(JSON.stringify([blueprint.audio.intro,...blueprint.phases.map(p=>p.audioScript)])).digest('hex');
  if(sourceHash!==m.scriptSha256)throw Error(slug+': narration changed after generation; regeneration review needed.');
+ if(approvedV3&&(blueprint.audio.approvedScriptSha256!==sourceHash||blueprint.audio.editorialTextApproved!==true||blueprint.review.editorialValidated!==true))
+   throw Error(slug+': V3 non approuvée ou signature du script différente.');
  const reviewErrors=verifyCookingAudioReview(blueprint,m);
  if(reviewErrors.length)throw Error(slug+': '+reviewErrors.join(' | '));
  const asset=blueprint.audio.asset;
