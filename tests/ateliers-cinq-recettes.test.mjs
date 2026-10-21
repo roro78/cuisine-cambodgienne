@@ -48,7 +48,7 @@ test('Une source d’ingrédients, photos existantes, données privées absentes
   assert.doesNotMatch(page,/n8n|resend|socialCatalog|password|OPENAI_API_KEY/);
 });
 
-test('Lok Lak V2 : sept chapitres cuisinables, MP3 antérieur conservé mais non publiable', async () => {
+test('Lok Lak V2 : sept chapitres cuisinables, MP3 V2 conserve sans piste V1', async () => {
   const { data, recipes, errors } = await validateBlueprintFile('src/data/atelier-recette-guides/lok-lak.json');
   assert.deepEqual(errors, []);
   assert.equal(data.audio.storyboardVersion, 2);
@@ -56,7 +56,7 @@ test('Lok Lak V2 : sept chapitres cuisinables, MP3 antérieur conservé mais non
   assert.equal(data.review.productionApproved, false);
   if(data.audio.status === 'script_only') assert.equal(data.audio.asset, undefined, 'Old MP3 must not appear as the active V2 audio');
   else assert.match(data.audio.asset.audioUrl, /atelier-coral-v2[.]mp3$/, 'V2 must never overwrite old MP3');
-  assert.match(data.audio.previousAsset.sha256, /^[a-f0-9]{64}$/);
+  assert.equal(data.audio.previousAsset,undefined,'Les pistes courtes V1 ont été supprimées');
   const plan = buildCookingAudioStoryboard(data);
   assert.deepEqual(plan.chapters.map(c => c.id), ['intro', ...PHASE_IDS]);
   assert.ok(plan.chapters[0].text.length >= 350, 'Welcome and preparation before starting');
