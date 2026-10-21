@@ -1,0 +1,43 @@
+name: Publish MP3 page-follow restore once - 2026-10-21
+on:
+  push:
+    branches: [main]
+    paths:
+      - docs/ateliers/DECLENCHEMENT-OVH-SUIVI-NARRATION-20261021.md
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: one-time-page-follow-cambodge-20261021
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    name: Publish approved page-follow with pinned main SHA
+    if: github.repository == 'roro78/cuisine-cambodgienne'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify the one-time owner-authorized correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$(git log -1 --pretty=%s)" = "release: authorized one-time OVH MP3 page-follow restoration"
+          grep -Fq 'AUTORISATION_SUIVI_NARRATION=OUI' docs/ateliers/DECLENCHEMENT-OVH-SUIVI-NARRATION-20261021.md
+          grep -Fq 'manualFollowChoice=false' src/components/CookingWorkshopAudio.astro
+          grep -Fq 'mobileViewport.matches && !manualFollowChoice' src/components/CookingWorkshopAudio.astro
+          grep -Fq 'scrollToChapter(active)' src/components/CookingWorkshopAudio.astro
+          test -f tests/workshop-mobile-narration-scroll.test.mjs
+      - name: Dispatch existing SHA-pinned OVH publication
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run deploy-ovh.yml -R "$GITHUB_REPOSITORY" --ref main -f expected_source_sha="$RELEASE_SHA"
+          echo "ONE_TIME_PAGE_FOLLOW_RELEASE $RELEASE_SHA"
