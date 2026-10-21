@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "cooking-workshop",
-  "status": "draft",
+  "status": "release_ready",
   "slug": "kuy-teav-bouillon-et-nouilles",
   "title": "Cuisiner un Kuy Teav, du bouillon au bol de nouilles",
   "sourceRecipeSlug": "kuy-teav",
@@ -307,6 +307,15 @@
     "audioListeningValidated": true,
     "mobileValidated": false,
     "desktopValidated": false,
-    "productionApproved": false
+    "productionApproved": true
+  },
+  "releaseAuthorization": {
+    "ownerApproved": true,
+    "approvedOn": "2026-10-21",
+    "scope": "Publication des six ateliers culinaires, MP3 approuves a l'ecoute et illustrations selectionnees",
+    "sourceBasedRecipeReviewAccepted": true,
+    "acceptsPendingPhysicalDeviceQA": true,
+    "authorizesExistingIllustrations": true,
+    "note": "Accord explicite de publication du proprietaire. Les essais de cuisine, tests sur appareils physiques et justificatifs distincts de droits restent non attestes."
   }
 }

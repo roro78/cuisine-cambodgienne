@@ -33,7 +33,17 @@ export function verifyCookingAudioReview(blueprint, manifest) {
   }
   if (recorded==='audio_validated' && status!=='validated')
     errors.push('Manifeste audio validé avant validation de la fiche.');
-  if (blueprint?.status==='release_ready' && !passed)
-    errors.push('Publication refusée : contrôles humains audio non certifiés.');
+  // Explicit owner-authorized release may proceed without claiming real-device
+  // QA. Acoustic listening still must be confirmed in both sources.
+  const permission=blueprint?.releaseAuthorization;
+  const ownerApproved=permission?.ownerApproved===true &&
+    permission?.acceptsPendingPhysicalDeviceQA===true &&
+    blueprint?.review?.productionApproved===true &&
+    blueprint?.review?.audioListeningValidated===true &&
+    manifest?.review?.acousticListening===true &&
+    status==='generated_review_pending' &&
+    recorded==='audio_generated_review_pending';
+  if (blueprint?.status==='release_ready' && !passed && !ownerApproved)
+    errors.push('Publication refusée : contrôles humains incomplets sans accord du propriétaire.');
   return errors;
 }

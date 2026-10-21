@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "cooking-workshop",
-  "status": "draft",
+  "status": "release_ready",
   "slug": "num-banh-chok-sauce-et-herbes-fraiches",
   "title": "Préparer un Num Banh Chok, sauce au poisson et garnitures",
   "sourceRecipeSlug": "num-banh-chok",
@@ -306,6 +306,15 @@
     "audioListeningValidated": true,
     "mobileValidated": false,
     "desktopValidated": false,
-    "productionApproved": false
+    "productionApproved": true
+  },
+  "releaseAuthorization": {
+    "ownerApproved": true,
+    "approvedOn": "2026-10-21",
+    "scope": "Publication des six ateliers culinaires, MP3 approuves a l'ecoute et illustrations selectionnees",
+    "sourceBasedRecipeReviewAccepted": true,
+    "acceptsPendingPhysicalDeviceQA": true,
+    "authorizesExistingIllustrations": true,
+    "note": "Accord explicite de publication du proprietaire. Les essais de cuisine, tests sur appareils physiques et justificatifs distincts de droits restent non attestes."
   }
 }

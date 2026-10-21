@@ -9,6 +9,16 @@ import {existsSync,readFileSync,writeFileSync,renameSync,rmSync,copyFileSync} fr
 import {execFileSync} from 'node:child_process';
 import path from 'node:path';
 const slugs=['kroeung-jaune','lok-lak','samlor-machu','num-banh-chok','kuy-teav','bai-sach-chrouk'];
+// If the owner-authorized real release is already built, verify it directly.
+// The isolated draft simulation below remains available for future drafts.
+const actual=slugs.map(slug=>JSON.parse(readFileSync('src/data/atelier-recette-guides/'+slug+'.json','utf8')));
+if(actual.every(guide=>guide.status==='release_ready')){
+  assert.ok(actual.every(guide=>guide.releaseAuthorization?.ownerApproved===true),'Missing owner authorization');
+  assert.ok(existsSync('dist/sitemap.xml'),'Build output missing');
+  execFileSync(process.execPath,['scripts/check-workshop-cutover.mjs'],{stdio:'inherit',timeout:120000});
+  console.log('WORKSHOP_RELEASE_SIMULATION_PASS — owner-authorized release candidate verified, no fake QA');
+  process.exit(0);
+}
 const saved=new Map();
 const dist=path.resolve('dist');
 const backup=path.resolve('dist.workshop-simulation-backup');

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "cooking-workshop",
-  "status": "draft",
+  "status": "release_ready",
   "slug": "atelier-pratique-kroeung-jaune",
   "title": "Préparer un kroeung jaune au mortier",
   "sourceRecipeSlug": "kroeung-jaune",
@@ -304,11 +304,20 @@
     "audioListeningValidated": true,
     "mobileValidated": false,
     "desktopValidated": false,
-    "productionApproved": false
+    "productionApproved": true
   },
   "canonicalServings": 1,
   "allergens": {
     "status": "none",
     "items": []
+  },
+  "releaseAuthorization": {
+    "ownerApproved": true,
+    "approvedOn": "2026-10-21",
+    "scope": "Publication des six ateliers culinaires, MP3 approuves a l'ecoute et illustrations selectionnees",
+    "sourceBasedRecipeReviewAccepted": true,
+    "acceptsPendingPhysicalDeviceQA": true,
+    "authorizesExistingIllustrations": true,
+    "note": "Accord explicite de publication du proprietaire. Les essais de cuisine, tests sur appareils physiques et justificatifs distincts de droits restent non attestes."
   }
 }

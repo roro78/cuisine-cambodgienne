@@ -53,7 +53,7 @@ test('Lok Lak V2 : sept chapitres cuisinables, MP3 V2 conserve sans piste V1', a
   assert.deepEqual(errors, []);
   assert.equal(data.audio.storyboardVersion, 2);
   assert.ok(['script_only','generated_review_pending','validated'].includes(data.audio.status));
-  assert.equal(data.review.productionApproved, false);
+  assert.equal(data.review.productionApproved, true);
   if(data.audio.status === 'script_only') assert.equal(data.audio.asset, undefined, 'Old MP3 must not appear as the active V2 audio');
   else assert.match(data.audio.asset.audioUrl, /atelier-coral-v2[.]mp3$/, 'V2 must never overwrite old MP3');
   assert.equal(data.audio.previousAsset,undefined,'Les pistes courtes V1 ont été supprimées');

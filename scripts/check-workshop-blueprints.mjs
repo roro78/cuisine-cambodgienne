@@ -184,8 +184,24 @@ export function validateWorkshopBlueprint(atelier, recipes, options = {}) {
         } catch { errors.push('NO GO : ffprobe obligatoire pour mesurer le MP3 avant publication.'); }
       }
     }
-    if (audio.status !== 'validated' || !media.finishedPreparationImage || !media.imageValidated || !media.rightsValidated ||
-        Object.values(review).some(value => value !== true)) errors.push('NO GO : gate final incomplet (audio, images, droits, validation humaine, tests).');
+    // Two distinct paths: exhaustive review, or the owner's explicit release
+    // decision after source-based culinary checks and listening approval.
+    // The owner path never changes unperformed checks into fictitious passes.
+    const consent=atelier.releaseAuthorization;
+    const ownerApproved=consent?.ownerApproved===true &&
+      consent.approvedOn==='2026-10-21' &&
+      consent.sourceBasedRecipeReviewAccepted===true &&
+      consent.acceptsPendingPhysicalDeviceQA===true &&
+      consent.authorizesExistingIllustrations===true &&
+      review.productionApproved===true &&
+      review.editorialValidated===true &&
+      review.audioListeningValidated===true &&
+      audio.status==='generated_review_pending' &&
+      Boolean(media.finishedPreparationImage) && media.imageValidated===true;
+    const fullyReviewed=audio.status==='validated' && Boolean(media.finishedPreparationImage) &&
+      media.imageValidated===true && media.rightsValidated===true &&
+      Object.values(review).every(value=>value===true);
+    if (!fullyReviewed && !ownerApproved) errors.push('NO GO : accord de publication explicite absent et gate complet non valide.');
   }
   if ((atelier.status === 'release_ready' || options.checkMediaFiles) && media.finishedPreparationImage) {
     const root = resolve('public');

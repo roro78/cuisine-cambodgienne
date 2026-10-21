@@ -73,7 +73,9 @@ test('Lok Lak V2 : approbation audio explicite sans validations de publication i
   assert.equal(blueprint.review.mobileValidated,false,'Validation utilisateur mobile non alleguee');
   assert.equal(blueprint.review.desktopValidated,false,'Validation utilisateur desktop non alleguee');
   assert.equal(blueprint.review.recipeValidated,false,'Essai en cuisine non allegue');
-  assert.equal(blueprint.review.productionApproved,false,'Publication non autorisee');
+  assert.equal(blueprint.review.productionApproved,true,'Publication explicitement autorisee par le proprietaire');
+  assert.equal(blueprint.releaseAuthorization?.ownerApproved,true);
+  assert.equal(blueprint.status,'release_ready');
   assert.equal(blueprint.audio.status,'generated_review_pending','L etat technique attend encore les controles mobiles et desktop');
   assert.equal(manifest.status,'audio_generated_review_pending','L audio complet nest pas marque audio_validated');
   assert.deepEqual(verifyCookingAudioReview(blueprint,manifest),[],'Validation partielle coherente');

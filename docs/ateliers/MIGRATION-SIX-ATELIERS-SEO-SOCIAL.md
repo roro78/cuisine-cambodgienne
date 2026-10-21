@@ -53,3 +53,11 @@ La CI utilise `scripts/simulate-six-workshop-release.mjs` pour **simuler de mani
 ### Correctifs de la simulation
 
 Le test a révélé deux liens vers les anciens ateliers malgré leur disparition. Correction *dans les modèles de présentation*, sans toucher au contenu original des carnets : la page consacrée au riz propose les ateliers actuels ; la fiche technique du bouillon renvoie vers le nouvel atelier Kuy Teav. Le lot de nettoyage couvre désormais les **6 MP3 historiques + 5 V2 remplacés** dans le dossier OVH uniquement, jamais les six versions approuvées en source.
+
+## Feu vert du propriétaire — 21 octobre 2026
+
+Le propriétaire a explicitement validé la publication des six fiches, des six MP3 déjà écoutés et des visuels générés déjà sélectionnés. Il confirme que les recettes sont vérifiées à partir de sources fiables ; un essai à domicile n'est **pas** un prérequis éditorial. Les six guides sont placés en `release_ready` et `review.productionApproved=true` avec un bloc `releaseAuthorization` transparent.
+
+Les indicateurs `recipeValidated`, `mobileValidated`, `desktopValidated` et `media.rightsValidated` non attestés ne sont **pas** artificiellement transformés en `true`. Les scripts de sécurité conservent leurs contrôles d'intégrité réels (SHA des MP3, durées, fichiers, URLs, phases, sources, canonical, 301, visuels). Cette décision de publication appartient au propriétaire ; elle ne prouve pas des tests qui n'ont pas été réalisés.
+
+Les workflows n8n et la PR #89 restent hors périmètre. Aucun déclenchement Coral. Déploiement OVH séparé et volontaire.

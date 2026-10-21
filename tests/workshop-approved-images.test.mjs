@@ -15,8 +15,11 @@ for(const [slug,expected] of Object.entries(photos))test('Image approuvée : '+s
   assert.equal(guide.media.finishedPreparationImage,expected);
   assert.equal(guide.media.imageValidated,true,'Image selected by owner');
   assert.equal(guide.media.rightsValidated,false,'Do not invent licensing attestations');
-  assert.equal(guide.review.productionApproved,false,'No deployment approval');
-  assert.equal(guide.status,'draft');
+  assert.equal(guide.review.productionApproved,true,'Explicit owner release approval');
+  assert.equal(guide.status,'release_ready');
+  assert.equal(guide.releaseAuthorization?.ownerApproved,true);
+  assert.equal(guide.review.mobileValidated,false,'No invented phone QA');
+  assert.equal(guide.review.desktopValidated,false,'No invented desktop QA');
   const asset=join('public',expected.slice(1));
   assert.ok(existsSync(asset),'Missing pre-existing approved visual '+expected);
   const bytes=readFileSync(asset);
