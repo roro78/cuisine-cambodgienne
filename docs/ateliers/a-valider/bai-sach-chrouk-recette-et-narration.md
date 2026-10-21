@@ -54,159 +54,161 @@ Grillez ou poêlez le porc à feu vif jusqu’à obtenir des bords bien colorés
 
 Répartissez le riz jasmin chaud dans quatre assiettes. Déposez le porc entièrement cuit et caramélisé dessus, puis ajoutez les 200 g de pickles égouttés sur le côté.
 
-## B — Atelier pratique, à relire et corriger
+## B — Atelier de cuisine, étape par étape
 
 **Objectif :** Réaliser un repas cambodgien complet, préparer une marinade équilibrée, cuire le riz et colorer le porc sans compromettre sa cuisson à cœur.
 
-**Préparation attendue :** Quatre assiettes de Bai Sach Chrouk avec porc entièrement cuit, riz jasmin chaud et pickles de légumes.
+**Préparation que vous allez obtenir :** Des assiettes de Bai Sach Chrouk avec porc entièrement cuit, riz jasmin chaud et pickles de légumes.
 
-**Durée indicative des gestes :** 45 min
+**Durée estimée de l'atelier :** environ 45 min. Le temps varie selon la quantité préparée et votre rythme.
 
-**Matériel :**
+**Repère pour les temps de cuisson ou de repos :** Comptez au moins 15 minutes de marinade au réfrigérateur. Profitez de ce temps pour cuire le riz : l'attente n'est pas ajoutée deux fois à la durée totale.
+
+### Matériel
 
 - Une poêle ou plancha adaptée aux tranches fines de porc
 - Une casserole à riz avec couvercle et une passoire
 - Un saladier de marinade, une planche propre et des assiettes propres
 - Un thermomètre alimentaire pour vérifier la cuisson du porc
 
-**Avant de cuisiner :**
+### Avant de commencer
 
-- Choisissez vos convives et mesurez les ingrédients sur la fiche, notamment le riz et les tranches de porc.
-- Les pickles de concombre et de carotte de la recette sont une sous-préparation à réaliser à l'avance ou à acheter préparée ; ils doivent être prêts et égouttés avant l'atelier.
-- Réservez une place au réfrigérateur pour la marinade du porc pendant au moins quinze minutes.
+- Indiquez le nombre de personnes à table et mesurez les ingrédients sur la fiche, notamment le riz et les tranches de porc.
+- Préparez les pickles de concombre et de carotte à l'avance, ou choisissez des pickles prêts à servir. Égouttez-les avant de commencer.
+- Le porc devra mariner au réfrigérateur pendant au moins quinze minutes. Prévoyez suffisamment de place pour le saladier couvert.
 
-**Précautions :**
+### Précautions alimentaires
 
 - Laissez toujours le porc mariner au réfrigérateur et ne goûtez jamais une marinade ayant touché la viande crue.
 - Cuisez les tranches de porc complètement et utilisez une assiette et des ustensiles propres pour le service.
 - Pour les tranches de porc issues d'un morceau entier, vérifiez au thermomètre au moins 63 °C à cœur et laissez reposer 3 minutes avant de servir ; si vous utilisez du porc haché, visez 71 °C.
 - Servez le riz dès qu'il est cuit ou refroidissez-le rapidement puis réfrigérez-le : du riz laissé tiédir longtemps peut favoriser Bacillus cereus, et le simple réchauffage ne garantit pas l'élimination des toxines.
 
-### Temps de cuisine 1 — Mesurer les ingrédients et préparer le plan de travail
+### Étape 1 sur 6 — Mesurer les ingrédients et préparer le plan de travail (environ 3 min)
 
-**Gestes :**
+**À faire :**
 
 - Préparez le saladier pour la marinade, la casserole pour le riz et la poêle ou le gril pour le porc, avant de sortir la viande froide.
 - Mesurez les ingrédients de la recette : porc, sauce soja, sauce de poisson, sucre roux, ail, quantité de riz cru indiquée sur la fiche et pickles prévus sur la fiche prêts.
 
-**Observer :** Chaque élément a sa place et les pickles sont déjà préparés.
+**À observer :** Chaque élément a sa place et les pickles sont déjà préparés.
 
-**Vérifier le résultat :** Le plan de travail permet de suivre cuisson du riz et saisie du porc sans confusion.
+**Résultat attendu :** Le plan de travail permet de suivre cuisson du riz et saisie du porc sans confusion.
 
-**Éviter :** Commencer avec des pickles non préparés impose une recette supplémentaire en plein atelier.
+**À éviter :** Commencer avec des pickles non préparés impose une recette supplémentaire en plein atelier.
 
-**Corriger :** Préparez ou achetez des pickles sûrs et égouttez-les avant de poursuivre.
+**Si besoin, comment corriger :** Préparez ou achetez des pickles sûrs et égouttez-les avant de poursuivre.
 
-**Technique apprise :** Le Bai Sach Chrouk exige une organisation simple entre marinade, riz et viande chaude.
+**Ce que vous apprenez :** Le Bai Sach Chrouk exige une organisation simple entre marinade, riz et viande chaude.
 
 **Précaution :** Lavez-vous les mains et gardez les pickles loin de la zone de préparation du porc cru.
 
-### Temps de cuisine 2 — Préparer le porc et hacher l'ail
+### Étape 2 sur 6 — Préparer le porc et hacher l'ail (environ 6 min)
 
-**Gestes :**
+**À faire :**
 
 - Épluchez et hachez les gousses d'ail prévues sur la fiche, puis disposez les tranches fines de porc mesurées selon la fiche dans un saladier réservé à la viande.
 - Vérifiez que les tranches ne sont pas trop épaisses et qu'elles peuvent être étalées dans la poêle en plusieurs fournées si nécessaire.
 
-**Observer :** L'ail est finement haché et les tranches de porc sont assez régulières.
+**À observer :** L'ail est finement haché et les tranches de porc sont assez régulières.
 
-**Vérifier le résultat :** La viande peut être enrobée rapidement et être cuite de manière homogène.
+**Résultat attendu :** La viande peut être enrobée rapidement et être cuite de manière homogène.
 
-**Éviter :** Des tranches très épaisses peuvent brûler dehors avant de cuire correctement dedans.
+**À éviter :** Des tranches très épaisses peuvent brûler dehors avant de cuire correctement dedans.
 
-**Corriger :** Recoupez ou aplatissez légèrement des tranches trop épaisses, en gardant les ustensiles et le plan de travail propres.
+**Si besoin, comment corriger :** Recoupez ou aplatissez légèrement des tranches trop épaisses, en gardant les ustensiles et le plan de travail propres.
 
-**Technique apprise :** La régularité des tranches facilite la coloration et la cuisson complète.
+**Ce que vous apprenez :** La régularité des tranches facilite la coloration et la cuisson complète.
 
 **Précaution :** Manipulez le porc cru séparément du riz et des pickles.
 
-### Temps de cuisine 3 — Mariner au frais et comprendre les saveurs
+### Étape 3 sur 6 — Mariner au frais et comprendre les saveurs (environ 5 min)
 
-**Gestes :**
+**À faire :**
 
-- Mélangez les deux cuillères à soupe de sauce soja, la cuillère de sauce de poisson, la cuillère de sucre roux et l'ail haché dans le saladier.
+- Mélangez dans le saladier la sauce soja, la sauce de poisson, le sucre roux et l'ail haché, dans les quantités indiquées sur votre fiche.
 - Enrobez toutes les tranches de porc, couvrez puis placez au réfrigérateur au moins quinze minutes ; n'utilisez pas cette marinade crue comme sauce de service.
 
-**Observer :** Chaque tranche est finement recouverte d'un mélange de sauce, sucre et ail.
+**À observer :** Chaque tranche est finement recouverte d'un mélange de sauce, sucre et ail.
 
-**Vérifier le résultat :** Le porc a reposé au frais pendant quinze minutes ou davantage, sans rester sur le plan de travail.
+**Résultat attendu :** Le porc reste au réfrigérateur au moins quinze minutes pendant la cuisson du riz.
 
-**Éviter :** Mariner à température ambiante ou réutiliser directement la sauce crue met le plat en danger.
+**À éviter :** Mariner à température ambiante ou réutiliser directement la sauce crue met le plat en danger.
 
-**Corriger :** Replacez immédiatement la viande au frais et jetez la marinade crue non cuite.
+**Si besoin, comment corriger :** Replacez immédiatement la viande au frais et jetez la marinade crue non cuite.
 
-**Technique apprise :** La sauce soja sale, le sucre favorise une couleur dorée et l'ail parfume le porc.
+**Ce que vous apprenez :** Une marinade au frais parfume le porc. Pendant ce temps, on peut cuire le riz et préparer les pickles.
 
 **Précaution :** Ne goûtez pas une marinade qui a touché le porc cru ; respectez la chaîne du froid.
 
-### Temps de cuisine 4 — Cuire le riz jasmin sans le détremper
+### Étape 4 sur 6 — Cuire le riz jasmin sans le détremper (environ 20 min)
 
-**Gestes :**
+**À faire :**
 
-- Rincez les riz jasmin cru mesuré sur la fiche à l'eau froide, mesurez l'eau et cuisez le riz en respectant les indications précises du paquet utilisé.
+- Rincez le riz jasmin prévu sur la fiche, mesurez l'eau et faites cuire le riz en suivant les indications précises du paquet utilisé.
 - Pendant cette cuisson, égouttez les pickles prévus sur la fiche de concombre et carotte déjà préparés, puis gardez-les dans un plat propre.
 
-**Observer :** Le riz absorbe l'eau et reste souple ; les pickles sont égouttés et conservent du croquant.
+**À observer :** Le riz absorbe l'eau et reste souple ; les pickles sont égouttés et conservent du croquant.
 
-**Vérifier le résultat :** Le riz est cuit conformément à sa variété et les pickles n'apportent pas de liquide excessif.
+**Résultat attendu :** Le riz est cuit conformément à sa variété et les pickles n'apportent pas de liquide excessif.
 
-**Éviter :** Ajouter une quantité d'eau au hasard peut rendre le riz collant ou mal cuit.
+**À éviter :** Ajouter une quantité d'eau au hasard peut rendre le riz collant ou mal cuit.
 
-**Corriger :** Suivez le dosage du paquet et prolongez doucement la cuisson si les grains restent fermes.
+**Si besoin, comment corriger :** Suivez le dosage du paquet et prolongez doucement la cuisson si les grains restent fermes.
 
-**Technique apprise :** Le riz constitue la base du repas ; sa texture doit accompagner le porc et les légumes.
+**Ce que vous apprenez :** Le riz constitue la base du repas ; sa texture doit accompagner le porc et les légumes.
 
 **Précaution :** Évitez les brûlures de vapeur en soulevant le couvercle du riz.
 
-### Temps de cuisine 5 — Dorer le porc en vérifiant sa cuisson
+### Étape 5 sur 6 — Dorer le porc en vérifiant sa cuisson (environ 8 min)
 
-**Gestes :**
+**À faire :**
 
 - Chauffez la poêle ou le gril puis disposez les tranches de porc égouttées en une couche, sans empiler ; cuisez en plusieurs fournées si nécessaire.
 - Retournez les tranches pour obtenir des bords colorés et poursuivez jusqu'à cuisson complète au cœur de chaque morceau, même si cela dépasse le temps indicatif.
 
-**Observer :** Les bords prennent une coloration dorée sans zones carbonisées ni intérieur cru.
+**À observer :** Les bords prennent une coloration dorée sans zones carbonisées ni intérieur cru.
 
-**Vérifier le résultat :** Le porc est entièrement cuit et légèrement caramélisé, sans être brûlé.
+**Résultat attendu :** Le porc est entièrement cuit et légèrement caramélisé, sans être brûlé.
 
-**Éviter :** Trop de tranches à la fois font rendre du jus et empêchent la coloration.
+**À éviter :** Trop de tranches à la fois font rendre du jus et empêchent la coloration.
 
-**Corriger :** Retirez une partie de la viande et remontez la température avant la prochaine fournée.
+**Si besoin, comment corriger :** Retirez une partie de la viande et remontez la température avant la prochaine fournée.
 
-**Technique apprise :** Saisir le porc ne suffit pas : coloration et sécurité de cuisson doivent être réunies.
+**Ce que vous apprenez :** Saisir le porc ne suffit pas : coloration et sécurité de cuisson doivent être réunies.
 
 **Précaution :** Jetez la marinade crue inutilisée et n'utilisez que des ustensiles propres pour servir la viande cuite.
 
-### Temps de cuisine 6 — Dresser l'assiette de riz, porc et pickles
+### Étape 6 sur 6 — Dresser l'assiette de riz, porc et pickles (environ 3 min)
 
-**Gestes :**
+**À faire :**
 
 - Répartissez le riz jasmin chaud dans des assiettes propres, placez les tranches de porc bien cuites dessus et vérifiez que chaque portion est suffisamment garnie.
 - Ajoutez les pickles égouttés de carotte et concombre sur le côté, puis dégustez le contraste entre porc savoureux, riz neutre et légumes acidulés.
 
-**Observer :** Les trois éléments restent distincts et chaque assiette est prête à être servie.
+**À observer :** Les trois éléments restent distincts et chaque assiette est prête à être servie.
 
-**Vérifier le résultat :** Les repas préparés sont dressés, avec porc cuit, riz chaud et pickles.
+**Résultat attendu :** Les repas préparés sont dressés, avec porc cuit, riz chaud et pickles.
 
-**Éviter :** Mélanger tous les pickles au riz chaud longtemps avant le service leur fait perdre leur croquant.
+**À éviter :** Mélanger tous les pickles au riz chaud longtemps avant le service leur fait perdre leur croquant.
 
-**Corriger :** Gardez-les sur le côté et apportez-les juste avant de déguster.
+**Si besoin, comment corriger :** Gardez-les sur le côté et apportez-les juste avant de déguster.
 
-**Technique apprise :** La composition du repas équilibre le plat principal avec le riz et un contraste frais.
+**Ce que vous apprenez :** La composition du repas équilibre le plat principal avec le riz et un contraste frais.
 
 **Précaution :** Ne laissez pas longtemps le porc cuit à température ambiante ; réfrigérez rapidement les restes.
 
-## C — Sept narrations corrigées à valider avant Coral
+## C — Narration complète à valider avant tout nouvel enregistrement
 
-**Ces textes ont été corrigés. Les MP3 historiques ne correspondent plus : validation éditoriale exigée avant toute nouvelle synthèse.**
+**Ces sept textes ont été relus, mais ne sont pas encore approuvés. Les précédents MP3 restent archivés et ne doivent pas accompagner ce nouveau texte.**
 
 ### Chapitre 1 sur 7 — Introduction
 
-Bonjour et bienvenue ! Aujourd'hui, nous préparons un Bai Sach Chrouk : du porc finement coupé, mariné puis doré, servi avec du riz jasmin et des pickles croquants. Ce n'est pas juste une cuisson de viande : on va organiser tout un repas cambodgien, avec le contraste entre le sucré-salé du porc, le riz tendre et les légumes acidulés. Choisissez d'abord le nombre de convives sur votre fiche et mesurez les quantités qui s'affichent. Dans cet enregistrement, je nomme les ingrédients et les repères techniques, sans vous imposer une quantité pour quatre personnes. Prenez votre casserole à riz, une passoire, une grande poêle ou plancha, un saladier pour la marinade, une planche, un couteau, une spatule, un thermomètre alimentaire et des assiettes propres. Nous laisserons la viande mariner au froid, puis nous cuisinerons le riz pendant ce repos. Vous pourrez mettre l'audio en pause aux moments utiles : rien ne se déclenche tout seul. On cuisine ensemble, tranquillement et dans le bon ordre.
+Bonjour et bienvenue ! Aujourd'hui, nous préparons un Bai Sach Chrouk : du porc finement coupé, mariné puis doré, servi avec du riz jasmin et des pickles croquants. Ce n'est pas juste une cuisson de viande : on va organiser tout un repas cambodgien, avec le contraste entre le sucré-salé du porc, le riz tendre et les légumes acidulés. Choisissez d'abord le nombre de convives sur votre fiche et mesurez les quantités qui s'affichent. Dans cet enregistrement, je nomme les ingrédients et les repères techniques, en suivant les quantités adaptées au nombre de personnes choisi. Prenez votre casserole à riz, une passoire, une grande poêle ou plancha, un saladier pour la marinade, une planche, un couteau, une spatule, un thermomètre alimentaire et des assiettes propres. Nous laisserons la viande mariner au froid, puis nous cuisinerons le riz pendant ce repos. Vous pourrez mettre l'audio en pause aux moments utiles : vous avancez à votre rythme. On cuisine ensemble, tranquillement et dans le bon ordre.
 
 ### Chapitre 2 sur 7 — Mesurer les ingrédients et préparer le plan de travail
 
-On prépare notre plan de travail avant de manipuler la viande. Placez devant vous le saladier de marinade, la poêle encore éteinte, la casserole et son couvercle, la passoire, une spatule, une planche stable et un couteau propre. Prévoyez aussi un thermomètre si vous en avez un, une pince réservée au porc cru et une autre propre pour le service. Du côté des ingrédients, retrouvez sur la fiche les fines tranches de porc, l'ail, la sauce soja, la sauce de poisson et le sucre roux ; à part, le riz jasmin cru et les pickles de concombre et carotte. La fiche précise les quantités correspondant à votre table. Pour cette version, les pickles sont une préparation préalable : ne les improvisez pas en versant du vinaigre directement sur l'assiette. Ils doivent déjà avoir été préparés et égouttés ; je vous explique plus loin leur rôle et comment contrôler leur texture. Si vous les faites vous-même, utilisez une recette de pickles express au réfrigérateur avec des légumes propres et une saumure vinaigrée adaptée, pas une conservation en bocaux à température ambiante. Vérifiez sur les étiquettes la présence possible de blé dans la sauce soja et de poisson dans la sauce de poisson. Gardez le cru éloigné des garnitures prêtes à manger. Faites pause pour tout mesurer et installer votre coin de cuisine ; on commence par l'ail et le porc.
+On prépare notre plan de travail avant de manipuler la viande. Placez devant vous le saladier de marinade, la poêle encore éteinte, la casserole et son couvercle, la passoire, une spatule, une planche stable et un couteau propre. Prévoyez aussi un thermomètre si vous en avez un, une pince réservée au porc cru et une autre propre pour le service. Du côté des ingrédients, retrouvez sur la fiche les fines tranches de porc, l'ail, la sauce soja, la sauce de poisson et le sucre roux ; à part, le riz jasmin cru et les pickles de concombre et carotte. La fiche précise les quantités correspondant à votre table. Pour cette recette, les pickles doivent déjà être préparés. Un filet de vinaigre sur les légumes ne remplace pas une vraie préparation de pickles. Ils doivent déjà avoir été préparés et égouttés ; je vous explique plus loin leur rôle et comment contrôler leur texture. Si vous les faites vous-même, utilisez une recette de pickles express au réfrigérateur avec des légumes propres et une saumure vinaigrée adaptée, pas une conservation en bocaux à température ambiante. Vérifiez sur les étiquettes la présence possible de blé dans la sauce soja et de poisson dans la sauce de poisson. Gardez le cru éloigné des garnitures prêtes à manger. Faites pause pour tout mesurer et installer votre coin de cuisine ; on commence par l'ail et le porc.
 
 ### Chapitre 3 sur 7 — Préparer le porc et hacher l'ail
 
@@ -214,15 +216,15 @@ Passons à la viande. Gardez le porc au réfrigérateur jusqu'au moment de trava
 
 ### Chapitre 4 sur 7 — Mariner au frais et comprendre les saveurs
 
-Dans le saladier, réunissez maintenant la sauce soja, la sauce de poisson, le sucre roux et l'ail haché, en utilisant les mesures visibles sur la fiche. Remuez jusqu'à répartir le sucre, puis retournez les tranches de porc dans cette marinade pour les enduire de tous les côtés. La sauce soja apporte du corps, la sauce de poisson une profondeur salée, le sucre aide à caraméliser, et l'ail donne du relief. Cherchez une couche fine sur chaque tranche, pas une flaque de liquide sous une pile de viande. Couvrez votre saladier et placez-le au réfrigérateur pendant au moins quinze minutes. Surtout, pas de marinade sur le plan de travail à température ambiante. Une fois qu'elle a touché le porc cru, on ne la goûte pas, et on ne la verse pas froide dans les assiettes. Pendant ce repos, égouttez les pickles de concombre et de carotte qui sont prévus sur votre fiche : ils doivent rester croquants, sans baigner dans leur vinaigre. Si leur goût est trop agressif, ne compensez pas directement dans l'assiette ; égouttez mieux et ajustez lors de leur propre préparation la prochaine fois. Nettoyez la zone de la viande, puis préparez votre riz et son eau selon l'indication de son paquet. Vous pouvez faire pause jusqu'à ce que la marinade ait eu le temps d'agir. Le prochain geste, c'est cuire le riz correctement.
+Dans le saladier, réunissez maintenant la sauce soja, la sauce de poisson, le sucre roux et l'ail haché, en utilisant les mesures visibles sur la fiche. Remuez jusqu'à répartir le sucre, puis retournez les tranches de porc dans cette marinade pour les enduire de tous les côtés. La sauce soja apporte du corps, la sauce de poisson une profondeur salée, le sucre aide à caraméliser, et l'ail donne du relief. Cherchez une couche fine sur chaque tranche, pas une flaque de liquide sous une pile de viande. Couvrez votre saladier et placez-le au réfrigérateur pendant au moins quinze minutes. Surtout, pas de marinade sur le plan de travail à température ambiante. Une fois qu'elle a touché le porc cru, on ne la goûte pas, et on ne la verse pas froide dans les assiettes. Pendant ce repos, égouttez les pickles de concombre et de carotte qui sont prévus sur votre fiche : ils doivent rester croquants, sans baigner dans leur vinaigre. Si leur goût est trop agressif, ne compensez pas directement dans l'assiette ; égouttez mieux et ajustez lors de leur propre préparation la prochaine fois. Nettoyez la zone de la viande, puis préparez votre riz et son eau selon l'indication de son paquet. Vous pouvez faire pause jusqu'à ce que la marinade ait eu le temps d'agir. Pendant que le porc marine, nous allons cuire le riz.
 
 ### Chapitre 5 sur 7 — Cuire le riz jasmin sans le détremper
 
-Le riz jasmin va devenir notre base douce et chaude. Versez-le dans un grand récipient ou une passoire fine et rincez-le à l'eau froide, si les instructions de votre variété le recommandent, jusqu'à éliminer une partie de l'amidon de surface. Laissez-le s'égoutter. Mettez le riz et l'eau dans la casserole selon le rapport indiqué sur l'emballage ; je ne donne pas de volume figé, car la quantité dépend du nombre de convives et du riz choisi. Amenez à ébullition, puis baissez à feu doux et couvrez selon le mode de cuisson retenu. Évitez de soulever le couvercle toutes les trente secondes : la vapeur qui s'échappe perturbe l'absorption. Quand le riz est cuit, les grains doivent être tendres, ni croquants ni noyés dans de l'eau. S'il reste trop d'eau, poursuivez doucement selon le paquet sans gratter un fond attaché ; s'il est encore ferme, vérifiez prudemment le liquide nécessaire. Aérez délicatement avec une fourchette propre et maintenez au chaud seulement si le service suit rapidement. Le riz cuit ne doit pas traîner tiède pendant des heures : Bacillus cereus peut se multiplier si on le garde dans de mauvaises conditions, et le réchauffage n'annule pas forcément ses toxines. Si vous le conservez, refroidissez rapidement et réfrigérez. Pendant que le riz termine sa cuisson, vous pouvez faire une pause. Nous allons ensuite saisir le porc mariné.
+Le riz jasmin va devenir notre base douce et chaude. Versez-le dans un grand récipient ou une passoire fine et rincez-le à l'eau froide, si les instructions de votre variété le recommandent, jusqu'à éliminer une partie de l'amidon de surface. Laissez-le s'égoutter. Mettez le riz et l'eau dans la casserole selon le rapport indiqué sur l'emballage ; je ne donne pas de volume figé, car la quantité dépend du nombre de convives et du riz choisi. Amenez à ébullition, puis baissez à feu doux et couvrez selon le mode de cuisson retenu. Évitez de soulever le couvercle toutes les trente secondes : la vapeur qui s'échappe perturbe l'absorption. Quand le riz est cuit, les grains doivent être tendres, ni croquants ni noyés dans de l'eau. S'il reste trop d'eau, poursuivez doucement selon le paquet sans gratter un fond attaché ; s'il est encore ferme, vérifiez prudemment le liquide nécessaire. Aérez délicatement avec une fourchette propre et maintenez au chaud seulement si le service suit rapidement. Le riz cuit ne doit pas traîner tiède pendant des heures : Bacillus cereus peut se multiplier si on le garde dans de mauvaises conditions, et le réchauffage n'annule pas forcément ses toxines. Si vous le conservez, refroidissez rapidement et réfrigérez. Pendant que le riz termine sa cuisson, vous pouvez faire une pause. Dès que le riz est prêt, nous passerons à la cuisson du porc mariné.
 
 ### Chapitre 6 sur 7 — Dorer le porc en vérifiant sa cuisson
 
-Voilà le moment du porc. Sortez les tranches marinées du froid juste avant la cuisson et laissez l'excès de marinade s'égoutter dans le saladier. Chauffez la poêle ou la plancha de façon à obtenir un grésillement net sans fumée abondante. Disposez les tranches à plat, sans les superposer ; si la poêle est petite, faites plusieurs fournées. Regardez les bords : ils vont peu à peu dorer. Retournez chaque tranche avec une pince propre quand la première face a pris couleur. Le sucre contenu dans la marinade colore vite : si des zones deviennent noires ou sentent le brûlé, baissez le feu et retirez les dépôts carbonisés plutôt que de les racler sur la viande. Si le porc rend beaucoup de jus, il est probable que la poêle soit trop chargée. Enlevez une partie des tranches, laissez l'humidité se réduire puis reprenez par petites fournées. La couleur dorée ne suffit pas pour affirmer que le porc est cuit à cœur. Pour des tranches provenant d'un morceau entier, le repère USDA est au moins soixante-trois degrés au centre et trois minutes de repos ; pour du porc haché, c'est soixante et onze degrés. Vérifiez la catégorie réelle de votre viande et utilisez un thermomètre si possible. Ne remettez pas la viande cuite dans le saladier cru et jetez la marinade inutilisée. Vous pouvez mettre le guide en pause pour finir chaque fournée sans précipitation. On termine ensuite notre assiette complète.
+Passons maintenant à la cuisson du porc mariné. Sortez les tranches marinées du froid juste avant la cuisson et laissez l'excès de marinade s'égoutter dans le saladier. Chauffez la poêle ou la plancha de façon à obtenir un grésillement net sans fumée abondante. Disposez les tranches à plat, sans les superposer ; si la poêle est petite, faites plusieurs fournées. Regardez les bords : ils vont peu à peu dorer. Retournez chaque tranche avec une pince propre quand la première face a pris couleur. Le sucre contenu dans la marinade colore vite : si des zones deviennent noires ou sentent le brûlé, baissez le feu et retirez les dépôts carbonisés plutôt que de les racler sur la viande. Si le porc rend beaucoup de jus, il est probable que la poêle soit trop chargée. Enlevez une partie des tranches, laissez l'humidité se réduire puis reprenez par petites fournées. La couleur dorée ne suffit pas pour affirmer que le porc est cuit à cœur. Pour des tranches provenant d'un morceau entier, le repère USDA est au moins soixante-trois degrés au centre et trois minutes de repos ; pour du porc haché, c'est soixante et onze degrés. Vérifiez la catégorie réelle de votre viande et utilisez un thermomètre si possible. Ne remettez pas la viande cuite dans le saladier cru et jetez la marinade inutilisée. Vous pouvez mettre le guide en pause pour finir chaque fournée sans précipitation. On termine ensuite notre assiette complète.
 
 ### Chapitre 7 sur 7 — Dresser l'assiette de riz, porc et pickles
 
