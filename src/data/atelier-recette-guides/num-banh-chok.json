@@ -28,7 +28,7 @@
   ],
   "beforeStarting": [
     "Choisissez vos convives, puis mesurez tous les ingrédients sur la fiche.",
-    "Le kroeung jaune est une sous-préparation à faire avant ce cours (voir atelier Kroeung jaune) ou à acheter : il n'est pas fabriqué pendant cet atelier.",
+    "Le kroeung jaune est une sous-préparation à faire avant ce cours (voir atelier Kroeung jaune) ou à acheter : il doit être préparé avant cet atelier.",
     "Prévoyez de l'eau potable pour pocher le poisson, cuire les nouilles et blanchir les haricots, des ustensiles propres et un moyen de retirer les arêtes."
   ],
   "safety": [
@@ -74,11 +74,11 @@
         "Préparez également des bols et une passoire ; vérifiez que le kroeung jaune est déjà disponible avant de commencer la cuisson."
       ],
       "observe": "Le poisson, le lait de coco, le kroeung et les légumes sont clairement séparés.",
-      "check": "Le poste est prêt pour mener plusieurs cuissons sans perdre le fil.",
+      "check": "Le plan de travail est prêt pour mener plusieurs cuissons sans perdre le fil.",
       "mistake": "Commencer sans kroeung entraîne une interruption au milieu de la sauce.",
       "recovery": "Préparez cette pâte aromatique en avance ou référez-vous à sa fiche recette.",
       "learning": "Une préparation à composants multiples demande une mise en place lisible.",
-      "audioScript": "Plaçons tout à portée de main avant de commencer. La première casserole servira à pocher le poisson, puis à préparer la sauce parfumée ; la seconde accueillera l'eau des nouilles et des haricots verts. Prévoyez la passoire, une louche, une écumoire, une fourchette pour émietter le poisson, un couteau, une planche propre et des bols profonds. Sur la fiche, vérifiez les nouilles de riz, le poisson blanc, le lait de coco, le kroeung jaune, la sauce de poisson et les garnitures : concombre, haricots verts fins et herbes fraîches. Préparez les quantités pour les convives de votre choix. Attention à une chose essentielle : le kroeung jaune est une véritable sous-préparation, une pâte de citronnelle, galanga, curcuma, ail, échalote et combava ; il doit être déjà fait ou acheté. Vous pouvez suivre l'atelier spécifique du kroeung pour le fabriquer en avance. Le lait de coco apporte une note douce et ronde dans notre variante ; certaines versions du Num Banh Chok l'utilisent peu ou pas du tout. Ne confondons pas recette choisie et définition unique du plat. Vérifiez les allergènes, notamment le poisson et la sauce de poisson. Gardez les légumes frais loin de la zone de travail du poisson cru, avec une planche et des ustensiles nettoyés. Vous pouvez mettre le guide en pause pour terminer la mise en place. Puis nous allons préparer le poisson et les légumes.",
+      "audioScript": "Plaçons tout à portée de main avant de commencer. La première casserole servira à pocher le poisson, puis à préparer la sauce parfumée ; la seconde accueillera l'eau des nouilles et des haricots verts. Prévoyez la passoire, une louche, une écumoire, une fourchette pour émietter le poisson, un couteau, une planche propre et des bols profonds. Sur la fiche, vérifiez les nouilles de riz, le poisson blanc, le lait de coco, le kroeung jaune, la sauce de poisson et les garnitures : concombre, haricots verts fins et herbes fraîches. Préparez les quantités pour les convives de votre choix. Attention à une chose essentielle : le kroeung jaune est une véritable sous-préparation, une pâte de citronnelle, galanga, curcuma, ail, échalote et combava ; il doit être déjà fait ou acheté. Vous pouvez suivre l'atelier spécifique du kroeung pour le préparer en avance. Le lait de coco apporte une note douce et ronde dans notre variante ; certaines versions du Num Banh Chok l'utilisent peu ou pas du tout. Ne confondons pas recette choisie et définition unique du plat. Vérifiez les allergènes, notamment le poisson et la sauce de poisson. Gardez les légumes frais loin de la zone de travail du poisson cru, avec une planche et des ustensiles nettoyés. Vous pouvez mettre le guide en pause pour terminer la mise en place. Puis nous allons préparer le poisson et les légumes.",
       "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
       "safety": "Conservez le poisson cru au frais jusqu'à son passage en cuisson."
     },
@@ -123,7 +123,7 @@
     },
     {
       "id": "maitriser",
-      "title": "Construire la sauce chaude au kroeung",
+      "title": "Préparer la sauce chaude au kroeung",
       "minutes": 15,
       "ingredientNames": [
         "lait de coco",
@@ -165,7 +165,7 @@
     },
     {
       "id": "terminer",
-      "title": "Monter les bols et ajouter la fraîcheur",
+      "title": "Dresser les bols et ajouter la fraîcheur",
       "minutes": 10,
       "ingredientNames": [],
       "actions": [
@@ -177,16 +177,16 @@
       "mistake": "Verser la sauce sur les herbes longtemps avant de manger les fait flétrir.",
       "recovery": "Gardez la finition végétale pour le dernier moment, une fois les bols prêts.",
       "learning": "Le contraste entre chaud et frais fait partie du résultat appris dans cet atelier.",
-      "audioScript": "Nous pouvons enfin assembler les bols. Émincez finement le concombre sur une planche propre et préparez les herbes lavées. Répartissez d'abord les nouilles de riz, encore souples et bien égouttées, dans les bols. Versez dessus la sauce chaude au poisson et au lait de coco ; elle doit traverser les nouilles, pas former une masse épaisse posée au-dessus. Ajoutez les haricots verts blanchis, le concombre frais et les feuilles de menthe ou de basilic asiatique. Gardez ces végétaux distincts pour que chacun retrouve du croquant et une note végétale. Regardez le résultat : une sauce qui enrobe, un poisson sans arêtes, des nouilles séparées et des garnitures fraîches. Goûtez ensemble une bouchée de sauce et de nouilles, puis avec du concombre ; c'est là que la douceur du coco rencontre le parfum du kroeung. Vous avez aujourd'hui appris à pocher un poisson, contrôler les arêtes, construire une sauce aromatique délicate et choisir le bon moment pour cuire les nouilles. Ce sont des gestes que vous pourrez refaire avec d'autres préparations. Servez sans attendre et mettez rapidement au frais les restes qui ne sont pas consommés. Merci d'avoir cuisiné avec moi, et bon appétit !",
+      "audioScript": "Nous pouvons enfin dresser les bols. Émincez finement le concombre sur une planche propre et préparez les herbes lavées. Répartissez d'abord les nouilles de riz, encore souples et bien égouttées, dans les bols. Versez dessus la sauce chaude au poisson et au lait de coco ; elle doit traverser les nouilles, pas former une masse épaisse posée au-dessus. Ajoutez les haricots verts blanchis, le concombre frais et les feuilles de menthe ou de basilic asiatique. Gardez ces végétaux distincts pour que chacun retrouve du croquant et une note végétale. Regardez le résultat : une sauce qui enrobe, un poisson sans arêtes, des nouilles séparées et des garnitures fraîches. Goûtez ensemble une bouchée de sauce et de nouilles, puis avec du concombre ; c'est là que la douceur du coco rencontre le parfum du kroeung. Vous avez aujourd'hui appris à pocher un poisson, contrôler les arêtes, préparer une sauce aromatique délicate et choisir le bon moment pour cuire les nouilles. Ce sont des gestes que vous pourrez refaire avec d'autres préparations. Servez sans attendre et mettez rapidement au frais les restes qui ne sont pas consommés. Merci d'avoir cuisiné avec moi, et bon appétit !",
       "pausePrompt": "Mettez la lecture en pause pour terminer cette phase, puis reprenez quand le résultat correspond au repère.",
       "safety": "Servez le poisson entièrement cuit ; réfrigérez rapidement les restes non servis."
     }
   ],
   "audio": {
     "mode": "guided-cooking",
-    "status": "generated_review_pending",
+    "status": "script_only",
     "voice": "coral",
-    "intro": "Bonjour et bienvenue dans notre atelier Cuisine du Cambodge ! Aujourd'hui nous réalisons un Num Banh Chok, avec des nouilles de riz, une sauce chaude au poisson et au kroeung jaune, du lait de coco et beaucoup de fraîcheur. Notre objectif, c'est de maîtriser l'ordre des préparations : pocher le poisson sans le dessécher, l'émietter en retirant les arêtes, construire une sauce parfumée mais fluide, puis dresser avec des légumes croquants. Ce plat existe en plusieurs variantes cambodgiennes ; nous suivrons celle de notre fiche, avec du coco et du kroeung jaune. Choisissez votre nombre de convives et préparez les quantités sur la fiche. Le son accompagne vos gestes, pas les grammages qui changent avec les portions. Sortez deux casseroles, une passoire, une écumoire, une louche, une planche, un couteau, une fourchette, un thermomètre si possible et des bols propres. Le kroeung doit être préparé avant le cours ou acheté prêt ; on ne va pas prétendre le fabriquer ici en quelques secondes. Je vous préviendrai lorsqu'une pause est utile. Allez, on commence !",
+    "intro": "Bonjour et bienvenue dans notre atelier Cuisine du Cambodge ! Aujourd'hui nous réalisons un Num Banh Chok, avec des nouilles de riz, une sauce chaude au poisson et au kroeung jaune, du lait de coco et beaucoup de fraîcheur. Notre objectif, c'est de maîtriser l'ordre des préparations : pocher le poisson sans le dessécher, l'émietter en retirant les arêtes, préparer une sauce parfumée et fluide, puis dresser avec des légumes croquants. Ce plat existe en plusieurs variantes cambodgiennes ; nous suivrons celle de notre fiche, avec du coco et du kroeung jaune. Choisissez votre nombre de convives et préparez les quantités sur la fiche. Le son accompagne vos gestes, pas les grammages qui changent avec les portions. Sortez deux casseroles, une passoire, une écumoire, une louche, une planche, un couteau, une fourchette, un thermomètre si possible et des bols propres. Le kroeung doit être préparé avant le cours ou acheté prêt ; on ne va pas prétendre le préparer ici en quelques secondes. Je vous préviendrai lorsqu'une pause est utile. Allez, on commence !",
     "publicProviderMention": false,
     "previousAsset": {
       "audioUrl": "/audio/workshops/num-banh-chok-sauce-et-herbes-fraiches/atelier-coral.mp3",
@@ -219,7 +219,7 @@
         },
         {
           "id": "maitriser",
-          "title": "Construire la sauce chaude au kroeung",
+          "title": "Préparer la sauce chaude au kroeung",
           "startSec": 77.448,
           "endSec": 94.92
         },
@@ -231,7 +231,7 @@
         },
         {
           "id": "terminer",
-          "title": "Monter les bols et ajouter la fraîcheur",
+          "title": "Dresser les bols et ajouter la fraîcheur",
           "startSec": 111.48,
           "endSec": 127.344
         }
@@ -239,7 +239,7 @@
       "scriptSha256": "8830e51af9050773961483b2646a9abfa09b08cb846b8b780b519b64637ce6d1"
     },
     "storyboardVersion": 2,
-    "asset": {
+    "supersededV2Asset": {
       "audioUrl": "/audio/workshops/num-banh-chok-sauce-et-herbes-fraiches/atelier-coral-v2.mp3",
       "durationSec": 698.16,
       "sha256": "69b467288ef3c23ef2d6b914d395d9f54175372085ee3c52fe1019489a30e1d1",
@@ -270,7 +270,7 @@
         },
         {
           "id": "maitriser",
-          "title": "Construire la sauce chaude au kroeung",
+          "title": "Préparer la sauce chaude au kroeung",
           "startSec": 391.488,
           "endSec": 501.84
         },
@@ -282,13 +282,14 @@
         },
         {
           "id": "terminer",
-          "title": "Monter les bols et ajouter la fraîcheur",
+          "title": "Dresser les bols et ajouter la fraîcheur",
           "startSec": 609.312,
           "endSec": 698.16
         }
       ],
       "scriptSha256": "96ba8cc1097ece97aa622015bdbdcf202df2844ddde38380a1b4778c697ee3b8"
-    }
+    },
+    "editorialTextApproved": false
   },
   "media": {
     "finishedPreparationImage": "",
