@@ -8,6 +8,24 @@ import {dirname,join} from 'node:path';
 const slug='num-banh-chok';
 const base=['scripts/bridge-cooking-workshops-coral.mjs','--atelier='+slug,'--edition=approved-v3'];
 const call=(a)=>spawnSync(process.execPath,[...base,...a],{encoding:'utf8',timeout:30000});
+// Published recordings must be IMMUTABLE: every paid synthesis path is
+// rejected, even for a single segment. Never start Coral while verifying this.
+const current=JSON.parse(readFileSync('src/data/atelier-recette-guides/'+slug+'.json','utf8'));
+if(current.status==='release_ready'){
+  assert.equal(current.releaseAuthorization?.ownerApproved,true,'Owner release must be explicit');
+  for(const params of [
+    ['--check'],
+    ['--one=intro'],
+    ['--one=intro','--part=1'],
+    ['--one=intro','--part=999'],
+    ['--assemble']
+  ]){
+    const attempt=call(params);
+    assert.notEqual(attempt.status,0,'Published MP3 must NEVER allow synthesis: '+params.join(' '));
+  }
+  console.log('PASS: RELEASED_GUIDE_CORAL_IMMUTABLE; 0 NETWORK REQUESTS; 0 paid TTS');
+  process.exit(0);
+}
 const goodPlan=call(['--plan']);
 assert.equal(goodPlan.status,0,'Offline plan should pass');
 assert.match(goodPlan.stdout,/v3 25 segments/);
