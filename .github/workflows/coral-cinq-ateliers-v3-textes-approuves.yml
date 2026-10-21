@@ -118,6 +118,7 @@ jobs:
           path: .tmp-cooking-coral/*/v3/intro-part-*.mp3
           retention-days: 30
           if-no-files-found: warn
+          include-hidden-files: true
           overwrite: true
       - name: Coral V3 - installer, approved script only
         run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --one=installer
@@ -129,6 +130,7 @@ jobs:
           path: .tmp-cooking-coral/*/v3/installer-part-*.mp3
           retention-days: 30
           if-no-files-found: warn
+          include-hidden-files: true
           overwrite: true
       - name: Coral V3 - preparer, approved script only
         run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --one=preparer
@@ -140,6 +142,7 @@ jobs:
           path: .tmp-cooking-coral/*/v3/preparer-part-*.mp3
           retention-days: 30
           if-no-files-found: warn
+          include-hidden-files: true
           overwrite: true
       - name: Coral V3 - assembler, approved script only
         run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --one=assembler
@@ -151,6 +154,7 @@ jobs:
           path: .tmp-cooking-coral/*/v3/assembler-part-*.mp3
           retention-days: 30
           if-no-files-found: warn
+          include-hidden-files: true
           overwrite: true
       - name: Coral V3 - maitriser, approved script only
         run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --one=maitriser
@@ -162,6 +166,7 @@ jobs:
           path: .tmp-cooking-coral/*/v3/maitriser-part-*.mp3
           retention-days: 30
           if-no-files-found: warn
+          include-hidden-files: true
           overwrite: true
       - name: Coral V3 - rectifier, approved script only
         run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --one=rectifier
@@ -173,6 +178,7 @@ jobs:
           path: .tmp-cooking-coral/*/v3/rectifier-part-*.mp3
           retention-days: 30
           if-no-files-found: warn
+          include-hidden-files: true
           overwrite: true
       - name: Coral V3 - terminer, approved script only
         run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --one=terminer
@@ -184,6 +190,7 @@ jobs:
           path: .tmp-cooking-coral/*/v3/terminer-part-*.mp3
           retention-days: 30
           if-no-files-found: warn
+          include-hidden-files: true
           overwrite: true
       - name: Assemble exactly seven navigable chapters
         run: node scripts/bridge-cooking-workshops-coral.mjs --atelier=${{ matrix.atelier }} --edition=approved-v3 --assemble
