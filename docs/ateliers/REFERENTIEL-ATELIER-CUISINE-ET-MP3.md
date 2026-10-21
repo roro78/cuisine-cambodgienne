@@ -4,6 +4,15 @@
 
 > **Complément obligatoire V2 (21 octobre 2026) — voix, script et navigation :** lire [Référentiel permanent de narration immersive V2](./REFERENTIEL-NARRATION-IMMERSIVE-V2.md) **avant de rédiger ou générer un nouvel atelier MP3**. Le [prompt opérationnel de reprise des cinq ateliers](./PROMPT-CONTINUATION-CINQ-ATELIERS-V2.md) applique ce contrat. **En cas de divergence sur la durée de l'introduction, la longueur des scripts, les quantités parlées ou les interactions MP3/page, le référentiel V2 fait foi ; les six phases et les exigences de sécurité, sources, médias, droits et publication du présent document restent en vigueur.** Le Lok Lak V2 enregistré et validé à l'écoute est l'étalon, mais pas une autorisation de commercialisation.
 
+## Contrat lexical bloquant — avant approbation, avant Coral
+
+Une recette ou un atelier se **prépare** et se **cuisine** : on coupe, émince, pile, mélange, fait revenir, laisse mijoter, rectifie l'assaisonnement et dresse. Le mot **« fabriquer »** et toutes ses flexions, ainsi que « fabrication », sont **interdits dans tout contenu éditorial de recette, fiche pratique et narration**. Ne pas écrire non plus « construire une sauce », « construire un bouillon », « chantier », « poste » (dire « plan de travail »), « monter les bols » (dire « dresser les bols »). Les identifiants internes `installer`, `preparer`, `assembler`, `maitriser`, `rectifier`, `terminer` restent stables ; ce ne sont pas des titres obligatoires pour le visiteur.
+
+**Ordre non négociable** : recette et ingrédients contrôlés → fiche pratique complète → sept textes parlés lisibles remis à l'utilisateur → **approbation explicite des textes** → synthèse Coral → écoute et contrôle des chapitres sur mobile. L'existence d'un MP3 ne vaut jamais approbation. Modifier une phrase parlée invalide l'association au MP3 précédent, lequel doit être conservé séparément, sans lecture sous le nouveau script.
+
+Le contrôle automatique `node scripts/check-culinary-lexicon.mjs` bloque le catalogue et les fiches de revue s'il trouve du vocabulaire de chantier ou une narration modifiée encore associée à une ancienne piste. La passerelle TTS exige en plus les validations humaines et l'empreinte exacte du script approuvé avant tout appel audio.
+
+
 ## La promesse d'un véritable atelier
 
 Un atelier est une **préparation que le visiteur réalise de bout en bout** : il part des ingrédients, organise son plan de travail, apprend un geste, vérifie le résultat et termine avec quelque chose de concret à servir ou utiliser. Une astuce, une expérience isolée ou une liste de conseils n'est pas un atelier, même si elle comporte une vidéo ou un MP3.
