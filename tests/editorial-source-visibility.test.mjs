@@ -17,7 +17,7 @@ const publicFiles = [
 const bannedDisplayExpressions = [
   /article\.sources\.map\s*\(/,
   /recipe\.sources\.map\s*\(/,
-  /guide\.sources\.(?:culinaryReferences|safetyReferences)\.map\s*\(/,
+  /guide\.sources\.(?:culinaryReferences|safetyReferences)\??\.map\s*\(/,
   /workshop\.sources\.culinaryReferences\.map\s*\(/,
   /<\s*(?:h[1-6]|summary|p)[^>]*>\s*(?:Sources(?: utilisées| de l’atelier| des repères de sécurité alimentaire)?|Références culinaires)/i,
   /Les sources citées à la fin de chaque carnet/i,
@@ -36,6 +36,7 @@ const workshop = read('src/pages/apprendre/pratique/[slug].astro');
 assert.match(workshop, /Sécurité et allergènes/);
 assert.match(workshop, /guide\.safety\.map/);
 assert.match(read('src/data/culture.ts'), /sources:\s*\[/);
+assert.doesNotMatch(read('src/data/culture.ts'), /La FAO présente|Selon l’agence de presse cambodgienne AKP/, 'Sources must not be named in the C01 reader-facing prose');
 assert.match(read('src/data/restoredRecipes.ts'), /sources:\s*\[/);
 
 // Attributions sous licence : les crédits photo NE sont PAS des bibliographies
