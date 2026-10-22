@@ -4,10 +4,10 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v2.0 (correction de cap : Carnets culture/histoire, aucun doublon ateliers)** · Responsable de validation : **propriétaire du site**  
-> État du projet : **M2 EN COURS — C01 corrigé, C02/C05 brouillons, C03 recadré exclusivement sur l'histoire et la mémoire ; aucune publication**  
-> **Étape active : M2 — C03 orientation initiale « gestes au mortier » RÉVOQUÉE et remplacée par un sujet culturel sur la mémoire du kroeung, sous réserve de preuves et de validation ; aucun texte final accepté.**  
-> Prochaine action : faire relire [C02](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md), [C03 version mémoire/histoire (qui remplace le tutoriel)](./BROUILLON-C03-KROEUNG-TRANSMISSION-2026-10-22.md) et [C05](./BROUILLON-C05-KEP-MARCHE-CRABES-2026-10-22.md). Le parcours de l'index Carnets est **culturel seulement** ; C03 n'affiche plus de suggestions Recette/Atelier. **Kep : photo distante à importer en WebP local. C03 : image historique et droits à trouver.** Exécuter CI/build et contrôle mobile avant validation ; arbitrer D2 et N01–N04, GSC, visas. **PR #97–#102 non fusionnées.**
+> Création : **22 octobre 2026** · Version du plan : **v2.1 (C04 amok culturel prêt en prévisualisation ; 4/7 brouillons)** · Responsable de validation : **propriétaire du site**  
+> État du projet : **M2 EN COURS — C01 corrigé ; quatre brouillons culturels C02/C03/C04/C05 en prévisualisation, aucun publié**  
+> **Étape active : M2 — frontière culture / ateliers / recettes désormais exigée ; C03 recadré histoire, C04 également reconstruit autour de patrimoine et pratiques sociales. AUCUN TEXTE FINAL ACCEPTÉ.**  
+> Prochaine action : faire relire les [brouillons C02](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md), [C03 mémoire du kroeung](./BROUILLON-C03-KROEUNG-TRANSMISSION-2026-10-22.md), [C04 amok patrimonial](./BROUILLON-C04-AMOK-PATRIMOINE-2026-10-22.md) et [C05 Kep](./BROUILLON-C05-KEP-MARCHE-CRABES-2026-10-22.md). **Kep : photo CDN à importer en WebP local**, **C03 : photo culturelle et droits à trouver**, **C04 : image horizontale sous CC BY 2.0 à comparer avec son original**. Exécuter tests/CI, build, responsive ; arbitrer D2 et N01–N04 ; GSC puis visa D3 avant publication. **PR #97–#102 non fusionnées ; branche C04 empilée non publiée.**
 
 ## 1. Objectif final
 
@@ -53,7 +53,7 @@ Constaté dans la branche **main** au moment de la création de ce plan :
 | C01 | le-riz-symbole-de-vie-au-cambodge | **Le riz, au cœur de la vie cambodgienne** ; quotidien, rizières, variétés, fêtes, distinction internationale | Vie quotidienne | Consolider et enrichir visuels et maillage ; vérifier dates et prix cités | **Orientation D1 validée — article non enrichi** |
 | C02 | poivre-de-kampot | **Le poivre de Kampot, de la plantation à la table** ; terroir, producteurs, récolte, IG | Terroirs et marchés | Histoire du territoire et des producteurs ; **ne pas détailler les étapes techniques de culture ou d'assaisonnement** | **Prévisualisation enrichie préparée — texte/média non validés** |
 | C03 | comprendre-le-kroeung | **Le kroeung, une mémoire de la cuisine khmère** ; rupture historique, exil, diaspora, patrimoine | Mémoire et transmission | **AUCUNE technique du mortier, recette, aromate à détailler, tutoriel ou renvoi pratique** ; aucune origine angkorienne sans preuve ; photo culturelle à rechercher | **Orientation initiale annulée ; nouvelle prévisualisation historique NON VALIDÉE** |
-| C04 | comprendre-amok | **L'amok, un plat et ses interprétations** ; place culturelle, façons de servir, représentations historiques vérifiées | Mémoire culinaire | **Aucune leçon de cuisson ni explication de texture**, chercher histoire/usage réellement documentés ; refuser les mythes royaux non prouvés | **Orientation D1 validée — article non enrichi** |
+| C04 | comprendre-amok | **L’amok, entre patrimoine et tables d’aujourd’hui** ; occasions particulières, identité, récit royal non prouvé, restaurants et diaspora | Mémoire culinaire | **Aucune technique de cuisson, texture à réussir ni ingrédients détaillés** ; histoire royale explicitement qualifiée ; photo horizontale CC BY 2.0 avec crédit obligatoire | **Prévisualisation rédigée — texte/média non validés** |
 | C05 | kep-marche-crabe-poivre | **Kep, au marché des crabes, entre mer et poivre** ; pêche, commerce côtier, préservation | Terroirs et marchés | Texte reportage sans visite fictive ; ancienne photo faussement légendée ; visuel CC0 en CDN de staging à internaliser | **Prévisualisation enrichie — texte/média non validés** |
 | C06 | prahok-fermentation-umami | **Prahok : conservation et mémoire culinaire** ; communautés de pêche, histoire des échanges, patrimoine | Mémoire culinaire | Raconter les métiers et la place sociale du prahok ; **aucun protocole de fermentation** ni cours d'umami | **Orientation D1 validée — article non enrichi** |
 | C07 | construire-repas-cambodgien | **À table au Cambodge, le repas partagé** ; sociabilité, pratiques de table, diversité des milieux | Vie quotidienne | Récit de commensalité ; **aucun menu à construire ni conseil de dressage** | **Orientation D1 validée — article non enrichi** |
@@ -109,7 +109,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | **M0 — Pilotage** | Plan versionné et accès depuis le dépôt | Fichier sur main, lien lisible, étape active explicite | **FAIT le 22/10/2026** |
 | **M1 — Audit et briefs** | Inventaire C01–C07 : source, photos, liens, H1, SEO, fiche par article ; baseline GSC si disponible ; briefs proposés | **7 fiches** + écarts consignés ; aucun contenu original touché ; briefs soumis à validation | **VALIDÉ pour les 7 orientations, en PR ; GSC non disponible** |
 | **M2 — Validation éditoriale** | Angles/titres/plans/sources cibles validés, modèle commun fixé ; priorités N01–N04 confirmées | Décisions écrites ; refus et inconnues documentés | **EN COURS : D1 sept orientations + erratum C01 acceptés ; D2/modèle/priorités N01–N04 à arbitrer** |
-| **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | **À faire : C02/C03/C05 pré-rédigés pour M3 en PR non fusionnées, gate M2 non franchi** |
+| **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | **À faire : C02/C03/C04/C05 pré-rédigés en PR non fusionnées, gate M2 non franchi** |
 | **M4 — Index Carnets** | Refonte /culture/ avec quatre univers et nouveaux parcours | Navigation accessible, responsive, cohérence avec les sept Carnets | À faire |
 | **M5 — Première vague N01–N04** | Quatre nouveaux dossiers, articles et visuels | **4/4** validés, sources et média vérifiés ; publication par lot possible | À faire |
 | **M6 — Recette technique et publication** | Tests éditoriaux, build, liens, SEO, photos, mobile/desktop, vérification OVH | Aucun défaut bloquant ; accord propriétaire avant fusion/déploiement ; compte-rendu HTTP après mise en production | À faire |
@@ -165,7 +165,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | --- | --- |
 | Carnets existants au catalogue main | **7** (constaté dans src/data/culture.ts) |
 | Briefs audités/validés | **7/7 orientations validées (D1) en PR ; 0/7 articles réécrits validés** |
-| Carnets enrichis/validés | **3/7 brouillons en prévisualisation (C02/C03/C05) ; 0/7 articles finalisés/validés** |
+| Carnets enrichis/validés | **4/7 brouillons en prévisualisation (C02/C03/C04/C05) ; 0/7 articles finalisés/validés** |
 | Nouveaux Carnets publiés | **0/4** |
 | Univers implémentés sur /culture/ | **0/4** au sens de filtres structurés |
 | Index refondu/validé | **Non** |
@@ -174,6 +174,15 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J11 — Carnet C04 Amok refondu comme un récit culturel, sans tutoriel
+- **Réalisation :** rédaction et intégration sur `docs/carnets-c04-amok-patrimoine-20261022` de C04 `/culture/comprendre-amok/` « **L’amok, entre patrimoine et tables d’aujourd’hui** », six chapitres, 18 paragraphes, ~935 mots. Sujet **culturel seulement** : emblème, occasions particulières dans le témoignage de Kethana Dunnett, feuilles de bananier et images du plat, origine royale **non prouvée**, pratiques contemporaines diverses, présence de l'amok en Californie attestée dans la presse dès mai 1990.
+- **Aucun doublon :** suppression des explications de vapeur, textures et recette de C04 ; aucun carrousel de recette/ingrédient sur cette fiche et glossaire réduit au mot « amok ». Les pratiques de cuisine restent dans les rubriques Recettes et Ateliers.
+- **Références internes uniquement** : Audrey Gillan 2017, ambassade Cambodge 2022 (tradition royale **non démontrée**), Chef Nak, Phil Lees 2007, Los Angeles Times 1990, ARTE 2025 ; [registre documentaire du brouillon C04](./BROUILLON-C04-AMOK-PATRIMOINE-2026-10-22.md). **Aucune référence documentaire visible dans les pages publiques.**
+- **Média principal C04 :** l'ancien `amok-alt-1600.webp` est une photo verticale avec très grand fond rouge, peu adaptée à une couverture. Prévisualisation avec `amok-1600.webp`, photographie horizontale du service avec riz et feuilles (Ben Yapp, **CC BY 2.0**), déjà créditée sur `/credits-photos/`. Ancien visuel préservé pour les actifs sociaux, `socialImageRole:'article'` préserve la classification de photo documentaire. **Correspondance source WebP et mention de transformation encore à vérifier avant visa photo.**
+- **Contrôle :** nouveau `tests/carnets-c04-contract.test.mjs` raccordé à `npm run test:editorial`. Tests npm et build Astro **non exécutés à cette étape** ; les contrôles statiques ne sont pas un PASS CI. Aucune publication.
+- **Programme :** M2 **EN COURS** ; 4/7 brouillons C02/C03/C04/C05, **0/7 articles finalisés/validés** ; D2 taxonomie et D3 textes/médias/publication ouverts ; aucun merge, OVH, n8n ou Meta modifié. Blocages restants : photo Kep distante à localiser, photo C03 à autoriser.
+- **Prochaine action :** revue C04 et vérification des médias, CI et contrôle mobile ; recherche puis rédaction C06/C07 si histoire culturelle suffisamment étayée.
 
 ### 2026-10-22 — J10 — demande explicite du propriétaire : fin des doublons entre Carnets, Recettes et Ateliers
 - **Avis du propriétaire :** « le carnet consacré au Krung, ça fait pas doublon avec l'atelier et la recette ? [...] OK pour la recette ou dans les ateliers, mais pas dans la culture. Et si on en parle, on n'aura pas de recette. On parlera de son histoire ». Cette décision **corrige et remplace la validation antérieure D1-C03 « gestes et transmission »** ; aucun visa du texte final n'est donné.
