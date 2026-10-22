@@ -122,7 +122,7 @@ const testPatches=[
 for(const target of testPatches) {
   let t=await readFile(target.path,'utf8');
   for(const [prefix,newText] of target.lines) {
-    const line=t.split('\\n').filter(x=>x.trimStart().startsWith(prefix));
+    const line=t.split('\n').filter(x=>x.trimStart().startsWith(prefix));
     assert.equal(line.length,1,'Unexpected test contract shape: '+target.path+' / '+prefix);
     t=replaceExactlyOnce(t,line[0],newText,target.path);
   }
@@ -132,8 +132,8 @@ for(const target of testPatches) {
 const planPath='docs/carnets/PLAN-REFONTE-CARNETS.md';
 let plan=await readFile(planPath,'utf8');
 plan=replaceExactlyOnce(plan,'v2.8 (QA finale 7/7 PASS avec photo Kep locale ; D2/D3 non validés)','v2.9 (couvertures éditoriales C03/C06 importées, QA finale à confirmer)','Pilot version');
-const marker='## 10. Journal chronologique immuable\\n\\n### 2026-10-22 — J18';
-const entry='## 10. Journal chronologique immuable\\n\\n### 2026-10-22 — J19 — couvertures C03/C06 illustratives intégrées\\n- **Images acceptées en conversation :** C03 scène entre générations autour des aromates, C06 scène lacustre avec pêche et marché, sans tutoriel au mortier. Ce sont des **illustrations éditoriales composées**, non des reportages de personnes ou lieux attestés ; aucune mention de source documentaire en page.\\n- **8 WebP vérifiés par SHA-256 et Sharp**, quatre formats 480/800/1200/1536 pour chaque Carnet, 1536×1024 au maximum. Données image, alt et légende mises à jour uniquement sur C03/C06.\\n- **Catalogue social préservé :** anciennes photographies C03 et C06 conservées dans socialImage et socialImageRole article. Aucune modification des flux n8n/Meta, d\'Ateliers ni de Recettes.\\n- **Gate :** images importées exclusivement sur branche QA à réceptionner, CI/Chromium obligatoires après import ; D2, D3 textes et publication restent ouverts, aucun merge ou OVH.\\n\\n### 2026-10-22 — J18';
+const marker='## 10. Journal chronologique immuable\n\n### 2026-10-22 — J18';
+const entry='## 10. Journal chronologique immuable\n\n### 2026-10-22 — J19 — couvertures C03/C06 illustratives intégrées\n- **Images acceptées en conversation :** C03 scène entre générations autour des aromates, C06 scène lacustre avec pêche et marché, sans tutoriel au mortier. Ce sont des **illustrations éditoriales composées**, non des reportages de personnes ou lieux attestés ; aucune mention de source documentaire en page.\n- **8 WebP vérifiés par SHA-256 et Sharp**, quatre formats 480/800/1200/1536 pour chaque Carnet, 1536×1024 au maximum. Données image, alt et légende mises à jour uniquement sur C03/C06.\n- **Catalogue social préservé :** anciennes photographies C03 et C06 conservées dans socialImage et socialImageRole article. Aucune modification des flux n8n/Meta, d\'Ateliers ni de Recettes.\n- **Gate :** images importées exclusivement sur branche QA à réceptionner, CI/Chromium obligatoires après import ; D2, D3 textes et publication restent ouverts, aucun merge ou OVH.\n\n### 2026-10-22 — J18';
 plan=replaceExactlyOnce(plan,marker,entry,'Pilot J19 journal');
 await writeFile(planPath,plan,'utf8');
 await writeFile(dataPath,culture,'utf8');
