@@ -58,7 +58,7 @@ export const restoredRecipes: RestoredRecipe[] = [
     ],
     tips: [
       'La recette d’époque ne précisait pas le volume de lait de coco : 400 ml constitue une adaptation culinaire et non une transcription littérale.',
-      'La source d’époque mentionnait six à huit piments rouges : cette version commence plus doucement, avec la possibilité d’en rajouter.',
+      'Une version ancienne utilisait six à huit piments rouges : celle-ci commence plus doucement, avec la possibilité d’en rajouter.',
       'L’amok de poisson est un autre plat : ce curry mérite sa propre page et sa propre redirection.'
     ],
     sources: [
