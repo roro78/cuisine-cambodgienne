@@ -4,10 +4,10 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v1.4 (correctif C01 rédigé en PR dépendante, non fusionnée)** · Responsable de validation : **propriétaire du site**  
-> État du projet : **M1 VALIDÉ EN BRANCHE — M2 EN COURS ; CORRECTIF C01-P0 PRÉPARÉ SANS PUBLICATION**  
+> Création : **22 octobre 2026** · Version du plan : **v1.5 (politique de références non visibles préparée en PR empilée, non fusionnée)** · Responsable de validation : **propriétaire du site**  
+> État du projet : **M2 EN COURS : D1 VALIDÉ ; C01 CORRIGÉ EN PR, SOURCES DOCUMENTAIRES DÉSAFFICHÉES SUR BRANCHE, AUCUNE PUBLICATION**  
 > **Étape active : M2 — sept orientations C01–C07 validées par le propriétaire, autres arbitrages ouverts ; aucun article final validé.**  
-> Prochaine action : faire contrôler la PR corrective C01-P0 et soumettre les prochains textes enrichis pour réception ; arbitrages D2 (univers/maquette), modèle final M2 et priorités N01–N04 encore ouverts. Export GSC et visa de publication nécessaires avant OVH. **Ni la PR documentaire ni la PR corrective ne sont fusionnées.**
+> Prochaine action : contrôler la suppression des bibliographies publiques et le correctif C01, lancer la CI et faire valider le rendu avant toute fusion ; préparer les enrichissements C01–C07. D2 (univers/maquette) et priorités N01–N04 restent ouverts. Export GSC et visa publication nécessaires avant OVH. **PR #97 et #98 non fusionnées ; PR de politique d'affichage empilée, aucune publication.**
 
 ## 1. Objectif final
 
@@ -22,7 +22,7 @@ Les Carnets racontent **les lieux, les personnes, les usages, l'histoire et la t
 | O1 | Continuité éditoriale et SEO | **7/7 articles existants conservés sur leur URL**, sans perte des redirections historiques connues | Inventaire URL avant/après, requêtes HTTP et sitemap |
 | O2 | Valeur éditoriale | **7/7 articles audités** puis enrichis selon un brief approuvé ; informations non banales, pas de doublons purs avec recettes/ateliers | Grille de lecture et diff éditorial par article |
 | O3 | Découverte | **4 univers** visibles et navigables : Vie quotidienne ; Terroirs et marchés ; Gestes et transmission ; Fêtes et traditions | Contrôle fonctionnel page /culture/ mobile et desktop |
-| O4 | Fiabilité | **100 % des affirmations sensibles** (origine, récompense, IG, pratiques, dates, conservation) reliées à des sources consultables ; aucune histoire ou citation inventée | Registre des sources et contrôle éditorial |
+| O4 | Fiabilité | **100 % des affirmations sensibles** (origine, récompense, IG, pratiques, dates, conservation) reliées à des références **consultables dans le registre interne**, non affichées publiquement ; aucune histoire ou citation inventée | Registre interne des sources et contrôle éditorial |
 | O5 | Médias | **100 % des nouveaux médias publiés** avec droits/provenance vérifiés, alt descriptif et légende exacte quand nécessaire | Inventaire médias / licences et QA images |
 | O6 | Maillage | **7/7 Carnets** avec au moins un lien pertinent vers une autre ressource existante ; aucun lien cassé | Contrôle des liens et vérification manuelle |
 | O7 | Accessibilité | Aucun défaut bloquant détecté lors de la revue clavier, mobile et desktop ; titres structurés, images et contrastes contrôlés | Rapport de recette avec captures |
@@ -93,7 +93,7 @@ Les titres sont **des propositions à valider**, pas des renommages effectués. 
 - **5 à 7 sections utiles** comme repère éditorial adaptable ; souvent **900 à 1 500 mots** si la matière le justifie. Ne pas allonger artificiellement.
 - **Preuves** : origines, noms khmers, dates, distinction, réglementation, données et citations factuelles contrôlés ; signaler les variantes régionales et incertitudes. Aucun faux témoignage, aucune visite fictive, aucune histoire « ancestrale » sans preuve.
 - **Médias** : photo principale pertinente, photos de chapitre si fiables, crédits/licences/droits, légendes, dimensions, texte alternatif. Pas de fausse photographie documentaire.
-- **Liens** : sources externes vérifiées, 1 ou plusieurs connexions internes utiles (autre Carnet, Glossaire, Recette, Atelier) ; aucun faux lien.
+- **Liens** : références documentaires et URLs archivées **en interne** pour vérification, sans bibliographie ni citation des sources dans la page publique ; 1 ou plusieurs liens de navigation interne utiles (Carnet, Glossaire, Recette, Atelier), sans faux lien.
 - **SEO et UX** : titre H1 unique, description spécifique, métadonnées cohérentes, URL stable, données structurées Article valides, contraste et navigation au clavier, mobile lisible.
 - **Sécurité** : la fermentation du poisson, les aliments crus et les pratiques de conservation ne donnent lieu à aucune consigne domestique non validée.
 - **Visa éditorial** : chaque Carnet reçoit un contrôle des faits, un contrôle des médias et une approbation avant publication.
@@ -174,6 +174,13 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J05 — décision du propriétaire : pas de sources visibles sur les pages publiques
+- **Instruction explicite :** « Aucune source ne doit être mentionnée dans nos pages » (22/10/2026). Application : **aucun bloc de bibliographie documentaire sur les Carnets, Recettes, Ateliers et À propos**, y compris les liens de sources documentaires (riz/VNA), bien que ces URLs restent conservées pour contrôles internes.
+- **Exception juridique et technique :** les crédits de photographies soumis à licences (auteurs, licences, liens d'attribution) sont distincts des sources éditoriales et restent visibles sur la page `/credits-photos/` ainsi que dans les légendes qui l'exigent ; aucune suppression des avertissements culinaires et sanitaires.
+- **Réalisation en branche dédiée dépendante du correctif #98 :** suppression des bibliographies de `src/pages/culture/[slug].astro`, `src/components/RestoredRecipe.astro`, `src/pages/apprendre/pratique/[slug].astro`, `src/pages/apprendre/pratique/kroeung-jaune.astro` ; harmonisation de `src/pages/a-propos.astro`, `src/pages/recettes/index.astro` et des libellés de la page crédits photo. Les fichiers de données de sources restent conservés. Ajout d'un test de non-affichage, sans publication automatique.
+- **Statut :** aucune fusion, aucun déploiement ; PR #97 et #98 restent en préparation ; tests CI et contrôle visuel à vérifier. M2 demeure **EN COURS** et D2/D3 sans visa.
+- **Prochaine action :** contrôler le code en PR, obtenir verdict CI, poursuivre les Carnets à partir des briefs acceptés, sans bibliographies publiques.
 
 ### 2026-10-22 — J04 — correction C01-P0 préparée dans une PR dédiée (non fusionnée)
 - **Réalisation :** sur une branche issue de la PR documentaire #97 (pour ne pas créer un conflit de plan parallèle), modification d'un seul paragraphe de `src/data/culture.ts` : le prix 2025 est indiqué comme **partagé** entre Malys Angkor/Phka Rumduol (Cambodge) et ST25 (Vietnam). Ajout de la référence Vietnam News Agency du 10/11/2025 dans les sources du C01 ; autres contenus des sept Carnets préservés.
