@@ -33,7 +33,7 @@ export const cultureArticles: CultureArticle[] = [
         paragraphs: [
           'Au Cambodge, le riz se retrouve dans des cuisines très différentes, chez les familles modestes comme dans les grandes maisons, sur les marchés, dans les cantines et au restaurant. La quantité, la variété, les plats servis autour de lui et les habitudes de table peuvent changer selon les moyens et les régions. Mais le riz demeure un point de rencontre.',
           'On le prépare souvent nature, puis on l’accompagne de poisson, d’une soupe, de légumes, d’œufs, de viande, de condiments ou d’un plat mijoté. Son goût discret n’est pas un défaut : il permet aux autres saveurs de s’exprimer. Un petit plat très relevé prend une autre dimension lorsqu’il est partagé avec du riz chaud.',
-          'La FAO présente le riz comme une culture vivrière majeure du Cambodge. C’est à la fois une composante essentielle de l’alimentation et un produit agricole qui fait vivre de nombreuses familles. Il serait pourtant faux de réduire tous les repas cambodgiens à une assiette identique : les habitudes et les ressources varient.'
+          'Le riz est une culture vivrière majeure du Cambodge. C’est à la fois une composante essentielle de l’alimentation et un produit agricole qui fait vivre de nombreuses familles. Il serait pourtant faux de réduire tous les repas cambodgiens à une assiette identique : les habitudes et les ressources varient.'
         ]
       },
       {
@@ -63,7 +63,7 @@ export const cultureArticles: CultureArticle[] = [
       {
         title: 'Un riz récompensé sept fois au niveau mondial',
         paragraphs: [
-          'En novembre 2025, lors de la World Rice Conference organisée à Phnom Penh par The Rice Trader, le Malys Angkor cambodgien (variété Phka Rumduol) a partagé la première place du concours « World’s Best Rice 2025 » avec le riz vietnamien ST25. Selon l’agence de presse cambodgienne AKP, il s’agissait de la septième distinction remportée par un riz cambodgien dans ce concours, après 2012, 2013, 2014, 2018, 2022 et 2024.',
+          'En novembre 2025, lors de la World Rice Conference organisée à Phnom Penh par The Rice Trader, le Malys Angkor cambodgien (variété Phka Rumduol) a partagé la première place du concours « World’s Best Rice 2025 » avec le riz vietnamien ST25. Il s’agissait de la septième distinction remportée par un riz cambodgien dans ce concours, après 2012, 2013, 2014, 2018, 2022 et 2024.',
           'Ce prix valorise un riz parfumé, la qualité du grain et le savoir-faire de la filière. Ce n’est pas un classement permanent de tous les riz vendus dans le monde : il s’agit d’une récompense attribuée dans le cadre d’un concours professionnel annuel.',
           'La reconnaissance internationale est réelle, mais le véritable enjeu reste aussi très concret : produire une qualité régulière, préserver les terres et permettre aux agriculteurs de vivre convenablement de leur travail.'
         ]
