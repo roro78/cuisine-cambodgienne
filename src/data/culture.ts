@@ -24,11 +24,11 @@ const tourismGuide = 'https://tourismcambodia.org/public/index.php/official-acti
 export const cultureArticles: CultureArticle[] = [
   {
     slug: 'le-riz-symbole-de-vie-au-cambodge',
-    title: 'Le riz au Cambodge : la vie quotidienne, les rizières et un savoir-faire primé',
-    eyebrow: 'Terres, familles et saveurs',
+    title: 'Le riz, au cœur de la vie cambodgienne',
+    eyebrow: 'Vie quotidienne',
     intro: 'Dans une maison de village, sur une table de Phnom Penh ou au bord d’une rizière, le riz est bien davantage qu’un accompagnement : il nourrit, rassemble et fait vivre. Découvrons le riz cambodgien, de ses variétés parfumées aux plats du quotidien.',
-    seoDescription: 'Le riz au Cambodge : place dans la vie quotidienne, riz parfumé Phka Rumduol et Malys Angkor primé en 2025, rizières, fêtes, plats au riz et savoir-faire paysan.',
-    readingTime: '9 min',
+    seoDescription: 'Le riz au cœur de la vie cambodgienne : rizières, familles, fêtes, variétés et première place partagée du Phka Rumduol au concours mondial 2025.',
+    readingTime: '5 min',
     sections: [
       {
         title: 'Le riz, au cœur du quotidien cambodgien',
@@ -43,7 +43,7 @@ export const cultureArticles: CultureArticle[] = [
         paragraphs: [
           'Le matin, le riz peut prendre la forme d’un bai sach chrouk, avec du porc grillé, ou d’un bobor, une bouillie de riz servie chaude et agrémentée selon les goûts. Au déjeuner ou au dîner, il accompagne volontiers un amok, un curry, un lok lak ou du poisson préparé simplement.',
           'Il existe aussi des plats où le riz change complètement de texture : riz sauté, riz gluant pour certaines douceurs, grains grillés ou aplatis. On le transforme en farine, en galettes ou en nouilles de riz, comme celles du num banh chok. Le riz se mange donc en grains, mais il entre aussi dans une multitude de préparations.',
-          'Cuisiner cambodgien ne signifie pas recouvrir systématiquement le riz de sauce. Il peut rester bien distinct dans le bol : on alterne les bouchées et chacun dose les accompagnements à sa manière.'
+          'Dans bien des repas, le riz garde sa place dans un bol ou une assiette et les autres mets se partagent à côté. Ailleurs, il est intégré à la préparation elle-même. Cette diversité raconte autant la vie des familles que l’inventivité des cuisines de rue et des marchés.'
         ]
       },
       {
@@ -59,7 +59,7 @@ export const cultureArticles: CultureArticle[] = [
         paragraphs: [
           'Il n’existe pas un seul riz cambodgien. Le pays cultive différents types de riz : des grains longs parfumés, des riz blancs plus courants, du riz gluant et d’autres variétés adaptées aux terres et aux saisons. Leur parfum, leur texture et leur tenue à la cuisson ne sont pas identiques.',
           'Le Phka Rumduol, souvent cité sous l’orthographe Phka Romdoul, est une variété cambodgienne de riz parfumé. Le nom commercial Malys Angkor est associé à ce riz de qualité destiné notamment aux marchés d’exportation. Il ne faut pas confondre le nom de la variété, le nom utilisé sur le marché et l’ensemble des riz produits au Cambodge.',
-          'Pour cuisiner, on choisira un riz parfumé à grains longs pour accompagner une sauce ou un poisson, ou un riz gluant lorsque la recette réclame cette texture. Acheter un paquet étiqueté « jasmin » ne garantit pas à lui seul une origine cambodgienne : vérifiez l’étiquette et la provenance.'
+          'Sur les marchés, le mot « jasmin » peut désigner des riz parfumés venant de pays différents. La provenance et les appellations commerciales ne se confondent pas avec une variété cultivée sur un territoire particulier. Le développement des filières d’exportation a aussi donné au riz cambodgien une visibilité nouvelle au-delà des frontières.'
         ]
       },
       {
@@ -74,15 +74,15 @@ export const cultureArticles: CultureArticle[] = [
         title: 'Le riz dans les fêtes, les gestes et la transmission',
         paragraphs: [
           'La culture du riz dépasse la cuisine. La préparation des champs et les récoltes rythment certaines activités rurales, tandis que des savoir-faire se transmettent entre générations. Les usages changent selon les régions, les familles et les époques : il n’y a pas une seule tradition uniforme.',
-          'Lors de la fête de l’Eau, Bon Om Touk, l’ambok — du riz pilé ou aplati, souvent associé à la noix de coco et à la banane — rappelle que le grain peut être transformé pour des moments particuliers. Le riz relie ici le repas, le geste et la mémoire collective.'
+          'La période de la fête de l’Eau, Bon Om Touk, réunit plusieurs célébrations, dont les salutations à la lune, Sampeah Preah Khe, et l’Ok Ambok. Cette dernière est associée au riz grillé puis aplati, souvent consommé avec de la banane ou de la noix de coco. Ces traditions relient les rythmes agricoles, la gratitude pour les récoltes et les moments de rassemblement, avec des pratiques variables selon les lieux.'
         ]
       },
       {
-        title: 'Comment découvrir le riz cambodgien chez soi ?',
+        title: 'Des rizières aux marchés, une filière qui relie les territoires',
         paragraphs: [
-          'Commencez par comparer deux riz : un riz parfumé cambodgien clairement identifié et un riz blanc courant. Faites-les cuire séparément selon les indications de leurs emballages, sans sauce, puis sentez-les et observez leur tenue. Le parfum et la texture comptent autant que la blancheur du grain.',
-          'Servez le riz avec un amok de poisson, un lok lak, un bai sach chrouk ou une soupe. Préparez aussi un petit bol de légumes frais ou de condiments : les convives pourront construire des bouchées différentes sans multiplier les plats.',
-          'Pour passer de l’histoire à la pratique, retrouvez notre atelier consacré à la composition d’un repas cambodgien. Le riz y devient le point de départ de l’assiette, pas un simple détail posé à côté.'
+          'Après la récolte, le riz traverse encore plusieurs métiers avant d’arriver dans les maisons. Il faut transporter le paddy, le sécher et le transformer, puis le distribuer vers des marchés ou des commerces. Les riziculteurs, les transporteurs, les rizeries et les vendeurs appartiennent ainsi à une même histoire économique.',
+          'La valeur produite dans cette filière ne se répartit pas nécessairement de façon égale. Entre le coût du travail agricole, les risques liés à la météo et les prix de vente, chaque acteur fait face à des contraintes différentes. La notoriété internationale d’une variété ne garantit pas, à elle seule, une amélioration du revenu de chaque famille qui cultive du riz.',
+          'Le riz cambodgien est donc à la fois un aliment familier, un paysage agricole, un produit échangé et un patrimoine vivant. De la rizière aux villes et aux marchés d’exportation, son histoire relie des personnes qui ne partagent pas toutes la même table mais dépendent, chacune à leur manière, de cette culture.'
         ]
       }
     ],
@@ -127,7 +127,8 @@ export const cultureArticles: CultureArticle[] = [
       { label: 'Agence Kampuchea Presse (9 novembre 2025) — Malys Angkor primé pour la septième fois', url: 'https://www.akp.gov.kh/fr/post/detail/352733' },
       { label: 'Vietnam News Agency (10 novembre 2025) — Le titre 2025 partagé avec le riz vietnamien ST25', url: 'https://vietnam.vnanet.vn/french/tin-van/le-riz-vietnamien-st25-sacre-trois-fois-meilleur-riz-du-monde-414190.html' },
       { label: 'Agence Kampuchea Presse (5 janvier 2026) — Riz Phka Rumduol et exportations', url: 'https://akp.gov.kh/fr/post/detail/358182' },
-      { label: 'UNESCO (2015) — Jeux rituels liés aux cultures rizicoles', url: 'https://ich.unesco.org/en/RL/tugging-rituals-and-games-01080' }
+      { label: 'Ang Choulean — entretien sur les origines de la fête de l’Eau et l’Ok Ambok (novembre 2025)', url: 'https://cambodianess.com/index.php/article/exploring-the-roots-of-the-water-festival' },
+      { label: 'Agence Kampuchea Presse — fête de l’Eau et Ok Ambok (3 novembre 2025)', url: 'https://www.akp.gov.kh/fr/post/detail/352424' }
     ]
   },
   {
