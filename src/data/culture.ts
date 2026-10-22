@@ -270,41 +270,75 @@ export const cultureArticles: CultureArticle[] = [
   },
   {
     slug: 'comprendre-amok',
-    title: 'Amok : comprendre ce qui fait sa texture et son parfum',
-    eyebrow: 'Plats',
-    intro: 'L’amok repose sur quelques éléments simples : un kroeung parfumé, du lait de coco et une cuisson douce qui garde le poisson tendre.',
-    seoDescription: 'Amok cambodgien : comprendre le rôle du kroeung, du lait de coco et de la cuisson vapeur pour réussir une texture liée, parfumée et encore souple.',
-    readingTime: '5 min',
+    title: 'L’amok, entre patrimoine et tables d’aujourd’hui',
+    eyebrow: 'Mémoire culinaire',
+    intro: 'L’amok de poisson est devenu l’un des plats les plus reconnaissables de la cuisine cambodgienne. Il apparaît dans les récits de voyage, sur les tables de restaurants khmers et dans des livres qui souhaitent faire connaître cette cuisine. Mais l’amok n’a pas toujours la même place selon qu’on le découvre pour la première fois ou qu’on le connaît depuis longtemps. Derrière sa présentation souvent associée aux feuilles de bananier, il y a aussi des questions de mémoire, d’occasions particulières et de représentation du pays. Son histoire ne peut pas se réduire à une origine royale affirmée sans preuve, ni à une version unique que toutes les familles reproduiraient.',
+    seoDescription: 'L’amok de poisson raconte plus qu’une recette : fêtes, feuilles de bananier, récits d’origine royale, restaurants et diaspora cambodgienne, entre tradition et changements.',
+    readingTime: '4 min',
     sections: [
       {
-        title: 'Une préparation liée et parfumée',
+        title: 'Quand un plat devient un emblème',
         paragraphs: [
-          'Dans l’amok de poisson, le kroeung apporte les parfums, le lait de coco donne de l’onctuosité et la cuisson douce permet à la préparation de prendre sans dessécher le poisson.',
-          'Le résultat attendu n’est pas celui d’un curry très liquide : la préparation doit garder une texture souple, presque tremblante, qui enrobe le poisson.'
+          'Certains plats finissent par représenter un pays aux yeux des visiteurs. L’amok, et particulièrement l’amok trey au poisson, occupe cette place dans de nombreux récits consacrés à la cuisine cambodgienne. Sa présence répétée dans les restaurants et les ouvrages de gastronomie a contribué à en faire un symbole immédiatement reconnaissable.',
+          'Cette célébrité ne signifie pas qu’il serait le repas le plus courant dans tous les foyers. Elle raconte plutôt ce qu’une société, ses restaurateurs et ses observateurs choisissent de montrer lorsqu’il s’agit de présenter sa cuisine. D’autres plats de riz, de nouilles, de soupe ou de légumes tiennent une place tout aussi importante dans la vie quotidienne.',
+          'Le fait de reconnaître l’amok comme un emblème ne doit donc pas effacer la diversité des repas cambodgiens. Il peut être une porte d’entrée vers le patrimoine, sans en devenir l’unique définition.'
         ]
       },
       {
-        title: 'Pourquoi la vapeur change tout',
+        title: 'À la table des grandes occasions',
         paragraphs: [
-          'Une chaleur douce et régulière aide les œufs et le coco à lier la préparation progressivement. Une cuisson trop forte resserre rapidement la texture et peut séparer les matières grasses.',
-          'La vapeur permet surtout une cuisson douce et régulière, même lorsque la préparation est assez épaisse.'
+          'Des cuisinières cambodgiennes décrivent l’amok comme une préparation que l’on retrouve volontiers lors de certaines célébrations, réceptions ou réunions importantes. Dans un entretien publié en 2017, Kethana Dunnett, restauratrice cambodgienne, le présente comme un plat que l’on ne prépare pas forcément tous les jours.',
+          'Ce témoignage éclaire une dimension moins visible dans les menus destinés aux touristes : la différence entre un plat célèbre et un plat quotidien. À une table de fête, le temps qu’on lui consacre et la manière de le présenter peuvent lui donner une place particulière. Dans un restaurant, le même nom peut au contraire apparaître au menu chaque jour.',
+          'Il ne serait pas exact d’en déduire que toutes les familles servent l’amok à chaque cérémonie ou qu’il possède partout la même fonction rituelle. Les habitudes varient. Ce qui importe est cette coexistence entre une mémoire des occasions spéciales et une présence désormais familière dans la restauration.'
         ]
       },
       {
-        title: 'Ce qu’il faut retenir en cuisine',
+        title: 'La feuille de bananier, une image qui voyage',
         paragraphs: [
-          'Goûter la base avant d’ajouter le poisson, travailler un kroeung assez fin et arrêter la cuisson dès que la préparation est prise sont trois repères simples pour progresser.',
-          'Les variantes sont nombreuses. Une fois que l’on comprend la texture recherchée et l’équilibre des saveurs, on peut adapter la recette beaucoup plus facilement.'
+          'L’amok est souvent photographié dans de petites corbeilles de feuilles de bananier. Cette présentation contribue fortement à son identité visuelle : un contenant végétal qui encadre le plat et qui rappelle un usage culinaire plus large des feuilles dans la région.',
+          'Pourtant, toutes les versions d’amok ne se ressemblent pas. Certains cuisiniers le présentent autrement ; les feuilles de bananier peuvent être remplacées par d’autres récipients selon les circonstances. Une cheffe cambodgienne contemporaine propose elle-même plusieurs modes de service possibles.',
+          'La feuille de bananier est ainsi devenue un élément important de la représentation publique de l’amok sans constituer une preuve d’authenticité exclusive. Pour un Carnet culturel, observer les images et la manière dont elles circulent est plus intéressant que d’expliquer comment fabriquer un panier.'
+        ]
+      },
+      {
+        title: 'Une origine royale souvent racontée, pas démontrée',
+        paragraphs: [
+          'On rencontre fréquemment l’idée selon laquelle l’amok aurait été préparé pour la cour royale du Cambodge depuis l’époque d’Angkor. Cette histoire est reprise dans des présentations gastronomiques et son association à la royauté continue de marquer l’imaginaire du plat.',
+          'Mais *être présenté comme royal ne démontre pas une naissance à la cour d’Angkor*. Les références consultées pour ce Carnet n’apportent ni recette datée ni description ancienne permettant d’établir la création précise de l’amok actuel. Une ressemblance avec d’autres préparations régionales ne permet pas davantage de déterminer à elle seule une origine ou un emprunt.',
+          'Il est donc plus juste de parler d’un récit d’origine largement diffusé, tout en reconnaissant l’absence de certitude historique. Le patrimoine culinaire a besoin de mémoire ; il ne gagne rien à transformer une hypothèse séduisante en fait établi.'
+        ]
+      },
+      {
+        title: 'D’un restaurant à l’autre, plusieurs amoks',
+        paragraphs: [
+          'Le nom amok rassemble aujourd’hui des présentations et des interprétations différentes. Le poisson reste au cœur des formes les plus connues, mais certaines cartes de restaurant proposent aussi d’autres produits. Cette diversité reflète des usages variés et parfois des adaptations destinées à des clientèles différentes.',
+          'En 2007, un article consacré à l’amok décrivait déjà la coexistence de plusieurs approches, discutées jusque dans les cuisines de chefs travaillant au Cambodge. Les goûts, les produits disponibles, l’idée de ce qui fait un amok et les attentes des convives influencent la manière dont il est présenté.',
+          'Cela ne signifie pas que toutes les interprétations sont indifférenciées ou qu’il n’existe plus de repères communs. C’est plutôt un rappel : une tradition culinaire vit à travers des personnes qui font des choix, et non comme une photographie figée d’un plat idéal.'
+        ]
+      },
+      {
+        title: 'Un nom qui traverse aussi les frontières',
+        paragraphs: [
+          'L’amok ne reste pas seulement dans les restaurants du Cambodge. Un article de presse publié en mai 1990 décrivait déjà ce plat sur la carte d’un restaurant cambodgien à Long Beach, en Californie, au sein d’une scène culinaire portée notamment par les communautés installées aux États-Unis.',
+          'La présence d’un plat à l’étranger ne résume pas l’expérience de l’exil ni la totalité des pratiques de la diaspora. Elle montre néanmoins que les restaurants sont aussi des lieux où l’on transmet, transforme et présente une cuisine à des convives qui ne partagent pas tous la même histoire familiale.',
+          'Des chefs cambodgiens contemporains continuent aujourd’hui de revendiquer et de réinterpréter l’amok dans leurs livres et leurs restaurants. Entre plats d’occasion, mémoire des cuisines du pays et découverte à l’étranger, son parcours raconte finalement une chose simple : les traditions n’ont pas besoin d’être immobiles pour rester importantes.'
         ]
       }
     ],
-    image: '/images/cuisine/amok-alt-1600.webp',
-    imageAlt: 'Portions d’amok trei cambodgien présentées dans des feuilles',
-    imageWidth: 1836,
-    imageHeight: 4080,
+    image: '/images/cuisine/amok-1600.webp',
+    imageAlt: 'Amok de poisson servi dans des feuilles de bananier avec du riz, sur une table de restaurant',
+    imageWidth: 1600,
+    imageHeight: 1067,
     imageWidths: [480, 800, 1200, 1600],
+    socialImage: '/images/cuisine/amok-alt-1600.webp',
+    socialImageRole: 'article',
     sources: [
-      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: tourismGuide }
+      { label: 'Audrey Gillan, National Geographic Traveller UK (octobre 2017) — occasions et représentations de l’amok', url: 'https://www.audreygillan.com/archives/cambodia-the-art-of-amok' },
+      { label: 'Ambassade du Cambodge à Londres (février 2022) — récit de tradition royale', url: 'https://www.cambodiaembassyuk.org/fish-amok-recipe/' },
+      { label: 'Chef Nak — présentation et adaptations contemporaines de l’amok', url: 'https://www.chefnak.com/cambodian-fish-amok' },
+      { label: 'Phil Lees (mai 2007) — discussions sur les versions de l’amok', url: 'https://www.phnomenon.com/index.php/cambodian-food/meta/amokalypse-now-byline-ahoy/' },
+      { label: 'Los Angeles Times (mai 1990) — amok dans un restaurant cambodgien à Long Beach', url: 'https://www.latimes.com/archives/la-xpm-1990-05-13-ca-276-story.html' },
+      { label: 'ARTE (décembre 2025) — poisson amok et gastronomie contemporaine', url: 'https://www.arte.tv/fr/videos/119582-140-A/voyage-en-cuisine/' }
     ]
   },
   {
