@@ -16,6 +16,11 @@
 
 ---
 
+### Complément QA #111 — 22/10/2026
+
+Sur la branche consolidée #111, filtre progressif 3 univers ajouté (2/2/3) sans changer les sept pages, les six ateliers ou les images. Vérification des en-têtes binaires des six WebP héros ; incohérence C02 `6000×4000` corrigée en `1600×1067` avec test anti-régression. Le script Chromium Carnets était absent des étapes réellement exécutées par la CI générale : ajout d'une étape ciblée branche #111 dans `.github/workflows/ci.yml` et d'un artefact de captures. **Attendre un run PASS de la nouvelle tête de branche avant tout verdict final** ; D2 (taxonomie) et D3 (textes, médias et droits) non approuvés. Aucun OVH/n8n/Meta.
+
+
 ## 1. Instantané vérifié
 
 - Branche `main` : `d231b1ac44dfcb8a9db54208bccd3d24847326d6`, CI GitHub `success` du 22/10/2026. Dernières PR Ateliers fusionnées : #90–#96, à la suite de #74 et autres livraisons audio/UI.
