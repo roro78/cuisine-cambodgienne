@@ -14,6 +14,8 @@ export interface CultureArticle {
   imageWidths: number[];
   /** Illustration locale approuvée pour le catalogue social; distincte de la photo documentaire du carnet. */
   socialImage?: string;
+  /** Rôle du visuel social : une photographie historique n'est pas une illustration. */
+  socialImageRole?: 'article' | 'illustration';
   gallery?: { image: string; imageAlt: string; caption: string; credit: string; source: string; width: number; height: number }[];
 }
 
@@ -347,6 +349,7 @@ export const cultureArticles: CultureArticle[] = [
     imageWidths: [],
     /** Visuel existant inchangé pour préserver le catalogue social ; à remplacer avant publication de C05. */
     socialImage: '/images/cuisine/kep-market-1600.webp',
+    socialImageRole: 'article',
     sources: [
       { label: 'SEAFDEC — Filière et pêche du crabe nageur à Kep (juin 2020)', url: 'https://repository.seafdec.or.th/handle/20.500.12067/1471' },
       { label: 'FAO — Restauration des stocks de crabe à Kep et Kampot (15 juin 2026)', url: 'https://www.fao.org/cambodia/news/detail/850-000-blue-swimming-crablets-released-in-kampot-to-support-coastal-fisheries-and-climate-resilience/en' },
