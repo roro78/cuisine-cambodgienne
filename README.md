@@ -13,6 +13,11 @@ Site francophone sur la cuisine khmère : recettes, kroeung, poivre de Kampot et
 
 Les recettes se consultent, se filtrent, s’enregistrent (favoris) et s’impriment. Les portions se règlent à la volée.
 
+
+## Chantiers documentés
+
+- **Refonte des Carnets** — [plan de pilotage, objectifs, jalons et journal de suivi](docs/carnets/PLAN-REFONTE-CARNETS.md). C'est la référence à rouvrir lors d'un changement de conversation.
+
 ## Nom de domaine
 
 Pointez `www.cuisine-du-cambodge.com` vers le site publié (enregistrement CNAME chez votre registrar).
