@@ -4,6 +4,18 @@
 >
 > **Sens des termes** : « CI PASS » = exécution historique réussie *sur la branche indiquée*, pas autorisation de publication ni garantie de compatibilité avec le `main` courant. « Fusionnable » selon GitHub ≠ approuvé. Les décisions de fermeture/archivage ci-dessous sont des **recommandations**, pas des actions déjà effectuées.
 
+## Mise à jour opérationnelle — 22 octobre 2026 (PR #111)
+
+> **La section « Instantané vérifié » ci-dessous est un relevé HISTORIQUE de l'audit initial des 21 PR, non l'état actuel.** Ne pas rouvrir cet inventaire ni appliquer les anciennes suggestions de fusion telles quelles.
+
+- **Trois PR encore ouvertes selon les métadonnées GitHub contrôlées :** [#111](https://github.com/roro78/cuisine-cambodgienne/pull/111) Carnets (draft, `mergeable=true`, cible main), [#89](https://github.com/roro78/cuisine-cambodgienne/pull/89) n8n (draft, conflits, runtime non vérifié), [#88](https://github.com/roro78/cuisine-cambodgienne/pull/88) atelier sauce au tamarin (draft, pilote isolé).
+- **Clôtures déjà exécutées :** #46, #50, #57, #63, #67, #83, #87 et #97 à #108 ; archives et branches conservées. **Merges déjà effectués :** #109 sécurité Meta/n8n et #110 catalogue social dans `main`, SHA de base `3c974b63dc9766f1acadbf560b9b7799d9aeb703`.
+- **Livraison unique Carnets :** #111, tête testée `5977777aa19390f327b0b8ec61aa5b2cd81abc2e`, [GitHub Actions #39825531561](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39825531561) : job global `success`. Revue du 22/10 : 7 Carnets/12 WebP, trois univers réellement fournis ; décision D2 non signée, réception D3 des sept textes et visuels incomplète. Documents de réception mis à jour dans `docs/carnets/PLAN-REFONTE-CARNETS.md`.
+- **Règle d'enchaînement :** ne pas fusionner #111 tant que D3 est ouvert ; ne pas fermer #89 avant contrôle du runtime n8n ; ne pas fusionner #88 sans réception de la photo, du guide audio et des tests. **Aucun déclenchement du workflow OVH, aucune activation n8n ni publication Meta.**
+- **Nota tests :** l'ancien incident npm Volar a déjà été résolu ; ne pas répéter son diagnostic. Cette mise à jour documentaire déclenche une nouvelle révision de branche : ne pas réutiliser aveuglément le résultat CI de l'ancien SHA comme preuve du nouveau SHA.
+
+---
+
 ## 1. Instantané vérifié
 
 - Branche `main` : `d231b1ac44dfcb8a9db54208bccd3d24847326d6`, CI GitHub `success` du 22/10/2026. Dernières PR Ateliers fusionnées : #90–#96, à la suite de #74 et autres livraisons audio/UI.
