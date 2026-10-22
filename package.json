@@ -32,5 +32,11 @@
     "@types/node": "^24.10.1",
     "esbuild": "^0.25.10",
     "playwright-core": "^1.56.1"
+  },
+  "overrides": {
+    "@volar/language-service": "2.4.28",
+    "@volar/language-core": "2.4.28",
+    "@volar/typescript": "2.4.28",
+    "@volar/language-server": "2.4.28"
   }
 }
