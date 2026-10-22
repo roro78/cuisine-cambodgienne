@@ -4,10 +4,10 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v2.5 (recette technique isolée, première CI effective et correctifs navigateur)** · Responsable de validation : **propriétaire du site**  
-> État du projet : **M2 EN COURS — 7/7 Carnets préparés ; QA technique en cours, 0/7 validés ni publiés**  
-> **Étape active : M2 — réception technique ciblée des 7 Carnets : première CI Astro/éditorial/recettes/build PASS, première QA navigateur FAIL sur un vrai renvoi pratique corrigé ensuite ; nouvelle CI attendue. Droits médias et validation éditoriale EN ATTENTE.**  
-> Prochaine action : examiner la [réception technique et le premier run de CI](./RECEPTION-TECHNIQUE-2026-10-22.md). **Contrôles Astro, tests éditoriaux, tests Recettes et build : PASS réellement exécutés au premier run #39767416153.** Le navigateur a découvert des conseils pratiques cachés dans le Glossaire express (échec C04 mobile), **correctifs ajoutés à la branche QA** : suppression du Glossaire express et des carrousels recettes uniquement pour Culture, correction des dimensions C06/C07. **Nouvelle exécution Chromium à contrôler**, vérifier photos Wikimedia, galerie riz, QA responsive, droits et GSC. Les sept contenus restent à réceptionner, D2 taxonomie et D3 médias/visa de publication ouverts. **PR #97–#106 non fusionnées ; QA dans une branche séparée non publiée.**
+> Création : **22 octobre 2026** · Version du plan : **v2.6 (réception technique 7 Carnets mobile/desktop PASS, D3 médias encore ouvert)** · Responsable de validation : **propriétaire du site**  
+> État du projet : **M2 EN COURS — 7/7 Carnets préparés, QA technique 7/7 PASS, 0/7 textes et médias définitivement acceptés ni publiés**  
+> **Étape active : M2 — QA ciblée Astro/éditorial/recettes/build/Chromium mobile+desktop **PASS** au second run #39767993049 ; réception éditoriale, iconographie, droits et publication D3 EN ATTENTE.**  
+> Prochaine action : consulter [la preuve de réception technique](./RECEPTION-TECHNIQUE-2026-10-22.md) : [run #39767993049](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39767993049) **PASS**, y compris Chromium sur `/culture/` et les **7 pages à 390 et 1366 px**, images et absence de liens recettes/ateliers ; captures artifact jusqu'au **25/10/2026**. Les 7 textes ne sont **pas** définitivement validés ; **D2** taxonomie quatre univers, **D3** droits et choix photo / visa de publication, GSC et import photo Kep WebP local sont ouverts. Les visuels C03/C06 restent peu documentaires, C07 illustration, C01 Commons distant. **PR #97–#107 non fusionnées, aucun OVH.**
 
 ## 1. Objectif final
 
@@ -174,6 +174,13 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J16 — recette technique complète 7/7 : PASS après le correctif Glossaire express
+- **Preuve :** [GitHub Actions run #39767993049](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39767993049) **conclusion success** sur commit `347bd874bb9b840490b9a32f3db6928847c4df56`. Node 22 install, `npm run check`, `npm run test:editorial`, `npm run test:recipes`, `npm run build` (**48 pages**), Chrome et script `tests/carnets-responsive-browser.test.mjs` : **toutes étapes PASS**.
+- **Navigateur réel :** `/culture/` + 7 Carnets aux formats **390×844 et 1366×900** ; **7 routes HTTP 200**, chapitres et H1 présents, photos héros réellement décodées (y compris liens Commons), aucun débordement horizontal ni lien direct Recette/Atelier. Le bloc de Glossaire express qui produisait une fuite C04 au premier run est maintenant absent du gabarit Culture.
+- **Captures de revue :** artifact GitHub `carnets-previsualisation-mobile-desktop`, environ **6,45 Mo**, disponible jusqu'au **25 octobre 2026** sur la page du run. La PR **[#107](https://github.com/roro78/cuisine-cambodgienne/pull/107)** matérialise ce contrôle en branche empilée ; aucun merge et aucun déploiement.
+- **Limites de réception :** le navigateur prouve le fonctionnement aux deux tailles testées, **pas** la propriété des images ni un visuel culturel idéal. **Kep : photo CDN à internaliser en WebP local** ; **C03 : image de plat sans illustration historique** ; **C06 : prahok ktis photographié au lieu des productrices** ; **C07 : illustration éditoriale, pas reportage** ; **C01 : quatre médias Commons distants**. D2 et D3, GSC, validation des textes et des droits restent ouverts.
+- **État produit :** **7/7 textes préparés, 7/7 routes techniquement testées PASS, 0/7 visas éditoriaux finaux**. Maintenir toutes les PR #97–#107 en brouillon, ne pas fusionner dans `main` ni déployer sur OVH sans validation du propriétaire.
 
 ### 2026-10-22 — J15 — réception technique réelle : CI Astro PASS ; une fuite vers les recettes découverte au navigateur et corrigée
 - **Branche de validation isolée :** `docs/carnets-validation-20261022`, fondée sur le contenu empilé jusqu'à PR #106. Aucune modification de `main`, aucune fusion OVH, aucune publication. Le workflow principal `.github/workflows/ci.yml` ne couvre pas les branches `docs/carnets-*`, d'où l'absence historique des vérifications automatisées. Ajout d'un workflow **ciblé non déployant** `.github/workflows/carnets-validation-once.yml`.

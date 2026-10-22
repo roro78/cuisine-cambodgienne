@@ -47,3 +47,21 @@
 - Le pilotage M2 recommande quatre univers éditoriaux. **D2 n'est pas arbitré**, la quatrième catégorie « Fêtes et traditions » ne compte encore aucun Carnet exclusivement dédié : **ne pas fabriquer une page vide ou déplacer artificiellement des Carnets** pour faire croire à une taxonomie complète.
 - **D3 : 0/7 textes finaux approuvés**. Les changements sur GitHub restent dans des branches non fusionnées. Une réussite de CI ne constitue **pas** une autorisation de publication.
 - Ne fusionner ni PR #97–#106, ni la branche QA ; ne pas toucher à n8n, Meta, aux workflows d'ateliers ni aux articles historiques de recettes.
+
+## Deuxième run : QA complète après correction — **PASS**
+
+**Preuve :** [GitHub Actions #39767993049](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39767993049), branche `docs/carnets-validation-20261022`, commit `347bd874bb9b840490b9a32f3db6928847c4df56`, **conclusion success**, vérifié le 22 octobre 2026.
+
+| Étape réellement exécutée | Résultat |
+| --- | --- |
+| Installation dépendances Node 22 | **PASS** |
+| Astro `npm run check` | **PASS** |
+| `npm run test:editorial`, sept contrats Carnets inclus | **PASS** |
+| `npm run test:recipes` | **PASS** |
+| Build Astro (48 pages, dont 7 Carnets et index) | **PASS** |
+| Chromium mobile **390 × 844** et ordinateur **1366 × 900** | **PASS** : index + 7 Carnets, 7 slugs, titres, chapitres, images principales décodées, pas de débordement horizontal, **aucun lien recette/atelier** dans les Carnets |
+| Captures de prévisualisation | **Artifact créé** : `carnets-previsualisation-mobile-desktop`, taille environ **6,45 Mo**, expiration **25 octobre 2026** ([run](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39767993049)) |
+
+**Interprétation :** l'échec réel du premier run a été résolu et **la régression est couverte par le test navigateur**. Le fait que les photos externes chargent depuis le runner à cette date **ne remplace pas un import local, une garantie de disponibilité future, un contrôle juridique ou une réception artistique**. Même avec toute la CI PASS, D3 demeure **NON VALIDÉ**, aucune mise en ligne autorisée.
+
+**PR de QA :** [#107](https://github.com/roro78/cuisine-cambodgienne/pull/107), empilée sur #106 et non fusionnée. Les modifications apportées après le commit validé par le run ci-dessus sont uniquement **documentaires** (ce compte rendu et la nouvelle entrée du plan), sans changement de code ni de tests ; garder la preuve du commit testé.
