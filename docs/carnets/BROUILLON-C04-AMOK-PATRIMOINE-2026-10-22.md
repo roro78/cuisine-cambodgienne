@@ -26,7 +26,7 @@ Le fait de reconnaître l’amok comme un emblème ne doit donc pas effacer la d
 
 ## 2. À la table des grandes occasions
 
-Des cuisinières cambodgiennes décrivent l’amok comme une préparation que l’on retrouve volontiers lors de certaines célébrations, réceptions ou réunions importantes. Dans un entretien publié en 2017, Kethana Dunnett, restauratrice cambodgienne, le présente comme un plat que l’on ne prépare pas forcément tous les jours.
+Des cuisinières cambodgiennes décrivent l’amok comme une préparation que l’on retrouve volontiers lors de certaines célébrations, réceptions ou réunions importantes. Pour Kethana Dunnett, restauratrice cambodgienne, l’amok n’est pas nécessairement un plat de tous les jours : il peut marquer un moment que l’on souhaite partager.
 
 Ce témoignage éclaire une dimension moins visible dans les menus destinés aux touristes : la différence entre un plat célèbre et un plat quotidien. À une table de fête, le temps qu’on lui consacre et la manière de le présenter peuvent lui donner une place particulière. Dans un restaurant, le même nom peut au contraire apparaître au menu chaque jour.
 
@@ -44,7 +44,7 @@ La feuille de bananier est ainsi devenue un élément important de la représent
 
 On rencontre fréquemment l’idée selon laquelle l’amok aurait été préparé pour la cour royale du Cambodge depuis l’époque d’Angkor. Cette histoire est reprise dans des présentations gastronomiques et son association à la royauté continue de marquer l’imaginaire du plat.
 
-Mais **être présenté comme royal ne démontre pas une naissance à la cour d’Angkor**. Les références consultées pour ce Carnet n’apportent ni recette datée ni description ancienne permettant d’établir la création précise de l’amok actuel. Une ressemblance avec d’autres préparations régionales ne permet pas davantage de déterminer à elle seule une origine ou un emprunt.
+Être présenté comme royal ne démontre pas une naissance à la cour d’Angkor. Aucune recette historique datée ni description ancienne suffisamment précise n’a été établie ici pour confirmer la création de l’amok actuel à cette époque. Les ressemblances avec des préparations régionales ne permettent pas davantage de déterminer à elles seules une origine ou un emprunt.
 
 Il est donc plus juste de parler d’un récit d’origine largement diffusé, tout en reconnaissant l’absence de certitude historique. Le patrimoine culinaire a besoin de mémoire ; il ne gagne rien à transformer une hypothèse séduisante en fait établi.
 
@@ -52,13 +52,13 @@ Il est donc plus juste de parler d’un récit d’origine largement diffusé, t
 
 Le nom amok rassemble aujourd’hui des présentations et des interprétations différentes. Le poisson reste au cœur des formes les plus connues, mais certaines cartes de restaurant proposent aussi d’autres produits. Cette diversité reflète des usages variés et parfois des adaptations destinées à des clientèles différentes.
 
-En 2007, un article consacré à l’amok décrivait déjà la coexistence de plusieurs approches, discutées jusque dans les cuisines de chefs travaillant au Cambodge. Les goûts, les produits disponibles, l’idée de ce qui fait un amok et les attentes des convives influencent la manière dont il est présenté.
+Au début du XXIe siècle, plusieurs interprétations de l’amok coexistaient déjà au Cambodge et suscitaient des discussions parmi les cuisiniers. Les goûts, les produits disponibles, l’idée de ce qui fait un amok et les attentes des convives influencent la manière dont il est présenté.
 
 Cela ne signifie pas que toutes les interprétations sont indifférenciées ou qu’il n’existe plus de repères communs. C’est plutôt un rappel : une tradition culinaire vit à travers des personnes qui font des choix, et non comme une photographie figée d’un plat idéal.
 
 ## 6. Un nom qui traverse aussi les frontières
 
-L’amok ne reste pas seulement dans les restaurants du Cambodge. Un article de presse publié en mai 1990 décrivait déjà ce plat sur la carte d’un restaurant cambodgien à Long Beach, en Californie, au sein d’une scène culinaire portée notamment par les communautés installées aux États-Unis.
+L’amok ne reste pas seulement dans les restaurants du Cambodge. En mai 1990, il figurait déjà sur la carte d’un restaurant cambodgien à Long Beach, en Californie, dans une scène culinaire animée notamment par les communautés installées aux États-Unis.
 
 La présence d’un plat à l’étranger ne résume pas l’expérience de l’exil ni la totalité des pratiques de la diaspora. Elle montre néanmoins que les restaurants sont aussi des lieux où l’on transmet, transforme et présente une cuisine à des convives qui ne partagent pas tous la même histoire familiale.
 
