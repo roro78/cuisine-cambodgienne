@@ -9,6 +9,8 @@
 >
 > Protection : URLs, textes, images, redirections et données Culture d'origine **inchangés**. Les orientations ci-dessous sont des **propositions soumises au propriétaire**, et non des contenus approuvés.
 
+> **Complément documentaire et correction P0 — 22/10/2026** : voir le [registre de preuves et arbitrages M2](./REGISTRE-SOURCES-DECISIONS-M2-2026-10-22.md). L'article C01 doit indiquer que le prix **World's Best Rice 2025 a été partagé avec le Vietnam (ST25)** : cette précision manque au texte actuel. La page AKP 2026 mentionne effectivement Phka Rumduol dans son corps, bien qu'elle porte d'abord sur les exportations de riz de 2025. La qualification « Ministère du Tourisme » de l'ancienne URL commune C02–C07 **ne doit plus être considérée comme une attribution officielle actuelle vérifiée**. Ces constats sont documentaires, **aucun texte publié n'a été corrigé**.
+>
 ## A. Inventaire technique et SEO : constat au commit de référence
 
 | ID | URL canonique : préfixe /culture/ et suffixe / | Sections H2 | Texte approx. (intro + paragraphes) | Durée affichée | Photo de tête | Sources déclarées | Gabarit de liens associés |
