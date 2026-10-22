@@ -20,6 +20,21 @@ const moments = [
 const featuredSlug = 'kep-marche-crabe-poivre';
 const featuredArticle = cultureArticles.find((article) => article.slug === featuredSlug);
 
+// Trois univers effectivement représentés par les sept Carnets.
+// Le quatrième univers envisagé reste absent tant qu'il ne contient aucun récit.
+const carnetUniverses = [
+  { key: 'Vie quotidienne', label: 'Vie quotidienne' },
+  { key: 'Terroirs et marchés', label: 'Terroirs et marchés' },
+  { key: 'Mémoire culinaire', label: 'Mémoire et transmission' }
+].map((universe) => ({
+  ...universe,
+  count: cultureArticles.filter((article) => article.eyebrow === universe.key).length
+}));
+if (carnetUniverses.some((universe) => universe.count === 0) ||
+    carnetUniverses.reduce((sum, universe) => sum + universe.count, 0) !== cultureArticles.length) {
+  throw new Error('Taxonomie Carnets : univers vide ou article sans univers reconnu.');
+}
+
 const heritagePath = [
   {
     step: '01 · Vie quotidienne',
@@ -92,7 +107,7 @@ const collectionSchema = {
       </div>
     </section>
 
-    {featuredArticle && <section class="v16-journal-lead" aria-label="Carnet à la une">
+    {featuredArticle && <section class="v16-journal-lead" aria-label="Carnet à la une" data-carnets-universe={featuredArticle.eyebrow}>
       <a href={'/culture/' + featuredArticle.slug + '/'} class="v16-journal-lead-card">
         <figure>
           <img src={featuredArticle.image} srcset={featuredArticle.imageWidths.length ? imageSrcSet(featuredArticle.image,featuredArticle.imageWidths) : undefined} sizes="(max-width:900px) 100vw, 58vw" alt={featuredArticle.imageAlt} width={featuredArticle.imageWidth} height={featuredArticle.imageHeight} loading="eager" decoding="async" />
@@ -106,9 +121,21 @@ const collectionSchema = {
       </a>
     </section>}
 
+    <section class="carnets-explorer" aria-labelledby="carnets-explorer-title">
+      <p class="v16-page-kicker">Explorer par univers</p>
+      <h2 id="carnets-explorer-title">Choisir une histoire du Cambodge</h2>
+      <nav class="carnets-filters" data-carnets-filters hidden aria-label="Filtrer les Carnets par univers">
+        <button type="button" data-carnets-filter="all" aria-pressed="true">Tous les Carnets · {cultureArticles.length}</button>
+        {carnetUniverses.map((universe) => (
+          <button type="button" data-carnets-filter={universe.key} aria-pressed="false">{universe.label} · {universe.count}</button>
+        ))}
+      </nav>
+      <p class="carnets-filter-status" data-carnets-filter-status aria-live="polite">{cultureArticles.length} Carnets à découvrir.</p>
+    </section>
+
     <section class="v16-journal-grid" aria-label="Tous les carnets">
       {cultureArticles.filter((article) => article.slug !== featuredSlug).map((article,index) => (
-        <a href={'/culture/' + article.slug + '/'} class:list={['v16-journal-card', index === 0 && 'v16-journal-card--wide']} data-reveal="up">
+        <a href={'/culture/' + article.slug + '/'} class:list={['v16-journal-card', index === 0 && 'v16-journal-card--wide']} data-reveal="up" data-carnets-universe={article.eyebrow}>
           <figure>
             <img src={article.image} srcset={article.imageWidths.length ? imageSrcSet(article.image,article.imageWidths) : undefined} sizes="(max-width:760px) 100vw, 45vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} loading="lazy" decoding="async" />
           </figure>
@@ -154,3 +181,36 @@ const collectionSchema = {
   <script type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
   <SiteFooter />
 </BaseLayout>
+
+<script>
+  const filters = document.querySelector<HTMLElement>('[data-carnets-filters]');
+  if (filters) {
+    const items = Array.from(document.querySelectorAll<HTMLElement>('[data-carnets-universe]'));
+    const buttons = Array.from(filters.querySelectorAll<HTMLButtonElement>('[data-carnets-filter]'));
+    const status = document.querySelector<HTMLElement>('[data-carnets-filter-status]');
+
+    const selectUniverse = (key: string) => {
+      for (const item of items) item.hidden = key !== 'all' && item.dataset.carnetsUniverse !== key;
+      for (const button of buttons) button.setAttribute('aria-pressed', String(button.dataset.carnetsFilter === key));
+      const count = items.filter((item) => !item.hidden).length;
+      const current = buttons.find((button) => button.dataset.carnetsFilter === key);
+      if (status) status.textContent = key === 'all'
+        ? `${count} Carnets à découvrir.`
+        : `${count} Carnets dans « ${current?.textContent?.split(' · ')[0] ?? ''} ».`;
+    };
+
+    buttons.forEach((button) => button.addEventListener('click', () => selectUniverse(button.dataset.carnetsFilter || 'all')));
+    filters.hidden = false; // Sans JavaScript, la liste complète reste visible.
+  }
+</script>
+
+<style>
+  .carnets-explorer{width:min(calc(100% - 36px),1220px);margin:clamp(34px,5vw,66px) auto 24px}
+  .carnets-explorer h2{font-family:Georgia,serif;font-size:clamp(1.55rem,3.2vw,2.6rem);margin:.5rem 0 1rem}
+  .carnets-filters{display:flex;flex-wrap:wrap;gap:.65rem;margin:1.25rem 0}
+  .carnets-filters[hidden],[data-carnets-universe][hidden]{display:none!important}
+  .carnets-filters button{appearance:none;font:inherit;font-size:.93rem;font-weight:650;border:1px solid #b5a183;background:#fffaf1;color:#473622;border-radius:999px;min-height:44px;padding:.6rem 1rem;cursor:pointer}
+  .carnets-filters button[aria-pressed="true"]{background:#473622;color:#fff;border-color:#473622}
+  .carnets-filters button:focus-visible{outline:3px solid #9a6c2d;outline-offset:3px}
+  .carnets-filter-status{font-size:.92rem;color:#63584b}
+</style>

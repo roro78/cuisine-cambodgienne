@@ -53,6 +53,23 @@ async function inspect(view) {
     assert.equal(overview?.status(),200,'Carnets index must render');
     assert.equal(await page.locator('main.v16-journals a.v16-journal-lead-card, main.v16-journals a.v16-journal-card').count(),7,'All 7 Carnets must be discoverable');
     assert.equal(await page.locator('main.v16-journals a[href^="/recettes/"], main.v16-journals a[href^="/apprendre/"]').count(),0,'No recipe/workshop CTA in Carnets home');
+    const filterButtons = page.locator('[data-carnets-filters] button[data-carnets-filter]');
+    await filterButtons.first().waitFor({ state: 'visible' });
+    assert.equal(await filterButtons.count(),4,'All + three non-empty universes');
+    assert.equal(await page.locator('[data-carnets-universe]:visible').count(),7,'All seven stories shown by default');
+    for (const [universe,expected] of [['Vie quotidienne',2],['Terroirs et marchés',2],['Mémoire culinaire',3]]) {
+      // Press the exact data value rather than matching translated labels.
+      await page.locator('[data-carnets-filter]').evaluateAll((nodes,key) => {
+        const target = nodes.find(node => node.getAttribute('data-carnets-filter') === key);
+        if (!target) throw new Error('Missing filter '+key);
+        target.click();
+      },universe);
+      assert.equal(await page.locator('[data-carnets-universe]:visible').count(),expected,'Filter results '+universe);
+      assert.equal(await page.locator('[data-carnets-filter="'+universe+'"]').getAttribute('aria-pressed'),'true','Accessible filter state '+universe);
+    }
+    await page.locator('[data-carnets-filter="all"]').click();
+    assert.equal(await page.locator('[data-carnets-universe]:visible').count(),7,'All filter restores original layout');
+    assert.equal(await page.locator('[data-carnets-universe][hidden]').count(),0,'No hidden story left after reset');
     await assertNoOverflow(page,'index '+view.name);
     if (view.name==='desktop') await capture(page,'index-desktop');
 
