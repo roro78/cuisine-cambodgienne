@@ -34,7 +34,7 @@ for (const phrase of [
 ]) assert.ok(!c03.includes(phrase),`Tutorial passage must be removed from C03: ${phrase}`);
 
 assert.ok(!/culture-related|relatedContent/.test(detail) && !detail.includes('/recettes/') && !detail.includes('/ingredients/'), 'Culture article template must never recommend recipes or ingredients');
-assert.match(detail,/'comprendre-le-kroeung': \['kroeung'\]/,'C03 glossary must be limited to the term, not a spice shopping list');
+assert.doesNotMatch(detail, /GlossaryStrip|glossaryByArticle|getGlossaryEntries/, 'Carnets must not show instructional GlossaryStrip blocks');
 assert.doesNotMatch(detail,/article\.sources\.map\s*\(/,'Documentary sources remain private');
 assert.match(index,/const heritagePath = \[/,'Culture index must provide cultural-only navigation');
 assert.doesNotMatch(index,/culinaryPath|\/(?:apprendre|recettes)\//,'Culture index must not push towards practical workshops or recipes');
