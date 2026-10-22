@@ -36,7 +36,7 @@ const workshop = read('src/pages/apprendre/pratique/[slug].astro');
 assert.match(workshop, /Sécurité et allergènes/);
 assert.match(workshop, /guide\.safety\.map/);
 assert.match(read('src/data/culture.ts'), /sources:\s*\[/);
-assert.doesNotMatch(read('src/data/culture.ts'), /La FAO présente|Selon l’agence de presse cambodgienne AKP/, 'Sources must not be named in the C01 reader-facing prose');
+assert.doesNotMatch(read('src/data/culture.ts'), /La FAO présente|Selon l’agence de presse cambodgienne AKP|Les documents consultés pour ce Carnet|Les références consultées pour ce Carnet|Dans un entretien publié en 2017|Un article de presse publié en mai 1990/, 'Reader-facing Carnets must not mention the documentary research or bibliographies');
 assert.match(read('src/data/restoredRecipes.ts'), /sources:\s*\[/);
 
 // Attributions sous licence : les crédits photo NE sont PAS des bibliographies
