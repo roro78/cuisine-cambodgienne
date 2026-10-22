@@ -32,7 +32,7 @@ for(const old of [
   'ajouter prahok, sauce de poisson',
   'Le meilleur réflexe consiste donc à commencer'
 ]) assert.ok(!c06.includes(old),`No practical or risky home-preservation instruction: ${old}`);
-assert.match(template,/article\.slug === 'prahok-fermentation-umami'\s*\n\s*\? \[\]/,'No practical ingredients list attached to C06');
+assert.doesNotMatch(template, /culture-related|relatedContent|\\/recettes\\/|\\/ingredients\\//, 'Culture article template must never recommend recipes, workshops or ingredient shopping');
 assert.match(template,/'prahok-fermentation-umami': \['prahok'\]/,'C06 glossary stays cultural');
 assert.doesNotMatch(template,/article\.sources\.map\s*\(/,'Never show public bibliography');
 assert.equal([...all.matchAll(/^    slug: '/gm)].length,7,'All seven slugs must survive');
