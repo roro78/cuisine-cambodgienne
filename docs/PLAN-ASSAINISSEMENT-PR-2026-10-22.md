@@ -4,6 +4,17 @@
 >
 > **Sens des termes** : « CI PASS » = exécution historique réussie *sur la branche indiquée*, pas autorisation de publication ni garantie de compatibilité avec le `main` courant. « Fusionnable » selon GitHub ≠ approuvé. Les décisions de fermeture/archivage ci-dessous sont des **recommandations**, pas des actions déjà effectuées.
 
+## État de clôture — 22 octobre 2026 (référence la plus récente)
+
+L'inventaire « 21 PR » conservé plus bas est **historique**. **PR ouvertes en brouillon : [#111 Carnets](https://github.com/roro78/cuisine-cambodgienne/pull/111) et [#113 pilote tamarin](https://github.com/roro78/cuisine-cambodgienne/pull/113).**
+
+- **Fusionnées dans `main` : #109, #110, #112 et #114.** SHA de référence contrôlé : `280b76dce9226705cb4820e5d3bdb53f473dd4b9`. La sécurité Resend/DB #112 n'active pas n8n ; #114 borne `ffprobe` et ne neutralise aucun test MP3.
+- **Fermées SANS fusion : #88 et #89**, historiques et branches conservés. #113 reprend uniquement le pilote noindex et son MP3 préexistant, sans synthèse payante ; #112 a repris le garde-fou d'insertion de #89 sans anciennes versions divergentes.
+- **CI déjà concluantes :** [Carnets #39850522532](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39850522532), [pilote #39850038333](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39850038333), [CI bornée #39851472014](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39851472014) — SUCCESS. **Les têtes synchronisées des deux PR ouvertes ont de nouveaux runs à réceptionner**, ne pas extrapoler les anciennes CI.
+- **Gates ouverts :** #111 D2 taxonomie et D3 sept textes/médias/droits ; #113 photo finale/licence, recette testée, écoute complète mobile/desktop, normalisation phases et recette canonique. **Aucun OVH, aucune publication Meta ou activation n8n n'est autorisé.**
+
+---
+
 ## Mise à jour opérationnelle — 22 octobre 2026 (PR #111)
 
 > **La section « Instantané vérifié » ci-dessous est un relevé HISTORIQUE de l'audit initial des 21 PR, non l'état actuel.** Ne pas rouvrir cet inventaire ni appliquer les anciennes suggestions de fusion telles quelles.

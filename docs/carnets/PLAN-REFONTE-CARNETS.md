@@ -4,13 +4,25 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (version de travail PR #111 ; main ne sera mis à jour qu'après fusion)**  
-> Création : **22 octobre 2026** · Version du plan : **v3.2 — filtres 3 univers en PR #111 et correction dimensions C02, 22/10/2026** · Responsable du visa D2/D3 : **propriétaire du site**
+> Création : **22 octobre 2026** · Version du plan : **v3.3 — plan et branches synchronisés après PR #114, 22/10/2026** · Responsable du visa D2/D3 : **propriétaire du site**
 > **État actuel : M2/D2 et D3 NON VALIDÉS ; 7/7 Carnets et 12 WebP consolidés dans [PR #111](https://github.com/roro78/cuisine-cambodgienne/pull/111), encore en brouillon. Aucun Carnet refondu publié.**
-> **CI vérifiée : [run #39825531561](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39825531561) : Astro, recettes, éditorial, six MP3 et build PASS au commit `5977777aa19390f327b0b8ec61aa5b2cd81abc2e`; certains tests audio optionnels de la CI globale ont été SKIPPED (ne pas les décrire comme exécutés).**
-> **PR #97–#108 : clôturées comme consolidées, branches et contenus préservés ; #109 et #110 : fusionnées dans main.** Il reste #111, #89 (n8n runtime non attesté), #88 (atelier tamarin). `main` au contrôle : `3c974b63dc9766f1acadbf560b9b7799d9aeb703`.
+> **Dernière CI validée : [#39850522532](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39850522532) SUCCESS après les contrôles n8n/Carnets réunis, six MP3, Astro, recettes et build. La nouvelle tête post-#114 devra être contrôlée indépendamment ; certains tests ciblés d'autres branches restent SKIPPED et ne valent pas une preuve.**
+> **PR #97–#108 : clôturées comme consolidées ; #109/#110/#112/#114 fusionnées dans main ; #88/#89 closes sans fusion (historiques conservés).** PR encore ouvertes : #111 Carnets et #113 Tamarin, toutes deux en brouillon. SHA de main vérifié : `280b76dce9226705cb4820e5d3bdb53f473dd4b9`.
 > **D2 préconisé, non arbitré : trois univers réellement alimentés** — Vie quotidienne (C01, C07), Terroirs et marchés (C02, C05), Mémoire et transmission (C03, C04, C06). Ne pas ouvrir une catégorie « Fêtes et traditions » vide ; réévaluer après de nouveaux articles documentés.
 > **D3 : réception finale des sept textes toujours à obtenir.** Crédits/licences Commons recoupés en lecture externe pour riz (Dmitry A. Mottl, Brad Collis, Chhoukkosal, Willuconquer), amok (Ben Yapp) et Kep (Mx. Granger). Cela **ne prouve ni l'identité du fichier WebP local, ni les droits des autres images historiques**, ni un visa artistique. C03/C06 : illustrations éditoriales clairement signalées, non reportages.
-> **Prochaine action :** vérification restante de provenance/media C02/C04/C07, visa D2/D3, éventuellement compléter la navigation par univers **après D2**, puis dernière CI sur commit de livraison. **Ne pas fusionner #111 avant D3 ; ne pas déclencher OVH sans autorisation explicite distincte.**
+> **Prochaine action :** vérification restante de provenance/media C02/C04/C07, visa D2/D3, valider ou ajuster les trois filtres déjà intégrés **dans le cadre du visa D2**, puis dernière CI sur commit de livraison. **Ne pas fusionner #111 avant D3 ; ne pas déclencher OVH sans autorisation explicite distincte.**
+
+## Actualisation du 22 octobre 2026 — branches et PR consolidées
+
+**Situation effective :** `main` = `280b76dce9226705cb4820e5d3bdb53f473dd4b9`, après la fusion **#112** (verrou Resend pour insertion PostgreSQL réellement réussie) et **#114** (installation `ffprobe` bornée, sans suppression de vérification audio). [CI #114](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39851472014) **SUCCESS**. Le workflow n8n exporté reste `active:false`, le runtime réel ne change pas.
+
+**PR #111** : sept Carnets, douze WebP, navigation 3 univers (2/2/3) et dimensions corrigées C02, inchangés après la resynchronisation sans force-push avec `main`. [CI #39850522532](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39850522532) SUCCESS avant le dernier raccordement CI #114 ; vérifier séparément la tête la plus récente. **D2/D3 NON VALIDÉS : aucune fusion de #111, aucun OVH.**
+
+**PR #113** remplace le pilote tamarin de **#88**, clôturée sans fusion. La copie du MP3 Coral est binaire identique (blob Git `236ed7feb33ce895fdac550c140c8c94bf4a0456`), les six MP3 historiques restent inchangés, pas de génération TTS. CI dédiée [#39850038333](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39850038333) SUCCESS. La branche est synchronisée sur `main` corrigé ; la CI générale après synchronisation reste à vérifier. **#113 en brouillon noindex : photographie réelle/licence, essai culinaire, écoute humaine mobile/desktop et recette canonique non approuvés.** La **#89** est fermée sans fusion, son volet de sécurité pertinent repris dans #112.
+
+**PR de chantiers encore ouvertes : #111 et #113.** Le journal des anciennes 21 PR ci-dessous est historique ; il ne doit pas servir à rouvrir des audits clos. Aucun déploiement OVH, aucune publication Meta ou activation n8n n'est autorisé ici.
+
+---
 
 ## Jalon de reprise — 22 octobre 2026 : navigation trois univers et contrôle binaire C02
 
