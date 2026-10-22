@@ -22,7 +22,9 @@ assert.match(c05,/fao\.org\/cambodia\/news/,'2026 fisheries protection must be i
 assert.match(c05,/imageAlt: 'Étals et visiteurs sous les auvents colorés du marché de Kep, au Cambodge'/);
 assert.match(c05,/Kep_Crab_Market\.jpg\/1280px-Kep_Crab_Market\.jpg/,'Staging hero is real Kep market, not pepper sacks');
 assert.match(c05,/socialImage: '\/images\/cuisine\/kep-market-1600\.webp'/,'Social catalogue image is retained until approved replacement');
+assert.match(c05,/socialImageRole: 'article'/,'Legacy documentary photo must stay typed as photo, not illustration');
 assert.match(socialCatalog,/article\.socialImage \?\? article\.image/);
+assert.match(socialCatalog,/article\.socialImageRole \?\? 'illustration'/,'Role override must avoid social regression for C05');
 assert.match(credits,/Photo : Mx\. Granger · CC0 1\.0/);
 assert.match(credits,/Photo : PsamatheM · CC BY-SA 4\.0/);
 assert.match(index,/featuredArticle\.imageWidths\.length \? imageSrcSet/,'No empty srcset for external image');
