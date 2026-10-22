@@ -4,7 +4,7 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v1.8 (C02/C03/C05 en prévisualisation, blocage image Kep et droits mortier tracés)** · Responsable de validation : **propriétaire du site**  
+> Création : **22 octobre 2026** · Version du plan : **v1.9 (prévisualisations C02/C03/C05, examen initial média C04)** · Responsable de validation : **propriétaire du site**  
 > État du projet : **M2 EN COURS — D1 VALIDÉ, C01 CORRIGÉ, C02/C03/C05 EN PRÉVISUALISATION NON VALIDÉE ; AUCUNE PUBLICATION**  
 > **Étape active : M2 — sept orientations validées ; trois textes complets C02/C03/C05 préparés en PR dépendantes, aucun texte final accepté.**  
 > Prochaine action : faire relire [C02](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md), [C03](./BROUILLON-C03-KROEUNG-TRANSMISSION-2026-10-22.md) et [C05](./BROUILLON-C05-KEP-MARCHE-CRABES-2026-10-22.md). **Kep : photo CC0 distante à importer en WebP local**, non réalisée. **C03 : droits du visuel mortier non attestés (rightsValidated=false)**. Exécuter tests/CI et contrôle mobile avant une éventuelle réception, arbitrer D2 et N01–N04, recueillir la baseline GSC et les visas de publication. **PR #97–#101 non fusionnées, branche C03 empilée non publiée.**
@@ -174,6 +174,11 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J09 — contrôle visuel préliminaire C04 avant prochaine rédaction
+- **Inspection directe du fichier existant** `public/images/cuisine/amok-alt-1600.webp` (C04 /culture/comprendre-amok/) : image verticale présentant quatre portions d'amok sur une assiette, avec grand fond rouge occupant une grande partie du cadre. Elle semble représenter le plat, mais **qualité de couverture et adaptation panoramique à réexaminer** ; droits, localisation et provenance non attestés ici. Ne pas remplacer automatiquement le média original avant dossier de provenance et revue de direction artistique.
+- **Prochaine rédaction C04 :** reprendre l'angle M1 validé « L'amok, un plat et ses interprétations », éviter de refaire le guide de cuisson, vérifier les usages de la feuille de bananier, les variantes et la place du plat sans histoire royale inventée. Préparer un petit lot de texte hors publication.
+- **Blocages inchangés :** droits visuel C03 `rightsValidated=false`, photo Kep externe non importée en WebP local, M2/D2/D3 et CI/build non franchis ; les trois textes complets C02/C03/C05 attendent réception. Aucune fusion et aucun déploiement.
 
 ### 2026-10-22 — J08 — C03 Kroeung complet ; confirmation des blocages photographiques
 - **Rédaction en branche dépendante :** C03 `/culture/comprendre-le-kroeung/`, H1 « Le kroeung, des gestes qui se transmettent », 6 chapitres, 18 paragraphes, environ 950 mots. Références de Chef Nak, Cambodianess et recettes cambodgiennes dans [le dossier de preuve interne](./BROUILLON-C03-KROEUNG-TRANSMISSION-2026-10-22.md), **aucune bibliographie visible**. Aucun souvenir familial, interview ou lieu prétendument observé inventé. Le texte renvoie aux ateliers/recettes existants pour la pratique, sans en dupliquer les étapes.
