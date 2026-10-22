@@ -4,10 +4,10 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v1.1 (préparation M1 en PR, non fusionnée)** · Responsable de validation : **propriétaire du site**  
-> État du projet : **M1 — 7 FICHES D'AUDIT ET BRIEFS PRÉPARÉS EN BRANCHE ; AUCUNE REFONTE PUBLIÉE**  
-> **Étape active : M1 — livrables préparés, À VALIDER ; M2 non franchi.**  
-> Prochaine action : examiner les sept briefs du [rapport d'audit M1](./AUDIT-M1-BRIEFS-2026-10-22.md), obtenir les décisions D1/M2, réparer les références faibles et obtenir la baseline GSC avant tout déploiement. Aucun article original modifié.
+> Création : **22 octobre 2026** · Version du plan : **v1.2 (recherche documentaire et registre D1/M2 en PR, non fusionnée)** · Responsable de validation : **propriétaire du site**  
+> État du projet : **M1 LIVRÉ EN PR, À VALIDER — SOURCES COMPLÉTÉES ET CORRECTION PRIORITAIRE C01 IDENTIFIÉE ; ZÉRO PUBLICATION**  
+> **Étape active : M1 — À valider ; documentation de décision M2 préparée, sans passage de gate.**  
+> Prochaine action : examiner [l'audit M1](./AUDIT-M1-BRIEFS-2026-10-22.md) et le [registre sourcé + décisions M2](./REGISTRE-SOURCES-DECISIONS-M2-2026-10-22.md) ; **faire valider la correction P0 : prix riz 2025 partagé avec le Vietnam**, puis obtenir D1 et D2. Baseline GSC avant publication ; aucun article original modifié.
 
 ## 1. Objectif final
 
@@ -108,7 +108,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | --- | --- | --- | --- |
 | **M0 — Pilotage** | Plan versionné et accès depuis le dépôt | Fichier sur main, lien lisible, étape active explicite | **FAIT le 22/10/2026** |
 | **M1 — Audit et briefs** | Inventaire C01–C07 : source, photos, liens, H1, SEO, fiche par article ; baseline GSC si disponible ; briefs proposés | **7 fiches** + écarts consignés ; aucun contenu original touché ; briefs soumis à validation | **À valider — 7 fiches documentées en PR ; GSC absente** |
-| **M2 — Validation éditoriale** | Angles/titres/plans/sources cibles validés, modèle commun fixé ; priorités N01–N04 confirmées | Décisions écrites ; refus et inconnues documentés | À faire |
+| **M2 — Validation éditoriale** | Angles/titres/plans/sources cibles validés, modèle commun fixé ; priorités N01–N04 confirmées | Décisions écrites ; refus et inconnues documentés | **Préparation documentaire en PR ; visa propriétaire non reçu** |
 | **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | À faire |
 | **M4 — Index Carnets** | Refonte /culture/ avec quatre univers et nouveaux parcours | Navigation accessible, responsive, cohérence avec les sept Carnets | À faire |
 | **M5 — Première vague N01–N04** | Quatre nouveaux dossiers, articles et visuels | **4/4** validés, sources et média vérifiés ; publication par lot possible | À faire |
@@ -164,7 +164,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Indicateur | Situation au 22/10/2026 |
 | --- | --- |
 | Carnets existants au catalogue main | **7** (constaté dans src/data/culture.ts) |
-| Briefs audités/validés | **7/7 préparés pour examen ; 0/7 validés** (en PR uniquement) |
+| Briefs audités/validés | **7/7 préparés + registre de sources et décisions M2 en PR ; 0/7 validés** |
 | Carnets enrichis/validés | **0/7** |
 | Nouveaux Carnets publiés | **0/4** |
 | Univers implémentés sur /culture/ | **0/4** au sens de filtres structurés |
@@ -174,6 +174,15 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J02 — vérifications croisées, erratum du riz et décisions M2 v1.2 (en PR)
+- **Réalisé :** recherche documentaire avec consultation directe (FAO, AKP, OMPI, DEFRA, Chef Nak, KQED, PLOS ONE, UNESCO, site du sommet francophonie, source institutionnelle de Kep), et recherche indexée lorsque l'accès direct était refusé (EUR-Lex 2025, étude Taylor & Francis). [Registre de sources et propositions D1/D2](./REGISTRE-SOURCES-DECISIONS-M2-2026-10-22.md) ajouté sur branche Carnets.
+- **Correction P0 découverte :** le texte C01 doit préciser que **le Cambodge et le Vietnam (ST25) ont partagé le titre World's Best Rice 2025**. AKP (09/11/2025) cite le titre cambodgien sans cet ex æquo ; la dépêche VNA (10/11/2025) et VOV (09/11/2025) précisent les deux lauréats. Proposition de phrase dans le registre, **pas de modification d'article faute de visa**.
+- **Découvertes :** l'ancienne URL touristique commune aux six Carnets renvoie 404 ; son statut de source ministérielle actuelle n'est pas prouvé. Soumettre une substitution par preuves distinctes. Le quatrième univers Fêtes et traditions n'a aucun Carnet principal assigné parmi C01–C07 : arbitrage de classement requis avant M4.
+- **Risques et limites :** documents UE/étude prahok partiellement indexés et non lus intégralement ; aucune licence photo nouvellement autorisée ; aucune donnée GSC, tests HTTP, responsive ni CI exécutés sur ce travail documentaire. Les sept contenus publiés restent intacts.
+- **Gate :** M1 À valider ; M2 **NON VALIDÉ** ; D1/D2/D3 en attente ; 0/7 enrichi, 0/4 nouveau ; aucune fusion, aucun déploiement.
+- **Preuve :** [PR #97](https://github.com/roro78/cuisine-cambodgienne/pull/97) ; voir le registre sourcé du 22/10/2026.
+- **Prochaine action :** obtenir le visa sur la correction P0 C01 et les orientations C01–C07 ; préparer le correctif isolé uniquement après accord.
 
 ### 2026-10-22 — J01 — audit M1 et briefs v1.1 (branche dédiée, non fusionnée)
 - **Réalisé :** audit statique des 7 URL, titres/H1 de gabarit, textes, descriptions SEO, médias, sources déclarées, liens associés et redirection historique ; comptage indicatif des mots ; 7 briefs de réorientation consignés dans [AUDIT-M1-BRIEFS-2026-10-22.md](./AUDIT-M1-BRIEFS-2026-10-22.md). Vérification des 9 PR ouvertes : aucune collision avec les fichiers du chantier Carnets visés.
