@@ -63,6 +63,14 @@ test('source content catalog is data-derived and rejects invented duplicate IDs'
   assert.match(s,/sha256/);
 });
 
+test('restored historical recipes enter social catalog without auto-publishable images', () => {
+  const s=text('src/data/socialCatalog.ts');
+  assert.match(s,/import \{ restoredRecipes \} from '\.\/restoredRecipes'/);
+  assert.match(s,/\.\.\.restoredRecipes\.map/);
+  assert.match(s,/undefined, 'none', recipe\.sources\.map/);
+  assert.match(s,/releasedCookingWorkshopGuides/,'Current workshop social entries must survive the port');
+});
+
 test('approval uses email and an explicit form POST; missing action defaults to rejection', () => {
   const w=n8n('01-drafts-email-approval.json');
   const approval=w.nodes.find(n=>n.name==='Attendre une décision via formulaire');
