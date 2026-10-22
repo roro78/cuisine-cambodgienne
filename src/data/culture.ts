@@ -415,41 +415,71 @@ export const cultureArticles: CultureArticle[] = [
   },
   {
     slug: 'prahok-fermentation-umami',
-    title: 'Prahok : comprendre la fermentation et l’umami',
-    eyebrow: 'Fermentation',
-    intro: 'Le prahok est souvent présenté comme un condiment très puissant. Bien dosé, il apporte surtout du sel, de l’umami et ce goût fermenté si particulier.',
-    seoDescription: 'Prahok cambodgien : fermentation, umami, dosage et usages culinaires pour comprendre ce condiment essentiel de la cuisine khmère au-delà de son odeur.',
-    readingTime: '5 min',
+    title: 'Prahok, quand la pêche devient patrimoine',
+    eyebrow: 'Mémoire culinaire',
+    intro: 'Au Cambodge, le prahok est bien plus qu\'un goût reconnaissable. Cette pâte de poisson fermenté relie les tables à une histoire de rivières, de villages et de saisons de pêche. Derrière un aliment conservé pour durer, il y a des générations de travail et une façon de vivre avec les variations de l\'eau.  Le prahok raconte aussi des réalités contemporaines : les revenus tirés du poisson, la place des femmes dans sa transformation, les échanges entre campagnes et villes, et les inquiétudes devant des ressources moins accessibles. C\'est cette histoire humaine et collective qui mérite sa place dans les Carnets, loin d\'un mode d\'emploi de fermentation.',
+    seoDescription: 'Au Cambodge, le prahok raconte le rythme du Tonlé Sap, le travail des communautés de pêche, les échanges avec les villages et la transmission d’un patrimoine menacé.',
+    readingTime: '4 min',
     sections: [
       {
-        title: 'Une saveur qui dépasse l’odeur',
+        title: 'Le Tonlé Sap, un paysage qui change avec les saisons',
         paragraphs: [
-          'À l’ouverture, le prahok peut impressionner par son odeur. En petite quantité dans un plat, il apporte surtout du sel, de l’umami et une saveur fermentée qui donne beaucoup de caractère.',
-          'À la cuisson, son goût devient plus doux et se mêle mieux au coco, aux aromates, aux légumes ou à la viande.'
+          'Au centre du Cambodge, le lac Tonlé Sap est lié au Mékong par un système d\'eaux dont le mouvement varie fortement au cours de l\'année. Pendant la saison des pluies, l\'eau gagne les plaines et les zones inondées. Lorsque les niveaux redescendent, le paysage se transforme encore et les poissons se déplacent avec ces changements.',
+          'Cette alternance rythme depuis longtemps la vie des communautés riveraines. On ne pêche pas partout de la même manière ni aux mêmes moments, et les activités de nombreuses familles ont dû composer avec la disponibilité saisonnière des poissons d\'eau douce.',
+          'Le prahok appartient à ce paysage. Il rappelle qu\'une ressource abondante à certaines périodes peut devenir plus rare à d\'autres. Mais le Tonlé Sap n\'est pas la seule région du Cambodge où l\'on connaît ce produit : son histoire s\'étend au-delà des rives du lac, par les déplacements de personnes et les échanges de marchandises.'
         ]
       },
       {
-        title: 'Le dosage comme apprentissage',
+        title: 'Quand le poisson reliait les villages aux rivières',
         paragraphs: [
-          'Le prahok n’a pas une salinité identique d’un produit à l’autre. Le meilleur réflexe consiste donc à commencer par une quantité modeste, goûter, puis décider si le plat a réellement besoin de plus.',
-          'Cette méthode évite l’erreur la plus fréquente : ajouter prahok, sauce de poisson et sel sans tenir compte de leur rôle commun.'
+          'Dans des récits historiques sur les campagnes cambodgiennes, la période des pêches importantes était aussi une période de mouvement. Des familles venant de régions éloignées rejoignaient les rivières ou les marchés pour obtenir du poisson, parfois en échangeant du riz. Ces voyages reliaient des territoires agricoles à des lieux de pêche.',
+          'La conservation du poisson permettait d\'étendre la présence de cette ressource au-delà de la période où les prises étaient les plus importantes. La pâte de poisson fermenté est ainsi devenue une composante durable du paysage alimentaire, particulièrement là où l\'accès régulier au poisson frais pouvait varier selon les saisons et les distances.',
+          'Les moyens de transport, les marchés et la distribution ont depuis changé ces relations. Il serait trompeur de décrire tous les villages actuels comme s\'ils suivaient encore un même trajet ancien. Ce qui demeure, c\'est le lien entre le produit, la géographie et l\'organisation économique des échanges.'
         ]
       },
       {
-        title: 'Avec quoi le découvrir',
+        title: 'Des savoirs et des revenus portés par des productrices',
         paragraphs: [
-          'Pour découvrir le prahok, commencez avec des légumes croquants, une sauce au coco ou un plat mijoté : ce sont des associations faciles à apprécier.',
-          'La fraîcheur des légumes et des herbes équilibre très bien son goût fermenté, surtout quand on n’a pas l’habitude de le manger.'
+          'Autour du Tonlé Sap, la transformation du poisson représente aussi une activité professionnelle. Dans certaines communautés étudiées, de nombreuses femmes y jouent un rôle central : elles organisent le travail, achètent des prises, vendent le produit fini et composent avec les besoins de leur foyer.',
+          'Leur savoir-faire ne se réduit pas à une tâche domestique. Pour certaines, produire du prahok signifie exercer un métier, gagner un revenu et maintenir une compétence acquise auprès de proches. La qualité de ce qu\'elles proposent fait aussi partie de leur réputation professionnelle.',
+          'Cette réalité ne doit pas devenir un cliché selon lequel toutes les Cambodgiennes prépareraient le prahok ou seraient responsables de transmettre seules la cuisine du pays. Les parcours sont différents d\'un village à l\'autre, et la place des femmes dans ces métiers dépend aussi des possibilités économiques et de l\'histoire de chaque famille.'
+        ]
+      },
+      {
+        title: 'Un produit de terroirs, de marchés et de goûts différents',
+        paragraphs: [
+          'Le prahok n\'est pas une préparation strictement identique dans tous les foyers et sur tous les marchés. Selon les territoires, les poissons disponibles et les préférences locales, on rencontre des formes et des caractères distincts. Cette diversité donne au produit une valeur qui dépasse l\'idée d\'un simple assaisonnement standardisé.',
+          'Les circuits de vente relient les pêcheurs, les personnes chargées de la transformation, les commerçants et les familles qui achètent le prahok. Les marchés des villes accueillent ainsi des productions venues d\'autres régions. Les évolutions des transports ont modifié la manière dont ces produits circulent.',
+          'Il y a dans ces échanges une histoire de savoirs, de réputations et de choix de consommation. Pour certaines familles, la préférence pour un prahok particulier peut rappeler une région ou une habitude familière. Ces attachements ne sont pas mesurables à l\'échelle d\'un pays entier, mais ils éclairent ce qu\'un aliment peut représenter au-delà de sa fonction dans une assiette.'
+        ]
+      },
+      {
+        title: 'Préserver le prahok, c\'est aussi préserver une ressource',
+        paragraphs: [
+          'Les communautés de pêche du Tonlé Sap sont confrontées à des changements environnementaux et économiques. Dans certaines zones étudiées, la disponibilité de petits poissons a diminué ou leur accès est devenu plus coûteux. Les productrices de prahok doivent alors s\'adapter, parfois en réduisant leur activité ou en cherchant d\'autres revenus.',
+          'Une autre tension apparaît lorsque des petits poissons autrefois destinés à l\'alimentation humaine sont utilisés pour nourrir des poissons d\'élevage. Ce déplacement de la demande pose une question de partage des ressources, notamment pour les ménages qui dépendent encore du poisson accessible localement.',
+          'Aucune de ces observations ne suffit à annoncer la disparition du prahok dans tout le Cambodge. Elles montrent plutôt que préserver une tradition culinaire ne consiste pas seulement à en répéter le nom : il faut aussi regarder les conditions de vie et l\'environnement des personnes qui la rendent possible.'
+        ]
+      },
+      {
+        title: 'Une mémoire vivante, pas une recette figée',
+        paragraphs: [
+          'Parler du prahok uniquement par son odeur ferait passer à côté de l\'essentiel. Il est lié à l\'histoire alimentaire de nombreuses familles et à des activités qui ont évolué au gré des saisons, des marchés et des déplacements. Sa place dans la culture cambodgienne est aussi celle d\'un produit sur lequel des personnes ont bâti une compétence et parfois leur métier.',
+          'Cette histoire ne se limite ni à une époque lointaine ni à une seule façon de manger. Les usages, les formes et les circuits de vente changent. Certaines familles continuent de produire du prahok ; d\'autres l\'achètent ou l\'utilisent occasionnellement. La diversité ne contredit pas le patrimoine : elle en fait partie.',
+          'C\'est pourquoi ce Carnet parle d\'abord des eaux du Tonlé Sap, des échanges entre villages et du travail de celles et ceux qui vivent de la pêche. Les gestes de cuisine et les associations de saveurs ont leur place ailleurs, dans les recettes et les ateliers. Ici, ce sont les personnes et les paysages que le prahok nous invite à comprendre.'
         ]
       }
     ],
     image: '/images/cuisine/prahok-1600.webp',
-    imageAlt: 'Prahok ktis servi avec des légumes',
+    imageAlt: 'Bol de prahok ktis entouré de crudités, illustration d’un plat et non d’une scène de production',
     imageWidth: 3000,
     imageHeight: 4000,
     imageWidths: [480, 800, 1200, 1600],
     sources: [
-      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: tourismGuide }
+      { label: 'LeGrand, Borarin et Young (mai 2020) — Tonlé Sap, culture et conservation du poisson', url: 'https://link.springer.com/article/10.1186/s42779-019-0027-1' },
+      { label: 'Food and Foodways (2025) — femmes productrices et enjeux sociaux du prahok', url: 'https://doi.org/10.1080/07409710.2025.2564492' },
+      { label: 'Regional Environmental Change (octobre 2026) — petits poissons entre alimentation et élevage', url: 'https://link.springer.com/article/10.1007/s10113-026-02706-8' },
+      { label: 'FAO — profil des pêches et produits transformés au Cambodge', url: 'https://www.fao.org/fishery/facp/KHM/en' }
     ]
   },
   {
