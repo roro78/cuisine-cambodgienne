@@ -209,41 +209,72 @@ export const cultureArticles: CultureArticle[] = [
   },
   {
     slug: 'comprendre-le-kroeung',
-    title: 'Kroeung : comprendre une famille de pâtes aromatiques',
-    eyebrow: 'Gestes',
-    intro: 'Le kroeung n’est pas une seule recette figée. C’est une famille de pâtes d’aromates qui forme la base de nombreux plats cambodgiens.',
-    seoDescription: 'Kroeung cambodgien : comprendre cette famille de pâtes aromatiques, le rôle de la citronnelle, du galanga, du curcuma et du combava et le geste du mortier.',
-    readingTime: '6 min',
+    title: 'Le kroeung, des gestes qui se transmettent',
+    eyebrow: 'Gestes et transmission',
+    intro: 'Avant de parfumer une soupe, un poisson ou des légumes sautés, la cuisine cambodgienne commence souvent par les aromates. Citronnelle, galanga, curcuma, feuilles de combava, ail ou échalote prennent alors une autre forme : une pâte épaisse et parfumée que l\'on appelle *kroeung*.  Ce nom recouvre plusieurs préparations. Ce qui les relie n\'est pas seulement une liste d\'ingrédients : c\'est l\'attention portée aux fibres, au parfum et à la manière dont chaque élément rejoint les autres. Derrière cette base culinaire, il y a un geste que l\'on peut apprendre, adapter et transmettre.',
+    seoDescription: 'Le kroeung est bien plus qu’une pâte d’aromates : découvrez le rôle du mortier, les variantes cambodgiennes et le geste transmis derrière les soupes et les plats khmers.',
+    readingTime: '5 min',
     sections: [
       {
-        title: 'Une même famille, plusieurs recettes',
+        title: 'Le kroeung ne désigne pas une recette unique',
         paragraphs: [
-          'Le terme kroeung désigne différentes pâtes d’herbes, de racines et d’épices qui servent de base parfumée à de nombreux plats. Citronnelle, galanga, curcuma, combava, ail ou échalote peuvent entrer dans leur composition selon la recette.',
-          'La couleur et le parfum changent selon les ingrédients utilisés. Il n’existe donc pas une seule formule à apprendre par cœur : mieux vaut comprendre le rôle de chaque aromate et ajuster selon le plat.'
+          'Parler du kroeung comme d\'une formule immuable serait passer à côté de l\'essentiel. Dans la cuisine khmère, le terme désigne différentes pâtes d\'aromates. Leur composition varie selon le plat, les habitudes de la personne qui cuisine, les produits disponibles et la place accordée à chaque parfum.',
+          'Certaines préparations sont dominées par la citronnelle et le curcuma, d\'autres accueillent du piment séché ou davantage d\'herbes fraîches. Elles ne produisent pas les mêmes couleurs ni les mêmes saveurs. Les distinctions entre kroeung jaune, rouge ou vert servent donc de repères, pas de frontières étanches entre trois recettes universelles.',
+          'C\'est précisément ce qui rend cette famille de préparations intéressante : une base commune n\'efface pas la liberté du cuisinier. Le kroeung n\'est pas un plat autonome posé à côté du riz ; il transforme les ingrédients qui vont ensuite être cuits avec lui.'
         ]
       },
       {
-        title: 'Le geste compte autant que la liste',
+        title: 'Le mortier change notre manière de préparer',
         paragraphs: [
-          'Couper finement puis piler progressivement modifie la texture et permet aux fibres et aux huiles aromatiques de se mélanger intimement. Les ingrédients les plus durs sont généralement travaillés avant les plus tendres.',
-          'C’est pour cela que le geste compte autant que les ingrédients. Un kroeung bien pilé parfume le plat de façon régulière et évite de retrouver des fibres trop dures en bouche.'
+          'On peut hacher la citronnelle ou la couper finement. Piler des aromates répond à une autre logique. Sous les coups répétés du pilon, les morceaux se réduisent, les fibres se travaillent et les ingrédients se mélangent peu à peu jusqu\'à former une pâte.',
+          'Ce mouvement réclame de l\'attention. Un fragment de galanga trop épais ou une longue fibre de citronnelle n\'a pas la même texture qu\'un aromate travaillé finement. Le mortier donne la possibilité d\'observer la transformation de la matière au lieu de s\'en remettre seulement au temps qui passe.',
+          'Il ne faut pas pour autant transformer cet outil en obligation absolue. Un robot peut aider lorsque le temps, la force ou le matériel manquent. Le geste au mortier reste une référence culinaire importante, mais le choix de l\'outil n\'enlève rien au désir de cuisiner un plat cambodgien chez soi.'
         ]
       },
       {
-        title: 'Sentir avant de cuire',
+        title: 'Chaque aromate prend sa place',
         paragraphs: [
-          'Un bon repère consiste à sentir la pâte avant qu’elle ne touche la casserole. La citronnelle doit être nette, le galanga présent sans dominer et le combava rester précis.',
-          'À la cuisson, les parfums deviennent plus doux et se mêlent davantage. C’est ce qui donne au kroeung cette saveur chaude, fraîche et très reconnaissable dans de nombreux plats.'
+          'La citronnelle apporte des notes végétales fraîches, sans se réduire à son seul parfum citronné. Le galanga donne une impression plus chaude, parfois légèrement poivrée. Le curcuma peut colorer la pâte et lui apporter son caractère terreux. La feuille ou le zeste de combava amènent une note vive, reconnaissable même à petite dose.',
+          'Ail et échalote participent autrement à l\'ensemble : leurs saveurs soutiennent la base aromatique et évoluent avec la cuisson. Aucun de ces ingrédients ne remplace parfaitement un autre. C\'est pourquoi deux pâtes visuellement proches ne donnent pas nécessairement le même résultat.',
+          'Savoir reconnaître ces différences peut s\'apprendre en préparant le kroeung, mais aussi en sentant les ingrédients avant leur transformation. Le nez, la vue et le toucher deviennent des outils d\'observation. Ce sont des connaissances modestes et concrètes, qui se construisent à force de gestes répétés.'
+        ]
+      },
+      {
+        title: 'Une transmission faite de variantes',
+        paragraphs: [
+          'Dans les familles et les cuisines professionnelles, les façons de préparer une pâte d\'aromates ne se superposent pas toujours. Une personne coupe plus finement, une autre préfère sentir encore une texture légèrement granuleuse ; certaines aiment une présence marquée du curcuma, d\'autres choisissent une base plus verte.',
+          'Parler de transmission ne signifie pas affirmer que chaque enfant cambodgien apprend le pilage auprès de sa mère ou de sa grand-mère. Les parcours sont bien plus divers : apprentissage dans une famille, auprès d\'un cuisinier, dans une école, par un livre ou en essayant une recette loin du Cambodge.',
+          'Le geste peut ainsi continuer de circuler tout en se transformant. Une préparation réalisée à l\'étranger avec des ingrédients accessibles localement ne raconte pas la même expérience qu\'une pâte pilée avec des plantes fraîchement récoltées, mais elle peut conserver l\'envie de retrouver un parfum et de partager un repas.'
+        ]
+      },
+      {
+        title: 'Une base qui traverse plusieurs plats',
+        paragraphs: [
+          'Le kroeung entre dans des préparations très différentes. Il peut servir de point de départ à un amok de poisson, parfumer une soupe ou accompagner un plat sauté. Ce rôle ne se voit pas toujours dans l\'assiette : la pâte est souvent mêlée aux autres ingrédients, parfois longuement cuite.',
+          'On reconnaît alors le kroeung moins à sa couleur qu\'à la manière dont ses parfums portent le plat. Le même mélange ne produira pas le même résultat associé au lait de coco, à un bouillon, à des légumes ou à de la viande. Le kroeung appartient donc à une cuisine de combinaisons, et non à une seule recette emblématique.',
+          'Cela explique aussi pourquoi le travail des aromates mérite un récit à part entière. Une fois la pâte entrée dans une casserole, l\'attention se porte sur le plat terminé ; le Carnet rappelle le geste et les choix qui ont préparé sa saveur.'
+        ]
+      },
+      {
+        title: 'Du récit au geste, sans confondre les deux',
+        paragraphs: [
+          'Lire l\'histoire du kroeung, c\'est comprendre qu\'une préparation peut porter plusieurs savoir-faire à la fois : choisir les plantes, préparer leur texture, observer leur parfum, puis les associer à un plat. Ce sont des repères que chacun peut apprendre sans prétendre posséder une tradition unique.',
+          'Pour découvrir cette transformation concrètement, mieux vaut passer à un véritable atelier plutôt qu\'allonger ici une liste d\'étapes. Le parcours consacré au mortier permet de prendre en main les ingrédients ; la recette de kroeung jaune donne ensuite les quantités et les conseils utiles pour cuisiner.',
+          'Le kroeung se transmet parce qu\'il se refait : non à l\'identique dans toutes les cuisines, mais avec la même attention à ce que les aromates apportent au repas. Et c\'est peut-être là que le geste prend tout son sens, entre mémoire culinaire et liberté de faire à sa manière.'
         ]
       }
     ],
-    image: '/images/cuisine/kroeung-1600.webp',
-    imageAlt: 'Plat cambodgien préparé avec du kroeung',
-    imageWidth: 5184,
-    imageHeight: 3456,
-    imageWidths: [480, 800, 1200, 1600],
+    image: '/images/cuisine/v19-mortier-kroeung-1440.webp',
+    imageAlt: 'Des mains pilent des aromates au mortier pour illustrer la préparation du kroeung',
+    imageWidth: 1440,
+    imageHeight: 960,
+    imageWidths: [800, 1200, 1440],
+    socialImage: '/images/cuisine/kroeung-1600.webp',
+    socialImageRole: 'article',
     sources: [
-      { label: 'Ministère du Tourisme du Cambodge — glossaire gastronomique', url: tourismGuide }
+      { label: 'Chef Nak — base aromatique et rôle du mortier', url: 'https://www.chefnak.com/cambodian-kroeung' },
+      { label: 'Cambodianess (22 mars 2021) — Kroeung khmer', url: 'https://cambodianess.com/article/how-to-make-khmer-lemongrass-paste' },
+      { label: 'Chef Nak — exemple d’amok au kroeung', url: 'https://www.chefnak.com/cambodian-fish-amok' }
     ]
   },
   {
