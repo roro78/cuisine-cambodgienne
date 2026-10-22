@@ -4,10 +4,24 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v3.0 (2 couvertures C03/C06 intégrées, 8 WebP GitHub, CI finale PASS, OVH non déployé)** · Responsable de validation : **propriétaire du site**
-> État du projet : **M2 EN COURS — 7/7 Carnets préparés, QA technique 7/7 PASS et couvertures C03/C06 intégrées dans GitHub, 0/7 contenus définitivement approuvés et publiés**  
-> **Étape active : M2 — QA Astro, contrats, build et Chromium mobile/desktop PASS sur la branche d'intégration avec les 2 nouvelles couvertures C03/C06 ; [run #39819573638](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39819573638). D2 et publication D3 en attente.**  
-> Prochaine action : voir [PR #108](https://github.com/roro78/cuisine-cambodgienne/pull/108) et [run final PASS #39819573638](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39819573638). **Les 8 WebP des nouvelles couvertures Kroeung/Prahok sont désormais dans GitHub, deux pages raccordées ; anciens socialImage préservés ; ZIP supprimé**. Les 7 Carnets passent Astro, tests éditoriaux/recettes, build et navigateur mobile/desktop. **Pas de publication OVH.** Restent la revue finale des textes et de l'iconographie, la décision D2 sur les univers, la validation D3 de publication, les autres droits photo C01/C04/C07 et la baseline GSC. **PR #97 à #108 restent en brouillon, pas fusionnées**.
+> Création : **22 octobre 2026** · Version du plan : **v3.1 — reprise après consolidation PR #111, revue documentaire du 22/10/2026** · Responsable du visa D2/D3 : **propriétaire du site**
+> **État actuel : M2/D2 et D3 NON VALIDÉS ; 7/7 Carnets et 12 WebP consolidés dans [PR #111](https://github.com/roro78/cuisine-cambodgienne/pull/111), encore en brouillon. Aucun Carnet refondu publié.**
+> **CI vérifiée : [run #39825531561](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39825531561) : Astro, recettes, éditorial, six MP3 et build PASS au commit `5977777aa19390f327b0b8ec61aa5b2cd81abc2e`; certains tests audio optionnels de la CI globale ont été SKIPPED (ne pas les décrire comme exécutés).**
+> **PR #97–#108 : clôturées comme consolidées, branches et contenus préservés ; #109 et #110 : fusionnées dans main.** Il reste #111, #89 (n8n runtime non attesté), #88 (atelier tamarin). `main` au contrôle : `3c974b63dc9766f1acadbf560b9b7799d9aeb703`.
+> **D2 préconisé, non arbitré : trois univers réellement alimentés** — Vie quotidienne (C01, C07), Terroirs et marchés (C02, C05), Mémoire et transmission (C03, C04, C06). Ne pas ouvrir une catégorie « Fêtes et traditions » vide ; réévaluer après de nouveaux articles documentés.
+> **D3 : réception finale des sept textes toujours à obtenir.** Crédits/licences Commons recoupés en lecture externe pour riz (Dmitry A. Mottl, Brad Collis, Chhoukkosal, Willuconquer), amok (Ben Yapp) et Kep (Mx. Granger). Cela **ne prouve ni l'identité du fichier WebP local, ni les droits des autres images historiques**, ni un visa artistique. C03/C06 : illustrations éditoriales clairement signalées, non reportages.
+> **Prochaine action :** vérification restante de provenance/media C02/C04/C07, visa D2/D3, éventuellement compléter la navigation par univers **après D2**, puis dernière CI sur commit de livraison. **Ne pas fusionner #111 avant D3 ; ne pas déclencher OVH sans autorisation explicite distincte.**
+
+## Reprise contrôlée du 22 octobre 2026 — état post-PR #111
+
+Le tableau et les comptes rendus historiques ci-dessous décrivent parfois les états intermédiaires des branches #97–#108. **En cas de contradiction, l'en-tête v3.1 ci-dessus prévaut.** La pile des douze anciennes PR a été remplacée par la PR #111, qui est techniquement fusionnable mais toujours en brouillon. Ne pas relancer le correctif Volar : le dernier run réussi est #39825531561. Aucun test local supplémentaire n'a été exécuté pendant cette revue.
+
+- **D2 (proposition, non encore visée) :** trois univers réels, respectivement 2/2/3 Carnets ; « Fêtes et traditions » reste au backlog, sans filtre ni page vide. La page actuelle montre quatre regards éditoriaux, **pas quatre catégories filtrables**. Le passage à trois ancres/groupes doit être reçu avant modification UI.
+- **D3 (en attente) :** les sept articles sont des propositions, non des textes signés. Ils restent des récits culturels et non des tutoriels. Contrôles complémentaires : exactitude des affirmations sensibles et validation des visuels du catalogue sous licence ; les droits attachés à un original Commons ne prouvent pas l'origine du WebP local.
+- **Crédits déjà vérifiés sur Commons à la date de reprise** (références internes uniquement) : rizières Dmitry A. Mottl CC BY-SA 4.0 ; repiquage Brad Collis CC BY 2.0 ; riz Chhoukkosal CC BY-SA 4.0 ; Ak Ambok Willuconquer CC BY-SA 4.0 ; Fish Amok Ben Yapp CC BY 2.0 ; Kep Crab Market Mx. Granger CC0 1.0. Ces licences demandent, hors CC0, crédit de l'auteur, lien vers la licence, et transparence sur les transformations ; contrôler le rendu final des attributions.
+- **État des trois PR restantes :** #111 en draft, #89 sécurité exports partiellement intégrée par #109 mais runtime n8n non attesté, #88 atelier pilote avec MP3 sur sa branche et gates séparées. Aucune action sur OVH, Meta, n8n, Supabase ou autres projets.
+
+---
 
 ## 1. Objectif final
 
