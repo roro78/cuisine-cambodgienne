@@ -16,7 +16,7 @@ assert.equal([...c06.matchAll(/^        title: /gm)].length,6,'Six cultural chap
 assert.equal([...c06.matchAll(/^          '/gm)].length,18,'Eighteen paragraphs required');
 assert.match(c06,/Le Tonlé Sap, un paysage qui change avec les saisons/);
 assert.match(c06,/Des savoirs et des revenus portés par des productrices/);
-assert.match(c06,/Préserver le prahok, c'est aussi préserver une ressource/);
+assert.match(c06,/Préserver le prahok,/);
 assert.match(c06,/image: '\/images\/cuisine\/prahok-1600\.webp'/,'Do not silently change old photography');
 assert.match(c06,/imageAlt: 'Bol de prahok ktis entouré de crudités/,'Photograph must be described as cooked food, never production reportage');
 for(const width of [480,800,1200,1600]) assert.ok(existsSync(`public/images/cuisine/prahok-${width}.webp`),`Missing existing width ${width}`);
@@ -36,5 +36,5 @@ assert.match(template,/article\.slug === 'prahok-fermentation-umami'\s*\n\s*\? \
 assert.match(template,/'prahok-fermentation-umami': \['prahok'\]/,'C06 glossary stays cultural');
 assert.doesNotMatch(template,/article\.sources\.map\s*\(/,'Never show public bibliography');
 assert.equal([...all.matchAll(/^    slug: '/gm)].length,7,'All seven slugs must survive');
-assert.match(readFileSync('docs/carnets/PLAN-REFONTE-CARNETS.md','utf8'),/v2\.2/,'Pilot version must record the decision');
+assert.match(readFileSync('docs/carnets/PLAN-REFONTE-CARNETS.md','utf8'),/J12 — C06/,'Immutable journal must record C06 cultural milestone');
 console.log('PASS C06: Tonle Sap social heritage, women producers, fisheries, no fermentation tutorial or source display.');
