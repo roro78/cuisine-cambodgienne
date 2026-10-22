@@ -3,7 +3,7 @@
 > **SOURCE DE VÉRITÉ DU CHANTIER** — Ce fichier fait foi pour l'objectif, le périmètre, les décisions, l'avancement et la reprise entre conversations.  
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
-> **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
+> **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (version de travail PR #111 ; main ne sera mis à jour qu'après fusion)**  
 > Création : **22 octobre 2026** · Version du plan : **v3.1 — reprise après consolidation PR #111, revue documentaire du 22/10/2026** · Responsable du visa D2/D3 : **propriétaire du site**
 > **État actuel : M2/D2 et D3 NON VALIDÉS ; 7/7 Carnets et 12 WebP consolidés dans [PR #111](https://github.com/roro78/cuisine-cambodgienne/pull/111), encore en brouillon. Aucun Carnet refondu publié.**
 > **CI vérifiée : [run #39825531561](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39825531561) : Astro, recettes, éditorial, six MP3 et build PASS au commit `5977777aa19390f327b0b8ec61aa5b2cd81abc2e`; certains tests audio optionnels de la CI globale ont été SKIPPED (ne pas les décrire comme exécutés).**
@@ -35,7 +35,7 @@ Les Carnets racontent **les lieux, les personnes, les usages, l'histoire et la t
 | --- | --- | --- | --- |
 | O1 | Continuité éditoriale et SEO | **7/7 articles existants conservés sur leur URL**, sans perte des redirections historiques connues | Inventaire URL avant/après, requêtes HTTP et sitemap |
 | O2 | Valeur éditoriale | **7/7 articles audités** puis enrichis selon un brief approuvé ; informations non banales, pas de doublons purs avec recettes/ateliers | Grille de lecture et diff éditorial par article |
-| O3 | Découverte | **4 univers** visibles et navigables : Vie quotidienne ; Terroirs et marchés ; Gestes et transmission ; Fêtes et traditions | Contrôle fonctionnel page /culture/ mobile et desktop |
+| O3 | Découverte | **3 univers actifs** visibles et navigables : Vie quotidienne ; Terroirs et marchés ; Mémoire et transmission ; futur univers Fêtes et traditions désactivé tant qu'aucun article ne l'alimente | Contrôle fonctionnel page /culture/ mobile et desktop |
 | O4 | Fiabilité | **100 % des affirmations sensibles** (origine, récompense, IG, pratiques, dates, conservation) reliées à des références **consultables dans le registre interne**, non affichées publiquement ; aucune histoire ou citation inventée | Registre interne des sources et contrôle éditorial |
 | O5 | Médias | **100 % des nouveaux médias publiés** avec droits/provenance vérifiés, alt descriptif et légende exacte quand nécessaire | Inventaire médias / licences et QA images |
 | O6 | Maillage | **7/7 Carnets** avec au moins un lien pertinent vers une autre ressource existante ; aucun lien cassé | Contrôle des liens et vérification manuelle |
@@ -93,7 +93,7 @@ Les titres sont **des propositions à valider**, pas des renommages effectués. 
 
 1. **Hero éditorial** : « Carnets du Cambodge — Derrière chaque plat, une histoire à découvrir », photographie crédible et introduction culturelle.
 2. **À la une** : un récit majeur avec média immersif (choix éditorial explicite, pas dépendance implicite à l'ordre des données).
-3. **Explorer par univers** : quatre catégories accessibles, avec libellés et filtres clavier/mobile ou ancres robustes ; ne pas créer d'URL de catégorie inutile.
+3. **Explorer par univers** : trois catégories renseignées, avec libellés et filtres clavier/mobile ou ancres robustes après visa D2 ; ne pas créer de catégorie vide ni d'URL inutile.
 4. **Tous les Carnets** : cartes harmonisées (titre, univers, résumé utile, durée de lecture vérifiée, photo, lien clair).
 5. **Parcours de découverte** : enchaînement pertinent de deux à trois Carnets, vers un ingrédient, un atelier et une recette lorsque justifié.
 6. **Sur mobile** : lecture prioritaire ; pas de carrousel obligatoire ni de filtres invisibles ; comportement testé à 360, 390 et 768 px, puis 1280/1440 px.
@@ -124,7 +124,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | **M1 — Audit et briefs** | Inventaire C01–C07 : source, photos, liens, H1, SEO, fiche par article ; baseline GSC si disponible ; briefs proposés | **7 fiches** + écarts consignés ; aucun contenu original touché ; briefs soumis à validation | **VALIDÉ pour les 7 orientations, en PR ; GSC non disponible** |
 | **M2 — Validation éditoriale** | Angles/titres/plans/sources cibles validés, modèle commun fixé ; priorités N01–N04 confirmées | Décisions écrites ; refus et inconnues documentés | **EN COURS : D1 sept orientations + erratum C01 acceptés ; D2/modèle/priorités N01–N04 à arbitrer** |
 | **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | **À faire : 7/7 versions éditoriales en branches non fusionnées ; gate M2/D2/D3 non franchi** |
-| **M4 — Index Carnets** | Refonte /culture/ avec quatre univers et nouveaux parcours | Navigation accessible, responsive, cohérence avec les sept Carnets | À faire |
+| **M4 — Index Carnets** | Refonte /culture/ avec trois univers actifs (quatrième différé) et nouveaux parcours, sous réserve de D2 | Navigation accessible, responsive, cohérence avec les sept Carnets | À faire |
 | **M5 — Première vague N01–N04** | Quatre nouveaux dossiers, articles et visuels | **4/4** validés, sources et média vérifiés ; publication par lot possible | À faire |
 | **M6 — Recette technique et publication** | Tests éditoriaux, build, liens, SEO, photos, mobile/desktop, vérification OVH | Aucun défaut bloquant ; accord propriétaire avant fusion/déploiement ; compte-rendu HTTP après mise en production | À faire |
 | **M7 — Mesure et itérations** | Comparatifs GSC J+28/J+90, retours et backlog N05–N08 | Observations mesurées, décisions de correction documentées | À faire |
