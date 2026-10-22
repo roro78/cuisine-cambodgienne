@@ -102,8 +102,8 @@ const breadcrumbSchema = {
         <img src={article.image} srcset={article.imageWidths.length ? imageSrcSet(article.image, article.imageWidths) : undefined} sizes="(max-width: 900px) 100vw, 52vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} decoding="async" />
         <figcaption>
           {article.slug === 'le-riz-symbole-de-vie-au-cambodge' ? (
-            <>Rizières près de Siem Reap · Photo Dmitry A. Mottl, CC BY-SA 4.0 · <a href="https://commons.wikimedia.org/wiki/File:Cambodia%27s_rice_fields.jpg" target="_blank" rel="noreferrer">Source et licence</a></>
-          ) : 'Photographie illustrative · crédits et licence en bas de page.'}
+            <>Rizières près de Siem Reap · Photo Dmitry A. Mottl, CC BY-SA 4.0 · <a href="https://commons.wikimedia.org/wiki/File:Cambodia%27s_rice_fields.jpg" target="_blank" rel="noreferrer">Crédit et licence</a></>
+          ) : <>Photographie illustrative · <a href="/credits-photos/">crédits photo</a>.</>}
         </figcaption>
       </figure>
     </section>
@@ -120,7 +120,7 @@ const breadcrumbSchema = {
             {article.gallery.slice(0, 2).map((photo) => (
               <figure>
                 <img src={photo.image} alt={photo.imageAlt} width={photo.width} height={photo.height} loading="lazy" decoding="async" />
-                <figcaption>{photo.caption} <small>{photo.credit} · <a href={photo.source} target="_blank" rel="noreferrer">Source et licence</a></small></figcaption>
+                <figcaption>{photo.caption} <small>{photo.credit} · <a href={photo.source} target="_blank" rel="noreferrer">Crédit et licence</a></small></figcaption>
               </figure>
             ))}
           </div>
@@ -128,7 +128,7 @@ const breadcrumbSchema = {
         {article.gallery && index === 5 && article.gallery[2] && (
           <figure class="rice-festival-photo">
             <img src={article.gallery[2].image} alt={article.gallery[2].imageAlt} width={article.gallery[2].width} height={article.gallery[2].height} loading="lazy" decoding="async" />
-            <figcaption>{article.gallery[2].caption} <small>{article.gallery[2].credit} · <a href={article.gallery[2].source} target="_blank" rel="noreferrer">Source et licence</a></small></figcaption>
+            <figcaption>{article.gallery[2].caption} <small>{article.gallery[2].credit} · <a href={article.gallery[2].source} target="_blank" rel="noreferrer">Crédit et licence</a></small></figcaption>
           </figure>
         )}
         </>
@@ -142,14 +142,7 @@ const breadcrumbSchema = {
           <a href={completeCookingWorkshopCutoverReady ? '/apprendre/' : '/apprendre/composer-repas-cambodgien/'}>{completeCookingWorkshopCutoverReady ? 'Découvrir les six ateliers de cuisine →' : 'Découvrir l’atelier « Composer un repas » →'}</a>
         </aside>
       )}
-      <aside class="source-box">
-        <p class="eyebrow">Sources</p>
-        <ul>
-          {article.sources.map((source: CultureArticle['sources'][number]) => (
-            <li><a href={source.url} target="_blank" rel="noreferrer">{source.label}</a></li>
-          ))}
-        </ul>
-      </aside>
+
     </article>
 
     <GlossaryStrip entries={glossary} />
