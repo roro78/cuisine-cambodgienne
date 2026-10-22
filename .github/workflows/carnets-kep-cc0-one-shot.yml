@@ -1,0 +1,76 @@
+name: Carnets - Kep CC0 locale une fois
+on:
+  push:
+    branches:
+      - docs/carnets-validation-20261022
+    paths:
+      - .github/workflows/carnets-kep-cc0-one-shot.yml
+
+permissions:
+  contents: write
+
+jobs:
+  prepare-kep-photo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - name: Checkout isolated QA branch only
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install sharp from existing repository dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Retrieve 1280px Commons CC0 market photograph
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 2 --connect-timeout 15 --max-time 55 --user-agent 'CuisineDuCambodgeEditorial/1.0 (GitHub roro78/cuisine-cambodgienne)' 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/Kep_Crab_Market.jpg/1280px-Kep_Crab_Market.jpg' --output /tmp/carnets-kep-cc0.jpg
+          test "$(stat -c%s /tmp/carnets-kep-cc0.jpg)" -gt 50000
+          test "$(stat -c%s /tmp/carnets-kep-cc0.jpg)" -lt 2500000
+          file --mime-type /tmp/carnets-kep-cc0.jpg
+
+      - name: Validate source dimensions and generate four WebP variants
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import sharp from 'sharp';
+          import assert from 'node:assert/strict';
+          import { readFileSync } from 'node:fs';
+          import { createHash } from 'node:crypto';
+          const original='/tmp/carnets-kep-cc0.jpg';
+          const meta=await sharp(original).metadata();
+          assert.equal(meta.format,'jpeg');
+          assert.equal(meta.width,1280);
+          assert.equal(meta.height,960);
+          const bytes=readFileSync(original);
+          console.log('Commons CC0 source SHA-256 '+createHash('sha256').update(bytes).digest('hex'));
+          for(const width of [480,800,1200,1280]) {
+            const target='public/images/cuisine/kep-crab-market-'+width+'.webp';
+            const out=await sharp(bytes).resize({width,withoutEnlargement:true}).webp({quality:80,effort:4}).toFile(target);
+            assert.equal(out.width,width);
+            assert.equal(out.height,Math.round(width*.75));
+            console.log('Generated '+target+' '+out.width+'x'+out.height+' bytes='+out.size);
+          }
+          JS
+
+      - name: Commit ONLY four photographic assets to isolated QA branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = 'docs/carnets-validation-20261022'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/images/cuisine/kep-crab-market-480.webp public/images/cuisine/kep-crab-market-800.webp public/images/cuisine/kep-crab-market-1200.webp public/images/cuisine/kep-crab-market-1280.webp
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'Already imported; no new commit.'
+            exit 0
+          fi
+          git commit -m 'assets(carnets): importer le vrai marché de Kep CC0 en WebP local'
+          git push origin HEAD:refs/heads/docs/carnets-validation-20261022
