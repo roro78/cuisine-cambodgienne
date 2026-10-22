@@ -4,10 +4,10 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v1.0** · Responsable de validation : **propriétaire du site**  
-> État du projet : **PLAN CRÉÉ — REFONTE NON DÉMARRÉE**  
-> **Étape active : M1 — état des lieux détaillé et préparation des briefs éditoriaux.**  
-> Prochaine action : inventorier les sept Carnets existants (texte, images, sources, liens et signaux SEO), enregistrer un état initial et soumettre les briefs de réécriture, sans changer les articles publiés.
+> Création : **22 octobre 2026** · Version du plan : **v1.1 (préparation M1 en PR, non fusionnée)** · Responsable de validation : **propriétaire du site**  
+> État du projet : **M1 — 7 FICHES D'AUDIT ET BRIEFS PRÉPARÉS EN BRANCHE ; AUCUNE REFONTE PUBLIÉE**  
+> **Étape active : M1 — livrables préparés, À VALIDER ; M2 non franchi.**  
+> Prochaine action : examiner les sept briefs du [rapport d'audit M1](./AUDIT-M1-BRIEFS-2026-10-22.md), obtenir les décisions D1/M2, réparer les références faibles et obtenir la baseline GSC avant tout déploiement. Aucun article original modifié.
 
 ## 1. Objectif final
 
@@ -50,13 +50,13 @@ Constaté dans la branche **main** au moment de la création de ce plan :
 
 | ID | URL canonique existante (slug) | Orientation proposée | Univers | Travail attendu | Statut |
 | --- | --- | --- | --- | --- | --- |
-| C01 | le-riz-symbole-de-vie-au-cambodge | **Le riz, au cœur de la vie cambodgienne** ; quotidien, rizières, variétés, fêtes, distinction internationale | Vie quotidienne | Consolider et enrichir visuels et maillage ; vérifier dates et prix cités | À auditer |
-| C02 | poivre-de-kampot | **Le poivre de Kampot, de la plantation à la table** ; terroir, producteurs, récolte, IG | Terroirs et marchés | Sortir du format fiche ingrédient ; illustrer les étapes | À auditer |
-| C03 | comprendre-le-kroeung | **Le kroeung, des gestes qui se transmettent** ; mortier, variations, usages familiaux | Gestes et transmission | Distinction du tutoriel et renvoi à l'atelier existant | À auditer |
-| C04 | comprendre-amok | **L'amok, un plat et ses interprétations** ; contexte, ingrédients, service, variations attestées | Gestes et transmission | Vérifier les assertions d'origine ; garder la technique dans la recette | À auditer |
-| C05 | kep-marche-crabe-poivre | **Kep, le marché, le crabe et le poivre** ; territoire, commerce, cuisine du littoral | Terroirs et marchés | Traitement reportage **sans prétendre y être allé** ; contrôle photos | À auditer |
-| C06 | prahok-fermentation-umami | **Prahok : conservation et mémoire culinaire** ; pêche, transformations, usages | Gestes et transmission | Documentation et prudence sanitaire ; pas de protocole amateur risqué | À auditer |
-| C07 | construire-repas-cambodgien | **À table au Cambodge, le repas partagé** ; rythmes, compositions, différences familiales | Vie quotidienne | Approche culturelle plutôt que mode d'emploi culinaire | À auditer |
+| C01 | le-riz-symbole-de-vie-au-cambodge | **Le riz, au cœur de la vie cambodgienne** ; quotidien, rizières, variétés, fêtes, distinction internationale | Vie quotidienne | Consolider et enrichir visuels et maillage ; vérifier dates et prix cités | **À valider — brief M1 en PR** |
+| C02 | poivre-de-kampot | **Le poivre de Kampot, de la plantation à la table** ; terroir, producteurs, récolte, IG | Terroirs et marchés | Sortir du format fiche ingrédient ; illustrer les étapes | **À valider — brief M1 en PR** |
+| C03 | comprendre-le-kroeung | **Le kroeung, des gestes qui se transmettent** ; mortier, variations, usages familiaux | Gestes et transmission | Distinction du tutoriel et renvoi à l'atelier existant | **À valider — brief M1 en PR** |
+| C04 | comprendre-amok | **L'amok, un plat et ses interprétations** ; contexte, ingrédients, service, variations attestées | Gestes et transmission | Vérifier les assertions d'origine ; garder la technique dans la recette | **À valider — brief M1 en PR** |
+| C05 | kep-marche-crabe-poivre | **Kep, le marché, le crabe et le poivre** ; territoire, commerce, cuisine du littoral | Terroirs et marchés | Traitement reportage **sans prétendre y être allé** ; contrôle photos | **À valider — brief M1 en PR** |
+| C06 | prahok-fermentation-umami | **Prahok : conservation et mémoire culinaire** ; pêche, transformations, usages | Gestes et transmission | Documentation et prudence sanitaire ; pas de protocole amateur risqué | **À valider — brief M1 en PR** |
+| C07 | construire-repas-cambodgien | **À table au Cambodge, le repas partagé** ; rythmes, compositions, différences familiales | Vie quotidienne | Approche culturelle plutôt que mode d'emploi culinaire | **À valider — brief M1 en PR** |
 
 Les titres sont **des propositions à valider**, pas des renommages effectués. Les **slugs restent inchangés** sauf décision documentée contraire et stratégie SEO spécifique.
 
@@ -107,7 +107,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Jalon | Livrable | Critère de passage | Statut initial |
 | --- | --- | --- | --- |
 | **M0 — Pilotage** | Plan versionné et accès depuis le dépôt | Fichier sur main, lien lisible, étape active explicite | **FAIT le 22/10/2026** |
-| **M1 — Audit et briefs** | Inventaire C01–C07 : source, photos, liens, H1, SEO, fiche par article ; baseline GSC si disponible ; briefs proposés | **7 fiches** + écarts consignés ; aucun contenu original touché ; briefs soumis à validation | À faire |
+| **M1 — Audit et briefs** | Inventaire C01–C07 : source, photos, liens, H1, SEO, fiche par article ; baseline GSC si disponible ; briefs proposés | **7 fiches** + écarts consignés ; aucun contenu original touché ; briefs soumis à validation | **À valider — 7 fiches documentées en PR ; GSC absente** |
 | **M2 — Validation éditoriale** | Angles/titres/plans/sources cibles validés, modèle commun fixé ; priorités N01–N04 confirmées | Décisions écrites ; refus et inconnues documentés | À faire |
 | **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | À faire |
 | **M4 — Index Carnets** | Refonte /culture/ avec quatre univers et nouveaux parcours | Navigation accessible, responsive, cohérence avec les sept Carnets | À faire |
@@ -164,7 +164,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Indicateur | Situation au 22/10/2026 |
 | --- | --- |
 | Carnets existants au catalogue main | **7** (constaté dans src/data/culture.ts) |
-| Briefs audités/validés | **0/7** (non effectué par ce plan) |
+| Briefs audités/validés | **7/7 préparés pour examen ; 0/7 validés** (en PR uniquement) |
 | Carnets enrichis/validés | **0/7** |
 | Nouveaux Carnets publiés | **0/4** |
 | Univers implémentés sur /culture/ | **0/4** au sens de filtres structurés |
@@ -174,6 +174,15 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J01 — audit M1 et briefs v1.1 (branche dédiée, non fusionnée)
+- **Réalisé :** audit statique des 7 URL, titres/H1 de gabarit, textes, descriptions SEO, médias, sources déclarées, liens associés et redirection historique ; comptage indicatif des mots ; 7 briefs de réorientation consignés dans [AUDIT-M1-BRIEFS-2026-10-22.md](./AUDIT-M1-BRIEFS-2026-10-22.md). Vérification des 9 PR ouvertes : aucune collision avec les fichiers du chantier Carnets visés.
+- **Vérifications externes ponctuelles :** références FAO, AKP et OMPI consultées ; guide gastronomique touristique en échec d'accès direct (404 dans le contrôle, version indexée disponible) ; accès UNESCO protégé par anti-bot ; pages Commons riz consultables. Aucun constat ne vaut validation générale des faits ou licences de tous les médias.
+- **Risques :** durées de lecture probablement surestimées, six articles courts très proches de fiches pratiques, dépendance majeure à une source touristique, aucune mesure GSC collectée, contrôles HTTP/rendu/mobile non réalisés. Aucun contenu éditorial d'origine touché.
+- **Décisions en attente :** D1 et M2 (titres, angles, plans, sources cibles et taxonomie), approbation des futurs médias. **Cette mise à jour n'est pas sur main tant que la PR n'est pas fusionnée** ; zéro fusion et zéro déploiement autorisés.
+- **État :** M1 « À valider » (livrables 7/7 produits) ; M2–M7 « À faire » ; **0/7 enrichi, 0/4 nouveau, 0 publication**.
+- **Prochaine action :** transmettre les sept briefs au propriétaire, recevoir ses décisions, puis préparer le premier petit lot approuvé. Baseline GSC à collecter avant publication.
+- **Preuve :** rapport M1 versionné et historique de cette branche/PR.
 
 ### 2026-10-22 — J00 — création du plan v1.0
 - **Réalisé :** recensement des sept entrées du catalogue Culture et des trois fichiers source principaux ; existence des docs Ateliers, guide éditorial et héritage SEO identifiés ; objectifs, périmètre, jalons et règles de suivi définis.
