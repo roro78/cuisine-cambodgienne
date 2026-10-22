@@ -29,7 +29,7 @@ for (const author of ['Dmitry A. Mottl','Brad Collis','Chhoukkosal','Willuconque
   assert.match(page+all,new RegExp(author.replaceAll('.','\\.')),'Mandatory media credits must be kept');
 }
 assert.doesNotMatch(page,/rice-workshop-link|completeCookingWorkshopCutoverReady|apprendre\/composer-repas-cambodgien/,'C01 page must never funnel to cooking atelier');
-assert.match(page,/article\.slug === 'le-riz-symbole-de-vie-au-cambodge'\s*\n\s*\? \[\]/,'No recipe carousel for C01');
+assert.doesNotMatch(page, /culture-related|relatedContent|\\/recettes\\/|\\/ingredients\\//, 'Culture article template must never recommend recipes, workshops or ingredient shopping');
 assert.doesNotMatch(page,/article\.sources\.map\s*\(/,'No documentary bibliography visible');
 assert.equal([...all.matchAll(/^    slug: '/gm)].length,7,'All seven historic slugs must survive');
 assert.match(plan,/J14 —/,'C01 must be added to immutable project pilot');
