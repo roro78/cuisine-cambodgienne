@@ -142,11 +142,7 @@ const audioTexts=[workshop.audio.intro,...workshop.phases.map((phase)=>phase.aud
       <p><strong>À retenir :</strong> couper fin, commencer par les fibres, piler par petites quantités, et juger la texture plutôt que le seul temps passé.</p>
       <a class="atelier-action" href="/recettes/amok-trey/">Utiliser le kroeung dans un Amok Trey <span aria-hidden="true">→</span></a>
     </section>
-    <footer class="atelier-sources">
-      <h2>Sources de l’atelier</h2>
-      <p>Les ingrédients, proportions et gestes de base viennent de la <a href={'/recettes/' + recipe.slug + '/'}>recette Kroeung jaune</a>. Les critères d’observation et les exercices pédagogiques complètent cette préparation.</p>
-      <p>Références culinaires et variantes consultées :</p>
-      <ul>{workshop.sources.culinaryReferences.map(reference=>(<li><a href={reference.url} target="_blank" rel="noopener noreferrer">{reference.title}</a></li>))}</ul>
+    <footer class="atelier-outro">
       <a href="/apprendre/">← Retour aux ateliers</a>
     </footer>
   </main>
@@ -221,8 +217,7 @@ const audioTexts=[workshop.audio.intro,...workshop.phases.map((phase)=>phase.aud
   .atelier-next{display:inline-block;margin-top:16px;font-size:14px;font-weight:700}
   .atelier-finish{scroll-margin-top:124px;background:var(--paper);padding:clamp(23px,4vw,48px);border:1px solid var(--border);border-radius:12px;margin-bottom:64px}
   .atelier-finish p{max-width:800px}.atelier-finish .atelier-action{margin-top:15px}
-  .atelier-sources{padding-top:24px;border-top:1px solid var(--border);color:#5d584d;font-size:14px}
-  .atelier-sources h2{font-size:1.55rem}
+  .atelier-outro{padding-top:24px;border-top:1px solid var(--border);color:#5d584d;font-size:14px}
   @media(max-width:900px){.atelier-hero,.atelier-goal,.atelier-kit-grid,.atelier-phase-columns{grid-template-columns:1fr}.atelier-hero-photo{order:-1}.atelier-goal{gap:0}.atelier-step-nav{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:570px){.cooking-atelier{padding:101px 17px 60px}.atelier-hero{margin-bottom:38px}.atelier-stats{gap:12px}.atelier-goal{margin-bottom:50px}.atelier-section{margin-bottom:55px}.atelier-step-nav{grid-template-columns:1fr}.atelier-step-nav a{min-height:55px}.atelier-phase{padding:30px 0;scroll-margin-top:100px}.atelier-section,.atelier-finish{scroll-margin-top:100px}.atelier-phase-heading{gap:12px}.atelier-phase-number{font-size:2.5rem}.atelier-observe{padding:18px}}
 </style>
