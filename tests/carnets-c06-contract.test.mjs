@@ -33,7 +33,7 @@ for(const old of [
   'Le meilleur réflexe consiste donc à commencer'
 ]) assert.ok(!c06.includes(old),`No practical or risky home-preservation instruction: ${old}`);
 assert.ok(!/culture-related|relatedContent/.test(template) && !template.includes('/recettes/') && !template.includes('/ingredients/'), 'Culture article template must never recommend recipes or ingredients');
-assert.match(template,/'prahok-fermentation-umami': \['prahok'\]/,'C06 glossary stays cultural');
+assert.doesNotMatch(template, /GlossaryStrip|glossaryByArticle|getGlossaryEntries/, 'Carnets must not show instructional GlossaryStrip blocks');
 assert.doesNotMatch(template,/article\.sources\.map\s*\(/,'Never show public bibliography');
 assert.equal([...all.matchAll(/^    slug: '/gm)].length,7,'All seven slugs must survive');
 assert.match(readFileSync('docs/carnets/PLAN-REFONTE-CARNETS.md','utf8'),/J12 — C06/,'Immutable journal must record C06 cultural milestone');
