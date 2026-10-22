@@ -1,0 +1,61 @@
+name: Carnets - QA de previsualisation
+
+# Contrôle isole d'une seule branche Carnets. Aucun deploy, aucune publication.
+on:
+  push:
+    branches:
+      - docs/carnets-validation-20261022
+
+permissions:
+  contents: read
+
+concurrency:
+  group: carnets-review-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: Seven Carnets - check, build and browser
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout branch for QA only
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies without lifecycle side effects outside repository
+        run: npm install --no-audit --no-fund
+
+      - name: Astro types and data
+        run: npm run check
+
+      - name: Full editorial contract for all seven Carnets
+        run: npm run test:editorial
+
+      - name: Recipe regression protection (no edits to recipes)
+        run: npm run test:recipes
+
+      - name: Build static Astro preview
+        run: npm run build
+
+      - name: Chrome for mobile and desktop screenshots
+        id: chrome
+        uses: browser-actions/setup-chrome@v2
+
+      - name: Test index and seven Carnets in Chromium at 390px and 1366px
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/carnets-responsive-browser.test.mjs
+
+      - name: Retain screenshots only for editorial review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: carnets-previsualisation-mobile-desktop
+          path: artifacts/carnets-review/
+          if-no-files-found: ignore
+          retention-days: 3
