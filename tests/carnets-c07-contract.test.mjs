@@ -29,7 +29,7 @@ assert.match(c07,/socialImageRole: 'article'/,'Preexisting social photo must not
 assert.match(social,/article\.socialImageRole \?\? 'illustration'/,'Social compatibility gate');
 assert.match(credits,/une composition éditoriale d’un repas autour d’une table/,'The existing credit/illustrative disclaimer must remain');
 assert.ok(!/culture-related|relatedContent/.test(template) && !template.includes('/recettes/') && !template.includes('/ingredients/'), 'Culture article template must never recommend recipes or ingredients');
-assert.match(template,/'construire-repas-cambodgien': \['riz-jasmin'\]/,'No amok or lok-lak menu suggestions in C07 glossary');
+assert.doesNotMatch(template, /GlossaryStrip|glossaryByArticle|getGlossaryEntries/, 'Carnets must not show instructional GlossaryStrip blocks');
 assert.match(template,/Illustration éditoriale d’un repas partagé/,'Site must clearly distinguish illustrative scene from documentary photography');
 assert.match(c07,/journals\.sagepub\.com\/doi\/10\.1177\/0956247819863246/,'Social-solidarity claim must remain internally traceable');
 assert.match(c07,/chefnak\.com\/cambodian-cuisine-guide/,'Table customs must remain internally traceable');
