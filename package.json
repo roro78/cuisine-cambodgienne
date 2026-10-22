@@ -7,7 +7,7 @@
     "check": "astro check",
     "build": "astro build",
     "test:motion": "node scripts/check-motion-contract.mjs",
-    "test:editorial": "node scripts/check-editorial-contract.mjs && node scripts/check-culinary-lexicon.mjs && node tests/atelier-coral-quota-safety.test.mjs",
+    "test:editorial": "node scripts/check-editorial-contract.mjs && node scripts/check-culinary-lexicon.mjs && node tests/atelier-coral-quota-safety.test.mjs && node tests/editorial-source-visibility.test.mjs && node tests/carnets-c02-contract.test.mjs && node tests/carnets-c05-contract.test.mjs && node tests/carnets-c03-contract.test.mjs && node tests/carnets-c04-contract.test.mjs && node tests/carnets-c06-contract.test.mjs && node tests/carnets-c07-contract.test.mjs && node tests/carnets-c01-contract.test.mjs",
     "preview": "astro preview",
     "test:recipes": "node scripts/check-recipe-contract.mjs",
     "test:experiences": "node scripts/check-experiences-contract.mjs",

@@ -4,44 +4,43 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import EditorialSectionHero from '../../components/EditorialSectionHero.astro';
 import { cultureArticles } from '../../data/culture';
-import { completeCookingWorkshopCutoverReady } from '../../data/cookingWorkshopGuides';
 import { imageSrcSet } from '../../utils/images';
 import '../../styles/v16-editorial.css';
 import '../../styles/v19-premium-pages.css';
 import '../../styles/editorial-shared-hero.css';
 
 const moments = [
-  { image:'/images/cuisine/v18-kuy-teav.webp', moment:'Au réveil', title:'Un bol de kuy teav pour commencer la journée', text:'Nouilles, bouillon parfumé et herbes fraîches : découvrez comment préparer ce bol chez vous.', href:'/recettes/kuy-teav/', cta:'Voir la recette →' },
-  { image:'/images/cuisine/kep-market-1600.webp', moment:'Au marché', title:'Le marché inspire le repas', text:'Poissons, herbes, légumes, fruits : on cuisine d’abord avec ce qui est frais et disponible.', href:'/culture/kep-marche-crabe-poivre/', cta:'Lire le carnet →' },
-  { image:'/images/cuisine/v17-mortar-hands-1600.jpg', moment:'Au mortier', title:'Au mortier, les aromates prennent forme', text:'Le kroeung se prépare patiemment : on coupe, on pile, on sent, jusqu’à obtenir une pâte bien parfumée.', href:'/culture/comprendre-le-kroeung/', cta:'Lire le carnet →' },
-  { image:'/images/cuisine/v17-table-meal-1600.jpg', moment:'À table', title:'À table, chacun compose sa bouchée', text:'Riz, plat chaud, légumes, herbes, soupe ou condiment se mangent ensemble et se complètent.', href:'/culture/construire-repas-cambodgien/', cta:'Lire le carnet →' }
+  { image:'/images/cuisine/v17-table-meal-1600.jpg', moment:'Autour du riz', title:'Le repas, un moment de vie', text:'La place du riz et des plats partagés raconte des habitudes de table qui varient selon les familles.', href:'/culture/construire-repas-cambodgien/', cta:'Lire le carnet →' },
+  { image:'/images/cuisine/v17-market-live-1800.jpg', moment:'Sur les marchés', title:'La vie des marchés du littoral', text:'À Kep, la mer, le commerce et les pêcheurs font partie d’une même histoire locale.', href:'/culture/kep-marche-crabe-poivre/', cta:'Lire le carnet →' },
+  { image:'/images/cuisine/v17-table-meal-1600.jpg', moment:'Dans les mémoires', title:'Le kroeung, une mémoire de famille', text:'Les goûts du pays accompagnent parfois les récits d’exil et les nouvelles générations.', href:'/culture/comprendre-le-kroeung/', cta:'Lire le carnet →' },
+  { image:'/images/cuisine/kampot-1600.webp', moment:'Dans les terroirs', title:'Un nom, un lieu, des producteurs', text:'Le poivre de Kampot relie un territoire, des savoir-faire et une origine protégée.', href:'/culture/poivre-de-kampot/', cta:'Lire le carnet →' }
 ];
 
 // Select the featured journal by its stable slug, not its position in the catalogue.
 const featuredSlug = 'kep-marche-crabe-poivre';
 const featuredArticle = cultureArticles.find((article) => article.slug === featuredSlug);
 
-const culinaryPath = [
+const heritagePath = [
   {
-    step: '01 · Lire',
-    title: 'Comprendre le kroeung',
-    text: 'Citronnelle, galanga, curcuma : découvrez ce que chaque aromate apporte à la pâte.',
+    step: '01 · Vie quotidienne',
+    title: 'Le riz, de la terre à la table',
+    text: 'Le riz raconte des paysages, des saisons et des habitudes partagées.',
+    href: '/culture/le-riz-symbole-de-vie-au-cambodge/',
+    action: 'Lire le carnet'
+  },
+  {
+    step: '02 · Mémoire',
+    title: 'Le kroeung et les histoires de l’exil',
+    text: 'Les traditions culinaires peuvent garder une place particulière dans les souvenirs des familles.',
     href: '/culture/comprendre-le-kroeung/',
-    action: 'Découvrir le carnet'
+    action: 'Découvrir le récit'
   },
   {
-    step: '02 · Essayer',
-    title: 'Prendre le pilon en main',
-    text: 'Au mortier, observez la texture et le parfum qui changent au fil du geste.',
-    href: completeCookingWorkshopCutoverReady ? '/apprendre/pratique/kroeung-jaune/' : '/apprendre/piler-aromates-au-mortier/',
-    action: 'Suivre l’atelier'
-  },
-  {
-    step: '03 · Cuisiner',
-    title: 'Passer à l’amok de poisson',
-    text: 'Retrouvez ces parfums dans une recette guidée, avec les quantités et les repères de cuisson.',
-    href: '/recettes/amok-trey/',
-    action: 'Préparer l’amok'
+    step: '03 · Littoral',
+    title: 'Le marché aux crabes de Kep',
+    text: 'Pêche, vente et préservation des ressources racontent un territoire vivant.',
+    href: '/culture/kep-marche-crabe-poivre/',
+    action: 'Explorer le marché'
   }
 ];
 
@@ -49,7 +48,7 @@ const collectionSchema = {
   '@context':'https://schema.org',
   '@type':'CollectionPage',
   name:'Carnets culinaires du Cambodge',
-  description:'Marchés, gestes, produits, fermentation et table : des carnets pour comprendre la cuisine cambodgienne par ce qui se mange, se prépare et se partage.',
+  description:'Histoire, marchés, mémoire, territoires et traditions culinaires : des récits sur la vie et le patrimoine du Cambodge.',
   url:'https://www.cuisine-du-cambodge.com/culture/',
   inLanguage:'fr-FR',
   mainEntity:{
@@ -61,15 +60,15 @@ const collectionSchema = {
 };
 ---
 <BaseLayout
-  title="Carnets du Cambodge : marchés, gestes et culture culinaire"
-  description="Des marchés du matin aux tables familiales : découvrir la cuisine cambodgienne par ses produits, ses gestes, ses fermentations et ses habitudes."
+  title="Carnets du Cambodge : histoire, marchés et mémoire culinaire"
+  description="Explorez les récits culinaires du Cambodge : territoires, mémoire, habitudes de table, histoire et traditions."
 >
   <SiteHeader />
   <main class="v16-editorial v16-journals">
     <EditorialSectionHero
       kicker="Carnets du Cambodge"
       title="Des marchés animés aux repas partagés."
-      description="Ces carnets racontent les marchés, les produits, les gestes et les habitudes qui donnent toute sa saveur à la cuisine cambodgienne."
+      description="Ces carnets racontent les lieux, l’histoire, les traditions et les mémoires autour de la cuisine cambodgienne. Les gestes et les préparations sont détaillés dans nos Ateliers et Recettes."
       image="/images/cuisine/v17-market-live-1800.jpg"
       imageWidth={1800}
       imageHeight={1200}
@@ -77,8 +76,8 @@ const collectionSchema = {
 
     <section class="v16-day-notes" aria-labelledby="v16-day-title">
       <header>
-        <p class="v16-page-kicker">Du marché à la table</p>
-        <h2 id="v16-day-title">Quatre moments pour découvrir les parfums et les gestes.</h2>
+        <p class="v16-page-kicker">Culture et patrimoine</p>
+        <h2 id="v16-day-title">Quatre regards sur les lieux et la mémoire.</h2>
       </header>
       <div>
         {moments.map((moment) => (
@@ -96,7 +95,7 @@ const collectionSchema = {
     {featuredArticle && <section class="v16-journal-lead" aria-label="Carnet à la une">
       <a href={'/culture/' + featuredArticle.slug + '/'} class="v16-journal-lead-card">
         <figure>
-          <img src={featuredArticle.image} srcset={imageSrcSet(featuredArticle.image,featuredArticle.imageWidths)} sizes="(max-width:900px) 100vw, 58vw" alt={featuredArticle.imageAlt} width={featuredArticle.imageWidth} height={featuredArticle.imageHeight} loading="eager" decoding="async" />
+          <img src={featuredArticle.image} srcset={featuredArticle.imageWidths.length ? imageSrcSet(featuredArticle.image,featuredArticle.imageWidths) : undefined} sizes="(max-width:900px) 100vw, 58vw" alt={featuredArticle.imageAlt} width={featuredArticle.imageWidth} height={featuredArticle.imageHeight} loading="eager" decoding="async" />
         </figure>
         <div>
           <p class="v16-mini-label">À la une · {featuredArticle.readingTime}</p>
@@ -111,7 +110,7 @@ const collectionSchema = {
       {cultureArticles.filter((article) => article.slug !== featuredSlug).map((article,index) => (
         <a href={'/culture/' + article.slug + '/'} class:list={['v16-journal-card', index === 0 && 'v16-journal-card--wide']} data-reveal="up">
           <figure>
-            <img src={article.image} srcset={imageSrcSet(article.image,article.imageWidths)} sizes="(max-width:760px) 100vw, 45vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} loading="lazy" decoding="async" />
+            <img src={article.image} srcset={article.imageWidths.length ? imageSrcSet(article.image,article.imageWidths) : undefined} sizes="(max-width:760px) 100vw, 45vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} loading="lazy" decoding="async" />
           </figure>
           <div>
             <p class="v16-mini-label">{article.eyebrow} · {article.readingTime}</p>
@@ -125,12 +124,12 @@ const collectionSchema = {
 
     <section class="v16-journal-path" aria-labelledby="v16-journal-path-title">
       <header>
-        <p class="v16-page-kicker">Du carnet à votre cuisine</p>
-        <h2 id="v16-journal-path-title">Découvrez le kroeung, pilez les aromates, puis cuisinez l’amok.</h2>
-        <p>Un mot découvert dans un carnet devient plus facile à retenir quand on sent les aromates et qu’on les utilise dans un plat.</p>
+        <p class="v16-page-kicker">Parcourir les histoires</p>
+        <h2 id="v16-journal-path-title">Trois histoires pour découvrir la vie autour des repas.</h2>
+        <p>Des paysages agricoles aux mémoires familiales et aux marchés du littoral, la cuisine raconte une histoire plus vaste que ses recettes.</p>
       </header>
-      <nav aria-label="Parcours pour découvrir le kroeung" class="v16-journal-path-grid">
-        {culinaryPath.map((item) => (
+      <nav aria-label="Parcours à travers les Carnets du Cambodge" class="v16-journal-path-grid">
+        {heritagePath.map((item) => (
           <a href={item.href}>
             <span>{item.step}</span>
             <h3>{item.title}</h3>
@@ -143,10 +142,10 @@ const collectionSchema = {
 
     <section class="v16-journal-manifesto">
       <p class="v16-page-kicker">Ce qu’on aime raconter</p>
-      <h2>Une cuisine, ce sont aussi des lieux, des gestes et des souvenirs.</h2>
+      <h2>Une cuisine, ce sont aussi des lieux, une histoire et des souvenirs.</h2>
       <div>
         <p>Les marchés et les produits de saison.</p>
-        <p>Les gestes que l’on apprend en regardant faire.</p>
+        <p>Les savoirs et les récits qui passent d’une génération à l’autre.</p>
         <p>Les repas que l’on partage autour du riz et de plusieurs plats.</p>
         <p>Les recettes qui changent d’une famille à l’autre et continuent de se transmettre.</p>
       </div>
