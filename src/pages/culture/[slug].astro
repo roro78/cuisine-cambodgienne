@@ -4,8 +4,6 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { cultureArticles } from '../../data/culture';
 import type { CultureArticle } from '../../data/culture';
-import GlossaryStrip from '../../components/GlossaryStrip.astro';
-import { getGlossaryEntries } from '../../data/glossary';
 import { imageSrcSet } from '../../utils/images';
 import CulinaryIcon from '../../components/CulinaryIcon.astro';
 
@@ -17,17 +15,6 @@ export function getStaticPaths() {
 }
 
 const { article } = Astro.props;
-
-const glossaryByArticle: Record<string, string[]> = {
-  'le-riz-symbole-de-vie-au-cambodge': ['riz-jasmin'],
-  'poivre-de-kampot': ['poivre-de-kampot'],
-  'comprendre-le-kroeung': ['kroeung'],
-  'comprendre-amok': ['amok'],
-  'kep-marche-crabe-poivre': ['poivre-de-kampot'],
-  'prahok-fermentation-umami': ['prahok'],
-  'construire-repas-cambodgien': ['riz-jasmin']
-};
-const glossary = getGlossaryEntries(glossaryByArticle[article.slug] ?? []);
 
 const articleSchema = {
   '@context': 'https://schema.org',
@@ -102,8 +89,6 @@ const breadcrumbSchema = {
       ))}
 
     </article>
-
-    <GlossaryStrip entries={glossary} />
 
     <a class="text-link" href="/culture/">← Tous les carnets</a>
   </main>
