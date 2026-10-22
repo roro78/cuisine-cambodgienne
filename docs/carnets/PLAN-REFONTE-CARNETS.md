@@ -4,10 +4,10 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v2.3 (C07 table partagée préparé ; 6/7 brouillons en prévisualisation)** · Responsable de validation : **propriétaire du site**  
-> État du projet : **M2 EN COURS — C01 correction factuelle en PR ; 6 brouillons C02–C07 en prévisualisation, aucun texte final validé ou publié**  
-> **Étape active : M2 — séparation stricte culture / ateliers / recettes appliquée à C03/C04/C06/C07 ; six brouillons culturels préparés, aucun texte final accepté.**  
-> Prochaine action : recevoir les six brouillons [C02](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md), [C03](./BROUILLON-C03-KROEUNG-TRANSMISSION-2026-10-22.md), [C04](./BROUILLON-C04-AMOK-PATRIMOINE-2026-10-22.md), [C05](./BROUILLON-C05-KEP-MARCHE-CRABES-2026-10-22.md), [C06](./BROUILLON-C06-PRAHOK-PATRIMOINE-2026-10-22.md) et [C07](./BROUILLON-C07-TABLE-PARTAGEE-2026-10-22.md). **Dernier article C01 riz : audit/enrichissement culturel à préparer sans effacer son contenu existant.** Bloquants photos : Kep hébergée hors dépôt, C03 visuel non historique, C06 image de plat, C07 scène éditoriale non documentaire ; tests npm/CI/build et responsive non exécutés. Décisions D2 univers et D3 textes/médias/publication requises ; aucune fusion OVH. **PR #97–#104 non fusionnées, branche C07 en prévisualisation.**
+> Création : **22 octobre 2026** · Version du plan : **v2.4 (7/7 Carnets préparés en prévisualisation ; 0 validation finale)** · Responsable de validation : **propriétaire du site**  
+> État du projet : **M2 EN COURS — 7/7 Carnets C01–C07 préparés ou révisés en branches empilées ; 0/7 validés pour publication**  
+> **Étape active : M2 — séparation culture/ateliers/recettes appliquée aux sept Carnets ; préparation des contenus complète, réception éditoriale, droits et qualité technique EN ATTENTE.**  
+> Prochaine action : relire et faire réceptionner [C01 riz](./REVISION-C01-RIZ-PATRIMOINE-2026-10-22.md), [C02 poivre](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md), [C03 kroeung](./BROUILLON-C03-KROEUNG-TRANSMISSION-2026-10-22.md), [C04 amok](./BROUILLON-C04-AMOK-PATRIMOINE-2026-10-22.md), [C05 Kep](./BROUILLON-C05-KEP-MARCHE-CRABES-2026-10-22.md), [C06 prahok](./BROUILLON-C06-PRAHOK-PATRIMOINE-2026-10-22.md), [C07 table](./BROUILLON-C07-TABLE-PARTAGEE-2026-10-22.md). **D2 (quatre univers, dont Fêtes et traditions actuellement vide), D3 texte/medias/publication, tests npm/CI/build, responsive, baseline GSC et conformité photo encore ouverts.** Image Kep distante à importer localement, C03/C06 non documentaires, C07 illustration ; C01 quatre images Commons distantes à vérifier. Aucune fusion ni mise en production OVH. **PR #97–#105 non fusionnées ; branche C01 empilée.**
 
 ## 1. Objectif final
 
@@ -50,7 +50,7 @@ Constaté dans la branche **main** au moment de la création de ce plan :
 
 | ID | URL canonique existante (slug) | Orientation proposée | Univers | Travail attendu | Statut |
 | --- | --- | --- | --- | --- | --- |
-| C01 | le-riz-symbole-de-vie-au-cambodge | **Le riz, au cœur de la vie cambodgienne** ; quotidien, rizières, variétés, fêtes, distinction internationale | Vie quotidienne | Consolider et enrichir visuels et maillage ; vérifier dates et prix cités | **Orientation D1 validée — article non enrichi** |
+| C01 | le-riz-symbole-de-vie-au-cambodge | **Le riz, au cœur de la vie cambodgienne** ; quotidien, rizières, filière, fêtes, prix 2025 partagé | Vie quotidienne | **7 sections conservées**, passages pratiques supprimés, entretien sur Ok Ambok ajouté en référence interne ; quatre photos Commons toujours distantes et à contrôler | **Révision culturelle préparée — texte/média non validés** |
 | C02 | poivre-de-kampot | **Le poivre de Kampot, de la plantation à la table** ; terroir, producteurs, récolte, IG | Terroirs et marchés | Histoire du territoire et des producteurs ; **ne pas détailler les étapes techniques de culture ou d'assaisonnement** | **Prévisualisation enrichie préparée — texte/média non validés** |
 | C03 | comprendre-le-kroeung | **Le kroeung, une mémoire de la cuisine khmère** ; rupture historique, exil, diaspora, patrimoine | Mémoire et transmission | **AUCUNE technique du mortier, recette, aromate à détailler, tutoriel ou renvoi pratique** ; aucune origine angkorienne sans preuve ; photo culturelle à rechercher | **Orientation initiale annulée ; nouvelle prévisualisation historique NON VALIDÉE** |
 | C04 | comprendre-amok | **L’amok, entre patrimoine et tables d’aujourd’hui** ; occasions particulières, identité, récit royal non prouvé, restaurants et diaspora | Mémoire culinaire | **Aucune technique de cuisson, texture à réussir ni ingrédients détaillés** ; histoire royale explicitement qualifiée ; photo horizontale CC BY 2.0 avec crédit obligatoire | **Prévisualisation rédigée — texte/média non validés** |
@@ -109,7 +109,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | **M0 — Pilotage** | Plan versionné et accès depuis le dépôt | Fichier sur main, lien lisible, étape active explicite | **FAIT le 22/10/2026** |
 | **M1 — Audit et briefs** | Inventaire C01–C07 : source, photos, liens, H1, SEO, fiche par article ; baseline GSC si disponible ; briefs proposés | **7 fiches** + écarts consignés ; aucun contenu original touché ; briefs soumis à validation | **VALIDÉ pour les 7 orientations, en PR ; GSC non disponible** |
 | **M2 — Validation éditoriale** | Angles/titres/plans/sources cibles validés, modèle commun fixé ; priorités N01–N04 confirmées | Décisions écrites ; refus et inconnues documentés | **EN COURS : D1 sept orientations + erratum C01 acceptés ; D2/modèle/priorités N01–N04 à arbitrer** |
-| **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | **À faire : C02/C03/C04/C05/C06/C07 pré-rédigés dans des branches non fusionnées, gate M2 non franchi** |
+| **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | **À faire : 7/7 versions éditoriales en branches non fusionnées ; gate M2/D2/D3 non franchi** |
 | **M4 — Index Carnets** | Refonte /culture/ avec quatre univers et nouveaux parcours | Navigation accessible, responsive, cohérence avec les sept Carnets | À faire |
 | **M5 — Première vague N01–N04** | Quatre nouveaux dossiers, articles et visuels | **4/4** validés, sources et média vérifiés ; publication par lot possible | À faire |
 | **M6 — Recette technique et publication** | Tests éditoriaux, build, liens, SEO, photos, mobile/desktop, vérification OVH | Aucun défaut bloquant ; accord propriétaire avant fusion/déploiement ; compte-rendu HTTP après mise en production | À faire |
@@ -165,7 +165,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | --- | --- |
 | Carnets existants au catalogue main | **7** (constaté dans src/data/culture.ts) |
 | Briefs audités/validés | **7/7 orientations validées (D1) en PR ; 0/7 articles réécrits validés** |
-| Carnets enrichis/validés | **6/7 brouillons en prévisualisation (C02/C03/C04/C05/C06/C07) ; 0/7 articles finalisés/validés** |
+| Carnets enrichis/validés | **7/7 révisions/brouillons en prévisualisation (C01–C07) ; 0/7 articles finalisés/validés** |
 | Nouveaux Carnets publiés | **0/4** |
 | Univers implémentés sur /culture/ | **0/4** au sens de filtres structurés |
 | Index refondu/validé | **Non** |
@@ -174,6 +174,16 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J14 — C01 riz révisé sans toucher à son reportage initial
+- **Exécution :** dans `docs/carnets-c01-riz-patrimoine-20261022`, reprise ciblée du Carnet `/culture/le-riz-symbole-de-vie-au-cambodge/`. Les sept chapitres, sa structure sur le quotidien de toutes classes sociales, l'agriculture, les variétés et le concours 2025, ainsi que les **quatre médias de galerie** sont préservés. Titre adapté « Le riz, au cœur de la vie cambodgienne » ; durée de lecture reestimée à 5 min.
+- **Correction factuelle 2025 préservée :** Phka Rumduol commercialisé sous Malys Angkor **partage** le premier prix `World's Best Rice 2025` avec ST25 vietnamien. Aucune origine nationale unique proclamée et pas de confusion variété/marque/concours.
+- **Travail éditorial ciblé :** remplacement des conseils « choisir/faire cuire/comparer le riz » par analyse des appellations et de la commercialisation ; suppression intégrale de la section atelier « découvrir le riz chez soi » remplacée par « Des rizières aux marchés, une filière qui relie les territoires ». Aucun chiffre économique inventé.
+- **Fête de l'Eau** : Ok Ambok, Sampeah Preah Khe et lien aux récoltes **recoupés directement** par entretien avec l'ethnologue Ang Choulean (`Cambodianess` 04/11/2025) et reportage AKP du 03/11/2025 ; ces documents sont **dans le registre et les sources internes**, jamais mentionnés dans la page. La référence UNESCO 2015 sur des jeux de traction, non pertinente pour l'Ok Ambok, est retirée.
+- **Parcours de la page** : suppression de l'encart « atelier Composer un repas » et des cartes de recettes affichées sur C01, sans effacer les Recettes et Ateliers eux-mêmes. Aucun lien historique, slug, redirection ou galerie supprimé. Les crédits photo Creative Commons restent visibles là où la licence l'impose.
+- **Preuves** : [dossier de révision C01](./REVISION-C01-RIZ-PATRIMOINE-2026-10-22.md), mise à jour de `src/data/culture.ts`, `src/pages/culture/[slug].astro`, test `tests/carnets-c01-contract.test.mjs` rattaché à `npm run test:editorial`.
+- **Contrôles manquants** : CI npm / `astro check` / build et tests responsive non exécutés. Les quatre images C01 proviennent de CDN Wikimedia, à contrôler (disponibilité réelle, dimensions, droits, dérivés) avant tout déploiement. D2 taxonomie, D3 réception des textes/images et publication toujours ouverts. **Aucune fusion, aucun OVH.**
+- **État final provisoire :** **7/7 contenus préparés**, **0/7 textes finaux acceptés**. M2 demeure **EN COURS** : projet éditorial prêt pour réception, non prêt pour mise en production.
 
 ### 2026-10-22 — J13 — C07 : le repas partagé devient un sujet de sociabilité, pas de dressage
 - **Livraison en branche :** `docs/carnets-c07-table-partagee-20261022`, nouveau C07 `/culture/construire-repas-cambodgien/`, « **À la table cambodgienne, ce que partager veut dire** », six sections, 18 paragraphes, environ 928 mots. Thèmes : place culturelle du riz, plats communs, attention aux convives, entraide entre voisins dans certains quartiers, variation des formes de table et mémoire du quotidien.
