@@ -45,6 +45,9 @@ jobs:
       - name: Editorial regression contract
         run: npm run test:editorial
 
+      - name: Social approval and Meta guards (offline, no network)
+        run: node --test tests/social-pipeline.test.mjs
+
       - name: Enable ffprobe for real MP3 integrity checks
         shell: bash
         run: |
