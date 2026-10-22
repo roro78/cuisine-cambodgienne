@@ -4,10 +4,10 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v1.6 (C02 rédigé en prévisualisation, jamais publié)** · Responsable de validation : **propriétaire du site**  
-> État du projet : **M2 EN COURS — D1 VALIDÉ, C01 CORRIGÉ EN PR, C02 EN BROUILLON DE PRÉVISUALISATION, AUCUNE PUBLICATION**  
-> **Étape active : M2 — sept orientations validées ; texte C02 préparé pour réception dans une branche dépendante, aucun article final accepté.**  
-> Prochaine action : faire relire le [brouillon C02](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md) et vérifier le rendu de la branche de prévisualisation ; arbitrer D2 (quatre univers / catégorie encore vide) et priorités N01–N04. Export GSC, licences photo et visa de publication nécessaires avant OVH. **PR #97, #98 et #99 non fusionnées ; branche C02 empilée, aucune publication.**
+> Création : **22 octobre 2026** · Version du plan : **v1.7 (C02 et C05 rédigés en prévisualisation, contrôle photographique Kep documenté)** · Responsable de validation : **propriétaire du site**  
+> État du projet : **M2 EN COURS — D1 VALIDÉ, C01 CORRIGÉ, C02 ET C05 EN PRÉVISUALISATION NON VALIDÉE ; AUCUNE PUBLICATION**  
+> **Étape active : M2 — sept orientations validées ; deux textes complets C02/C05 préparés pour réception sur branches dépendantes, aucun article final accepté.**  
+> Prochaine action : faire relire [C02](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md) et [C05](./BROUILLON-C05-KEP-MARCHE-CRABES-2026-10-22.md), vérifier la nouvelle photo de marché, **remplacer sa version CDN par un WebP local avant toute publication**, et contrôler le responsive/CI sur la branche ; arbitrer D2 et N01–N04. Export GSC et visa publication nécessaires. **PR #97 à #100 non fusionnées ; branche C05 empilée et non publiée.**
 
 ## 1. Objectif final
 
@@ -54,7 +54,7 @@ Constaté dans la branche **main** au moment de la création de ce plan :
 | C02 | poivre-de-kampot | **Le poivre de Kampot, de la plantation à la table** ; terroir, producteurs, récolte, IG | Terroirs et marchés | Sortir du format fiche ingrédient ; illustrer les étapes | **Prévisualisation enrichie préparée — texte/média non validés** |
 | C03 | comprendre-le-kroeung | **Le kroeung, des gestes qui se transmettent** ; mortier, variations, usages familiaux | Gestes et transmission | Distinction du tutoriel et renvoi à l'atelier existant | **Orientation D1 validée — article non enrichi** |
 | C04 | comprendre-amok | **L'amok, un plat et ses interprétations** ; contexte, ingrédients, service, variations attestées | Gestes et transmission | Vérifier les assertions d'origine ; garder la technique dans la recette | **Orientation D1 validée — article non enrichi** |
-| C05 | kep-marche-crabe-poivre | **Kep, le marché, le crabe et le poivre** ; territoire, commerce, cuisine du littoral | Terroirs et marchés | Traitement reportage **sans prétendre y être allé** ; contrôle photos | **Orientation D1 validée — article non enrichi** |
+| C05 | kep-marche-crabe-poivre | **Kep, au marché des crabes, entre mer et poivre** ; pêche, commerce côtier, préservation | Terroirs et marchés | Texte reportage sans visite fictive ; ancienne photo faussement légendée ; visuel CC0 en CDN de staging à internaliser | **Prévisualisation enrichie — texte/média non validés** |
 | C06 | prahok-fermentation-umami | **Prahok : conservation et mémoire culinaire** ; pêche, transformations, usages | Gestes et transmission | Documentation et prudence sanitaire ; pas de protocole amateur risqué | **Orientation D1 validée — article non enrichi** |
 | C07 | construire-repas-cambodgien | **À table au Cambodge, le repas partagé** ; rythmes, compositions, différences familiales | Vie quotidienne | Approche culturelle plutôt que mode d'emploi culinaire | **Orientation D1 validée — article non enrichi** |
 
@@ -109,7 +109,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | **M0 — Pilotage** | Plan versionné et accès depuis le dépôt | Fichier sur main, lien lisible, étape active explicite | **FAIT le 22/10/2026** |
 | **M1 — Audit et briefs** | Inventaire C01–C07 : source, photos, liens, H1, SEO, fiche par article ; baseline GSC si disponible ; briefs proposés | **7 fiches** + écarts consignés ; aucun contenu original touché ; briefs soumis à validation | **VALIDÉ pour les 7 orientations, en PR ; GSC non disponible** |
 | **M2 — Validation éditoriale** | Angles/titres/plans/sources cibles validés, modèle commun fixé ; priorités N01–N04 confirmées | Décisions écrites ; refus et inconnues documentés | **EN COURS : D1 sept orientations + erratum C01 acceptés ; D2/modèle/priorités N01–N04 à arbitrer** |
-| **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | **À faire : C02 pré-rédigé pour M3 en PR non fusionnée, gate M2 non franchi** |
+| **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | **À faire : C02/C05 pré-rédigés pour M3 en PR non fusionnées, gate M2 non franchi** |
 | **M4 — Index Carnets** | Refonte /culture/ avec quatre univers et nouveaux parcours | Navigation accessible, responsive, cohérence avec les sept Carnets | À faire |
 | **M5 — Première vague N01–N04** | Quatre nouveaux dossiers, articles et visuels | **4/4** validés, sources et média vérifiés ; publication par lot possible | À faire |
 | **M6 — Recette technique et publication** | Tests éditoriaux, build, liens, SEO, photos, mobile/desktop, vérification OVH | Aucun défaut bloquant ; accord propriétaire avant fusion/déploiement ; compte-rendu HTTP après mise en production | À faire |
@@ -165,7 +165,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | --- | --- |
 | Carnets existants au catalogue main | **7** (constaté dans src/data/culture.ts) |
 | Briefs audités/validés | **7/7 orientations validées (D1) en PR ; 0/7 articles réécrits validés** |
-| Carnets enrichis/validés | **1/7 brouillon en prévisualisation (C02) ; 0/7 articles finalisés/validés** |
+| Carnets enrichis/validés | **2/7 brouillons en prévisualisation (C02/C05) ; 0/7 articles finalisés/validés** |
 | Nouveaux Carnets publiés | **0/4** |
 | Univers implémentés sur /culture/ | **0/4** au sens de filtres structurés |
 | Index refondu/validé | **Non** |
@@ -174,6 +174,15 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J07 — C05 Kep rédigé ; erreur de photographie prouvée et image provisoire remplacée
+- **Réalisé :** brouillon intégral C05 **6 chapitres / 18 paragraphes, ~1 000 mots** : géographie de Kep, pêche et vente, place du crabe, mariage au poivre, ressources côtières et initiatives de préservation 2026, métiers du marché. Intégré à `src/data/culture.ts` sur `docs/carnets-c05-kep-editorial-20261022` ; slug historique conservé. Aucune visite, interview, saison, prix ou horaire inventé.
+- **Recherche interne :** FAO du 15/06/2026 sur opérations de restauration du crabe nageur (y compris Kep), SEAFDEC (2020 et Angkaol), Travelfish (2025, témoignage touristique limité), OMPI. Aucune source affichée dans les pages publiques ; le registre figure dans [le brouillon C05](./BROUILLON-C05-KEP-MARCHE-CRABES-2026-10-22.md).
+- **Constat visuel prouvé :** le fichier historique `kep-market-1600.webp` montre des **sacs de poivre**, visuellement identiques au recadrage Commons `06-Kep Crab Market Cambodia-nX-3 (cropped).jpg`, sans crabe. Le blog photo était bien localisé à Kep mais la légende suggérait une scène de vente de produits frais sans le préciser : erreur éditoriale. La photo de C02 `kampot-1600.webp` montre une plante de poivre et reste cohérente.
+- **Correction en prévisualisation :** photo du **marché de Kep** prise par Mx. Granger le 27/01/2020 (Commons **CC0**), correctement légendée comme **étals sous les auvents** (elle ne montre pas spécifiquement des crabes). Image externe temporaire 1280×960. Son **import en WebP local avec contrôle de chargement HTTP, droits et rendu** reste à faire AVANT publication ; éviter un hébergement tiers permanent et un transfert d'image non vérifié.
+- **Compatibilité :** sur l'index Carnets, `srcset` conditionnel pour éviter un `srcset=""` si image externe sans déclinaisons. `socialImage` historique local explicitement conservé pour ne pas casser le catalogue social parallèle, **visuel social non approuvé pour future publication C05**. Crédits photo distinguant le nouveau visuel CC0 de l'ancien dérivé CC BY-SA. Nouveau test `tests/carnets-c05-contract.test.mjs` lié à `npm run test:editorial`, **non encore attesté exécuté**.
+- **État :** M2 en cours, texte final C05 et visuel soumis à approbation ; D2 (univers/maquette) et D3 (validation publication) toujours ouverts. PR #97–#100 non fusionnées. **0 fusion / 0 déploiement OVH**.
+- **Prochain geste :** contrôle CI/build/rendu de C02 et C05 ; revue humaine de leurs deux textes ; obtenir WebP local réellement adapté à Kep avant toute fusion/déploiement.
 
 ### 2026-10-22 — J06 — premier Carnet rédigé et préparé en prévisualisation, C02
 - **Réalisation :** rédaction du texte complet C02 « Le poivre de Kampot, de la plantation à la table » en sept sections et vingt-et-un paragraphes ; intégration isolée dans `src/data/culture.ts` sur la branche `docs/carnets-c02-brouillon-editorial-20261022`. Conservés : slug `poivre-de-kampot`, image principale existante, autres six Carnets et redirections. Durée provisoire : 5 min à partir d'environ 1 100 mots, à confirmer dans le rendu.
