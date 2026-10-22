@@ -17,6 +17,17 @@
 - Les phrases qui généralisent une tradition culinaire ou font croire qu’un plat n’a qu’une version familiale.
 - Les notes de dégustation chiffrées, temps et critères inventés.
 
+## Frontière éditoriale obligatoire : Carnets, Ateliers, Recettes, Glossaire
+
+**Correction demandée explicitement par le propriétaire le 22 octobre 2026 :** un Carnet ne doit **jamais** devenir une seconde recette ou un atelier déguisé. En Culture, écrire un récit à valeur historique, patrimoniale, sociale ou géographique **qui apporte des faits et des perspectives qu'un cours ou une fiche culinaire ne fournit pas**. Les noms des ingrédients, les listes d'aromates, leur rôle technique, les séquences de préparation, les dosages, les textures à obtenir et les conseils de cuisson restent **hors du Carnet**.
+
+- **Carnets :** histoire des lieux et des usages, événements attestés, transmission sociale, transformations des pratiques, mémoires, communautés, patrimoines vivants ; ne pas fabriquer des racines « angkoriennes » sans documentation.
+- **Ateliers :** gestes et manipulations, objectif pédagogique, observations, corrections, guide audio.
+- **Recettes :** ingrédients, proportions, préparation, cuisson, variantes réalisables.
+- **Glossaire :** définition des mots/ingrédients, propriétés et usages factuels.
+
+Un sujet ne mérite sa place en Culture **que s'il existe un angle culturel documentable distinct de l'apprentissage**. Sinon le sujet reste dans les autres rubriques. Sur l'index `/culture/`, privilégier les parcours **Carnet → Carnet**, sans tunnel « lire → atelier → recette ». Les références de vérification demeurent internes et invisibles sur le site, sans relâcher la vérification des faits.
+
 ## Différence recette / atelier
 **Recette** : ingrédients, quantités, ordre, cuisson et service.
 **Atelier** : un geste à apprendre, un petit essai, le changement à observer, un critère de réussite et la manière de refaire ce geste dans une recette.
