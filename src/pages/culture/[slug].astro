@@ -27,7 +27,7 @@ const glossaryByArticle: Record<string, string[]> = {
   'comprendre-le-kroeung': ['kroeung'],
   'comprendre-amok': ['amok'],
   'kep-marche-crabe-poivre': ['poivre-de-kampot'],
-  'prahok-fermentation-umami': ['prahok', 'sauce-poisson'],
+  'prahok-fermentation-umami': ['prahok'],
   'construire-repas-cambodgien': ['riz-jasmin', 'amok', 'lok-lak']
 };
 const glossary = getGlossaryEntries(glossaryByArticle[article.slug] ?? []);
@@ -47,10 +47,7 @@ const relatedContent = article.slug === 'poivre-de-kampot'
             recipes.find((item) => item.slug === 'lok-lak')
           ].filter(Boolean)
         : article.slug === 'prahok-fermentation-umami'
-          ? [
-              ingredientGuides.find((item) => item.slug === 'prahok'),
-              ingredientGuides.find((item) => item.slug === 'kroeung')
-            ].filter(Boolean)
+          ? [] // Patrimoine du Tonlé Sap : aucun tutoriel, condiment ou liste d'ingrédients associés.
           : [
               recipes.find((item) => item.slug === 'amok-trey'),
               recipes.find((item) => item.slug === 'lok-lak'),
