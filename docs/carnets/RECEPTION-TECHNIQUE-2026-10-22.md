@@ -65,3 +65,11 @@
 **Interprétation :** l'échec réel du premier run a été résolu et **la régression est couverte par le test navigateur**. Le fait que les photos externes chargent depuis le runner à cette date **ne remplace pas un import local, une garantie de disponibilité future, un contrôle juridique ou une réception artistique**. Même avec toute la CI PASS, D3 demeure **NON VALIDÉ**, aucune mise en ligne autorisée.
 
 **PR de QA :** [#107](https://github.com/roro78/cuisine-cambodgienne/pull/107), empilée sur #106 et non fusionnée. Les modifications apportées après le commit validé par le run ci-dessus sont uniquement **documentaires** (ce compte rendu et la nouvelle entrée du plan), sans changement de code ni de tests ; garder la preuve du commit testé.
+
+## J17 — Photo de Kep importée localement sur branche QA
+
+- **Exécution unique réelle** : [GitHub Actions #39769038550](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39769038550) **conclusion success** ; source JPG **1280×960**, `Kep Crab Market.jpg`, Mx. Granger (CC0 1.0), https://commons.wikimedia.org/wiki/File:Kep_Crab_Market.jpg.
+- **Quatre WebP créés et réellement présents dans GitHub** : `kep-crab-market-480.webp`, `kep-crab-market-800.webp`, `kep-crab-market-1200.webp`, `kep-crab-market-1280.webp`, commit `eccd91f5d7262ebeb0324918e193a8473af558b7` sur la seule branche de QA.
+- **Raccordement C05** : image principale `/images/cuisine/kep-crab-market-1280.webp` avec tailles `[480,800,1200,1280]`, photo sous auvents du marché de Kep ; légende n'affirme pas montrer des crabes. Ancien fichier de sacs de poivre et image sociale conservés avec leurs crédits ; workflows Meta/n8n inchangés.
+- **Effet :** plus de dépendance à Wikimedia CDN pour le visuel principal de **C05** ; les autres photos Commons de C01 restent externes, photographie C03/C06 et droits/choix final D3 toujours ouverts.
+- **Statut :** preuves GitHub vérifiées ; exécution finale Astro et Chromium sur ce nouveau commit **à lire avant toute réception technique de la version localisée**. Aucun merge ou déploiement.

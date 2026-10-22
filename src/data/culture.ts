@@ -399,11 +399,11 @@ export const cultureArticles: CultureArticle[] = [
         ]
       }
     ],
-    image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/Kep_Crab_Market.jpg/1280px-Kep_Crab_Market.jpg',
+    image: '/images/cuisine/kep-crab-market-1280.webp',
     imageAlt: 'Étals et visiteurs sous les auvents colorés du marché de Kep, au Cambodge',
     imageWidth: 1280,
     imageHeight: 960,
-    imageWidths: [],
+    imageWidths: [480, 800, 1200, 1280],
     /** Visuel existant inchangé pour préserver le catalogue social ; à remplacer avant publication de C05. */
     socialImage: '/images/cuisine/kep-market-1600.webp',
     socialImageRole: 'article',

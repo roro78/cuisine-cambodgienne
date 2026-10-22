@@ -87,3 +87,11 @@ Si le marché aux crabes de Kep mérite un Carnet, c'est précisément parce qu'
 | IMG02 | Photo candidate **CC0**, vraie scène de marché mais sans crabe | Commons, Mx. Granger, **2020** : https://commons.wikimedia.org/wiki/File:Kep_Crab_Market.jpg | Métadonnées + photo consultées. CC0 : attribution non obligatoire, crédit interne souhaitable. Disponibilité du futur fichier/CDN à contrôler. |
 
 **Interdits éditoriaux** : aucun prix, horaires ni inventaire des prises de 2026 inventés ; aucune scène vécue à la première personne ; aucune citation attribuée à un pêcheur non interrogé ; aucun « crabe toujours durable » ou « pêche effondrée partout » non démontrés ; aucune bibliographie visible.
+
+## 22 octobre 2026 — J17 : vraie photographie locale du marché
+
+- [Action one-shot #39769038550](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39769038550) **PASS** : la photo Wikimedia Commons `Kep Crab Market.jpg` de **Mx. Granger** (CC0 1.0, prise en 2020) a été téléchargée, contrôlée à **1280 × 960 pixels** puis convertie en **quatre WebP** de 480, 800, 1200 et 1280 pixels ; commit des médias `eccd91f5d7262ebeb0324918e193a8473af558b7` sur la branche QA uniquement.
+- Le Carnet C05 utilise désormais `/images/cuisine/kep-crab-market-1280.webp` et un `srcset` local. Il s'agit **d'étals au marché de Kep, pas de crabes** : conserver l'alt honnête déjà défini et ne pas revendiquer un reportage de la pêche.
+- L'ancienne photo `kep-market-1600.webp` montre des sacs de poivre ; elle est **conservée** et demeure l'actif social historique C05, sous les crédits Creative Commons antérieurs. Le nouveau média CC0 est crédité dans `/credits-photos/`.
+- Le téléchargement externe **n'est plus nécessaire au chargement de C05**. Revalider l'ensemble de la CI mobile/desktop sur le commit incluant le changement d'image avant de déclarer l'intégration technique PASS.
+- D3 demeure **ouvert** : droits CC0 contrôlés, mais esthétique/choix du reportage et texte complet restent à réceptionner par le propriétaire. Aucun merge ni OVH.

@@ -4,10 +4,10 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v2.6 (réception technique 7 Carnets mobile/desktop PASS, D3 médias encore ouvert)** · Responsable de validation : **propriétaire du site**  
+> Création : **22 octobre 2026** · Version du plan : **v2.7 (photo Kep locale CC0 intégrée, validation navigateur finale en cours)** · Responsable de validation : **propriétaire du site**  
 > État du projet : **M2 EN COURS — 7/7 Carnets préparés, QA technique 7/7 PASS, 0/7 textes et médias définitivement acceptés ni publiés**  
 > **Étape active : M2 — QA ciblée Astro/éditorial/recettes/build/Chromium mobile+desktop **PASS** au second run #39767993049 ; réception éditoriale, iconographie, droits et publication D3 EN ATTENTE.**  
-> Prochaine action : consulter [la preuve de réception technique](./RECEPTION-TECHNIQUE-2026-10-22.md) : [run #39767993049](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39767993049) **PASS**, y compris Chromium sur `/culture/` et les **7 pages à 390 et 1366 px**, images et absence de liens recettes/ateliers ; captures artifact jusqu'au **25/10/2026**. Les 7 textes ne sont **pas** définitivement validés ; **D2** taxonomie quatre univers, **D3** droits et choix photo / visa de publication, GSC et import photo Kep WebP local sont ouverts. Les visuels C03/C06 restent peu documentaires, C07 illustration, C01 Commons distant. **PR #97–#107 non fusionnées, aucun OVH.**
+> Prochaine action : [dossier de réception technique](./RECEPTION-TECHNIQUE-2026-10-22.md) ; [run #39767993049](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39767993049) **PASS** pour les 7 Carnets avant import image. **C05 Kep : photo CC0 maintenant locale en quatre WebP, action one-shot #39769038550 PASS**, en attente du dernier run QA sur commit actualisé. Reste **D2** taxonomie, **D3** réception des sept textes/photos et droit des autres médias, photos C03/C06, galerie C01, illustration C07 et GSC. **Aucune fusion ni publication OVH, PR #97–#107 en brouillon.**
 
 ## 1. Objectif final
 
@@ -174,6 +174,11 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J17 — photo du marché de Kep réellement internalisée en WebP CC0
+- **Preuve externe :** [action GitHub #39769038550](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39769038550) **PASS**. Image Commons `Kep Crab Market.jpg`, Mx. Granger (27/01/2020), **CC0 1.0** et photo de vrai marché ; JPG **1280×960**, contrôlé et converti en variantes WebP **480/800/1200/1280**. Fichiers réellement présents sur branche QA au commit `eccd91f5d7262ebeb0324918e193a8473af558b7`.
+- **Raccordement** : C05 `/culture/kep-marche-crabe-poivre/` utilise les quatre versions locales, **plus de lien CDN externe en hero** ; alt prudent « étals et visiteurs » puisque la photo ne montre pas spécifiquement des crabes. Le fichier ancien de sacs de poivre et le socialImage restent inchangés ; crédits anciens CC BY-SA et nouveau CC0 maintenus.
+- **Qualité et limites :** test C05 renforcé (fichiers présents, url locale, srcset) ; nouvelle CI Astro/Chromium à vérifier sur code actualisé. Les photos des autres Carnets, D2, D3 et GSC restent ouverts. Aucun merge et aucun déploiement OVH, workflows sociaux non modifiés.
 
 ### 2026-10-22 — J16 — recette technique complète 7/7 : PASS après le correctif Glossaire express
 - **Preuve :** [GitHub Actions run #39767993049](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39767993049) **conclusion success** sur commit `347bd874bb9b840490b9a32f3db6928847c4df56`. Node 22 install, `npm run check`, `npm run test:editorial`, `npm run test:recipes`, `npm run build` (**48 pages**), Chrome et script `tests/carnets-responsive-browser.test.mjs` : **toutes étapes PASS**.

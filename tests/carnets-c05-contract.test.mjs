@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 
 const culture = readFileSync('src/data/culture.ts','utf8');
 const articlePage = readFileSync('src/pages/culture/[slug].astro','utf8');
@@ -20,7 +20,9 @@ assert.doesNotMatch(c05,/url: tourismGuide/,'Broken old tourism URL must be remo
 assert.match(c05,/seafdec\.or\.th/,'Fisheries evidence must be retained internally');
 assert.match(c05,/fao\.org\/cambodia\/news/,'2026 fisheries protection must be internally verifiable');
 assert.match(c05,/imageAlt: 'Étals et visiteurs sous les auvents colorés du marché de Kep, au Cambodge'/);
-assert.match(c05,/Kep_Crab_Market\.jpg\/1280px-Kep_Crab_Market\.jpg/,'Staging hero is real Kep market, not pepper sacks');
+assert.ok(c05.includes("image: '/images/cuisine/kep-crab-market-1280.webp'"),'Kep market hero must be local CC0 WebP');
+assert.ok(c05.includes("imageWidths: [480, 800, 1200, 1280]"),'Kep hero must have responsive versions');
+for(const width of [480,800,1200,1280]) assert.ok(existsSync('public/images/cuisine/kep-crab-market-'+width+'.webp'),'Local Kep media variant missing: '+width);
 assert.match(c05,/socialImage: '\/images\/cuisine\/kep-market-1600\.webp'/,'Social catalogue image is retained until approved replacement');
 assert.match(c05,/socialImageRole: 'article'/,'Legacy documentary photo must stay typed as photo, not illustration');
 assert.match(socialCatalog,/article\.socialImage \?\? article\.image/);
