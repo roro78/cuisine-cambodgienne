@@ -130,31 +130,66 @@ export const cultureArticles: CultureArticle[] = [
   },
   {
     slug: 'poivre-de-kampot',
-    title: 'Poivre de Kampot : un produit lié à son territoire',
-    eyebrow: 'Territoires',
-    intro: 'Comprendre pourquoi le poivre de Kampot est plus qu’un simple assaisonnement : son nom, son origine et ses usages sont liés à un territoire précis du sud du Cambodge.',
-    seoDescription: 'Poivre de Kampot : origine, indication géographique, profils vert, noir, rouge et blanc, usages avec le crabe, les produits de la mer et le lok lak.',
-    readingTime: '6 min',
+    title: 'Le poivre de Kampot, de la plantation à la table',
+    eyebrow: 'Terroirs et marchés',
+    intro: 'Un grain de poivre paraît minuscule dans une assiette. Pourtant, dans le sud du Cambodge, celui de Kampot raconte tout un territoire : des terres cultivées, des lianes qu\'il faut accompagner au fil des saisons et un travail attentif jusqu\'au tri des grains. Derrière le nom « poivre de Kampot », il n\'y a pas seulement une réputation gastronomique. Il y a une origine protégée, des savoir-faire et des producteurs dont le travail donne sa valeur au produit.  Pour le comprendre, il faut donc quitter un instant le moulin à poivre et regarder ce qui se passe avant que les grains n\'arrivent en cuisine.',
+    seoDescription: 'Au sud du Cambodge, découvrez le terroir du poivre de Kampot : les plantations, le travail des producteurs, la récolte et une origine géographique protégée.',
+    readingTime: '5 min',
     sections: [
       {
-        title: 'Une indication géographique',
+        title: 'Un nom qui désigne un territoire',
         paragraphs: [
-          'Le nom « Poivre de Kampot » désigne un produit dont la réputation et les caractéristiques sont liées à son origine géographique. Le Cambodge l’a protégé comme indication géographique et il est aussi enregistré dans le système international de Lisbonne.',
-          'Cette protection distingue le produit d’un poivre générique : l’origine, les méthodes de production et le cahier des charges font partie de son identité.'
+          'Kampot et Kep se trouvent dans le sud du Cambodge, non loin du golfe de Thaïlande. C\'est dans une aire géographique délimitée de ces deux provinces que peut être produit le poivre portant le nom protégé de Kampot. Ce nom n\'est pas une simple manière de dire « poivre cultivé au Cambodge ».',
+          'La proximité de la côte contribue aux conditions climatiques de cette région. Les caractéristiques des terres et la gestion de l\'eau entrent également en jeu. Mais le terroir ne fait pas tout : cultiver une plante au bon endroit ne suffit pas, à lui seul, pour obtenir un poivre de Kampot reconnu. Les producteurs doivent aussi respecter des règles de culture et de préparation précises.',
+          'Cette distinction compte pour la personne qui achète le produit. Deux poivres peuvent être cultivés dans le même pays sans porter le même nom d\'origine ni répondre aux mêmes exigences.'
         ]
       },
       {
-        title: 'Vert, noir, rouge, blanc : quatre façons de le découvrir',
+        title: 'Une liane qui demande des soins',
         paragraphs: [
-          'La maturité et la façon dont le poivre est préparé changent nettement son goût. Le vert frais est végétal et juteux ; le noir est plus chaud ; le rouge plus mûr et fruité ; le blanc plus franc.',
-          'En cuisine, chaque maturité apporte quelque chose de différent. Le plus simple est souvent le meilleur : choisir le poivre selon le plat et le moudre au dernier moment pour garder tout son parfum.'
+          'Le poivre vient d\'une plante grimpante, Piper nigrum. Elle pousse en s\'appuyant sur un support. Une plantation n\'est donc pas un champ de grains déjà prêts à sécher : c\'est un ensemble de pieds qu\'il faut établir, nourrir, arroser et entretenir au cours de l\'année.',
+          'Dans les plantations de Kampot, la gestion de l\'eau est essentielle. Pendant la saison des pluies, les parcelles doivent pouvoir évacuer l\'excès d\'humidité ; pendant la saison sèche, les poivriers ont besoin d\'être irrigués. Le soin apporté au sol est tout aussi important. Le cahier des charges prévoit des pratiques de fertilisation spécifiques et exclut les engrais chimiques.',
+          'Le travail agricole ne se résume donc pas à cueillir quelques grappes. La qualité se prépare en amont, sur des mois de surveillance, et reste exposée aux contraintes de la météo comme aux coûts de production.'
         ]
       },
       {
-        title: 'Kampot, Kep et les produits de la mer',
+        title: 'Des variétés et des gestes à préserver',
         paragraphs: [
-          'Dans le sud du Cambodge, le poivre accompagne naturellement les produits de la mer, notamment le crabe. À Kep et Kampot, cette association est devenue emblématique : peu d’ingrédients, mais des produits très parfumés et très frais.',
-          'À la maison, on peut faire la même chose avec un poisson, des crevettes ou un bœuf sauté : peu d’ingrédients, une cuisson juste et le poivre ajouté assez tard pour garder tout son parfum.'
+          'Les poivriers admis pour le poivre de Kampot appartiennent à deux variétés locales désignées Kamchay et Lampong, cette dernière étant également appelée Belantoeung. Ces noms ne doivent pas être confondus avec les quatre couleurs sous lesquelles le poivre est commercialisé.',
+          'Pour multiplier les plants, les agriculteurs utilisent notamment des boutures de poivrier. L\'entretien des parcelles, la conduite des tiges et la surveillance des grappes demandent ensuite des gestes répétés. Certains savoir-faire se transmettent entre producteurs, mais il serait abusif de prétendre que toutes les fermes suivent exactement le même rythme ou la même organisation familiale.',
+          'Ce qui les rassemble est plus concret : le respect d\'un produit défini, d\'une aire de production et de pratiques contrôlées. La transmission ne se limite pas au récit du passé ; elle se retrouve dans le travail de la plantation.'
+        ]
+      },
+      {
+        title: 'Ce que racontent les couleurs des grains',
+        paragraphs: [
+          'Vert, noir, rouge et blanc ne désignent pas quatre plantes sans rapport. Ils correspondent surtout au moment de la récolte et au traitement des baies.',
+          'Le poivre vert provient de grappes cueillies alors que les fruits sont encore jeunes. Le noir est obtenu à partir de grains récoltés à un stade plus avancé, puis séchés. Le rouge vient de baies arrivées à maturité et séchées. Pour obtenir le blanc, on travaille des baies mûres afin d\'en retirer leur enveloppe extérieure.',
+          'La transformation change l\'aspect et les usages du poivre. Mais cette diversité ne doit pas masquer ce que les quatre formes ont en commun : elles résultent d\'une culture située dans la même région de production et de méthodes de préparation encadrées. Pour comparer leurs parfums et savoir quand les employer, la fiche ingrédient sera plus utile qu\'une longue liste de recettes dans ce Carnet.'
+        ]
+      },
+      {
+        title: 'Après la récolte, le travail continue',
+        paragraphs: [
+          'Une fois les grappes cueillies, le poivre n\'est pas encore prêt à être vendu. Selon le produit recherché, les grains passent par différentes étapes de préparation : séparation, séchage ou traitement adapté, tri et conditionnement. La rigueur de ces étapes contribue à préserver les caractéristiques recherchées et à écarter les grains qui ne répondent pas aux critères attendus.',
+          'Ce travail est moins visible que la plantation, mais il occupe une place importante dans l\'histoire du produit. La maturité de la baie ne se décide pas au moment où l\'on ouvre un sachet : elle a déjà guidé la récolte. Et la présentation finale dépend ensuite de la manière dont le poivre a été préparé.',
+          'Il serait trompeur de décrire ici une journée type de récolte comme si nous avions suivi une exploitation particulière. Les pratiques peuvent différer d\'une ferme à l\'autre dans le cadre des exigences communes.'
+        ]
+      },
+      {
+        title: 'Pourquoi l\'origine du poivre de Kampot est protégée',
+        paragraphs: [
+          'Le nom « poivre de Kampot » bénéficie d\'une protection en tant qu\'indication géographique. Cette protection vise à empêcher qu\'un poivre sans lien avec l\'aire et les méthodes reconnues profite indûment de sa réputation.',
+          'Les règles ne portent pas seulement sur la carte. Elles encadrent aussi la production et la traçabilité. Une association de producteurs et d\'opérateurs participe au respect du cahier des charges et au suivi du produit. La reconnaissance internationale a renforcé la visibilité du poivre de Kampot, tout en rendant plus importante la lutte contre les imitations.',
+          'Cette protection ne garantit pas que chaque récolte sera identique, ni qu\'un poivre protégé correspondra automatiquement aux goûts de tous. Elle donne plutôt au nom une signification vérifiable : une origine, des pratiques et des contrôles.'
+        ]
+      },
+      {
+        title: 'De Kampot à Kep, puis à la table',
+        paragraphs: [
+          'Dans cette partie du Cambodge, le poivre n\'est pas séparé des autres produits du territoire. À Kep, sur le littoral, son association avec le crabe est devenue particulièrement connue. Ce rapprochement entre ce qui vient de la mer et ce qui pousse dans les terres permet de comprendre pourquoi un ingrédient peut être lié à la cuisine d\'une région entière.',
+          'Pour autant, le poivre de Kampot ne sert pas seulement à accompagner le crabe. Il trouve sa place dans différents plats où l\'on veut souligner un parfum, relever une bouchée ou terminer un assaisonnement. Le choix entre vert, noir, rouge et blanc appartient ensuite à la cuisine, au produit disponible et au résultat recherché.',
+          'Ce que l\'on retient d\'une plantation ne tient finalement pas en un seul adjectif de dégustation. Il y a une plante, un climat, du travail et des règles communes derrière chaque grain. C\'est ce lien entre le lieu et les personnes qui donne toute sa portée au nom « poivre de Kampot ».'
         ]
       }
     ],
@@ -164,8 +199,10 @@ export const cultureArticles: CultureArticle[] = [
     imageHeight: 4000,
     imageWidths: [480, 800, 1200, 1600],
     sources: [
-      { label: 'OMPI — Système de Lisbonne et Poivre de Kampot', url: 'https://www.wipo.int/fr/web/lisbon-system/w/news/2021/news_0001' },
-      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: tourismGuide }
+      { label: 'OMPI — Indication géographique du poivre de Kampot (18 janvier 2021)', url: 'https://www.wipo.int/fr/web/lisbon-system/w/news/2021/news_0001' },
+      { label: 'FAO — Filière et terroir du poivre de Kampot (1er septembre 2022)', url: 'https://www.fao.org/one-country-one-priority-product/asia-pacific/good-practices/detail/cambodia-s-kampot-pepper/en' },
+      { label: 'Association des producteurs KPPA — Pratiques de production', url: 'https://www.kampotpepper-kppa.com/fr/production/' },
+      { label: 'Cambodia IP — Cahier des charges officiel du poivre de Kampot', url: 'https://www.cambodiaip.gov.kh/wp-content/uploads/DocResources/962f66de-749b-40ae-aa6b-632f8b3c06c2_c848dcff-d931-496b-95b4-377ee747b45a-en.pdf' }
     ]
   },
   {
