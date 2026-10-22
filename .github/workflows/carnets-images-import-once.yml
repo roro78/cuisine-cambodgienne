@@ -1,0 +1,122 @@
+name: Carnets - importer les 2 couvertures validees
+
+# Upload manuel unique du ZIP fourni dans cette conversation.
+# Aucune publication OVH, aucun appel Meta ou n8n.
+on:
+  push:
+    branches:
+      - docs/carnets-c03-c06-images-editoriales-20261022
+    paths:
+      - carnets_cambodge_2_couvertures_webp.zip
+
+permissions:
+  contents: write
+
+concurrency:
+  group: carnets-c03-c06-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout isolated branch
+        uses: actions/checkout@v4
+
+      - name: Detect one-shot ZIP
+        id: pack
+        shell: bash
+        run: |
+          if [ -f carnets_cambodge_2_couvertures_webp.zip ]; then
+            echo "present=yes" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=no" >> "$GITHUB_OUTPUT"
+            echo "Asset pack already removed after import: no-op."
+          fi
+
+      - name: Setup Node 22
+        if: steps.pack.outputs.present == 'yes'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install deps from project
+        if: steps.pack.outputs.present == 'yes'
+        run: npm install --no-audit --no-fund
+
+      - name: Unpack only eight expected WebP files
+        if: steps.pack.outputs.present == 'yes'
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive=carnets_cambodge_2_couvertures_webp.zip
+          for scene in carnet-kroeung-memoire carnet-prahok-tonle-sap; do
+            for width in 480 800 1200 1536; do
+              target="public/images/cuisine/${scene}-${width}.webp"
+              unzip -p "$archive" "$target" > "$target"
+              test -s "$target"
+            done
+          done
+
+      - name: Verify original image fingerprints and sizes
+        if: steps.pack.outputs.present == 'yes'
+        run: node scripts/apply-carnets-editorial-images.mjs
+
+      - name: Apply editorial hero references and protect old social images
+        if: steps.pack.outputs.present == 'yes'
+        run: node scripts/apply-carnets-editorial-images.mjs --apply
+
+      - name: Check types
+        if: steps.pack.outputs.present == 'yes'
+        run: npm run check
+
+      - name: Seven Carnets editorial contracts
+        if: steps.pack.outputs.present == 'yes'
+        run: npm run test:editorial
+
+      - name: Keep Recipes unchanged
+        if: steps.pack.outputs.present == 'yes'
+        run: npm run test:recipes
+
+      - name: Astro build for preview
+        if: steps.pack.outputs.present == 'yes'
+        run: npm run build
+
+      - name: Prepare Chromium
+        if: steps.pack.outputs.present == 'yes'
+        id: chrome
+        uses: browser-actions/setup-chrome@v2
+
+      - name: Mobile and desktop proof (seven Carnets)
+        if: steps.pack.outputs.present == 'yes'
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/carnets-responsive-browser.test.mjs
+
+      - name: Save preview screenshots
+        if: always() && steps.pack.outputs.present == 'yes'
+        uses: actions/upload-artifact@v4
+        with:
+          name: carnets-c03-c06-images-mobile-desktop
+          path: artifacts/carnets-review/
+          if-no-files-found: ignore
+          retention-days: 3
+
+      - name: Commit only verified files on the isolated branch
+        if: steps.pack.outputs.present == 'yes'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "docs/carnets-c03-c06-images-editoriales-20261022"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/images/cuisine/carnet-kroeung-memoire-{480,800,1200,1536}.webp
+          git add public/images/cuisine/carnet-prahok-tonle-sap-{480,800,1200,1536}.webp
+          git add src/data/culture.ts 'src/pages/culture/[slug].astro'
+          git add tests/carnets-c03-contract.test.mjs tests/carnets-c06-contract.test.mjs
+          git add docs/carnets/PLAN-REFONTE-CARNETS.md
+          git rm carnets_cambodge_2_couvertures_webp.zip
+          git diff --cached --check
+          git commit -m "assets(carnets): intégrer 2 couvertures illustratives en WebP responsive"
+          git push origin HEAD:refs/heads/docs/carnets-c03-c06-images-editoriales-20261022
