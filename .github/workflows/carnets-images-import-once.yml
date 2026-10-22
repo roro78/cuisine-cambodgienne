@@ -8,6 +8,7 @@ on:
       - docs/carnets-c03-c06-images-editoriales-20261022
     paths:
       - carnets_cambodge_2_couvertures_webp.zip
+      - .github/workflows/carnets-images-import-once.yml
 
 permissions:
   contents: write
@@ -115,6 +116,9 @@ jobs:
           git add public/images/cuisine/carnet-prahok-tonle-sap-{480,800,1200,1536}.webp
           git add src/data/culture.ts 'src/pages/culture/[slug].astro'
           git add tests/carnets-c03-contract.test.mjs tests/carnets-c06-contract.test.mjs
+          # The pilot's Markdown header historically has two trailing spaces for a hard break.
+          # The edited v2.9 line is the only one introduced in this commit; normalize just that line.
+          sed -i '/v2\.9 (couvertures éditoriales C03\/C06 importées/s/[[:blank:]]*$//' docs/carnets/PLAN-REFONTE-CARNETS.md
           git add docs/carnets/PLAN-REFONTE-CARNETS.md
           git rm carnets_cambodge_2_couvertures_webp.zip
           git diff --cached --check
