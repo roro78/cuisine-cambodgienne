@@ -63,7 +63,7 @@ export const cultureArticles: CultureArticle[] = [
       {
         title: 'Un riz récompensé sept fois au niveau mondial',
         paragraphs: [
-          'En novembre 2025, lors de la World Rice Conference organisée à Phnom Penh par The Rice Trader, le Malys Angkor cambodgien (variété Phka Rumduol) a reçu le titre « World’s Best Rice 2025 ». Selon l’agence de presse cambodgienne AKP et la Fédération cambodgienne du riz, c’était la septième distinction remportée par un riz cambodgien dans ce concours, après 2012, 2013, 2014, 2018, 2022 et 2024.',
+          'En novembre 2025, lors de la World Rice Conference organisée à Phnom Penh par The Rice Trader, le Malys Angkor cambodgien (variété Phka Rumduol) a partagé la première place du concours « World’s Best Rice 2025 » avec le riz vietnamien ST25. Selon l’agence de presse cambodgienne AKP, il s’agissait de la septième distinction remportée par un riz cambodgien dans ce concours, après 2012, 2013, 2014, 2018, 2022 et 2024.',
           'Ce prix valorise un riz parfumé, la qualité du grain et le savoir-faire de la filière. Ce n’est pas un classement permanent de tous les riz vendus dans le monde : il s’agit d’une récompense attribuée dans le cadre d’un concours professionnel annuel.',
           'La reconnaissance internationale est réelle, mais le véritable enjeu reste aussi très concret : produire une qualité régulière, préserver les terres et permettre aux agriculteurs de vivre convenablement de leur travail.'
         ]
@@ -123,6 +123,7 @@ export const cultureArticles: CultureArticle[] = [
       { label: 'FAO — Le riz et les moyens de subsistance au Cambodge', url: 'https://www.fao.org/hand-in-hand/previous-editions/hih-IF-2024/cambodia/en' },
       { label: 'FAO — Agriculture et alimentation au Cambodge', url: 'https://www.fao.org/cambodia/our-office/cambodia-at-a-glance/en' },
       { label: 'Agence Kampuchea Presse (9 novembre 2025) — Malys Angkor primé pour la septième fois', url: 'https://www.akp.gov.kh/fr/post/detail/352733' },
+      { label: 'Vietnam News Agency (10 novembre 2025) — Le titre 2025 partagé avec le riz vietnamien ST25', url: 'https://vietnam.vnanet.vn/french/tin-van/le-riz-vietnamien-st25-sacre-trois-fois-meilleur-riz-du-monde-414190.html' },
       { label: 'Agence Kampuchea Presse (5 janvier 2026) — Riz Phka Rumduol et exportations', url: 'https://akp.gov.kh/fr/post/detail/358182' },
       { label: 'UNESCO (2015) — Jeux rituels liés aux cultures rizicoles', url: 'https://ich.unesco.org/en/RL/tugging-rituals-and-games-01080' }
     ]
