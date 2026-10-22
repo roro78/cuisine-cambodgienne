@@ -57,7 +57,9 @@ test('source content catalog is data-derived and rejects invented duplicate IDs'
   assert.match(s,/\.\.\.recipes\.map/);
   assert.match(s,/\.\.\.ingredientGuides\.map/);
   assert.match(s,/\.\.\.cultureArticles\.map/);
-  assert.match(s,/\.\.\.workshops\.map/);
+  assert.match(s,/completeCookingWorkshopCutoverReady/, 'V2 workshop cutover must remain guarded');
+  assert.match(s,/releasedCookingWorkshopGuides\.map/, 'Released guides must be supported');
+  assert.match(s,/workshops\.map/, 'Historical six-workshop fallback must remain');
   assert.match(s,/\.\.\.recipeTechniqueGuides\.map/);
   assert.match(s,/social_catalog_duplicate_ids/);
   assert.match(s,/sha256/);
@@ -69,6 +71,30 @@ test('restored historical recipes enter social catalog without auto-publishable 
   assert.match(s,/\.\.\.restoredRecipes\.map/);
   assert.match(s,/undefined, 'none', recipe\.sources\.map/);
   assert.match(s,/releasedCookingWorkshopGuides/,'Current workshop social entries must survive the port');
+});
+
+test('Resend email never runs when PostgreSQL draft insertion returns no id', () => {
+  const w=n8n('01-drafts-email-approval.json');
+  const insert=w.nodes.find(n=>n.name==='Enregistrer le brouillon');
+  const gate=w.nodes.find(n=>n.name==='Brouillon inséré ?');
+  assert.ok(insert, 'Postgres insert must exist');
+  assert.ok(gate, 'Explicit insert guard must exist');
+  assert.match(insert.parameters.query,/ON CONFLICT \(scheduled_date\) DO NOTHING RETURNING id/);
+  assert.equal(gate.type,'n8n-nodes-base.if');
+  assert.equal(gate.parameters.conditions.conditions.length,1);
+  const condition=gate.parameters.conditions.conditions[0];
+  assert.equal(condition.leftValue,'={{ $json.id !== undefined && $json.id !== null && /^[1-9][0-9]*$/.test(String($json.id)) }}');
+  assert.equal(condition.operator.type,'boolean');
+  assert.equal(condition.operator.operation,'true');
+  // PostgreSQL BIGINT can be supplied as a decimal string, not only a JS number.
+  const validInsertId = (id) => id !== undefined && id !== null && /^[1-9][0-9]*$/.test(String(id));
+  for (const id of [1,'1',42,'9007199254740993']) assert.equal(validInsertId(id),true);
+  for (const id of [null,undefined,'',0,'0',-1,'bad',{},true]) assert.equal(validInsertId(id),false);
+  assert.match(sql,/id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY/);
+  assert.deepEqual(w.connections['Enregistrer le brouillon'].main[0].map(edge=>edge.node),['Brouillon inséré ?']);
+  assert.deepEqual(w.connections['Brouillon inséré ?'].main[0].map(edge=>edge.node),['Envoyer la demande de validation Resend']);
+  assert.deepEqual(w.connections['Brouillon inséré ?'].main[1],[]);
+  assert.equal(w.active,false,'Do not activate workflow when modifying export');
 });
 
 test('approval uses email and an explicit form POST; missing action defaults to rejection', () => {
