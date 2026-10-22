@@ -24,7 +24,7 @@ const { article } = Astro.props;
 const glossaryByArticle: Record<string, string[]> = {
   'le-riz-symbole-de-vie-au-cambodge': ['riz-jasmin'],
   'poivre-de-kampot': ['poivre-de-kampot'],
-  'comprendre-le-kroeung': ['kroeung', 'citronnelle', 'galanga', 'combava', 'curcuma'],
+  'comprendre-le-kroeung': ['kroeung'],
   'comprendre-amok': ['amok', 'kroeung', 'lait-de-coco', 'combava', 'feuille-bananier'],
   'kep-marche-crabe-poivre': ['poivre-de-kampot'],
   'prahok-fermentation-umami': ['prahok', 'sauce-poisson'],
@@ -38,11 +38,7 @@ const relatedContent = article.slug === 'poivre-de-kampot'
       recipes.find((item) => item.slug === 'lok-lak')
     ].filter(Boolean)
   : article.slug === 'comprendre-le-kroeung'
-    ? [
-        ingredientGuides.find((item) => item.slug === 'kroeung'),
-        recipes.find((item) => item.slug === 'kroeung-jaune'),
-        recipes.find((item) => item.slug === 'amok-trey')
-      ].filter(Boolean)
+    ? [] // Un Carnet historique : ni tutoriel ni suggestion de recette/atelier en fin de récit.
     : article.slug === 'comprendre-amok'
       ? [
           recipes.find((item) => item.slug === 'amok-trey'),
