@@ -257,11 +257,11 @@
           "conditions": [
             {
               "id": "cuisine-inserted-id",
-              "leftValue": "={{ $json.id }}",
+              "leftValue": "={{ $json.id !== undefined && $json.id !== null && /^[1-9][0-9]*$/.test(String($json.id)) }}",
               "rightValue": "",
               "operator": {
-                "type": "number",
-                "operation": "exists",
+                "type": "boolean",
+                "operation": "true",
                 "singleValue": true
               }
             }

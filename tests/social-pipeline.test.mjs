@@ -81,9 +81,14 @@ test('Resend email never runs when PostgreSQL draft insertion returns no id', ()
   assert.equal(gate.type,'n8n-nodes-base.if');
   assert.equal(gate.parameters.conditions.conditions.length,1);
   const condition=gate.parameters.conditions.conditions[0];
-  assert.equal(condition.leftValue,'={{ $json.id }}');
-  assert.equal(condition.operator.type,'number');
-  assert.equal(condition.operator.operation,'exists');
+  assert.equal(condition.leftValue,'={{ $json.id !== undefined && $json.id !== null && /^[1-9][0-9]*$/.test(String($json.id)) }}');
+  assert.equal(condition.operator.type,'boolean');
+  assert.equal(condition.operator.operation,'true');
+  // PostgreSQL BIGINT can be supplied as a decimal string, not only a JS number.
+  const validInsertId = (id) => id !== undefined && id !== null && /^[1-9][0-9]*$/.test(String(id));
+  for (const id of [1,'1',42,'9007199254740993']) assert.equal(validInsertId(id),true);
+  for (const id of [null,undefined,'',0,'0',-1,'bad',{},true]) assert.equal(validInsertId(id),false);
+  assert.match(sql,/id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY/);
   assert.deepEqual(w.connections['Enregistrer le brouillon'].main[0].map(edge=>edge.node),['Brouillon inséré ?']);
   assert.deepEqual(w.connections['Brouillon inséré ?'].main[0].map(edge=>edge.node),['Envoyer la demande de validation Resend']);
   assert.deepEqual(w.connections['Brouillon inséré ?'].main[1],[]);
