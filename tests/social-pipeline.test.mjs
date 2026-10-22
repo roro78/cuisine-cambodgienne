@@ -71,6 +71,25 @@ test('restored historical recipes enter social catalog without auto-publishable 
   assert.match(s,/releasedCookingWorkshopGuides/,'Current workshop social entries must survive the port');
 });
 
+test('Resend email never runs when PostgreSQL draft insertion returns no id', () => {
+  const w=n8n('01-drafts-email-approval.json');
+  const insert=w.nodes.find(n=>n.name==='Enregistrer le brouillon');
+  const gate=w.nodes.find(n=>n.name==='Brouillon inséré ?');
+  assert.ok(insert, 'Postgres insert must exist');
+  assert.ok(gate, 'Explicit insert guard must exist');
+  assert.match(insert.parameters.query,/ON CONFLICT \(scheduled_date\) DO NOTHING RETURNING id/);
+  assert.equal(gate.type,'n8n-nodes-base.if');
+  assert.equal(gate.parameters.conditions.conditions.length,1);
+  const condition=gate.parameters.conditions.conditions[0];
+  assert.equal(condition.leftValue,'={{ $json.id }}');
+  assert.equal(condition.operator.type,'number');
+  assert.equal(condition.operator.operation,'exists');
+  assert.deepEqual(w.connections['Enregistrer le brouillon'].main[0].map(edge=>edge.node),['Brouillon inséré ?']);
+  assert.deepEqual(w.connections['Brouillon inséré ?'].main[0].map(edge=>edge.node),['Envoyer la demande de validation Resend']);
+  assert.deepEqual(w.connections['Brouillon inséré ?'].main[1],[]);
+  assert.equal(w.active,false,'Do not activate workflow when modifying export');
+});
+
 test('approval uses email and an explicit form POST; missing action defaults to rejection', () => {
   const w=n8n('01-drafts-email-approval.json');
   const approval=w.nodes.find(n=>n.name==='Attendre une décision via formulaire');
