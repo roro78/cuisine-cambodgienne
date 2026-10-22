@@ -4,10 +4,10 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v1.2 (recherche documentaire et registre D1/M2 en PR, non fusionnée)** · Responsable de validation : **propriétaire du site**  
-> État du projet : **M1 LIVRÉ EN PR, À VALIDER — SOURCES COMPLÉTÉES ET CORRECTION PRIORITAIRE C01 IDENTIFIÉE ; ZÉRO PUBLICATION**  
-> **Étape active : M1 — À valider ; documentation de décision M2 préparée, sans passage de gate.**  
-> Prochaine action : examiner [l'audit M1](./AUDIT-M1-BRIEFS-2026-10-22.md) et le [registre sourcé + décisions M2](./REGISTRE-SOURCES-DECISIONS-M2-2026-10-22.md) ; **faire valider la correction P0 : prix riz 2025 partagé avec le Vietnam**, puis obtenir D1 et D2. Baseline GSC avant publication ; aucun article original modifié.
+> Création : **22 octobre 2026** · Version du plan : **v1.3 (décision D1 obtenue, état en PR non fusionnée)** · Responsable de validation : **propriétaire du site**  
+> État du projet : **M1 — BRIEFS 7/7 ACCEPTÉS, EN PR NON FUSIONNÉE ; M2 EN COURS ; ZÉRO PUBLICATION**  
+> **Étape active : M2 — sept orientations C01–C07 validées par le propriétaire, autres arbitrages ouverts ; aucun article final validé.**  
+> Prochaine action : préparer la **correction P0 C01 autorisée** (première place partagée avec le riz ST25 vietnamien) dans une PR technique distincte, réviser et soumettre les premiers textes enrichis ; arbitrages D2 (univers/maquette) et modèle final M2 encore ouverts. Export GSC et visa de publication requis avant OVH. Aucune fusion autorisée.
 
 ## 1. Objectif final
 
@@ -50,13 +50,13 @@ Constaté dans la branche **main** au moment de la création de ce plan :
 
 | ID | URL canonique existante (slug) | Orientation proposée | Univers | Travail attendu | Statut |
 | --- | --- | --- | --- | --- | --- |
-| C01 | le-riz-symbole-de-vie-au-cambodge | **Le riz, au cœur de la vie cambodgienne** ; quotidien, rizières, variétés, fêtes, distinction internationale | Vie quotidienne | Consolider et enrichir visuels et maillage ; vérifier dates et prix cités | **À valider — brief M1 en PR** |
-| C02 | poivre-de-kampot | **Le poivre de Kampot, de la plantation à la table** ; terroir, producteurs, récolte, IG | Terroirs et marchés | Sortir du format fiche ingrédient ; illustrer les étapes | **À valider — brief M1 en PR** |
-| C03 | comprendre-le-kroeung | **Le kroeung, des gestes qui se transmettent** ; mortier, variations, usages familiaux | Gestes et transmission | Distinction du tutoriel et renvoi à l'atelier existant | **À valider — brief M1 en PR** |
-| C04 | comprendre-amok | **L'amok, un plat et ses interprétations** ; contexte, ingrédients, service, variations attestées | Gestes et transmission | Vérifier les assertions d'origine ; garder la technique dans la recette | **À valider — brief M1 en PR** |
-| C05 | kep-marche-crabe-poivre | **Kep, le marché, le crabe et le poivre** ; territoire, commerce, cuisine du littoral | Terroirs et marchés | Traitement reportage **sans prétendre y être allé** ; contrôle photos | **À valider — brief M1 en PR** |
-| C06 | prahok-fermentation-umami | **Prahok : conservation et mémoire culinaire** ; pêche, transformations, usages | Gestes et transmission | Documentation et prudence sanitaire ; pas de protocole amateur risqué | **À valider — brief M1 en PR** |
-| C07 | construire-repas-cambodgien | **À table au Cambodge, le repas partagé** ; rythmes, compositions, différences familiales | Vie quotidienne | Approche culturelle plutôt que mode d'emploi culinaire | **À valider — brief M1 en PR** |
+| C01 | le-riz-symbole-de-vie-au-cambodge | **Le riz, au cœur de la vie cambodgienne** ; quotidien, rizières, variétés, fêtes, distinction internationale | Vie quotidienne | Consolider et enrichir visuels et maillage ; vérifier dates et prix cités | **Orientation D1 validée — article non enrichi** |
+| C02 | poivre-de-kampot | **Le poivre de Kampot, de la plantation à la table** ; terroir, producteurs, récolte, IG | Terroirs et marchés | Sortir du format fiche ingrédient ; illustrer les étapes | **Orientation D1 validée — article non enrichi** |
+| C03 | comprendre-le-kroeung | **Le kroeung, des gestes qui se transmettent** ; mortier, variations, usages familiaux | Gestes et transmission | Distinction du tutoriel et renvoi à l'atelier existant | **Orientation D1 validée — article non enrichi** |
+| C04 | comprendre-amok | **L'amok, un plat et ses interprétations** ; contexte, ingrédients, service, variations attestées | Gestes et transmission | Vérifier les assertions d'origine ; garder la technique dans la recette | **Orientation D1 validée — article non enrichi** |
+| C05 | kep-marche-crabe-poivre | **Kep, le marché, le crabe et le poivre** ; territoire, commerce, cuisine du littoral | Terroirs et marchés | Traitement reportage **sans prétendre y être allé** ; contrôle photos | **Orientation D1 validée — article non enrichi** |
+| C06 | prahok-fermentation-umami | **Prahok : conservation et mémoire culinaire** ; pêche, transformations, usages | Gestes et transmission | Documentation et prudence sanitaire ; pas de protocole amateur risqué | **Orientation D1 validée — article non enrichi** |
+| C07 | construire-repas-cambodgien | **À table au Cambodge, le repas partagé** ; rythmes, compositions, différences familiales | Vie quotidienne | Approche culturelle plutôt que mode d'emploi culinaire | **Orientation D1 validée — article non enrichi** |
 
 Les titres sont **des propositions à valider**, pas des renommages effectués. Les **slugs restent inchangés** sauf décision documentée contraire et stratégie SEO spécifique.
 
@@ -107,8 +107,8 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Jalon | Livrable | Critère de passage | Statut initial |
 | --- | --- | --- | --- |
 | **M0 — Pilotage** | Plan versionné et accès depuis le dépôt | Fichier sur main, lien lisible, étape active explicite | **FAIT le 22/10/2026** |
-| **M1 — Audit et briefs** | Inventaire C01–C07 : source, photos, liens, H1, SEO, fiche par article ; baseline GSC si disponible ; briefs proposés | **7 fiches** + écarts consignés ; aucun contenu original touché ; briefs soumis à validation | **À valider — 7 fiches documentées en PR ; GSC absente** |
-| **M2 — Validation éditoriale** | Angles/titres/plans/sources cibles validés, modèle commun fixé ; priorités N01–N04 confirmées | Décisions écrites ; refus et inconnues documentés | **Préparation documentaire en PR ; visa propriétaire non reçu** |
+| **M1 — Audit et briefs** | Inventaire C01–C07 : source, photos, liens, H1, SEO, fiche par article ; baseline GSC si disponible ; briefs proposés | **7 fiches** + écarts consignés ; aucun contenu original touché ; briefs soumis à validation | **VALIDÉ pour les 7 orientations, en PR ; GSC non disponible** |
+| **M2 — Validation éditoriale** | Angles/titres/plans/sources cibles validés, modèle commun fixé ; priorités N01–N04 confirmées | Décisions écrites ; refus et inconnues documentés | **EN COURS : D1 sept orientations + erratum C01 acceptés ; D2/modèle/priorités N01–N04 à arbitrer** |
 | **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | À faire |
 | **M4 — Index Carnets** | Refonte /culture/ avec quatre univers et nouveaux parcours | Navigation accessible, responsive, cohérence avec les sept Carnets | À faire |
 | **M5 — Première vague N01–N04** | Quatre nouveaux dossiers, articles et visuels | **4/4** validés, sources et média vérifiés ; publication par lot possible | À faire |
@@ -164,7 +164,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Indicateur | Situation au 22/10/2026 |
 | --- | --- |
 | Carnets existants au catalogue main | **7** (constaté dans src/data/culture.ts) |
-| Briefs audités/validés | **7/7 préparés + registre de sources et décisions M2 en PR ; 0/7 validés** |
+| Briefs audités/validés | **7/7 orientations validées (D1) en PR ; 0/7 articles réécrits validés** |
 | Carnets enrichis/validés | **0/7** |
 | Nouveaux Carnets publiés | **0/4** |
 | Univers implémentés sur /culture/ | **0/4** au sens de filtres structurés |
@@ -174,6 +174,13 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J03 — décision explicite du propriétaire : D1 et correction C01-P0
+- **Décision reçue :** réponse « Oui » à la question « Valides-tu les sept orientations proposées et la correction de l'ex æquo du riz 2025 ? ». **Accord pour les angles C01–C07 et pour corriger factuellement le paragraphe C01 relatif au prix 2025**. Cela ne signifie ni visa final des sept articles enrichis, ni approbation D2 pour le design/taxonomie, ni permission de fusionner ou de publier.
+- **État exact :** M1 briefs acceptés éditorialement mais **uniquement enregistrés dans la PR #97** ; M2 **EN COURS**, modèles complets et 4 univers encore à arbitrer ; tous les articles publiés inchangés à l'instant de cette inscription.
+- **Réalisation préparée :** correction P0 à effectuer sur une branche/PR distincte dépendante de ce plan. Sources factuelles croisées : AKP 09/11/2025 et Vietnam News Agency 10/11/2025 et VOV 09/11/2025, qui confirment le titre partagé avec ST25 vietnamien.
+- **Prochaine action :** versionner le correctif minimal C01 et sa source vietnamienne, vérifier le diff, laisser PR en brouillon, ne pas déployer.
+- **Preuve :** décision de validation du propriétaire dans la conversation de pilotage du 22/10/2026 ; [PR #97](https://github.com/roro78/cuisine-cambodgienne/pull/97).
 
 ### 2026-10-22 — J02 — vérifications croisées, erratum du riz et décisions M2 v1.2 (en PR)
 - **Réalisé :** recherche documentaire avec consultation directe (FAO, AKP, OMPI, DEFRA, Chef Nak, KQED, PLOS ONE, UNESCO, site du sommet francophonie, source institutionnelle de Kep), et recherche indexée lorsque l'accès direct était refusé (EUR-Lex 2025, étude Taylor & Francis). [Registre de sources et propositions D1/D2](./REGISTRE-SOURCES-DECISIONS-M2-2026-10-22.md) ajouté sur branche Carnets.
