@@ -25,7 +25,7 @@ const glossaryByArticle: Record<string, string[]> = {
   'le-riz-symbole-de-vie-au-cambodge': ['riz-jasmin'],
   'poivre-de-kampot': ['poivre-de-kampot'],
   'comprendre-le-kroeung': ['kroeung'],
-  'comprendre-amok': ['amok', 'kroeung', 'lait-de-coco', 'combava', 'feuille-bananier'],
+  'comprendre-amok': ['amok'],
   'kep-marche-crabe-poivre': ['poivre-de-kampot'],
   'prahok-fermentation-umami': ['prahok', 'sauce-poisson'],
   'construire-repas-cambodgien': ['riz-jasmin', 'amok', 'lok-lak']
@@ -40,10 +40,7 @@ const relatedContent = article.slug === 'poivre-de-kampot'
   : article.slug === 'comprendre-le-kroeung'
     ? [] // Un Carnet historique : ni tutoriel ni suggestion de recette/atelier en fin de récit.
     : article.slug === 'comprendre-amok'
-      ? [
-          recipes.find((item) => item.slug === 'amok-trey'),
-          ingredientGuides.find((item) => item.slug === 'kroeung')
-        ].filter(Boolean)
+      ? [] // Un Carnet patrimonial : aucun renvoi pratique dans le récit C04.
       : article.slug === 'kep-marche-crabe-poivre'
         ? [
             ingredientGuides.find((item) => item.slug === 'poivre-de-kampot'),
