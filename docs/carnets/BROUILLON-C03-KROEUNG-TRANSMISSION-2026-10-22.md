@@ -1,79 +1,72 @@
-# C03 — Le kroeung, des gestes qui se transmettent
+# C03 — Le kroeung, une mémoire de la cuisine khmère
 
-> **Brouillon interne — 22 octobre 2026 ; texte intégrable en prévisualisation, jamais publié automatiquement.** D1 a validé l'angle, pas ce texte final. Conserver le slug `/culture/comprendre-le-kroeung/`. Aucun bloc « Sources » ni référence documentaire citée aux lecteurs.
+> **Brouillon culturel corrigé le 22 octobre 2026 — non fusionné, non publié.** Cette version **remplace entièrement** le brouillon précédent « des gestes qui se transmettent », jugé trop proche des Ateliers et Recettes par le propriétaire. Slug inchangé : `/culture/comprendre-le-kroeung/`. La version précédente demeure dans l'historique Git mais **ne doit plus être retenue**.
 >
-> **Frontière avec les Ateliers/Recettes :** les Carnets racontent le rôle culturel du geste et des différentes pâtes, sans reproduire les dosages, durées, conservations ou l'ordre exact de pilage. Le lien vers la pratique existe déjà : `/apprendre/piler-aromates-au-mortier/` et l'atelier recette `/apprendre/pratique/kroeung-jaune/` ; les quantités restent dans `/recettes/kroeung-jaune/`.
+> **Règle explicite du propriétaire :** zéro préparation, mode d'emploi, dosage, liste pédagogique d'aromates, conseil de pilage ou renvoi commercial vers un atelier. Un Carnet doit raconter **l'histoire, le patrimoine ou la société**. Si des preuves historiques supplémentaires ne permettent pas de soutenir cette histoire, **retirer C03 des propositions culturelles**, plutôt que créer un doublon culinaire. Aucune référence documentaire visible sur les pages.
 
-**Titre H1 proposé :** Le kroeung, des gestes qui se transmettent  
-**Surtitre :** Gestes et transmission  
-**Description SEO :** Le kroeung est bien plus qu'une pâte d'aromates : découvrez le rôle du mortier, les variantes cambodgiennes et le geste transmis derrière les soupes et les plats khmers.  
-**Photographie illustrative existante, réutilisée de l'atelier :** `/images/cuisine/v19-mortier-kroeung-1440.webp`. Elle montre des mains au mortier avec aromates, pas une personne identifiée ni un reportage réalisé par le site. Attention : `imageValidated:true` sur l'atelier, mais `rightsValidated:false` dans le manifeste à la date du contrôle. **Bloquer la publication de ce nouveau Carnet tant que les droits ne sont pas explicités.**
+**H1 proposé :** Le kroeung, une mémoire de la cuisine khmère  
+**Surtitre :** Mémoire culinaire  
+**Description SEO :** Au-delà des recettes, le kroeung raconte une part du patrimoine culinaire cambodgien : mémoire des familles, bouleversements du XXe siècle et transmission dans la diaspora.  
+**Lecture :** recalculer après intégration.  
+**Image :** retour provisoire à l'image historique `/images/cuisine/kroeung-1600.webp` (plat cuisiné) pour éviter le visuel de l'atelier au mortier. **Ce n'est pas une photographie historique** ; sa provenance et ses droits restent à vérifier. **Une meilleure couverture culturelle est souhaitable avant tout visa de publication.**
 
 ## Chapô
 
-Avant de parfumer une soupe, un poisson ou des légumes sautés, la cuisine cambodgienne commence souvent par les aromates. Citronnelle, galanga, curcuma, feuilles de combava, ail ou échalote prennent alors une autre forme : une pâte épaisse et parfumée que l'on appelle *kroeung*.
+Qu'est-ce qui fait qu'un parfum devient un souvenir de pays ? Dans la cuisine cambodgienne, le mot *kroeung* désigne une famille de préparations aromatiques. Il revient dans des plats différents, des cuisines de famille aux tables de restaurant. Pourtant, son intérêt culturel ne se résume pas à la manière dont on le prépare.
 
-Ce nom recouvre plusieurs préparations. Ce qui les relie n'est pas seulement une liste d'ingrédients : c'est l'attention portée aux fibres, au parfum et à la manière dont chaque élément rejoint les autres. Derrière cette base culinaire, il y a un geste que l'on peut apprendre, adapter et transmettre.
+Le kroeung raconte aussi ce qui se transmet d'une génération à l'autre, ce qui change quand on quitte son pays et ce que des cuisiniers cherchent aujourd'hui à préserver. Cette histoire mérite d'être racontée sans transformer une tradition vivante en recette officielle, ni prétendre connaître un acte de naissance que les documents disponibles ne permettent pas d'établir.
 
-## 1. Le kroeung ne désigne pas une recette unique
+## 1. Un repère de la cuisine khmère, pas un plat unique
 
-Parler du kroeung comme d'une formule immuable serait passer à côté de l'essentiel. Dans la cuisine khmère, le terme désigne différentes pâtes d'aromates. Leur composition varie selon le plat, les habitudes de la personne qui cuisine, les produits disponibles et la place accordée à chaque parfum.
+Dans les cuisines cambodgiennes, le kroeung traverse plusieurs familles de plats. Il est présent dans certaines soupes, dans des préparations de poisson et dans des plats mijotés ou sautés. On le décrit souvent comme l'une des bases de la cuisine khmère, mais le terme ne correspond pas à un plat servi à lui seul.
 
-Certaines préparations sont dominées par la citronnelle et le curcuma, d'autres accueillent du piment séché ou davantage d'herbes fraîches. Elles ne produisent pas les mêmes couleurs ni les mêmes saveurs. Les distinctions entre kroeung jaune, rouge ou vert servent donc de repères, pas de frontières étanches entre trois recettes universelles.
+Cette place particulière aide à comprendre pourquoi le kroeung peut devenir un marqueur de mémoire. Un plat peut changer d'une maison à l'autre tout en conservant un parfum que l'on reconnaît. Ce n'est pas l'identité parfaite de chaque préparation qui compte : c'est la continuité d'un répertoire culinaire que l'on partage, réinterprète et parfois retrouve après des années.
 
-C'est précisément ce qui rend cette famille de préparations intéressante : une base commune n'efface pas la liberté du cuisinier. Le kroeung n'est pas un plat autonome posé à côté du riz ; il transforme les ingrédients qui vont ensuite être cuits avec lui.
+Les cultures voisines utilisent elles aussi des préparations aromatiques apparentées. Reconnaître ces parentés n'efface pas la place du kroeung dans la cuisine cambodgienne. Cela évite simplement de présenter toute ressemblance comme une preuve d'emprunt direct, ou toute différence comme une origine exclusivement khmère.
 
-## 2. Le mortier change notre manière de préparer
+## 2. Une origine qu'il faut raconter avec prudence
 
-On peut hacher la citronnelle ou la couper finement. Piler des aromates répond à une autre logique. Sous les coups répétés du pilon, les morceaux se réduisent, les fibres se travaillent et les ingrédients se mélangent peu à peu jusqu'à former une pâte.
+Il serait tentant de faire remonter le kroeung aux cuisines du grand empire d'Angkor, puis de dérouler une tradition ininterrompue jusqu'à nos jours. Une telle chronologie aurait une belle allure. Elle demanderait pourtant des preuves précises : textes datés, usages identifiables et descriptions suffisamment détaillées pour reconnaître la préparation dont on parle aujourd'hui.
 
-Ce mouvement réclame de l'attention. Un fragment de galanga trop épais ou une longue fibre de citronnelle n'a pas la même texture qu'un aromate travaillé finement. Le mortier donne la possibilité d'observer la transformation de la matière au lieu de s'en remettre seulement au temps qui passe.
+Les documents consultés pour ce Carnet ne permettent pas d'établir une date certaine pour l'apparition du kroeung sous sa forme actuelle. Les récits généraux sur l'histoire de la cuisine khmère ne suffisent pas à démontrer qu'une préparation contemporaine existait à l'identique il y a plusieurs siècles.
 
-Il ne faut pas pour autant transformer cet outil en obligation absolue. Un robot peut aider lorsque le temps, la force ou le matériel manquent. Le geste au mortier reste une référence culinaire importante, mais le choix de l'outil n'enlève rien au désir de cuisiner un plat cambodgien chez soi.
+C'est aussi cela, raconter un patrimoine avec sérieux : accepter ses zones d'ombre. L'absence d'une date fondatrice ne rend pas la tradition moins importante. Elle rappelle qu'une culture culinaire ne se conserve pas seulement dans les livres, mais aussi dans les habitudes, les paroles et les repas.
 
-## 3. Chaque aromate prend sa place
+## 3. Quand l'histoire récente a bouleversé les cuisines
 
-La citronnelle apporte des notes végétales fraîches, sans se réduire à son seul parfum citronné. Le galanga donne une impression plus chaude, parfois légèrement poivrée. Le curcuma peut colorer la pâte et lui apporter son caractère terreux. La feuille ou le zeste de combava amènent une note vive, reconnaissable même à petite dose.
+Entre 1975 et 1979, le régime des Khmers rouges a profondément bouleversé la vie de la population cambodgienne. La violence, les déplacements forcés et les pertes humaines ont touché les familles et de nombreux aspects de la transmission culturelle. Les décennies de conflit et de reconstruction ont prolongé ces ruptures.
 
-Ail et échalote participent autrement à l'ensemble : leurs saveurs soutiennent la base aromatique et évoluent avec la cuisson. Aucun de ces ingrédients ne remplace parfaitement un autre. C'est pourquoi deux pâtes visuellement proches ne donnent pas nécessairement le même résultat.
+La cuisine n'a pas été épargnée. Les repas quotidiens, la disponibilité des produits et les possibilités d'apprendre auprès de proches ont été affectés. Réduire cette histoire à l'idée que toutes les recettes auraient disparu serait néanmoins faux : des pratiques et des mémoires ont continué d'exister, au Cambodge comme dans les communautés établies à l'étranger.
 
-Savoir reconnaître ces différences peut s'apprendre en préparant le kroeung, mais aussi en sentant les ingrédients avant leur transformation. Le nez, la vue et le toucher deviennent des outils d'observation. Ce sont des connaissances modestes et concrètes, qui se construisent à force de gestes répétés.
+Le kroeung n'est pas, à lui seul, le symbole de ces épreuves. Il appartient plutôt à un ensemble plus large de goûts et de préparations que certaines familles ont maintenus ou retrouvés. Pour raconter cette continuité, il faut regarder aussi bien ce qui a été perdu que ce qui a pu être transmis.
 
-## 4. Une transmission faite de variantes
+## 4. Dans l'exil, un parfum peut rappeler le pays
 
-Dans les familles et les cuisines professionnelles, les façons de préparer une pâte d'aromates ne se superposent pas toujours. Une personne coupe plus finement, une autre préfère sentir encore une texture légèrement granuleuse ; certaines aiment une présence marquée du curcuma, d'autres choisissent une base plus verte.
+À partir de la fin des années 1970, des Cambodgiens ont trouvé refuge dans d'autres pays, notamment aux États-Unis et en France. L'expérience de l'exil a profondément varié d'une famille à l'autre, mais l'alimentation a parfois constitué un lien concret avec le pays quitté.
 
-Parler de transmission ne signifie pas affirmer que chaque enfant cambodgien apprend le pilage auprès de sa mère ou de sa grand-mère. Les parcours sont bien plus divers : apprentissage dans une famille, auprès d'un cuisinier, dans une école, par un livre ou en essayant une recette loin du Cambodge.
+Des récits contemporains de descendants de réfugiés cambodgiens décrivent le parfum du kroeung comme un souvenir des repas préparés par leurs parents. Des saveurs autrefois perçues comme différentes de celles de l'école ou du voisinage peuvent prendre, à l'âge adulte, une autre valeur : celle d'une histoire familiale dont on souhaite garder quelque chose.
 
-Le geste peut ainsi continuer de circuler tout en se transformant. Une préparation réalisée à l'étranger avec des ingrédients accessibles localement ne raconte pas la même expérience qu'une pâte pilée avec des plantes fraîchement récoltées, mais elle peut conserver l'envie de retrouver un parfum et de partager un repas.
+Il ne s'agit pas d'attribuer le même souvenir à toute une diaspora. Certains ont appris en observant leurs proches, d'autres ont découvert plus tard des plats de leur enfance, et d'autres encore connaissent peu ces préparations. Ce que ces trajectoires montrent, c'est qu'un aliment peut relier l'intime à une histoire collective sans résumer à lui seul cette histoire.
 
-## 5. Une base qui traverse plusieurs plats
+## 5. Préserver la cuisine sans la figer
 
-Le kroeung entre dans des préparations très différentes. Il peut servir de point de départ à un amok de poisson, parfumer une soupe ou accompagner un plat sauté. Ce rôle ne se voit pas toujours dans l'assiette : la pâte est souvent mêlée aux autres ingrédients, parfois longuement cuite.
+Aujourd'hui, des cuisinières, des cuisiniers et des auteurs cambodgiens s'attachent à raconter, documenter et faire connaître leur patrimoine culinaire. Cette démarche prend plusieurs formes : recueillir des souvenirs, écrire des livres, retrouver des plats moins connus ou montrer la diversité des façons de manger selon les territoires.
 
-On reconnaît alors le kroeung moins à sa couleur qu'à la manière dont ses parfums portent le plat. Le même mélange ne produira pas le même résultat associé au lait de coco, à un bouillon, à des légumes ou à de la viande. Le kroeung appartient donc à une cuisine de combinaisons, et non à une seule recette emblématique.
+Leur travail soulève une question importante : comment conserver une mémoire sans transformer une version particulière en vérité définitive ? Le mot « traditionnel » ne signifie pas que tout le monde cuisine de la même manière. Une préparation peut évoluer avec les saisons, les migrations, les moyens disponibles et les goûts d'une génération.
 
-Cela explique aussi pourquoi le travail des aromates mérite un récit à part entière. Une fois la pâte entrée dans une casserole, l'attention se porte sur le plat terminé ; le Carnet rappelle le geste et les choix qui ont préparé sa saveur.
-
-## 6. Du récit au geste, sans confondre les deux
-
-Lire l'histoire du kroeung, c'est comprendre qu'une préparation peut porter plusieurs savoir-faire à la fois : choisir les plantes, préparer leur texture, observer leur parfum, puis les associer à un plat. Ce sont des repères que chacun peut apprendre sans prétendre posséder une tradition unique.
-
-Pour découvrir cette transformation concrètement, mieux vaut passer à un véritable atelier plutôt qu'allonger ici une liste d'étapes. Le parcours consacré au mortier permet de prendre en main les ingrédients ; la recette de kroeung jaune donne ensuite les quantités et les conseils utiles pour cuisiner.
-
-Le kroeung se transmet parce qu'il se refait : non à l'identique dans toutes les cuisines, mais avec la même attention à ce que les aromates apportent au repas. Et c'est peut-être là que le geste prend tout son sens, entre mémoire culinaire et liberté de faire à sa manière.
+Le kroeung trouve sa place dans ce récit : non comme une leçon à reproduire exactement, mais comme l'un des fils qui relient les repas du présent à des histoires familiales et collectives. C'est cette dimension humaine qui relève des Carnets. Les proportions et les gestes ont leur place ailleurs, dans les Recettes et les Ateliers.
 
 ---
 
-## Registre de preuves — INTERNE UNIQUEMENT
+## Registre documentaire — INTERNE UNIQUEMENT, JAMAIS DANS LA PAGE
 
-| ID | Proposition dans le brouillon | Vérification | Limites |
+| ID | Ce qui est établi | Sources de vérification | Limite et contrôle |
 | --- | --- | --- | --- |
-| C03-A | Kroeung = préparations aromatiques variables (citronnelle, galanga, curcuma, combava, ail, échalote), notamment pour soupes/amok/currys | Chef Nak, fiche professionnelle consultée le 22/10/2026 : https://www.chefnak.com/cambodian-kroeung | Source directe d'une cheffe, **une formulation parmi d'autres**. Ne pas prétendre à une version nationale unique. |
-| C03-B | Tradition du pilage au mortier mais alternative au robot possible | Cambodianess (22 mars 2021), recette issue du programme culturel *The Taste of ANGKOR* : https://cambodianess.com/article/how-to-make-khmer-lemongrass-paste | L'article propose aussi le robot ; éviter « robot interdit » et les promesses quantitatives d'huiles essentielles non mesurées. |
-| C03-C | Le kroeung est utilisé dans l'amok et d'autres plats | Chef Nak, sa version d'amok : https://www.chefnak.com/cambodian-fish-amok | Exemple d'une cuisine identifiée, pas origine historique du plat. |
-| C03-D | Le site officiel de la Francophonie au Cambodge évoque transmission et aromates | https://www.francophonie2026.gov.kh/fr/InformationForVisitor | Source institutionnelle promotionnelle ; **ne pas reprendre sa généralisation des transmissions mère-fille** comme réalité générale. |
-| C03-E | Variations jaunes/rouges/vertes et gestes | Cambodianess + Chef Nak + site de recette cambodgienne https://cambokitchen.wordpress.com/2013/06/02/kreoung-kraham-cambodian-red-curry-paste/ | Des formulations divergentes sont attestées ; éviter d'imposer une taxonomie de couleurs ou d'énoncer un ordre d'incorporation unique. |
-| C03-F | Photographie du mortier déjà approuvée pour l'atelier | `src/data/atelier-recette-guides/kroeung-jaune.json` → `media.finishedPreparationImage = /images/cuisine/v19-mortier-kroeung-1440.webp` | `media.imageValidated:true`, mais **`rightsValidated:false`**. C'est un visuel illustratif ; aucun lieu ni personnage identifié n'est attesté. Le nouveau Carnet ne doit pas prétendre en faire une photo documentaire. |
+| H01 | Le kroeung est un mélange aromatique utilisé pour plusieurs catégories de plats cambodgiens ; rôle avec prahok dans certaines préparations | Étude de synthèse scientifique sur le prahok et le kroeung : https://link.springer.com/article/10.1186/s42779-019-0027-1 ; Chef Nak : https://www.chefnak.com/cambodian-kroeung | **Il ne s'agit pas d'une preuve datée de l'invention du kroeung.** Ne pas prêter aux deux sources l'idée de « pureté » culinaire nationale. |
+| H02 | Les textes culinaires anciens et l'histoire linguistique sont plus complexes qu'une attribution directe au royaume d'Angkor | Saveros Pou, *Khmer Cuisine Vocabulary* (1992), archive : https://angkordatabase.asia/publications/khmer-cuisine-vocabulary | Le texte étudie le vocabulaire ancien, **pas la date d'invention du kroeung** ; ne pas inventer de continuité angkorienne. |
+| H03 | Les conflits, le régime Khmer rouge et l'exil ont bouleversé la transmission de pratiques culinaires ; initiatives actuelles de conservation | Robert Carmack, *Eating amok*, Mekong Review, mai 2018 : https://mekongreview.com/eating-amok/ ; BBC Travel, 2024 (article original, accès direct parfois restreint) : https://www.bbc.com/travel/article/20240321-the-return-of-cambodias-food-lost-during-the-khmer-rouge-regime | Généraliser au paysage culinaire avec prudence, **pas prétendre que tel ingrédient a été perdu puis recréé**. Article BBC confirmé par résultats indexés et copie externe, lecture de l'original restreinte. |
+| H04 | Un témoignage personnel associe explicitement kroeung, parents réfugiés cambodgiens à la fin des années 1970, souvenir et identité | Tenement Museum, projet participatif *Your Story, Our Story*, *Kroeung: The Taste of Home* : https://yourstory.tenement.org/stories/kroeung/ | Témoignage individuel conservé dans un corpus muséal, **ne représente pas tous les Cambodgiens** ; ne pas attribuer de dialogue, de scène ou de citation non présente. |
+| H05 | Des initiatives diasporiques documentent et réinterprètent la cuisine cambodgienne, y compris des plats au kroeung | Journalisme local Long Beach, panorama d'adresses et cuisines : https://longbeachize.com/articles/crystal-thai-cambodian-is-long-beachs-cambodian-home-kitchen/ ; livre *Kroeung: Cambodian Cooking with Chef T* (2022), bibliographie https://khmerconnection.com/wiki/Kroeung%3A_Cambodian_Cooking_with_Chef_T | Exemples **actuels et localisés** : éviter « partout » / « toute la diaspora », vérifier le livre original avant d'en citer des passages. |
+| IMG | Couverture actuelle candidate (retour au visuel historique, assiette de plat sauté) | `/images/cuisine/kroeung-1600.webp` | Cette image **ne prouve aucun fait historique** ; ni identité du plat ni provenance/licence attestées ici. **Remplacement culturel plus pertinent recommandé** avant publication. |
 
-**Décisions encore ouvertes :** réception du texte complet C03, vérification des droits du visuel, contrôle rendu/alt/durée, liens de parcours atelier et autorisation de publication. Pas de source citée dans le rendu public.
+**Définition de terminé C03 :** texte culturel distinct des Ateliers et Recettes ; aucune section d'ingrédients, gestes, textures, comment réussir ni parcours pratique ; aucune légende photo historique inventée ; aucun lien source documentaire affiché ; contrôle juridique média ; tests et validation du propriétaire avant intégration en production.
