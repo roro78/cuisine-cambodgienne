@@ -53,10 +53,13 @@ jobs:
         run: |
           set -euo pipefail
           if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
-            sudo apt-get update -qq
-            sudo apt-get install -y -qq ffmpeg
+            # The Ubuntu apt mirror occasionally hangs. Bound setup, but never skip MP3 checks.
+            timeout --signal=TERM --kill-after=10s 120s sudo apt-get update -qq
+            timeout --signal=TERM --kill-after=10s 120s sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ffmpeg
           fi
-          ffprobe -version | head -n 1
+          command -v ffmpeg
+          command -v ffprobe
+          ffprobe -version | sed -n '1p'
 
       - name: Standard ateliers — recette réutilisable et guide MP3 (sans TTS)
         run: |
