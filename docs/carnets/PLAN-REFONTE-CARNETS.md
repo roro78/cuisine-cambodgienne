@@ -4,10 +4,10 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v1.9 (prévisualisations C02/C03/C05, examen initial média C04)** · Responsable de validation : **propriétaire du site**  
-> État du projet : **M2 EN COURS — D1 VALIDÉ, C01 CORRIGÉ, C02/C03/C05 EN PRÉVISUALISATION NON VALIDÉE ; AUCUNE PUBLICATION**  
-> **Étape active : M2 — sept orientations validées ; trois textes complets C02/C03/C05 préparés en PR dépendantes, aucun texte final accepté.**  
-> Prochaine action : faire relire [C02](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md), [C03](./BROUILLON-C03-KROEUNG-TRANSMISSION-2026-10-22.md) et [C05](./BROUILLON-C05-KEP-MARCHE-CRABES-2026-10-22.md). **Kep : photo CC0 distante à importer en WebP local**, non réalisée. **C03 : droits du visuel mortier non attestés (rightsValidated=false)**. Exécuter tests/CI et contrôle mobile avant une éventuelle réception, arbitrer D2 et N01–N04, recueillir la baseline GSC et les visas de publication. **PR #97–#101 non fusionnées, branche C03 empilée non publiée.**
+> Création : **22 octobre 2026** · Version du plan : **v2.0 (correction de cap : Carnets culture/histoire, aucun doublon ateliers)** · Responsable de validation : **propriétaire du site**  
+> État du projet : **M2 EN COURS — C01 corrigé, C02/C05 brouillons, C03 recadré exclusivement sur l'histoire et la mémoire ; aucune publication**  
+> **Étape active : M2 — C03 orientation initiale « gestes au mortier » RÉVOQUÉE et remplacée par un sujet culturel sur la mémoire du kroeung, sous réserve de preuves et de validation ; aucun texte final accepté.**  
+> Prochaine action : faire relire [C02](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md), [C03 version mémoire/histoire (qui remplace le tutoriel)](./BROUILLON-C03-KROEUNG-TRANSMISSION-2026-10-22.md) et [C05](./BROUILLON-C05-KEP-MARCHE-CRABES-2026-10-22.md). Le parcours de l'index Carnets est **culturel seulement** ; C03 n'affiche plus de suggestions Recette/Atelier. **Kep : photo distante à importer en WebP local. C03 : image historique et droits à trouver.** Exécuter CI/build et contrôle mobile avant validation ; arbitrer D2 et N01–N04, GSC, visas. **PR #97–#102 non fusionnées.**
 
 ## 1. Objectif final
 
@@ -52,7 +52,7 @@ Constaté dans la branche **main** au moment de la création de ce plan :
 | --- | --- | --- | --- | --- | --- |
 | C01 | le-riz-symbole-de-vie-au-cambodge | **Le riz, au cœur de la vie cambodgienne** ; quotidien, rizières, variétés, fêtes, distinction internationale | Vie quotidienne | Consolider et enrichir visuels et maillage ; vérifier dates et prix cités | **Orientation D1 validée — article non enrichi** |
 | C02 | poivre-de-kampot | **Le poivre de Kampot, de la plantation à la table** ; terroir, producteurs, récolte, IG | Terroirs et marchés | Sortir du format fiche ingrédient ; illustrer les étapes | **Prévisualisation enrichie préparée — texte/média non validés** |
-| C03 | comprendre-le-kroeung | **Le kroeung, des gestes qui se transmettent** ; mortier, variations, usages familiaux | Gestes et transmission | Récit distinct de l'atelier ; image réutilisée validée visuellement mais droits non attestés | **Prévisualisation enrichie — texte/média non validés** |
+| C03 | comprendre-le-kroeung | **Le kroeung, une mémoire de la cuisine khmère** ; rupture historique, exil, diaspora, patrimoine | Mémoire et transmission | **AUCUNE technique du mortier, recette, aromate à détailler, tutoriel ou renvoi pratique** ; aucune origine angkorienne sans preuve ; photo culturelle à rechercher | **Orientation initiale annulée ; nouvelle prévisualisation historique NON VALIDÉE** |
 | C04 | comprendre-amok | **L'amok, un plat et ses interprétations** ; contexte, ingrédients, service, variations attestées | Gestes et transmission | Vérifier les assertions d'origine ; garder la technique dans la recette | **Orientation D1 validée — article non enrichi** |
 | C05 | kep-marche-crabe-poivre | **Kep, au marché des crabes, entre mer et poivre** ; pêche, commerce côtier, préservation | Terroirs et marchés | Texte reportage sans visite fictive ; ancienne photo faussement légendée ; visuel CC0 en CDN de staging à internaliser | **Prévisualisation enrichie — texte/média non validés** |
 | C06 | prahok-fermentation-umami | **Prahok : conservation et mémoire culinaire** ; pêche, transformations, usages | Gestes et transmission | Documentation et prudence sanitaire ; pas de protocole amateur risqué | **Orientation D1 validée — article non enrichi** |
@@ -174,6 +174,15 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J10 — demande explicite du propriétaire : fin des doublons entre Carnets, Recettes et Ateliers
+- **Avis du propriétaire :** « le carnet consacré au Krung, ça fait pas doublon avec l'atelier et la recette ? [...] OK pour la recette ou dans les ateliers, mais pas dans la culture. Et si on en parle, on n'aura pas de recette. On parlera de son histoire ». Cette décision **corrige et remplace la validation antérieure D1-C03 « gestes et transmission »** ; aucun visa du texte final n'est donné.
+- **Principe transversal acté :** **Carnets = histoire, société, mémoire, territoires, traditions** ; **Ateliers = apprentissage d'un geste** ; **Recettes = ingrédients, quantités, méthode** ; Glossaire = définition. Interdiction des doublons éditoriaux. Si un sujet ne possède pas de matière historique/culturelle vérifiable, **ne pas créer de Carnet** sur ce seul sujet ; l'intégrer plutôt aux Ateliers/Recettes/Glossaire. Les sources ne sont pas visibles publiquement.
+- **C03 remanié dans PR #102** : ancien brouillon axé sur les aromates, le mortier et le geste **abandonné** (consultable seulement dans l'historique Git). Nouveau H1 **« Le kroeung, une mémoire de la cuisine khmère »**, cinq sections sur sa place culinaire, ses origines non datées, les ruptures de 1975–1979, diaspora, mémoire familiale et documentation actuelle ; témoignage patrimonial individuel et analyses dans le **registre interne**. **Aucune origine angkorienne sans preuve, aucune recette ou instruction de pilage.**
+- **Index culturel rectifié** : suppression du parcours « lire → piler → cuisiner », de l'accès direct à l'atelier ou à la recette depuis la page /culture/, remplacé par un parcours **riz/mémoire/marché** entre Carnets uniquement. La fiche C03 n'affiche plus les suggestions de recettes et ingrédients ; son glossaire est limité au mot kroeung.
+- **Média C03** : retrait du visuel mortier partagé avec l'Atelier. Restauration provisoire du visuel original de plat sauté, **qui n'a pas valeur de photographie historique** ; la couverture culturelle et les droits restent à instruire avant publication.
+- **Contrôle** : contrat C03 et contrat éditorial global actualisés ; **exécution npm/build/CI/contrôle visuel non attestée** à cette étape. Six autres Carnets et leurs slugs préservés, aucune fusion, aucun déploiement, PR #97–#102 en brouillon.
+- **Prochaine action** : réception du texte culturel et audit photo, tests complets, et retour au plan M2 avant d'ouvrir un nouveau sujet.
 
 ### 2026-10-22 — J09 — contrôle visuel préliminaire C04 avant prochaine rédaction
 - **Inspection directe du fichier existant** `public/images/cuisine/amok-alt-1600.webp` (C04 /culture/comprendre-amok/) : image verticale présentant quatre portions d'amok sur une assiette, avec grand fond rouge occupant une grande partie du cadre. Elle semble représenter le plat, mais **qualité de couverture et adaptation panoramique à réexaminer** ; droits, localisation et provenance non attestés ici. Ne pas remplacer automatiquement le média original avant dossier de provenance et revue de direction artistique.
