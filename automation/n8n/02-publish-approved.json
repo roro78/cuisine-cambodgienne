@@ -34,7 +34,7 @@
       ],
       "parameters": {
         "operation": "executeQuery",
-        "query": "WITH chosen AS (SELECT id FROM cuisine_social.posts WHERE status='approved' AND scheduled_date <= (NOW() AT TIME ZONE 'Europe/Paris')::date AND fb_state='pending' AND ig_state='pending' ORDER BY scheduled_date,id FOR UPDATE SKIP LOCKED LIMIT 1) UPDATE cuisine_social.posts p SET status='publishing',fb_state='submitting',ig_state='creating',publishing_started_at=NOW(),updated_at=NOW() FROM chosen WHERE p.id=chosen.id RETURNING p.*",
+        "query": "WITH chosen AS (SELECT id FROM cuisine_social.posts WHERE status='approved' AND human_decision='approved' AND approved_at IS NOT NULL AND decided_at IS NOT NULL AND scheduled_date <= (NOW() AT TIME ZONE 'Europe/Paris')::date AND fb_state='pending' AND ig_state='pending' ORDER BY scheduled_date,id FOR UPDATE SKIP LOCKED LIMIT 1) UPDATE cuisine_social.posts p SET status='publishing',fb_state='submitting',ig_state='creating',publishing_started_at=NOW(),updated_at=NOW() FROM chosen WHERE p.id=chosen.id RETURNING p.*",
         "options": {}
       }
     },

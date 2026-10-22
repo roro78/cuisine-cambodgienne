@@ -30,6 +30,9 @@ test('outbound Meta publication cannot precede an approved atomic DB claim', () 
   assert.ok(names.indexOf('Claim atomique uniquement si validé') < names.indexOf('Publier la photo Facebook'));
   const claim = w.nodes.find((n) => n.name === 'Claim atomique uniquement si validé');
   assert.match(claim.parameters.query, /status='approved'/);
+  assert.match(claim.parameters.query, /human_decision='approved'/);
+  assert.match(claim.parameters.query, /approved_at IS NOT NULL/);
+  assert.match(claim.parameters.query, /decided_at IS NOT NULL/);
   assert.match(claim.parameters.query, /FOR UPDATE SKIP LOCKED/);
   assert.match(sql, /UNIQUE \(scheduled_date\)/);
   assert.match(sql, /fb_state.*DEFAULT 'pending'/);
@@ -38,6 +41,11 @@ test('outbound Meta publication cannot precede an approved atomic DB claim', () 
 
 test('Instagram media_publish only occurs after Meta container status is FINISHED', () => {
   const w=n8n('03-reconcile-instagram.json');
+  const reservation=w.nodes.find((n)=>n.name==='Réserver un conteneur à examiner').parameters.query;
+  assert.match(reservation,/human_decision='approved'/);
+  assert.match(reservation,/approved_at IS NOT NULL/);
+  assert.match(reservation,/decided_at IS NOT NULL/);
+  assert.match(reservation,/fb_state='published'/);
   const query=w.nodes.find((n)=>n.name==='Enregistrer READY ou reporter').parameters.query;
   assert.match(query,/WHEN \$1='FINISHED' THEN 'submitting'/);
   assert.match(query,/ELSE 'manual_review'/);
