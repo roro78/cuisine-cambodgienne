@@ -4,10 +4,10 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v2.4 (7/7 Carnets préparés en prévisualisation ; 0 validation finale)** · Responsable de validation : **propriétaire du site**  
-> État du projet : **M2 EN COURS — 7/7 Carnets C01–C07 préparés ou révisés en branches empilées ; 0/7 validés pour publication**  
-> **Étape active : M2 — séparation culture/ateliers/recettes appliquée aux sept Carnets ; préparation des contenus complète, réception éditoriale, droits et qualité technique EN ATTENTE.**  
-> Prochaine action : relire et faire réceptionner [C01 riz](./REVISION-C01-RIZ-PATRIMOINE-2026-10-22.md), [C02 poivre](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md), [C03 kroeung](./BROUILLON-C03-KROEUNG-TRANSMISSION-2026-10-22.md), [C04 amok](./BROUILLON-C04-AMOK-PATRIMOINE-2026-10-22.md), [C05 Kep](./BROUILLON-C05-KEP-MARCHE-CRABES-2026-10-22.md), [C06 prahok](./BROUILLON-C06-PRAHOK-PATRIMOINE-2026-10-22.md), [C07 table](./BROUILLON-C07-TABLE-PARTAGEE-2026-10-22.md). **D2 (quatre univers, dont Fêtes et traditions actuellement vide), D3 texte/medias/publication, tests npm/CI/build, responsive, baseline GSC et conformité photo encore ouverts.** Image Kep distante à importer localement, C03/C06 non documentaires, C07 illustration ; C01 quatre images Commons distantes à vérifier. Aucune fusion ni mise en production OVH. **PR #97–#105 non fusionnées ; branche C01 empilée.**
+> Création : **22 octobre 2026** · Version du plan : **v2.5 (recette technique isolée, première CI effective et correctifs navigateur)** · Responsable de validation : **propriétaire du site**  
+> État du projet : **M2 EN COURS — 7/7 Carnets préparés ; QA technique en cours, 0/7 validés ni publiés**  
+> **Étape active : M2 — réception technique ciblée des 7 Carnets : première CI Astro/éditorial/recettes/build PASS, première QA navigateur FAIL sur un vrai renvoi pratique corrigé ensuite ; nouvelle CI attendue. Droits médias et validation éditoriale EN ATTENTE.**  
+> Prochaine action : examiner la [réception technique et le premier run de CI](./RECEPTION-TECHNIQUE-2026-10-22.md). **Contrôles Astro, tests éditoriaux, tests Recettes et build : PASS réellement exécutés au premier run #39767416153.** Le navigateur a découvert des conseils pratiques cachés dans le Glossaire express (échec C04 mobile), **correctifs ajoutés à la branche QA** : suppression du Glossaire express et des carrousels recettes uniquement pour Culture, correction des dimensions C06/C07. **Nouvelle exécution Chromium à contrôler**, vérifier photos Wikimedia, galerie riz, QA responsive, droits et GSC. Les sept contenus restent à réceptionner, D2 taxonomie et D3 médias/visa de publication ouverts. **PR #97–#106 non fusionnées ; QA dans une branche séparée non publiée.**
 
 ## 1. Objectif final
 
@@ -174,6 +174,16 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J15 — réception technique réelle : CI Astro PASS ; une fuite vers les recettes découverte au navigateur et corrigée
+- **Branche de validation isolée :** `docs/carnets-validation-20261022`, fondée sur le contenu empilé jusqu'à PR #106. Aucune modification de `main`, aucune fusion OVH, aucune publication. Le workflow principal `.github/workflows/ci.yml` ne couvre pas les branches `docs/carnets-*`, d'où l'absence historique des vérifications automatisées. Ajout d'un workflow **ciblé non déployant** `.github/workflows/carnets-validation-once.yml`.
+- **Preuve de CI exécutée :** [premier run #39767416153](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39767416153). npm install, `npm run check`, `npm run test:editorial`, `npm run test:recipes`, `npm run build` **PASS** ; **48 pages Astro générées**, dont les 7 Carnets.
+- **Vrai échec navigateur :** Chromium 390 px s'arrête sur C04 amok parce que le `GlossaryStrip` inséré dans Culture comporte un lien pratique vers une recette. **FAIL réel** : `Recipe/workshop link in cultural article: comprendre-amok`. Le composant pratique a été retiré du **gabarit Culture seulement**, sans toucher aux pages Glossaire/Ateliers/Recettes ; cinq tests de Carnets actualisés.
+- **Autre non-conformité éditoriale découverte :** bien que masqués sur 5 Carnets, les carrousels Recettes/Ingrédients restaient présents pour C02 Kampot et C05 Kep ; **suppression complète des carrousels** et de leurs imports dans le gabarit commun.
+- **Défauts de dimensions réelles :** C06 `prahok-1600.webp` = **1600×2133** (données incorrectes 3000×4000) ; C07 `v19-table-partage-desktop-1440.webp` = **1440×810** (déclaré 1440×960). Dimensions corrigées après lecture directe des entêtes WebP sur GitHub ; variantes 800×450 et 1200×675 confirmées.
+- **QA navigateur dédiée :** nouveau script `tests/carnets-responsive-browser.test.mjs` avec les 7 routes et l'index à **390×844 et 1366×900**, photos décodées, débordements, interdiction des liens pratiques, captures. Nouvelle CI déclenchée après corrections, **ne pas présumer PASS avant lecture des runs**.
+- **Dossier de preuve :** [RECEPTION-TECHNIQUE-2026-10-22.md](./RECEPTION-TECHNIQUE-2026-10-22.md). Les sources journalistiques et scientifiques restent **internes**, crédits photo légaux conservés.
+- **Publication :** M2/D2/D3 et visas toujours ouverts, **7/7 rédigés, 0/7 validés**. Photo Kep en CDN à localiser, C03/C06 médias insuffisamment documentaires, C07 illustration éditoriale, C01 images distantes, vérification des licences et GSC manquantes. Aucun déploiement.
 
 ### 2026-10-22 — J14 — C01 riz révisé sans toucher à son reportage initial
 - **Exécution :** dans `docs/carnets-c01-riz-patrimoine-20261022`, reprise ciblée du Carnet `/culture/le-riz-symbole-de-vie-au-cambodge/`. Les sept chapitres, sa structure sur le quotidien de toutes classes sociales, l'agriculture, les variétés et le concours 2025, ainsi que les **quatre médias de galerie** sont préservés. Titre adapté « Le riz, au cœur de la vie cambodgienne » ; durée de lecture reestimée à 5 min.
