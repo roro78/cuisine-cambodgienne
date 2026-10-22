@@ -285,42 +285,73 @@ export const cultureArticles: CultureArticle[] = [
   },
   {
     slug: 'kep-marche-crabe-poivre',
-    title: 'Kep : quand le marché rencontre le poivre et la mer',
-    eyebrow: 'Marchés',
-    intro: 'À Kep, le marché, les produits de la mer et le poivre de Kampot donnent envie de cuisiner simplement, avec ce qui est frais et plein de goût.',
-    seoDescription: 'Kep au Cambodge : marché, crabe, produits de la mer et poivre de Kampot, pour comprendre une cuisine fondée sur la fraîcheur, le terroir et les cuissons courtes.',
+    title: 'Kep, au marché des crabes, entre mer et poivre',
+    eyebrow: 'Terroirs et marchés',
+    intro: 'À Kep, le marché aux crabes relie deux paysages du sud du Cambodge : la côte où vivent les pêcheurs et les terres voisines où pousse le poivre de Kampot. Le même lieu concentre les arrivages, la vente de produits de la mer et les cuisines qui leur donnent une autre vie. C\'est ce voisinage entre l\'eau, les étals et les assiettes qui a rendu Kep reconnaissable bien au-delà de sa taille.  Le crabe y occupe une place particulière. Mais pour raconter ce marché sans le réduire à une carte postale gourmande, il faut aussi parler des personnes qui en dépendent et de la nécessité de préserver les ressources dont elles vivent.',
+    seoDescription: 'À Kep, au sud du Cambodge, découvrez le marché aux crabes, la pêche côtière, l’association au poivre de Kampot et les enjeux de préservation de la mer.',
     readingTime: '5 min',
     sections: [
       {
-        title: 'Le marché comme point de départ',
+        title: 'Kep, une ville tournée vers la mer',
         paragraphs: [
-          'Quand on cuisine avec des produits frais, le marché donne souvent l’idée du repas. Poissons, crustacés, herbes, fruits et légumes changent selon la saison et les arrivages.',
-          'Cela donne envie de cuisiner simplement : une cuisson juste, quelques aromates et un assaisonnement bien dosé suffisent souvent quand le produit est bon.'
+          'Kep se trouve sur la côte méridionale du Cambodge, près de Kampot et du golfe de Thaïlande. Sa réputation balnéaire est ancienne, mais elle ne résume pas les activités de la ville. La pêche et la vente de produits marins y tiennent également une place visible, en particulier autour du marché connu sous le nom de Psar Kdam, le marché aux crabes.',
+          'La proximité de Kampot compte dans cette géographie culinaire. En peu de distance, on passe des terres agricoles au bord de mer. Il serait pourtant trompeur de faire comme si toute l\'économie de Kep reposait sur un seul plat ou comme si chaque repas local était nécessairement composé de crabe.',
+          'Le marché est un bon point de départ pour comprendre le lieu : il relie des métiers différents sans les confondre. Entre le produit encore vivant, le commerce, la préparation et le service, plusieurs personnes interviennent avant qu\'une spécialité arrive à table.'
         ]
       },
       {
-        title: 'Crabe et poivre : une association devenue emblématique',
+        title: 'De la pêche à l\'étal',
         paragraphs: [
-          'La région de Kep est connue pour ses produits de la mer et sa proximité avec Kampot. L’association du crabe avec le poivre frais résume bien cette cuisine : un produit principal identifiable et un condiment local très expressif.',
-          'Le même principe fonctionne à la maison avec crevettes ou poisson : cuire juste, garder le jus du produit et ajouter le poivre suffisamment tard pour qu’il reste vivant.'
+          'Les crabes nageurs bleus font partie des ressources marines recherchées le long des côtes cambodgiennes. Ils constituent une source de revenu importante pour certaines communautés de pêcheurs. Leur présence dans les marchés de Kep rappelle qu\'un produit réputé dépend d\'abord du travail effectué en mer.',
+          'À proximité du marché, des paniers et des casiers servent à conserver ou à présenter une partie des prises. Des vendeuses et des vendeurs participent au tri, à la vente et parfois à l\'organisation de la préparation. Leur rôle ne doit pas être effacé derrière le mot « spécialité » : le commerce côtier repose sur des compétences concrètes et sur des échanges avec les pêcheurs.',
+          'Les formes de vente, les arrivages et la disponibilité peuvent varier. Plutôt que de décrire des horaires, un prix ou une journée de pêche que nous n\'avons pas observés, retenons ce que l\'on peut établir : le marché fait le lien entre des ressources marines, des métiers et les personnes venues se fournir ou manger.'
         ]
       },
       {
-        title: 'Ce que l’on peut apprendre de cette cuisine',
+        title: 'Pourquoi le crabe est devenu l\'image de Kep',
         paragraphs: [
-          'Choisir de bons produits change tout. Ensuite, il suffit d’ajuster le sel, l’acidité, les aromates et la cuisson pour les mettre en valeur.',
-          'C’est une belle façon de découvrir la cuisine cambodgienne : commencer par regarder, sentir et goûter avant de vouloir compliquer les recettes.'
+          'Le crabe occupe une place singulière dans la représentation de Kep. On le retrouve dans les descriptions du marché, dans les assiettes associées à la ville et jusque dans ses images touristiques. Cette notoriété peut donner l\'impression d\'une tradition immuable, alors que les habitudes de consommation et les possibilités de pêche évoluent.',
+          'Le nom courant de « crabe bleu » désigne ici les crabes nageurs présents dans les eaux côtières. Il faut rester prudent avec les appellations commerciales : elles peuvent mélanger plusieurs dénominations et ne remplacent pas une identification précise de l\'espèce lorsqu\'elle est nécessaire.',
+          'Ce qui rend le marché intéressant ne tient pas seulement à la couleur d\'une carapace. C\'est la continuité entre le produit de la mer, le travail des personnes qui le vendent et la cuisine pratiquée sur place. Cette continuité n\'empêche ni les changements économiques ni les tensions sur la ressource.'
+        ]
+      },
+      {
+        title: 'Le poivre de Kampot rencontre le crabe',
+        paragraphs: [
+          'Parmi les associations culinaires de la région, celle du crabe avec du poivre vert frais de Kampot est particulièrement connue. Le contraste a du sens : la chair délicate du crustacé et le parfum végétal, vif, du poivre racontent deux activités voisines, la pêche d\'un côté et l\'agriculture de l\'autre.',
+          'Cette rencontre ne signifie pas que les producteurs de poivre et les pêcheurs pratiquent les mêmes métiers, ni que tous les crabes servis à Kep sont nécessairement pêchés dans les eaux les plus proches. Elle illustre plutôt la manière dont la cuisine peut rapprocher plusieurs produits d\'un territoire.',
+          'Pour comprendre comment le poivre est cultivé, récolté et protégé par une indication géographique, il faut se tourner vers le Carnet consacré à Kampot. Ici, l\'intérêt est ailleurs : dans la rencontre entre ce qui arrive du littoral et ce que les terres voisines apportent à l\'assaisonnement.'
+        ]
+      },
+      {
+        title: 'La mer n\'est pas une ressource infinie',
+        paragraphs: [
+          'La renommée du crabe de Kep pose aussi une question moins souvent racontée : comment continuer à vivre de cette pêche lorsque la pression sur la ressource augmente ? Des travaux menés depuis plusieurs années dans la région documentent les difficultés de gestion des stocks de crabes et la nécessité de protéger les habitats côtiers.',
+          'En 2026, des opérations de restauration des populations de crabes nageurs ont été soutenues dans des communautés de pêche de Kep et de Kampot. Elles s\'inscrivent dans un ensemble plus vaste d\'initiatives pour renforcer la résilience des moyens de subsistance face aux changements environnementaux.',
+          'Ces actions ne prouvent pas, à elles seules, que les populations de crabes sont désormais rétablies ou que chaque capture vendue au marché est durable. Elles montrent en revanche que la préservation des ressources est devenue un enjeu concret, pour le milieu marin comme pour les personnes dont la pêche constitue une source de revenus.'
+        ]
+      },
+      {
+        title: 'Ce que le marché raconte de la cuisine cambodgienne',
+        paragraphs: [
+          'À Kep, le marché ne vend pas uniquement du crabe. D\'autres poissons et produits de la mer y ont leur place, aux côtés de condiments et de préparations qui répondent à des usages variés. Regarder cet ensemble évite de résumer la cuisine côtière à une seule recette devenue célèbre.',
+          'Le poivre rappelle les fermes de Kampot ; les paniers de produits marins évoquent le travail des pêcheurs ; les étals mettent en contact vendeurs, cuisiniers, habitants et voyageurs. Mais ce lieu n\'est pas un décor figé. Il dépend des saisons, des ressources et des choix collectifs sur la manière de continuer à pêcher.',
+          'Si le marché aux crabes de Kep mérite un Carnet, c\'est précisément parce qu\'il ne raconte pas seulement une saveur. Il donne à voir comment une spécialité relie la mer, les terres, des métiers et des questions d\'avenir.'
         ]
       }
     ],
-    image: '/images/cuisine/kep-market-1600.webp',
-    imageAlt: 'Marché de Kep au Cambodge avec produits frais',
-    imageWidth: 1600,
-    imageHeight: 1334,
-    imageWidths: [480, 800, 1200, 1600],
+    image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/Kep_Crab_Market.jpg/1280px-Kep_Crab_Market.jpg',
+    imageAlt: 'Étals et visiteurs sous les auvents colorés du marché de Kep, au Cambodge',
+    imageWidth: 1280,
+    imageHeight: 960,
+    imageWidths: [],
+    /** Visuel existant inchangé pour préserver le catalogue social ; à remplacer avant publication de C05. */
+    socialImage: '/images/cuisine/kep-market-1600.webp',
     sources: [
-      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: tourismGuide },
-      { label: 'OMPI — Poivre de Kampot', url: 'https://www.wipo.int/fr/web/lisbon-system/w/news/2021/news_0001' }
+      { label: 'SEAFDEC — Filière et pêche du crabe nageur à Kep (juin 2020)', url: 'https://repository.seafdec.or.th/handle/20.500.12067/1471' },
+      { label: 'FAO — Restauration des stocks de crabe à Kep et Kampot (15 juin 2026)', url: 'https://www.fao.org/cambodia/news/detail/850-000-blue-swimming-crablets-released-in-kampot-to-support-coastal-fisheries-and-climate-resilience/en' },
+      { label: 'SEAFDEC — Gestion communautaire de la pêche à Angkaol', url: 'https://repository.seafdec.org/handle/20.500.12066/6449' },
+      { label: 'OMPI — Poivre de Kampot et indication géographique', url: 'https://www.wipo.int/fr/web/lisbon-system/w/news/2021/news_0001' }
     ]
   },
   {
