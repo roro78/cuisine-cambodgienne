@@ -182,7 +182,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 - **Décisions en attente :** D1 et M2 (titres, angles, plans, sources cibles et taxonomie), approbation des futurs médias. **Cette mise à jour n'est pas sur main tant que la PR n'est pas fusionnée** ; zéro fusion et zéro déploiement autorisés.
 - **État :** M1 « À valider » (livrables 7/7 produits) ; M2–M7 « À faire » ; **0/7 enrichi, 0/4 nouveau, 0 publication**.
 - **Prochaine action :** transmettre les sept briefs au propriétaire, recevoir ses décisions, puis préparer le premier petit lot approuvé. Baseline GSC à collecter avant publication.
-- **Preuve :** rapport M1 versionné et historique de cette branche/PR.
+- **Preuve :** [PR brouillon #97](https://github.com/roro78/cuisine-cambodgienne/pull/97), [audit M1 et briefs](./AUDIT-M1-BRIEFS-2026-10-22.md), commits f29e50a et 830e2f9. La branche main a reçu entre-temps deux commits sur la documentation des Ateliers ; comparaison GitHub : aucun fichier Carnets partagé et PR fusionnable, sans fusion effectuée.
 
 ### 2026-10-22 — J00 — création du plan v1.0
 - **Réalisé :** recensement des sept entrées du catalogue Culture et des trois fichiers source principaux ; existence des docs Ateliers, guide éditorial et héritage SEO identifiés ; objectifs, périmètre, jalons et règles de suivi définis.
