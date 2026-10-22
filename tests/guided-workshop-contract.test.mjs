@@ -12,7 +12,7 @@ test('pilot is separated from the six historical lessons and stays noindex', () 
   assert.equal(workshop.recipeSource.status, 'source_verified');
   assert.equal(workshop.recipeSource.url, 'https://cambodiarecipe.com/tamarind-sauce/');
   assert.ok(workshop.recipeSource.crossCheckUrls.length >= 2);
-  assert.match(page, /workshop.recipeSource.url/);
+  assert.doesNotMatch(page, /recipeSource\.url|Source vérifiée|Autres références|fabriquer/i, 'No documentary references or banned verb on public workshop');
   assert.match(page, /noindex=\{workshop.status !== 'validated'\}/);
   assert.match(workshop.historyUrl, /^\/apprendre\/equilibrer-une-sauce\/$/);
   assert.ok(!page.includes('getWorkshopAudio('), 'No historical Coral file may be presented as the new narration');
@@ -58,8 +58,8 @@ test('all six stages teach measurable actions, cues, troubleshooting and audio s
   assert.match(source, /10 ml de sauce/);
   assert.match(source, /quatre bols|quatre coupelles/i);
   assert.match(source, /une cuillère à café, soit environ 5 ml/);
-  assert.match(source, /une expérience pédagogique ajoutée à la recette publiée/);
-  assert.match(page, /recetteSource\.url|recipeSource\.url/, 'The publisher must appear on the page');
+  assert.match(source, /exercice pédagogique pour comparer séparément/);
+  assert.doesNotMatch(page, /Source vérifiée|Autres références|fabriquer/i, 'Public editorial contract');
   const stage = Object.fromEntries(workshop.steps.map(step => [step.id, step]));
   assert.match(stage.base.instructions.join(' '), /incorporez-les immédiatement dans la casserole/);
   assert.match(stage.base.instructions.join(' '), /une à deux minutes/);

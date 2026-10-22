@@ -47,7 +47,7 @@ try {
       assert.equal(await page.locator('.guided-step').count(), 6, 'Six cooking stages');
       assert.equal(await page.locator('[data-guided-done]').count(), 6, 'Six completion controls');
       assert.equal(await page.locator('[data-guided-meter]').evaluate(el => el.value), 0);
-      assert.match(await page.locator('.guided-context').innerText(), /Source vérifiée/i);
+      assert.doesNotMatch(await page.locator('.guided-context').innerText(), /Source vérifiée|Cambodia Recipe|Autres références|fabriquer/i, 'No public documentary sources or banned wording');
       assert.equal(await page.locator('summary:text("Lire le brouillon de narration")').count(), 0,
         'Private voice drafts must not appear in public page');
       assert.equal(await page.locator('[data-workshop-chapter-player]').count(), 0,

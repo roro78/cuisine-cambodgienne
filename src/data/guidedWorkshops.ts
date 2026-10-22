@@ -72,7 +72,7 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
   description: 'Réaliser une sauce acidulée au tamarin, de la pulpe à la dégustation : quantités, filtrage, assaisonnement, quatre bols de comparaison et corrections progressives.',
   promise: 'Vous commencez avec de la pulpe de tamarin et repartez avec une sauce prête à servir, en ayant compris comment corriger son goût.',
   portions: 'Environ 2 petites portions, après quatre coupelles de dégustation',
-  recipeNote: 'La sauce de base reprend les proportions publiées par Cambodia Recipe (2023) : deux cuillères à soupe de pulpe de tamarin, 80 ml d’eau, deux cuillères à soupe de sucre et deux de sauce de poisson. L’ail et le piment sont facultatifs. Les petites réserves de sel, de sucre et d’eau, la filtration et les quatre bols de comparaison sont des ajouts pédagogiques pour pouvoir réellement goûter et rectifier la sauce.',
+  recipeNote: 'La sauce de base utilise les proportions suivantes : deux cuillères à soupe de pulpe de tamarin, 80 ml d’eau, deux cuillères à soupe de sucre et deux de sauce de poisson. L’ail et le piment sont facultatifs. Les petites réserves de sel, de sucre et d’eau, la filtration et les quatre bols de comparaison sont des ajouts pédagogiques pour pouvoir réellement goûter et rectifier la sauce.',
   recipeSource: {
     status: 'source_verified',
     title: 'Cambodia Recipe — Tamarind Sauce',
@@ -126,7 +126,7 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
         'Prélevez une cuillère à café, soit environ 5 ml, de jus de tamarin non assaisonné dans une coupelle propre et laissez-le tiédir ; cette réserve servira aux essais puis, si nécessaire, à la correction finale.'
       ],
       check: 'Le jus est homogène ; une petite portion acide non assaisonnée a été mise de côté.',
-      tip: 'La source chauffe directement le tamarin dans l’eau. La filtration facultative est une adaptation de l’atelier pour éviter les fibres dans les coupelles.',
+      tip: 'Une filtration facultative évite les fibres dans les coupelles, particulièrement avec une pulpe filandreuse.',
       recovery: 'Si le jus s’est trop évaporé, un très petit appoint d’eau est possible, en sachant qu’il modifie la concentration de la recette.',
       narrationDraft: 'Faites chauffer en remuant jusqu’aux petites bulles. Filtrez seulement si des fibres gênantes subsistent. Gardez une cuillère à café de jus de tamarin non assaisonné pour l’exercice de dégustation.'
     },
@@ -157,7 +157,7 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
         'Remuez avec des cuillères distinctes, puis goûtez sans vous brûler et comparez acidité, douceur et salé à la coupelle témoin.'
       ],
       check: 'Vous savez nommer le goût qui ressort davantage dans chacune des coupelles modifiées.',
-      tip: 'Les quatre coupelles sont une expérience pédagogique ajoutée à la recette publiée, et non une étape revendiquée par son auteur.',
+      tip: 'Les quatre coupelles sont un exercice pédagogique pour comparer séparément l’acidité, le sucré et le salé.',
       recovery: 'Si une correction ne se distingue pas, regoûtez le témoin avant de faire des ajouts supplémentaires.',
       narrationDraft: 'Versez dix millilitres de sauce dans quatre coupelles. Gardez la première nature. Dans la deuxième, deux ou trois gouttes du jus de tamarin réservé ; dans la troisième, une pincée de sucre ; dans la quatrième, deux gouttes de sauce de poisson. Goûtez avec des cuillères propres.'
     },
@@ -172,7 +172,7 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
         'Remuez et regoûtez après chaque correction avec une cuillère propre ; si l’ensemble reste trop intense, ajoutez une cuillère à café (5 ml) d’eau supplémentaire à la fois, sans dépasser d’emblée les 15 ml préparés à part. Cette eau ne fait pas partie des 80 ml de la recette de base.'
       ],
       check: 'La sauce garde une saveur de tamarin identifiable et l’équilibre vous plaît avec son accompagnement.',
-      tip: 'La recette source conseille de rectifier le sucré et le salé, sans imposer un équilibre identique à toutes les personnes.',
+      tip: 'Rectifiez le sucré et le salé en petites quantités, sans imposer un équilibre identique à tout le monde.',
       recovery: 'Si vous avez trop salé, évitez de masquer ce défaut avec beaucoup de sucre ; corrigez plutôt la concentration.',
       narrationDraft: 'Gardez les coupelles déjà goûtées à part. Dans la sauce principale, ajustez une seule chose à la fois : tamarin réservé, sucre ou sauce de poisson. Si le goût est trop intense, ajoutez une cuillère à café d’eau supplémentaire, mélangez et regoûtez.'
     },
@@ -192,12 +192,12 @@ export const tamarindGuidedWorkshop: GuidedWorkshop = {
       narrationDraft: 'La sauce est prête. Versez-la dans un bol propre et servez-la avec du poisson déjà cuit. Gardez les coupelles de dégustation séparées et placez rapidement les éventuels restes au frais.'
     }
   ],
-  serving: 'À utiliser comme condiment avec du poisson grillé ou frit. La version à quatre coupelles est une adaptation pédagogique ajoutée à la recette publiée.',
+  serving: 'À utiliser comme condiment avec du poisson grillé ou frit. Les quatre coupelles constituent un exercice de dégustation facultatif.',
   safety: [
     'Contient du poisson via la sauce de poisson. Vérifiez les allergies des convives.',
     'N’utilisez pas de produits crus nécessitant une cuisson comme base de dégustation.',
     'Goûtez la sauce tiédie et non brûlante ; utilisez des cuillères propres.',
     'Conservez séparément les portions de dégustation et la sauce principale.',
-    'La durée de 24 heures au réfrigérateur est une précaution de l’atelier, distincte de la recette source ; ne conservez pas les coupelles déjà goûtées pour un repas ultérieur.'
+    'La durée de 24 heures au réfrigérateur est une précaution propre à cet atelier ; ne conservez pas les coupelles déjà goûtées pour un repas ultérieur.'
   ]
 };
