@@ -4,7 +4,7 @@
 >
 > **Règle de preuve** : « vérifié » signifie seulement que **le document cité contient bien l'information indiquée**, pas que chaque thèse historique est définitivement établie ni que l'ensemble de son contenu est utilisable. Les mentions « à recouper » ne doivent pas devenir des faits publiés. Aucune photographie externe n'est autorisée par la seule lecture de sa page.
 >
-> **Publication interdite dans ce lot** : aucun article, image, URL, test CI ni déploiement modifiés ; visas D1, D2, D3 toujours ouverts.
+> **Publication interdite dans ce lot** : aucun article, image, URL, test CI ni déploiement modifiés ; D1 (orientations et correction C01) **accordé le 22/10/2026** ; D2/D3 et validation des articles complets toujours ouverts.
 
 ## 1. Correction prioritaire P0 — prix du riz en 2025
 
@@ -75,8 +75,8 @@ Décision à obtenir : autoriser une **correction factuelle ciblée de C01**, sa
 
 | Décision | Préconisation argumentée | Autorisation reçue ? |
 | --- | --- | --- |
-| D1-C01 à C07 | Conserver tous les slugs ; approuver les sept angles documentés par l'audit M1, avec droit de réduire un plan si les sources sont insuffisantes. | **NON** |
-| D1-C01-P0 | Corriger **en priorité** l'omission de l'ex æquo du prix de 2025 ; patch minimal et traçable séparé de la refonte. | **NON** |
+| D1-C01 à C07 | Conserver tous les slugs ; approuver les sept angles documentés par l'audit M1, avec droit de réduire un plan si les sources sont insuffisantes. | **OUI — 22/10/2026, orientations approuvées ; articles finaux non encore visés** |
+| D1-C01-P0 | Corriger **en priorité** l'omission de l'ex æquo du prix de 2025 ; patch minimal et traçable séparé de la refonte. | **OUI — 22/10/2026 ; modification autorisée, publication/fusion non autorisées** |
 | D1-modèle | 5–7 sections **quand les preuves le justifient**, longueur non imposée, H1 unique, 2 sources indépendantes lorsque affirmation contestable, dates explicites, registre droits et médias, liens internes réellement existants, revue factuelle. | **NON** |
 | D2-taxonomie | Trois univers réellement fournis par les 7 Carnets ; **quatrième « Fêtes et traditions » vide actuellement**. Proposition A : autoriser un **tag secondaire** sur C01 *seulement* si le passage ambok/fête est solidement sourcé et le classement compréhensible. Proposition B : attendre N03/N06 pour activer le quatrième univers. **Ne pas produire un filtre vide sans décision.** | **NON** |
 | D2-parcours | Interface accessible par ancres ou filtres sans JS obligatoire, cartes et durée mesurées ; ne pas toucher aux autres rubriques. | **NON** |
@@ -93,5 +93,7 @@ Décision à obtenir : autoriser une **correction factuelle ciblée de C01**, sa
 4. Les traces GitHub attestent la présence des fichiers locaux, **pas** les droits des photos ni leur représentation exacte ; le contrôle photographique et les tests navigateurs restent ouverts.
 5. Les témoignages recueillis dans un contexte particulier (familles, diaspora, quartier) doivent être attribués, sans généraliser à l'ensemble du Cambodge.
 
-### Prochaine action admissible sans visa
-Partager le document et préparer, **hors production**, un diff exact de la correction C01-P0 pour validation. Demander l'avis du propriétaire sur D1/D2 ; enregistrer la décision avant d'ouvrir un lot de réécriture.
+### Décision reçue et prochaine action (22/10/2026)
+**Décision reçue du propriétaire :** oui aux **sept orientations** et au **correctif de l'ex æquo C01**. Le correctif minimal peut désormais être préparé en code dans une PR indépendante de préparation, sans fusion automatique. La validation du texte complet des futurs Carnets, le modèle M2, le choix D2 des quatre univers et D3 publication restent ouverts. Mettre les futurs premiers drafts en revue avant diffusion.
+
+**Prochaine action :** préparer le diff C01-P0 et le contrôler sur une PR dédiée ; ne pas confondre autorisation de modifier le brouillon source avec autorisation de publier sur OVH.
