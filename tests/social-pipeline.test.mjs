@@ -57,7 +57,9 @@ test('source content catalog is data-derived and rejects invented duplicate IDs'
   assert.match(s,/\.\.\.recipes\.map/);
   assert.match(s,/\.\.\.ingredientGuides\.map/);
   assert.match(s,/\.\.\.cultureArticles\.map/);
-  assert.match(s,/\.\.\.workshops\.map/);
+  assert.match(s,/completeCookingWorkshopCutoverReady/, 'V2 workshop cutover must remain guarded');
+  assert.match(s,/releasedCookingWorkshopGuides\.map/, 'Released guides must be supported');
+  assert.match(s,/workshops\.map/, 'Historical six-workshop fallback must remain');
   assert.match(s,/\.\.\.recipeTechniqueGuides\.map/);
   assert.match(s,/social_catalog_duplicate_ids/);
   assert.match(s,/sha256/);
