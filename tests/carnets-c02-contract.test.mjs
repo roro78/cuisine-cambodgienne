@@ -10,6 +10,16 @@ const c02 = source.slice(start, end);
 
 assert.match(c02, /title: 'Le poivre de Kampot, de la plantation à la table'/);
 assert.match(c02, /image: '\/images\/cuisine\/kampot-1600\.webp'/);
+const localWebp = readFileSync('public/images/cuisine/kampot-1600.webp');
+assert.equal(localWebp.toString('ascii', 0, 4), 'RIFF', 'WebP RIFF magic');
+assert.equal(localWebp.toString('ascii', 8, 12), 'WEBP', 'WebP format signature');
+assert.equal(localWebp.toString('ascii', 12, 16), 'VP8 ', 'WebP lossy frame format');
+const naturalWidth = localWebp.readUInt16LE(26) & 0x3fff;
+const naturalHeight = localWebp.readUInt16LE(28) & 0x3fff;
+assert.equal(naturalWidth, 1600, 'Do not confuse original camera dimensions with encoded WebP');
+assert.equal(naturalHeight, 1067);
+assert.match(c02, new RegExp('imageWidth: ' + naturalWidth + ','), 'Declared image width must match real binary');
+assert.match(c02, new RegExp('imageHeight: ' + naturalHeight + ','), 'Declared image height must match real binary');
 assert.match(c02, /readingTime: '5 min'/);
 assert.equal([...c02.matchAll(/^\s{8}title:\s/gm)].length, 7, 'The draft must contain seven H2 chapters');
 assert.equal([...c02.matchAll(/^\s{8}paragraphs:\s\[/gm)].length, 7, 'Every chapter must have paragraphs');

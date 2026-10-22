@@ -198,8 +198,8 @@ export const cultureArticles: CultureArticle[] = [
     ],
     image: '/images/cuisine/kampot-1600.webp',
     imageAlt: 'Grappes de poivre vert de Kampot sur le plant',
-    imageWidth: 6000,
-    imageHeight: 4000,
+    imageWidth: 1600,
+    imageHeight: 1067,
     imageWidths: [480, 800, 1200, 1600],
     sources: [
       { label: 'OMPI — Indication géographique du poivre de Kampot (18 janvier 2021)', url: 'https://www.wipo.int/fr/web/lisbon-system/w/news/2021/news_0001' },
