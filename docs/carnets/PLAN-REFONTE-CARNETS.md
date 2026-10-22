@@ -4,10 +4,10 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v1.5 (politique de références non visibles préparée en PR empilée, non fusionnée)** · Responsable de validation : **propriétaire du site**  
-> État du projet : **M2 EN COURS : D1 VALIDÉ ; C01 CORRIGÉ EN PR, SOURCES DOCUMENTAIRES DÉSAFFICHÉES SUR BRANCHE, AUCUNE PUBLICATION**  
-> **Étape active : M2 — sept orientations C01–C07 validées par le propriétaire, autres arbitrages ouverts ; aucun article final validé.**  
-> Prochaine action : contrôler la suppression des bibliographies publiques et le correctif C01, lancer la CI et faire valider le rendu avant toute fusion ; préparer les enrichissements C01–C07. D2 (univers/maquette) et priorités N01–N04 restent ouverts. Export GSC et visa publication nécessaires avant OVH. **PR #97 et #98 non fusionnées ; PR de politique d'affichage empilée, aucune publication.**
+> Création : **22 octobre 2026** · Version du plan : **v1.6 (C02 rédigé en prévisualisation, jamais publié)** · Responsable de validation : **propriétaire du site**  
+> État du projet : **M2 EN COURS — D1 VALIDÉ, C01 CORRIGÉ EN PR, C02 EN BROUILLON DE PRÉVISUALISATION, AUCUNE PUBLICATION**  
+> **Étape active : M2 — sept orientations validées ; texte C02 préparé pour réception dans une branche dépendante, aucun article final accepté.**  
+> Prochaine action : faire relire le [brouillon C02](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md) et vérifier le rendu de la branche de prévisualisation ; arbitrer D2 (quatre univers / catégorie encore vide) et priorités N01–N04. Export GSC, licences photo et visa de publication nécessaires avant OVH. **PR #97, #98 et #99 non fusionnées ; branche C02 empilée, aucune publication.**
 
 ## 1. Objectif final
 
@@ -51,7 +51,7 @@ Constaté dans la branche **main** au moment de la création de ce plan :
 | ID | URL canonique existante (slug) | Orientation proposée | Univers | Travail attendu | Statut |
 | --- | --- | --- | --- | --- | --- |
 | C01 | le-riz-symbole-de-vie-au-cambodge | **Le riz, au cœur de la vie cambodgienne** ; quotidien, rizières, variétés, fêtes, distinction internationale | Vie quotidienne | Consolider et enrichir visuels et maillage ; vérifier dates et prix cités | **Orientation D1 validée — article non enrichi** |
-| C02 | poivre-de-kampot | **Le poivre de Kampot, de la plantation à la table** ; terroir, producteurs, récolte, IG | Terroirs et marchés | Sortir du format fiche ingrédient ; illustrer les étapes | **Orientation D1 validée — article non enrichi** |
+| C02 | poivre-de-kampot | **Le poivre de Kampot, de la plantation à la table** ; terroir, producteurs, récolte, IG | Terroirs et marchés | Sortir du format fiche ingrédient ; illustrer les étapes | **Prévisualisation enrichie préparée — texte/média non validés** |
 | C03 | comprendre-le-kroeung | **Le kroeung, des gestes qui se transmettent** ; mortier, variations, usages familiaux | Gestes et transmission | Distinction du tutoriel et renvoi à l'atelier existant | **Orientation D1 validée — article non enrichi** |
 | C04 | comprendre-amok | **L'amok, un plat et ses interprétations** ; contexte, ingrédients, service, variations attestées | Gestes et transmission | Vérifier les assertions d'origine ; garder la technique dans la recette | **Orientation D1 validée — article non enrichi** |
 | C05 | kep-marche-crabe-poivre | **Kep, le marché, le crabe et le poivre** ; territoire, commerce, cuisine du littoral | Terroirs et marchés | Traitement reportage **sans prétendre y être allé** ; contrôle photos | **Orientation D1 validée — article non enrichi** |
@@ -109,7 +109,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | **M0 — Pilotage** | Plan versionné et accès depuis le dépôt | Fichier sur main, lien lisible, étape active explicite | **FAIT le 22/10/2026** |
 | **M1 — Audit et briefs** | Inventaire C01–C07 : source, photos, liens, H1, SEO, fiche par article ; baseline GSC si disponible ; briefs proposés | **7 fiches** + écarts consignés ; aucun contenu original touché ; briefs soumis à validation | **VALIDÉ pour les 7 orientations, en PR ; GSC non disponible** |
 | **M2 — Validation éditoriale** | Angles/titres/plans/sources cibles validés, modèle commun fixé ; priorités N01–N04 confirmées | Décisions écrites ; refus et inconnues documentés | **EN COURS : D1 sept orientations + erratum C01 acceptés ; D2/modèle/priorités N01–N04 à arbitrer** |
-| **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | À faire |
+| **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | **À faire : C02 pré-rédigé pour M3 en PR non fusionnée, gate M2 non franchi** |
 | **M4 — Index Carnets** | Refonte /culture/ avec quatre univers et nouveaux parcours | Navigation accessible, responsive, cohérence avec les sept Carnets | À faire |
 | **M5 — Première vague N01–N04** | Quatre nouveaux dossiers, articles et visuels | **4/4** validés, sources et média vérifiés ; publication par lot possible | À faire |
 | **M6 — Recette technique et publication** | Tests éditoriaux, build, liens, SEO, photos, mobile/desktop, vérification OVH | Aucun défaut bloquant ; accord propriétaire avant fusion/déploiement ; compte-rendu HTTP après mise en production | À faire |
@@ -165,7 +165,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | --- | --- |
 | Carnets existants au catalogue main | **7** (constaté dans src/data/culture.ts) |
 | Briefs audités/validés | **7/7 orientations validées (D1) en PR ; 0/7 articles réécrits validés** |
-| Carnets enrichis/validés | **0/7** |
+| Carnets enrichis/validés | **1/7 brouillon en prévisualisation (C02) ; 0/7 articles finalisés/validés** |
 | Nouveaux Carnets publiés | **0/4** |
 | Univers implémentés sur /culture/ | **0/4** au sens de filtres structurés |
 | Index refondu/validé | **Non** |
@@ -174,6 +174,14 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J06 — premier Carnet rédigé et préparé en prévisualisation, C02
+- **Réalisation :** rédaction du texte complet C02 « Le poivre de Kampot, de la plantation à la table » en sept sections et vingt-et-un paragraphes ; intégration isolée dans `src/data/culture.ts` sur la branche `docs/carnets-c02-brouillon-editorial-20261022`. Conservés : slug `poivre-de-kampot`, image principale existante, autres six Carnets et redirections. Durée provisoire : 5 min à partir d'environ 1 100 mots, à confirmer dans le rendu.
+- **Sources internes (aucun affichage public) :** FAO (2022), OMPI (2021), association KPPA, cahier des charges officiel cambodgien (PDF sections III et VI contrôlées visuellement). Constat contradictoire documenté : correspondance « petites/grandes feuilles » inversée selon la page de la KPPA et le cahier des charges officiel ; cette précision n'est **pas** insérée au texte lecteur. Éviter une date de reconnaissance cambodgienne tant que les sources historiques sont réconciliées.
+- **Preuve :** [brouillon C02 et registre de faits](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md), fichier `src/data/culture.ts` et nouveau test `tests/carnets-c02-contract.test.mjs` raccordé à `npm run test:editorial`. **Ces tests ne sont pas encore réputés exécutés**.
+- **État/gate :** travail **anticipé en prévisualisation** avant passage formel de M2 ; aucun nouveau texte validé/accepté, aucun nouveau visuel ni publication. Le propriétaire a validé l'angle C02, pas chaque formulation. D2 et D3 restent ouverts.
+- **Prochaine action :** revue contradictoire du texte C02 et des droits du visuel ; réception de la maquette/taxonomie D2 ; autres Carnets par petits lots après gate M2.
+- **Publication :** **aucune fusion ni déploiement OVH** ; éviter d'importer en production le contenu de cette branche avant autorisation.
 
 ### 2026-10-22 — J05 — décision du propriétaire : pas de sources visibles sur les pages publiques
 - **Instruction explicite :** « Aucune source ne doit être mentionnée dans nos pages » (22/10/2026). Application : **aucun bloc de bibliographie documentaire sur les Carnets, Recettes, Ateliers et À propos**, y compris les liens de sources documentaires (riz/VNA), bien que ces URLs restent conservées pour contrôles internes.
