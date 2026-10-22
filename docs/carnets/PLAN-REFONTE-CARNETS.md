@@ -4,10 +4,10 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v1.7 (C02 et C05 rédigés en prévisualisation, contrôle photographique Kep documenté)** · Responsable de validation : **propriétaire du site**  
-> État du projet : **M2 EN COURS — D1 VALIDÉ, C01 CORRIGÉ, C02 ET C05 EN PRÉVISUALISATION NON VALIDÉE ; AUCUNE PUBLICATION**  
-> **Étape active : M2 — sept orientations validées ; deux textes complets C02/C05 préparés pour réception sur branches dépendantes, aucun article final accepté.**  
-> Prochaine action : faire relire [C02](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md) et [C05](./BROUILLON-C05-KEP-MARCHE-CRABES-2026-10-22.md), vérifier la nouvelle photo de marché, **remplacer sa version CDN par un WebP local avant toute publication**, et contrôler le responsive/CI sur la branche ; arbitrer D2 et N01–N04. Export GSC et visa publication nécessaires. **PR #97 à #100 non fusionnées ; branche C05 empilée et non publiée.**
+> Création : **22 octobre 2026** · Version du plan : **v1.8 (C02/C03/C05 en prévisualisation, blocage image Kep et droits mortier tracés)** · Responsable de validation : **propriétaire du site**  
+> État du projet : **M2 EN COURS — D1 VALIDÉ, C01 CORRIGÉ, C02/C03/C05 EN PRÉVISUALISATION NON VALIDÉE ; AUCUNE PUBLICATION**  
+> **Étape active : M2 — sept orientations validées ; trois textes complets C02/C03/C05 préparés en PR dépendantes, aucun texte final accepté.**  
+> Prochaine action : faire relire [C02](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md), [C03](./BROUILLON-C03-KROEUNG-TRANSMISSION-2026-10-22.md) et [C05](./BROUILLON-C05-KEP-MARCHE-CRABES-2026-10-22.md). **Kep : photo CC0 distante à importer en WebP local**, non réalisée. **C03 : droits du visuel mortier non attestés (rightsValidated=false)**. Exécuter tests/CI et contrôle mobile avant une éventuelle réception, arbitrer D2 et N01–N04, recueillir la baseline GSC et les visas de publication. **PR #97–#101 non fusionnées, branche C03 empilée non publiée.**
 
 ## 1. Objectif final
 
@@ -52,7 +52,7 @@ Constaté dans la branche **main** au moment de la création de ce plan :
 | --- | --- | --- | --- | --- | --- |
 | C01 | le-riz-symbole-de-vie-au-cambodge | **Le riz, au cœur de la vie cambodgienne** ; quotidien, rizières, variétés, fêtes, distinction internationale | Vie quotidienne | Consolider et enrichir visuels et maillage ; vérifier dates et prix cités | **Orientation D1 validée — article non enrichi** |
 | C02 | poivre-de-kampot | **Le poivre de Kampot, de la plantation à la table** ; terroir, producteurs, récolte, IG | Terroirs et marchés | Sortir du format fiche ingrédient ; illustrer les étapes | **Prévisualisation enrichie préparée — texte/média non validés** |
-| C03 | comprendre-le-kroeung | **Le kroeung, des gestes qui se transmettent** ; mortier, variations, usages familiaux | Gestes et transmission | Distinction du tutoriel et renvoi à l'atelier existant | **Orientation D1 validée — article non enrichi** |
+| C03 | comprendre-le-kroeung | **Le kroeung, des gestes qui se transmettent** ; mortier, variations, usages familiaux | Gestes et transmission | Récit distinct de l'atelier ; image réutilisée validée visuellement mais droits non attestés | **Prévisualisation enrichie — texte/média non validés** |
 | C04 | comprendre-amok | **L'amok, un plat et ses interprétations** ; contexte, ingrédients, service, variations attestées | Gestes et transmission | Vérifier les assertions d'origine ; garder la technique dans la recette | **Orientation D1 validée — article non enrichi** |
 | C05 | kep-marche-crabe-poivre | **Kep, au marché des crabes, entre mer et poivre** ; pêche, commerce côtier, préservation | Terroirs et marchés | Texte reportage sans visite fictive ; ancienne photo faussement légendée ; visuel CC0 en CDN de staging à internaliser | **Prévisualisation enrichie — texte/média non validés** |
 | C06 | prahok-fermentation-umami | **Prahok : conservation et mémoire culinaire** ; pêche, transformations, usages | Gestes et transmission | Documentation et prudence sanitaire ; pas de protocole amateur risqué | **Orientation D1 validée — article non enrichi** |
@@ -109,7 +109,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | **M0 — Pilotage** | Plan versionné et accès depuis le dépôt | Fichier sur main, lien lisible, étape active explicite | **FAIT le 22/10/2026** |
 | **M1 — Audit et briefs** | Inventaire C01–C07 : source, photos, liens, H1, SEO, fiche par article ; baseline GSC si disponible ; briefs proposés | **7 fiches** + écarts consignés ; aucun contenu original touché ; briefs soumis à validation | **VALIDÉ pour les 7 orientations, en PR ; GSC non disponible** |
 | **M2 — Validation éditoriale** | Angles/titres/plans/sources cibles validés, modèle commun fixé ; priorités N01–N04 confirmées | Décisions écrites ; refus et inconnues documentés | **EN COURS : D1 sept orientations + erratum C01 acceptés ; D2/modèle/priorités N01–N04 à arbitrer** |
-| **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | **À faire : C02/C05 pré-rédigés pour M3 en PR non fusionnées, gate M2 non franchi** |
+| **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | **À faire : C02/C03/C05 pré-rédigés pour M3 en PR non fusionnées, gate M2 non franchi** |
 | **M4 — Index Carnets** | Refonte /culture/ avec quatre univers et nouveaux parcours | Navigation accessible, responsive, cohérence avec les sept Carnets | À faire |
 | **M5 — Première vague N01–N04** | Quatre nouveaux dossiers, articles et visuels | **4/4** validés, sources et média vérifiés ; publication par lot possible | À faire |
 | **M6 — Recette technique et publication** | Tests éditoriaux, build, liens, SEO, photos, mobile/desktop, vérification OVH | Aucun défaut bloquant ; accord propriétaire avant fusion/déploiement ; compte-rendu HTTP après mise en production | À faire |
@@ -165,7 +165,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | --- | --- |
 | Carnets existants au catalogue main | **7** (constaté dans src/data/culture.ts) |
 | Briefs audités/validés | **7/7 orientations validées (D1) en PR ; 0/7 articles réécrits validés** |
-| Carnets enrichis/validés | **2/7 brouillons en prévisualisation (C02/C05) ; 0/7 articles finalisés/validés** |
+| Carnets enrichis/validés | **3/7 brouillons en prévisualisation (C02/C03/C05) ; 0/7 articles finalisés/validés** |
 | Nouveaux Carnets publiés | **0/4** |
 | Univers implémentés sur /culture/ | **0/4** au sens de filtres structurés |
 | Index refondu/validé | **Non** |
@@ -174,6 +174,15 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J08 — C03 Kroeung complet ; confirmation des blocages photographiques
+- **Rédaction en branche dépendante :** C03 `/culture/comprendre-le-kroeung/`, H1 « Le kroeung, des gestes qui se transmettent », 6 chapitres, 18 paragraphes, environ 950 mots. Références de Chef Nak, Cambodianess et recettes cambodgiennes dans [le dossier de preuve interne](./BROUILLON-C03-KROEUNG-TRANSMISSION-2026-10-22.md), **aucune bibliographie visible**. Aucun souvenir familial, interview ou lieu prétendument observé inventé. Le texte renvoie aux ateliers/recettes existants pour la pratique, sans en dupliquer les étapes.
+- **Média C03 :** l'ancien fichier `kroeung-1600.webp` montre un plat sauté, pas le geste du mortier. Réutilisation du visuel déjà présent dans l'atelier `v19-mortier-kroeung-1440.webp`, montrant des mains pilant des aromates, alt descriptif prudent. Les formats existants 800/1200/1440 sont préservés. **L'atelier marque `media.imageValidated=true` mais `media.rightsValidated=false` ; D3 média NON VALIDÉ**, aucune affirmation de photographie documentaire.
+- **Social :** `socialImage` C03 préexistant conservé et `socialImageRole:'article'` pour ne pas changer silencieusement les actifs du catalogue social ; workflows n8n inchangés.
+- **Kep photo :** Wikimedia Commons confirme Mx. Granger, janvier 2020 et CC0 ; l'image CDN s'affiche lors du contrôle web. **L'import binaire en WebP local GitHub n'a PAS abouti** (accès au téléchargement impossible dans l'environnement connecté) ; ne pas déclarer la correction photo finie ni publier une URL distante comme définitive.
+- **Tests :** nouveau `tests/carnets-c03-contract.test.mjs` raccordé à `npm run test:editorial`. Vérifications statiques d'inventaire possibles ; **CI, build et rendu navigateur du site non exécutés**. Ne pas confondre un contrôle du code avec un PASS visuel/technique.
+- **Gate :** M2 EN COURS, 3/7 brouillons préparés, 0/7 textes finaux réceptionnés ; D2 taxonomie/UX et D3 médias/publication **EN ATTENTE**. Aucun merge, aucun déploiement OVH.
+- **Prochaines actions :** valider les trois textes et médias, obtenir image Kep locale et droits photo C03, exécuter CI/build, arbitrer D2 avant M4. Si les médias restent bloquants, poursuivre exclusivement la préparation de contenus internes sans publication.
 
 ### 2026-10-22 — J07 — C05 Kep rédigé ; erreur de photographie prouvée et image provisoire remplacée
 - **Réalisé :** brouillon intégral C05 **6 chapitres / 18 paragraphes, ~1 000 mots** : géographie de Kep, pêche et vente, place du crabe, mariage au poivre, ressources côtières et initiatives de préservation 2026, métiers du marché. Intégré à `src/data/culture.ts` sur `docs/carnets-c05-kep-editorial-20261022` ; slug historique conservé. Aucune visite, interview, saison, prix ou horaire inventé.
