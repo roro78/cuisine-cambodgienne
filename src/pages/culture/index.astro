@@ -96,7 +96,7 @@ const collectionSchema = {
     {featuredArticle && <section class="v16-journal-lead" aria-label="Carnet à la une">
       <a href={'/culture/' + featuredArticle.slug + '/'} class="v16-journal-lead-card">
         <figure>
-          <img src={featuredArticle.image} srcset={imageSrcSet(featuredArticle.image,featuredArticle.imageWidths)} sizes="(max-width:900px) 100vw, 58vw" alt={featuredArticle.imageAlt} width={featuredArticle.imageWidth} height={featuredArticle.imageHeight} loading="eager" decoding="async" />
+          <img src={featuredArticle.image} srcset={featuredArticle.imageWidths.length ? imageSrcSet(featuredArticle.image,featuredArticle.imageWidths) : undefined} sizes="(max-width:900px) 100vw, 58vw" alt={featuredArticle.imageAlt} width={featuredArticle.imageWidth} height={featuredArticle.imageHeight} loading="eager" decoding="async" />
         </figure>
         <div>
           <p class="v16-mini-label">À la une · {featuredArticle.readingTime}</p>
@@ -111,7 +111,7 @@ const collectionSchema = {
       {cultureArticles.filter((article) => article.slug !== featuredSlug).map((article,index) => (
         <a href={'/culture/' + article.slug + '/'} class:list={['v16-journal-card', index === 0 && 'v16-journal-card--wide']} data-reveal="up">
           <figure>
-            <img src={article.image} srcset={imageSrcSet(article.image,article.imageWidths)} sizes="(max-width:760px) 100vw, 45vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} loading="lazy" decoding="async" />
+            <img src={article.image} srcset={article.imageWidths.length ? imageSrcSet(article.image,article.imageWidths) : undefined} sizes="(max-width:760px) 100vw, 45vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} loading="lazy" decoding="async" />
           </figure>
           <div>
             <p class="v16-mini-label">{article.eyebrow} · {article.readingTime}</p>
