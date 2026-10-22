@@ -4,10 +4,10 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v2.2 (C06 prahok culturel préparé ; 5/7 brouillons)** · Responsable de validation : **propriétaire du site**  
-> État du projet : **M2 EN COURS — C01 corrigé ; 5 brouillons C02/C03/C04/C05/C06 en prévisualisation, aucun validé ni publié**  
-> **Étape active : M2 — frontière culture / ateliers / recettes appliquée à C03, C04 et C06 ; aucun texte final accepté.**  
-> Prochaine action : relire les brouillons [C02](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md), [C03](./BROUILLON-C03-KROEUNG-TRANSMISSION-2026-10-22.md), [C04](./BROUILLON-C04-AMOK-PATRIMOINE-2026-10-22.md), [C05](./BROUILLON-C05-KEP-MARCHE-CRABES-2026-10-22.md), [C06](./BROUILLON-C06-PRAHOK-PATRIMOINE-2026-10-22.md). C07 reste à rédiger. Photos : **Kep CDN externe**, **C03 histoire à illustrer**, **C06 photo culinaire seulement**. CI/build, responsive, arbitrage D2, données GSC et visa D3 avant publication. **PR #97–#103 non fusionnées ; branche C06 non publiée.**
+> Création : **22 octobre 2026** · Version du plan : **v2.3 (C07 table partagée préparé ; 6/7 brouillons en prévisualisation)** · Responsable de validation : **propriétaire du site**  
+> État du projet : **M2 EN COURS — C01 correction factuelle en PR ; 6 brouillons C02–C07 en prévisualisation, aucun texte final validé ou publié**  
+> **Étape active : M2 — séparation stricte culture / ateliers / recettes appliquée à C03/C04/C06/C07 ; six brouillons culturels préparés, aucun texte final accepté.**  
+> Prochaine action : recevoir les six brouillons [C02](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md), [C03](./BROUILLON-C03-KROEUNG-TRANSMISSION-2026-10-22.md), [C04](./BROUILLON-C04-AMOK-PATRIMOINE-2026-10-22.md), [C05](./BROUILLON-C05-KEP-MARCHE-CRABES-2026-10-22.md), [C06](./BROUILLON-C06-PRAHOK-PATRIMOINE-2026-10-22.md) et [C07](./BROUILLON-C07-TABLE-PARTAGEE-2026-10-22.md). **Dernier article C01 riz : audit/enrichissement culturel à préparer sans effacer son contenu existant.** Bloquants photos : Kep hébergée hors dépôt, C03 visuel non historique, C06 image de plat, C07 scène éditoriale non documentaire ; tests npm/CI/build et responsive non exécutés. Décisions D2 univers et D3 textes/médias/publication requises ; aucune fusion OVH. **PR #97–#104 non fusionnées, branche C07 en prévisualisation.**
 
 ## 1. Objectif final
 
@@ -56,7 +56,7 @@ Constaté dans la branche **main** au moment de la création de ce plan :
 | C04 | comprendre-amok | **L’amok, entre patrimoine et tables d’aujourd’hui** ; occasions particulières, identité, récit royal non prouvé, restaurants et diaspora | Mémoire culinaire | **Aucune technique de cuisson, texture à réussir ni ingrédients détaillés** ; histoire royale explicitement qualifiée ; photo horizontale CC BY 2.0 avec crédit obligatoire | **Prévisualisation rédigée — texte/média non validés** |
 | C05 | kep-marche-crabe-poivre | **Kep, au marché des crabes, entre mer et poivre** ; pêche, commerce côtier, préservation | Terroirs et marchés | Texte reportage sans visite fictive ; ancienne photo faussement légendée ; visuel CC0 en CDN de staging à internaliser | **Prévisualisation enrichie — texte/média non validés** |
 | C06 | prahok-fermentation-umami | **Prahok, quand la pêche devient patrimoine** ; Tonlé Sap, échanges riz-poisson, femmes productrices, ressources de pêche | Mémoire culinaire | **Aucun protocole ni conseil de fermentation**, traiter les vies et enjeux ; photo actuelle prahok ktis seulement illustrative | **Prévisualisation enrichie — texte/média non validés** |
-| C07 | construire-repas-cambodgien | **À table au Cambodge, le repas partagé** ; sociabilité, pratiques de table, diversité des milieux | Vie quotidienne | Récit de commensalité ; **aucun menu à construire ni conseil de dressage** | **Orientation D1 validée — article non enrichi** |
+| C07 | construire-repas-cambodgien | **À la table cambodgienne, ce que partager veut dire** ; riz et langage, plats communs, attention aux autres, entraide, diversité sociale | Vie quotidienne | **Pas de menu-type, préparation ou conseil de dressage** ; image existante mais **illustrative**, ne pas la présenter comme une famille réelle | **Prévisualisation enrichie — texte et image non validés** |
 
 Les titres sont **des propositions à valider**, pas des renommages effectués. Les **slugs restent inchangés** sauf décision documentée contraire et stratégie SEO spécifique.
 
@@ -109,7 +109,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | **M0 — Pilotage** | Plan versionné et accès depuis le dépôt | Fichier sur main, lien lisible, étape active explicite | **FAIT le 22/10/2026** |
 | **M1 — Audit et briefs** | Inventaire C01–C07 : source, photos, liens, H1, SEO, fiche par article ; baseline GSC si disponible ; briefs proposés | **7 fiches** + écarts consignés ; aucun contenu original touché ; briefs soumis à validation | **VALIDÉ pour les 7 orientations, en PR ; GSC non disponible** |
 | **M2 — Validation éditoriale** | Angles/titres/plans/sources cibles validés, modèle commun fixé ; priorités N01–N04 confirmées | Décisions écrites ; refus et inconnues documentés | **EN COURS : D1 sept orientations + erratum C01 acceptés ; D2/modèle/priorités N01–N04 à arbitrer** |
-| **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | **À faire : C02/C03/C04/C05/C06 pré-rédigés dans des branches non fusionnées, gate M2 non franchi** |
+| **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | **À faire : C02/C03/C04/C05/C06/C07 pré-rédigés dans des branches non fusionnées, gate M2 non franchi** |
 | **M4 — Index Carnets** | Refonte /culture/ avec quatre univers et nouveaux parcours | Navigation accessible, responsive, cohérence avec les sept Carnets | À faire |
 | **M5 — Première vague N01–N04** | Quatre nouveaux dossiers, articles et visuels | **4/4** validés, sources et média vérifiés ; publication par lot possible | À faire |
 | **M6 — Recette technique et publication** | Tests éditoriaux, build, liens, SEO, photos, mobile/desktop, vérification OVH | Aucun défaut bloquant ; accord propriétaire avant fusion/déploiement ; compte-rendu HTTP après mise en production | À faire |
@@ -165,7 +165,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | --- | --- |
 | Carnets existants au catalogue main | **7** (constaté dans src/data/culture.ts) |
 | Briefs audités/validés | **7/7 orientations validées (D1) en PR ; 0/7 articles réécrits validés** |
-| Carnets enrichis/validés | **5/7 brouillons en prévisualisation (C02/C03/C04/C05/C06) ; 0/7 articles finalisés/validés** |
+| Carnets enrichis/validés | **6/7 brouillons en prévisualisation (C02/C03/C04/C05/C06/C07) ; 0/7 articles finalisés/validés** |
 | Nouveaux Carnets publiés | **0/4** |
 | Univers implémentés sur /culture/ | **0/4** au sens de filtres structurés |
 | Index refondu/validé | **Non** |
@@ -174,6 +174,15 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J13 — C07 : le repas partagé devient un sujet de sociabilité, pas de dressage
+- **Livraison en branche :** `docs/carnets-c07-table-partagee-20261022`, nouveau C07 `/culture/construire-repas-cambodgien/`, « **À la table cambodgienne, ce que partager veut dire** », six sections, 18 paragraphes, environ 928 mots. Thèmes : place culturelle du riz, plats communs, attention aux convives, entraide entre voisins dans certains quartiers, variation des formes de table et mémoire du quotidien.
+- **Suppression du doublon pédagogique :** plus de liste « riz + plat + légumes », dosage des sauces, consigne de dressage ou menu à constituer. Plus de recommandations pratiques sous la fiche C07 ; glossaire réduit au riz. Le site culturel ne comporte pas de renvois vers l'Atelier ou les Recettes sur cette entrée.
+- **Références internes, jamais dans la page :** guide Chef Nak, revue sur les plats partagés (PMC 2022), enquête qualitative de femmes cambodgiennes sur les choix alimentaires (PMC, indexée, accès direct variable) et étude SAGE `Environment and Urbanization` du 18/07/2019 sur des familles de quartiers précaires (Cambodge et Népal ; **les observations ne valent pas généralisation nationale**). [Brouillon culturel et registre](./BROUILLON-C07-TABLE-PARTAGEE-2026-10-22.md).
+- **Photographie et prudence :** l'ancienne image `v17-table-meal-1600.jpg` montre **une table de restaurant et non un repas familial partagé**, d'où mauvaise couverture. Dans la prévisualisation C07, visuel déjà présent `v19-table-partage-desktop-1440.webp` et déclinaisons 800/1200/1440, **image éditoriale illustrative** d'un repas commun : alt et légende signalent explicitement qu'il ne s'agit **pas d'un reportage**. Ancien actif `socialImage` gardé avec `socialImageRole:'article'` pour ne pas casser le catalogue social. Droits et pertinence finale à réceptionner.
+- **Contrat :** nouveau `tests/carnets-c07-contract.test.mjs` rattaché à `npm run test:editorial` pour préserver le caractère exclusivement culturel, les liens/URLs, les médias et l'absence de sources publiques ; **ne pas confondre contrôles statiques et tests npm/CI/build**, encore non exécutés.
+- **État :** six brouillons C02–C07 sur sept en PR/branches empilées, C01 riz reste à enrichir, 0/7 textes complets acceptés pour publication. M2 en cours, D2 (quatre univers), D3 (réception, droits visuels, publication), GSC et responsive encore ouverts ; aucune fusion, aucun déploiement OVH et aucun changement Meta/n8n.
+- **Étape suivante :** planifier C01 riz sans supprimer ses articles/paragraphes existants, revue factuelle et photo, puis tests et réception de tous les Carnets avant fusion.
 
 ### 2026-10-22 — J12 — C06 : le patrimoine social du prahok, sans tutoriel
 - **Réalisé :** rédaction de C06 `/culture/prahok-fermentation-umami/` « Prahok, quand la pêche devient patrimoine », 6 sections, 18 paragraphes, environ 1 018 mots, intégration sur la branche `docs/carnets-c06-prahok-patrimoine-20261022`.
