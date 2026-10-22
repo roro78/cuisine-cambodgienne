@@ -4,10 +4,10 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v2.1 (C04 amok culturel prêt en prévisualisation ; 4/7 brouillons)** · Responsable de validation : **propriétaire du site**  
-> État du projet : **M2 EN COURS — C01 corrigé ; quatre brouillons culturels C02/C03/C04/C05 en prévisualisation, aucun publié**  
-> **Étape active : M2 — frontière culture / ateliers / recettes désormais exigée ; C03 recadré histoire, C04 également reconstruit autour de patrimoine et pratiques sociales. AUCUN TEXTE FINAL ACCEPTÉ.**  
-> Prochaine action : faire relire les [brouillons C02](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md), [C03 mémoire du kroeung](./BROUILLON-C03-KROEUNG-TRANSMISSION-2026-10-22.md), [C04 amok patrimonial](./BROUILLON-C04-AMOK-PATRIMOINE-2026-10-22.md) et [C05 Kep](./BROUILLON-C05-KEP-MARCHE-CRABES-2026-10-22.md). **Kep : photo CDN à importer en WebP local**, **C03 : photo culturelle et droits à trouver**, **C04 : image horizontale sous CC BY 2.0 à comparer avec son original**. Exécuter tests/CI, build, responsive ; arbitrer D2 et N01–N04 ; GSC puis visa D3 avant publication. **PR #97–#102 non fusionnées ; branche C04 empilée non publiée.**
+> Création : **22 octobre 2026** · Version du plan : **v2.2 (C06 prahok culturel préparé ; 5/7 brouillons)** · Responsable de validation : **propriétaire du site**  
+> État du projet : **M2 EN COURS — C01 corrigé ; 5 brouillons C02/C03/C04/C05/C06 en prévisualisation, aucun validé ni publié**  
+> **Étape active : M2 — frontière culture / ateliers / recettes appliquée à C03, C04 et C06 ; aucun texte final accepté.**  
+> Prochaine action : relire les brouillons [C02](./BROUILLON-C02-POIVRE-KAMPOT-2026-10-22.md), [C03](./BROUILLON-C03-KROEUNG-TRANSMISSION-2026-10-22.md), [C04](./BROUILLON-C04-AMOK-PATRIMOINE-2026-10-22.md), [C05](./BROUILLON-C05-KEP-MARCHE-CRABES-2026-10-22.md), [C06](./BROUILLON-C06-PRAHOK-PATRIMOINE-2026-10-22.md). C07 reste à rédiger. Photos : **Kep CDN externe**, **C03 histoire à illustrer**, **C06 photo culinaire seulement**. CI/build, responsive, arbitrage D2, données GSC et visa D3 avant publication. **PR #97–#103 non fusionnées ; branche C06 non publiée.**
 
 ## 1. Objectif final
 
@@ -55,7 +55,7 @@ Constaté dans la branche **main** au moment de la création de ce plan :
 | C03 | comprendre-le-kroeung | **Le kroeung, une mémoire de la cuisine khmère** ; rupture historique, exil, diaspora, patrimoine | Mémoire et transmission | **AUCUNE technique du mortier, recette, aromate à détailler, tutoriel ou renvoi pratique** ; aucune origine angkorienne sans preuve ; photo culturelle à rechercher | **Orientation initiale annulée ; nouvelle prévisualisation historique NON VALIDÉE** |
 | C04 | comprendre-amok | **L’amok, entre patrimoine et tables d’aujourd’hui** ; occasions particulières, identité, récit royal non prouvé, restaurants et diaspora | Mémoire culinaire | **Aucune technique de cuisson, texture à réussir ni ingrédients détaillés** ; histoire royale explicitement qualifiée ; photo horizontale CC BY 2.0 avec crédit obligatoire | **Prévisualisation rédigée — texte/média non validés** |
 | C05 | kep-marche-crabe-poivre | **Kep, au marché des crabes, entre mer et poivre** ; pêche, commerce côtier, préservation | Terroirs et marchés | Texte reportage sans visite fictive ; ancienne photo faussement légendée ; visuel CC0 en CDN de staging à internaliser | **Prévisualisation enrichie — texte/média non validés** |
-| C06 | prahok-fermentation-umami | **Prahok : conservation et mémoire culinaire** ; communautés de pêche, histoire des échanges, patrimoine | Mémoire culinaire | Raconter les métiers et la place sociale du prahok ; **aucun protocole de fermentation** ni cours d'umami | **Orientation D1 validée — article non enrichi** |
+| C06 | prahok-fermentation-umami | **Prahok, quand la pêche devient patrimoine** ; Tonlé Sap, échanges riz-poisson, femmes productrices, ressources de pêche | Mémoire culinaire | **Aucun protocole ni conseil de fermentation**, traiter les vies et enjeux ; photo actuelle prahok ktis seulement illustrative | **Prévisualisation enrichie — texte/média non validés** |
 | C07 | construire-repas-cambodgien | **À table au Cambodge, le repas partagé** ; sociabilité, pratiques de table, diversité des milieux | Vie quotidienne | Récit de commensalité ; **aucun menu à construire ni conseil de dressage** | **Orientation D1 validée — article non enrichi** |
 
 Les titres sont **des propositions à valider**, pas des renommages effectués. Les **slugs restent inchangés** sauf décision documentée contraire et stratégie SEO spécifique.
@@ -109,7 +109,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | **M0 — Pilotage** | Plan versionné et accès depuis le dépôt | Fichier sur main, lien lisible, étape active explicite | **FAIT le 22/10/2026** |
 | **M1 — Audit et briefs** | Inventaire C01–C07 : source, photos, liens, H1, SEO, fiche par article ; baseline GSC si disponible ; briefs proposés | **7 fiches** + écarts consignés ; aucun contenu original touché ; briefs soumis à validation | **VALIDÉ pour les 7 orientations, en PR ; GSC non disponible** |
 | **M2 — Validation éditoriale** | Angles/titres/plans/sources cibles validés, modèle commun fixé ; priorités N01–N04 confirmées | Décisions écrites ; refus et inconnues documentés | **EN COURS : D1 sept orientations + erratum C01 acceptés ; D2/modèle/priorités N01–N04 à arbitrer** |
-| **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | **À faire : C02/C03/C04/C05 pré-rédigés en PR non fusionnées, gate M2 non franchi** |
+| **M3 — Enrichissement C01–C07** | Sept articles préparés par petits lots, changements tracés, médias sourcés | **7/7** fiches contrôlées et acceptées ; URLs inchangées ; aucun contenu inventé | **À faire : C02/C03/C04/C05/C06 pré-rédigés dans des branches non fusionnées, gate M2 non franchi** |
 | **M4 — Index Carnets** | Refonte /culture/ avec quatre univers et nouveaux parcours | Navigation accessible, responsive, cohérence avec les sept Carnets | À faire |
 | **M5 — Première vague N01–N04** | Quatre nouveaux dossiers, articles et visuels | **4/4** validés, sources et média vérifiés ; publication par lot possible | À faire |
 | **M6 — Recette technique et publication** | Tests éditoriaux, build, liens, SEO, photos, mobile/desktop, vérification OVH | Aucun défaut bloquant ; accord propriétaire avant fusion/déploiement ; compte-rendu HTTP après mise en production | À faire |
@@ -165,7 +165,7 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | --- | --- |
 | Carnets existants au catalogue main | **7** (constaté dans src/data/culture.ts) |
 | Briefs audités/validés | **7/7 orientations validées (D1) en PR ; 0/7 articles réécrits validés** |
-| Carnets enrichis/validés | **4/7 brouillons en prévisualisation (C02/C03/C04/C05) ; 0/7 articles finalisés/validés** |
+| Carnets enrichis/validés | **5/7 brouillons en prévisualisation (C02/C03/C04/C05/C06) ; 0/7 articles finalisés/validés** |
 | Nouveaux Carnets publiés | **0/4** |
 | Univers implémentés sur /culture/ | **0/4** au sens de filtres structurés |
 | Index refondu/validé | **Non** |
@@ -174,6 +174,15 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J12 — C06 : le patrimoine social du prahok, sans tutoriel
+- **Réalisé :** rédaction de C06 `/culture/prahok-fermentation-umami/` « Prahok, quand la pêche devient patrimoine », 6 sections, 18 paragraphes, environ 1 018 mots, intégration sur la branche `docs/carnets-c06-prahok-patrimoine-20261022`.
+- **Angle culturel :** Tonlé Sap et ses eaux saisonnières, échanges anciens de riz contre du poisson, rôle des femmes productrices dans des communautés étudiées, marchés, métiers et pressions sur les ressources. **Zéro recette, dosage ou protocole de fermentation maison.**
+- **Recherche interne :** LeGrand/Borarin/Young (2020) sur le Tonlé Sap, étude `Food and Foodways` (2025 ; résumé et extraits indexés, accès direct HTML 403) sur les femmes productrices, Marschke et coll. (étude du 21 octobre 2026, texte HTML lu) sur petits poissons détournés vers l'alimentation d'élevage ; [registre C06](./BROUILLON-C06-PRAHOK-PATRIMOINE-2026-10-22.md). Les affirmations restent limitées aux contextes étudiés. **Aucune référence publiée sur les pages.**
+- **Photo :** `prahok-1600.webp` est un plat prahok ktis avec crudités, image culinaire sous crédit Thomas Wanhoff CC BY-SA 2.0. Alt corrigé, **ce n'est pas un reportage de production** ; chercher un média documentaire licite avant D3.
+- **Qualité et risques :** page C06 sans suggestions de recettes/ingrédients et glossaire restreint à prahok ; nouveau test `tests/carnets-c06-contract.test.mjs` raccordé à `npm run test:editorial`. CI, build et responsive **non exécutés**. Aucune fusion ni mise en ligne OVH, aucun changement n8n/Meta.
+- **État :** M2 encore en cours, **5/7 brouillons rédigés ; 0/7 textes et images validés**. D2 taxonomie et D3 publication toujours ouverts.
+- **Suite :** préparer C07 sur la sociabilité des repas, puis contrôler C01 riz ; vérifier les médias et exécuter les tests avant toute publication.
 
 ### 2026-10-22 — J11 — Carnet C04 Amok refondu comme un récit culturel, sans tutoriel
 - **Réalisation :** rédaction et intégration sur `docs/carnets-c04-amok-patrimoine-20261022` de C04 `/culture/comprendre-amok/` « **L’amok, entre patrimoine et tables d’aujourd’hui** », six chapitres, 18 paragraphes, ~935 mots. Sujet **culturel seulement** : emblème, occasions particulières dans le témoignage de Kethana Dunnett, feuilles de bananier et images du plat, origine royale **non prouvée**, pratiques contemporaines diverses, présence de l'amok en Californie attestée dans la presse dès mai 1990.
