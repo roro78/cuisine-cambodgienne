@@ -29,7 +29,7 @@ for (const author of ['Dmitry A. Mottl','Brad Collis','Chhoukkosal','Willuconque
   assert.match(page+all,new RegExp(author.replaceAll('.','\\.')),'Mandatory media credits must be kept');
 }
 assert.doesNotMatch(page,/rice-workshop-link|completeCookingWorkshopCutoverReady|apprendre\/composer-repas-cambodgien/,'C01 page must never funnel to cooking atelier');
-assert.doesNotMatch(page, /culture-related|relatedContent|\\/recettes\\/|\\/ingredients\\//, 'Culture article template must never recommend recipes, workshops or ingredient shopping');
+assert.ok(!/culture-related|relatedContent/.test(page) && !page.includes('/recettes/') && !page.includes('/ingredients/'), 'Culture article template must never recommend recipes or ingredients');
 assert.doesNotMatch(page,/article\.sources\.map\s*\(/,'No documentary bibliography visible');
 assert.equal([...all.matchAll(/^    slug: '/gm)].length,7,'All seven historic slugs must survive');
 assert.match(plan,/J14 —/,'C01 must be added to immutable project pilot');
