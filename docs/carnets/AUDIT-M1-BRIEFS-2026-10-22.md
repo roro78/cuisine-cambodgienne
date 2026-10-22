@@ -71,16 +71,16 @@ Contrôles statiques :
 **Médias :** image locale existante ; prioriser série réelle plante → récolte → tri → grains, chaque vue créditée.
 **Décision suggérée :** recentrer sur le terroir et éviter de dupliquer un lexique des couleurs.
 
-### C03 — Le kroeung, des gestes qui se transmettent (Gestes et transmission)
+### C03 — Le kroeung, une mémoire de la cuisine khmère (nouvelle orientation du propriétaire)
 
 **URL préservée :** /culture/comprendre-le-kroeung/  
-**Existant :** 3 sections sur la famille aromatique, la technique du mortier et les parfums ; 1 source touristique ; visuel local intitulé « plat avec du kroeung ».
-**Question du lecteur :** pourquoi le kroeung est-il une transmission de gestes et non une recette unique ?
-**Plan proposé (6 sections) :** (1) rôles du kroeung dans la cuisine khmère ; (2) transmission des gestes en cuisine ; (3) outils et mortier ; (4) choix des aromates et variations documentées ; (5) contexte familial/régional sans généralisation ; (6) passer à l'atelier pratique.
-**Preuves/gates :** témoignage publié sourçable ou étude vérifiable ; ne jamais inventer une scène familiale ; distinguer récit de transmission et démonstration culinaire.
-**Maillage candidat :** atelier existant du mortier, glossaire kroeung, recette amok, C04.
-**Médias :** une illustration générique d'un plat ne démontre pas le pilage ; demander photo autorisée d'un vrai geste.
-**Décision suggérée :** garder la technique détaillée à l'atelier.
+**Décision :** la première proposition (mortier, ingrédients, geste, suite à l'atelier) faisait **doublon**. Elle est **abandonnée et remplacée**, même si les sept orientations avaient été globalement acceptées au départ.  
+**Question culturelle seule :** comment une préparation du répertoire khmer peut-elle devenir un repère de mémoire et de transmission dans l'histoire récente, notamment pour des familles déplacées et la diaspora ?  
+**Plan corrigé (5 sections) :** (1) place dans la culture culinaire ; (2) origines non datées, refus d'une fausse chronologie angkorienne ; (3) ruptures du XXe siècle ; (4) récits singuliers de diaspora et de mémoire ; (5) documentation actuelle sans figer une « recette authentique ».
+**Références internes à vérifier :** Tenement Museum (récit contemporain de la diaspora ciblant le kroeung), Mekong Review 2018 (histoire récente), Journal of Ethnic Foods 2019 (rôle du kroeung), analyse du lexique ancien par Saveros Pou 1992 (**ne date pas l'invention**).
+**Interdits dans la page publique :** dosage, noms détaillés d'aromates, pilage, texture, guide pas à pas, suggestion de recette ou d'atelier, sources visibles et « tradition datant d'Angkor » sans preuve.
+**Médias :** l'ancien visuel `kroeung-1600.webp` illustre un plat et non l'histoire ; le visuel mortier est retiré car il reproduisait l'Atelier. **Chercher une photographie contextualisée et dont les droits sont vérifiés**, sans inventer un portrait de famille.
+**Statut :** brouillon culturel v2 préparé en PR #102, **non validé et non publié**. Si le dossier de preuves ne soutient pas suffisamment une histoire distincte, **supprimer cette entrée de la sélection Culture** plutôt que revenir à un tutoriel.
 
 ### C04 — L'amok, un plat et ses interprétations (Gestes et transmission)
 
