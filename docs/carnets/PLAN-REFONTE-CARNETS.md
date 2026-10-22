@@ -4,10 +4,10 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v2.9 (couvertures éditoriales C03/C06 importées, QA finale à confirmer)** · Responsable de validation : **propriétaire du site**
-> État du projet : **M2 EN COURS — 7/7 Carnets préparés, QA technique 7/7 PASS avec média Kep local, 0/7 textes et médias définitivement validés ni publiés**  
-> **Étape active : M2 — QA Astro, contrats, build et Chromium mobile/desktop **PASS** sur la version actualisée avec la photo Kep locale : run final #39769358161. D2 taxonomie, D3 réception éditoriale/médias et publication EN ATTENTE.**  
-> Prochaine action : [réception technique finalisée](./RECEPTION-TECHNIQUE-2026-10-22.md) et [GitHub Actions #39769358161](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39769358161) **PASS sur les sept Carnets**, mobile/ordinateur, avec **photo du marché de Kep maintenant locale**. Accéder aux captures sur le run avant leur expiration **25/10/2026**. Restent la validation des **sept textes**, **D2** (univers/fêtes à arbitrer), **D3** (choix/licences des médias C01/C03/C06/C07 et visa de publication), baseline GSC et la réception artistique. **PR #97 à #107 en brouillon, aucune fusion ni OVH.**
+> Création : **22 octobre 2026** · Version du plan : **v3.0 (2 couvertures C03/C06 intégrées, 8 WebP GitHub, CI finale PASS, OVH non déployé)** · Responsable de validation : **propriétaire du site**
+> État du projet : **M2 EN COURS — 7/7 Carnets préparés, QA technique 7/7 PASS et couvertures C03/C06 intégrées dans GitHub, 0/7 contenus définitivement approuvés et publiés**  
+> **Étape active : M2 — QA Astro, contrats, build et Chromium mobile/desktop PASS sur la branche d'intégration avec les 2 nouvelles couvertures C03/C06 ; [run #39819573638](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39819573638). D2 et publication D3 en attente.**  
+> Prochaine action : voir [PR #108](https://github.com/roro78/cuisine-cambodgienne/pull/108) et [run final PASS #39819573638](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39819573638). **Les 8 WebP des nouvelles couvertures Kroeung/Prahok sont désormais dans GitHub, deux pages raccordées ; anciens socialImage préservés ; ZIP supprimé**. Les 7 Carnets passent Astro, tests éditoriaux/recettes, build et navigateur mobile/desktop. **Pas de publication OVH.** Restent la revue finale des textes et de l'iconographie, la décision D2 sur les univers, la validation D3 de publication, les autres droits photo C01/C04/C07 et la baseline GSC. **PR #97 à #108 restent en brouillon, pas fusionnées**.
 
 ## 1. Objectif final
 
@@ -174,6 +174,14 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J20 — images C03/C06 réellement intégrées sur GitHub, QA mobile/ordinateur PASS
+- **Déclenchement utilisateur :** archive `carnets_cambodge_2_couvertures_webp.zip` déposée sur la branche `docs/carnets-c03-c06-images-editoriales-20261022`, exclusivement en PR [#108](https://github.com/roro78/cuisine-cambodgienne/pull/108).
+- **Premier run [#39819304663](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39819304663)** : empreintes SHA-256 8/8, import, tests Astro/éditorial/Recettes/build et Chromium 390/1366 **PASS**, mais **échec du commit** sur deux espaces Markdown de fin de ligne dans l'en-tête du plan : cet échec réel a été corrigé sans changer les visuels.
+- **Deuxième run [#39819573638](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39819573638)** : **SUCCÈS COMPLET**, toutes étapes et commit GitHub PASS. Commit des huit images et de la page : `5f86a6a3b8b4eea2061451c52a9ecd05cd31c664`. Enregistrement GitHub vérifié : **4 WebP C03 + 4 WebP C06** (480, 800, 1200, 1536 px), liens `src/data/culture.ts` et légendes « illustration éditoriale » opérationnels. Anciennes photos sauvegardées dans `socialImage` avec `socialImageRole:'article'`, catalogue Meta/n8n non modifié. Le ZIP provisoire **n'existe plus** dans la branche.
+- **QA effective :** `npm run check`, `npm run test:editorial`, `npm run test:recipes`, `npm run build` (48 pages), Chromium mobile **390×844** et bureau **1366×900** sur `/culture/` et les **7 Carnets**, images décodées et pas de liens vers Recettes/Ateliers ni débordements : **PASS**. Captures dans l'artifact `carnets-c03-c06-images-mobile-desktop` du run, expiration **25 octobre 2026**.
+- **Statut précis :** **intégration GitHub faite et contrôlée** ; **pas de fusion dans `main` ni de déploiement OVH**. C03/C06 sont des scènes illustratives validées pour la prévisualisation, **pas des reportages documentaires** ; vérifier la cohérence artistique lors du visa éditorial D3. D2, D3, vérification des droits des autres photos et GSC encore ouverts.
+- **Dossier récapitulatif :** [Iconographie C03/C06](./ICONOGRAPHIE-C03-C06-LOT-2026-10-22.md).
 
 ### 2026-10-22 — J19 — couvertures C03/C06 illustratives intégrées
 - **Images acceptées en conversation :** C03 scène entre générations autour des aromates, C06 scène lacustre avec pêche et marché, sans tutoriel au mortier. Ce sont des **illustrations éditoriales composées**, non des reportages de personnes ou lieux attestés ; aucune mention de source documentaire en page.
