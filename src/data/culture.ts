@@ -484,41 +484,73 @@ export const cultureArticles: CultureArticle[] = [
   },
   {
     slug: 'construire-repas-cambodgien',
-    title: 'L’art de composer un repas cambodgien',
-    eyebrow: 'À table',
-    intro: 'Riz, plat principal, légumes, herbes, sauces et condiments : comprendre la table aide à cuisiner des recettes qui fonctionnent ensemble.',
-    seoDescription: 'Comment composer un repas cambodgien : rôle du riz, plats chauds, légumes, herbes, sauces et condiments pour préparer une table équilibrée et gourmande.',
-    readingTime: '5 min',
+    title: 'À la table cambodgienne, ce que partager veut dire',
+    eyebrow: 'Vie quotidienne',
+    intro: 'Il existe des histoires que l\'on comprend simplement en regardant une table. Au Cambodge, le riz accompagne de nombreux repas et plusieurs personnes mangent souvent des plats placés au centre. Ce geste ordinaire — prendre sa part d\'un plat commun — raconte parfois autant de choses sur les relations familiales qu\'une recette célèbre.  Mais la table cambodgienne n\'a pas une forme unique. Elle change selon les lieux, les moyens, les générations, les horaires de travail et les personnes présentes. Parler du repas partagé, c\'est donc moins expliquer ce que chacun devrait servir que regarder ce que manger ensemble peut signifier.',
+    seoDescription: 'Au Cambodge, le repas partagé raconte la famille, la place du riz, les plats communs et la solidarité du quotidien, des maisons aux quartiers des villes.',
+    readingTime: '4 min',
     sections: [
       {
-        title: 'Le riz comme point d’équilibre',
+        title: 'Le riz et le mot qui dit le repas',
         paragraphs: [
-          'Le riz n’est pas un simple accompagnement neutre. Il absorbe les sauces, calme le sel ou le piment et permet de passer d’une bouchée très parfumée à une autre plus douce.',
-          'Penser le riz avec le plat aide à mieux doser les assaisonnements : une sauce destinée à être mangée avec du riz peut sembler trop intense si on la goûte seule.'
+          'Au Cambodge, le riz est si central dans l\'alimentation que la question « as-tu mangé ? » peut se dire en faisant référence au fait d\'avoir mangé du riz. Cette association dépasse la simple description d\'un féculent : elle montre comment un aliment ordinaire peut devenir une manière de parler du repas lui-même.',
+          'Ce lien ne signifie pas que chaque Cambodgien mange du riz à tous les repas, ni que le riz a toujours occupé la même place dans toutes les régions et à toutes les époques. Il rappelle plutôt la profondeur de son inscription dans les habitudes et dans le langage du quotidien.',
+          'Pour comprendre sa place dans les paysages agricoles, les marchés, les variétés et les fêtes, un autre Carnet lui est consacré. Ici, le sujet est la présence du riz autour des personnes : non pas comment le cuire, mais comment il s\'inscrit dans un moment partagé.'
         ]
       },
       {
-        title: 'Associer des goûts et des textures différents',
+        title: 'Plusieurs plats au milieu, des parts différentes',
         paragraphs: [
-          'Un repas est plus agréable quand les plats se complètent. Un plat chaud et généreux peut être servi avec des crudités, des herbes fraîches ou un condiment acidulé.',
-          'Passer d’une bouchée chaude à quelque chose de frais, de doux à acidulé, rend le repas plus léger et donne envie de goûter à tout.'
+          'Dans de nombreuses maisons, les mets peuvent être disposés en commun tandis que chacun reçoit son riz dans un bol ou une assiette. Une soupe, un plat de poisson, des légumes ou un accompagnement peuvent alors circuler entre les convives sans que les portions soient identiques.',
+          'Cette forme de service n\'est pas un modèle à reproduire pour avoir une table « authentique ». Elle offre surtout un aperçu des relations entre les personnes présentes. Le fait de se servir dans un même plat oblige à être attentif aux autres, à leur faim et à ce qui reste.',
+          'Les repas individuels existent aussi, notamment dans la restauration rapide, les déplacements ou certaines situations de travail. La diversité des façons de manger rappelle qu\'un usage fréquent ne doit pas devenir une règle imposée à toutes les familles cambodgiennes.'
         ]
       },
       {
-        title: 'Composer à la maison',
+        title: 'Un repas peut aussi être une manière de prendre soin',
         paragraphs: [
-          'Pour commencer simplement : un riz jasmin, un plat principal comme le lok lak ou l’amok, des légumes frais et un condiment suffisent. Inutile de multiplier les préparations.',
-          'L’objectif est de créer plusieurs bouchées possibles : un peu de riz, davantage de sauce, une herbe fraîche, un trait d’acidité. C’est cette liberté qui rend le repas vivant.'
+          'Partager un plat ne veut pas seulement dire manger simultanément. Au sein d\'un foyer, les gestes liés aux repas peuvent exprimer le souci que quelqu\'un ait suffisamment à manger, qu\'un enfant soit servi, qu\'une personne âgée ait ce dont elle a besoin ou qu\'un visiteur soit accueilli.',
+          'Dans des situations de ressources limitées, cette attention prend une dimension très concrète. Les possibilités de manger ensemble dépendent aussi du budget, du temps disponible, des trajets et du travail de chacun. Il n\'y a pas lieu d\'idéaliser toutes les tables comme si elles étaient toujours abondantes et joyeuses.',
+          'L\'histoire sociale d\'un repas tient dans ces écarts entre le désir de recevoir et les contraintes de la vie quotidienne. Les manières de partager peuvent être chaleureuses, pratiques, parfois difficiles. Elles ne donnent pas pour autant une mesure simple de l\'affection au sein d\'une famille.'
+        ]
+      },
+      {
+        title: 'La solidarité peut dépasser la maison',
+        paragraphs: [
+          'Dans certains quartiers urbains du Cambodge, lorsque des familles peinent à disposer de nourriture en quantité suffisante, l\'entraide peut passer par un bol de riz, de soupe ou de fruits envoyé à des voisins. Une invitation à manger peut aussi devenir un soutien discret et concret.',
+          'Ces pratiques ont été documentées dans des communautés confrontées à la précarité. Elles ne doivent pas être transformées en portrait universel du pays, ni en image romantique de la pauvreté. Une solidarité réelle peut coexister avec des difficultés importantes pour se nourrir suffisamment.',
+          'Elles montrent néanmoins que l\'alimentation peut avoir une fonction sociale qui dépasse la famille proche. Partager un repas, même modeste, peut être une manière d\'entretenir un lien, de rendre service ou de faire une place à quelqu\'un.'
+        ]
+      },
+      {
+        title: 'Des tables qui changent avec la vie',
+        paragraphs: [
+          'La table d\'une famille rurale n\'est pas forcément celle d\'un appartement urbain, d\'un restaurant de quartier ou d\'un foyer installé depuis longtemps à l\'étranger. Les horaires des enfants, les déplacements, la taille du logement et les moyens disponibles font évoluer le moment du repas.',
+          'Des cuisinières et des cuisiniers cambodgiens parlent volontiers de la convivialité des plats disposés au centre. D\'autres expériences montrent des repas pris rapidement, séparément ou hors du domicile. Ces réalités ne se contredisent pas : elles appartiennent toutes à la vie contemporaine.',
+          'La présentation d\'une table peut également se transformer lorsque l\'on reçoit des amis, qu\'une fête réunit des proches ou que des générations se retrouvent. Cela ne veut pas dire qu\'il existe un protocole identique d\'une province à l\'autre. Les usages sont autant des histoires familiales que des habitudes collectives.'
+        ]
+      },
+      {
+        title: 'Le partage comme mémoire du quotidien',
+        paragraphs: [
+          'Les aliments célèbres attirent souvent le regard, mais les gestes ordinaires racontent aussi le Cambodge : la place gardée autour d\'une table, un bol qu\'on rapproche, un plat que plusieurs personnes goûtent, une assiette réservée à quelqu\'un qui rentre plus tard.',
+          'Il ne faut pas transformer ces images en scènes inventées d\'un repas observé. Ce sont des façons possibles de comprendre une pratique sociale, pas le récit d\'une famille que nous aurions rencontrée. Le Carnet s\'intéresse à ce que le partage peut signifier, sans prétendre parler au nom de tous.',
+          'C\'est peut-être là l\'une des différences les plus importantes entre un Carnet et une recette. La recette décrit une préparation ; le Carnet invite à réfléchir aux personnes qui se retrouvent autour d\'elle, à ce qu\'elles échangent et à la manière dont les repas prennent une place dans leurs vies.'
         ]
       }
     ],
-    image: '/images/cuisine/v17-table-meal-1600.jpg',
-    imageAlt: 'Table cambodgienne composée de plusieurs plats, riz, herbes et accompagnements',
-    imageWidth: 1600,
-    imageHeight: 1067,
-    imageWidths: [1600],
+    image: '/images/cuisine/v19-table-partage-desktop-1440.webp',
+    imageAlt: 'Illustration éditoriale de convives partageant des plats et du riz autour d’une table',
+    imageWidth: 1440,
+    imageHeight: 960,
+    imageWidths: [800, 1200, 1440],
+    socialImage: '/images/cuisine/v17-table-meal-1600.jpg',
+    socialImageRole: 'article',
     sources: [
-      { label: 'Ministère du Tourisme du Cambodge — guide gastronomique', url: tourismGuide }
+      { label: 'Chef Nak — guide des tables et repas cambodgiens', url: 'https://www.chefnak.com/cambodian-cuisine-guide' },
+      { label: 'Recherche en santé publique — enquête qualitative sur les choix alimentaires des familles', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC13499906/' },
+      { label: 'Environment and Urbanization (2019) — entraide alimentaire entre voisins en situation urbaine précaire', url: 'https://journals.sagepub.com/doi/10.1177/0956247819863246' },
+      { label: 'Étude méthodologique — quantification des plats partagés et des portions', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9545030/' }
     ]
   }
 ];
