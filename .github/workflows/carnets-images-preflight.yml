@@ -1,0 +1,24 @@
+name: Carnets - syntaxe import images
+on:
+  push:
+    branches:
+      - docs/carnets-c03-c06-images-editoriales-20261022
+    paths:
+      - .github/workflows/carnets-images-preflight.yml
+      - scripts/apply-carnets-editorial-images.mjs
+
+permissions:
+  contents: read
+
+jobs:
+  syntax:
+    name: Import script - Node 22 syntax
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate import script parses
+        run: node --check scripts/apply-carnets-editorial-images.mjs
