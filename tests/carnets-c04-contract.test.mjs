@@ -36,7 +36,7 @@ for(const phrase of [
   'réussir une texture liée'
 ]) assert.ok(!c04.includes(phrase),`No old tutorial passage: ${phrase}`);
 assert.ok(!/culture-related|relatedContent/.test(detail) && !detail.includes('/recettes/') && !detail.includes('/ingredients/'), 'Culture article template must never recommend recipes or ingredients');
-assert.match(detail,/'comprendre-amok': \['amok'\]/,'Glossary limited to subject instead of recipe ingredient list');
+assert.doesNotMatch(detail, /GlossaryStrip|glossaryByArticle|getGlossaryEntries/, 'Carnets must not show instructional GlossaryStrip blocks');
 assert.doesNotMatch(detail,/article\.sources\.map\s*\(/,'Never show documentary bibliography');
 assert.equal([...culture.matchAll(/^    slug: '/gm)].length,7);
 assert.match(plan,/J11 — Carnet C04 Amok/,'Journal must retain cultural C04 milestone');
