@@ -28,7 +28,7 @@ const glossaryByArticle: Record<string, string[]> = {
   'comprendre-amok': ['amok'],
   'kep-marche-crabe-poivre': ['poivre-de-kampot'],
   'prahok-fermentation-umami': ['prahok'],
-  'construire-repas-cambodgien': ['riz-jasmin', 'amok', 'lok-lak']
+  'construire-repas-cambodgien': ['riz-jasmin']
 };
 const glossary = getGlossaryEntries(glossaryByArticle[article.slug] ?? []);
 
@@ -48,7 +48,9 @@ const relatedContent = article.slug === 'poivre-de-kampot'
           ].filter(Boolean)
         : article.slug === 'prahok-fermentation-umami'
           ? [] // Patrimoine du Tonlé Sap : aucun tutoriel, condiment ou liste d'ingrédients associés.
-          : [
+          : article.slug === 'construire-repas-cambodgien'
+            ? [] // Sociabilité des repas : ni menu-type ni suggestion pratique pour composer l'assiette.
+            : [
               recipes.find((item) => item.slug === 'amok-trey'),
               recipes.find((item) => item.slug === 'lok-lak'),
               recipes.find((item) => item.slug === 'kroeung-jaune')
@@ -93,6 +95,8 @@ const breadcrumbSchema = {
         <figcaption>
           {article.slug === 'le-riz-symbole-de-vie-au-cambodge' ? (
             <>Rizières près de Siem Reap · Photo Dmitry A. Mottl, CC BY-SA 4.0 · <a href="https://commons.wikimedia.org/wiki/File:Cambodia%27s_rice_fields.jpg" target="_blank" rel="noreferrer">Crédit et licence</a></>
+          ) : article.slug === 'construire-repas-cambodgien' ? (
+            <>Illustration éditoriale d’un repas partagé · <a href="/credits-photos/">crédits photo</a>.</>
           ) : <>Photographie illustrative · <a href="/credits-photos/">crédits photo</a>.</>}
         </figcaption>
       </figure>
