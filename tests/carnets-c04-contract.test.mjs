@@ -39,6 +39,6 @@ assert.match(detail,/article\.slug === 'comprendre-amok'\s*\n\s*\? \[\]/,'No rec
 assert.match(detail,/'comprendre-amok': \['amok'\]/,'Glossary limited to subject instead of recipe ingredient list');
 assert.doesNotMatch(detail,/article\.sources\.map\s*\(/,'Never show documentary bibliography');
 assert.equal([...culture.matchAll(/^    slug: '/gm)].length,7);
-assert.match(plan,/v2\.1/,'Project pilot must reflect editorial change');
+assert.match(plan,/J11 — Carnet C04 Amok/,'Journal must retain cultural C04 milestone');
 
 console.log('PASS: C04 is a cultural Amok history with no recipe tutorial, public bibliography or route regression.');
