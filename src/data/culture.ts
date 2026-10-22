@@ -227,7 +227,7 @@ export const cultureArticles: CultureArticle[] = [
         title: 'Une origine qu\'il faut raconter avec prudence',
         paragraphs: [
           'Il serait tentant de faire remonter le kroeung aux cuisines du grand empire d\'Angkor, puis de dérouler une tradition ininterrompue jusqu\'à nos jours. Une telle chronologie aurait une belle allure. Elle demanderait pourtant des preuves précises : textes datés, usages identifiables et descriptions suffisamment détaillées pour reconnaître la préparation dont on parle aujourd\'hui.',
-          'Les documents consultés pour ce Carnet ne permettent pas d\'établir une date certaine pour l\'apparition du kroeung sous sa forme actuelle. Les récits généraux sur l\'histoire de la cuisine khmère ne suffisent pas à démontrer qu\'une préparation contemporaine existait à l\'identique il y a plusieurs siècles.',
+          'Aucune date certaine ne peut être avancée ici pour l\'apparition du kroeung sous sa forme actuelle. Le fait que la cuisine khmère possède une histoire ancienne ne démontre pas qu\'une préparation contemporaine existait à l\'identique il y a plusieurs siècles.',
           'C\'est aussi cela, raconter un patrimoine avec sérieux : accepter ses zones d\'ombre. L\'absence d\'une date fondatrice ne rend pas la tradition moins importante. Elle rappelle qu\'une culture culinaire ne se conserve pas seulement dans les livres, mais aussi dans les habitudes, les paroles et les repas.'
         ]
       },
