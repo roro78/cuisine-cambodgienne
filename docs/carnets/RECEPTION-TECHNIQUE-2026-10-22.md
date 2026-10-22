@@ -73,3 +73,12 @@
 - **Raccordement C05** : image principale `/images/cuisine/kep-crab-market-1280.webp` avec tailles `[480,800,1200,1280]`, photo sous auvents du marché de Kep ; légende n'affirme pas montrer des crabes. Ancien fichier de sacs de poivre et image sociale conservés avec leurs crédits ; workflows Meta/n8n inchangés.
 - **Effet :** plus de dépendance à Wikimedia CDN pour le visuel principal de **C05** ; les autres photos Commons de C01 restent externes, photographie C03/C06 et droits/choix final D3 toujours ouverts.
 - **Statut :** preuves GitHub vérifiées ; exécution finale Astro et Chromium sur ce nouveau commit **à lire avant toute réception technique de la version localisée**. Aucun merge ou déploiement.
+
+## J18 — Recette finale sur images locales C05 : **PASS**
+
+- **GitHub Actions [#39769358161](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39769358161)** — commit `adfa2c2cc993ec93fe61de3f4ef881f197d376b9`, **conclusion success**.
+- Installation Node, Astro check, tests éditoriaux des sept Carnets, tests recettes, build Astro et **Chromium aux formats mobile 390×844 / ordinateur 1366×900 : tous PASS**.
+- L'index `/culture/` et les **sept URLs** ont été parcourus ; images principales décodées, dont désormais les **quatre WebP locaux de Kep**. Pas de débordement horizontal, pas de renvois directs vers les Ateliers ou Recettes dans les contenus des Carnets.
+- **Captures QA :** artifact `carnets-previsualisation-mobile-desktop` de **5,02 Mo**, disponible sur la page du run jusqu'au **25 octobre 2026**.
+- **Résultat exact :** *techniquement* les 7/7 Carnets sont compatibles avec le rendu de prévisualisation ; cela **n'approuve ni les sept textes ni les photos au regard du fond, des droits complémentaires et du choix artistique**. M2 reste ouvert, D2 univers et D3 publication non franchis.
+- Les modifications postérieures au commit testé ne concernent que les **deux documents de suivi** ; le code, les tests et les images validés par ce run sont inchangés.
