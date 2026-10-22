@@ -35,7 +35,7 @@ for(const phrase of [
   'Une préparation liée et parfumée',
   'réussir une texture liée'
 ]) assert.ok(!c04.includes(phrase),`No old tutorial passage: ${phrase}`);
-assert.doesNotMatch(detail, /culture-related|relatedContent|\\/recettes\\/|\\/ingredients\\//, 'Culture article template must never recommend recipes, workshops or ingredient shopping');
+assert.ok(!/culture-related|relatedContent/.test(detail) && !detail.includes('/recettes/') && !detail.includes('/ingredients/'), 'Culture article template must never recommend recipes or ingredients');
 assert.match(detail,/'comprendre-amok': \['amok'\]/,'Glossary limited to subject instead of recipe ingredient list');
 assert.doesNotMatch(detail,/article\.sources\.map\s*\(/,'Never show documentary bibliography');
 assert.equal([...culture.matchAll(/^    slug: '/gm)].length,7);
