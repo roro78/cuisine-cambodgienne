@@ -100,6 +100,42 @@ const captionInsert=") : article.slug === 'comprendre-le-kroeung' || article.slu
 if(!template.includes(captionInsert)) {
   template=replaceExactlyOnce(template,captionAnchor,captionInsert,'caption illustrative culturelle');
 }
+// Adapt the two editorial contracts only once real binary assets have passed all SHA and dimension checks.
+const testPatches=[
+  {
+    path:'tests/carnets-c03-contract.test.mjs',
+    lines:[
+      ["assert.match(c03,/image: ","assert.match(c03,/image: '\\/images\\/cuisine\\/carnet-kroeung-memoire-1536\\.webp'/,'Verified editorial hero C03');"],
+      ["assert.match(c03,/imageAlt: ","assert.match(c03,/imageAlt: 'Scène illustrative de deux générations/,'New cover should be unmistakably illustrative');"],
+      ["assert.doesNotMatch(c03,/socialImage:","assert.match(c03,/socialImage: '\\/images\\/cuisine\\/kroeung-1600\\.webp'/,'Legacy social image preserved');\nassert.match(c03,/socialImageRole: 'article'/);\nfor(const width of [480,800,1200,1536]) assert.ok(existsSync('public/images/cuisine/carnet-kroeung-memoire-'+width+'.webp'),'Missing new C03 variant '+width);"]
+    ]
+  },
+  {
+    path:'tests/carnets-c06-contract.test.mjs',
+    lines:[
+      ["assert.match(c06,/image: ","assert.match(c06,/image: '\\/images\\/cuisine\\/carnet-prahok-tonle-sap-1536\\.webp'/,'Verified editorial hero C06');"],
+      ["assert.match(c06,/imageAlt: ","assert.match(c06,/imageAlt: 'Scène illustrative de pêcheurs/,'New cultural illustration should not pretend to be a report photo');"],
+      ["assert.match(credits,/Photo : Thomas Wanhoff","assert.match(c06,/socialImage: '\\/images\\/cuisine\\/prahok-1600\\.webp'/,'Legacy social image preserved');\nassert.match(c06,/socialImageRole: 'article'/);\nfor(const width of [480,800,1200,1536]) assert.ok(existsSync('public/images/cuisine/carnet-prahok-tonle-sap-'+width+'.webp'),'Missing new C06 variant '+width);\nassert.match(credits,/Photo : Thomas Wanhoff · CC BY-SA 2\\.0/,'Legacy social image license remains documented');"]
+    ]
+  }
+];
+for(const target of testPatches) {
+  let t=await readFile(target.path,'utf8');
+  for(const [prefix,newText] of target.lines) {
+    const line=t.split('\\n').filter(x=>x.trimStart().startsWith(prefix));
+    assert.equal(line.length,1,'Unexpected test contract shape: '+target.path+' / '+prefix);
+    t=replaceExactlyOnce(t,line[0],newText,target.path);
+  }
+  await writeFile(target.path,t,'utf8');
+}
+
+const planPath='docs/carnets/PLAN-REFONTE-CARNETS.md';
+let plan=await readFile(planPath,'utf8');
+plan=replaceExactlyOnce(plan,'v2.8 (QA finale 7/7 PASS avec photo Kep locale ; D2/D3 non validés)','v2.9 (couvertures éditoriales C03/C06 importées, QA finale à confirmer)','Pilot version');
+const marker='## 10. Journal chronologique immuable\\n\\n### 2026-10-22 — J18';
+const entry='## 10. Journal chronologique immuable\\n\\n### 2026-10-22 — J19 — couvertures C03/C06 illustratives intégrées\\n- **Images acceptées en conversation :** C03 scène entre générations autour des aromates, C06 scène lacustre avec pêche et marché, sans tutoriel au mortier. Ce sont des **illustrations éditoriales composées**, non des reportages de personnes ou lieux attestés ; aucune mention de source documentaire en page.\\n- **8 WebP vérifiés par SHA-256 et Sharp**, quatre formats 480/800/1200/1536 pour chaque Carnet, 1536×1024 au maximum. Données image, alt et légende mises à jour uniquement sur C03/C06.\\n- **Catalogue social préservé :** anciennes photographies C03 et C06 conservées dans socialImage et socialImageRole article. Aucune modification des flux n8n/Meta, d\'Ateliers ni de Recettes.\\n- **Gate :** images importées exclusivement sur branche QA à réceptionner, CI/Chromium obligatoires après import ; D2, D3 textes et publication restent ouverts, aucun merge ou OVH.\\n\\n### 2026-10-22 — J18';
+plan=replaceExactlyOnce(plan,marker,entry,'Pilot J19 journal');
+await writeFile(planPath,plan,'utf8');
 await writeFile(dataPath,culture,'utf8');
 await writeFile(templatePath,template,'utf8');
-console.log('APPLY_PASS : nouvelles couvertures C03/C06, alt, dimensions, responsive et actifs sociaux anciens conservés.');
+console.log('APPLY_PASS : couvertures C03/C06, contrats éditoriaux et plan J19, images sociales historiques conservées.');
