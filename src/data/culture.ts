@@ -257,11 +257,13 @@ export const cultureArticles: CultureArticle[] = [
         ]
       }
     ],
-    image: '/images/cuisine/kroeung-1600.webp',
-    imageAlt: 'Plat sauté de légumes et de viande présenté dans une assiette, illustration culinaire non historique',
-    imageWidth: 1600,
-    imageHeight: 1067,
-    imageWidths: [480, 800, 1200, 1600],
+    image: '/images/cuisine/carnet-kroeung-memoire-1536.webp',
+    imageAlt: 'Scène illustrative de deux générations autour de la mémoire culinaire cambodgienne, avec des aromates sur une table',
+    imageWidth: 1536,
+    imageHeight: 1024,
+    imageWidths: [480, 800, 1200, 1536],
+    socialImage: '/images/cuisine/kroeung-1600.webp',
+    socialImageRole: 'article',
     sources: [
       { label: 'Journal of Ethnic Foods (2019) — place du kroeung dans le répertoire khmer', url: 'https://link.springer.com/article/10.1186/s42779-019-0027-1' },
       { label: 'Mekong Review (mai 2018) — histoire récente et transmission de la cuisine cambodgienne', url: 'https://mekongreview.com/eating-amok/' },
@@ -471,11 +473,13 @@ export const cultureArticles: CultureArticle[] = [
         ]
       }
     ],
-    image: '/images/cuisine/prahok-1600.webp',
-    imageAlt: 'Bol de prahok ktis entouré de crudités, illustration d’un plat et non d’une scène de production',
-    imageWidth: 1600,
-    imageHeight: 2133,
-    imageWidths: [480, 800, 1200, 1600],
+    image: '/images/cuisine/carnet-prahok-tonle-sap-1536.webp',
+    imageAlt: 'Scène illustrative de pêcheurs, vendeuses et embarcations dans un village lacustre inspiré du Tonlé Sap',
+    imageWidth: 1536,
+    imageHeight: 1024,
+    imageWidths: [480, 800, 1200, 1536],
+    socialImage: '/images/cuisine/prahok-1600.webp',
+    socialImageRole: 'article',
     sources: [
       { label: 'LeGrand, Borarin et Young (mai 2020) — Tonlé Sap, culture et conservation du poisson', url: 'https://link.springer.com/article/10.1186/s42779-019-0027-1' },
       { label: 'Food and Foodways (2025) — femmes productrices et enjeux sociaux du prahok', url: 'https://doi.org/10.1080/07409710.2025.2564492' },

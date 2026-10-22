@@ -55,6 +55,8 @@ const breadcrumbSchema = {
         <figcaption>
           {article.slug === 'le-riz-symbole-de-vie-au-cambodge' ? (
             <>Rizières près de Siem Reap · Photo Dmitry A. Mottl, CC BY-SA 4.0 · <a href="https://commons.wikimedia.org/wiki/File:Cambodia%27s_rice_fields.jpg" target="_blank" rel="noreferrer">Crédit et licence</a></>
+          ) : article.slug === 'comprendre-le-kroeung' || article.slug === 'prahok-fermentation-umami' ? (
+            <>Illustration éditoriale de la culture cambodgienne.</>
           ) : article.slug === 'construire-repas-cambodgien' ? (
             <>Illustration éditoriale d’un repas partagé · <a href="/credits-photos/">crédits photo</a>.</>
           ) : <>Photographie illustrative · <a href="/credits-photos/">crédits photo</a>.</>}

@@ -15,12 +15,14 @@ assert.match(c03,/title: 'Le kroeung, une mémoire de la cuisine khmère'/);
 assert.match(c03,/eyebrow: 'Mémoire culinaire'/);
 assert.equal([...c03.matchAll(/^        title: /gm)].length,5,'Exactly five historical and cultural chapters');
 assert.equal([...c03.matchAll(/^          '/gm)].length,15,'Exactly 15 cultural paragraphs');
-assert.match(c03,/image: '\/images\/cuisine\/kroeung-1600\.webp'/,'Restore the original image; the workshop mortar image is not a cultural report');
-assert.match(c03,/imageAlt: 'Plat sauté de légumes et de viande/);
+assert.match(c03,/image: '\/images\/cuisine\/carnet-kroeung-memoire-1536\.webp'/,'Verified editorial hero C03');
+assert.match(c03,/imageAlt: 'Scène illustrative de deux générations/,'New cover should be unmistakably illustrative');
 for(const width of [480,800,1200,1600]) {
   assert.ok(existsSync(`public/images/cuisine/kroeung-${width}.webp`),`Old hero variant ${width} must remain available`);
 }
-assert.doesNotMatch(c03,/socialImage:|socialImageRole:/,'Do not create a new social image classification for C03');
+assert.match(c03,/socialImage: '\/images\/cuisine\/kroeung-1600\.webp'/,'Legacy social image preserved');
+assert.match(c03,/socialImageRole: 'article'/);
+for(const width of [480,800,1200,1536]) assert.ok(existsSync('public/images/cuisine/carnet-kroeung-memoire-'+width+'.webp'),'Missing new C03 variant '+width);
 assert.match(social,/article\.socialImage \?\? article\.image/,'Other social cards remain compatible');
 assert.doesNotMatch(c03,/tourismGuide|tourismcambodia\.org/,'Broken generic document must not appear in C03');
 assert.match(c03,/yourstory\.tenement\.org\/stories\/kroeung/,'Cultural memory should have a verifiable internal record');

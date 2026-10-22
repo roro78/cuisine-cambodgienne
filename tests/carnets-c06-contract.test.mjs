@@ -17,10 +17,13 @@ assert.equal([...c06.matchAll(/^          '/gm)].length,18,'Eighteen paragraphs 
 assert.match(c06,/Le Tonlé Sap, un paysage qui change avec les saisons/);
 assert.match(c06,/Des savoirs et des revenus portés par des productrices/);
 assert.match(c06,/Préserver le prahok,/);
-assert.match(c06,/image: '\/images\/cuisine\/prahok-1600\.webp'/,'Do not silently change old photography');
-assert.match(c06,/imageAlt: 'Bol de prahok ktis entouré de crudités/,'Photograph must be described as cooked food, never production reportage');
+assert.match(c06,/image: '\/images\/cuisine\/carnet-prahok-tonle-sap-1536\.webp'/,'Verified editorial hero C06');
+assert.match(c06,/imageAlt: 'Scène illustrative de pêcheurs/,'New cultural illustration should not pretend to be a report photo');
 for(const width of [480,800,1200,1600]) assert.ok(existsSync(`public/images/cuisine/prahok-${width}.webp`),`Missing existing width ${width}`);
-assert.match(credits,/Photo : Thomas Wanhoff · CC BY-SA 2\.0/,'Existing CC credit must stay');
+assert.match(c06,/socialImage: '\/images\/cuisine\/prahok-1600\.webp'/,'Legacy social image preserved');
+assert.match(c06,/socialImageRole: 'article'/);
+for(const width of [480,800,1200,1536]) assert.ok(existsSync('public/images/cuisine/carnet-prahok-tonle-sap-'+width+'.webp'),'Missing new C06 variant '+width);
+assert.match(credits,/Photo : Thomas Wanhoff · CC BY-SA 2\.0/,'Legacy social image license remains documented');
 assert.match(c06,/doi\.org\/10\.1080\/07409710\.2025\.2564492/,'Women producers research internal evidence');
 assert.match(c06,/link\.springer\.com\/article\/10\.1007\/s10113-026-02706-8/,'Current 2026 fisheries study internal evidence');
 assert.match(c06,/link\.springer\.com\/article\/10\.1186\/s42779-019-0027-1/,'Historic seasonal pattern internal evidence');

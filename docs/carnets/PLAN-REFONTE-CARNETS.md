@@ -4,7 +4,7 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v2.8 (QA finale 7/7 PASS avec photo Kep locale ; D2/D3 non validés)** · Responsable de validation : **propriétaire du site**  
+> Création : **22 octobre 2026** · Version du plan : **v2.9 (couvertures éditoriales C03/C06 importées, QA finale à confirmer)** · Responsable de validation : **propriétaire du site**
 > État du projet : **M2 EN COURS — 7/7 Carnets préparés, QA technique 7/7 PASS avec média Kep local, 0/7 textes et médias définitivement validés ni publiés**  
 > **Étape active : M2 — QA Astro, contrats, build et Chromium mobile/desktop **PASS** sur la version actualisée avec la photo Kep locale : run final #39769358161. D2 taxonomie, D3 réception éditoriale/médias et publication EN ATTENTE.**  
 > Prochaine action : [réception technique finalisée](./RECEPTION-TECHNIQUE-2026-10-22.md) et [GitHub Actions #39769358161](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39769358161) **PASS sur les sept Carnets**, mobile/ordinateur, avec **photo du marché de Kep maintenant locale**. Accéder aux captures sur le run avant leur expiration **25/10/2026**. Restent la validation des **sept textes**, **D2** (univers/fêtes à arbitrer), **D3** (choix/licences des médias C01/C03/C06/C07 et visa de publication), baseline GSC et la réception artistique. **PR #97 à #107 en brouillon, aucune fusion ni OVH.**
@@ -174,6 +174,12 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J19 — couvertures C03/C06 illustratives intégrées
+- **Images acceptées en conversation :** C03 scène entre générations autour des aromates, C06 scène lacustre avec pêche et marché, sans tutoriel au mortier. Ce sont des **illustrations éditoriales composées**, non des reportages de personnes ou lieux attestés ; aucune mention de source documentaire en page.
+- **8 WebP vérifiés par SHA-256 et Sharp**, quatre formats 480/800/1200/1536 pour chaque Carnet, 1536×1024 au maximum. Données image, alt et légende mises à jour uniquement sur C03/C06.
+- **Catalogue social préservé :** anciennes photographies C03 et C06 conservées dans socialImage et socialImageRole article. Aucune modification des flux n8n/Meta, d'Ateliers ni de Recettes.
+- **Gate :** images importées exclusivement sur branche QA à réceptionner, CI/Chromium obligatoires après import ; D2, D3 textes et publication restent ouverts, aucun merge ou OVH.
 
 ### 2026-10-22 — J18 — QA finale PASS avec photo locale Kep, 7 pages vérifiées sur mobile et ordinateur
 - **Preuve sans ambiguïté :** [run GitHub #39769358161](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39769358161), commit `adfa2c2cc993ec93fe61de3f4ef881f197d376b9`, **conclusion SUCCESS**, toutes étapes Node/Astro/éditorial/recettes/build/Chromium **PASS**.
