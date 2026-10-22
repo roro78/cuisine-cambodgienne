@@ -4,10 +4,10 @@
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  
 > **Chemin stable : docs/carnets/PLAN-REFONTE-CARNETS.md (branche main)**  
-> Création : **22 octobre 2026** · Version du plan : **v1.3 (décision D1 obtenue, état en PR non fusionnée)** · Responsable de validation : **propriétaire du site**  
-> État du projet : **M1 — BRIEFS 7/7 ACCEPTÉS, EN PR NON FUSIONNÉE ; M2 EN COURS ; ZÉRO PUBLICATION**  
+> Création : **22 octobre 2026** · Version du plan : **v1.4 (correctif C01 rédigé en PR dépendante, non fusionnée)** · Responsable de validation : **propriétaire du site**  
+> État du projet : **M1 VALIDÉ EN BRANCHE — M2 EN COURS ; CORRECTIF C01-P0 PRÉPARÉ SANS PUBLICATION**  
 > **Étape active : M2 — sept orientations C01–C07 validées par le propriétaire, autres arbitrages ouverts ; aucun article final validé.**  
-> Prochaine action : préparer la **correction P0 C01 autorisée** (première place partagée avec le riz ST25 vietnamien) dans une PR technique distincte, réviser et soumettre les premiers textes enrichis ; arbitrages D2 (univers/maquette) et modèle final M2 encore ouverts. Export GSC et visa de publication requis avant OVH. Aucune fusion autorisée.
+> Prochaine action : faire contrôler la PR corrective C01-P0 et soumettre les prochains textes enrichis pour réception ; arbitrages D2 (univers/maquette), modèle final M2 et priorités N01–N04 encore ouverts. Export GSC et visa de publication nécessaires avant OVH. **Ni la PR documentaire ni la PR corrective ne sont fusionnées.**
 
 ## 1. Objectif final
 
@@ -174,6 +174,13 @@ Les jalons sont **séquentiels**, sans délai inventé. Commencer par M1, n'avan
 | Publication de la refonte | **Aucune** |
 
 ## 10. Journal chronologique immuable
+
+### 2026-10-22 — J04 — correction C01-P0 préparée dans une PR dédiée (non fusionnée)
+- **Réalisation :** sur une branche issue de la PR documentaire #97 (pour ne pas créer un conflit de plan parallèle), modification d'un seul paragraphe de `src/data/culture.ts` : le prix 2025 est indiqué comme **partagé** entre Malys Angkor/Phka Rumduol (Cambodge) et ST25 (Vietnam). Ajout de la référence Vietnam News Agency du 10/11/2025 dans les sources du C01 ; autres contenus des sept Carnets préservés.
+- **Fondement :** approbation explicite du propriétaire (J03) ; contrôle contradictoire AKP du 09/11/2025 et VNA du 10/11/2025, confirmés par VOV du 09/11/2025. Aucune interprétation comme classement permanent.
+- **État :** patch sur branche `fix/carnets-riz-world-best-rice-ex-aequo-20261022`, **dépendante de la PR #97**, non fusionnée ; pas d'édition de la production, pas de publication OVH, M2 toujours EN COURS. Cette branche portera sa PR spécifique vers la branche de #97, puis devra être retargetée vers main une fois la PR documentaire fusionnée sur autorisation.
+- **Contrôles :** vérifier la comparaison Git du fichier et la présence de la source ; CI GitHub / tests de rendu non attestés tant que non exécutés. Aucun visa de publication reçu.
+- **Prochain geste :** réception du patch, préparation de petits lots d'enrichissement C01–C07, décision D2 et validation des textes/visuels avant M3 complet.
 
 ### 2026-10-22 — J03 — décision explicite du propriétaire : D1 et correction C01-P0
 - **Décision reçue :** réponse « Oui » à la question « Valides-tu les sept orientations proposées et la correction de l'ex æquo du riz 2025 ? ». **Accord pour les angles C01–C07 et pour corriger factuellement le paragraphe C01 relatif au prix 2025**. Cela ne signifie ni visa final des sept articles enrichis, ni approbation D2 pour le design/taxonomie, ni permission de fusionner ou de publier.
