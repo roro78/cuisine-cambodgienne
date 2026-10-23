@@ -1,5 +1,11 @@
 # Carnets du Cambodge — plan de refonte et journal de pilotage
 
+## Réception éditoriale contradictoire du 23 octobre (v3.5)
+
+**Dossier source interne** : [RECEPTION-EDITORIALE-2026-10-23.md](./RECEPTION-EDITORIALE-2026-10-23.md). Sept Carnets effectivement relus, quatre retouches de formulation uniquement dans `src/data/culture.ts`. Constat : éléments factuels majeurs recoupés ; D2 taxonomie 2/2/3 favorable mais **visa final non signé** ; D3 **0/7 visas** et iconographie complète toujours à approuver. Outre les originaux Commons, concordance exacte des WebP locaux non prouvée. Le maillage inter-Carnets O6 reste à faire et quatre modifications hors périmètre Carnets préexistantes dans la PR doivent être arbitrées. **Aucune fusion #111 ni OVH**. Tests du nouveau commit à contrôler séparément, même si la CI antérieure est SUCCESS.
+
+---
+
 ## État de reprise prioritaire — 23 octobre 2026 (v3.4)
 
 **Ce jalon actualise et prévaut sur les instantanés v3.1 à v3.3 datés du 22 octobre ci-dessous.** Référence `main` synchronisée : `536332ce95edc5b1f0278120e7e8112268d146e1` après fusion de la [PR #115](https://github.com/roro78/cuisine-cambodgienne/pull/115). Son [run CI #39853159532](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39853159532) est terminé **SUCCESS** : contrôles applicables, installation npm des outils ffprobe/ffmpeg, six MP3 historiques, build et navigateur V17. Les étapes conditionnelles SKIPPED ne sont pas assimilées à des tests passés.

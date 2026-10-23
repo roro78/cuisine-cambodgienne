@@ -168,7 +168,7 @@ export const cultureArticles: CultureArticle[] = [
         paragraphs: [
           'Vert, noir, rouge et blanc ne désignent pas quatre plantes sans rapport. Ils correspondent surtout au moment de la récolte et au traitement des baies.',
           'Le poivre vert provient de grappes cueillies alors que les fruits sont encore jeunes. Le noir est obtenu à partir de grains récoltés à un stade plus avancé, puis séchés. Le rouge vient de baies arrivées à maturité et séchées. Pour obtenir le blanc, on travaille des baies mûres afin d\'en retirer leur enveloppe extérieure.',
-          'La transformation change l\'aspect et les usages du poivre. Mais cette diversité ne doit pas masquer ce que les quatre formes ont en commun : elles résultent d\'une culture située dans la même région de production et de méthodes de préparation encadrées. Pour comparer leurs parfums et savoir quand les employer, la fiche ingrédient sera plus utile qu\'une longue liste de recettes dans ce Carnet.'
+          'La transformation change l\'aspect et les usages du poivre. Mais cette diversité ne doit pas masquer ce que les quatre formes ont en commun : elles résultent d\'une culture située dans la même région de production et de méthodes de préparation encadrées. Ces couleurs renvoient aux gestes agricoles et aux choix de préparation ; les usages en cuisine varient ensuite selon les plats et les familles.'
         ]
       },
       {
@@ -253,7 +253,7 @@ export const cultureArticles: CultureArticle[] = [
         paragraphs: [
           'Aujourd\'hui, des cuisinières, des cuisiniers et des auteurs cambodgiens s\'attachent à raconter, documenter et faire connaître leur patrimoine culinaire. Cette démarche prend plusieurs formes : recueillir des souvenirs, écrire des livres, retrouver des plats moins connus ou montrer la diversité des façons de manger selon les territoires.',
           'Leur travail soulève une question importante : comment conserver une mémoire sans transformer une version particulière en vérité définitive ? Le mot « traditionnel » ne signifie pas que tout le monde cuisine de la même manière. Une préparation peut évoluer avec les saisons, les migrations, les moyens disponibles et les goûts d\'une génération.',
-          'Le kroeung trouve sa place dans ce récit : non comme une leçon à reproduire exactement, mais comme l\'un des fils qui relient les repas du présent à des histoires familiales et collectives. C\'est cette dimension humaine qui relève des Carnets. Les proportions et les gestes ont leur place ailleurs, dans les Recettes et les Ateliers.'
+          'Le kroeung trouve sa place dans ce récit : non comme une leçon à reproduire exactement, mais comme l\'un des fils qui relient les repas du présent à des histoires familiales et collectives. C\'est cette dimension humaine qui relève des Carnets. Les parfums transmis de génération en génération ne se résument pas à une série de gestes.'
         ]
       }
     ],
@@ -300,7 +300,7 @@ export const cultureArticles: CultureArticle[] = [
         paragraphs: [
           'L’amok est souvent photographié dans de petites corbeilles de feuilles de bananier. Cette présentation contribue fortement à son identité visuelle : un contenant végétal qui encadre le plat et qui rappelle un usage culinaire plus large des feuilles dans la région.',
           'Pourtant, toutes les versions d’amok ne se ressemblent pas. Certains cuisiniers le présentent autrement ; les feuilles de bananier peuvent être remplacées par d’autres récipients selon les circonstances. Une cheffe cambodgienne contemporaine propose elle-même plusieurs modes de service possibles.',
-          'La feuille de bananier est ainsi devenue un élément important de la représentation publique de l’amok sans constituer une preuve d’authenticité exclusive. Pour un Carnet culturel, observer les images et la manière dont elles circulent est plus intéressant que d’expliquer comment fabriquer un panier.'
+          'La feuille de bananier est ainsi devenue un élément important de la représentation publique de l’amok sans constituer une preuve d’authenticité exclusive. Pour un Carnet culturel, observer les images et la manière dont elles circulent est plus intéressant que d’expliquer comment plier une corbeille en feuille de bananier.'
         ]
       },
       {
@@ -469,7 +469,7 @@ export const cultureArticles: CultureArticle[] = [
         paragraphs: [
           'Parler du prahok uniquement par son odeur ferait passer à côté de l\'essentiel. Il est lié à l\'histoire alimentaire de nombreuses familles et à des activités qui ont évolué au gré des saisons, des marchés et des déplacements. Sa place dans la culture cambodgienne est aussi celle d\'un produit sur lequel des personnes ont bâti une compétence et parfois leur métier.',
           'Cette histoire ne se limite ni à une époque lointaine ni à une seule façon de manger. Les usages, les formes et les circuits de vente changent. Certaines familles continuent de produire du prahok ; d\'autres l\'achètent ou l\'utilisent occasionnellement. La diversité ne contredit pas le patrimoine : elle en fait partie.',
-          'C\'est pourquoi ce Carnet parle d\'abord des eaux du Tonlé Sap, des échanges entre villages et du travail de celles et ceux qui vivent de la pêche. Les gestes de cuisine et les associations de saveurs ont leur place ailleurs, dans les recettes et les ateliers. Ici, ce sont les personnes et les paysages que le prahok nous invite à comprendre.'
+          'C\'est pourquoi ce Carnet parle d\'abord des eaux du Tonlé Sap, des échanges entre villages et du travail de celles et ceux qui vivent de la pêche. Ce sont les personnes, les paysages et les savoirs transmis entre générations que le prahok nous invite à comprendre.'
         ]
       }
     ],
