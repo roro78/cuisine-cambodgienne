@@ -63,7 +63,7 @@
         0
       ],
       "parameters": {
-        "jsCode": "const original=$('Réserver un conteneur à examiner').first().json;\nconst state=String($json.status_code||'').toUpperCase();\nif(!original.id)throw Error('conteneur_absent');\nreturn [{json:{id:original.id,containerId:original.instagram_container_id,status:state}}];",
+        "jsCode": "const original=$('Réserver un conteneur à examiner').first().json;\nconst state=String($input.first().json.status_code||'').toUpperCase();\nif(!original.id)throw Error('conteneur_absent');\nreturn [{json:{id:original.id,containerId:original.instagram_container_id,status:state}}];",
         "mode": "runOnceForAllItems"
       }
     },
@@ -94,7 +94,7 @@
         0
       ],
       "parameters": {
-        "jsCode": "return items.filter(i=>i.json.ig_state==='submitting');",
+        "jsCode": "return $input.all().filter(i=>i.json.ig_state==='submitting');",
         "mode": "runOnceForAllItems"
       }
     },

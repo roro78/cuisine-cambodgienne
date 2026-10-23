@@ -83,13 +83,20 @@ test('Resend email never runs when PostgreSQL draft insertion returns no id', ()
   assert.equal(gate.type,'n8n-nodes-base.if');
   assert.equal(gate.parameters.conditions.conditions.length,1);
   const condition=gate.parameters.conditions.conditions[0];
-  assert.equal(condition.leftValue,'={{ $json.id !== undefined && $json.id !== null && /^[1-9][0-9]*$/.test(String($json.id)) }}');
+  assert.match(condition.leftValue,/Number\.isSafeInteger/);
+  assert.match(condition.leftValue,/9223372036854775807/);
+  assert.match(condition.leftValue,/canonical\.length/);
   assert.equal(condition.operator.type,'boolean');
   assert.equal(condition.operator.operation,'true');
-  // PostgreSQL BIGINT can be supplied as a decimal string, not only a JS number.
-  const validInsertId = (id) => id !== undefined && id !== null && /^[1-9][0-9]*$/.test(String(id));
-  for (const id of [1,'1',42,'9007199254740993']) assert.equal(validInsertId(id),true);
-  for (const id of [null,undefined,'',0,'0',-1,'bad',{},true]) assert.equal(validInsertId(id),false);
+  // PostgreSQL BIGINT accepts canonical decimal strings up to signed int64 max.
+  const validInsertId = (raw) => {
+    const text=typeof raw==='string'?raw.trim():typeof raw==='number'&&Number.isSafeInteger(raw)?String(raw):'';
+    if(!/^(?:0*[1-9]\d*)$/.test(text)) return false;
+    const canonical=text.replace(/^0+/,'');
+    return canonical.length<19||(canonical.length===19&&canonical<='9223372036854775807');
+  };
+  for (const id of [1,'1',42,'9007199254740993','9223372036854775807','00042']) assert.equal(validInsertId(id),true);
+  for (const id of [null,undefined,'',0,'0',-1,'bad',{},true,'9223372036854775808']) assert.equal(validInsertId(id),false);
   assert.match(sql,/id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY/);
   assert.deepEqual(w.connections['Enregistrer le brouillon'].main[0].map(edge=>edge.node),['Brouillon inséré ?']);
   assert.deepEqual(w.connections['Brouillon inséré ?'].main[0].map(edge=>edge.node),['Envoyer la demande de validation Resend']);
@@ -104,6 +111,9 @@ test('approval uses email and an explicit form POST; missing action defaults to 
   assert.equal(approval.parameters.limitWaitTime,true);
   const decision=w.nodes.find(n=>n.name==='Interpréter la décision');
   assert.match(decision.parameters.jsCode,/d==='Approuver'\?'approved'/);
+  assert.doesNotMatch(decision.parameters.jsCode,/Number\(saved\.id\)/);
+  assert.match(decision.parameters.jsCode,/9223372036854775807/);
+  assert.match(decision.parameters.jsCode,/const id=text\.replace\(\/\^0\+\//);
   assert.ok(!w.nodes.some(n=>/graph\.facebook\.com\/.*\/(photos|media_publish)/.test(n.parameters?.url||'')));
 });
 
