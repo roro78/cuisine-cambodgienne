@@ -3,12 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { cultureArticles } from '../../data/culture';
-import { completeCookingWorkshopCutoverReady } from '../../data/cookingWorkshopGuides';
 import type { CultureArticle } from '../../data/culture';
-import { recipes } from '../../data/recipes';
-import { ingredientGuides } from '../../data/ingredients';
-import GlossaryStrip from '../../components/GlossaryStrip.astro';
-import { getGlossaryEntries } from '../../data/glossary';
 import { imageSrcSet } from '../../utils/images';
 import CulinaryIcon from '../../components/CulinaryIcon.astro';
 
@@ -21,48 +16,11 @@ export function getStaticPaths() {
 
 const { article } = Astro.props;
 
-const glossaryByArticle: Record<string, string[]> = {
-  'le-riz-symbole-de-vie-au-cambodge': ['riz-jasmin'],
-  'poivre-de-kampot': ['poivre-de-kampot'],
-  'comprendre-le-kroeung': ['kroeung', 'citronnelle', 'galanga', 'combava', 'curcuma'],
-  'comprendre-amok': ['amok', 'kroeung', 'lait-de-coco', 'combava', 'feuille-bananier'],
-  'kep-marche-crabe-poivre': ['poivre-de-kampot'],
-  'prahok-fermentation-umami': ['prahok', 'sauce-poisson'],
-  'construire-repas-cambodgien': ['riz-jasmin', 'amok', 'lok-lak']
-};
-const glossary = getGlossaryEntries(glossaryByArticle[article.slug] ?? []);
-
-const relatedContent = article.slug === 'poivre-de-kampot'
-  ? [
-      ingredientGuides.find((item) => item.slug === 'poivre-de-kampot'),
-      recipes.find((item) => item.slug === 'lok-lak')
-    ].filter(Boolean)
-  : article.slug === 'comprendre-le-kroeung'
-    ? [
-        ingredientGuides.find((item) => item.slug === 'kroeung'),
-        recipes.find((item) => item.slug === 'kroeung-jaune'),
-        recipes.find((item) => item.slug === 'amok-trey')
-      ].filter(Boolean)
-    : article.slug === 'comprendre-amok'
-      ? [
-          recipes.find((item) => item.slug === 'amok-trey'),
-          ingredientGuides.find((item) => item.slug === 'kroeung')
-        ].filter(Boolean)
-      : article.slug === 'kep-marche-crabe-poivre'
-        ? [
-            ingredientGuides.find((item) => item.slug === 'poivre-de-kampot'),
-            recipes.find((item) => item.slug === 'lok-lak')
-          ].filter(Boolean)
-        : article.slug === 'prahok-fermentation-umami'
-          ? [
-              ingredientGuides.find((item) => item.slug === 'prahok'),
-              ingredientGuides.find((item) => item.slug === 'kroeung')
-            ].filter(Boolean)
-          : [
-              recipes.find((item) => item.slug === 'amok-trey'),
-              recipes.find((item) => item.slug === 'lok-lak'),
-              recipes.find((item) => item.slug === 'kroeung-jaune')
-            ].filter(Boolean);
+// Maillage culturel uniquement, basé sur un univers réellement renseigné.
+// Aucun lien recette, atelier ou réseau social dans les récits.
+const nextCarnets = cultureArticles
+  .filter((candidate: CultureArticle) => candidate.slug !== article.slug && candidate.eyebrow === article.eyebrow)
+  .slice(0, 2);
 
 const articleSchema = {
   '@context': 'https://schema.org',
@@ -102,8 +60,12 @@ const breadcrumbSchema = {
         <img src={article.image} srcset={article.imageWidths.length ? imageSrcSet(article.image, article.imageWidths) : undefined} sizes="(max-width: 900px) 100vw, 52vw" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} decoding="async" />
         <figcaption>
           {article.slug === 'le-riz-symbole-de-vie-au-cambodge' ? (
-            <>Rizières près de Siem Reap · Photo Dmitry A. Mottl, CC BY-SA 4.0 · <a href="https://commons.wikimedia.org/wiki/File:Cambodia%27s_rice_fields.jpg" target="_blank" rel="noreferrer">Source et licence</a></>
-          ) : 'Photographie illustrative · crédits et licence en bas de page.'}
+            <>Rizières près de Siem Reap · Photo Dmitry A. Mottl, CC BY-SA 4.0 · <a href="https://commons.wikimedia.org/wiki/File:Cambodia%27s_rice_fields.jpg" target="_blank" rel="noreferrer">Crédit et licence</a></>
+          ) : article.slug === 'comprendre-le-kroeung' || article.slug === 'prahok-fermentation-umami' ? (
+            <>Illustration éditoriale de la culture cambodgienne.</>
+          ) : article.slug === 'construire-repas-cambodgien' ? (
+            <>Illustration éditoriale d’un repas partagé · <a href="/credits-photos/">crédits photo</a>.</>
+          ) : <>Photographie illustrative · <a href="/credits-photos/">crédits photo</a>.</>}
         </figcaption>
       </figure>
     </section>
@@ -120,7 +82,7 @@ const breadcrumbSchema = {
             {article.gallery.slice(0, 2).map((photo) => (
               <figure>
                 <img src={photo.image} alt={photo.imageAlt} width={photo.width} height={photo.height} loading="lazy" decoding="async" />
-                <figcaption>{photo.caption} <small>{photo.credit} · <a href={photo.source} target="_blank" rel="noreferrer">Source et licence</a></small></figcaption>
+                <figcaption>{photo.caption} <small>{photo.credit} · <a href={photo.source} target="_blank" rel="noreferrer">Crédit et licence</a></small></figcaption>
               </figure>
             ))}
           </div>
@@ -128,50 +90,23 @@ const breadcrumbSchema = {
         {article.gallery && index === 5 && article.gallery[2] && (
           <figure class="rice-festival-photo">
             <img src={article.gallery[2].image} alt={article.gallery[2].imageAlt} width={article.gallery[2].width} height={article.gallery[2].height} loading="lazy" decoding="async" />
-            <figcaption>{article.gallery[2].caption} <small>{article.gallery[2].credit} · <a href={article.gallery[2].source} target="_blank" rel="noreferrer">Source et licence</a></small></figcaption>
+            <figcaption>{article.gallery[2].caption} <small>{article.gallery[2].credit} · <a href={article.gallery[2].source} target="_blank" rel="noreferrer">Crédit et licence</a></small></figcaption>
           </figure>
         )}
         </>
       ))}
 
-      {article.slug === 'le-riz-symbole-de-vie-au-cambodge' && (
-        <aside class="rice-workshop-link">
-          <p class="eyebrow">De la rizière à votre cuisine</p>
-          <h2>Et maintenant, passons à table.</h2>
-          <p>Apprenez à associer le riz, un plat chaud, des légumes et un condiment : un petit exercice pour comprendre un repas cambodgien.</p>
-          <a href={completeCookingWorkshopCutoverReady ? '/apprendre/' : '/apprendre/composer-repas-cambodgien/'}>{completeCookingWorkshopCutoverReady ? 'Découvrir les six ateliers de cuisine →' : 'Découvrir l’atelier « Composer un repas » →'}</a>
-        </aside>
-      )}
-      <aside class="source-box">
-        <p class="eyebrow">Sources</p>
-        <ul>
-          {article.sources.map((source: CultureArticle['sources'][number]) => (
-            <li><a href={source.url} target="_blank" rel="noreferrer">{source.label}</a></li>
-          ))}
-        </ul>
-      </aside>
     </article>
 
-    <GlossaryStrip entries={glossary} />
-
-    {relatedContent.length > 0 && (
-      <section class="culture-related" data-reveal="up">
-        <p class="eyebrow">Envie d’aller plus loin ?</p>
-        <h2>Retrouvez les recettes et les ingrédients liés à ce carnet</h2>
-        <div class="culture-related-links">
-          {relatedContent.map((item: any) => {
-            const isRecipe = 'prepTime' in item;
-            const href = isRecipe ? `/recettes/${item.slug}/` : `/ingredients/${item.slug}/`;
-            return (
-              <a href={href}>
-                <span>{isRecipe ? 'Recette' : 'Ingrédient'}</span>
-                <strong>{item.title}</strong>
-                <em>{item.intro}</em>
-              </a>
-            );
-          })}
-        </div>
-      </section>
+    {nextCarnets.length > 0 && (
+      <nav class="culture-next-stories" aria-label="Poursuivre avec un autre Carnet">
+        <h2>À découvrir aussi</h2>
+        <ul>
+          {nextCarnets.map((candidate: CultureArticle) => (
+            <li><a href={`/culture/${candidate.slug}/`}>{candidate.title}</a></li>
+          ))}
+        </ul>
+      </nav>
     )}
 
     <a class="text-link" href="/culture/">← Tous les carnets</a>
@@ -183,16 +118,19 @@ const breadcrumbSchema = {
 
 <style>
   .culture-visual figcaption a{color:inherit;text-decoration:underline;text-underline-offset:.15em;font-size:inherit}
+  .culture-next-stories{border-top:1px solid #d8c9b3;margin:clamp(1.5rem,4vw,3rem) 0;padding-top:1.5rem}
+  .culture-next-stories h2{font-size:clamp(1.15rem,2.4vw,1.55rem);margin:0 0 .9rem}
+  .culture-next-stories ul{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:.8rem}
+  .culture-next-stories li{max-width:100%}
+  .culture-next-stories a{display:inline-block;padding:.65rem .9rem;border:1px solid #cabb9d;border-radius:.7rem;background:#fffaf1;color:#473622;text-decoration:underline;text-underline-offset:.2em}
+  .culture-next-stories a:focus-visible{outline:3px solid #9a6c2d;outline-offset:3px}
   .rice-photo-report{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:clamp(.8rem,2vw,1.5rem);margin:clamp(1.4rem,4vw,3rem) 0}
   .rice-photo-report figure,.rice-festival-photo{margin:0;min-width:0}
   .rice-photo-report img,.rice-festival-photo img{width:100%;height:clamp(15rem,33vw,23rem);object-fit:cover;border-radius:1rem;display:block}
   .rice-photo-report figcaption,.rice-festival-photo figcaption{padding:.75rem .25rem 0;color:#4d483e;font-size:.95rem;line-height:1.55}
   .rice-photo-report figcaption small,.rice-festival-photo figcaption small{display:block;margin-top:.3rem;font-size:.78rem}
-  .rice-photo-report a,.rice-festival-photo a,.rice-workshop-link a{color:#664c27;text-decoration:underline;text-underline-offset:.2em}
+  .rice-photo-report a,.rice-festival-photo a{color:#664c27;text-decoration:underline;text-underline-offset:.2em}
   .rice-festival-photo{max-width:42rem;margin:1.5rem auto 2rem}
   .rice-festival-photo img{max-height:32rem;object-position:center 44%}
-  .rice-workshop-link{padding:clamp(1.25rem,3.8vw,2.5rem);background:#eee2cb;border:1px solid #d3c2a6;border-radius:1.3rem;margin:2rem 0}
-  .rice-workshop-link h2{margin:.55rem 0}.rice-workshop-link p{max-width:56ch}
-  .rice-workshop-link a{font-weight:700;display:inline-block;margin-top:.65rem}
   @media(max-width:720px){.rice-photo-report{grid-template-columns:1fr}.rice-photo-report img{height:auto;max-height:25rem}.rice-festival-photo img{height:auto;max-height:27rem}}
 </style>

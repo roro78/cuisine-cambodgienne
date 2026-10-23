@@ -64,29 +64,33 @@ if (culture.includes('cultureArticles[3]') || !culture.includes("article.slug ==
   failures.push('Culture featured carnet must be selected by stable slug and excluded from the card grid');
 }
 if (culture.includes("time:'05:30'") || culture.includes("time:'08:30'") ||
-    !culture.includes('moment.moment') || !culture.includes('Quatre moments pour découvrir')) {
-  failures.push('Culture day narrative must not impose fixed daily clock times');
+    !culture.includes('moment.moment') || !culture.includes('Quatre regards sur les lieux et la mémoire.')) {
+  failures.push('Culture editorial perspectives must remain timeless and avoid invented daily clock times');
 }
-const practicalCultureLinks = [
+const culturalStoryLinks = [
+  '/culture/le-riz-symbole-de-vie-au-cambodge/',
   '/culture/comprendre-le-kroeung/',
-  '/apprendre/piler-aromates-au-mortier/',
-  '/recettes/amok-trey/'
+  '/culture/kep-marche-crabe-poivre/'
 ];
-practicalCultureLinks.forEach((href) => {
-  if (!culture.includes(href)) failures.push('Missing Culture learning path: ' + href);
+culturalStoryLinks.forEach((href) => {
+  if (!culture.includes(href)) failures.push('Missing cultural story path: ' + href);
 });
+if (culture.includes('/apprendre/') || culture.includes('/recettes/') ||
+    culture.includes('culinaryPath') || !culture.includes('heritagePath')) {
+  failures.push('Culture homepage must tell cultural stories, not funnel to workshops or recipes');
+}
 if (!cultureData.includes("slug: 'comprendre-le-kroeung'") ||
-    !workshopData.includes("slug: 'piler-aromates-au-mortier'") ||
-    !recipeData.includes("slug: 'amok-trey'")) {
-  failures.push('Culture learning path must lead to published journal, workshop and recipe slugs');
+    !cultureData.includes("slug: 'le-riz-symbole-de-vie-au-cambodge'") ||
+    !cultureData.includes("slug: 'kep-marche-crabe-poivre'")) {
+  failures.push('Culture story path must reference existing carnet slugs');
 }
 if (!fs.existsSync('src/pages/credits-photos.astro')) {
   failures.push('About photo credits CTA must point to a real page');
 }
-if (!culture.includes('aria-label="Parcours pour découvrir le kroeung"') ||
+if (!culture.includes('aria-label="Parcours à travers les Carnets du Cambodge"') ||
     !glossaryStyles.includes('.v16-journal-path-grid a:focus-visible') ||
     !glossaryStyles.includes('.v16-journal-path-grid{grid-template-columns:1fr}')) {
-  failures.push('Culture learning path must remain keyboard-accessible and responsive');
+  failures.push('Culture history path must remain keyboard-accessible and responsive');
 }
 if (!about.includes('class="v16-about-transparency"') ||
     !about.includes('href="/credits-photos/"') ||
@@ -143,9 +147,13 @@ forbiddenArtificialCopy.forEach((phrase) => {
   }
 });
 
-if (!culture.includes("href:'/recettes/kuy-teav/', cta:'Voir la recette →'")) failures.push('Morning card must link explicitly to the relevant noodle recipe');
-if (culture.includes("title:'Au petit matin, les gargotes sont déjà ouvertes'")) failures.push('Morning culture card must not misleadingly link to generic meal article');
-if (!culture.includes('<strong>{moment.cta}</strong>')) failures.push('Editorial cards must accurately label linked destination');
+if (!culture.includes("href:'/culture/construire-repas-cambodgien/', cta:'Lire le carnet →'")) {
+  failures.push('The everyday-life card must link to its cultural carnet, not a recipe');
+}
+if (culture.includes("title:'Au petit matin, les gargotes sont déjà ouvertes'")) {
+  failures.push('Old recipe-oriented morning card must not return to the culture homepage');
+}
+if (!culture.includes('<strong>{moment.cta}</strong>')) failures.push('Editorial cards must accurately label linked cultural destination');
 
 if (!navigation.includes("const desktopQuery = window.matchMedia('(min-width: 721px)')") ||
     !navigation.includes("desktopQuery.addEventListener('change', onViewportChange)") ||

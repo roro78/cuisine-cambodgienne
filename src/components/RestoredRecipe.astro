@@ -97,12 +97,7 @@ const breadcrumb = {
       <h2 id="notes-title">Variantes, repères et précisions</h2>
       <ul>{recipe.tips.map((tip) => <li>{tip}</li>)}</ul>
     </section>
-    <section class="restored-recipe-sources" aria-labelledby="restored-sources-title">
-      <p class="eyebrow">Traçabilité éditoriale</p>
-      <h2 id="restored-sources-title">Sources utilisées</h2>
-      <p>Recette réécrite, détaillée et adaptée à la cuisine domestique actuelle : ce n’est pas une reproduction mot pour mot de l’ancienne page disparue.</p>
-      <ul>{recipe.sources.map((source) => <li><a href={source.url} target="_blank" rel="noopener noreferrer">{source.label} ↗</a></li>)}</ul>
-    </section>
+
     <a class="restored-recipe-back" href="/recettes/">← Retrouver toutes les recettes</a>
   </main>
   <script type="application/ld+json" set:html={JSON.stringify(recipeJsonLd)} />

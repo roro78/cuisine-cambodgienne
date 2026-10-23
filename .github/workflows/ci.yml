@@ -211,6 +211,23 @@ jobs:
       - name: Install Playwright video encoder
         run: node ./node_modules/playwright-core/cli.js install ffmpeg
 
+      # Revue visuelle du lot Carnets, sans déploiement ni appel Meta.
+      # Ce test ne faisait pas partie de la CI globale initiale.
+      - name: Carnets release QA (7 stories, 3 universes, mobile and desktop)
+        if: github.ref == 'refs/heads/feat/carnets-release-consolidee-20261022'
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/carnets-responsive-browser.test.mjs
+
+      - name: Upload Carnets release screenshots
+        if: always() && github.ref == 'refs/heads/feat/carnets-release-consolidee-20261022'
+        uses: actions/upload-artifact@v4
+        with:
+          name: carnets-111-mobile-desktop-evidence
+          path: artifacts/carnets-review/*.png
+          retention-days: 7
+          if-no-files-found: ignore
+
       - name: V17 complete responsive browser regression (no video)
         env:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
