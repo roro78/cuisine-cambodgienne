@@ -1,5 +1,17 @@
 # Carnets du Cambodge — plan de refonte et journal de pilotage
 
+## État de reprise prioritaire — 23 octobre 2026 (v3.4)
+
+**Ce jalon actualise et prévaut sur les instantanés v3.1 à v3.3 datés du 22 octobre ci-dessous.** Référence `main` synchronisée : `536332ce95edc5b1f0278120e7e8112268d146e1` après fusion de la [PR #115](https://github.com/roro78/cuisine-cambodgienne/pull/115). Son [run CI #39853159532](https://github.com/roro78/cuisine-cambodgienne/actions/runs/39853159532) est terminé **SUCCESS** : contrôles applicables, installation npm des outils ffprobe/ffmpeg, six MP3 historiques, build et navigateur V17. Les étapes conditionnelles SKIPPED ne sont pas assimilées à des tests passés.
+
+- **PR #111 Carnets** : branche synchronisée par commit de fusion préservant les 7 Carnets, 12 WebP, filtres 2/2/3 et son test navigateur dédié, tout en reprenant la CI corrigée #115. **Reste D2 (taxonomie) et D3 (textes, photos, crédits/provenance)** : brouillon, aucune fusion ni publication. CI du nouvel état à contrôler séparément.
+- **PR #113 tamarin** : synchronisation prévue avec la CI corrigée #115 ; MP3 Coral existant inchangé (blob `236ed7feb33ce895fdac550c140c8c94bf4a0456`), six MP3 antérieurs protégés, `pilot_review` et `noindex`. L'essai gustatif, la photo de sauce terminée et les droits, l'écoute mobile/desktop et le visa éditorial restent ouverts ; **brouillon non fusionnable fonctionnellement avant ces preuves humaines**. CI de la nouvelle tête à contrôler séparément.
+- **Clôture technique** : #112, #114, #115 fusionnées ; #88/#89 clôturées sans fusion. Aucune génération audio, retouche des recettes historiques, activation n8n, publication Meta ni déploiement OVH.
+
+**Gate release** : même avec CI SUCCESS, le responsable éditorial doit valider D2/D3 et les gates tamarin avant une éventuelle fusion distincte. Un feu vert de fusion ne vaut jamais autorisation OVH.
+
+---
+
 > **SOURCE DE VÉRITÉ DU CHANTIER** — Ce fichier fait foi pour l'objectif, le périmètre, les décisions, l'avancement et la reprise entre conversations.  
 > Dépôt : https://github.com/roro78/cuisine-cambodgienne  
 > Site : https://www.cuisine-du-cambodge.com/culture/  

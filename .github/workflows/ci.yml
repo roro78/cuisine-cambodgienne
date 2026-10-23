@@ -53,13 +53,28 @@ jobs:
         run: |
           set -euo pipefail
           if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
-            # The Ubuntu apt mirror occasionally hangs. Bound setup, but never skip MP3 checks.
-            timeout --signal=TERM --kill-after=10s 120s sudo apt-get update -qq
-            timeout --signal=TERM --kill-after=10s 120s sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ffmpeg
+            # npm already worked for the project. Use pinned static binaries before
+            # falling back to Ubuntu apt mirrors that can hang unpredictably.
+            FFTOOLS_DIR="$RUNNER_TEMP/cuisine-fftools"
+            mkdir -p "$FFTOOLS_DIR"
+            if timeout --signal=TERM --kill-after=10s 120s npm install --no-save --ignore-scripts --no-audit --no-fund \
+              @ffprobe-installer/ffprobe@2.1.2 @ffmpeg-installer/ffmpeg@1.1.0; then
+              FFPROBE_STATIC=$(node -p "require('@ffprobe-installer/ffprobe').path")
+              FFMPEG_STATIC=$(node -p "require('@ffmpeg-installer/ffmpeg').path")
+              install -m 755 "$FFPROBE_STATIC" "$FFTOOLS_DIR/ffprobe"
+              install -m 755 "$FFMPEG_STATIC" "$FFTOOLS_DIR/ffmpeg"
+              echo "$FFTOOLS_DIR" >> "$GITHUB_PATH"
+              export PATH="$FFTOOLS_DIR:$PATH"
+            else
+              echo "::warning::Pinned npm binaries unavailable; trying bounded Ubuntu apt fallback."
+              timeout --signal=TERM --kill-after=10s 120s sudo apt-get update -qq
+              timeout --signal=TERM --kill-after=10s 120s sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ffmpeg
+            fi
           fi
           command -v ffmpeg
           command -v ffprobe
           ffprobe -version | sed -n '1p'
+          ffmpeg -version | sed -n '1p'
 
       - name: Standard ateliers — recette réutilisable et guide MP3 (sans TTS)
         run: |
