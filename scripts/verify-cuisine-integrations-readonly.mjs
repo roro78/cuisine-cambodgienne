@@ -27,6 +27,7 @@ const workflowFiles = [
 
 const pass = proof => ({ status: 'PASS', proof });
 const passOffline = proof => ({ status: 'PASS OFFLINE', proof });
+const notTested = proof => ({ status: 'NON TESTÉ', proof });
 
 /** Inspects version-controlled exports only. It never infers current runtime availability. */
 export function loadOfflineN8nEvidence({ readWorkflow = filename => JSON.parse(readFileSync(
@@ -166,75 +167,145 @@ export function evaluateResend(config, listResult, detailResult) {
 }
 
 const permissionStatus = (permissionResult, required) => {
-  if (!permissionResult.ok) return { status: 'FAIL', proof: 'Meta permissions API returned HTTP ' + permissionResult.httpStatus,
-    missing: required };
+  if (!permissionResult) return { status: 'BLOCKED',
+    proof: 'a User Access Token is required for the permissions endpoint', missing: required };
+  if (permissionResult.technicalFailure) return { status: 'FAIL', failureType: 'TECHNICAL',
+    proof: 'Meta permissions verification failed: ' + permissionResult.reason, missing: required };
+  if (!permissionResult.ok) return { status: 'FAIL', failureType: 'NEGATIVE',
+    proof: 'Meta permissions API returned HTTP ' + permissionResult.httpStatus, missing: required,
+    errorCode: permissionResult.errorCode || null, errorSubcode: permissionResult.errorSubcode || null };
   const granted = new Set((Array.isArray(permissionResult.data?.data) ? permissionResult.data.data : [])
     .filter(item => item.status === 'granted').map(item => item.permission));
   const missing = required.filter(permission => !granted.has(permission));
-  return { status: missing.length ? 'FAIL' : 'PASS',
+  return { status: missing.length ? 'FAIL' : 'PASS', failureType: missing.length ? 'NEGATIVE' : undefined,
     proof: missing.length ? 'required permissions are missing' : 'all required permissions are granted', missing };
 };
 
-export function evaluateMeta(config, pageResult, permissionResult) {
-  if (!pageResult.ok) return { status: 'FAIL', token: { status: 'FAIL',
-    proof: 'Meta Page API returned HTTP ' + pageResult.httpStatus, errorCode: pageResult.errorCode || null,
-    errorSubcode: pageResult.errorSubcode || null }, facebookPage: { status: 'FAIL', proof: 'page access not verified' },
-    facebookPermissions: permissionStatus(permissionResult, requiredFacebookPermissions),
-    instagramAccount: { status: 'FAIL', proof: 'Instagram association not verified' },
-    instagramPermissions: permissionStatus(permissionResult, requiredInstagramPermissions),
-    tokenDurability: { status: 'BLOCKED', proof: 'failed access cannot establish token expiry or durability' },
-    serviceHealth: { status: 'FAIL', proof: 'Meta health was not established by the failed request' } };
-  const pageMatches = String(pageResult.data?.id || '') === config.facebookPageId;
-  const linkedInstagram = String(pageResult.data?.instagram_business_account?.id || '');
-  const instagramMatches = linkedInstagram === config.instagramUserId;
+const userPageStatus = (accountsResult, pageId) => {
+  if (!accountsResult) return { status: 'BLOCKED',
+    proof: 'a User Access Token is required to list accessible Pages' };
+  if (accountsResult.technicalFailure) return { status: 'FAIL', failureType: 'TECHNICAL',
+    proof: 'Meta accessible-Pages verification failed: ' + accountsResult.reason };
+  if (!accountsResult.ok) return { status: 'FAIL', failureType: 'NEGATIVE',
+    proof: 'Meta accessible-Pages API returned HTTP ' + accountsResult.httpStatus,
+    errorCode: accountsResult.errorCode || null, errorSubcode: accountsResult.errorSubcode || null };
+  const pages = Array.isArray(accountsResult.data?.data) ? accountsResult.data.data : [];
+  const page = pages.find(item => String(item?.id || '') === pageId);
+  if (!page) return { status: 'FAIL', failureType: 'NEGATIVE',
+    proof: 'configured Page is not listed for the User Access Token', tasks: [] };
+  const tasks = (Array.isArray(page.tasks) ? page.tasks : [])
+    .filter(task => typeof task === 'string' && /^[A-Z_]+$/.test(task)).slice(0, 50);
+  return { status: 'PASS', proof: 'configured Page is listed for the User Access Token', tasks };
+};
+
+const metaFailure = (label, result) => ({
+  status: 'FAIL',
+  failureType: result?.technicalFailure ? 'TECHNICAL' : 'NEGATIVE',
+  proof: result?.technicalFailure ? label + ' failed: ' + result.reason :
+    label + ' returned HTTP ' + (result?.httpStatus || 'unknown'),
+  errorCode: result?.errorCode || null,
+  errorSubcode: result?.errorSubcode || null,
+});
+
+export function evaluateMeta(config, {
+  pageResult = null,
+  permissionResult = null,
+  accountsResult = null,
+  pageTokenProvided = false,
+  userTokenProvided = false,
+} = {}) {
+  const pageToken = !pageTokenProvided ? { status: 'BLOCKED',
+    proof: 'META_PAGE_ACCESS_TOKEN is absent; Page-token checks were not run' } :
+    pageResult?.ok ? { status: 'PASS',
+      proof: 'the Page Access Token was accepted by the configured Page endpoint at verification time' } :
+      metaFailure('Meta Page endpoint', pageResult);
+  const userToken = !userTokenProvided ? { status: 'BLOCKED',
+    proof: 'META_USER_ACCESS_TOKEN is absent; user-token checks were not run' } :
+    permissionResult?.ok || accountsResult?.ok ? { status: 'PASS',
+      proof: 'the User Access Token was accepted by at least one user-only endpoint at verification time' } :
+      metaFailure('Meta user-token endpoints', permissionResult || accountsResult);
+  const pageMatches = Boolean(pageResult?.ok) &&
+    String(pageResult.data?.id || '') === config.facebookPageId;
+  const linkedInstagram = pageResult?.ok ?
+    String(pageResult.data?.instagram_business_account?.id || '') : '';
+  const instagramMatches = Boolean(pageResult?.ok) && linkedInstagram === config.instagramUserId;
   const facebookPermissions = permissionStatus(permissionResult, requiredFacebookPermissions);
   const instagramPermissions = permissionStatus(permissionResult, requiredInstagramPermissions);
-  const checks = [pageMatches, instagramMatches,
-    facebookPermissions.status === 'PASS', instagramPermissions.status === 'PASS'];
-  return { status: checks.every(Boolean) ? 'PASS' : 'FAIL',
-    token: { status: 'PASS',
-      proof: 'token was accepted by the read-only Page and permissions endpoints at verification time' },
+  const userPageAccess = userPageStatus(accountsResult, config.facebookPageId);
+  const facebookPage = !pageTokenProvided ? { status: 'BLOCKED',
+    proof: 'Page identity requires a Page Access Token' } :
+    !pageResult?.ok ? { ...metaFailure('Meta Page identity', pageResult),
+      proof: 'configured Page identity was not verified' } :
+      { status: pageMatches ? 'PASS' : 'FAIL', failureType: pageMatches ? undefined : 'NEGATIVE',
+        proof: pageMatches ? 'configured Page identifier is accessible with the Page Access Token' :
+          'accessible Page identifier does not match configuration' };
+  const instagramAccount = !pageTokenProvided ? { status: 'BLOCKED',
+    proof: 'Instagram association requires a Page Access Token' } :
+    !pageResult?.ok ? { status: 'BLOCKED',
+      proof: 'Instagram association was not evaluated because Page access failed' } :
+      { status: instagramMatches ? 'PASS' : 'FAIL', failureType: instagramMatches ? undefined : 'NEGATIVE',
+        proof: instagramMatches ? 'configured professional account is linked to the Page' :
+          'Instagram professional account link does not match configuration' };
+  const pageTokenDerivation = userPageAccess.status === 'PASS' ?
+    { status: 'PASS', proof: 'the configured Page is available through /me/accounts; no Page token was requested or serialized',
+      tasks: userPageAccess.tasks } :
+    { ...userPageAccess, proof: userPageAccess.proof +
+      '; Page-token availability was not inferred beyond that result' };
+  const serviceResults = [pageResult, permissionResult, accountsResult].filter(Boolean);
+  const serviceHealth = serviceResults.some(item => item.technicalFailure) ?
+    { status: 'FAIL', failureType: 'TECHNICAL',
+      proof: 'at least one Meta read-only request failed before an HTTP response' } :
+    serviceResults.length ? { status: 'PASS',
+      proof: 'Meta returned HTTP responses to the attempted read-only requests' } :
+      { status: 'BLOCKED', proof: 'no Meta request was attempted' };
+  const requiredStatuses = [pageToken.status, userToken.status, facebookPage.status,
+    facebookPermissions.status, userPageAccess.status, instagramAccount.status,
+    instagramPermissions.status, pageTokenDerivation.status];
+  return { status: combinedStatus(requiredStatuses),
+    pageToken, userToken,
     tokenDurability: { status: 'BLOCKED',
-      proof: 'successful read-only calls do not establish token expiry or long-term validity' },
-    serviceHealth: { status: 'PASS', proof: 'Meta returned successful read-only responses at verification time' },
-    facebookPage: { status: pageMatches ? 'PASS' : 'FAIL', proof: pageMatches ?
-      'configured page identifier is accessible' : 'accessible page identifier does not match configuration' },
+      proof: 'these read-only calls do not establish token expiry or long-term validity' },
+    serviceHealth,
+    facebookPage,
     facebookPermissions,
-    instagramAccount: { status: instagramMatches ? 'PASS' : 'FAIL', proof: instagramMatches ?
-      'configured professional account is linked to the page' : 'Instagram professional account link does not match configuration' },
-    instagramPermissions };
+    userPageAccess,
+    pageTokenDerivation,
+    instagramAccount,
+    instagramPermissions,
+    publicationInventory: notTested('Kroeung publications and photos belong to a separate read-only mission and were not queried'),
+  };
 }
 
 export function buildOfflineResult(n8nConfiguration = loadOfflineN8nEvidence()) {
   return {
     verificationMode: 'offline',
-    status: 'BLOCKED',
+    status: 'NON TESTÉ',
     n8nConfiguration,
     resend: {
-      status: 'BLOCKED',
-      domain: { status: 'BLOCKED', proof: 'Resend API was not queried in offline mode' },
-      recipient: { status: 'BLOCKED', proof: 'runtime recipient was not queried in offline mode' },
-      sender: { status: 'BLOCKED', proof: 'runtime sender was not queried in offline mode' },
-      currentAccess: { status: 'BLOCKED', proof: 'Resend API was not queried in offline mode' },
-      serviceHealth: { status: 'BLOCKED', proof: 'Resend health was not queried in offline mode' },
+      status: 'NON TESTÉ',
+      domain: notTested('Resend API was not queried in offline mode'),
+      recipient: notTested('runtime recipient was not queried in offline mode'),
+      sender: notTested('runtime sender was not queried in offline mode'),
+      currentAccess: notTested('Resend API was not queried in offline mode'),
+      serviceHealth: notTested('Resend health was not queried in offline mode'),
     },
     meta: {
-      status: 'BLOCKED',
-      token: { status: 'BLOCKED',
-        proof: 'Meta API was not queried in offline mode' },
+      status: 'NON TESTÉ',
+      pageToken: notTested('Page Access Token was not used in offline mode'),
+      userToken: notTested('User Access Token was not used in offline mode'),
       tokenDurability: { status: 'BLOCKED', proof: 'token lifetime was not queried in offline mode' },
-      serviceHealth: { status: 'BLOCKED', proof: 'Meta health was not queried in offline mode' },
-      facebookPage: { status: 'BLOCKED',
-        proof: 'Graph access was not tested' },
-      facebookPermissions: { status: 'BLOCKED',
-        proof: 'permissions require an explicit read-only Graph call' },
-      instagramAccount: { status: 'BLOCKED',
-        proof: 'the Page association was not queried' },
-      instagramPermissions: { status: 'BLOCKED',
-        proof: 'permissions require an explicit read-only Graph call' },
+      serviceHealth: notTested('Meta health was not queried in offline mode'),
+      facebookPage: notTested('Graph Page access was not tested'),
+      facebookPermissions: notTested('user permissions require an explicit read-only Graph call'),
+      userPageAccess: notTested('accessible Pages require an explicit read-only Graph call'),
+      pageTokenDerivation: notTested('Page-token availability was not checked'),
+      instagramAccount: notTested('the Page association was not queried'),
+      instagramPermissions: notTested('user permissions require an explicit read-only Graph call'),
+      publicationInventory: notTested('Kroeung publications and photos were not queried'),
     },
     safeguards: {
       methods: [], n8nApiCalled: false, resendApiCalled: false, metaApiCalled: false,
+      metaPageApiCalled: false, metaUserApiCalled: false,
       externalIntegrationApisCalled: false,
       emailsSent: false, publicationEndpointsCalled: false, workflowsExecuted: false,
       workflowsActivated: false, secretsLogged: false,
@@ -317,28 +388,46 @@ const failedResend = reason => ({
 
 const blockedMeta = proof => ({
   status: 'BLOCKED',
-  token: { status: 'BLOCKED', proof },
+  pageToken: { status: 'BLOCKED', proof },
+  userToken: { status: 'BLOCKED', proof },
   tokenDurability: { status: 'BLOCKED', proof: 'token lifetime was not established' },
   serviceHealth: { status: 'BLOCKED', proof },
   facebookPage: { status: 'BLOCKED', proof },
   facebookPermissions: { status: 'BLOCKED', proof },
+  userPageAccess: { status: 'BLOCKED', proof },
+  pageTokenDerivation: { status: 'BLOCKED', proof },
   instagramAccount: { status: 'BLOCKED', proof },
   instagramPermissions: { status: 'BLOCKED', proof },
+  publicationInventory: notTested('Kroeung publications and photos were not queried'),
 });
 
 const failedMeta = reason => ({
   status: 'FAIL',
-  token: { status: 'FAIL', proof: 'Meta read-only verification failed: ' + reason },
+  pageToken: { status: 'FAIL', failureType: 'TECHNICAL',
+    proof: 'Meta Page-token verification failed: ' + reason },
+  userToken: { status: 'FAIL', failureType: 'TECHNICAL',
+    proof: 'Meta User-token verification failed: ' + reason },
   tokenDurability: { status: 'BLOCKED', proof: 'failed access cannot establish token lifetime' },
-  serviceHealth: { status: 'FAIL', proof: 'Meta health was not established: ' + reason },
-  facebookPage: { status: 'FAIL', proof: 'Meta read-only verification failed: ' + reason },
-  facebookPermissions: { status: 'FAIL', proof: 'Meta read-only verification failed: ' + reason },
-  instagramAccount: { status: 'FAIL', proof: 'Meta read-only verification failed: ' + reason },
-  instagramPermissions: { status: 'FAIL', proof: 'Meta read-only verification failed: ' + reason },
+  serviceHealth: { status: 'FAIL', failureType: 'TECHNICAL',
+    proof: 'Meta health was not established: ' + reason },
+  facebookPage: { status: 'FAIL', failureType: 'TECHNICAL',
+    proof: 'Meta read-only verification failed: ' + reason },
+  facebookPermissions: { status: 'FAIL', failureType: 'TECHNICAL',
+    proof: 'Meta read-only verification failed: ' + reason },
+  userPageAccess: { status: 'FAIL', failureType: 'TECHNICAL',
+    proof: 'Meta read-only verification failed: ' + reason },
+  pageTokenDerivation: { status: 'FAIL', failureType: 'TECHNICAL',
+    proof: 'Meta read-only verification failed: ' + reason },
+  instagramAccount: { status: 'FAIL', failureType: 'TECHNICAL',
+    proof: 'Meta read-only verification failed: ' + reason },
+  instagramPermissions: { status: 'FAIL', failureType: 'TECHNICAL',
+    proof: 'Meta read-only verification failed: ' + reason },
+  publicationInventory: notTested('Kroeung publications and photos were not queried'),
 });
 
 const combinedStatus = values => values.includes('FAIL') ? 'FAIL' :
   values.includes('BLOCKED') ? 'BLOCKED' :
+    values.includes('NON TESTÉ') ? 'NON TESTÉ' :
     values.includes('PASS OFFLINE') ? 'PASS OFFLINE' : 'PASS';
 
 async function verifyResend(config, key, requestJson) {
@@ -354,13 +443,26 @@ async function verifyResend(config, key, requestJson) {
   return evaluateResend(config, domains, detail);
 }
 
-async function verifyMeta(config, token, requestJson) {
+const safeMetaRequest = async (url, token, requestJson) => {
+  try {
+    return await requestJson(url, token);
+  } catch (error) {
+    return { ok: false, technicalFailure: true, reason: safeReason(error) };
+  }
+};
+
+async function verifyMeta(config, { pageToken, userToken }, requestJson) {
   const fields = new URLSearchParams({ fields: 'id,name,instagram_business_account{id,username}' });
-  const page = await requestJson('https://graph.facebook.com/' + config.graphVersion + '/' +
-    encodeURIComponent(config.facebookPageId) + '?' + fields, token);
-  const permissions = await requestJson('https://graph.facebook.com/' + config.graphVersion +
-    '/me/permissions?limit=100', token);
-  return evaluateMeta(config, page, permissions);
+  const pageResult = pageToken ? await safeMetaRequest('https://graph.facebook.com/' +
+    config.graphVersion + '/' + encodeURIComponent(config.facebookPageId) + '?' + fields,
+  pageToken, requestJson) : null;
+  const permissionResult = userToken ? await safeMetaRequest('https://graph.facebook.com/' +
+    config.graphVersion + '/me/permissions?limit=100', userToken, requestJson) : null;
+  const accountsResult = userToken ? await safeMetaRequest('https://graph.facebook.com/' +
+    config.graphVersion + '/me/accounts?fields=id%2Cname%2Ctasks&limit=100',
+  userToken, requestJson) : null;
+  return evaluateMeta(config, { pageResult, permissionResult, accountsResult,
+    pageTokenProvided: Boolean(pageToken), userTokenProvided: Boolean(userToken) });
 }
 
 export async function verifyAvailableIntegrations({
@@ -375,6 +477,7 @@ export async function verifyAvailableIntegrations({
   const safeguards = {
     methods: mode === 'offline' ? [] : ['GET'],
     n8nApiCalled: false, resendApiCalled: false, metaApiCalled: false,
+    metaPageApiCalled: false, metaUserApiCalled: false,
     externalIntegrationApisCalled: false, emailsSent: false, publicationEndpointsCalled: false,
     workflowsExecuted: false, workflowsActivated: false, secretsLogged: false,
   };
@@ -397,8 +500,9 @@ export async function verifyAvailableIntegrations({
   let resend;
   let meta;
   if (mode === 'offline') {
-    resend = blockedResend('Resend API was not requested in offline mode', config);
-    meta = blockedMeta('Meta Graph API was not requested in offline mode');
+    const offline = buildOfflineResult(n8nConfiguration);
+    resend = offline.resend;
+    meta = offline.meta;
   } else {
     const hasResendConfig = Boolean(config.senderDomain && config.recipientEmail);
     const hasMetaConfig = Boolean(config.graphVersion && config.facebookPageId && config.instagramUserId);
@@ -416,15 +520,20 @@ export async function verifyAvailableIntegrations({
       }
     }
 
-    if (!environment.META_ACCESS_TOKEN || !hasMetaConfig) {
-      const reason = !environment.META_ACCESS_TOKEN ? 'META_ACCESS_TOKEN is absent; Meta Graph API was not queried' :
+    const pageToken = environment.META_PAGE_ACCESS_TOKEN || environment.META_ACCESS_TOKEN;
+    const userToken = environment.META_USER_ACCESS_TOKEN;
+    if ((!pageToken && !userToken) || !hasMetaConfig) {
+      const reason = !pageToken && !userToken ?
+        'META_PAGE_ACCESS_TOKEN and META_USER_ACCESS_TOKEN are absent; Meta Graph API was not queried' :
         'configured Page or Instagram identifier is unavailable; Meta Graph API was not queried';
       meta = blockedMeta(reason);
     } else {
       safeguards.metaApiCalled = true;
+      safeguards.metaPageApiCalled = Boolean(pageToken);
+      safeguards.metaUserApiCalled = Boolean(userToken);
       safeguards.externalIntegrationApisCalled = true;
       try {
-        meta = await verifyMeta(config, environment.META_ACCESS_TOKEN, requestJson);
+        meta = await verifyMeta(config, { pageToken, userToken }, requestJson);
       } catch (error) {
         meta = failedMeta(safeReason(error));
       }
@@ -491,30 +600,48 @@ export function buildFinalReport(result, fullPath) {
     { component: 'Destinataire Resend', ...(resend.recipient || fallback('live recipient not verified')) },
     { component: 'Accès Resend actuel', ...(resend.currentAccess || fallback('Resend access not verified')) },
     { component: 'Santé Resend', ...(resend.serviceHealth || fallback('Resend health not verified')) },
-    { component: 'Accès Meta actuel', ...(meta.token || fallback('Meta token not verified')) },
-    { component: 'Durée de validité Meta', ...(meta.tokenDurability || fallback('Meta token lifetime not verified')) },
+    { component: 'Jeton de Page Meta', ...(meta.pageToken || fallback('Meta Page token not verified')) },
+    { component: 'Jeton utilisateur Meta', ...(meta.userToken || fallback('Meta User token not verified')) },
+    { component: 'Durée de validité Meta', required: false,
+      ...(meta.tokenDurability || fallback('Meta token lifetime not verified')) },
     { component: 'Santé Meta', ...(meta.serviceHealth || fallback('Meta health not verified')) },
     { component: 'Page Facebook', ...(meta.facebookPage || fallback('Facebook Page identity not verified')) },
+    { component: 'Pages accessibles par utilisateur',
+      ...(meta.userPageAccess || fallback('accessible Pages not verified')) },
+    { component: 'Disponibilité du jeton de Page',
+      ...(meta.pageTokenDerivation || fallback('Page-token availability not verified')) },
     { component: 'Permissions Facebook', ...(meta.facebookPermissions || fallback('Meta permissions not verified')) },
     { component: 'Compte Instagram', ...(meta.instagramAccount || fallback('Instagram association not verified')) },
     { component: 'Permissions Instagram', ...(meta.instagramPermissions || fallback('Instagram permissions not verified')) },
+    { component: 'Inventaire Kroeung Meta', required: false,
+      ...(meta.publicationInventory || notTested('Kroeung publications and photos were not queried')) },
     { component: 'Validation humaine', status: 'PASS OFFLINE',
       proof: 'approval, rejection, revision and 72-hour expiry contracts passed' },
     { component: 'Anti-doublons', status: 'PASS OFFLINE',
       proof: 'unique constraints, atomic claims and fail-closed interruption policy passed' },
     { component: 'Parcours complet simulé', status: fullPath.status, proof: fullPath.proof },
   ];
-  const verdict = components.some(item => item.status === 'FAIL') ? 'ÉCHEC TECHNIQUE' :
-    components.some(item => item.status === 'BLOCKED') ? 'BLOQUÉ' : 'PRÊT POUR VALIDATION FINALE';
+  const requiredComponents = components.filter(item => item.required !== false);
+  const failedComponents = components.filter(item => item.status === 'FAIL');
+  const requiredUnavailable = requiredComponents.filter(item =>
+    item.status === 'BLOCKED' || item.status === 'NON TESTÉ');
+  const verdict = failedComponents.length ?
+    (failedComponents.some(item => item.failureType === 'TECHNICAL') ? 'ÉCHEC TECHNIQUE' : 'ÉCHEC') :
+    requiredUnavailable.length ? 'BLOQUÉ' :
+      components.some(item => item.status === 'BLOCKED' || item.status === 'NON TESTÉ') ?
+        'PRÊT POUR VALIDATION FINALE AVEC LIMITES' : 'PRÊT POUR VALIDATION FINALE';
   const checksPassed = components.filter(item => item.status === 'PASS' || item.status === 'PASS OFFLINE');
   const checksBlocked = components.filter(item => item.status === 'BLOCKED');
-  const checksFailed = components.filter(item => item.status === 'FAIL');
+  const checksNotTested = components.filter(item => item.status === 'NON TESTÉ');
+  const checksFailed = failedComponents;
   const humanActionsRequired = [];
-  if ([meta.token, meta.facebookPage, meta.facebookPermissions, meta.instagramAccount,
-    meta.instagramPermissions].some(item => item?.status === 'BLOCKED')) {
+  if ([meta.pageToken, meta.userToken, meta.facebookPage, meta.facebookPermissions,
+    meta.userPageAccess, meta.pageTokenDerivation, meta.instagramAccount,
+    meta.instagramPermissions].some(item =>
+    item?.status === 'BLOCKED' || item?.status === 'NON TESTÉ')) {
     humanActionsRequired.push({
       integration: 'Meta',
-      action: 'Run the single secure read-only command with a current token and the configured Page and Instagram IDs',
+      action: 'Run the secure read-only command with distinct current Page and User tokens; never print either token',
     });
   }
   if (resend.recipient?.status === 'BLOCKED' || resend.sender?.status === 'BLOCKED') {
@@ -530,16 +657,18 @@ export function buildFinalReport(result, fullPath) {
       components: checksFailed.map(item => item.component),
     });
   }
-  return { schemaVersion: 3, generatedAt: new Date().toISOString(),
+  return { schemaVersion: 4, generatedAt: new Date().toISOString(),
     mode: result.verificationMode || 'offline',
     components, integrations: { n8nConfiguration: n8n, resend, meta },
-    checksPassed, checksBlocked, checksFailed,
+    checksPassed, checksBlocked, checksNotTested, checksFailed,
     technicalEvidence: {
       n8nEvidenceSource: n8n.evidenceSource || null,
       n8nEvidenceFreshness: n8n.evidenceFreshness || null,
       historicalReportRequired: false,
       resendApiCalled: result.safeguards?.resendApiCalled ?? false,
       metaApiCalled: result.safeguards?.metaApiCalled ?? false,
+      metaPageApiCalled: result.safeguards?.metaPageApiCalled ?? false,
+      metaUserApiCalled: result.safeguards?.metaUserApiCalled ?? false,
       offlineFullPath: fullPath,
     },
     fullPathSimulation: fullPath,
@@ -549,8 +678,18 @@ export function buildFinalReport(result, fullPath) {
       n8nApiCalled: result.safeguards?.n8nApiCalled ?? false,
       resendApiCalled: result.safeguards?.resendApiCalled ?? false,
       metaApiCalled: result.safeguards?.metaApiCalled ?? false,
+      metaPageApiCalled: result.safeguards?.metaPageApiCalled ?? false,
+      metaUserApiCalled: result.safeguards?.metaUserApiCalled ?? false,
       externalIntegrationApisCalled: result.safeguards?.externalIntegrationApisCalled ?? false },
     humanActionsRequired, verdict };
+}
+
+export function exitCodeForReport(report) {
+  if (report.checksFailed?.length) return 1;
+  const requiredUnavailable = (report.components || []).some(item => item.required !== false &&
+    (item.status === 'BLOCKED' || item.status === 'NON TESTÉ'));
+  if (report.mode === 'available-integrations-readonly' && requiredUnavailable) return 2;
+  return 0;
 }
 export function writeFinalReport(report) {
   const dir = join(process.cwd(), 'reports');
@@ -578,16 +717,21 @@ export async function main(args = process.argv.slice(2)) {
       resend: blockedResend('verification stopped before Resend could be checked'),
       meta: blockedMeta('verification stopped before Meta could be checked'),
       safeguards: { methods: liveRequested ? ['GET'] : [], n8nApiCalled: false, resendApiCalled: false,
-        metaApiCalled: false, externalIntegrationApisCalled: false, emailsSent: false,
+        metaApiCalled: false, metaPageApiCalled: false, metaUserApiCalled: false,
+        externalIntegrationApisCalled: false, emailsSent: false,
         publicationEndpointsCalled: false, workflowsExecuted: false, workflowsActivated: false,
         secretsLogged: false },
     };
   }
   const fullPath = await runFullPathSimulation();
   const report = buildFinalReport(result, fullPath);
+  const exitCode = exitCodeForReport(report);
+  report.processOutcome = { exitCode, meaning: exitCode === 0 ? 'SUCCESS' :
+    exitCode === 1 ? 'FAILED' : 'BLOCKED' };
   const reportPath = writeFinalReport(report);
   console.log('Rapport final expurgé créé : ' + reportPath);
   console.log('INTEGRATION_VERIFY_RESULT ' + JSON.stringify(result));
+  process.exitCode = exitCode;
   return report;
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

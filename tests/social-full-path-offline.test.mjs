@@ -35,6 +35,8 @@ test('approval, rejection, revision and expiry all fail closed without implicit 
   assert.match(code, /d==='Approuver'\?'approved'/);
   assert.match(code, /d==='Demander une modification'\?'revision_requested':'rejected'/);
   assert.match(code, /commentaire_requis_pour_modification/);
+  assert.doesNotMatch(code, /Number\(saved\.id\)/);
+  assert.match(code, /9223372036854775807/);
   assert.match(sql(workflows[0], 'Persister la décision humaine'), /WHERE id=\$3 AND status='draft'/);
   assert.doesNotMatch(code, /\?\?'approved'/);
 });

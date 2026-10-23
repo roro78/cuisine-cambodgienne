@@ -179,6 +179,7 @@ test('duplicate-date simulation stops before Resend and nominal decision outputs
     $input: { first: () => ({ json: { data: { Decision, Commentaire } } }) },
   })[0].json;
   assert.equal(interpret('Approuver').decision, 'approved');
+  assert.equal(interpret('Approuver').id, '4060');
   assert.equal(interpret('Refuser').decision, 'rejected');
   assert.equal(interpret('Demander une modification', 'Revoir le titre').decision, 'revision_requested');
   assert.throws(() => interpret('Demander une modification'), /commentaire_requis_pour_modification/);

@@ -111,6 +111,9 @@ test('approval uses email and an explicit form POST; missing action defaults to 
   assert.equal(approval.parameters.limitWaitTime,true);
   const decision=w.nodes.find(n=>n.name==='Interpréter la décision');
   assert.match(decision.parameters.jsCode,/d==='Approuver'\?'approved'/);
+  assert.doesNotMatch(decision.parameters.jsCode,/Number\(saved\.id\)/);
+  assert.match(decision.parameters.jsCode,/9223372036854775807/);
+  assert.match(decision.parameters.jsCode,/const id=text\.replace\(\/\^0\+\//);
   assert.ok(!w.nodes.some(n=>/graph\.facebook\.com\/.*\/(photos|media_publish)/.test(n.parameters?.url||'')));
 });
 
