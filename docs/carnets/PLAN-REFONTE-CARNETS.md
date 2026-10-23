@@ -2,7 +2,7 @@
 
 ## Réception éditoriale contradictoire du 23 octobre (v3.5)
 
-**Dossier source interne** : [RECEPTION-EDITORIALE-2026-10-23.md](./RECEPTION-EDITORIALE-2026-10-23.md). Sept Carnets effectivement relus, quatre retouches de formulation uniquement dans `src/data/culture.ts`. Constat : éléments factuels majeurs recoupés ; D2 taxonomie 2/2/3 favorable mais **visa final non signé** ; D3 **0/7 visas** et iconographie complète toujours à approuver. Outre les originaux Commons, concordance exacte des WebP locaux non prouvée. Le maillage inter-Carnets O6 reste à faire et quatre modifications hors périmètre Carnets préexistantes dans la PR doivent être arbitrées. **Aucune fusion #111 ni OVH**. Tests du nouveau commit à contrôler séparément, même si la CI antérieure est SUCCESS.
+**Dossier source interne** : [RECEPTION-EDITORIALE-2026-10-23.md](./RECEPTION-EDITORIALE-2026-10-23.md). Sept Carnets effectivement relus, quatre retouches de formulation uniquement dans `src/data/culture.ts`. Constat : éléments factuels majeurs recoupés ; D2 taxonomie 2/2/3 favorable mais **visa final non signé** ; D3 **0/7 visas** et iconographie complète toujours à approuver. Outre les originaux Commons, concordance exacte des WebP locaux non prouvée. Le maillage inter-Carnets O6 est implémenté sur les sept pages culturelles et doit être reçu sur la dernière CI et quatre modifications hors périmètre Carnets préexistantes dans la PR doivent être arbitrées. **Aucune fusion #111 ni OVH**. Tests du nouveau commit à contrôler séparément, même si la CI antérieure est SUCCESS.
 
 ---
 

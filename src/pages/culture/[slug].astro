@@ -16,6 +16,12 @@ export function getStaticPaths() {
 
 const { article } = Astro.props;
 
+// Maillage culturel uniquement, basé sur un univers réellement renseigné.
+// Aucun lien recette, atelier ou réseau social dans les récits.
+const nextCarnets = cultureArticles
+  .filter((candidate: CultureArticle) => candidate.slug !== article.slug && candidate.eyebrow === article.eyebrow)
+  .slice(0, 2);
+
 const articleSchema = {
   '@context': 'https://schema.org',
   '@type': 'Article',
@@ -92,6 +98,17 @@ const breadcrumbSchema = {
 
     </article>
 
+    {nextCarnets.length > 0 && (
+      <nav class="culture-next-stories" aria-label="Poursuivre avec un autre Carnet">
+        <h2>À découvrir aussi</h2>
+        <ul>
+          {nextCarnets.map((candidate: CultureArticle) => (
+            <li><a href={`/culture/${candidate.slug}/`}>{candidate.title}</a></li>
+          ))}
+        </ul>
+      </nav>
+    )}
+
     <a class="text-link" href="/culture/">← Tous les carnets</a>
   </main>
   <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
@@ -101,6 +118,12 @@ const breadcrumbSchema = {
 
 <style>
   .culture-visual figcaption a{color:inherit;text-decoration:underline;text-underline-offset:.15em;font-size:inherit}
+  .culture-next-stories{border-top:1px solid #d8c9b3;margin:clamp(1.5rem,4vw,3rem) 0;padding-top:1.5rem}
+  .culture-next-stories h2{font-size:clamp(1.15rem,2.4vw,1.55rem);margin:0 0 .9rem}
+  .culture-next-stories ul{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:.8rem}
+  .culture-next-stories li{max-width:100%}
+  .culture-next-stories a{display:inline-block;padding:.65rem .9rem;border:1px solid #cabb9d;border-radius:.7rem;background:#fffaf1;color:#473622;text-decoration:underline;text-underline-offset:.2em}
+  .culture-next-stories a:focus-visible{outline:3px solid #9a6c2d;outline-offset:3px}
   .rice-photo-report{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:clamp(.8rem,2vw,1.5rem);margin:clamp(1.4rem,4vw,3rem) 0}
   .rice-photo-report figure,.rice-festival-photo{margin:0;min-width:0}
   .rice-photo-report img,.rice-festival-photo img{width:100%;height:clamp(15rem,33vw,23rem);object-fit:cover;border-radius:1rem;display:block}

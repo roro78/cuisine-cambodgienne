@@ -83,6 +83,11 @@ async function inspect(view) {
         'Chapter count regression: '+slug);
       assert.equal(await page.locator('main.culture-article .culture-related, main.culture-article .rice-workshop-link').count(),0,'Practical funnel leaked: '+slug);
       assert.equal(await page.locator('main.culture-article a[href^="/recettes/"], main.culture-article a[href^="/apprendre/"]').count(),0,'Recipe/workshop link in cultural article: '+slug);
+      const otherCarnets = page.locator('main.culture-article nav.culture-next-stories a[href^="/culture/"]');
+      assert.equal(await otherCarnets.count(),['comprendre-le-kroeung','comprendre-amok','prahok-fermentation-umami'].includes(slug)?2:1,
+        'Cultural cross-link expected within each non-empty universe: '+slug);
+      assert.equal(await page.locator(`main.culture-article nav.culture-next-stories a[href="/culture/${slug}/"]`).count(),0,
+        'Current story must not link to itself: '+slug);
       await assertNoOverflow(page,slug+' '+view.name);
       const img=page.locator('main.culture-article .culture-visual img');
       await img.waitFor({state:'attached',timeout:15000});
