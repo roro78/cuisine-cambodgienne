@@ -26,6 +26,7 @@ const filenames = ['01-drafts-email-approval.json','02-publish-approved.json','0
 export const approvedPredecessorHashes = Object.freeze({
   promptBody: 'ae16f3ddd6cf71f19f63f71c1e55c33f0a6c2a6d5f1aca6d2e9b4f73b12681a0',
   validatorCode: '41bacec56ac8987a4afb65305bd9adc30ed7c766007ea10ce254f997d276ca6f',
+  validatorCodeIntermediate: 'f60c925bc7752bb3e4f842ed5eed439eef94bdd7c9fdbc6bcd9cb18547967f9c',
   insertGuardExpression: '3ba19c03fc1213967bb285126dc60d7fbd4b5af4280afa663daee862e301007a',
   decisionIntermediate: '0b8a0a7fb3141e0fe6cee4a23a18423ae2c530e747532efa5eb2d08894f2e4a5',
 });
@@ -199,8 +200,14 @@ export function planWorkflow(live, reviewed, index) {
     const validatorName = 'Vérifier et cadrer les textes';
     const validator = find(update, validatorName, 'n8n-nodes-base.code');
     const reviewedValidator = find(reviewed, validatorName, 'n8n-nodes-base.code');
+    // Allow the exact historical validator from GitHub ce6ace6, never arbitrary drift.
+    // The original predecessor hash remains authorized and all other hashes fail closed.
+    const validatorHash = sha256(validator.parameters.jsCode);
+    const validatorPredecessor = validatorHash === approvedPredecessorHashes.validatorCodeIntermediate
+      ? approvedPredecessorHashes.validatorCodeIntermediate
+      : approvedPredecessorHashes.validatorCode;
     const validatorResult = hashGuarded(validator.parameters.jsCode,
-      reviewedValidator.parameters.jsCode, approvedPredecessorHashes.validatorCode, validatorName);
+      reviewedValidator.parameters.jsCode, validatorPredecessor, validatorName);
     if (validatorResult.changed) {
       validator.parameters.jsCode = validatorResult.value;
       changes.push(validatorName + ': deterministic verified-facts formatter');

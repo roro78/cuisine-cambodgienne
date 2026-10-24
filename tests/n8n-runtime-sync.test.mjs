@@ -309,3 +309,45 @@ test('workflow 01 intermediate Code allowlist is byte-exact, and drift fails clo
   pinned.pinData={old:[{json:{id:1}}]};
   assert.throws(()=>planWorkflow(pinned,reviewed[0],0),/Pinned data/);
 });
+
+test('workflow 01 accepts only byte-exact historical intermediate text validator', () => {
+  // Historical GitHub commit ce6ace688ab72257fa8b705d7aa65dd890039eba; no credentials or external data.
+  const intermediate="const s=$('Choisir un contenu original').first().json;\nconst clean=value=>String(value??'').replace(/\\s+/g,' ').trim();\nconst source=s?.source||{},title=clean(source.title),rawFacts=Array.isArray(source.facts)?source.facts:[];\nconst facts=rawFacts.map((raw,index)=>({raw,text:clean(raw),index})).filter(f=>f.text.length>0);\nif(!title||!facts.length)throw Error('catalogue_insuffisant_pour_legendes');\nconst pageUrl=clean(source.url);\nif(typeof source.url!=='string'||!/^https:\\/\\/www\\.cuisine-du-cambodge\\.com\\/[a-z0-9][a-z0-9\\/_-]*\\/?$/i.test(pageUrl))throw Error('catalogue_url_invalide');\nconst verified=[];for(const fact of facts)if(!verified.some(item=>item.text===fact.text))verified.push(fact);\nconst input=$input.first().json||{},raw=clean(input.choices?.[0]?.message?.content).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/,'');\nlet modelValidation='absent';if(raw){try{const value=JSON.parse(raw),fb=clean(value?.facebookCaption),ig=clean(value?.instagramCaption),claims=value?.claimsUsed;if(!value||typeof value!=='object'||typeof value.facebookCaption!=='string'||typeof value.instagramCaption!=='string'||!Array.isArray(claims)||!claims.length)modelValidation='schema_invalide';else if(claims.some(claim=>typeof claim!=='string'||!rawFacts.includes(claim)))modelValidation='preuves_non_verifiables';else if(fb.length<200||fb.length>850||ig.length<150||ig.length>700)modelValidation='plages_non_conformes';else modelValidation='valide_non_transmis'}catch{modelValidation='json_invalide'}}\nconst contentTag=(String(source.kind||'contenu')+'_'+String(s.sourceId||'catalogue').split(':').pop()).replace(/[^a-z0-9_-]+/gi,'_');\nconst utm=pageUrl+'?utm_source=facebook&utm_medium=organic_social&utm_campaign=cuisine_organique&utm_content='+contentTag;\nconst fbPrefix=title+'\\n\\nDans notre catalogue Cuisine du Cambodge, les informations verifiees sont : ',fbSuffix='\\n\\nRetrouvez la page associee pour consulter les details disponibles.',igPrefix=title+'\\n\\nInformations verifiees par notre catalogue : ',igSuffix='\\n\\nA retrouver sur cuisine-du-cambodge.com',fbLimit=850-fbPrefix.length-fbSuffix.length-utm.length-2,igLimit=700-igPrefix.length-igSuffix.length;\nconst limit=Math.min(fbLimit,igLimit),used=[],parts=[];for(const fact of verified){const next=parts.length?parts.join(' ')+' '+fact.text:fact.text;if(next.length<=limit){parts.push(fact.text);used.push(fact)}}\nconst factText=parts.join(' '),facebookCaption=fbPrefix+factText+fbSuffix+'\\n\\n'+utm,instagramCaption=igPrefix+factText+igSuffix;\nif(!factText||facebookCaption.length<200||facebookCaption.length>850||instagramCaption.length<150||instagramCaption.length>700)throw Error('catalogue_insuffisant_pour_legendes');\nreturn [{json:{...s,facebookCaption,instagramCaption,claimsUsed:used.map(fact=>fact.raw),generationMode:'catalogue_deterministe',modelValidation}}];";
+  const sha=createHash('sha256').update(intermediate).digest('hex');
+  assert.equal(sha,'f60c925bc7752bb3e4f842ed5eed439eef94bdd7c9fdbc6bcd9cb18547967f9c', 'Historical validator fingerprint must match observed n8n GET');
+  assert.equal(sha,approvedPredecessorHashes.validatorCodeIntermediate);
+  const live=clone(reviewed[0]);
+  locate(live,'Vérifier et cadrer les textes').parameters.jsCode=intermediate;
+  const before=clone(live);
+  const plan=planWorkflow(live,reviewed[0],0);
+  assert.deepEqual(plan.changes,['Vérifier et cadrer les textes: deterministic verified-facts formatter']);
+  assert.deepEqual(live,before,'Preflight cannot mutate n8n GET document');
+  assert.equal(locate(plan.update,'Vérifier et cadrer les textes').parameters.jsCode,
+    locate(reviewed[0],'Vérifier et cadrer les textes').parameters.jsCode);
+  assert.equal(planWorkflow(plan.update,reviewed[0],0).changes.length,0,'Must be idempotent');
+});
+
+test('workflow 01 refuses any variation of the historical validator and forbids active workflows', () => {
+  const intermediate="const s=$('Choisir un contenu original').first().json;\nconst clean=value=>String(value??'').replace(/\\s+/g,' ').trim();\nconst source=s?.source||{},title=clean(source.title),rawFacts=Array.isArray(source.facts)?source.facts:[];\nconst facts=rawFacts.map((raw,index)=>({raw,text:clean(raw),index})).filter(f=>f.text.length>0);\nif(!title||!facts.length)throw Error('catalogue_insuffisant_pour_legendes');\nconst pageUrl=clean(source.url);\nif(typeof source.url!=='string'||!/^https:\\/\\/www\\.cuisine-du-cambodge\\.com\\/[a-z0-9][a-z0-9\\/_-]*\\/?$/i.test(pageUrl))throw Error('catalogue_url_invalide');\nconst verified=[];for(const fact of facts)if(!verified.some(item=>item.text===fact.text))verified.push(fact);\nconst input=$input.first().json||{},raw=clean(input.choices?.[0]?.message?.content).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/,'');\nlet modelValidation='absent';if(raw){try{const value=JSON.parse(raw),fb=clean(value?.facebookCaption),ig=clean(value?.instagramCaption),claims=value?.claimsUsed;if(!value||typeof value!=='object'||typeof value.facebookCaption!=='string'||typeof value.instagramCaption!=='string'||!Array.isArray(claims)||!claims.length)modelValidation='schema_invalide';else if(claims.some(claim=>typeof claim!=='string'||!rawFacts.includes(claim)))modelValidation='preuves_non_verifiables';else if(fb.length<200||fb.length>850||ig.length<150||ig.length>700)modelValidation='plages_non_conformes';else modelValidation='valide_non_transmis'}catch{modelValidation='json_invalide'}}\nconst contentTag=(String(source.kind||'contenu')+'_'+String(s.sourceId||'catalogue').split(':').pop()).replace(/[^a-z0-9_-]+/gi,'_');\nconst utm=pageUrl+'?utm_source=facebook&utm_medium=organic_social&utm_campaign=cuisine_organique&utm_content='+contentTag;\nconst fbPrefix=title+'\\n\\nDans notre catalogue Cuisine du Cambodge, les informations verifiees sont : ',fbSuffix='\\n\\nRetrouvez la page associee pour consulter les details disponibles.',igPrefix=title+'\\n\\nInformations verifiees par notre catalogue : ',igSuffix='\\n\\nA retrouver sur cuisine-du-cambodge.com',fbLimit=850-fbPrefix.length-fbSuffix.length-utm.length-2,igLimit=700-igPrefix.length-igSuffix.length;\nconst limit=Math.min(fbLimit,igLimit),used=[],parts=[];for(const fact of verified){const next=parts.length?parts.join(' ')+' '+fact.text:fact.text;if(next.length<=limit){parts.push(fact.text);used.push(fact)}}\nconst factText=parts.join(' '),facebookCaption=fbPrefix+factText+fbSuffix+'\\n\\n'+utm,instagramCaption=igPrefix+factText+igSuffix;\nif(!factText||facebookCaption.length<200||facebookCaption.length>850||instagramCaption.length<150||instagramCaption.length>700)throw Error('catalogue_insuffisant_pour_legendes');\nreturn [{json:{...s,facebookCaption,instagramCaption,claimsUsed:used.map(fact=>fact.raw),generationMode:'catalogue_deterministe',modelValidation}}];";
+  const mutated=[
+    intermediate+String.fromCharCode(10),
+    intermediate.replace('catalogue_deterministe','catalogue_altere'),
+    intermediate.replace('catalogue_insuffisant_pour_legendes','validation_contournee'),
+    intermediate.replace('modelValidation','modelValidation2'),
+  ];
+  for(const variant of mutated) {
+    assert.notEqual(variant,intermediate,'Each mutation must change the source');
+    const live=clone(reviewed[0]);
+    locate(live,'Vérifier et cadrer les textes').parameters.jsCode=variant;
+    assert.throws(()=>planWorkflow(live,reviewed[0],0),
+      /Unexpected live customizations: Vérifier et cadrer les textes/);
+  }
+  const active=clone(reviewed[0]);
+  locate(active,'Vérifier et cadrer les textes').parameters.jsCode=intermediate;
+  active.active=true;
+  assert.throws(()=>planWorkflow(active,reviewed[0],0),/active/);
+  const pinned=clone(reviewed[0]);
+  locate(pinned,'Vérifier et cadrer les textes').parameters.jsCode=intermediate;
+  pinned.pinData={manual:[{json:{id:1}}]};
+  assert.throws(()=>planWorkflow(pinned,reviewed[0],0),/Pinned data/);
+});
