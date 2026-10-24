@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
 
 const n8n = (f) => JSON.parse(readFileSync(new URL(`../automation/n8n/${f}`, import.meta.url), 'utf8'));
 const sql = readFileSync(new URL('../automation/n8n/schema.sql', import.meta.url), 'utf8');
@@ -126,4 +127,49 @@ test('a revision request is non-publishable, auditable, and requires a human not
   assert.match(decision.parameters.jsCode,/commentaire_requis_pour_modification/);
   assert.match(sql,/revision_requested/);
   assert.match(sql,/human_note TEXT/);
+});
+
+test('Facebook claim preflight drops n8n success:true and refuses invalid rows', () => {
+  const w=n8n('02-publish-approved.json');
+  const guard=w.nodes.find(n=>n.name==='Vérifier la réservation avant Meta');
+  assert.equal(guard.type,'n8n-nodes-base.code');
+  assert.deepEqual(w.connections['Claim atomique uniquement si validé'].main[0].map(x=>x.node),
+    [guard.name]);
+  assert.deepEqual(w.connections[guard.name].main[0].map(x=>x.node),
+    ['Publier la photo Facebook']);
+  const run = rows => vm.runInNewContext(
+    '(function(){\n'+guard.parameters.jsCode+'\n})()', {
+      $input:{all:()=>rows.map(json=>({json}))}
+    });
+  assert.deepEqual(Array.from(run([])),[]);
+  assert.deepEqual(Array.from(run([{success:true}])),[]);
+  assert.deepEqual(Array.from(run([{}])),[]);
+  const row={
+    id:'9007199254740993',source_id:'ingredient:kroeung',status:'publishing',
+    fb_state:'submitting',ig_state:'creating',human_decision:'approved',
+    approved_at:'2026-10-21T20:48:15Z',decided_at:'2026-10-21T20:48:15Z',
+    facebook_post_id:null,
+    image_url:'https://www.cuisine-du-cambodge.com/social-assets/ingredient-kroeung.jpg',
+    facebook_caption:'Kroeung: une page a decouvrir.',
+    instagram_caption:'Kroeung: notre cuisine.',
+  };
+  assert.equal(run([row])[0].json.id,row.id,'exact BIGINT must survive');
+  const invalid=[
+    {...row,id:9007199254740993},
+    {...row,fb_state:'pending'},
+    {...row,human_decision:'rejected'},
+    {...row,facebook_post_id:'already-posted'},
+    {...row,image_url:undefined},
+    {...row,image_url:'https://evil.example/remote.jpg'},
+    {...row,facebook_caption:''},
+    {...row,instagram_caption:null},
+    {...row,approved_at:null},
+  ];
+  for(const candidate of invalid) assert.throws(()=>run([candidate]),/claim_|facebook_/);
+  assert.throws(()=>run([row,row]),/claim_ambigu/);
+  assert.equal(w.active,false);
+  const fb=w.nodes.find(n=>n.name==='Publier la photo Facebook');
+  assert.equal(fb.parameters.contentType,'form-urlencoded');
+  assert.equal(fb.parameters.sendHeaders,false);
+  assert.deepEqual(fb.parameters.bodyParameters.parameters.map(p=>p.name),['url','caption']);
 });

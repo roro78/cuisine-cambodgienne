@@ -57,6 +57,21 @@ const fromCandidate = (candidate, index) => {
     assert.ok(node.parameters.query.includes(guard));
     node.parameters.query = node.parameters.query.replace(guard, '');
   }
+  if (index === 1) {
+    live.nodes = live.nodes.filter(node => node.name !== 'Vérifier la réservation avant Meta');
+    live.connections['Claim atomique uniquement si validé'] = {main:[[
+      {node:'Publier la photo Facebook',type:'main',index:0}
+    ]]};
+    delete live.connections['Vérifier la réservation avant Meta'];
+    const request = locate(live, 'Publier la photo Facebook').parameters;
+    request.contentType='raw';
+    request.rawContentType='application/json';
+    request.body='={{JSON.stringify({url:$json.image_url,caption:$json.facebook_caption})}}';
+    request.sendHeaders=true;
+    request.headerParameters={parameters:[{name:'Content-Type',value:'application/json'}]};
+    delete request.specifyBody;
+    delete request.bodyParameters;
+  }
   if (index === 0) {
     delete locate(live, 'Enregistrer le brouillon').alwaysOutputData;
     live.nodes = live.nodes.filter(node => node.name !== 'Brouillon inséré ?');
@@ -95,6 +110,15 @@ test('all 3 real offline workflow mocks are synchronizable without losing local 
         locate(live, 'Publier la photo Facebook').parameters.url);
       assert.deepEqual(locate(plan.update, 'Publier la photo Facebook').credentials,
         locate(live, 'Publier la photo Facebook').credentials);
+      assert.equal(plan.update.connections['Claim atomique uniquement si validé'].main[0][0].node,
+        'Vérifier la réservation avant Meta');
+      assert.equal(plan.update.connections['Vérifier la réservation avant Meta'].main[0][0].node,
+        'Publier la photo Facebook');
+      assert.equal(locate(plan.update,'Publier la photo Facebook').parameters.contentType,
+        'form-urlencoded');
+      assert.deepEqual(locate(plan.update,'Publier la photo Facebook').parameters.bodyParameters,
+        reviewed[1].nodes.find(n=>n.name==='Publier la photo Facebook').parameters.bodyParameters);
+
     }
     assert.equal(planWorkflow(plan.update, reviewed[index], index).changes.length, 0,
       'second sync must be idempotent');
@@ -226,4 +250,18 @@ test('PUT preflight refuses malformed node group metadata instead of sending HTT
   assert.throws(() => asPayload(live), /Unsupported node group field/);
   live.nodeGroups = [{id:'group-01', name:'group'}];
   assert.throws(() => asPayload(live), /Invalid node group nodeIds/);
+});
+
+test('Workflow 02 refuses bypass of preflight, custom guard or unexpected Facebook body', () => {
+  const altered = fromCandidate(reviewed[1],1);
+  altered.connections['Claim atomique uniquement si validé'].main[0][0].node='Unknown';
+  assert.throws(()=>planWorkflow(altered,reviewed[1],1),/Unexpected live claim routing/);
+  const guardAltered = clone(reviewed[1]);
+  locate(guardAltered,'Vérifier la réservation avant Meta').parameters.jsCode='return $input.all();';
+  assert.throws(()=>planWorkflow(guardAltered,reviewed[1],1),/preflight customization/);
+  const bodyAltered = fromCandidate(reviewed[1],1);
+  locate(bodyAltered,'Publier la photo Facebook').parameters.body='={{"bad"}}';
+  assert.throws(()=>planWorkflow(bodyAltered,reviewed[1],1),/existing Facebook payload/);
+  const approved = clone(reviewed[1]);
+  assert.equal(planWorkflow(approved,reviewed[1],1).changes.length,0);
 });
