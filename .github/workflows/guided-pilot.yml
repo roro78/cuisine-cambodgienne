@@ -1,0 +1,61 @@
+name: Guided tamarind pilot (no deployment)
+on:
+  push:
+    branches:
+      - feat/tamarin-pilot-consolidated-20261022
+permissions:
+  contents: read
+jobs:
+  isolated-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install --no-audit --no-fund
+      - name: Assert historical files unchanged
+        run: |
+          git diff --name-only origin/main...HEAD | tee /tmp/guided-files.txt
+          if grep -E '^(src/data/workshops.ts|src/data/workshopLearning.ts|src/data/workshop-audio/|src/pages/apprendre/index.astro|src/pages/apprendre/\[slug\].astro|src/components/WorkshopChapterPlayer.astro|src/scripts/workshopChapterPlayer.ts|src/data/socialCatalog.ts)' /tmp/guided-files.txt; then
+            echo "Historical atelier, audio player or social catalog changed: STOP"
+            exit 1
+          fi
+          # Only the brand-new tamarind MP3 is allowed in the audio folder.
+          # Reject changes to any historical MP3 or unexpected workshop audio.
+          if grep -E '^public/audio/workshops/' /tmp/guided-files.txt | grep -Ev '^public/audio/workshops/pratique-sauce-tamarin/atelier-coral[.]mp3$'; then
+            echo "Historical MP3 or unexpected workshop audio changed: STOP"
+            exit 1
+          fi
+      # Read-only check; never regenerate the historical or tamarind MP3.
+      - name: Verify existing tamarind MP3 checksum (no TTS)
+        run: |
+          node --input-type=module -e '
+          import fs from "node:fs";
+          import { createHash } from "node:crypto";
+          const m = JSON.parse(fs.readFileSync("src/data/guided-workshop-audio/sauce-tamarin.json", "utf8"));
+          const p = "public" + m.audioUrl;
+          const digest = createHash("sha256").update(fs.readFileSync(p)).digest("hex");
+          if (digest !== m.sha256) throw Error("Pilot Coral MP3 differs from approved immutable blob");
+          console.log("TAMARIN_MP3_SHA256_PASS", digest, "chapters", m.chapters.length, "review", m.status);
+          '
+      - name: Test guided workshop editorial contract
+        run: node --test tests/guided-workshop-contract.test.mjs
+      - name: Refuser une release tamarin sans preuves PR #90
+        run: node --test tests/guided-pilot-release-gate.test.mjs
+      - name: Check Coral script without TTS calls
+        run: node scripts/export-guided-workshop-narration.mjs --check
+      - name: Typecheck
+        run: npm run check
+      - name: Build
+        run: npm run build
+      - name: Setup Chrome for responsive pilot browser tests
+        id: chrome
+        uses: browser-actions/setup-chrome@v2
+      - name: Browser regression for guided tamarind (mobile and desktop)
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/guided-workshop-browser.test.mjs

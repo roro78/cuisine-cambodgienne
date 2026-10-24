@@ -1,0 +1,316 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SiteHeader from '../../../components/SiteHeader.astro';
+import SiteFooter from '../../../components/SiteFooter.astro';
+import { tamarindGuidedWorkshop as workshop } from '../../../data/guidedWorkshops';
+import guideAudio from '../../../data/guided-workshop-audio/sauce-tamarin.json';
+import { recipes } from '../../../data/recipes';
+// @ts-ignore — vérification de release conservée en module JS pur pour les tests Node.
+import { guidedPilotReleaseBlockers } from '../../../../scripts/verify-guided-pilot-release.mjs';
+
+// Une simple bascule manuelle du statut ne doit jamais publier le pilote
+// avant conversion au contrat PR #90, preuves photo et écoute réelle.
+const releaseBlockers = guidedPilotReleaseBlockers(
+  workshop, guideAudio, recipes.some((recipe) => recipe.slug === workshop.slug)
+);
+if (workshop.status === 'validated' && releaseBlockers.length) {
+  throw new Error('NO GO tamarin : ' + releaseBlockers.join(' | '));
+}
+const total = workshop.steps.reduce((minutes, step) => minutes + step.minutes, 0);
+// This is a pilot PREVIEW: recorded MP3 verified technically, human listening still required.
+const introNarration = 'Bienvenue dans cet atelier consacré à la sauce au tamarin. Nous allons préparer une sauce à partir de sa pulpe, puis goûter plusieurs équilibres. Préparez votre matériel, avancez à votre rythme et mettez la narration en pause lorsque vous cuisinez.';
+if (guideAudio.atelier !== workshop.id || guideAudio.chapters.length !== workshop.steps.length + 1 ||
+    guideAudio.chapters.some((part, index) => index > 0 && (part.id !== workshop.steps[index - 1].id || part.title !== workshop.steps[index - 1].title)) ||
+    !guideAudio.audioUrl.startsWith('/audio/workshops/pratique-sauce-tamarin/')) {
+  throw new Error('Guide vocal du pilote tamarin incohérent avec les six étapes.');
+}
+const audioChapters = guideAudio.chapters.map((chapter, index) => ({
+  ...chapter,
+  text: index === 0 ? introNarration : workshop.steps[index - 1].narrationDraft
+}));
+const audioMinutes = Math.floor(guideAudio.durationSec / 60);
+const audioSeconds = String(Math.floor(guideAudio.durationSec % 60)).padStart(2, '0');
+const url = 'https://www.cuisine-du-cambodge.com/apprendre/pratique/sauce-tamarin/';
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://www.cuisine-du-cambodge.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Ateliers', item: 'https://www.cuisine-du-cambodge.com/apprendre/' },
+    { '@type': 'ListItem', position: 3, name: workshop.title, item: url }
+  ]
+};
+---
+<BaseLayout
+  title={workshop.title + ' — Atelier guidé | Cuisine du Cambodge'}
+  description={workshop.description}
+  noindex={workshop.status !== 'validated'}
+>
+  <SiteHeader />
+  <main class="guided-main">
+    <nav class="guided-breadcrumb" aria-label="Fil d’Ariane">
+      <a href="/apprendre/">← Toutes les leçons</a>
+      <span aria-hidden="true">/</span>
+      <span>Atelier pratique : sauce au tamarin</span>
+    </nav>
+
+    <header class="guided-hero">
+      <div>
+        <p class="guided-eyebrow">Une vraie préparation, pas seulement une leçon</p>
+        <h1>{workshop.title}</h1>
+        <p class="guided-lede">{workshop.promise}</p>
+        <dl class="guided-facts">
+          <div><dt>Durée indicative</dt><dd>{total} min de gestes + temps de refroidissement</dd></div>
+          <div><dt>Rendement</dt><dd>{workshop.portions}</dd></div>
+          <div><dt>Technique</dt><dd>Préparer · goûter · rectifier</dd></div>
+        </dl>
+        {workshop.status !== 'validated' && <p class="guided-pilot" role="status">Recette en prévisualisation. La photographie du résultat et l’écoute de validation du guide audio restent à finaliser ; cet atelier est encore un pilote.</p>}
+        <a class="guided-start" href="#ingredients">Commencer avec les ingrédients ↓</a>
+      </div>
+      <figure class="guided-ingredient-image">
+        <img src={workshop.image} alt={workshop.imageAlt} width="1200" height="660" loading="eager" />
+        <figcaption>Le tamarin est l’ingrédient de départ, pas la photographie d’une sauce terminée.</figcaption>
+      </figure>
+    </header>
+
+    <section class="guided-context" aria-labelledby="context-title">
+      <h2 id="context-title">Pourquoi commencer par cette sauce ?</h2>
+      <p>{workshop.recipeNote}</p>
+
+      <p><strong>Suivre simplement la recette ?</strong> <a href="/recettes/sauce-tamarin/">Retrouvez la fiche Sauce tamarin complète</a>. Cet atelier ajoute les exercices de dégustation et de correction des équilibres.</p>
+      <p>Vous allez d’abord préparer votre sauce à partir de la pulpe, puis découvrir comment le tamarin, le sucre et la sauce de poisson modifient son équilibre. L’exercice des quatre bols de la <a href={workshop.historyUrl}>leçon historique</a> est conservé, mais prend désormais place dans une préparation complète.</p>
+    </section>
+
+    <section class="guided-audio-preview" id="guide-audio" data-guided-audio-chapters={JSON.stringify(audioChapters)} aria-labelledby="guided-audio-title">
+      <div class="guided-audio-heading">
+        <div>
+          <p class="guided-eyebrow">L’atelier à écouter</p>
+          <h2 id="guided-audio-title">Le guide audio, étape par étape</h2>
+          <p>Introduction + six gestes · {audioMinutes}:{audioSeconds} · Écoutez à votre rythme et mettez en pause avant de manipuler des aliments chauds.</p>
+        </div>
+        <span class="guided-audio-review">Version en préécoute — qualité vocale à confirmer</span>
+      </div>
+      <audio data-guided-audio src={guideAudio.audioUrl} controls preload="metadata" aria-label="Guide audio de l’atelier sauce au tamarin">
+        Votre navigateur ne prend pas en charge la lecture audio.
+      </audio>
+      <ol class="guided-audio-chapters" aria-label="Accès direct aux sept chapitres du guide audio">
+        {audioChapters.map((chapter, index) => (
+          <li>
+            <button type="button" data-guided-chapter={index} aria-current={index === 0 ? 'true' : undefined}>
+              <span>{index === 0 ? 'Intro' : String(index).padStart(2, '0')}</span>
+              <strong>{chapter.title}</strong>
+              <small>{Math.floor(chapter.startSec / 60)}:{String(Math.floor(chapter.startSec % 60)).padStart(2, '0')}</small>
+            </button>
+          </li>
+        ))}
+      </ol>
+      <details class="guided-audio-text">
+        <summary>Lire la transcription du chapitre sélectionné</summary>
+        <p data-guided-audio-transcript>{audioChapters[0].text}</p>
+      </details>
+      <p class="guided-audio-status" data-guided-audio-status aria-live="polite">Prêt à écouter · introduction.</p>
+      <p class="guided-audio-note">Le son accompagne les gestes mais ne remplace pas les instructions écrites. Ce fichier n’est pas encore validé à l’écoute sur téléphone et ordinateur.</p>
+    </section>
+
+    <section class="guided-progress" aria-labelledby="guided-progress-title" data-guided-progress>
+      <div>
+        <p class="guided-eyebrow">Votre progression</p>
+        <h2 id="guided-progress-title">Une étape à la fois</h2>
+        <p>Préparez les ingrédients, effectuez chaque geste, puis cochez la case correspondante. La progression est temporaire et reste sur cet écran, sans inscription ni suivi de votre activité.</p>
+      </div>
+      <div class="guided-progress-indicator">
+        <output data-guided-count for="guided-stage-extraire guided-stage-filtrer guided-stage-base guided-stage-comparer guided-stage-finaliser guided-stage-servir" aria-live="polite" aria-atomic="true">0 étape sur 6 terminée</output>
+        <progress data-guided-meter max="6" value="0" aria-label="Progression dans les six étapes">0 sur 6</progress>
+        <a href="#etapes">Aller aux étapes ↓</a>
+      </div>
+    </section>
+
+    <div class="guided-layout">
+      <aside class="guided-kit" id="ingredients" aria-labelledby="ingredients-title">
+        <h2 id="ingredients-title">Ingrédients mesurés</h2>
+        <ul class="guided-ingredients">
+          {workshop.ingredients.map((ingredient) => (
+            <li>
+              <strong>{ingredient.quantity}</strong>
+              <span>{ingredient.label}</span>
+              <small>{ingredient.purpose}{ingredient.allergen ? ' · Allergène : ' + ingredient.allergen : ''}</small>
+            </li>
+          ))}
+        </ul>
+        <h3>Matériel</h3>
+        <ul>{workshop.equipment.map((item) => <li>{item}</li>)}</ul>
+        <p>Besoin de reconnaître la pulpe ? <a href={workshop.ingredientUrl}>Lire la fiche du tamarin</a>.</p>
+      </aside>
+
+      <section class="guided-method" id="etapes" aria-labelledby="method-title">
+        <p class="guided-eyebrow">Suivez les gestes dans l’ordre</p>
+        <h2 id="method-title">Préparation guidée</h2>
+        <p>Chaque étape comporte une consigne mesurable, un signe de réussite et une solution de dépannage. Un guide vocal de sept chapitres accompagne les étapes. Suivez les consignes écrites et mettez la narration en pause pendant la manipulation.</p>
+        <ol class="guided-steps">
+          {workshop.steps.map((step, index) => (
+            <li id={step.id} class="guided-step">
+              <header>
+                <span>Étape {index + 1} sur {workshop.steps.length} · environ {step.minutes} min</span>
+                <h3>{step.title}</h3>
+              </header>
+              <ol class="guided-actions">{step.instructions.map((action) => <li>{action}</li>)}</ol>
+              <p class="guided-check"><strong>Ce que vous devez constater :</strong> {step.check}</p>
+              <details>
+                <summary>Astuce du chef et dépannage</summary>
+                <p><strong>Astuce :</strong> {step.tip}</p>
+                <p><strong>Si ça ne fonctionne pas :</strong> {step.recovery}</p>
+              </details>
+              <label class="guided-done" for={`guided-stage-${step.id}`}>
+                <input id={`guided-stage-${step.id}`} type="checkbox" data-guided-done />
+                <span>J’ai terminé cette étape</span>
+              </label>
+              {index < workshop.steps.length - 1 && <a class="guided-next" href={`#${workshop.steps[index + 1].id}`}>Étape suivante →</a>}
+            </li>
+          ))}
+        </ol>
+      </section>
+    </div>
+
+    <section class="guided-finish" aria-labelledby="finish-title">
+      <h2 id="finish-title">Votre sauce est prête</h2>
+      <p>{workshop.serving}</p>
+      <h3>Hygiène et précautions</h3>
+      <ul>{workshop.safety.map((note) => <li>{note}</li>)}</ul>
+      <p><strong>Pour aller plus loin :</strong> <a href={workshop.historyUrl}>comprendre les corrections gustatives</a>, puis découvrir <a href={workshop.ingredientUrl}>les usages du tamarin</a>.</p>
+      <a href="/apprendre/">← Revenir aux ateliers</a>
+    </section>
+  </main>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <SiteFooter />
+</BaseLayout>
+<script>
+  const root = document.querySelector<HTMLElement>('[data-guided-progress]');
+  if (root) {
+    const checkboxes = Array.from(document.querySelectorAll<HTMLInputElement>('[data-guided-done]'));
+    const output = root.querySelector<HTMLOutputElement>('[data-guided-count]');
+    const meter = root.querySelector<HTMLProgressElement>('[data-guided-meter]');
+    const update = () => {
+      const done = checkboxes.filter((checkbox) => checkbox.checked).length;
+      if (meter) {
+        meter.max = checkboxes.length;
+        meter.value = done;
+      }
+      if (output) {
+        output.textContent = `${done} étape${done > 1 ? 's' : ''} sur ${checkboxes.length} terminée${done > 1 ? 's' : ''}`;
+      }
+    };
+    checkboxes.forEach((checkbox) => checkbox.addEventListener('change', update));
+    update();
+  }
+  const preview = document.querySelector<HTMLElement>('[data-guided-audio-chapters]');
+  if (preview) {
+    type PreviewChapter = { id: string; title: string; startSec: number; endSec: number; text: string };
+    const chapters = JSON.parse(preview.dataset.guidedAudioChapters || '[]') as PreviewChapter[];
+    const media = preview.querySelector<HTMLAudioElement>('[data-guided-audio]');
+    const buttons = Array.from(preview.querySelectorAll<HTMLButtonElement>('[data-guided-chapter]'));
+    const transcript = preview.querySelector<HTMLElement>('[data-guided-audio-transcript]');
+    const status = preview.querySelector<HTMLElement>('[data-guided-audio-status]');
+    let active = -1;
+    const select = (index: number) => {
+      if (index < 0 || index >= chapters.length || index === active) return;
+      active = index;
+      buttons.forEach((button, buttonIndex) => {
+        if (buttonIndex === index) button.setAttribute('aria-current', 'true');
+        else button.removeAttribute('aria-current');
+      });
+      if (transcript) transcript.textContent = chapters[index].text;
+      if (status) status.textContent = 'Chapitre ' + (index === 0 ? 'introduction' : index) + ' · ' + chapters[index].title;
+    };
+    buttons.forEach((button, index) => button.addEventListener('click', () => {
+      if (!media) return;
+      media.currentTime = chapters[index].startSec;
+      select(index);
+      void media.play().catch(() => {
+        if (status) status.textContent = 'Chapitre choisi. Utilisez Lecture dans le lecteur audio pour démarrer.';
+      });
+    }));
+    media?.addEventListener('timeupdate', () => {
+      let index = 0;
+      for (let i = 1; i < chapters.length; i++) {
+        if (media.currentTime + 0.02 >= chapters[i].startSec) index = i;
+      }
+      select(index);
+    });
+    media?.addEventListener('error', () => {
+      if (status) status.textContent = 'Audio indisponible. Les instructions écrites restent accessibles.';
+    });
+    select(0);
+  }
+</script>
+<style>
+  .guided-main{max-width:1240px;margin:0 auto;padding:clamp(1.2rem,3vw,3rem) clamp(1rem,3vw,2rem) 5rem;color:#302a24}
+  .guided-main a{color:#704413;text-underline-offset:.18em}
+  .guided-breadcrumb{display:flex;gap:.8rem;flex-wrap:wrap;margin:0 0 2.5rem;font-size:.86rem}
+  .guided-hero{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(1.2rem,4vw,3rem);align-items:center;padding-bottom:3rem;border-bottom:1px solid #d8c9b8}
+  .guided-eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.13em;font-weight:800;color:#845725}
+  .guided-hero h1{font-family:Georgia,serif;font-size:clamp(2.15rem,5vw,4.1rem);line-height:1.08;margin:.7rem 0 1.3rem}
+  .guided-lede{font-size:clamp(1.05rem,1.8vw,1.28rem);line-height:1.68;max-width:55ch}
+  .guided-facts{display:flex;gap:1rem 2rem;flex-wrap:wrap;margin:1.8rem 0}
+  .guided-facts dt{font-size:.77rem;color:#685c50}
+  .guided-facts dd{font-weight:750;margin:.25rem 0 0;font-size:.95rem;max-width:22ch}
+  .guided-ingredient-image{margin:0}
+  .guided-ingredient-image img{display:block;width:100%;height:clamp(240px,36vw,450px);object-fit:cover;border-radius:1.2rem}
+  .guided-ingredient-image figcaption{font-size:.78rem;line-height:1.5;margin-top:.5rem;color:#685c50}
+  .guided-pilot{padding:1rem;border-left:3px solid #896537;background:#f1e8d8;font-size:.9rem;line-height:1.55}
+  .guided-start{display:inline-block;padding:.85rem 1.1rem;border:1px solid #9a7b51;border-radius:2rem;font-weight:750}
+  .guided-context{padding:2rem 0;max-width:85ch;line-height:1.7}
+  .guided-context h2,.guided-method h2,.guided-finish h2{font-family:Georgia,serif;font-size:clamp(1.7rem,3.4vw,2.65rem);line-height:1.15}
+  .guided-layout{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(0,1.65fr);gap:clamp(1.5rem,4vw,4rem);align-items:start}
+  .guided-kit{background:#f2e9dc;padding:clamp(1.1rem,2.8vw,2rem);border-radius:1.1rem}
+  .guided-kit h2{font-family:Georgia,serif;font-size:1.7rem;margin:.15rem 0 1.5rem}
+  .guided-kit h3{font-size:1.2rem;margin-top:2rem}
+  .guided-kit ul{padding-left:1.2rem;line-height:1.65}
+  .guided-ingredients li{margin-bottom:1rem}
+  .guided-ingredients strong,.guided-ingredients span,.guided-ingredients small{display:block}
+  .guided-ingredients strong{font-size:1.05rem}
+  .guided-ingredients small{color:#675c51;margin-top:.25rem}
+  .guided-method{min-width:0}
+  .guided-method>p{line-height:1.65}
+  .guided-steps{margin:1.5rem 0;padding-left:0;list-style:none;display:grid;gap:1.4rem}
+  .guided-step{padding:clamp(1.1rem,2.5vw,2rem);border:1px solid #ddd0c0;border-radius:1rem;background:#fffdf9;scroll-margin-top:6rem}
+  .guided-step header span{font-size:.82rem;font-weight:750;color:#7c5930}
+  .guided-step h3{font-family:Georgia,serif;font-size:clamp(1.3rem,2vw,1.7rem);margin:.6rem 0 1.2rem}
+  .guided-actions{margin:0 0 1rem;padding-left:1.45rem;line-height:1.75}
+  .guided-actions li{margin-bottom:.7rem}
+  .guided-check{background:#f6efe4;border-radius:.6rem;padding:.85rem 1rem;line-height:1.65}
+  .guided-step details{border-top:1px solid #e6d9ca;padding:.9rem 0;line-height:1.6}
+  .guided-step summary{cursor:pointer;font-weight:700;min-height:28px}
+  .guided-progress{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(220px,.7fr);gap:2rem;align-items:center;margin:1.4rem 0 2.6rem;padding:1.2rem clamp(1rem,3vw,2rem);border:1px solid #d2c0a8;background:#fffaf2;border-radius:1.1rem}
+  .guided-progress h2{font:400 clamp(1.5rem,2vw,2rem)/1.2 Georgia,serif;margin:.3rem 0}
+  .guided-progress p{line-height:1.65;margin-bottom:0}
+  .guided-progress-indicator{display:grid;gap:.8rem}
+  .guided-progress-indicator output{font-size:1rem;font-weight:700}
+  .guided-progress-indicator progress{display:block;width:100%;height:1rem;accent-color:#715020}
+  .guided-progress-indicator a{font-weight:700}
+  .guided-done{margin:1rem 0 .3rem;display:flex;align-items:center;gap:.8rem;min-height:44px;border-top:1px solid #e6d9ca;padding-top:.7rem;cursor:pointer;font-weight:700}
+  .guided-done input{width:1.4rem;height:1.4rem;accent-color:#715020;flex:none}
+  .guided-next{display:inline-flex;min-height:44px;align-items:center;font-weight:700}
+  .guided-main a:not(.guided-start){text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.2em}
+  .guided-main :is(a,button,summary,input):focus-visible{outline:3px solid #a2661e;outline-offset:3px}
+  .guided-finish{margin-top:3rem;padding:clamp(1.2rem,3vw,2.7rem);border-radius:1.2rem;background:#f1e8d8;line-height:1.75}
+  .guided-finish li{margin-bottom:.45rem}
+  @media(max-width:840px){.guided-hero,.guided-layout,.guided-progress{grid-template-columns:1fr}.guided-kit{order:0}.guided-method{order:1}.guided-hero{gap:1.4rem}.guided-ingredient-image img{height:clamp(200px,65vw,390px)}}
+  @media(prefers-reduced-motion:reduce){.guided-main *{scroll-behavior:auto!important}}
+
+  .guided-audio-preview{margin:2rem 0;padding:clamp(1rem,2.8vw,2rem);border:1px solid #d3c2aa;border-radius:1.2rem;background:#fffaf3;color:#352c24}
+  .guided-audio-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap}
+  .guided-audio-heading h2{font:400 clamp(1.5rem,3vw,2.4rem)/1.15 Georgia,serif;margin:.5rem 0}
+  .guided-audio-heading p{line-height:1.55;max-width:65ch}
+  .guided-audio-review{font-size:.76rem;font-weight:700;color:#725022}
+  .guided-audio-preview audio{display:block;width:100%;margin:1rem 0;accent-color:#715020}
+  .guided-audio-chapters{list-style:none;margin:1rem 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.5rem}
+  .guided-audio-chapters button{display:flex;align-items:center;gap:.65rem;width:100%;min-height:52px;text-align:left;padding:.7rem .8rem;border:1px solid #d6c6b2;border-radius:.7rem;background:#fff;cursor:pointer;color:#322c24}
+  .guided-audio-chapters button[aria-current="true"]{border-color:#805f35;background:#f1e3ce}
+  .guided-audio-chapters button strong{flex:1;font-size:.82rem;line-height:1.4}
+  .guided-audio-chapters button span,.guided-audio-chapters button small{font-size:.77rem;color:#68533b}
+  .guided-audio-text{border-top:1px solid #decfbb;padding-top:.85rem;line-height:1.7}
+  .guided-audio-text summary{cursor:pointer;font-weight:700;min-height:44px}
+  .guided-audio-status{font-weight:700;font-size:.9rem}
+  .guided-audio-note{font-size:.82rem;line-height:1.6}
+  @media(max-width:520px){.guided-audio-chapters{grid-template-columns:1fr}.guided-audio-heading{display:block}}
+</style>

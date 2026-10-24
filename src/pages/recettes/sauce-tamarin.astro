@@ -1,0 +1,117 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { tamarindGuidedWorkshop as source } from '../../data/guidedWorkshops';
+
+// Fiche recette autonome, distincte des exercices de dégustation de l'atelier.
+// La recette source est attribuée sans prétendre à une photo de sauce terminée.
+const sauceBase = [
+  {quantity:'2 c. à soupe',name:'Pulpe de tamarin nature, dénoyautée et non sucrée'},
+  {quantity:'80 ml',name:'Eau potable pour détendre la pulpe'},
+  {quantity:'2 c. à soupe rases',name:'Sucre de palme râpé ou sucre roux'},
+  {quantity:'30 ml (2 c. à soupe)',name:'Sauce de poisson (allergène : poisson)'}
+];
+const optional = [
+  {quantity:'2 gousses',name:'Ail, facultatif'},
+  {quantity:'Jusqu’à 2 petits piments',name:'Piments frais, facultatifs'}
+];
+const adjustments = [
+  'Une petite réserve de sucre si la sauce semble trop acide.',
+  'Quelques gouttes de sauce de poisson supplémentaires si elle manque de salé.',
+  'Une cuillère à café d’eau, ajoutée progressivement, si elle est trop concentrée.'
+];
+const steps = [
+ {title:'Délayer le tamarin',text:'Mettez deux cuillères à soupe de pulpe de tamarin dénoyautée dans une petite casserole avec 80 ml d’eau. Écrasez doucement avec une cuillère pour disperser la pulpe. N’utilisez pas un concentré déjà sucré comme substitut à quantité égale.',check:'La pulpe est dispersée et l’eau est devenue acidulée et colorée.'},
+ {title:'Faire chauffer et filtrer si nécessaire',text:'Chauffez à feu doux jusqu’à l’apparition de petites bulles, en remuant. Si de grosses fibres subsistent, passez le mélange à travers une passoire fine, puis reversez le liquide filtré dans la casserole.',check:'Le jus est fluide et ne contient plus de fibres gênantes.'},
+ {title:'Assaisonner la sauce',text:'Incorporez les deux cuillères à soupe de sucre et 30 ml de sauce de poisson. Mélangez à feu doux jusqu’à dissolution du sucre. Pour une variante parfumée, ajoutez maintenant l’ail écrasé et le piment émincé, puis maintenez un léger frémissement pendant une à deux minutes.',check:'La sauce est homogène, légèrement nappante et sans sucre non dissous.'},
+ {title:'Laisser tiédir et corriger',text:'Retirez du feu et laissez tiédir réellement. Goûtez avec une cuillère propre. Corrigez une seule saveur à la fois : une pincée de sucre pour adoucir, quelques gouttes de sauce de poisson pour relever le salé, ou un très petit ajout d’eau si la sauce est trop concentrée. Mélangez et regoûtez après chaque correction.',check:'Le tamarin reste identifiable ; l’acidité, le sucré et le salé sont agréables ensemble.'},
+ {title:'Servir et conserver',text:'Versez la sauce dans un petit bol propre et servez-la en accompagnement d’un poisson grillé ou frit déjà bien cuit. Réfrigérez rapidement les restes non goûtés ; par prudence, cet atelier recommande de les consommer dans les 24 heures, sans attribuer cette durée à la recette source.',check:'La sauce peut être utilisée sans autre cuisson comme condiment d’un plat déjà cuit.'}
+];
+---
+<BaseLayout title="Sauce tamarin cambodgienne — recette | Cuisine du Cambodge" description="La recette complète de sauce au tamarin : pulpe, eau, sucre, sauce de poisson, cuisson douce et équilibre des saveurs." noindex={true}>
+  <SiteHeader />
+  <main class="tamarin-recipe">
+    <nav class="tr-breadcrumb" aria-label="Fil d’Ariane"><a href="/recettes/">← Les recettes</a><span aria-hidden="true">/</span> Sauce au tamarin</nav>
+    <header class="tr-hero">
+      <div>
+        <p class="tr-eyebrow">Les recettes · Cuisine cambodgienne</p>
+        <h1>Sauce tamarin cambodgienne</h1>
+        <p class="tr-intro">Une sauce aigre-douce faite de pulpe de tamarin, de sucre de palme et de sauce de poisson, à préparer puis ajuster à votre goût.</p>
+        <dl class="tr-data"><div><dt>Quantité</dt><dd>Environ 2 petites portions</dd></div><div><dt>Temps</dt><dd>Environ 25–30 min avec tiédissement</dd></div><div><dt>Difficulté</dt><dd>Facile</dd></div></dl>
+        <a class="tr-primary" href="#ingredients">Voir les ingrédients ↓</a>
+        <p class="tr-note">Photographie finale de la sauce à contrôler avant référencement : cette page reste en prépublication.</p>
+      </div>
+      <figure><img src={source.image} alt={source.imageAlt} width="1600" height="1067" loading="eager" /><figcaption>Le tamarin, ingrédient de base. Cette image ne représente pas la sauce terminée.</figcaption></figure>
+    </header>
+
+    <section id="ingredients" class="tr-section" aria-labelledby="tr-ingredients-title">
+      <p class="tr-eyebrow">01 · Les courses</p>
+      <h2 id="tr-ingredients-title">Les ingrédients</h2>
+      <div class="tr-grid">
+        <div class="tr-panel">
+          <h3>Base de la recette</h3>
+          <ul>{sauceBase.map(item=><li><strong>{item.quantity}</strong> · {item.name}</li>)}</ul>
+          <h3>Facultatifs</h3>
+          <ul>{optional.map(item=><li><strong>{item.quantity}</strong> · {item.name}</li>)}</ul>
+        </div>
+        <aside class="tr-panel">
+          <h3>À prévoir pour corriger</h3>
+          <ul>{adjustments.map(item=><li>{item}</li>)}</ul>
+          <h3>Matériel</h3>
+          <p>Petite casserole, bol, cuillère, passoire fine si la pulpe est fibreuse, récipient propre.</p>
+          <p><strong>Allergène :</strong> poisson via la sauce de poisson.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="tr-section" aria-labelledby="tr-method-title">
+      <p class="tr-eyebrow">02 · La préparation</p>
+      <h2 id="tr-method-title">La recette pas à pas</h2>
+      <div class="tr-steps">
+        {steps.map((step,i)=>(
+          <article><span class="tr-index">{String(i+1).padStart(2,'0')}</span>
+            <div><h3>{step.title}</h3><p>{step.text}</p><p class="tr-check"><strong>Repère :</strong> {step.check}</p></div>
+          </article>
+        ))}
+      </div>
+    </section>
+    <section class="tr-workshop" aria-labelledby="tr-workshop-heading">
+      <p class="tr-eyebrow">Aller plus loin</p>
+      <h2 id="tr-workshop-heading">Apprendre à équilibrer la sauce en cuisinant</h2>
+      <p>La recette sert à préparer la sauce. L’atelier va plus loin : vous comparez quatre petites coupelles pour reconnaître ce que le sucre, l’acidité du tamarin et la sauce de poisson changent réellement.</p>
+      <a class="tr-primary" href="/apprendre/pratique/sauce-tamarin/">Découvrir l’atelier guidé →</a>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+<style>
+  .tamarin-recipe{max-width:1250px;margin:0 auto;padding:120px clamp(18px,4vw,60px) 85px;color:#302a20;line-height:1.7}
+  .tamarin-recipe *{box-sizing:border-box}.tamarin-recipe a{color:#715222}
+  .tamarin-recipe :is(a):focus-visible{outline:3px solid #9c782d;outline-offset:4px}
+  .tamarin-recipe h1,.tamarin-recipe h2,.tamarin-recipe h3{font:400 normal Georgia,serif;line-height:1.14;color:#30271e}
+  .tamarin-recipe h1{font-size:clamp(2.7rem,5vw,5rem);margin:.6rem 0 1.2rem}
+  .tamarin-recipe h2{font-size:clamp(1.8rem,3.6vw,3rem);margin:.5rem 0 1.3rem}
+  .tamarin-recipe h3{font-size:clamp(1.25rem,2vw,1.9rem);margin:0 0 15px}
+  .tr-eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:750;color:#76521d}
+  .tr-breadcrumb{display:flex;gap:12px;flex-wrap:wrap;font-size:14px;margin-bottom:36px}
+  .tr-hero{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:45px;margin-bottom:70px}
+  .tr-intro{font-size:clamp(1.2rem,1.9vw,1.5rem)}
+  .tr-hero figure{margin:0}.tr-hero img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:9px}
+  .tr-hero figcaption{font-size:12px;color:#655d54;margin-top:9px}
+  .tr-data{display:flex;flex-wrap:wrap;gap:24px;margin:28px 0}
+  .tr-data div{border-top:1px solid #ddd1bb;padding-top:9px}.tr-data dt{font-size:12px}.tr-data dd{font-weight:700;margin:5px 0}
+  .tr-primary{display:inline-flex;min-height:48px;align-items:center;background:#f0c961;padding:12px 21px;border-radius:30px;color:#31291b!important;text-decoration:none;font-weight:700}
+  .tr-note{font-size:13px;color:#665d50;border-left:3px solid #bc9559;padding:7px 13px}
+  .tr-section{margin-bottom:80px;scroll-margin-top:120px}
+  .tr-grid{display:grid;grid-template-columns:1fr .85fr;gap:20px}.tr-panel{background:#faf7ef;border:1px solid #dfd2bf;padding:clamp(19px,3vw,35px);border-radius:10px}
+  .tr-panel ul{padding-left:22px}.tr-panel li{padding:6px 0}
+  .tr-steps article{display:grid;grid-template-columns:75px 1fr;gap:15px;padding:25px 0;border-top:1px solid #e1d7c8}
+  .tr-index{font:400 2.4rem Georgia,serif;color:#b18b52}
+  .tr-steps p{max-width:850px}.tr-check{background:#faf6ec;border-left:3px solid #b68e4c;padding:12px 16px}
+  .tr-workshop{padding:clamp(20px,4vw,49px);border:1px solid #e0d3bc;background:#faf6eb;border-radius:10px;margin-bottom:55px}
+  .tr-workshop p{max-width:860px}.tr-sources{border-top:1px solid #dfd2bd;padding-top:23px;font-size:14px}
+  .tr-sources h2{font-size:1.4rem}
+  @media(max-width:800px){.tr-hero,.tr-grid{grid-template-columns:1fr}.tr-hero figure{order:-1}.tr-section{margin-bottom:55px}}
+  @media(max-width:550px){.tamarin-recipe{padding:100px 17px 70px}.tr-steps article{grid-template-columns:45px 1fr;gap:12px}.tr-index{font-size:1.8rem}}
+</style>
