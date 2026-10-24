@@ -27,6 +27,7 @@ export const approvedPredecessorHashes = Object.freeze({
   promptBody: 'ae16f3ddd6cf71f19f63f71c1e55c33f0a6c2a6d5f1aca6d2e9b4f73b12681a0',
   validatorCode: '41bacec56ac8987a4afb65305bd9adc30ed7c766007ea10ce254f997d276ca6f',
   insertGuardExpression: '3ba19c03fc1213967bb285126dc60d7fbd4b5af4280afa663daee862e301007a',
+  decisionIntermediate: '0b8a0a7fb3141e0fe6cee4a23a18423ae2c530e747532efa5eb2d08894f2e4a5',
 });
 const sha256 = value => createHash('sha256').update(String(value)).digest('hex');
 
@@ -107,7 +108,12 @@ export function planWorkflow(live, reviewed, index) {
   for (const [name, patches] of codePatches[index] || []) {
     const existing = find(update, name, 'n8n-nodes-base.code');
     const target = find(reviewed, name, 'n8n-nodes-base.code');
-    const result = guarded(existing.parameters.jsCode, target.parameters.jsCode, patches, name);
+    // Exact SHA-256 of 2026-10-23 intermediate Code: $input.first(), unsafe Number(saved.id).
+    const allowIntermediate = index === 0 && name === 'Interpréter la décision' &&
+      sha256(existing.parameters.jsCode) === approvedPredecessorHashes.decisionIntermediate;
+    const result = allowIntermediate
+      ? { changed: true, value: target.parameters.jsCode }
+      : guarded(existing.parameters.jsCode, target.parameters.jsCode, patches, name);
     if (result.changed) {
       existing.parameters.jsCode = result.value;
       changes.push(name + ': code');

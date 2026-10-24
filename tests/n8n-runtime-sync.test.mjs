@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { planWorkflow, asPayload } from '../scripts/sync-cuisine-n8n-runtime.mjs';
+import { planWorkflow, asPayload, approvedPredecessorHashes } from '../scripts/sync-cuisine-n8n-runtime.mjs';
+import { createHash } from 'node:crypto';
 
 const load = filename => JSON.parse(readFileSync(new URL(
   '../automation/n8n/' + filename, import.meta.url), 'utf8'));
@@ -264,4 +265,47 @@ test('Workflow 02 refuses bypass of preflight, custom guard or unexpected Facebo
   assert.throws(()=>planWorkflow(bodyAltered,reviewed[1],1),/existing Facebook payload/);
   const approved = clone(reviewed[1]);
   assert.equal(planWorkflow(approved,reviewed[1],1).changes.length,0);
+});
+
+test('workflow 01 upgrades exactly the known intermediate Code node (PostgreSQL BIGINT)', () => {
+  // Reproduces historical GitHub commit ce6ace688ab72257fa8b705d7aa65dd890039eba; no runtime secrets.
+  const intermediate="const incoming=$input.first().json;\nconst d=String(incoming?.data?.Decision??incoming?.Decision??incoming?.body?.Decision??'').trim();\nconst note=String(incoming?.data?.Commentaire??incoming?.Commentaire??incoming?.body?.Commentaire??'').trim().slice(0,2000);\nconst saved=$('Enregistrer le brouillon').first().json;\nif(!saved?.id)throw Error('brouillon_non_identifie');\nconst decision=d==='Approuver'?'approved':d==='Demander une modification'?'revision_requested':'rejected';\nif(decision==='revision_requested'&&!note) throw Error('commentaire_requis_pour_modification');\nreturn [{json:{id:Number(saved.id),decision,note}}];";
+  const hash=createHash('sha256').update(intermediate).digest('hex');
+  assert.equal(hash,'0b8a0a7fb3141e0fe6cee4a23a18423ae2c530e747532efa5eb2d08894f2e4a5');
+  assert.equal(hash,approvedPredecessorHashes.decisionIntermediate);
+  const live=clone(reviewed[0]);
+  locate(live,'Interpréter la décision').parameters.jsCode=intermediate;
+  const before=clone(live);
+  const plan=planWorkflow(live,reviewed[0],0);
+  assert.deepEqual(plan.changes,['Interpréter la décision: code']);
+  assert.deepEqual(live,before,'planner does not mutate live input');
+  assert.equal(locate(plan.update,'Interpréter la décision').parameters.jsCode,
+    locate(reviewed[0],'Interpréter la décision').parameters.jsCode);
+  assert.equal(locate(plan.update,'Interpréter la décision').parameters.jsCode.includes('Number(saved.id)'),false);
+  assert.equal(planWorkflow(plan.update,reviewed[0],0).changes.length,0);
+});
+
+test('workflow 01 intermediate Code allowlist is byte-exact, and drift fails closed', () => {
+  const intermediate="const incoming=$input.first().json;\nconst d=String(incoming?.data?.Decision??incoming?.Decision??incoming?.body?.Decision??'').trim();\nconst note=String(incoming?.data?.Commentaire??incoming?.Commentaire??incoming?.body?.Commentaire??'').trim().slice(0,2000);\nconst saved=$('Enregistrer le brouillon').first().json;\nif(!saved?.id)throw Error('brouillon_non_identifie');\nconst decision=d==='Approuver'?'approved':d==='Demander une modification'?'revision_requested':'rejected';\nif(decision==='revision_requested'&&!note) throw Error('commentaire_requis_pour_modification');\nreturn [{json:{id:Number(saved.id),decision,note}}];";
+  const mutations=[
+    intermediate+String.fromCharCode(10),
+    intermediate.replace('Number(saved.id)','parseInt(saved.id,10)'),
+    intermediate.replace("if(!saved?.id)","if(saved?.id)"),
+    intermediate.replace("throw Error('brouillon_non_identifie')","return []"),
+  ];
+  for (const changed of mutations) {
+    assert.notEqual(changed,intermediate);
+    const live=clone(reviewed[0]);
+    locate(live,'Interpréter la décision').parameters.jsCode=changed;
+    assert.throws(()=>planWorkflow(live,reviewed[0],0),
+      /Unexpected live customizations: Interpréter la décision/);
+  }
+  const active=clone(reviewed[0]);
+  locate(active,'Interpréter la décision').parameters.jsCode=intermediate;
+  active.active=true;
+  assert.throws(()=>planWorkflow(active,reviewed[0],0),/active/);
+  const pinned=clone(reviewed[0]);
+  locate(pinned,'Interpréter la décision').parameters.jsCode=intermediate;
+  pinned.pinData={old:[{json:{id:1}}]};
+  assert.throws(()=>planWorkflow(pinned,reviewed[0],0),/Pinned data/);
 });
