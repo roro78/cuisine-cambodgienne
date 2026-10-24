@@ -123,6 +123,62 @@ export function planWorkflow(live, reviewed, index) {
       changes.push(name + ': SQL');
     }
   }
+  if (index === 1) {
+    const claimName = 'Claim atomique uniquement si validé';
+    const guardName = 'Vérifier la réservation avant Meta';
+    const facebookName = 'Publier la photo Facebook';
+    const desiredGuard = find(reviewed, guardName, 'n8n-nodes-base.code');
+    const desiredClaimEdges = reviewed.connections[claimName];
+    const desiredGuardEdges = reviewed.connections[guardName];
+    assert.deepEqual(desiredClaimEdges?.main, [[{node:guardName,type:'main',index:0}]],
+      'Reviewed claim does not pass through preflight');
+    assert.deepEqual(desiredGuardEdges?.main, [[{node:facebookName,type:'main',index:0}]],
+      'Reviewed preflight does not lead to Facebook');
+    const existing = update.nodes.find(n => n.name === guardName || n.id === desiredGuard.id);
+    if (!existing) {
+      assert.deepEqual(update.connections[claimName]?.main,
+        [[{node:facebookName,type:'main',index:0}]],
+        'Unexpected live claim routing; refusing automatic rewiring');
+      assert.equal(update.connections[guardName], undefined, 'Preflight edge collision');
+      update.nodes.push(clone(desiredGuard));
+      update.connections[claimName] = clone(desiredClaimEdges);
+      update.connections[guardName] = clone(desiredGuardEdges);
+      changes.push(guardName + ': reject missing/invalid PostgreSQL claim before Meta');
+    } else {
+      assert.equal(existing.id, desiredGuard.id, 'Preflight ID mismatch');
+      assert.deepEqual(existing, desiredGuard, 'Unexpected live preflight customization');
+      assert.deepEqual(update.connections[claimName], desiredClaimEdges,
+        'Live claim bypasses preflight');
+      assert.deepEqual(update.connections[guardName], desiredGuardEdges,
+        'Live preflight routing changed');
+    }
+    const facebook = find(update, facebookName, 'n8n-nodes-base.httpRequest');
+    const reviewedFacebook = find(reviewed, facebookName, 'n8n-nodes-base.httpRequest');
+    const keys = ['contentType','rawContentType','body','sendHeaders',
+      'headerParameters','specifyBody','bodyParameters'];
+    const current = facebook.parameters;
+    const target = reviewedFacebook.parameters;
+    if (keys.some(key => !isDeepStrictEqual(current[key],target[key]))) {
+      assert.equal(current.contentType, 'raw', 'Unexpected live Facebook body type');
+      assert.equal(current.rawContentType, 'application/json', 'Unexpected MIME type');
+      assert.equal(current.body,
+        '={{JSON.stringify({url:$json.image_url,caption:$json.facebook_caption})}}',
+        'Unexpected existing Facebook payload');
+      assert.equal(current.sendHeaders, true, 'Unexpected live Facebook headers');
+      assert.deepEqual(current.headerParameters,
+        {parameters:[{name:'Content-Type',value:'application/json'}]},
+        'Unexpected Facebook content-type header');
+      assert.equal(current.specifyBody, undefined, 'Unexpected Facebook body mode');
+      assert.equal(current.bodyParameters, undefined, 'Unexpected Facebook body fields');
+      for (const key of keys) {
+        if (Object.hasOwn(target,key)) current[key]=clone(target[key]);
+        else delete current[key];
+      }
+      changes.push(facebookName + ': send URL and caption as URL-encoded form fields');
+    }
+    assert.deepEqual(keys.map(key=>current[key]),keys.map(key=>target[key]),
+      'Facebook body mode drift after patch');
+  }
   if (index === 0) {
     const promptName = 'Rédiger via Llama sur Ollama';
     const prompt = find(update, promptName, 'n8n-nodes-base.httpRequest');

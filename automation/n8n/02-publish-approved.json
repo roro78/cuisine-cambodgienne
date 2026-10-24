@@ -39,6 +39,20 @@
       }
     },
     {
+      "parameters": {
+        "jsCode": "// A zero-row PostgreSQL executeQuery can emit {success:true}. Never send it to Meta.\nconst items=$input.all();\nif (items.length===0) return [];\nif (items.length!==1) throw Error('claim_ambigu_plusieurs_lignes');\nconst row=items[0]?.json;\nif (!row || Object.keys(row).length===0 || (Object.keys(row).length===1 && row.success===true)) return [];\nconst raw=row.id;\nconst text=typeof raw==='string'?raw.trim():typeof raw==='number'&&Number.isSafeInteger(raw)?String(raw):'';\nif (!/^(?:0*[1-9]\\d*)$/.test(text)) throw Error('claim_id_invalide');\nconst id=text.replace(/^0+/,'');\nif (id.length>19 || (id.length===19 && id>'9223372036854775807')) throw Error('claim_id_hors_plage');\nif (row.status!=='publishing'||row.fb_state!=='submitting'||row.ig_state!=='creating'||\n    row.human_decision!=='approved'||!row.approved_at||!row.decided_at) throw Error('claim_non_approuve_ou_etat_invalide');\nif (row.facebook_post_id!==null && row.facebook_post_id!==undefined) throw Error('facebook_deja_reference');\nif (typeof row.source_id!=='string'||!row.source_id.trim()) throw Error('claim_source_absente');\nif (typeof row.image_url!=='string'||!/^https:\\/\\/www\\.cuisine-du-cambodge\\.com\\/social-assets\\/[a-z0-9-]+\\.jpg$/.test(row.image_url)) throw Error('claim_image_url_invalide');\nif (typeof row.facebook_caption!=='string'||!row.facebook_caption.trim()||\n    typeof row.instagram_caption!=='string'||!row.instagram_caption.trim()) throw Error('claim_legendes_absentes');\nreturn items;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "cuisine-facebook-claim-preflight-20261024",
+      "name": "Vérifier la réservation avant Meta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        360,
+        -160
+      ]
+    },
+    {
       "id": "f69a14ca-84c0-5d80-89ba-5c806fa21e3a",
       "name": "Publier la photo Facebook",
       "type": "n8n-nodes-base.httpRequest",
@@ -52,20 +66,23 @@
         "url": "https://graph.facebook.com/v26.0/CONFIGURER_FACEBOOK_PAGE_ID/photos",
         "options": {},
         "sendBody": true,
-        "contentType": "raw",
-        "rawContentType": "application/json",
-        "body": "={{JSON.stringify({url:$json.image_url,caption:$json.facebook_caption})}}",
-        "sendHeaders": true,
-        "headerParameters": {
+        "contentType": "form-urlencoded",
+        "sendHeaders": false,
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "specifyBody": "keypair",
+        "bodyParameters": {
           "parameters": [
             {
-              "name": "Content-Type",
-              "value": "application/json"
+              "name": "url",
+              "value": "={{ $json.image_url }}"
+            },
+            {
+              "name": "caption",
+              "value": "={{ $json.facebook_caption }}"
             }
           ]
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       }
     },
     {
@@ -149,7 +166,7 @@
       "main": [
         [
           {
-            "node": "Publier la photo Facebook",
+            "node": "Vérifier la réservation avant Meta",
             "type": "main",
             "index": 0
           }
@@ -183,6 +200,17 @@
         [
           {
             "node": "Sauver le conteneur Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vérifier la réservation avant Meta": {
+      "main": [
+        [
+          {
+            "node": "Publier la photo Facebook",
             "type": "main",
             "index": 0
           }
