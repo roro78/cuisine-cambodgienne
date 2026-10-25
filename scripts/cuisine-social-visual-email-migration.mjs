@@ -4,6 +4,7 @@
  * Import from the CLI for the guarded read-only check and optional migration.
  */
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {isDeepStrictEqual} from 'node:util';
 import {asPayload,planWorkflow} from './sync-cuisine-n8n-runtime.mjs';
 
@@ -56,6 +57,33 @@ export function planVisualApprovalEmail(live,reviewed,previousBody){
   const current=locate(live);
   const target=locate(reviewed);
   locate(oldReviewed).parameters.body=previousBody;
+  // E-mail-only migration: never silently install version-approval changes.
+  // Both exact predecessor and reviewed version-locked states are accepted,
+  // but partial updates, unknown code and SQL variants are refused.
+  const previousApproval=JSON.parse(readFileSync(
+    new URL('../tests/fixtures/social-version-approval-predecessor.json',import.meta.url),'utf8'));
+  const byName=(workflow,name)=> {
+    const nodes=workflow.nodes.filter(n=>n.name===name);
+    assert.equal(nodes.length,1,'Missing/duplicate decision node '+name);
+    return nodes[0];
+  };
+  const oldCode=byName(oldReviewed,'Interpréter la décision');
+  const oldSql=byName(oldReviewed,'Persister la décision humaine');
+  const currentCode=byName(live,'Interpréter la décision');
+  const currentSql=byName(live,'Persister la décision humaine');
+  const isPrevious=currentCode.parameters.jsCode===previousApproval.decisionCode &&
+    currentSql.parameters.query===previousApproval.persistenceQuery &&
+    isDeepStrictEqual(currentSql.parameters.options.queryReplacement,previousApproval.queryReplacement);
+  const isReviewed=currentCode.parameters.jsCode===byName(reviewed,'Interpréter la décision').parameters.jsCode &&
+    currentSql.parameters.query===byName(reviewed,'Persister la décision humaine').parameters.query &&
+    isDeepStrictEqual(currentSql.parameters.options.queryReplacement,
+      byName(reviewed,'Persister la décision humaine').parameters.options.queryReplacement);
+  assert.ok(isPrevious||isReviewed,'Unsupported partial/versioned approval drift');
+  if(isPrevious){
+    oldCode.parameters.jsCode=previousApproval.decisionCode;
+    oldSql.parameters.query=previousApproval.persistenceQuery;
+    oldSql.parameters.options.queryReplacement=previousApproval.queryReplacement;
+  }
   assert.equal(target.id,current.id,'Resend node ID drift');
   assert.equal(current.parameters.url,'https://api.resend.com/emails','Wrong Resend endpoint');
   assert.equal(current.parameters.method,'POST','Unexpected email method');

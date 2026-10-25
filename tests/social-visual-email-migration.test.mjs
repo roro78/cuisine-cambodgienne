@@ -16,7 +16,8 @@ const email=w=>{
 const configured=expr=>expr
   .replace('social@CONFIGURER_DOMAINE_VERIFIE','social@cuisine-du-cambodge.com')
   .replace("to:['CONFIGURER_EMAIL_VALIDATION']","to:['validateur@example.fr']");
-const live=body=>{
+const previousApproval=JSON.parse(readFileSync(new URL('./fixtures/social-version-approval-predecessor.json',import.meta.url),'utf8'));
+const live=(body,prelock=false)=>{
   const workflow=clone(target);
   workflow.id='G7jJCMw6bLQE7dD4';
   workflow.versionId='version-abc';
@@ -24,6 +25,12 @@ const live=body=>{
   workflow.activeVersion=null;
   workflow.pinData={};
   email(workflow).parameters.body=body;
+  if(prelock){
+    workflow.nodes.find(n=>n.name==='Interpréter la décision').parameters.jsCode=previousApproval.decisionCode;
+    const p=workflow.nodes.find(n=>n.name==='Persister la décision humaine').parameters;
+    p.query=previousApproval.persistenceQuery;
+    p.options.queryReplacement=previousApproval.queryReplacement;
+  }
   email(workflow).credentials={httpHeaderAuth:{id:'secret-credential-id',name:'Resend configured credential'}};
   return workflow;
 };
@@ -119,4 +126,19 @@ test('retains the human decision form, expiry and approval state machine',()=>{
   const persist=plan.update.nodes.find(n=>n.name==='Persister la décision humaine');
   assert.match(persist.parameters.query,/WHERE id=\$3 AND status='draft'/);
   assert.equal(plan.update.active,false);
+});
+
+test('email-only migration preserves pre-version-lock approval code and SQL',()=>{
+  const oldLive=live(configured(old),true);
+  const plan=planVisualApprovalEmail(oldLive,target,old);
+  assert.equal(plan.changed,true);
+  assert.equal(plan.update.nodes.find(n=>n.name==='Interpréter la décision').parameters.jsCode,
+    previousApproval.decisionCode);
+  const persistence=plan.update.nodes.find(n=>n.name==='Persister la décision humaine').parameters;
+  assert.equal(persistence.query,previousApproval.persistenceQuery);
+  assert.equal(persistence.options.queryReplacement,previousApproval.queryReplacement);
+  const mixed=live(configured(old),true);
+  mixed.nodes.find(n=>n.name==='Persister la décision humaine').parameters.query=
+    target.nodes.find(n=>n.name==='Persister la décision humaine').parameters.query;
+  assert.throws(()=>planVisualApprovalEmail(mixed,target,old),/Unsupported partial\/versioned approval drift/);
 });

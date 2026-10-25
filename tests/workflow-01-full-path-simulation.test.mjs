@@ -175,8 +175,9 @@ test('duplicate-date simulation stops before Resend and nominal decision outputs
 
   const interpret = (Decision, Commentaire = '') => runCode(decision, {
     $: name => {
-      assert.equal(name, insert.name);
-      return { first: () => ({ json: { id: 4060 } }) };
+      if(name===insert.name) return {first:()=>({json:{id:4060}})};
+      if(name===validator.name) return {first:()=>({json:validate(select()[0],{choices:[]})[0].json})};
+      throw Error('Unexpected node: '+name);
     },
     $input: { first: () => ({ json: { data: { Decision, Commentaire } } }) },
   })[0].json;
@@ -185,7 +186,7 @@ test('duplicate-date simulation stops before Resend and nominal decision outputs
   assert.equal(interpret('Refuser').decision, 'rejected');
   assert.equal(interpret('Demander une modification', 'Revoir le titre').decision, 'revision_requested');
   assert.throws(() => interpret('Demander une modification'), /commentaire_requis_pour_modification/);
-  assert.equal(interpret('Valeur inconnue').decision, 'rejected');
+  assert.throws(()=>interpret('Valeur inconnue'),/decision_non_reconnue/);
 });
 
 test('invalid catalog shapes, external URLs and unverifiable facts fail before persistence', () => {

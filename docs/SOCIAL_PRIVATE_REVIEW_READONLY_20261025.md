@@ -86,3 +86,11 @@ Schéma cible d'intégration (non implémenté, pas de promesse de mise en produ
 - `php -l` validé pour `public/gestion-social/index.php` et `public/gestion-visuels/index.php` dans le runner Ubuntu. `node --check` validé pour les deux scripts de migration et le contrat dashboard ; 23 tests Node ciblés natifs **PASS** (e-mail visuel, migration, sécurité du lecteur).
 - Premier run échoué uniquement sur un test trop large : recherche du mot SQL `TRUNCATE` dans une vérification de privilèges ; ce n'était pas une instruction destructive. Contrat corrigé et second run complet PASS. Aucun échec PHP.
 - Aucune validation `pdo_pgsql`/connexion OVH, aucune session Android sur site réel et aucun parcours d'approbation n8n en bout de chaîne ; conserver la PR **DRAFT**.
+
+### Étape 26/10 — verrouillage de version préparé dans le workflow 01, sans mutation du runtime
+
+L'export de la PR #129 exige désormais une **égalité atomique de la version éditoriale complète**, sans migration SQL : ID BIGINT en chaîne, source ID, empreinte, snapshot JSONB, date, légendes FB/IG, image, états des deux plateformes et références Meta absentes. Toute décision inconnue ou incompletement encadrée échoue explicitement. L'UPDATE `WHERE status='draft' AND ...` interdit le double clic et la modification de la photo ou de la légende entre e-mail et approbation. L'ancienne décision reste utilisée en runtime tant qu'une migration dédiée n'est pas approuvée.
+
+La migration existante d'e-mail visuel est découplée : elle peut examiner l'ancien contrat de décision **ou** le nouveau, mais ne modifie toujours que le corps de l'e-mail Resend. Toute combinaison mixte SQL/Code est refusée. Le précédent exact est stocké dans `tests/fixtures/social-version-approval-predecessor.json`. **Ne pas utiliser la migration e-mail pour installer le nouveau contrat de décision.** Une migration distincte versionnée avec contrôle GET-only et sauvegarde privée reste obligatoire avant la réception live.
+
+Limite non résolue : un UPDATE correct n'empêche pas un autre écrivain disposant de droits SQL de muter un post **après** son approbation. Une politique d'immuabilité en base, ou une version approuvée indépendante contrôlée lors du claim 02, doit être validée avant publication automatique.

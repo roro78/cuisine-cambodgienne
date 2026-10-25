@@ -15,6 +15,11 @@ on:
       - "tests/social-private-dashboard-contract.test.mjs"
       - "tests/social-approval-email-preview.test.mjs"
       - "tests/social-visual-email-migration.test.mjs"
+      - "tests/social-version-bound-decision.test.mjs"
+      - "tests/fixtures/social-version-approval-predecessor.json"
+      - "tests/workflow-01-dryrun.test.mjs"
+      - "tests/workflow-01-full-path-simulation.test.mjs"
+      - "tests/social-pipeline.test.mjs"
   workflow_dispatch:
 
 permissions:
@@ -48,4 +53,8 @@ jobs:
           node --test --test-concurrency=1 \
             tests/social-private-dashboard-contract.test.mjs \
             tests/social-approval-email-preview.test.mjs \
-            tests/social-visual-email-migration.test.mjs
+            tests/social-visual-email-migration.test.mjs \
+            tests/social-version-bound-decision.test.mjs \
+            tests/workflow-01-dryrun.test.mjs \
+            tests/workflow-01-full-path-simulation.test.mjs \
+            tests/social-pipeline.test.mjs
