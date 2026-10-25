@@ -130,6 +130,20 @@ jobs:
       - name: Production build
         run: npm run build
 
+      - name: Generate autonomous six-post social review (offline)
+        run: node scripts/build-social-review.mjs
+
+      - name: Validate real image and caption review artifact (offline)
+        run: node --test tests/social-review-preview.test.mjs
+
+      - name: Upload mobile social editorial preview (download only, no deployment)
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuisine-social-preview-six-posts
+          path: artifacts/social-editorial-review.html
+          retention-days: 14
+          if-no-files-found: error
+
       - name: Verify copied Apache SEO redirect file
         run: |
           cp public/.htaccess dist/.htaccess
