@@ -55,6 +55,7 @@ jobs:
             tests/social-full-path-offline.test.mjs \
             tests/verify-cuisine-integrations-readonly.test.mjs \
             tests/workflow-01-dryrun.test.mjs \
+            tests/social-approval-email-preview.test.mjs \
             tests/workflow-01-full-path-simulation.test.mjs \
             tests/reconcile-kroeung-meta-readonly.test.mjs \
             tests/social-image-contract.test.mjs
