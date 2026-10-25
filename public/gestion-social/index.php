@@ -111,7 +111,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 }
 
 $rows = [];
-$counts = [];
 if ($authenticated) {
     // Use a separate SELECT-only role, never the n8n writer or Supabase service role.
     foreach (['social_readonly_dsn', 'social_readonly_user', 'social_readonly_password'] as $key)
@@ -127,6 +126,14 @@ if ($authenticated) {
              PDO::ATTR_EMULATE_PREPARES => false,
              PDO::ATTR_TIMEOUT => 6]
         );
+        // Refuse a configured writer/admin credential even if the supplied DSN works.
+        $rights = $pdo->query("SELECT has_table_privilege(current_user,'cuisine_social.posts','SELECT') AS can_read, has_table_privilege(current_user,'cuisine_social.posts','INSERT') AS can_insert, has_table_privilege(current_user,'cuisine_social.posts','UPDATE') AS can_update, has_table_privilege(current_user,'cuisine_social.posts','DELETE') AS can_delete")->fetch();
+        $truthy = static fn($v): bool => in_array($v, [true, 1, '1', 't', 'true'], true);
+        if (!$truthy($rights['can_read'] ?? false)
+            || $truthy($rights['can_insert'] ?? false)
+            || $truthy($rights['can_update'] ?? false)
+            || $truthy($rights['can_delete'] ?? false)) failClosed();
+        $pdo->exec('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY');
         $status = (string)($_GET['status'] ?? 'draft');
         $allowed = ['all', 'draft', 'approved', 'revision_requested', 'rejected', 'publishing', 'published', 'manual_review'];
         if (!in_array($status, $allowed, true)) $status = 'draft';
@@ -137,7 +144,6 @@ if ($authenticated) {
         if ($status !== 'all') $stmt->bindValue(':status', $status, PDO::PARAM_STR);
         $stmt->execute();
         $rows = $stmt->fetchAll();
-        $counts = $pdo->query('SELECT status,count(*)::int AS total FROM cuisine_social.posts GROUP BY status')->fetchAll();
     } catch (Throwable $e) {
         error_log('Cuisine social review: read-only database unavailable');
         failClosed();
