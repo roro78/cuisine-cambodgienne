@@ -6,7 +6,12 @@ docker run -d --rm --name "$id" -e POSTGRES_HOST_AUTH_METHOD=trust postgres:17-a
 cleanup(){ docker rm -f "$id" >/dev/null 2>&1 || true; }
 trap cleanup EXIT
 for try in $(seq 1 30); do
-  if docker exec "$id" pg_isready -U postgres -d postgres >/dev/null 2>&1; then break; fi
+  # The official image starts a temporary init server, then restarts it.
+  # pg_isready may succeed during that short-lived initialization window.
+  if docker logs "$id" 2>&1 | grep -q 'PostgreSQL init process complete' &&
+     docker exec "$id" psql -X -A -t -v ON_ERROR_STOP=1 -U postgres -d postgres -c 'SELECT 1' >/dev/null 2>&1; then
+    break
+  fi
   if [ "$try" -eq 30 ]; then echo "Postgres was not ready"; exit 1; fi
   sleep 1
 done
