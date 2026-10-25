@@ -21,6 +21,7 @@ on:
       - "scripts/sync-cuisine-n8n-runtime.mjs"
       - "tests/social-private-dashboard-contract.test.mjs"
       - "tests/social-private-dashboard-history.test.mjs"
+      - "tests/social-private-dashboard-http-smoke.test.mjs"
       - "tests/social-approval-email-preview.test.mjs"
       - "tests/social-visual-email-migration.test.mjs"
       - "tests/social-version-bound-decision.test.mjs"
@@ -70,5 +71,7 @@ jobs:
             tests/workflow-01-full-path-simulation.test.mjs \
             tests/social-pipeline.test.mjs
 
+      - name: Native isolated PHP private-login HTTP smoke
+        run: node --test tests/social-private-dashboard-http-smoke.test.mjs
       - name: Disposable PostgreSQL 17 post-approval immutability smoke
         run: bash scripts/test-cuisine-social-immutability-ephemeral.sh
