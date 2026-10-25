@@ -14,6 +14,12 @@ Le socle existe : `src/data/socialCatalog.ts`, `/social-feed.json`, `scripts/bui
 
 **Distinction maintenue :** visualiser les posts dans Resend avec le formulaire `Wait` déjà existant n'est **pas encore le dashboard privé** (liste, édition, versionnement et suivi en direct) décrit ci-dessous. Aucun déclenchement Meta autorisé pendant la phase de test. Le P0 sera terminé uniquement quand le parcours complet sera testé de manière authentifiée jusqu'à l'enregistrement effectif de la décision en base, sans publication externe.
 
+### Extension P0 du 25 octobre — dashboard privé en lecture seule
+
+La [PR #129](https://github.com/roro78/cuisine-cambodgienne/pull/129) livre désormais également un premier `public/gestion-social/index.php` **serveur privé**, pour afficher les posts PostgreSQL réels après authentification, avec deux aperçus compacts et les états des plateformes. Un rôle DB **SELECT-only + RLS** distinct de n8n est nécessaire. Un script de provisioning non appliqué et un diagnostic SELECT sont inclus. Les **6/6 contrats statiques ciblés** ont réussi dans un environnement isolé ; **PHP/OVH/CI natifs non validés**, donc pas de déploiement.
+
+**Observation live Supabase (lecture seule) :** un post déclaré publié FB/IG, aucun brouillon à valider, mais une réservation Resend `reserved` encore ouverte depuis le 21 octobre pour ce post ; ne pas réinitialiser ou renvoyer automatiquement. L'approbation dans le nouveau PHP est **volontairement absente** tant que le workflow n8n 01 utilise `Wait`, afin de ne pas créer deux chemins concurrents.
+
 ## P0 — Validation humaine utilisable, contrat de réception
 
 1. n8n 01 sélectionne une source publiée, photographie sociale et pages canoniques. Il enregistre une **version figée** (`source_id`, `source_fingerprint`, captions Facebook/Instagram, `image_url`, `destination_url`, identifiant du brouillon). Ne jamais dériver une approbation d'une nouvelle version du catalogue.
