@@ -1,0 +1,51 @@
+name: Social P0 targeted native validation
+
+on:
+  push:
+    branches:
+      - review/social-approval-email-preview-20261025
+    paths:
+      - ".github/workflows/social-backoffice-p0-check.yml"
+      - "public/gestion-social/index.php"
+      - "automation/n8n/sql/social-viewer-role-provisioning-REVIEW.sql"
+      - "automation/n8n/01-drafts-email-approval.json"
+      - "scripts/cuisine-social-visual-email-migration.mjs"
+      - "scripts/migrate-cuisine-social-visual-email.mjs"
+      - "scripts/sync-cuisine-n8n-runtime.mjs"
+      - "tests/social-private-dashboard-contract.test.mjs"
+      - "tests/social-approval-email-preview.test.mjs"
+      - "tests/social-visual-email-migration.test.mjs"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cuisine-social-p0-branch-only
+  cancel-in-progress: true
+
+jobs:
+  offline-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Native PHP CLI version and syntax
+        run: |
+          php -v | head -n 1
+          php -l public/gestion-social/index.php
+          php -l public/gestion-visuels/index.php
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate isolated migration CLIs
+        run: |
+          node --check scripts/cuisine-social-visual-email-migration.mjs
+          node --check scripts/migrate-cuisine-social-visual-email.mjs
+          node --check tests/social-private-dashboard-contract.test.mjs
+      - name: Native offline contracts (no API calls)
+        run: |
+          node --test --test-concurrency=1 \
+            tests/social-private-dashboard-contract.test.mjs \
+            tests/social-approval-email-preview.test.mjs \
+            tests/social-visual-email-migration.test.mjs
