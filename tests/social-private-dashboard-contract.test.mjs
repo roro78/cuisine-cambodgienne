@@ -59,3 +59,28 @@ test('no approval bypass: this view is informative only',()=>{
  assert.match(src,/Instagram/);
  assert.match(src,/Facebook/);
 });
+
+test('viewer role is fixed, cannot inherit privileges or bypass PostgreSQL RLS',()=>{
+ assert.match(src,/social_readonly_user'\] !== 'cuisine_social_viewer'/);
+ for(const part of ['rolinherit','rolsuper','rolbypassrls','rolcreaterole','rolcreatedb',
+   'rolreplication','has_memberships','rls_enabled','viewer_policy'])
+   assert.ok(src.includes(part),part);
+ assert.match(src,/pg_auth_members/);
+ assert.match(src,/pg_policies/);
+});
+test('viewer cannot inspect dispatch reservations and paginates future posts safely',()=>{
+ for(const priv of ['SELECT','INSERT','UPDATE','DELETE'])
+   assert.ok(src.includes("has_table_privilege(current_user,'cuisine_social.validation_dispatches','"+priv+"')"),priv);
+ assert.match(src,/OFFSET :offset/);
+ assert.match(src,/PDO::PARAM_INT/);
+ assert.match(src,/max_range' => 100000/);
+ assert.match(src,/Page suivante/);
+});
+test('provisioning refuses elevated viewer roles and checks policy drift',()=>{
+ const sql=readFileSync(new URL('../automation/n8n/sql/social-viewer-role-provisioning-REVIEW.sql',import.meta.url),'utf8');
+ for(const part of ['rolbypassrls','pg_auth_members','relrowsecurity',
+   'REVOKE ALL PRIVILEGES','validation_dispatches','roles=ARRAY','manual review required'])
+   assert.ok(sql.includes(part),part);
+ assert.match(sql,/BEGIN;[\s\S]*COMMIT;/);
+ assert.doesNotMatch(sql,/PASSWORD\s+'[^']+'/i);
+});
