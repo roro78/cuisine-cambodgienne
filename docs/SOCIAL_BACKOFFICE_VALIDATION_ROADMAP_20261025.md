@@ -36,6 +36,29 @@ Unifier une structure de contenus versionnée pour recettes, Carnets, ateliers, 
 
 Exiger prévisualisation, historique, validations, gestion des droits des photographies, sauvegarde et réversion. Pour que l'IA respecte la structure, imposer un schéma versionné et des API stables ; toute migration de schéma nécessite revue, tests et sauvegarde, pas de mutation libre du modèle de données.
 
+## P2 bis — Production éditoriale IA en amont (proposition du 25 octobre)
+
+**Objectif** : le back-office devient le point d'entrée commun de création manuelle, assistée par IA et planifiée, sans publier directement sous l'impulsion de l'IA. Ce chantier est **postérieur au P0** de validation sociale réellement connectée.
+
+### Chaîne fonctionnelle à deux approbations
+
+`idée / calendrier -> brief avec type de contenu -> génération brouillon -> contrôles de schéma, langue culinaire, faits, sécurité -> validation éditoriale -> construction Astro / PR Git -> tests -> publication OVH confirmée -> synchronisation du catalogue social -> brouillons Facebook et Instagram -> validation sociale -> publication Meta -> mesure`.
+
+- Deux plannings distincts : **calendrier de création** (IA prépare des brouillons) et **calendrier de diffusion** (publication des contenus validés). Une proposition programmée ne doit pas publier automatiquement une page ou déclencher une synthèse MP3 payante.
+- Les types admissibles sont `recette`, `culture` (Carnet), `atelier`, `ingredient`, `technique` ; chaque type possède un schéma éditorial versionné, des champs requis, un aperçu et un `source_id` stable. La génération IA produit seulement ces données contrôlées, **pas des modifications arbitraires aux composants Astro ou au back-office**.
+- Source culinaire canonique unique : ingrédients, quantités de base, portions, étapes, temps et mises en garde proviennent de la **recette validée**. L'atelier pédagogique et son script MP3 référencent une version et une empreinte de cette source. Un changement de recette impactant ces éléments invalide les approbations en aval.
+- Reprise obligatoire des référentiels : `docs/ateliers/REFERENTIEL-ATELIER-CUISINE-ET-MP3.md`, `docs/ateliers/REFERENTIEL-NARRATION-IMMERSIVE-V2.md`, `scripts/check-culinary-lexicon.mjs`, `scripts/check-workshop-blueprints.mjs`. Six phases pratiques et sept textes parlés ; approbation humaine explicite des textes **avant** toute TTS Coral ; écoute et intégrité MP3 **après** génération. Jamais de TTS à la simple création d'un brouillon ou d'un calendrier.
+- Le contrôle culinaire porte sur réalisme des quantités/temps, disponibilité française des ingrédients avec substitutions indiquées, allergènes, cuisson sécuritaire, contextes culturels non inventés. Une variante créée par l'IA ne peut pas être présentée comme recette traditionnelle attestée sans vérification. « Testée en cuisine » n'est pas une affirmation automatique.
+- Photographies : correspondance obligatoire au plat/étape, droits vérifiés, distinction entre photographie du plat réellement préparé et **illustration générée par IA**. Les scènes culturelles ne peuvent pas prétendre documenter un événement ou un lieu réel sans preuve. Les dérivés WebP du site et JPEG sociaux proviennent de médias approuvés, avec recadrages contrôlés.
+- SEO : titre, description, liens internes, URL canonique, données structurées `Recipe` si approprié, dates et sitemap ; contrôles de qualité, d'originalité et de valeur pour l'utilisateur avant multiplication de pages générées.
+- GitHub/Astro demeure la source publiée actuelle (recettes et Carnets en données TypeScript ; ateliers également en fichiers JSON) : **pas de CMS supposé déjà fonctionnel**. Comparer migration graduelle vers données structurées à schéma stable et éditeur Git-backed ; passage par PR + tests + déploiement OVH contrôlé. Ne pas donner à Ollama ni à n8n le droit de réécrire librement `src/pages`, les schémas ou le dashboard.
+- Réutiliser, après audit de configuration et de déploiement, le portail existant `public/gestion-visuels/index.php` pour l'import de médias ; il propose déjà authentification, CSRF et une file d'envoi vers GitHub. **Ne pas présumer qu'il soit déployé ou correctement configuré**.
+- Déclenchement social **uniquement après publication sur le site vérifiée**, pas à la génération du brouillon IA. La synchronisation `social-feed.json` doit surveiller les nouvelles versions, conserver l'historique et ne pas réactiver un post déjà publié à la suite d'un simple changement de photo.
+- Gardes de coûts et de réputation : une exécution par idée et par version, déduplication éditoriale/SEO, budgets plafonnés (texte, image, TTS, CI), journal d'audit, limites de création ; aucun envoi Resend ou Meta lors des simulations.
+- Test d'acceptation prioritaire **après P0** : 2 recettes distinctes -> brouillons générés selon le schéma existant -> vérification qualité -> approbation éditoriale d'une seule -> publication de cette recette en environnement de test -> découverte dans le catalogue social -> aperçu Facebook et Instagram en attente d'approbation -> aucun Meta sans validation explicite. Un atelier lié à une recette vient ensuite, en testant script/empreinte/audio séparément.
+
+**Décision de cadence** : commencer par suggestions et génération **à la demande**, puis programmation de brouillons (par semaine/mois) après mesure des coûts, du taux de corrections humaines et du trafic utile ; ne pas confondre volume de pages et acquisition démontrée.
+
 ## P3 — Engagement et IA commentaires
 
 Récupérer les indicateurs autorisés Meta (likes, commentaires, partages/portée selon accès), créer une file de réponses avec liens vers les publications. D'abord **IA propose / humain approuve** et seulement ensuite éventuelles catégories automatiques limitées. API Meta, permissions, volume et utilité économique à vérifier.
