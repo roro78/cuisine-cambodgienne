@@ -12,6 +12,8 @@ Contrôler les JPEG sociaux **réels** (1080 × 1080) et six légendes de prévi
 
 ### Propriétés
 - Images : assets JPEG **réellement générés par Sharp** à partir des photos existantes. Si une image ou un format manque, la CI échoue. Pas de placeholder ni de photo IA ajoutée.
+- La revue affiche une **miniature compacte (230 px maximum)** pour éviter qu'une image ne remplisse l'écran du téléphone : cela ne modifie **ni les JPEG 1080 × 1080, ni le rendu native 1:1 des publications Facebook/Instagram**. La largeur d'affichage finale dépend du terminal et du réseau.
+- Sur la carte Instagram, le panneau dépliable « Comparer avec la grille Instagram (3:4) » montre une simulation de vignette centrée. Pour un JPEG carré, elle masque théoriquement 12,5 % à gauche et à droite ; l'application peut proposer un autre cadrage. C'est une **prévisualisation illustrative**, pas une preuve du rendu Meta en ligne.
 - Textes : sortie du **fallback déterministe réel** du nœud \`Vérifier et cadrer les textes\`, exécuté hors réseau. Ce n'est **pas** une réponse Ollama en production et ce n'est **pas** une capture réelle de l'interface Facebook ou Instagram.
 - Page : un seul fichier HTML autosuffisant, sans police ni script distant, aucun tracking, aucun appel réseau.
 - Boutons « Validée » et « Exporter » : données **locales dans le navigateur** ; aucun PUT/POST/GET, aucune écriture base et aucune modification n8n.
