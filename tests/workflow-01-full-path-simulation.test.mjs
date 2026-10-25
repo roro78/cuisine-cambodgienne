@@ -150,7 +150,7 @@ test('complete nominal simulation reaches a prepared Resend payload and human fo
   assert.ok(payload.text.includes(generated.facebookCaption));
   assert.ok(payload.text.includes(generated.instagramCaption));
   assert.ok(payload.text.includes(formUrl));
-  assert.match(payload.text, /AUCUNE PUBLICATION/);
+  assert.match(payload.text, /Aucune publication sans accord explicite/i);
 
   assert.equal(wait.parameters.resume, 'form');
   assert.equal(wait.parameters.limitWaitTime, true);
