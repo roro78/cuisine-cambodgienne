@@ -31,7 +31,15 @@ button:focus-visible,input:focus-visible,textarea:focus-visible { outline:3px so
 .handle { font-weight:750; font-size:13px; line-height:1.2; }
 .meta { color:var(--muted); font-size:12px; }
 .platform { margin-left:auto; border-radius:99px; padding:4px 8px; background:#f6e9d7; color:#604b33; font-size:11px; font-weight:800; white-space:nowrap; }
-.post-photo { display:block; width:100%; aspect-ratio:1/1; object-fit:cover; background:#cfcfc6; }
+.post-photo { display:block; width:min(calc(100% - 28px),230px); height:auto; aspect-ratio:1/1; object-fit:contain; background:#cfcfc6; border-radius:10px; margin:10px auto 6px; }
+.media-guide { color:#536458; font-size:11px; text-align:center; padding:0 14px 10px; }
+.grid-crop { margin:0 15px 12px; border:1px solid #e5e4dd; border-radius:10px; padding:8px 10px; background:#f9f8f4; }
+.grid-crop summary { cursor:pointer; font-size:12px; font-weight:700; }
+.grid-crop-body { display:flex; align-items:center; gap:12px; padding:11px 2px 3px; }
+.grid-crop-tile { width:90px; aspect-ratio:3/4; flex:0 0 90px; overflow:hidden; border-radius:4px; background:#cacaca; }
+.grid-crop-tile img { display:block; width:100%; height:100%; object-fit:cover; object-position:center; }
+.grid-crop-body p { color:#566158; font-size:12px; margin:0; }
+@media(max-width:340px) { .grid-crop-body { gap:8px; } .grid-crop-tile { width:75px; flex-basis:75px; } }
 .image-caption { padding:9px 15px; color:#6c6a59; border-bottom:1px solid #efeee9; font-size:11px; }
 .post-copy { padding:14px 16px 18px; white-space:pre-wrap; overflow-wrap:anywhere; font-size:14px; line-height:1.65; }
 .review { padding:13px 15px 17px; border-top:2px solid #ebece5; background:#fdfcf9; }
@@ -44,16 +52,16 @@ footer strong { color:var(--ink); }
 .export { background:var(--sage); color:#fff; margin-top:14px; }
 .warning { color:#92502f; font-weight:650; }
 @media(max-width:700px) { header{padding:24px 16px;} main.wrap{padding:14px 11px 35px;} .grid{grid-template-columns:1fr;gap:16px;} .toolbar{gap:9px;} .card{border-radius:15px;} }
-@media print { header{background:white;color:black;} .safety, .toolbar, .review, footer{display:none!important;} .grid{display:block;} .card{break-inside:avoid;margin-bottom:18px;} .post-photo{max-height:350px;object-fit:contain;} }
+@media print { header{background:white;color:black;} .safety, .toolbar, .review, footer,.grid-crop{display:none!important;} .grid{display:block;} .card{break-inside:avoid;margin-bottom:18px;} .post-photo{max-height:350px;object-fit:contain;} }
 </style>
 </head>
 <body>
 <header><div class="wrap"><div class="eyebrow">Cuisine du Cambodge · Atelier social</div>
 <h1>Avant de publier, on regarde.</h1>
-<p>Trois sujets, six simulations et les véritables photos recadrées par notre générateur. Compare les textes et les images comme si tu les découvrais sur ton téléphone.</p>
+<p>Trois sujets, six simulations et les vrais fichiers JPEG du générateur. Les photos sont affichées ici en petit pour faciliter la validation sur téléphone, sans diminuer leur qualité de publication.</p>
 <div class="safety">APERÇU HORS LIGNE — AUCUNE PUBLICATION</div></div></header>
 <main class="wrap">
-<div class="notice"><strong>À contrôler :</strong> 1. L'image montre-t-elle le bon sujet sans bandes vides ni coupe gênante ? 2. Le texte donne-t-il envie ? 3. Les informations sont-elles justes ?<br><strong>Attention :</strong> l'interface est une approximation des flux Facebook et Instagram, pas une capture de ces applications. Les légendes sont issues du <em>fallback déterministe réel du workflow 01</em>, sans solliciter Ollama.</div>
+<div class="notice"><strong>À contrôler :</strong> 1. L'image montre-t-elle le bon sujet sans bandes vides ni coupe gênante ? 2. Le texte donne-t-il envie ? 3. Les informations sont-elles justes ?<br><strong>Dimensions :</strong> le JPEG publié reste en 1080 × 1080 (1:1). L'aperçu ci-dessous est volontairement réduit à 230 px de largeur au maximum. Instagram peut rogner les côtés dans la grille du profil : ouvre « Comparer avec la grille » sur sa carte pour voir cette zone.<br><strong>Attention :</strong> l'interface est une approximation des flux Facebook et Instagram, pas une capture de ces applications. Les légendes sont issues du <em>fallback déterministe réel du workflow 01</em>, sans solliciter Ollama.</div>
 <div class="toolbar"><div class="filters" role="group" aria-label="Filtrer les aperçus">
 <button type="button" aria-pressed="true" data-filter="all">Les 6</button>
 <button type="button" aria-pressed="false" data-filter="facebook">Facebook</button>
@@ -92,7 +100,23 @@ for (const review of reviews) {
     img.src = review.imageData; img.alt = review.imageAlt;
     img.width = 1080; img.height = 1080;
     article.append(img);
-    article.append(tag('div','image-caption',review.imageLabel+' · JPEG réel 1:1 · '+review.imageRole));
+    article.append(tag('div','media-guide','Fil d’actualité · image entière 1:1 · aperçu réduit'));
+    if(platform === 'instagram') {
+      const crop=tag('details','grid-crop');
+      crop.append(tag('summary','', 'Comparer avec la grille Instagram (3:4)'));
+      const cropBody=tag('div','grid-crop-body');
+      const tile=tag('div','grid-crop-tile');
+      const gridImg=tag('img','');
+      gridImg.src=review.imageData;
+      gridImg.alt='Miniature 3:4 du visuel '+review.title;
+      gridImg.loading='lazy';
+      gridImg.width=90; gridImg.height=120;
+      tile.append(gridImg);
+      cropBody.append(tile,tag('p','', 'Miniature du profil : un JPEG carré est recadré sur les côtés (environ 12,5 % par côté, centrage théorique). Le post du fil conserve son carré complet.'));
+      crop.append(cropBody);
+      article.append(crop);
+    }
+    article.append(tag('div','image-caption',review.imageLabel+' · JPEG publié 1080 × 1080 · '+review.imageRole));
     article.append(tag('div','post-copy',platform === 'facebook' ? review.facebookCaption : review.instagramCaption));
     const box = tag('div','review');
     box.append(tag('div','review-title','Mon contrôle'));
