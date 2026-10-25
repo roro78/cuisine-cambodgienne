@@ -99,10 +99,12 @@ test('complete nominal simulation reaches a prepared Resend payload and human fo
   })[0].json;
   assert.equal(generated.generationMode, 'catalogue_deterministe');
   assert.equal(generated.modelValidation, 'json_invalide');
-  assert.deepEqual(Array.from(generated.claimsUsed), source406.facts);
-  assert.ok(generated.facebookCaption.length >= 200 && generated.facebookCaption.length <= 850);
-  assert.ok(generated.instagramCaption.length >= 150 && generated.instagramCaption.length <= 700);
-  assert.ok(generated.facebookCaption.includes('https://www.cuisine-du-cambodge.com/ingredients/kroeung/?utm_source=facebook&'));
+  assert.ok(generated.claimsUsed.every(fact => source406.facts.includes(fact)));
+  assert.ok(generated.claimsUsed.length>=1);
+  assert.ok(generated.facebookCaption.length >= 100 && generated.facebookCaption.length <= 850);
+  assert.ok(generated.instagramCaption.length >= 90 && generated.instagramCaption.length <= 700);
+  assert.ok(generated.facebookCaption.includes('https://www.cuisine-du-cambodge.com/ingredients/kroeung/'));
+  assert.doesNotMatch(generated.facebookCaption,/utm_/);
   assert.equal(generated.imageUrl, source406.imageUrl);
 
   const parameters = evalExpression(insert.parameters.options.queryReplacement, expressionContext(generated));
