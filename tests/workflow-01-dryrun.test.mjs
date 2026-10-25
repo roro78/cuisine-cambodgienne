@@ -266,3 +266,27 @@ test('Instagram status parsing and ready-container filtering use real code', () 
   assert.equal(ready.length, 1);
   assert.equal(ready[0].json.id, 42);
 });
+
+test('social captions reject boilerplate, remain short and retain factual excerpts', () => {
+  const out=validate({choices:[]})[0].json;
+  assert.equal(out.generationMode,'catalogue_deterministe');
+  for(const caption of [out.facebookCaption,out.instagramCaption]){
+    assert.doesNotMatch(caption,/Dans notre catalogue|informations v[eé]rifi[eé]es|page associ[eé]e/i);
+    assert.ok(source.facts.some(fact=>caption.includes(fact)),
+      'Social caption must reproduce at least one source fact exactly');
+  }
+  assert.equal(out.facebookCaption.includes('utm_'),false);
+  assert.ok(out.facebookCaption.endsWith(source.url),'Facebook must use short canonical URL');
+  assert.ok(out.instagramCaption.endsWith('cuisine-du-cambodge.com'));
+  assert.notEqual(out.facebookCaption,out.instagramCaption,'Networks must be differentiated');
+});
+
+test('public caption validation refuses forged claims and protects human publication gate', () => {
+  const forged=boundedModelResponse({facebookMiddle:[source.facts[0],'Un ingrédient miracle totalement inventé.']});
+  const out=validate(forged)[0].json;
+  assert.equal(out.modelValidation,'texte_non_verifiable');
+  assert.equal(out.generationMode,'catalogue_deterministe');
+  assert.match(workflow02.nodes.find(n=>n.name==='Claim atomique uniquement si validé').parameters.query,
+    /human_decision='approved'/);
+  assert.equal(workflow01.active,false);
+});

@@ -351,3 +351,46 @@ test('workflow 01 refuses any variation of the historical validator and forbids 
   pinned.pinData={manual:[{json:{id:1}}]};
   assert.throws(()=>planWorkflow(pinned,reviewed[0],0),/Pinned data/);
 });
+
+test('workflow 01 upgrades only exact prior editorial code and Ollama prompt', () => {
+  const previous=JSON.parse(readFileSync(new URL('../tests/fixtures/social-editorial-predecessors.json',import.meta.url),'utf8'));
+  assert.equal(createHash('sha256').update(previous.promptBody).digest('hex'),
+    approvedPredecessorHashes.editorialPromptPrevious);
+  assert.equal(createHash('sha256').update(previous.validatorCode).digest('hex'),
+    approvedPredecessorHashes.editorialValidatorPrevious);
+  const live=clone(reviewed[0]);
+  locate(live,'Rédiger via Llama sur Ollama').parameters.body=previous.promptBody;
+  locate(live,'Vérifier et cadrer les textes').parameters.jsCode=previous.validatorCode;
+  const before=clone(live);
+  const plan=planWorkflow(live,reviewed[0],0);
+  assert.deepEqual(plan.changes,[
+    'Rédiger via Llama sur Ollama: deterministic-generation prompt',
+    'Vérifier et cadrer les textes: deterministic verified-facts formatter'
+  ]);
+  assert.deepEqual(live,before,'Read-only preflight must not change previous live object');
+  assert.deepEqual(locate(plan.update,'Rédiger via Llama sur Ollama').parameters.body,
+    locate(reviewed[0],'Rédiger via Llama sur Ollama').parameters.body);
+  assert.deepEqual(locate(plan.update,'Vérifier et cadrer les textes').parameters.jsCode,
+    locate(reviewed[0],'Vérifier et cadrer les textes').parameters.jsCode);
+  assert.equal(planWorkflow(plan.update,reviewed[0],0).changes.length,0);
+});
+
+test('editorial sync refuses one-byte changes, active workflows and pinned state', () => {
+  const previous=JSON.parse(readFileSync(new URL('../tests/fixtures/social-editorial-predecessors.json',import.meta.url),'utf8'));
+  for(const name of ['Rédiger via Llama sur Ollama','Vérifier et cadrer les textes']){
+    const field=name==='Rédiger via Llama sur Ollama'?'body':'jsCode';
+    for(const change of [original=>original+'\n', original=>original.replace('catalogue','catalogue_altéré')]){
+      const live=clone(reviewed[0]);
+      locate(live,name).parameters[field]=change(name==='Rédiger via Llama sur Ollama'?previous.promptBody:previous.validatorCode);
+      assert.throws(()=>planWorkflow(live,reviewed[0],0),/Unexpected live customizations/);
+    }
+  }
+  const active=clone(reviewed[0]);
+  locate(active,'Vérifier et cadrer les textes').parameters.jsCode=previous.validatorCode;
+  active.active=true;
+  assert.throws(()=>planWorkflow(active,reviewed[0],0),/active/);
+  const pinned=clone(reviewed[0]);
+  locate(pinned,'Rédiger via Llama sur Ollama').parameters.body=previous.promptBody;
+  pinned.pinData={test:[{json:{id:'1'}}]};
+  assert.throws(()=>planWorkflow(pinned,reviewed[0],0),/Pinned data/);
+});
