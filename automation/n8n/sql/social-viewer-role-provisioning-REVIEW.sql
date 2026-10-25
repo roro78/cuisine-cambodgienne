@@ -14,7 +14,7 @@ END $$;
 -- à un tiers. Le rôle est réservé exclusivement au portail de consultation.
 -- Refuser de réutiliser silencieusement un rôle existant trop privilégié.
 -- NOINHERIT seul ne protège pas contre SET ROLE et BYPASSRLS.
-DO $
+DO $$
 BEGIN
   IF EXISTS (
     SELECT 1 FROM pg_roles r
@@ -31,7 +31,7 @@ BEGIN
   ) THEN
     RAISE EXCEPTION 'posts RLS must already be enabled';
   END IF;
-END $;
+END $$;
 -- Minimum requis : USAGE du schéma, SELECT des posts uniquement.
 GRANT USAGE ON SCHEMA cuisine_social TO cuisine_social_viewer;
 GRANT SELECT ON TABLE cuisine_social.posts TO cuisine_social_viewer;
@@ -55,7 +55,7 @@ BEGIN
   END IF;
 END $$;
 -- Si une policy homonyme existe avec une condition différente, arrêter.
-DO $
+DO $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1 FROM pg_policies
@@ -66,7 +66,7 @@ BEGIN
   ) THEN
     RAISE EXCEPTION 'Viewer policy drift; manual review required';
   END IF;
-END $;
+END $$;
 COMMIT;
 -- IMPORTANT : confier la définition du mot de passe LOGIN à l'administrateur,
 -- dans son outil privé. Conserver RLS ; ne jamais accorder ce rôle au navigateur,
