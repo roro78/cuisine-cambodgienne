@@ -19,6 +19,19 @@ Le workflow n8n 01 produit actuellement un courrier de validation en texte brut 
 - Aucune publication, aucun appel HTTP, aucun e-mail envoyé depuis les tests. Les tests évaluent l'expression réellement présente dans l'export.
 - Les trois workflows restent `active:false`, tous les IDs de nœuds et toutes les connexions restent inchangés.
 
+### Migration n8n préparée — gardes effectifs
+
+La PR contient désormais le planificateur pur `scripts/cuisine-social-visual-email-migration.mjs` et le script opérationnel **read-only par défaut** `scripts/migrate-cuisine-social-visual-email.mjs`. L'ancien template Resend est figé dans `tests/fixtures/social-resend-email-predecessor.json`.
+
+- **Lecture d'abord :** le script n'inspecte que le workflow 01 et n'imprime jamais les adresses privées ou les credentials ; il refuse le mauvais host, les workflows actifs, un nœud Resend inconnu, des paramètres modifiés, un garde-fou manquant et tout modèle qui diffère de l'unique prédécesseur connu.
+- **Paramètres préservés :** sender `Cuisine du Cambodge <social@...>`, destinataire, credential Resend, identifiants de nœuds, calendrier, nœuds SQL/Code, connexions et réglages n8n. Seul `parameters.body` de la demande Resend peut changer. Valeurs de placeholder non configurées : toute écriture est refusée.
+- **Réexécution :** si le nouveau HTML est déjà installé, le plan est sans changement (idempotent).
+- **Option d'application explicite** : `--apply --approve-single-workflow-update` sur un terminal déjà autorisé, avec `N8N_API_KEY` passé en secret local ; relecture n8n avant PUT, sauvegarde locale privée 0600, **une seule mise à jour du workflow 01**, puis GET de vérification. **Ne pas activer les workflows**.
+- **État réel de cette livraison :** 14/14 tests ciblés passés en isolation V8 avec simulateurs légers (nœuds/VM) ; la CI Node GitHub, la consultation du runtime n8n, les tests Android/Gmail et un vrai e-mail Resend ne sont **pas encore vérifiés**. Aucune clé n'a été utilisée.
+- Le précédent synchroniseur global `sync-cuisine-n8n-runtime.mjs` n'est **pas modifié** : une autre correction de sécurité en attente fait échouer l'étape de préparation, plutôt que de combiner deux modifications n8n.
+
+**Décision** : la migration est prête pour revue et test GET-only dès qu'un terminal d'administration n8n est accessible. Elle **ne transforme pas l'e-mail en dashboard privé** : celui-ci reste une étape P0 distincte, avec lecture authentifiée de la file des posts et approbation de versions figées.
+
 ### Points bloquants avant installation dans n8n
 - **Le synchroniseur actuel `scripts/sync-cuisine-n8n-runtime.mjs` ne migre pas automatiquement le corps de cet e-mail** : c'est volontaire. Il faudrait une migration qui compare l'expression précédente exacte et préserve les adresses configurées, les IDs de credentials et les connexions, sans écraser de valeurs du runtime.
 - Confirmer l'URL HTTPS retournée par `$execution.resumeFormUrl` sur l'instance réelle et ses règles d'expiration.
