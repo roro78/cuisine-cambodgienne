@@ -67,6 +67,9 @@ test('viewer role is fixed, cannot inherit privileges or bypass PostgreSQL RLS',
    assert.ok(src.includes(part),part);
  assert.match(src,/pg_auth_members/);
  assert.match(src,/pg_policies/);
+ assert.match(src,/m\.member=r\.oid OR m\.roleid=r\.oid/);
+ assert.match(src,/qual='true' AND with_check IS NULL/);
+ assert.match(src,/roles=ARRAY\['cuisine_social_viewer'\]::name\[\]/);
 });
 test('viewer cannot inspect dispatch reservations and paginates future posts safely',()=>{
  for(const priv of ['SELECT','INSERT','UPDATE','DELETE'])

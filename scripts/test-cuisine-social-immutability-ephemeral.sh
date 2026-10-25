@@ -16,11 +16,15 @@ for try in $(seq 1 30); do
   sleep 1
 done
 docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < automation/n8n/schema.sql >/dev/null
+# Repeat schema to verify idempotence of its table definitions (not a migration).
+docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < automation/n8n/schema.sql >/dev/null
 docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < automation/n8n/sql/social-approved-content-immutability-REVIEW.sql >/dev/null
 docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < tests/sql/social-approved-content-immutability-smoke.sql
 # Ensure the real provisioning SQL parses and protects actual rows and RLS.
 # This disposable fixture mirrors production's validation_dispatches table shape.
 docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < tests/sql/social-viewer-role-fixture.sql >/dev/null
+docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < automation/n8n/sql/social-viewer-role-provisioning-REVIEW.sql >/dev/null
+# The reader provisioning must also be idempotent for controlled retries.
 docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < automation/n8n/sql/social-viewer-role-provisioning-REVIEW.sql >/dev/null
 docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < tests/sql/social-viewer-role-smoke.sql
 

@@ -121,8 +121,19 @@ if ($authenticated) {
     foreach (['social_readonly_dsn', 'social_readonly_user', 'social_readonly_password'] as $key)
         if (!isset($cfg[$key]) || !is_string($cfg[$key]) || $cfg[$key] === '') failClosed();
     if (!str_starts_with($cfg['social_readonly_dsn'], 'pgsql:')
-        || !preg_match('/(?:^|;)sslmode=(?:require|verify-ca|verify-full)(?:;|$)/', $cfg['social_readonly_dsn'])
         || !class_exists('PDO') || !in_array('pgsql', PDO::getAvailableDrivers(), true)) failClosed();
+    // Reject duplicated parameters (e.g. sslmode=require;sslmode=disable),
+    // embedded passwords, or libpq options that can override TLS protections.
+    $dsnParts = explode(';', substr($cfg['social_readonly_dsn'], 6));
+    $dsnValues = [];
+    foreach ($dsnParts as $part) {
+        if (!preg_match('/^(host|port|dbname|sslmode|sslrootcert)=([^;]+)$/iD', $part, $match)) failClosed();
+        $key = strtolower($match[1]);
+        if (array_key_exists($key, $dsnValues)) failClosed();
+        $dsnValues[$key] = $match[2];
+    }
+    if (empty($dsnValues['host']) || empty($dsnValues['dbname']) ||
+        !in_array($dsnValues['sslmode'] ?? '', ['require', 'verify-ca', 'verify-full'], true)) failClosed();
     if ($cfg['social_readonly_user'] !== 'cuisine_social_viewer') failClosed();
     try {
         $pdo = new PDO(
@@ -139,14 +150,15 @@ if ($authenticated) {
         $identity = $pdo->query(
             "SELECT current_user AS db_user, r.rolcanlogin, r.rolinherit, r.rolsuper,
                     r.rolbypassrls, r.rolcreatedb, r.rolcreaterole, r.rolreplication,
-                    EXISTS(SELECT 1 FROM pg_auth_members m WHERE m.member=r.oid) AS has_memberships,
+                    EXISTS(SELECT 1 FROM pg_auth_members m WHERE m.member=r.oid OR m.roleid=r.oid) AS has_memberships,
                     (SELECT c.relrowsecurity FROM pg_class c
                        JOIN pg_namespace n ON n.oid=c.relnamespace
                       WHERE n.nspname='cuisine_social' AND c.relname='posts') AS rls_enabled,
                     EXISTS(SELECT 1 FROM pg_policies
                             WHERE schemaname='cuisine_social' AND tablename='posts'
                               AND policyname='cuisine_social_viewer_read_posts'
-                              AND cmd='SELECT' AND 'cuisine_social_viewer'::name=ANY(roles)) AS viewer_policy
+                              AND cmd='SELECT' AND qual='true' AND with_check IS NULL
+                              AND roles=ARRAY['cuisine_social_viewer']::name[]) AS viewer_policy
                FROM pg_roles r WHERE r.rolname=current_user"
         )->fetch();
         if (!$identity || ($identity['db_user'] ?? '') !== 'cuisine_social_viewer'
