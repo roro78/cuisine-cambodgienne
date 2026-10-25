@@ -8,6 +8,12 @@
 
 Le socle existe : `src/data/socialCatalog.ts`, `/social-feed.json`, `scripts/build-social-assets.mjs`, les trois workflows `automation/n8n/01-drafts-email-approval.json`, `02-publish-approved.json`, `03-reconcile-instagram.json`, et `cuisine_social.posts`. Les exports n8n GitHub sont `active:false`. L'interface de revue générée par `scripts/build-social-review.mjs` est **un simulateur sans publication** et ne doit pas devenir un endpoint public d'approbation.
 
+## Jalon technique du 25 octobre — PR #129 (préparation P0)
+
+**[PR #129 — prévisualisations dans l'e-mail et migration n8n ciblée](https://github.com/roro78/cuisine-cambodgienne/pull/129)** : workflow 01 export enrichi de deux cartes Facebook/Instagram et d'un bouton vers le formulaire humain n8n existant ; sauvegarde des adresses Resend et des credentials prévue dans une migration indépendante, GET-only par défaut. 14/14 tests ciblés réussis en isolation V8 ; CI Node, n8n live et vrai e-mail non exécutés. PR #129 reste en brouillon et ne met rien en production.
+
+**Distinction maintenue :** visualiser les posts dans Resend avec le formulaire `Wait` déjà existant n'est **pas encore le dashboard privé** (liste, édition, versionnement et suivi en direct) décrit ci-dessous. Aucun déclenchement Meta autorisé pendant la phase de test. Le P0 sera terminé uniquement quand le parcours complet sera testé de manière authentifiée jusqu'à l'enregistrement effectif de la décision en base, sans publication externe.
+
 ## P0 — Validation humaine utilisable, contrat de réception
 
 1. n8n 01 sélectionne une source publiée, photographie sociale et pages canoniques. Il enregistre une **version figée** (`source_id`, `source_fingerprint`, captions Facebook/Instagram, `image_url`, `destination_url`, identifiant du brouillon). Ne jamais dériver une approbation d'une nouvelle version du catalogue.
