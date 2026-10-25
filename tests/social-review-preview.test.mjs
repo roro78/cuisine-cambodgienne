@@ -30,6 +30,11 @@ test('six ready-to-review cards contain real inlined square JPEGs and checked ca
   }
   assert.match(html,/APERÇU HORS LIGNE/);
   assert.match(html,/Exporter mon avis/);
+  assert.match(html,/width:min\(calc\(100% - 28px\),230px\)/,'mobile review photos must be compact');
+  assert.match(html,/Comparer avec la grille Instagram \(3:4\)/);
+  assert.match(html,/grid-crop-tile \{ width:90px; aspect-ratio:3\/4/);
+  assert.match(html,/if\(platform === 'instagram'\)/,'grid crop only for Instagram');
+  assert.match(html,/object-position:center/,'centered crop should be explicit');
   assert.doesNotMatch(html,/<img[^>]+src=["']https?:/i);
   assert.doesNotMatch(html,/<script[^>]+src=/i);
   assert.doesNotMatch(html,/\bfetch\s*\(/);
