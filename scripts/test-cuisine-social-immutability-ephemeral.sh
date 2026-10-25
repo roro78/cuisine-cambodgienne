@@ -13,3 +13,9 @@ done
 docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < automation/n8n/schema.sql >/dev/null
 docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < automation/n8n/sql/social-approved-content-immutability-REVIEW.sql >/dev/null
 docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < tests/sql/social-approved-content-immutability-smoke.sql
+# Ensure the real provisioning SQL parses and protects actual rows and RLS.
+# This disposable fixture mirrors production's validation_dispatches table shape.
+docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < tests/sql/social-viewer-role-fixture.sql >/dev/null
+docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < automation/n8n/sql/social-viewer-role-provisioning-REVIEW.sql >/dev/null
+docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < tests/sql/social-viewer-role-smoke.sql
+

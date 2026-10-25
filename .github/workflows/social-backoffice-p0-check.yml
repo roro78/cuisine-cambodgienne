@@ -16,6 +16,8 @@ on:
       - "automation/n8n/sql/social-approved-content-immutability-REVIEW.sql"
       - "tests/sql/social-approved-content-immutability-smoke.sql"
       - "scripts/test-cuisine-social-immutability-ephemeral.sh"
+      - "tests/sql/social-viewer-role-fixture.sql"
+      - "tests/sql/social-viewer-role-smoke.sql"
       - "scripts/sync-cuisine-n8n-runtime.mjs"
       - "tests/social-private-dashboard-contract.test.mjs"
       - "tests/social-approval-email-preview.test.mjs"
