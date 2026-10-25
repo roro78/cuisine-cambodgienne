@@ -33,7 +33,7 @@ La PR contient désormais le planificateur pur `scripts/cuisine-social-visual-em
 **Décision** : la migration est prête pour revue et test GET-only dès qu'un terminal d'administration n8n est accessible. Elle **ne transforme pas l'e-mail en dashboard privé** : celui-ci reste une étape P0 distincte, avec lecture authentifiée de la file des posts et approbation de versions figées.
 
 ### Points bloquants avant installation dans n8n
-- **Le synchroniseur actuel `scripts/sync-cuisine-n8n-runtime.mjs` ne migre pas automatiquement le corps de cet e-mail** : c'est volontaire. Il faudrait une migration qui compare l'expression précédente exacte et préserve les adresses configurées, les IDs de credentials et les connexions, sans écraser de valeurs du runtime.
+- **Le synchroniseur global `scripts/sync-cuisine-n8n-runtime.mjs` ne migre pas cet e-mail**. Une migration dédiée existe désormais (`scripts/migrate-cuisine-social-visual-email.mjs`), en lecture seule par défaut, avec contrôle du prédécesseur et préservation des adresses, credentials et connexions. Elle reste à tester contre l'instance réelle avant toute écriture.
 - Confirmer l'URL HTTPS retournée par `$execution.resumeFormUrl` sur l'instance réelle et ses règles d'expiration.
 - Tester avec **un seul e-mail réel explicitement autorisé**, d'abord en brouillon contrôlé, sans activer les schedules ni 02/03.
 - Vérifier la délivrabilité HTML et le blocage potentiel des images distantes par Gmail/Outlook. Un e-mail seul n'est pas encore le dashboard privé avec historique et édition.
