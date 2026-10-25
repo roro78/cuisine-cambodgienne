@@ -1,5 +1,5 @@
 /** Offline social editorial reviewer.
- * Reuses the actual build-time catalog, actual 4:5 generated JPEGs and the
+ * Reuses the actual build-time catalog, actual square social JPEGs and the
  * real Workflow 01 validator fallback. No HTTP calls or Meta/n8n writes.
  */
 import { build } from 'esbuild';
@@ -49,7 +49,7 @@ for(const id of ids){
   const file=path.join(root,'public/social-assets',id.replace(':','-')+'.jpg');
   const bytes=await readFile(file);
   const info=await sharp(bytes).metadata();
-  if(info.format!=='jpeg'||info.width!==1080||info.height!==1350)
+  if(info.format!=='jpeg'||info.width!==1080||info.height!==1080)
     throw Error('social_preview_invalid_image_dimensions:'+id);
   const caption=runValidator(source);
   reviews.push({
@@ -71,4 +71,4 @@ const outdir=path.join(root,'artifacts');
 await mkdir(outdir,{recursive:true});
 const outfile=path.join(outdir,'social-editorial-review.html');
 await writeFile(outfile,output,{encoding:'utf8',flag:'w'});
-console.log('social-review: 6 offline previews; actual JPEG 1080x1350; saved '+outfile+'; no Meta, n8n, Resend or DB calls');
+console.log('social-review: 6 offline previews; actual JPEG 1080x1080; saved '+outfile+'; no Meta, n8n, Resend or DB calls');

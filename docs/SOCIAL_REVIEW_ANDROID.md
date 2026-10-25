@@ -1,7 +1,7 @@
 # Revue éditoriale sociale — mode Android, hors ligne
 
 ### Objectif
-Contrôler les JPEG sociaux **réels** (1080 × 1350) et six légendes de prévisualisation (3 sujets × Facebook/Instagram), **sans publication** ni activation n8n et sans déploiement du site OVH.
+Contrôler les JPEG sociaux **réels** (1080 × 1080) et six légendes de prévisualisation (3 sujets × Facebook/Instagram), **sans publication** ni activation n8n et sans déploiement du site OVH.
 
 ### Mode d'emploi Android
 1. Ouvrir la dernière exécution GitHub Actions **CI** terminée avec succès sur la branche de la PR de prévisualisation (ou sur main après intégration).
@@ -26,3 +26,7 @@ Contrôler les JPEG sociaux **réels** (1080 × 1350) et six légendes de prévi
 5. Application n8n sous autorisation distincte, sans activer les workflows, puis tests contrôlés.
 
 **Le ticket #121 ne se ferme qu'après revue et vérifications.**
+
+## Correction du 25 octobre — cadrage du produit
+
+Les premières captures mobiles montrent que le 4:5 + Sharp `attention` agrandissait et coupait le sujet. La correction affiche désormais une image **carrée** plus courte, avec une vue centrale nette (1080×840) et une extension photographique douce, sans bandes beige ni zoom vertical. Les vues changées sont : Kroeung au mortier, pas un panier d'aromates vu de côté ; Amok Trey complet dans son panier de feuilles. Aucune nouvelle photographie n'est fabriquée et les fiches du site restent inchangées. Ne pas approuver le carnet du riz avant un véritable visuel pertinent.

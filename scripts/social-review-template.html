@@ -31,7 +31,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible { outline:3px so
 .handle { font-weight:750; font-size:13px; line-height:1.2; }
 .meta { color:var(--muted); font-size:12px; }
 .platform { margin-left:auto; border-radius:99px; padding:4px 8px; background:#f6e9d7; color:#604b33; font-size:11px; font-weight:800; white-space:nowrap; }
-.post-photo { display:block; width:100%; aspect-ratio:4/5; object-fit:cover; background:#cfcfc6; }
+.post-photo { display:block; width:100%; aspect-ratio:1/1; object-fit:cover; background:#cfcfc6; }
 .image-caption { padding:9px 15px; color:#6c6a59; border-bottom:1px solid #efeee9; font-size:11px; }
 .post-copy { padding:14px 16px 18px; white-space:pre-wrap; overflow-wrap:anywhere; font-size:14px; line-height:1.65; }
 .review { padding:13px 15px 17px; border-top:2px solid #ebece5; background:#fdfcf9; }
@@ -58,7 +58,7 @@ footer strong { color:var(--ink); }
 <button type="button" aria-pressed="true" data-filter="all">Les 6</button>
 <button type="button" aria-pressed="false" data-filter="facebook">Facebook</button>
 <button type="button" aria-pressed="false" data-filter="instagram">Instagram</button></div>
-<div class="tag">3 sujets × 2 réseaux · 1080 × 1350</div></div>
+<div class="tag">3 sujets × 2 réseaux · 1080 × 1080</div></div>
 <div id="cards" class="grid" aria-live="polite"></div>
 <footer><strong>Ton avis compte avant la production.</strong><div>Tu peux cocher les deux validations de chaque carte, saisir une remarque, puis exporter ton retour. Ce fichier ne valide rien dans n8n et ne déclenche aucune action extérieure.</div>
 <button id="export" type="button" class="export">Exporter mon avis (.json)</button>
@@ -90,9 +90,9 @@ for (const review of reviews) {
     const img = tag('img','post-photo');
     img.loading = 'lazy'; img.decoding = 'async';
     img.src = review.imageData; img.alt = review.imageAlt;
-    img.width = 1080; img.height = 1350;
+    img.width = 1080; img.height = 1080;
     article.append(img);
-    article.append(tag('div','image-caption',review.imageLabel+' · JPEG réel 4:5 · '+review.imageRole));
+    article.append(tag('div','image-caption',review.imageLabel+' · JPEG réel 1:1 · '+review.imageRole));
     article.append(tag('div','post-copy',platform === 'facebook' ? review.facebookCaption : review.instagramCaption));
     const box = tag('div','review');
     box.append(tag('div','review-title','Mon contrôle'));
