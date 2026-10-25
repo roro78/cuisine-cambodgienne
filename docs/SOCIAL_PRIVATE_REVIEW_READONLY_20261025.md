@@ -87,10 +87,34 @@ Schéma cible d'intégration (non implémenté, pas de promesse de mise en produ
 - Premier run échoué uniquement sur un test trop large : recherche du mot SQL `TRUNCATE` dans une vérification de privilèges ; ce n'était pas une instruction destructive. Contrat corrigé et second run complet PASS. Aucun échec PHP.
 - Aucune validation `pdo_pgsql`/connexion OVH, aucune session Android sur site réel et aucun parcours d'approbation n8n en bout de chaîne ; conserver la PR **DRAFT**.
 
-### Étape 26/10 — verrouillage de version préparé dans le workflow 01, sans mutation du runtime
+### Étape 25/10 — verrouillage de version préparé dans le workflow 01, sans mutation du runtime
 
 L'export de la PR #129 exige désormais une **égalité atomique de la version éditoriale complète**, sans migration SQL : ID BIGINT en chaîne, source ID, empreinte, snapshot JSONB, date, légendes FB/IG, image, états des deux plateformes et références Meta absentes. Toute décision inconnue ou incompletement encadrée échoue explicitement. L'UPDATE `WHERE status='draft' AND ...` interdit le double clic et la modification de la photo ou de la légende entre e-mail et approbation. L'ancienne décision reste utilisée en runtime tant qu'une migration dédiée n'est pas approuvée.
 
 La migration existante d'e-mail visuel est découplée : elle peut examiner l'ancien contrat de décision **ou** le nouveau, mais ne modifie toujours que le corps de l'e-mail Resend. Toute combinaison mixte SQL/Code est refusée. Le précédent exact est stocké dans `tests/fixtures/social-version-approval-predecessor.json`. **Ne pas utiliser la migration e-mail pour installer le nouveau contrat de décision.** Une migration distincte versionnée avec contrôle GET-only et sauvegarde privée reste obligatoire avant la réception live.
 
 Limite non résolue : un UPDATE correct n'empêche pas un autre écrivain disposant de droits SQL de muter un post **après** son approbation. Une politique d'immuabilité en base, ou une version approuvée indépendante contrôlée lors du claim 02, doit être validée avant publication automatique.
+
+
+## Jalon P0 — 25 octobre 2026, réception CI native et PostgreSQL éphémère
+
+**Commit testé :** `673c390621a9104fa0f39c5cd2852d57eb061111`.
+**CI native ciblée :** [GitHub Actions run #40241203161](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40241203161) — **SUCCESS**.
+
+- `php -l` sous PHP CLI 8.3.6 (runner GitHub) : les deux portails PHP sont syntaxiquement valides. **La disponibilité de PHP/pdo_pgsql sur OVH n'est pas vérifiée.**
+- **63 tests Node natifs / 63 PASS**, incluant le routage n8n, les images/légendes, l'ancienne migration Resend, les décisions versionnées, les tests BigInt et la migration de sécurité en lecture seule. Aucun appel réseau vers Meta, Resend, n8n ou Supabase pendant ces tests.
+- **PostgreSQL 17 éphémère : PASS**, avec conteneur Docker isolé sans port publié. Les tests chargent le vrai `automation/n8n/schema.sql`, appliquent exclusivement au conteneur `social-approved-content-immutability-REVIEW.sql`, puis simulent : correction d'un brouillon, interdiction d'une approbation modifiant simultanément la photo, refus des changements de photo/légende/source/décision après approbation, autorisation des transitions techniques FB/IG, interdiction de remettre un post publié dans la file d'approbation, refus d'insertion pré-approuvée et interdiction de recycler un brouillon refusé ou à réviser.
+- La migration SQL d'immutabilité reste un fichier **REVIEW ONLY** avec commandes de retour arrière commentées. **Rien n'a été appliqué au projet Supabase**. La comparaison PostgreSQL réelle n'a pas encore été validée pour toutes les procédures manuelles de réconciliation ; ne pas activer le garde-fou en production sans un audit de ces procédures.
+- Nouveau migrateur ciblé : `scripts/migrate-cuisine-social-versioned-decision.mjs`. Par défaut, il effectue seulement des GET API n8n et vérifie le modèle de workflow ainsi que les exécutions `waiting/running`. En cas de dérive, appel indisponible, statut ambigu ou credentials manquants : arrêt. L'option de mutation exige les deux drapeaux `--apply --approve-single-workflow-update`, **non exécutés**. Ne pas interpréter un résultat vide de l'API publique comme une preuve exhaustive d'absence d'exécutions `Wait` : inspection additionnelle obligatoire côté n8n.
+- La migration Resend et la migration du garde de décision sont **séparées**, toutes deux inactives en production. Aucune nouvelle transmission Gmail/Resend, Meta, ni opération n8n n'a été lancée.
+- Les données Supabase précédemment observées restent : une ligne `published`/approuvée, zéro `draft`, une réservation de validation `reserved`. La boîte Gmail contient bien le courriel historique, mais la réconciliation API Resend/Meta n'est pas terminée.
+
+### Critères manquants avant réception P0 complète
+
+1. Depuis l'environnement OVH réel : PHP/pdo_pgsql, connexion PostgreSQL chiffrée, sécurité sessions/cookies/CSRF, rôle `cuisine_social_viewer` et RLS, chargement des JPEG, vrais essais Android.
+2. n8n 01 : diagnostic authentifié GET-only, absence d'exécution Wait en cours confirmée indépendamment, vérification des credentials Resend conservés, migration approuvée puis contrôlée. Ne pas activer ni exécuter pendant cette réception.
+3. Unifier l'action authentifiée « approuver / demander une correction / refuser » depuis le dashboard avec l'instance Wait EXISTANTE. Aujourd'hui **seul le formulaire n8n envoyé par mail peut valider**, le PHP restant lecture seule. Toute implémentation nécessite de synchroniser l'identifiant et la version du brouillon, le délai d'expiration et un secret côté serveur. Aucun endpoint public basé sur le simple ID n'est acceptable.
+4. Avant d'autoriser le pipeline Meta automatique : migration SQL d'immutabilité après vérification d'impact, scénario de rejet/double clic/concurrence sur une base isolée, et validation humaine des publications individuelles.
+5. Réconcilier `validation_dispatches` sans renvoyer le mail ni publier de nouveau.
+
+**Verdict : PASS pour les contrôles locaux/CI ciblés ; P0 END-TO-END NON REÇU ; PR #129 toujours DRAFT.**
