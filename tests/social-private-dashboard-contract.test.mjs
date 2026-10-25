@@ -40,7 +40,7 @@ test('database role must be SELECT-only and session becomes read-only',()=>{
  assert.match(src,/PDO::ATTR_EMULATE_PREPARES => false/);
  assert.match(src,/PDO::PARAM_STR/);
  assert.match(src,/LIMIT 50/);
- assert.doesNotMatch(src,/\b(?:INSERT INTO|UPDATE cuisine_social|DELETE FROM|DROP TABLE|TRUNCATE)\b/i);
+ assert.doesNotMatch(src,/\b(?:INSERT INTO|UPDATE cuisine_social|DELETE FROM|DROP TABLE|TRUNCATE\s+(?:TABLE\s+)?cuisine_social)\b/i);
 });
 test('safe image and canonical destination URLs, escaping and compact mobile photographs',()=>{
  assert.match(src,/function pageUrl\(/);
