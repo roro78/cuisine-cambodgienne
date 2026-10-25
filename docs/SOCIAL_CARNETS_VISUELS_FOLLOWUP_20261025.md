@@ -24,3 +24,12 @@ Dans `src/pages/culture/index.astro`, deux cartes (« Le repas, un moment de vie
 ## Prévisualisation étendue
 
 La validation sociale inclut désormais 5 sujets × 2 réseaux = 10 cartes (Kroeung ingrédient / Amok recette déjà validés, Riz culturel candidat, Kroeung culturel, Repas partagé). Artefact CI `cuisine-social-preview-ten-posts`. Réception humaine nécessaire pour les 3 carnets ; aucune activation de n8n.
+
+## Correction de l'aperçu sur téléphone (retour utilisateur)
+La page de revue v3 affichait les carrés en pleine largeur des cartes, sans représentation réaliste de l'interface et sans contrôle de taille. Cette erreur induisait en erreur sur le rendu Facebook et Instagram. Correction v4 :
+- JPEG social **inchangé** 1080 × 1080, aucun nouveau recadrage au sein des posts.
+- Maquette de fil **compacte à 300 CSS px** par défaut, ou **370 CSS px** sur demande, limitée à la largeur de l'écran ; il s'agit d'une simulation adaptable et non d'une capture pixel-perfect officielle.
+- Facebook : légende d'abord puis photo ; Instagram : image puis légende, avec actions simulées et dépliage du texte.
+- Sur Instagram : aperçu secondaire miniature de la **grille du profil (3:4)** qui peut rogner les côtés d'un carré. Ne pas confondre ce recadrage miniature avec le fil.
+- Test navigateur mobile 393 CSS px : 298 px de photographie en compact, 368 px en mode fil, sans débordement horizontal, filtre Instagram et dépliage fonctionnels.
+- Aucun n8n/Meta/OVH/PostgreSQL modifié. La candidate photo du carnet Riz **reste non validée** et la PR demeure en brouillon.

@@ -45,6 +45,37 @@ footer strong { color:var(--ink); }
 .warning { color:#92502f; font-weight:650; }
 @media(max-width:700px) { header{padding:24px 16px;} main.wrap{padding:14px 11px 35px;} .grid{grid-template-columns:1fr;gap:16px;} .toolbar{gap:9px;} .card{border-radius:15px;} }
 @media print { header{background:white;color:black;} .safety, .toolbar, .review, footer{display:none!important;} .grid{display:block;} .card{break-inside:avoid;margin-bottom:18px;} .post-photo{max-height:350px;object-fit:contain;} }
+
+/* Feed preview v4: use 1080px source image but show it in bounded phone UI. */
+.grid {grid-template-columns:repeat(auto-fit,minmax(min(100%,370px),1fr));gap:24px;justify-items:center;align-items:start;}
+.card {width:min(100%,300px);max-width:370px;border-radius:13px;box-shadow:0 8px 25px #26352b15;}
+body[data-scale="feed"] .card {width:min(100%,370px);}
+.simulator-heading {padding:9px 12px;background:#f3f3f3;border-bottom:1px solid #e5e5e5;display:flex;justify-content:space-between;align-items:center;font-weight:800;}
+.simulator-heading small {font-weight:500;color:#666;}
+.card-head {padding:10px 11px;}
+.post-photo {width:100%;max-width:100%;aspect-ratio:1/1;object-fit:contain;height:auto;display:block;background:#dededc;}
+.feed-actions {font-size:13px;padding:8px 13px;border-bottom:1px solid #efefef;display:flex;align-items:center;gap:14px;color:#222;}
+.post-copy {padding:9px 13px 2px;font-size:12.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;}
+.post-copy.collapsed {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;white-space:pre-line;}
+.show-more {display:block;font-size:12px;font-weight:650;margin:0 13px 11px;padding:3px 0;background:none;text-align:left;color:#5d6770;}
+.image-caption {font-size:11px;background:#fafafa;padding:8px 12px;}
+.review {font-size:12px;}
+.grid-crop {margin:10px 0 4px;display:flex;align-items:center;gap:10px;background:#fff;border:1px dashed #d3d3d3;border-radius:10px;padding:8px;}
+.grid-crop img {height:96px;width:72px;aspect-ratio:3/4;object-fit:cover;flex:none;background:#eee;}
+.grid-crop span {font-size:11px;line-height:1.35;color:#5a625d;}
+.scale-options {display:flex;gap:5px;align-items:center;padding:4px;border:1px solid var(--line);border-radius:12px;background:#fff;}
+.scale-options button {font-size:12px;padding:8px 9px;}
+.scale-options button[aria-pressed=true] {background:#315845;color:#fff;}
+.mock-accuracy {display:block;font-size:12px;color:#65594f;margin-top:10px;}
+body[data-scale="compact"] .card {width:min(100%,300px);}
+@media(max-width:700px) {
+ .grid {grid-template-columns:minmax(0,1fr);gap:23px;}
+ .card {margin-inline:auto;}
+ .post-copy {font-size:12px;}
+ .toolbar {justify-content:center;}
+ .notice {font-size:12px;}
+}
+@media print {.simulator-heading,.scale-options,.show-more,.grid-crop{display:none!important}.card{width:100%!important}}
 </style>
 </head>
 <body>
@@ -53,12 +84,13 @@ footer strong { color:var(--ink); }
 <p>Cinq sujets, dix simulations et les véritables photos recadrées par notre générateur. Compare les textes et les images comme si tu les découvrais sur ton téléphone.</p>
 <div class="safety">APERÇU HORS LIGNE — AUCUNE PUBLICATION</div></div></header>
 <main class="wrap">
-<div class="notice"><strong>À contrôler :</strong> 1. L'image montre-t-elle le bon sujet sans bandes vides ni coupe gênante ? 2. Le texte donne-t-il envie ? 3. Les informations sont-elles justes ?<br><strong>Attention :</strong> l'interface est une approximation des flux Facebook et Instagram, pas une capture de ces applications. Les légendes sont issues du <em>fallback déterministe réel du workflow 01</em>, sans solliciter Ollama.</div>
+<div class="notice"><strong>À contrôler :</strong> 1. L'image montre-t-elle le bon sujet sans bandes vides ni coupe gênante ? 2. Le texte donne-t-il envie ? 3. Les informations sont-elles justes ?<br><strong>Attention :</strong> l'aperçu reproduit approximativement le fil mobile. Les photos sont affichées en petit pour comparer; ce ne sont pas des captures officielles des applications. Les légendes sont issues du <em>fallback déterministe réel du workflow 01</em>, sans solliciter Ollama.</div>
 <div class="toolbar"><div class="filters" role="group" aria-label="Filtrer les aperçus">
 <button type="button" aria-pressed="true" data-filter="all">Les 10</button>
 <button type="button" aria-pressed="false" data-filter="facebook">Facebook</button>
 <button type="button" aria-pressed="false" data-filter="instagram">Instagram</button></div>
-<div class="tag">5 sujets × 2 réseaux · 1080 × 1080</div></div>
+<div class="scale-options" role="group" aria-label="Échelle de l'aperçu"><button type="button" data-scale="compact" aria-pressed="true">Compact · 300 px</button><button type="button" data-scale="feed" aria-pressed="false">Fil mobile · 370 px</button></div><div class="tag">Images carrées 1:1 · fichier 1080 × 1080</div></div>
+<p class="mock-accuracy">La taille affichée (300 ou 370 pixels CSS) n'est pas la définition du fichier (1080 px). La taille réelle dépend du réseau, de l'écran et de ses réglages. Dans le fil, le carré est visible entier ; dans la grille du profil Instagram, l'aperçu vertical 3:4 peut masquer les côtés.</p>
 <div id="cards" class="grid" aria-live="polite"></div>
 <footer><strong>Ton avis compte avant la production.</strong><div>Tu peux cocher les deux validations de chaque carte, saisir une remarque, puis exporter ton retour. Ce fichier ne valide rien dans n8n et ne déclenche aucune action extérieure.</div>
 <button id="export" type="button" class="export">Exporter mon avis (.json)</button>
@@ -81,6 +113,7 @@ for (const review of reviews) {
   for (const platform of ['facebook','instagram']) {
     const article = tag('article','card');
     article.dataset.platform = platform;
+    article.append(tag('div','simulator-heading',platform==='instagram'?'Instagram · aperçu du fil':'Facebook · aperçu du fil'));
     const head = tag('div','card-head');
     head.append(tag('div','avatar','C'));
     const account = tag('div','account');
@@ -91,10 +124,28 @@ for (const review of reviews) {
     img.loading = 'lazy'; img.decoding = 'async';
     img.src = review.imageData; img.alt = review.imageAlt;
     img.width = 1080; img.height = 1080;
+    const caption = tag('div','post-copy collapsed',platform === 'facebook' ? review.facebookCaption : review.instagramCaption);
+    const more = tag('button','show-more','Afficher la légende complète');
+    more.type='button'; more.setAttribute('aria-expanded','false');
+    more.addEventListener('click',()=>{
+      const expanded = caption.classList.toggle('collapsed') === false;
+      more.setAttribute('aria-expanded',String(expanded));
+      more.textContent = expanded ? 'Réduire la légende' : 'Afficher la légende complète';
+    });
+    // Facebook displays copy before the photo; Instagram normally shows it below.
+    if(platform==='facebook')article.append(caption,more);
     article.append(img);
-    article.append(tag('div','image-caption',review.imageLabel+' · JPEG réel 1:1 · '+review.imageRole));
-    article.append(tag('div','post-copy',platform === 'facebook' ? review.facebookCaption : review.instagramCaption));
+    const actions = tag('div','feed-actions', platform==='instagram'?'♡   ◯   ↗   ·   Enregistrer':'J’aime   ·   Commenter   ·   Partager');
+    article.append(actions);
+    if(platform==='instagram')article.append(caption,more);
+    article.append(tag('div','image-caption',review.imageLabel+' · fichier original JPEG 1080 × 1080 · '+review.imageRole));
     const box = tag('div','review');
+    if(platform==='instagram'){
+      const gridTile=tag('div','grid-crop');
+      const thumb=tag('img'); thumb.src=review.imageData;thumb.alt='Simulation miniature dans la grille Instagram';
+      const context=tag('span','', 'Grille du profil Instagram (environ 3:4) : les bords latéraux du carré peuvent être masqués. Le fil conserve la photo carrée entière.');
+      gridTile.append(thumb,context);box.append(gridTile);
+    }
     box.append(tag('div','review-title','Mon contrôle'));
     const fieldset = [];
     for (const [key,caption] of [['imageOk','Image validée'],['textOk','Texte validé']]) {
@@ -108,6 +159,13 @@ for (const review of reviews) {
     box.append(note);article.append(box);cards.append(article);
     entries.push({id:review.id,title:review.title,platform,checkboxes:fieldset,note,article});
   }
+}
+document.body.dataset.scale='compact';
+for(const button of document.querySelectorAll('[data-scale]')) {
+  button.addEventListener('click',()=>{
+    document.body.dataset.scale=button.dataset.scale;
+    for(const b of document.querySelectorAll('[data-scale]'))b.setAttribute('aria-pressed',String(b===button));
+  });
 }
 for(const button of document.querySelectorAll('[data-filter]')) {
   button.addEventListener('click',function() {
