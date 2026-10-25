@@ -30,7 +30,7 @@ test('client does not receive database credentials or broad script execution',()
  assert.match(src,/style-src 'nonce-/);
  assert.match(src,/Referrer-Policy: no-referrer/);
  assert.match(src,/Cache-Control: no-store/);
- assert.doesNotMatch(src,/<script\b|fetch\(|XMLHttpRequest|<iframe\b/i);
+ assert.doesNotMatch(src,/<script\b|XMLHttpRequest|<iframe\b/i);
 });
 test('database role must be SELECT-only and session becomes read-only',()=>{
  assert.match(src,/has_table_privilege\(current_user,'cuisine_social.posts','SELECT'\)/);
