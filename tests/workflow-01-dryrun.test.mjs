@@ -290,3 +290,41 @@ test('public caption validation refuses forged claims and protects human publica
     /human_decision='approved'/);
   assert.equal(workflow01.active,false);
 });
+
+test('editing imagery or editorial catalog does not re-promote already published source', () => {
+  const alreadyPublished={...source,fingerprint:'new-photo-edition'};
+  const untouched={...sourceOld,id:'ingredient:new-aromate'};
+  const selected=select([alreadyPublished,untouched],[{
+    source_id:alreadyPublished.id,
+    source_fingerprint:'prior-fingerprint',
+    uses:1,latest_date:'2026-10-24',
+  }]);
+  assert.equal(selected[0].json.sourceId,untouched.id,
+    'New source must take priority over already published source with changed fingerprint');
+});
+test('fallback rejects recipe instructions and stray headings as feed facts', () => {
+  const sourceRich={...source,facts:[
+    source.facts[0],
+    'Préparer la base : Versez la crème de coco et mélangez les ingrédients pendant cinq minutes sans la moindre pause.',
+    source.facts[1],
+  ]};
+  const sel=select([sourceRich])[0];
+  const result=execute(workflow01,'Vérifier et cadrer les textes',{
+    $:name=>({first:()=>sel}),$input:{first:()=>({json:{choices:[]}})},
+  })[0].json;
+  assert.doesNotMatch(result.facebookCaption,/Préparer la base/);
+  assert.doesNotMatch(result.instagramCaption,/Préparer la base/);
+});
+test('culture captions use a grammatically neutral title and never invent facts', () => {
+  const rice={...source,kind:'culture',id:'culture:le-riz',title:'Le riz, au cœur de la vie cambodgienne',facts:[
+    'Au Cambodge, le riz occupe une place centrale dans les repas du quotidien et les moments de partage.',
+  ],url:'https://www.cuisine-du-cambodge.com/culture/le-riz/'};
+  const selectionRice=select([rice])[0];
+  const out=execute(workflow01,'Vérifier et cadrer les textes',{
+    $:()=>({first:()=>selectionRice}),$input:{first:()=>({json:{choices:[]}})}
+  })[0].json;
+  assert.match(out.facebookCaption,/^Dans nos carnets : Le riz/);
+  assert.match(out.instagramCaption,/^Le riz, au cœur/);
+  assert.doesNotMatch(out.facebookCaption,/Derrière Le riz/);
+  assert.ok(out.facebookCaption.includes(rice.facts[0]));
+});
