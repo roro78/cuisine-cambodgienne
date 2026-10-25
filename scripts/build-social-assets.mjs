@@ -5,6 +5,7 @@
  */
 import { build } from 'esbuild';
 import sharp from 'sharp';
+import { socialPhotoTransform, inspectSocialDimensions } from './social-image-layout.mjs';
 import { mkdir, access } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -27,16 +28,12 @@ for (const item of items) {
   const input = path.resolve('public', new URL(item.originalImageUrl).pathname.slice(1));
   await access(input).catch(() => { throw new Error(`Source image missing for ${item.id}: ${input}`); });
   const out = path.join(destination, `${item.kind}-${item.id.split(':')[1]}.jpg`);
-  await sharp(input)
-    .rotate()
-    .resize(1080, 1080, { fit: 'contain', background: '#f4efe6', withoutEnlargement: true })
-    .flatten({ background: '#f4efe6' })
+  await socialPhotoTransform(sharp(input), { sourceId: item.id })
     .jpeg({ quality: 85, mozjpeg: true })
     .toFile(out);
   const meta = await sharp(out).metadata();
-  if (meta.format !== 'jpeg' || !meta.width || !meta.height || meta.width > 1440 || meta.height > 1440) {
-    throw new Error(`Invalid social JPEG: ${out}`);
-  }
+  if (meta.format !== 'jpeg') throw new Error(`Invalid social JPEG: ${out}`);
+  inspectSocialDimensions(meta, item.id);
   built += 1;
 }
 console.log(`social-assets: ${built} validated JPEGs from ${items.length} site sources`);

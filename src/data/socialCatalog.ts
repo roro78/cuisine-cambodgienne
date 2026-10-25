@@ -85,7 +85,14 @@ export function getSocialCatalog(): SocialSource[] {
     )),
     ...ingredientGuides.map(ingredient => create(
       'ingredient', ingredient.slug, ingredient.title, `/ingredients/${ingredient.slug}/`, ingredient.intro,
-      [ingredient.role, ...ingredient.tips.slice(0, 3)], ingredient.image
+      [ingredient.role, ...ingredient.tips.slice(0, 3)],
+      // Social-only exception: the article's broad plated-dish hero does not
+      // clearly show the aromatic paste. Use an existing mortar/kroeung asset.
+      // Never alter the image on the original ingredient article.
+      ingredient.slug === 'kroeung'
+        ? '/images/cuisine/v19-mortier-kroeung-1200.webp'
+        : ingredient.image,
+      ingredient.slug === 'kroeung' ? 'illustration' : 'article'
     )),
     ...cultureArticles.map(article => create(
       'culture', article.slug, article.title, `/culture/${article.slug}/`, article.intro,
