@@ -7,6 +7,7 @@
 
 - Connexion protégée HTTPS, session dédiée, mot de passe haché, jeton CSRF, expiration 30 min et limitation des échecs, headers anti-indexation et CSP.
 - Photographies en 220 px max (190 px sur petit écran), JPEG d'origine inchangés ; texte et liens échappés, domaine Cuisine du Cambodge strictement contrôlé.
+- Les filtres montrent le nombre de contenus par statut ; à la date de la lecture Supabase, l'onglet « À valider » ne contient aucun brouillon et l'onglet « Publiées » contient un post.
 - Le portail réutilise **le fichier de configuration privé et les identifiants de l'espace d'import d'images** déjà développés, sans réutiliser son jeton GitHub.
 - Sur absence de configuration, `pdo_pgsql` non disponible, DSN non chiffrée ou privilèges trop étendus, **HTTP 503 sans divulgation de secret**.
 - Aucun appel vers l'API Meta, aucun envoi Resend, aucune insertion ni modification PostgreSQL.
