@@ -115,6 +115,15 @@ async function main(){
   const id=ids[0];
   assert.match(id,/^[A-Za-z0-9_-]+$/,'Invalid workflow ID');
   const path='/workflows/'+encodeURIComponent(id);
+  // n8n's public API documents waiting/running execution filters. A broken
+  // or unsupported filter also fails closed rather than risking a live Wait.
+  for(const status of ['waiting','running']){
+    const query=new URLSearchParams({workflowId:id,status,limit:'100'});
+    const executions=await request('/executions?'+query.toString());
+    assert.ok(Array.isArray(executions.data),'Execution query unavailable: '+status);
+    assert.equal(executions.data.length,0,'Workflow has in-flight executions: '+status);
+    assert.ok(!executions.nextCursor,'Ambiguous execution pagination: '+status);
+  }
   const live=await request(path);
   const planned=planVersionedSocialDecision(live,reviewed,previous,oldEmail);
   console.log('Versioned approval guard: '+(planned.changed?'one guarded update pending':'already installed'));
