@@ -41,6 +41,8 @@ const compareWithout=(a,b,names)=>{
 };
 export function planVersionedSocialDecision(live,reviewed,previous,previousEmailBody){
   assert.equal(live.name,NAME);
+  // Reject any rewritten routing, including a Wait bypass unrelated to the email node.
+  assert.deepEqual(live.connections,reviewed.connections,'Unexpected live n8n routing drift');
   planVisualApprovalEmail(live,reviewed,previousEmailBody); // recognized Resend template + full n8n gate
   const prelock=oldMatches(live,previous);
   const postlock=newMatches(live,reviewed);
