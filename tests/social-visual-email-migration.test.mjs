@@ -60,7 +60,7 @@ test('manual edits to the old template are not silently discarded',()=>{
     configured(old)+' ',
     configured(old).replace('Pour approuver ou refuser','Cliquez tout de suite pour publier'),
     configured(old).replace('Le lien expire','Ce lien expire'),
-    configured(old).replace('CONFIGURER_DOMAINE_VERIFIE','hacked.example'),
+    configured(old).replace('Proposition de publication','Demande automatique de publication'),
   ];
   for(const expr of edits)
     assert.throws(()=>planVisualApprovalEmail(live(expr),target,old),
