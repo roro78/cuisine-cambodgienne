@@ -173,3 +173,12 @@ test('Facebook claim preflight drops n8n success:true and refuses invalid rows',
   assert.equal(fb.parameters.sendHeaders,false);
   assert.deepEqual(fb.parameters.bodyParameters.parameters.map(p=>p.name),['url','caption']);
 });
+
+test('social feed sources favor succinct facts and preserve article originals', () => {
+  const source = text('src/data/socialCatalog.ts');
+  assert.match(source,/recipe\.description, recipe\.context/);
+  assert.doesNotMatch(source.split('// Restored historical recipes')[0],/\.\.\.recipe\.steps\.slice\(0, 3\)\.map/);
+  assert.match(source,/article\.intro\.split/);
+  assert.match(source,/ingredient\.slug === 'kroeung'/);
+  assert.match(sql,/UNIQUE \(scheduled_date\)/);
+});

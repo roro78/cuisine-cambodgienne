@@ -64,9 +64,8 @@ export function getSocialCatalog(): SocialSource[] {
     ...recipes.map(recipe => create(
       'recette', recipe.slug, recipe.title, `/recettes/${recipe.slug}/`, recipe.intro,
       [
-        `Préparation : ${recipe.prepTime}. Cuisson : ${recipe.cookTime}.`,
-        `Ingrédients : ${recipe.ingredients.map(ingredient => ingredient.name).join(', ')}.`,
-        ...recipe.steps.slice(0, 3).map(step => `${step.title} : ${step.text}`),
+        // Short, contextual facts for social previews; detailed steps stay in the article.
+        recipe.description, recipe.context,
         ...(recipe.keyPoints ?? []).slice(0, 2)
       ],
       recipe.image
@@ -95,8 +94,10 @@ export function getSocialCatalog(): SocialSource[] {
       ingredient.slug === 'kroeung' ? 'illustration' : 'article'
     )),
     ...cultureArticles.map(article => create(
-      'culture', article.slug, article.title, `/culture/${article.slug}/`, article.intro,
-      [article.sections[0]?.paragraphs[0], ...article.sections.map(section => section.title)],
+      'culture', article.slug, article.title, `/culture/${article.slug}/`,
+      // A complete opening sentence: sourced prose, never a chopped-off claim.
+      article.intro.split(/(?<=[.!?])\s+/)[0],
+      [article.sections[0]?.paragraphs[0]?.split(/(?<=[.!?])\s+/)[0]],
       article.socialImage ?? article.image, article.socialImage ? (article.socialImageRole ?? 'illustration') : 'article', article.sources.map(source => source.url)
     )),
     ...(completeCookingWorkshopCutoverReady
