@@ -112,6 +112,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 
 $rows = [];
 $counts = [];
+$humanDecisionLabels = ['approved' => 'Approuvée', 'revision_requested' => 'Modification demandée', 'rejected' => 'Refusée'];
+$platformStateLabels = ['pending' => 'En attente', 'submitting' => 'Transmission en cours',
+    'creating' => 'Préparation du média', 'checking' => 'Vérification Meta',
+    'container_created' => 'Média préparé', 'published' => 'Publiée', 'manual_review' => 'Vérification manuelle'];
 if ($authenticated) {
     // Use a separate SELECT-only role, never the n8n writer or Supabase service role.
     foreach (['social_readonly_dsn', 'social_readonly_user', 'social_readonly_password'] as $key)
@@ -173,7 +177,7 @@ if ($authenticated) {
         $status = (string)($_GET['status'] ?? 'draft');
         $allowed = ['all', 'draft', 'approved', 'revision_requested', 'rejected', 'publishing', 'published', 'manual_review'];
         if (!in_array($status, $allowed, true)) $status = 'draft';
-        $sql = 'SELECT id::text AS id,source_id,source_snapshot,scheduled_date::text AS scheduled_date,facebook_caption,instagram_caption,image_url,status,fb_state,ig_state FROM cuisine_social.posts';
+        $sql = 'SELECT id::text AS id,source_id,source_snapshot,scheduled_date::text AS scheduled_date,facebook_caption,instagram_caption,image_url,status,fb_state,ig_state,human_decision,human_note,decided_at::text AS decided_at,approved_at::text AS approved_at,published_at::text AS published_at,facebook_post_id,instagram_post_id FROM cuisine_social.posts';
         if ($status !== 'all') $sql .= ' WHERE status = :status';
         $candidate = filter_var($_GET['page'] ?? 1, FILTER_VALIDATE_INT,
             ['options' => ['min_range' => 1, 'max_range' => 100000]]);
@@ -213,7 +217,8 @@ input{display:block;width:100%;padding:12px;margin:6px 0 14px;border:1px solid #
 .socials{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:12px 0}
 .network{border:1px solid #dce1da;border-radius:12px;padding:15px;min-width:0}
 .network strong{display:block;margin:0 0 12px}.network img{display:block;margin:0 auto 12px;width:min(100%,220px);height:auto;aspect-ratio:1;object-fit:contain;border-radius:8px}
-.caption{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.55;max-height:240px;overflow:auto}
+.caption{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.55}
+.review-history{border:1px solid #dce1da;border-radius:9px;background:#f8faf7;padding:11px 13px;margin:12px 0;font-size:13px;overflow-wrap:anywhere}
 .small{font-size:12px;color:#526458}.warning{background:#fff5df;border-left:3px solid #bd892c;padding:13px}
 .empty{padding:24px;background:white;border:1px dashed #bac8be;border-radius:12px}
 @media(max-width:700px){.socials{grid-template-columns:1fr}.network{padding:12px}.network img{width:min(100%,190px)}}
@@ -256,11 +261,25 @@ input{display:block;width:100%;padding:12px;margin:6px 0 14px;border:1px solid #
 <h2><?= h($title) ?></h2>
 <div class="badges">
 <span class="badge"><?= h((string)$row['status']) ?></span>
-<span class="badge">Facebook : <?= h((string)$row['fb_state']) ?></span>
-<span class="badge">Instagram : <?= h((string)$row['ig_state']) ?></span>
+<span class="badge">Facebook : <?= h($platformStateLabels[(string)$row['fb_state']] ?? (string)$row['fb_state']) ?></span>
+<span class="badge">Instagram : <?= h($platformStateLabels[(string)$row['ig_state']] ?? (string)$row['ig_state']) ?></span>
 <span class="badge">Prévu : <?= h((string)$row['scheduled_date']) ?></span>
 </div>
 <p class="small">Référence : <?= h((string)$row['source_id']) ?> · Brouillon n°<?= h((string)$row['id']) ?></p>
+<?php if ($row['human_decision'] !== null): ?>
+<section class="review-history" aria-label="Historique de la validation">
+<strong>Décision humaine : <?= h($humanDecisionLabels[(string)$row['human_decision']] ?? (string)$row['human_decision']) ?></strong>
+<?php if ($row['decided_at'] !== null): ?><span class="small"> · Enregistrée le <?= h((string)$row['decided_at']) ?></span><?php endif; ?>
+<?php if (is_string($row['human_note']) && trim($row['human_note']) !== ''): ?><p class="caption"><?= h((string)$row['human_note']) ?></p><?php endif; ?>
+</section>
+<?php endif; ?>
+<?php if ($row['facebook_post_id'] !== null || $row['instagram_post_id'] !== null): ?>
+<p class="small">
+<?php if ($row['facebook_post_id'] !== null): ?>Référence Facebook : <?= h((string)$row['facebook_post_id']) ?><?php endif; ?>
+<?php if ($row['facebook_post_id'] !== null && $row['instagram_post_id'] !== null): ?> · <?php endif; ?>
+<?php if ($row['instagram_post_id'] !== null): ?>Référence Instagram : <?= h((string)$row['instagram_post_id']) ?><?php endif; ?>
+</p>
+<?php endif; ?>
 <p><?php if ($destination): ?><a href="<?= h($destination) ?>" target="_blank" rel="noopener noreferrer">Consulter la page du site</a><?php else: ?>Destination à vérifier<?php endif; ?></p>
 <div class="socials">
 <?php foreach (['Facebook'=>'facebook_caption','Instagram'=>'instagram_caption'] as $platform=>$field): ?>

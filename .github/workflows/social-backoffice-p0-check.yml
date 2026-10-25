@@ -20,6 +20,7 @@ on:
       - "tests/sql/social-viewer-role-smoke.sql"
       - "scripts/sync-cuisine-n8n-runtime.mjs"
       - "tests/social-private-dashboard-contract.test.mjs"
+      - "tests/social-private-dashboard-history.test.mjs"
       - "tests/social-approval-email-preview.test.mjs"
       - "tests/social-visual-email-migration.test.mjs"
       - "tests/social-version-bound-decision.test.mjs"
@@ -60,6 +61,7 @@ jobs:
         run: |
           node --test --test-concurrency=1 \
             tests/social-private-dashboard-contract.test.mjs \
+            tests/social-private-dashboard-history.test.mjs \
             tests/social-approval-email-preview.test.mjs \
             tests/social-visual-email-migration.test.mjs \
             tests/social-version-bound-decision.test.mjs \
