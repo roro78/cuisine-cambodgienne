@@ -118,3 +118,22 @@ Limite non résolue : un UPDATE correct n'empêche pas un autre écrivain dispos
 5. Réconcilier `validation_dispatches` sans renvoyer le mail ni publier de nouveau.
 
 **Verdict : PASS pour les contrôles locaux/CI ciblés ; P0 END-TO-END NON REÇU ; PR #129 toujours DRAFT.**
+
+## Réception complémentaire — 25 octobre 2026 : rôle viewer + HTTP PHP réels en CI
+
+**HEAD fonctionnel reçu :** `90882ac5e81b4dc2e5941a55d118fb91300cd71a`.
+**CI ciblée :** https://github.com/roro78/cuisine-cambodgienne/actions/runs/40243239329 — SUCCESS.
+
+**Correction démontrée :** le script `automation/n8n/sql/social-viewer-role-provisioning-REVIEW.sql` contenait deux délimiteurs PostgreSQL `DO $` non valides ; les contrats statiques initiaux n'avaient pas détecté cette erreur. Les blocs ont été corrigés, avec protection également contre l'octroi du rôle viewer à un autre rôle (appartenances entrantes et sortantes).
+
+**Nouvel essai PostgreSQL 17 réel mais isolé :** le même conteneur jetable crée les tables `posts` et `validation_dispatches` (cette seconde table étant seulement une fixture de test), active RLS, charge le **script de provisionnement réel**, puis `SET ROLE cuisine_social_viewer`. Résultat : deux publications visibles avec RLS et `SELECT`, aucun privilège en écriture et aucune lecture des réservations, tentative `UPDATE` refusée. Marqueur CI `CUISINE_SOCIAL_VIEWER_ROLE_PASS (2 readable, 0 writable)`. Le test précédent d'immutabilité demeure PASS. **Ce résultat ne prouve pas la connectivité PostgreSQL depuis OVH**.
+
+**Dashboard amélioré :** après authentification, la requête inclut les décisions humaines, notes, dates et identifiants de publication FB et IG ; les notes et identifiants sont échappés avant rendu. États Facebook/Instagram présentés par libellés français avec conservation des valeurs brutes inconnues. Les légendes sont désormais affichées entièrement sans un défilement dans chaque bloc en petit écran, toujours sans approbation directe.
+
+**Nouveau test PHP HTTP isolé :** serveur PHP natif local, configuration de test temporaire et mot de passe fictif, aucun accès Supabase/Meta/n8n. Contrôle du rejet d'une requête HTTP sans TLS simulé, du jeton CSRF, des mauvais identifiants, de l'ouverture de session et de sa fermeture, et de l'échec fermé `503` après connexion en l'absence de base configurée. L'indicateur TLS utilisé est exclusivement dans le routeur de test : **aucun contournement TLS n'est ajouté au portail livré**.
+
+**Preuves** : 65/65 tests Node natifs PASS ; test HTTP PHP isolé PASS ; `php -l` PASS ; PostgreSQL 17 / RLS / provisioning PASS ; PostgreSQL 17 / immutabilité PASS. Aucun réel envoi Resend, aucune publication Meta, aucune activation n8n.
+
+**Situation Supabase confirmée par nouvelle requête SELECT** : 1 post, 0 brouillon, 1 réservation `reserved`, aucun rôle `cuisine_social_viewer`, aucun trigger d'immutabilité en production. Aucun schéma n'a été modifié.
+
+**Statut P0 : partiel.** Le code PHP est audité et testable localement, mais sa validation dans OVH et l'approbation *depuis* le dashboard via l'unique Wait n8n demeurent indisponibles sans accès runtime authentifié. Ne pas confondre la simulation PHP avec la réception Android en production. Conserver la PR en brouillon et garder workflows désactivés.
