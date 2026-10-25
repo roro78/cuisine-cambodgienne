@@ -15,7 +15,7 @@
 ## Configuration opérateur nécessaire (non committée)
 
 1. Vérifier le support PHP + `pdo_pgsql` et la connectivité TCP/TLS de l'hébergement OVH mutualisé vers la base Supabase Cuisine. Si OVH bloque cette connexion, ne pas contourner via un endpoint public exposant un jeton : prévoir un proxy serveur authentifié dédié.
-2. Provisionner un rôle PostgreSQL distinct, sans droit d'écriture ni héritage de `cuisine_n8n`, avec uniquement `USAGE` sur `cuisine_social` et `SELECT` sur `cuisine_social.posts`. Ne pas utiliser `postgres`, `cuisine_n8n`, `service_role` ou une clé Supabase dans le navigateur.
+2. Provisionner un rôle PostgreSQL distinct, sans droit d'écriture ni héritage de `cuisine_n8n`, avec uniquement `USAGE` sur `cuisine_social` et `SELECT` sur `cuisine_social.posts`. **RLS est actif : une politique `FOR SELECT` propre au rôle est aussi indispensable**, faute de quoi le tableau semblera vide. Script de provisionnement **à examiner et à appliquer séparément** : `automation/n8n/sql/social-viewer-role-provisioning-REVIEW.sql` (aucun mot de passe intégré). Ne pas utiliser `postgres`, `cuisine_n8n`, `service_role` ou une clé Supabase dans le navigateur.
 3. Dans `~/.cuisine-asset-portal/config.php`, **hors racine web**, compléter l'array existant avec les clés serveur :
    - `social_readonly_dsn` : DSN PHP PDO PostgreSQL (`sslmode=verify-full` de préférence, `require` accepté).
    - `social_readonly_user` : nom du rôle SELECT uniquement.
