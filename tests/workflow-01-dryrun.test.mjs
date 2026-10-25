@@ -25,7 +25,7 @@ const evaluateIfLeftValue = (expression, id) => {
 const source = Object.freeze({
   id: 'recette:amok', fingerprint: 'new-fingerprint', kind: 'recette',
   title: 'Amok', summary: 'Cuisine du Cambodge',
-  facts: ['Le poisson est cuit a la vapeur selon les informations publiees dans le catalogue Cuisine du Cambodge.', 'La page associee rassemble les details verifies et les reperes disponibles pour cette recette du catalogue.'],
+  facts: ['Le poisson cuit doucement à la vapeur avec du lait de coco et un kroeung parfumé.', 'Le poisson doit être entièrement cuit, tandis que la préparation garde une texture souple.'],
   url: 'https://www.cuisine-du-cambodge.com/recettes/amok',
   imageUrl: 'https://www.cuisine-du-cambodge.com/social-assets/amok.jpg',
 });
