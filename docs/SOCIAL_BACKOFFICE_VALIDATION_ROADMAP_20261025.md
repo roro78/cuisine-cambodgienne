@@ -38,6 +38,8 @@ Exiger prévisualisation, historique, validations, gestion des droits des photog
 
 ## P2 bis — Production éditoriale IA en amont (proposition du 25 octobre)
 
+**Plan directeur complémentaire de la rédaction et des médias :** [Plan éditorial & média V1 — acquisition, veille, contrôle anti-doublons et calendrier](./PLAN-EDITORIAL-MEDIA-ACQUISITION-20261025.md). Ce document donne les règles permanentes de sélection avant toute génération, couvre les contenus existants, les brouillons et le contrôle sémantique, et fixe les conditions d'acquisition mesurable. Les initiatives d'actualité ou de création ne doivent jamais contourner P0.
+
 **Objectif** : le back-office devient le point d'entrée commun de création manuelle, assistée par IA et planifiée, sans publier directement sous l'impulsion de l'IA. Ce chantier est **postérieur au P0** de validation sociale réellement connectée.
 
 ### Chaîne fonctionnelle à deux approbations
