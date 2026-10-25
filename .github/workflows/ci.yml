@@ -48,6 +48,8 @@ jobs:
       - name: n8n social guards and integration diagnostics (offline, no network)
         run: |
           node --check scripts/sync-cuisine-n8n-runtime.mjs
+          node --check scripts/cuisine-social-visual-email-migration.mjs
+          node --check scripts/migrate-cuisine-social-visual-email.mjs
           node --check scripts/verify-cuisine-integrations-readonly.mjs
           node --test --test-concurrency=1 \
             tests/social-pipeline.test.mjs \
@@ -56,6 +58,7 @@ jobs:
             tests/verify-cuisine-integrations-readonly.test.mjs \
             tests/workflow-01-dryrun.test.mjs \
             tests/social-approval-email-preview.test.mjs \
+            tests/social-visual-email-migration.test.mjs \
             tests/workflow-01-full-path-simulation.test.mjs \
             tests/reconcile-kroeung-meta-readonly.test.mjs \
             tests/social-image-contract.test.mjs
