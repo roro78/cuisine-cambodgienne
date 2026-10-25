@@ -1,39 +1,40 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import {readFileSync} from 'node:fs';
 import sharp from 'sharp';
-import { socialPhotoTransform, SOCIAL_DIMENSIONS, inspectSocialDimensions } from '../scripts/social-image-layout.mjs';
+import {socialPhotoTransform,SOCIAL_DIMENSIONS,inspectSocialDimensions} from '../scripts/social-image-layout.mjs';
 
-test('social JPEG crops to portrait 4:5 with no letterbox', async () => {
-  // In-memory portrait source: no reliance on OVH, Meta, local art or external files.
-  const input = await sharp({
-    create: { width: 1600, height: 900, channels: 3, background: '#9c5746' }
-  }).jpeg().toBuffer();
-  const output = await socialPhotoTransform(sharp(input), {sourceId: 'recette:offline'})
+test('real product-centred square fills photographic corners and avoids deep portrait cropping',async()=>{
+  // White centre product against dark wood, with safe margin in the landscape source.
+  const source=await sharp({
+    create:{width:1600,height:900,channels:3,background:'#4e5c43'}
+  }).composite([{input:{
+    create:{width:670,height:450,channels:3,background:'#ddb447'}
+  },left:465,top:225}]).png().toBuffer();
+  const output=await (await socialPhotoTransform(sharp(source),{sourceId:'recette:offline'}))
     .jpeg({quality:85}).toBuffer();
-  const info = await sharp(output).metadata();
-  assert.equal(info.format, 'jpeg');
-  assert.equal(info.width, SOCIAL_DIMENSIONS.width);
-  assert.equal(info.height, SOCIAL_DIMENSIONS.height);
+  const info=await sharp(output).metadata();
+  assert.equal(info.format,'jpeg');
+  assert.deepEqual([info.width,info.height],[1080,1080]);
   assert.doesNotThrow(()=>inspectSocialDimensions(info,'recette:offline'));
-  const {data,info:raw}=await sharp(output).raw().toBuffer({resolveWithObject:true});
-  const top=Array.from(data.subarray(0, raw.channels));
-  const midStart=Math.floor(raw.height/2)*raw.width*raw.channels;
-  const mid=Array.from(data.subarray(midStart,midStart+raw.channels));
-  assert.deepEqual(top,mid,'Both upper and middle feed pixels are photo, no added beige padding');
+  const center=await sharp(output).extract({left:490,top:490,width:100,height:100}).stats();
+  const corner=await sharp(output).extract({left:10,top:10,width:100,height:100}).stats();
+  assert.ok(center.channels[0].mean>corner.channels[0].mean+20,'product must stay larger and clearer than background');
+  assert.ok(corner.channels[0].mean>0,'photographic backdrop should fill the square with no empty band');
 });
-test('social asset dimensions fail closed instead of accepting letterboxed or tiny exports', () => {
-  assert.throws(()=>inspectSocialDimensions({width:1080,height:1080},'x'),/dimensions_invalid/);
-  assert.throws(()=>inspectSocialDimensions({width:300,height:1350},'x'),/dimensions_invalid/);
+test('image dimensions fail closed for legacy portrait 4:5 and malformed outputs',()=>{
+  assert.throws(()=>inspectSocialDimensions({width:1080,height:1350},'old'),/dimensions_invalid/);
+  assert.throws(()=>inspectSocialDimensions({width:900,height:900},'x'),/dimensions_invalid/);
 });
-test('Kroeung uses a relevant mortar source only for social, without editing article or recipe', () => {
+test('Kroeung uses a legible product in a mortar only for social, without editing the original article',()=>{
   const catalog=readFileSync(new URL('../src/data/socialCatalog.ts',import.meta.url),'utf8');
   const ingredient=readFileSync(new URL('../src/data/ingredients.ts',import.meta.url),'utf8');
   assert.match(catalog,/ingredient\.slug === 'kroeung'/);
-  assert.match(catalog,/v19-mortier-kroeung-1200\.webp/);
+  assert.match(catalog,/mortier-etape-04\.webp/);
   assert.match(ingredient,/image: '\/images\/cuisine\/kroeung-1600\.webp'/);
   const build=readFileSync(new URL('../scripts/build-social-assets.mjs',import.meta.url),'utf8');
   assert.match(build,/socialPhotoTransform/);
-  assert.doesNotMatch(build,/fit: 'contain'/);
-  assert.doesNotMatch(build,/#f4efe6/);
+  const layout=readFileSync(new URL('../scripts/social-image-layout.mjs',import.meta.url),'utf8');
+  assert.doesNotMatch(layout,/sharp\.strategy\.attention/);
+  assert.match(layout,/featherMask/);
 });

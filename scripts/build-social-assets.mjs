@@ -28,7 +28,7 @@ for (const item of items) {
   const input = path.resolve('public', new URL(item.originalImageUrl).pathname.slice(1));
   await access(input).catch(() => { throw new Error(`Source image missing for ${item.id}: ${input}`); });
   const out = path.join(destination, `${item.kind}-${item.id.split(':')[1]}.jpg`);
-  await socialPhotoTransform(sharp(input), { sourceId: item.id })
+  await (await socialPhotoTransform(sharp(input), { sourceId: item.id }))
     .jpeg({ quality: 85, mozjpeg: true })
     .toFile(out);
   const meta = await sharp(out).metadata();

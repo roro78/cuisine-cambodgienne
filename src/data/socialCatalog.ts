@@ -89,7 +89,7 @@ export function getSocialCatalog(): SocialSource[] {
       // clearly show the aromatic paste. Use an existing mortar/kroeung asset.
       // Never alter the image on the original ingredient article.
       ingredient.slug === 'kroeung'
-        ? '/images/cuisine/v19-mortier-kroeung-1200.webp'
+        ? '/images/workshops/mortier-etape-04.webp'
         : ingredient.image,
       ingredient.slug === 'kroeung' ? 'illustration' : 'article'
     )),
