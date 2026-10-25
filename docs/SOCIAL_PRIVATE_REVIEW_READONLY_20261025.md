@@ -49,3 +49,33 @@ Un rapport SQL purement SELECT figure dans `automation/n8n/sql/social-approval-r
 4. Ensuite seulement : créer les brouillons issus du plan média et mesurer les publications par URL.
 
 **État : code présent sur la branche PR #129, pas installé ni activé.**
+
+## Reprise P0 — audit direct du 25 octobre 2026 (branche PR #129)
+
+**Actions réalisées sans déploiement :** interrogation du HEAD GitHub et du schéma Supabase en SELECT, audit du PHP et des protections de la migration email, durcissement ciblé dans cette même PR. Aucun secret lu ou publié, aucune modification de données, aucun appel Meta/Resend.
+
+### Découvertes vérifiées
+
+- `cuisine_social_viewer` est **absent** de `pg_roles` : le lecteur ne peut actuellement pas se connecter en production. Il faut un provisionnement et des contrôles effectifs depuis OVH avant ouverture.
+- `posts` et `validation_dispatches` disposent tous deux de RLS. Sur `posts`, les trois policies existantes ciblent `cuisine_n8n` (SELECT, INSERT et UPDATE). Aucune policy `cuisine_social_viewer`.
+- `validation_dispatches` : **clé primaire `post_id`**, `idempotency_key` UNIQUE, FK vers `posts` avec DELETE RESTRICT ; états autorisés `reserved`, `accepted`, `uncertain`. Schéma versionné `automation/n8n/schema.sql` ne définit pas cette table : **drift** documenté, aucune DDL appliquée.
+- Deux policies `validation_dispatches` visent *uniquement* `post_id=1` : SELECT et INSERT de la réservation `cuisine-social-validation/draft-1` pour `cuisine_n8n`. L'automatisation générique de nouveaux brouillons est **bloquée côté réservation tant que les privilèges/policies ne sont pas repensés et testés**. Ne surtout pas élargir avec `USING(true)` ou `WITH CHECK(true)` sans validation.
+- Une réservation `post_id=1` reste `reserved` depuis le 21/10/2026 à 20:45:55 UTC, `resend_message_id IS NULL` et n'a pas changé depuis ~95 h lors du contrôle. Le post lié est `published`/approuvé en base pour FB et IG. **Ce n'est ni une preuve d'envoi Resend ni une preuve de publication Meta réelle.** Ne pas réémettre, réinitialiser ou republier avant vérification indépendante.
+- Le rôle du dashboard est maintenant contrôlé avant toute requête de posts : identité exacte, NON-superutilisateur, NON-`BYPASSRLS`, NON-héritage, aucune appartenance à d'autres rôles, RLS + policy dédiée, droits SELECT-only sur les posts et **aucun droit** sur les réservations. Échec fermé HTTP 503.
+- Pagination SQL par tranches de 50 ajoutée pour consulter les futurs posts sans se limiter aux trois exemples ou aux 50 premières lignes.
+
+### Circuit de validation : écart P0 restant
+
+Le formulaire humain `Wait` et l'UPDATE SQL de `01-drafts-email-approval.json` sont le **seul chemin autorisé** de décision. Il conserve un garde `status='draft'` et une seule transition par post, mais **ne compare pas encore une empreinte complète de la version revue au moment de la décision**. La table conserve `source_fingerprint`, captions et image ; aucune preuve de verrouillage de ces champs pendant les 72 h d'attente. Ajouter une action PHP directe créerait un second chemin non synchronisé : **interdit avant conception et réception de la transition unifiée n8n**.
+
+Schéma cible d'intégration (non implémenté, pas de promesse de mise en production) :
+1. À la création, conserver un snapshot signé ou une empreinte canonique `post_id + source_fingerprint + image_url + captions + URL`, un identifiant d'exécution Wait et une échéance, hors du navigateur et sans endpoint d'approbation par ID seul.
+2. L'interface authentifiée soumettrait une décision via un **unique** point d'entrée backend connecté au Wait existant (ou sa migration coordonnée), sans modifier directement `posts`. Une réponse HTTP à un lien GET ne décide jamais.
+3. Le nœud de persistance n8n exécuterait un `UPDATE ... WHERE status='draft' AND version_empreinte_attendue=... RETURNING ...`, enregistré atomiquement et idempotent ; la condition d'absence de résultats bloque toute publication.
+4. Test préalable sur un clone isolé : approbation, révision avec commentaire obligatoire, refus, expiration, double-clic, mutation concurrente de photo/caption, panne après envoi. Ne pas activer 01/02/03 ni envoyer de vrai mail.
+
+### Réception technique et limites
+
+- **Statique** : contrats des autorisations, du rôle et de la pagination complétés en Node, en attente de leur exécution native sur le HEAD.
+- **Natif et production** : `php -l`, `node --test`, disponibilité PHP et `pdo_pgsql` sur OVH, connectivité TLS OVH→Supabase, rendu Android et vrai workflow n8n restent à vérifier. La présence de PHP dans un environnement de développement ne prouve rien concernant OVH.
+- **Retour arrière** : revenir aux commits précédents de la branche de revue ou restaurer uniquement les trois fichiers modifiés ; aucun SQL ni n8n réel modifié. La PR reste en brouillon et ne doit pas être fusionnée avant réception.
