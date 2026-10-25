@@ -111,6 +111,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 }
 
 $rows = [];
+$counts = [];
 if ($authenticated) {
     // Use a separate SELECT-only role, never the n8n writer or Supabase service role.
     foreach (['social_readonly_dsn', 'social_readonly_user', 'social_readonly_password'] as $key)
@@ -144,6 +145,7 @@ if ($authenticated) {
         if ($status !== 'all') $stmt->bindValue(':status', $status, PDO::PARAM_STR);
         $stmt->execute();
         $rows = $stmt->fetchAll();
+        $counts = $pdo->query('SELECT status,count(*)::int AS total FROM cuisine_social.posts GROUP BY status')->fetchAll(PDO::FETCH_KEY_PAIR);
     } catch (Throwable $e) {
         error_log('Cuisine social review: read-only database unavailable');
         failClosed();
@@ -193,7 +195,7 @@ input{display:block;width:100%;padding:12px;margin:6px 0 14px;border:1px solid #
 <p class="warning"><strong>Consultation uniquement.</strong> Pour approuver, corriger ou refuser un post, utilisez pour l'instant le formulaire de validation reçu par e-mail. Cette page n'écrit jamais dans PostgreSQL et ne publie rien sur Meta.</p>
 <nav class="filters" aria-label="Filtrer les publications">
 <?php foreach (['draft'=>'À valider','approved'=>'Approuvées','revision_requested'=>'À corriger','published'=>'Publiées','manual_review'=>'À examiner','rejected'=>'Refusées','all'=>'Toutes'] as $key=>$label): ?>
-<a class="<?= ($status===$key?'selected':'') ?>" href="?status=<?= h($key) ?>"><?= h($label) ?></a>
+<a class="<?= ($status===$key?'selected':'') ?>" href="?status=<?= h($key) ?>"><?= h($label) ?> (<?= $key==='all' ? array_sum(array_map('intval',$counts)) : (int)($counts[$key] ?? 0) ?>)</a>
 <?php endforeach; ?>
 </nav>
 <p class="muted">Maximum 50 publications par vue. État provenant de PostgreSQL ; vérification Meta indépendante.</p>
