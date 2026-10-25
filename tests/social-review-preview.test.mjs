@@ -3,14 +3,14 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import sharp from 'sharp';
 
-test('six ready-to-review cards contain real inlined square JPEGs and checked captions',async()=>{
+test('ten ready-to-review cards contain real inlined square JPEGs and checked captions',async()=>{
   const html=await readFile(new URL('../artifacts/social-editorial-review.html',import.meta.url),'utf8');
   const found=html.match(/<script type="application\/json" id="review-payload">([\s\S]*?)<\/script>/);
   assert.ok(found,'self contained embedded review data is required');
   const entries=JSON.parse(found[1]);
-  assert.equal(entries.length,3);
+  assert.equal(entries.length,5);
   assert.deepEqual(entries.map(x=>x.id),[
-    'ingredient:kroeung','recette:amok-trey','culture:le-riz-symbole-de-vie-au-cambodge'
+    'ingredient:kroeung','recette:amok-trey','culture:le-riz-symbole-de-vie-au-cambodge','culture:comprendre-le-kroeung','culture:construire-repas-cambodgien'
   ]);
   for(const post of entries){
     assert.match(post.imageData,/^data:image\/jpeg;base64,/);

@@ -9,7 +9,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = process.cwd();
-const ids = ['ingredient:kroeung','recette:amok-trey','culture:le-riz-symbole-de-vie-au-cambodge'];
+const ids = ['ingredient:kroeung','recette:amok-trey','culture:le-riz-symbole-de-vie-au-cambodge','culture:comprendre-le-kroeung','culture:construire-repas-cambodgien'];
 const catalogBundle = await build({
   entryPoints:[path.join(root,'src/data/socialCatalog.ts')],
   bundle:true, platform:'node', format:'esm', write:false, logLevel:'error'
@@ -61,7 +61,7 @@ for(const id of ids){
     facebookCaption:caption.facebookCaption,instagramCaption:caption.instagramCaption
   });
 }
-if(reviews.length!==3)throw Error('social_preview_incomplete');
+if(reviews.length!==5)throw Error('social_preview_incomplete');
 const template=await readFile(path.join(root,'scripts/social-review-template.html'),'utf8');
 const marker='__CUISINE_REVIEW_PAYLOAD__';
 if(template.split(marker).length!==2)throw Error('social_preview_template_missing_marker');
@@ -71,4 +71,4 @@ const outdir=path.join(root,'artifacts');
 await mkdir(outdir,{recursive:true});
 const outfile=path.join(outdir,'social-editorial-review.html');
 await writeFile(outfile,output,{encoding:'utf8',flag:'w'});
-console.log('social-review: 6 offline previews; actual JPEG 1080x1080; saved '+outfile+'; no Meta, n8n, Resend or DB calls');
+console.log('social-review: 10 offline previews; actual JPEG 1080x1080; saved '+outfile+'; no Meta, n8n, Resend or DB calls');

@@ -20,3 +20,7 @@ Dans `src/pages/culture/index.astro`, deux cartes (« Le repas, un moment de vie
 - [ ] Dry-run GET-only n8n puis application séparément autorisée : aucun workflow à activer pendant le contrôle.
 
 **Aucun déploiement OVH, aucune mutation PostgreSQL, aucun e-mail, aucune publication Meta** n'est déclenché par ce correctif GitHub.
+
+## Prévisualisation étendue
+
+La validation sociale inclut désormais 5 sujets × 2 réseaux = 10 cartes (Kroeung ingrédient / Amok recette déjà validés, Riz culturel candidat, Kroeung culturel, Repas partagé). Artefact CI `cuisine-social-preview-ten-posts`. Réception humaine nécessaire pour les 3 carnets ; aucune activation de n8n.
