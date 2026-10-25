@@ -1,0 +1,5 @@
+{
+  "schema": 1,
+  "origin": "GitHub main Resend expression before visual preview",
+  "body": "={{JSON.stringify({from:'Cuisine du Cambodge <social@CONFIGURER_DOMAINE_VERIFIE>',to:['CONFIGURER_EMAIL_VALIDATION'],subject:'[Cuisine du Cambodge] Valider le post du '+$('Vérifier et cadrer les textes').first().json.scheduledDate,text:'Proposition de publication (Facebook + Instagram)\\n\\nSOURCE : '+$('Vérifier et cadrer les textes').first().json.source.url+'\\n\\nIMAGE : '+$('Vérifier et cadrer les textes').first().json.imageUrl+'\\n\\nFACEBOOK :\\n'+$('Vérifier et cadrer les textes').first().json.facebookCaption+'\\n\\nINSTAGRAM :\\n'+$('Vérifier et cadrer les textes').first().json.instagramCaption+'\\n\\nPour approuver ou refuser, ouvrez ce FORMULAIRE et confirmez votre décision : '+$execution.resumeFormUrl+'\\n\\nAUCUNE PUBLICATION sans validation. Le lien expire sous 72 h.'})}}"
+}
