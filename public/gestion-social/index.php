@@ -119,6 +119,7 @@ if ($authenticated) {
     if (!str_starts_with($cfg['social_readonly_dsn'], 'pgsql:')
         || !preg_match('/(?:^|;)sslmode=(?:require|verify-ca|verify-full)(?:;|$)/', $cfg['social_readonly_dsn'])
         || !class_exists('PDO') || !in_array('pgsql', PDO::getAvailableDrivers(), true)) failClosed();
+    if ($cfg['social_readonly_user'] !== 'cuisine_social_viewer') failClosed();
     try {
         $pdo = new PDO(
             $cfg['social_readonly_dsn'], $cfg['social_readonly_user'], $cfg['social_readonly_password'],
@@ -127,22 +128,60 @@ if ($authenticated) {
              PDO::ATTR_EMULATE_PREPARES => false,
              PDO::ATTR_TIMEOUT => 6]
         );
-        // Refuse a configured writer/admin credential even if the supplied DSN works.
-        $rights = $pdo->query("SELECT has_table_privilege(current_user,'cuisine_social.posts','SELECT') AS can_read, has_table_privilege(current_user,'cuisine_social.posts','INSERT') AS can_insert, has_table_privilege(current_user,'cuisine_social.posts','UPDATE') AS can_update, has_table_privilege(current_user,'cuisine_social.posts','DELETE') AS can_delete")->fetch();
+        // Only the dedicated, non-inheriting viewer role may read this dashboard.
+        // Checking INSERT/UPDATE/DELETE on posts alone is insufficient: a
+        // pre-existing PostgreSQL role may inherit privileges or bypass RLS.
         $truthy = static fn($v): bool => in_array($v, [true, 1, '1', 't', 'true'], true);
-        if (!$truthy($rights['can_read'] ?? false)
-            || $truthy($rights['can_insert'] ?? false)
-            || $truthy($rights['can_update'] ?? false)
-            || $truthy($rights['can_delete'] ?? false)) failClosed();
+        $identity = $pdo->query(
+            "SELECT current_user AS db_user, r.rolcanlogin, r.rolinherit, r.rolsuper,
+                    r.rolbypassrls, r.rolcreatedb, r.rolcreaterole, r.rolreplication,
+                    EXISTS(SELECT 1 FROM pg_auth_members m WHERE m.member=r.oid) AS has_memberships,
+                    (SELECT c.relrowsecurity FROM pg_class c
+                       JOIN pg_namespace n ON n.oid=c.relnamespace
+                      WHERE n.nspname='cuisine_social' AND c.relname='posts') AS rls_enabled,
+                    EXISTS(SELECT 1 FROM pg_policies
+                            WHERE schemaname='cuisine_social' AND tablename='posts'
+                              AND policyname='cuisine_social_viewer_read_posts'
+                              AND cmd='SELECT' AND 'cuisine_social_viewer'::name=ANY(roles)) AS viewer_policy
+               FROM pg_roles r WHERE r.rolname=current_user"
+        )->fetch();
+        if (!$identity || ($identity['db_user'] ?? '') !== 'cuisine_social_viewer'
+            || !$truthy($identity['rolcanlogin'] ?? false)
+            || !$truthy($identity['rls_enabled'] ?? false)
+            || !$truthy($identity['viewer_policy'] ?? false)) failClosed();
+        foreach (['rolinherit','rolsuper','rolbypassrls','rolcreatedb','rolcreaterole',
+                  'rolreplication','has_memberships'] as $danger)
+            if ($truthy($identity[$danger] ?? false)) failClosed();
+        $rights = $pdo->query(
+            "SELECT has_table_privilege(current_user,'cuisine_social.posts','SELECT') AS can_read,
+                    has_table_privilege(current_user,'cuisine_social.posts','INSERT') AS can_insert,
+                    has_table_privilege(current_user,'cuisine_social.posts','UPDATE') AS can_update,
+                    has_table_privilege(current_user,'cuisine_social.posts','DELETE') AS can_delete,
+                    has_table_privilege(current_user,'cuisine_social.posts','TRUNCATE') AS can_truncate,
+                    has_table_privilege(current_user,'cuisine_social.posts','REFERENCES') AS can_reference,
+                    has_table_privilege(current_user,'cuisine_social.posts','TRIGGER') AS can_trigger,
+                    has_table_privilege(current_user,'cuisine_social.validation_dispatches','SELECT') AS can_read_dispatch,
+                    has_table_privilege(current_user,'cuisine_social.validation_dispatches','INSERT') AS can_insert_dispatch,
+                    has_table_privilege(current_user,'cuisine_social.validation_dispatches','UPDATE') AS can_update_dispatch,
+                    has_table_privilege(current_user,'cuisine_social.validation_dispatches','DELETE') AS can_delete_dispatch"
+        )->fetch();
+        if (!$truthy($rights['can_read'] ?? false)) failClosed();
+        foreach (['can_insert','can_update','can_delete','can_truncate','can_reference','can_trigger',
+                  'can_read_dispatch','can_insert_dispatch','can_update_dispatch','can_delete_dispatch'] as $danger)
+            if ($truthy($rights[$danger] ?? false)) failClosed();
         $pdo->exec('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY');
         $status = (string)($_GET['status'] ?? 'draft');
         $allowed = ['all', 'draft', 'approved', 'revision_requested', 'rejected', 'publishing', 'published', 'manual_review'];
         if (!in_array($status, $allowed, true)) $status = 'draft';
         $sql = 'SELECT id::text AS id,source_id,source_snapshot,scheduled_date::text AS scheduled_date,facebook_caption,instagram_caption,image_url,status,fb_state,ig_state FROM cuisine_social.posts';
         if ($status !== 'all') $sql .= ' WHERE status = :status';
-        $sql .= ' ORDER BY scheduled_date DESC,id DESC LIMIT 50';
+        $candidate = filter_var($_GET['page'] ?? 1, FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 1, 'max_range' => 100000]]);
+        $page = $candidate === false ? 1 : $candidate;
+        $sql .= ' ORDER BY scheduled_date DESC,id DESC LIMIT 50 OFFSET :offset';
         $stmt = $pdo->prepare($sql);
         if ($status !== 'all') $stmt->bindValue(':status', $status, PDO::PARAM_STR);
+        $stmt->bindValue(':offset', ($page - 1) * 50, PDO::PARAM_INT);
         $stmt->execute();
         $rows = $stmt->fetchAll();
         $counts = $pdo->query('SELECT status,count(*)::int AS total FROM cuisine_social.posts GROUP BY status')->fetchAll(PDO::FETCH_KEY_PAIR);
@@ -198,7 +237,13 @@ input{display:block;width:100%;padding:12px;margin:6px 0 14px;border:1px solid #
 <a class="<?= ($status===$key?'selected':'') ?>" href="?status=<?= h($key) ?>"><?= h($label) ?> (<?= $key==='all' ? array_sum(array_map('intval',$counts)) : (int)($counts[$key] ?? 0) ?>)</a>
 <?php endforeach; ?>
 </nav>
-<p class="muted">Maximum 50 publications par vue. État provenant de PostgreSQL ; vérification Meta indépendante.</p>
+<p class="muted">50 publications par page. États issus de PostgreSQL, sans vérification Meta indépendante.</p>
+<?php $visibleTotal = $status === 'all' ? array_sum(array_map('intval', $counts)) : (int)($counts[$status] ?? 0); ?>
+<nav class="filters" aria-label="Parcourir les publications">
+<?php if ($page > 1): ?><a href="?status=<?= h($status) ?>&amp;page=<?= $page - 1 ?>">Page précédente</a><?php endif; ?>
+<span class="muted">Page <?= $page ?> · <?= $visibleTotal ?> publication(s)</span>
+<?php if ($page * 50 < $visibleTotal): ?><a href="?status=<?= h($status) ?>&amp;page=<?= $page + 1 ?>">Page suivante</a><?php endif; ?>
+</nav>
 <?php if (!$rows): ?><div class="empty">Aucune publication dans cette catégorie.</div><?php endif; ?>
 <?php foreach ($rows as $row):
     $snap = json_decode((string)$row['source_snapshot'], true);
