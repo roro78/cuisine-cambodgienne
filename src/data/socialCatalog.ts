@@ -96,8 +96,8 @@ export function getSocialCatalog(): SocialSource[] {
     ...cultureArticles.map(article => create(
       'culture', article.slug, article.title, `/culture/${article.slug}/`,
       // A complete opening sentence: sourced prose, never a chopped-off claim.
-      article.intro.split(/(?<=[.!?])\\s+/)[0],
-      [article.sections[0]?.paragraphs[0]?.split(/(?<=[.!?])\\s+/)[0]],
+      article.intro.split(/(?<=[.!?])\s+/)[0],
+      [article.sections[0]?.paragraphs[0]?.split(/(?<=[.!?])\s+/)[0]],
       article.socialImage ?? article.image, article.socialImage ? (article.socialImageRole ?? 'illustration') : 'article', article.sources.map(source => source.url)
     )),
     ...(completeCookingWorkshopCutoverReady
