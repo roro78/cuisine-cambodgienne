@@ -80,14 +80,14 @@ const boundedModelResponse = ({
   instagramMiddle = instagramFacts,
 } = {}) => modelResponse({
   facebookCaption: [
-    'Decouvrons ' + source.title + ' a partir des informations verifiees de notre catalogue.',
+    'Envie de cuisiner ' + source.title + ' ?',
     ...facebookMiddle,
-    'Retrouvez la page associee pour consulter les details disponibles.',
+    'À lire sur notre site :',
   ].join('\n\n'),
   instagramCaption: [
-    'Quelques reperes verifies autour de ' + source.title + '.',
+    source.title + ', à cuisiner et à partager.',
     ...instagramMiddle,
-    'La suite est disponible sur la page associee.',
+    'La suite est à découvrir sur notre site.',
   ].join('\n\n'),
   claimsUsed,
 });
@@ -106,9 +106,9 @@ test('validator transmits only fully bounded Ollama captions composed from exact
   assert.equal(out.sourceId, source.id);
   assert.equal(out.generationMode, 'ollama_borne');
   assert.equal(out.modelValidation, 'valide_transmis');
-  assert.ok(out.facebookCaption.length >= 200 && out.facebookCaption.length <= 850);
-  assert.ok(out.instagramCaption.length >= 150 && out.instagramCaption.length <= 700);
-  assert.match(out.facebookCaption, /utm_source=facebook/);
+  assert.ok(out.facebookCaption.length >= 100 && out.facebookCaption.length <= 850);
+  assert.ok(out.instagramCaption.length >= 90 && out.instagramCaption.length <= 700);
+  assert.doesNotMatch(out.facebookCaption, /utm_/);
   assert.match(out.instagramCaption, /cuisine-du-cambodge\.com/);
   assert.deepEqual(Array.from(out.claimsUsed), source.facts);
 });
@@ -133,8 +133,8 @@ test('invalid, invented, deformed, uncovered, external, empty, long and maliciou
     const out = validate(response)[0].json;
     assert.equal(out.generationMode, 'catalogue_deterministe');
     assert.equal(out.modelValidation, status);
-    assert.ok(out.facebookCaption.length >= 200 && out.facebookCaption.length <= 850);
-    assert.ok(out.instagramCaption.length >= 150 && out.instagramCaption.length <= 700);
+    assert.ok(out.facebookCaption.length >= 100 && out.facebookCaption.length <= 850);
+    assert.ok(out.instagramCaption.length >= 90 && out.instagramCaption.length <= 700);
     assert.deepEqual(Array.from(out.claimsUsed), source.facts);
   }
 });
@@ -142,7 +142,7 @@ test('invalid, invented, deformed, uncovered, external, empty, long and maliciou
 test('validator accepts only canonical Cuisine URLs without relying on a URL global', () => {
   assert.equal(vm.runInNewContext('typeof URL', {}), 'undefined');
   const out = validate(modelResponse({}))[0].json;
-  assert.match(out.facebookCaption, /https:\/\/www\.cuisine-du-cambodge\.com\/recettes\/amok\?utm_source=facebook/);
+  assert.match(out.facebookCaption, /https:\/\/www\.cuisine-du-cambodge\.com\/recettes\/amok/);
   for (const invalidUrl of [
     undefined,
     null,
