@@ -57,7 +57,8 @@ jobs:
             tests/workflow-01-dryrun.test.mjs \
             tests/workflow-01-full-path-simulation.test.mjs \
             tests/reconcile-kroeung-meta-readonly.test.mjs \
-            tests/social-image-contract.test.mjs
+            tests/social-image-contract.test.mjs \
+            tests/carnets-social-photo-diversity.test.mjs
 
       - name: Enable ffprobe for real MP3 integrity checks
         shell: bash

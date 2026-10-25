@@ -9,12 +9,32 @@ import '../../styles/v16-editorial.css';
 import '../../styles/v19-premium-pages.css';
 import '../../styles/editorial-shared-hero.css';
 
-const moments = [
-  { image:'/images/cuisine/v17-table-meal-1600.jpg', moment:'Autour du riz', title:'Le repas, un moment de vie', text:'La place du riz et des plats partagés raconte des habitudes de table qui varient selon les familles.', href:'/culture/construire-repas-cambodgien/', cta:'Lire le carnet →' },
-  { image:'/images/cuisine/v17-market-live-1800.jpg', moment:'Sur les marchés', title:'La vie des marchés du littoral', text:'À Kep, la mer, le commerce et les pêcheurs font partie d’une même histoire locale.', href:'/culture/kep-marche-crabe-poivre/', cta:'Lire le carnet →' },
-  { image:'/images/cuisine/v17-table-meal-1600.jpg', moment:'Dans les mémoires', title:'Le kroeung, une mémoire de famille', text:'Les goûts du pays accompagnent parfois les récits d’exil et les nouvelles générations.', href:'/culture/comprendre-le-kroeung/', cta:'Lire le carnet →' },
-  { image:'/images/cuisine/kampot-1600.webp', moment:'Dans les terroirs', title:'Un nom, un lieu, des producteurs', text:'Le poivre de Kampot relie un territoire, des savoir-faire et une origine protégée.', href:'/culture/poivre-de-kampot/', cta:'Lire le carnet →' }
+// Vitrine et fiches restent liées à la même illustration de carnet.
+ // Une carte ne peut plus pointer par erreur sur une photo de restaurant recyclée.
+const momentDefinitions = [
+  { slug:'construire-repas-cambodgien', moment:'Autour du riz', title:'Le repas, un moment de vie', text:'La place du riz et des plats partagés raconte des habitudes de table qui varient selon les familles.', cta:'Lire le carnet →' },
+  { slug:'kep-marche-crabe-poivre', moment:'Sur les marchés', title:'La vie des marchés du littoral', text:'À Kep, la mer, le commerce et les pêcheurs font partie d’une même histoire locale.', cta:'Lire le carnet →' },
+  { slug:'comprendre-le-kroeung', moment:'Dans les mémoires', title:'Le kroeung, une mémoire de famille', text:'Les goûts du pays accompagnent parfois les récits d’exil et les nouvelles générations.', cta:'Lire le carnet →' },
+  { slug:'poivre-de-kampot', moment:'Dans les terroirs', title:'Un nom, un lieu, des producteurs', text:'Le poivre de Kampot relie un territoire, des savoir-faire et une origine protégée.', cta:'Lire le carnet →' }
 ];
+const moments = momentDefinitions.map((definition) => {
+  const article = cultureArticles.find((entry) => entry.slug === definition.slug);
+  if (!article || !article.image?.startsWith('/images/')) {
+    throw new Error(`Carnets : image locale absente pour ${definition.slug}`);
+  }
+  return {
+    ...definition,
+    image: article.image,
+    imageAlt: article.imageAlt,
+    imageWidth: article.imageWidth,
+    imageHeight: article.imageHeight,
+    imageWidths: article.imageWidths,
+    href: `/culture/${definition.slug}/`
+  };
+});
+if (new Set(moments.map((moment) => moment.image)).size !== moments.length) {
+  throw new Error('Carnets : images de vignettes dupliquées');
+}
 
 // Select the featured journal by its stable slug, not its position in the catalogue.
 const featuredSlug = 'kep-marche-crabe-poivre';
@@ -97,7 +117,7 @@ const collectionSchema = {
       <div>
         {moments.map((moment) => (
           <a href={moment.href} class="v16-day-note">
-            <img class="v19-note-image" src={moment.image} alt="" loading="lazy" decoding="async" width="320" height="240" />
+            <img class="v19-note-image" src={moment.image} srcset={moment.imageWidths.length ? imageSrcSet(moment.image, moment.imageWidths) : undefined} sizes="(max-width:760px) 90vw, 320px" alt={moment.imageAlt} loading="lazy" decoding="async" width={moment.imageWidth} height={moment.imageHeight} />
             <span>{moment.moment}</span>
             <h3>{moment.title}</h3>
             <p>{moment.text}</p>
