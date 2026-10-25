@@ -59,6 +59,7 @@ jobs:
             tests/workflow-01-dryrun.test.mjs \
             tests/social-approval-email-preview.test.mjs \
             tests/social-visual-email-migration.test.mjs \
+            tests/social-private-dashboard-contract.test.mjs \
             tests/workflow-01-full-path-simulation.test.mjs \
             tests/reconcile-kroeung-meta-readonly.test.mjs \
             tests/social-image-contract.test.mjs
