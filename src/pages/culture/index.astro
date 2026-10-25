@@ -12,10 +12,10 @@ import '../../styles/editorial-shared-hero.css';
 // Vitrine et fiches restent liées à la même illustration de carnet.
  // Une carte ne peut plus pointer par erreur sur une photo de restaurant recyclée.
 const momentDefinitions = [
-  { slug:'construire-repas-cambodgien', href:'/culture/construire-repas-cambodgien/', moment:'Autour du riz', title:'Le repas, un moment de vie', text:'La place du riz et des plats partagés raconte des habitudes de table qui varient selon les familles.', cta:'Lire le carnet →' },
-  { slug:'kep-marche-crabe-poivre', href:'/culture/kep-marche-crabe-poivre/', moment:'Sur les marchés', title:'La vie des marchés du littoral', text:'À Kep, la mer, le commerce et les pêcheurs font partie d’une même histoire locale.', cta:'Lire le carnet →' },
-  { slug:'comprendre-le-kroeung', href:'/culture/comprendre-le-kroeung/', moment:'Dans les mémoires', title:'Le kroeung, une mémoire de famille', text:'Les goûts du pays accompagnent parfois les récits d’exil et les nouvelles générations.', cta:'Lire le carnet →' },
-  { slug:'poivre-de-kampot', href:'/culture/poivre-de-kampot/', moment:'Dans les terroirs', title:'Un nom, un lieu, des producteurs', text:'Le poivre de Kampot relie un territoire, des savoir-faire et une origine protégée.', cta:'Lire le carnet →' }
+  { slug:'construire-repas-cambodgien', moment:'Autour du riz', title:'Le repas, un moment de vie', text:'La place du riz et des plats partagés raconte des habitudes de table qui varient selon les familles.' , href:'/culture/construire-repas-cambodgien/', cta:'Lire le carnet →' },
+  { slug:'kep-marche-crabe-poivre', moment:'Sur les marchés', title:'La vie des marchés du littoral', text:'À Kep, la mer, le commerce et les pêcheurs font partie d’une même histoire locale.' , href:'/culture/kep-marche-crabe-poivre/', cta:'Lire le carnet →' },
+  { slug:'comprendre-le-kroeung', moment:'Dans les mémoires', title:'Le kroeung, une mémoire de famille', text:'Les goûts du pays accompagnent parfois les récits d’exil et les nouvelles générations.' , href:'/culture/comprendre-le-kroeung/', cta:'Lire le carnet →' },
+  { slug:'poivre-de-kampot', moment:'Dans les terroirs', title:'Un nom, un lieu, des producteurs', text:'Le poivre de Kampot relie un territoire, des savoir-faire et une origine protégée.' , href:'/culture/poivre-de-kampot/', cta:'Lire le carnet →' }
 ];
 const moments = momentDefinitions.map((definition) => {
   const article = cultureArticles.find((entry) => entry.slug === definition.slug);
