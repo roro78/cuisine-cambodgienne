@@ -19,6 +19,9 @@ test('private portal native HTTP smoke: HTTPS, session, CSRF, login, logout and 
   const secret=join(root,'.cuisine-asset-portal');
   mkdirSync(portal,{recursive:true});mkdirSync(secret,{recursive:true,mode:0o700});
   copyFileSync(sourceFile,join(portal,'index.php'));
+  // Test the complete production portal, including its new catalogue helper.
+  copyFileSync(fileURLToPath(new URL('../public/gestion-social/catalog-readonly.php',import.meta.url)),
+    join(portal,'catalog-readonly.php'));
   const hash=execFileSync('php',['-r','echo password_hash("fixture-password", PASSWORD_DEFAULT);'],
     {encoding:'utf8'}).trim();
   assert.match(hash,/^\$2/);
