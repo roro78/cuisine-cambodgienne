@@ -70,7 +70,11 @@ test('no approval bypass: this view is informative only',()=>{
 });
 
 test('viewer role is fixed, cannot inherit privileges or bypass PostgreSQL RLS',()=>{
- assert.match(src,/social_readonly_user'\] !== 'cuisine_social_viewer'/);
+ assert.match(src,/\$cfg\['social_readonly_user'\] !== \$expectedPgUser/);
+ assert.match(src,/sessionPoolerHost/);
+ assert.match(src,/\(\$dsnValues\['port'\] \?\? '5432'\) !== '5432'/);
+ assert.match(src,/\$dsnValues\['dbname'\] !== 'postgres'/);
+ assert.match(src,/cuisine_social_viewer[.]kljbnfjxwloiodwlbrrz/);
  for(const part of ['rolinherit','rolsuper','rolbypassrls','rolcreaterole','rolcreatedb',
    'rolreplication','has_memberships','rls_enabled','viewer_policy'])
    assert.ok(src.includes(part),part);

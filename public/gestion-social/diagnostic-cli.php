@@ -56,10 +56,20 @@ foreach($parts as $part) {
     $values[$key]=$m[2];
 }
 if (!isset($values['host'],$values['dbname'],$values['sslmode'])
-    || !in_array($values['sslmode'],['require','verify-ca','verify-full'],true)
-    || !(preg_match('/^db[.]kljbnfjxwloiodwlbrrz[.]supabase[.]co$/D',$values['host'])
-        || preg_match('/^[a-z0-9-]+[.]pooler[.]supabase[.]com$/D',$values['host'])))
+    || !in_array($values['sslmode'],['require','verify-ca','verify-full'],true))
     readinessFail('DSN_POLICY');
+$directPgHost = (bool)preg_match(
+    '/^db[.]kljbnfjxwloiodwlbrrz[.]supabase[.]co$/D', $values['host']);
+$sessionPoolerHost = (bool)preg_match(
+    '/^[a-z0-9-]+[.]pooler[.]supabase[.]com$/D', $values['host']);
+if ((!$directPgHost && !$sessionPoolerHost)
+    || ($values['port'] ?? '5432') !== '5432'
+    || $values['dbname'] !== 'postgres')
+    readinessFail('DSN_POLICY');
+$expectedPgUser = $directPgHost ? 'cuisine_social_viewer'
+    : 'cuisine_social_viewer.kljbnfjxwloiodwlbrrz';
+if ($config['social_readonly_user'] !== $expectedPgUser)
+    readinessFail('VIEWER_POOLER_USERNAME');
 readinessOk('DSN_POLICY');
 
 try {

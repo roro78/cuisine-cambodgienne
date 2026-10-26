@@ -191,11 +191,19 @@ if ($authenticated) {
     // Never accept localhost, Unix sockets, IP literals or a lookalike host.
     // Only this Supabase project's direct endpoint or its regional pooler
     // may receive the dedicated read-only database credentials.
-    $trustedPgHost = preg_match('/^db[.]kljbnfjxwloiodwlbrrz[.]supabase[.]co$/D',
-            $dsnValues['host'])
-        || preg_match('/^[a-z0-9-]+[.]pooler[.]supabase[.]com$/D', $dsnValues['host']);
-    if (!$trustedPgHost) failClosed();
-    if ($cfg['social_readonly_user'] !== 'cuisine_social_viewer') failClosed();
+    // Supabase direct uses the bare PostgreSQL role; its IPv4 session
+    // pooler requires role.PROJECT_REF. Transaction mode is forbidden
+    // because this portal relies on prepared statements/session settings.
+    $directPgHost = (bool)preg_match(
+        '/^db[.]kljbnfjxwloiodwlbrrz[.]supabase[.]co$/D', $dsnValues['host']);
+    $sessionPoolerHost = (bool)preg_match(
+        '/^[a-z0-9-]+[.]pooler[.]supabase[.]com$/D', $dsnValues['host']);
+    if ((!$directPgHost && !$sessionPoolerHost)
+        || ($dsnValues['port'] ?? '5432') !== '5432'
+        || $dsnValues['dbname'] !== 'postgres') failClosed();
+    $expectedPgUser = $directPgHost ? 'cuisine_social_viewer'
+        : 'cuisine_social_viewer.kljbnfjxwloiodwlbrrz';
+    if ($cfg['social_readonly_user'] !== $expectedPgUser) failClosed();
     try {
         $pdo = new PDO(
             $cfg['social_readonly_dsn'], $cfg['social_readonly_user'], $cfg['social_readonly_password'],

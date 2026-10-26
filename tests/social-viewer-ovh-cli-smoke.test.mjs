@@ -14,6 +14,11 @@ test('OVH readiness CLI cannot be a public HTTP diagnostic and performs no write
  assert.match(code,/SET TRANSACTION READ ONLY/);
  assert.match(code,/pg_stat_ssl/);
  assert.match(code,/cuisine_social_viewer/);
+ assert.match(code,/cuisine_social_viewer[.]kljbnfjxwloiodwlbrrz/);
+ assert.match(code,/VIEWER_POOLER_USERNAME/);
+ assert.match(code,/sessionPoolerHost/);
+ assert.match(code,/\(\$values\['port'\] \?\? '5432'\) !== '5432'/);
+ assert.match(code,/\$values\['dbname'\] !== 'postgres'/);
  assert.match(code,/VIEWER_WRITE_OR_DISPATCH_ACCESS/);
  assert.match(code,/READY_FOR_PRIVATE_ANDROID_TEST/);
  assert.doesNotMatch(code,/echo\s+\$e|fwrite\([^)]*\$e|error_log\([^)]*\$e/);

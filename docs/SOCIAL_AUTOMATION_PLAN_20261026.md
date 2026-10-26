@@ -284,3 +284,12 @@ Il affiche uniquement `PORTAL_READINESS_PASS: ...` ou
 **Limite :** cet outil ne garantit pas à lui seul l'envoi de Resend,
 l'accessibilité des exécutions Wait ou une publication Meta ; il vérifie
 uniquement la disponibilité et les privilèges du **lecteur** privé.
+
+
+## Dernier correctif de raccordement OVH : IPv4 Supabase (26 octobre 2026)
+
+La documentation Supabase précise que les connexions PostgreSQL **directes** utilisent la connexion IPv6 par défaut avec utilisateur `cuisine_social_viewer`, mais que le **pooler partagé en session (IPv4)** exige `cuisine_social_viewer.kljbnfjxwloiodwlbrrz` ; son port est `5432`. Le dashboard et le diagnostic refusaient ce nom de connexion, rendant une installation OVH IPv4-only impossible malgré des grants corrects.
+
+**Corrigé sans toucher aux droits SQL** : le DSN doit pointer exclusivement vers `db.kljbnfjxwloiodwlbrrz.supabase.co:5432` avec l'utilisateur `cuisine_social_viewer`, **ou** vers le serveur `*.pooler.supabase.com:5432` copié depuis le panneau « Connect → Session pooler » du vrai projet avec l'utilisateur `cuisine_social_viewer.kljbnfjxwloiodwlbrrz`. Base `postgres` obligatoire ; port 6543 interdit (transaction-pooling incompatible avec certaines propriétés de session / requêtes préparées). TLS obligatoire. Après connexion, la session SQL doit toujours répondre `current_user = cuisine_social_viewer` et rester strictement SELECT-only. Aucun identifiant complet de connexion ni mot de passe ne doit être commité.
+
+**Important** : le hostname réel du pooler doit être copié depuis le panneau Connect du projet. Ne pas le déduire de la région ; plusieurs clusters existent. L'endpoint IPv4 n'est pas encore testé depuis OVH et ce code reste sur la PR #129.
