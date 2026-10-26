@@ -45,5 +45,5 @@ test('CLI cannot apply any mutations, even with flags',()=>{
  const s=readFileSync(new URL('../scripts/audit-cuisine-social-wait-form-auth.mjs',import.meta.url),'utf8');
  assert.match(s,/process\\.argv\\.length,2/);
  assert.doesNotMatch(s,/method:'(?:POST|PUT|PATCH|DELETE)'/);
- assert.doesNotMatch(s,/writeFileSync|UPDATE cuisine_social|fetch\\(.+api\\.resend/);
+ assert.ok(!s.includes('writeFileSync')&&!s.includes('UPDATE cuisine_social')&&!s.includes('api.resend.com'));
 });
