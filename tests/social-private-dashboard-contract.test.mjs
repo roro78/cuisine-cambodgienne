@@ -92,7 +92,8 @@ test('viewer role is fixed, cannot inherit privileges or bypass PostgreSQL RLS',
  assert.match(src,/JSON_THROW_ON_ERROR/);
  assert.match(src,/array_is_list\(\$times\)/);
  assert.match(src,/fwrite\(\$f, \$encoded\) !== strlen\(\$encoded\)/);
- assert.match(src,/trustedPgHost/);
+ assert.match(src,/directPgHost/);
+ assert.match(src,/sessionPoolerHost/);
  assert.match(src,/pooler\[\.\]supabase/);
  assert.match(src,/kljbnfjxwloiodwlbrrz/);
 });
