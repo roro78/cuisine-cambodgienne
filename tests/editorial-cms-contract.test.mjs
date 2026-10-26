@@ -31,6 +31,16 @@ test('Propositions versionnées sans publication directe',()=>{
  assert.doesNotMatch(ui+lib,/graph\.facebook\.com|graph\.instagram\.com|api\.resend\.com|api\/v1\/executions/);
 });
 
+test('P0B conserve uniquement des propositions structurees sans mutations des MP3',()=>{
+ for(const marker of ['cmsValidateStructuredDraft','STRUCTURE_FIELDS',
+   'STRUCTURE_QUANTITY','STRUCTURE_PHASE_IDS','cmsPatchTextList',
+   "['ingredients','steps','baseServings','prepTime','cookTime']"])
+   assert.ok(lib.includes(marker),marker);
+ assert.match(ui,/name="structure_json"/);
+ assert.match(ui,/les MP3 en production restent inchangés/);
+ assert.match(ui,/n'écrit aucun fichier Astro, média ou MP3/);
+ assert.doesNotMatch(ui+lib,/PUT \/repos|github_token|audio\.mp3\.write/);
+});
 test('la bibliothèque distingue brouillons et source modifiée sans publication',()=>{
  assert.match(ui,/\$latestById/);
  assert.match(ui,/cmsVersions\(\$dir,\$src\['id'\]\)/);
