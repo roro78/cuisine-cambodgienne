@@ -122,7 +122,8 @@ if($auth){
                         'summary'=>$_POST['summary']??null,
                         'editorial_text'=>$_POST['editorial_text']??null,
                         'editor_note'=>$_POST['editor_note']??null,
-                        'state'=>$_POST['state']??null
+                        'state'=>$_POST['state']??null,
+                        'structure_json'=>$_POST['structure_json']??''
                     ],$expected,(string)($_POST['source_fingerprint']??''));
                     header('Location: ?id='.rawurlencode($id).'&saved=1',true,303);exit;
                 }catch(InvalidArgumentException $e){
@@ -240,6 +241,25 @@ d'écraser une version récente. Comparer la source et reprendre le travail apr�
 <label>Résumé proposé<textarea name="summary" maxlength="1500" rows="4"><?= cmsEsc($latest['summary']??$selected['summary']) ?></textarea></label>
 <label>Texte éditorial proposé<textarea name="editorial_text" maxlength="12000" rows="12"
  placeholder="Préparer une proposition de réécriture, sans remplacer automatiquement la recette."><?= cmsEsc($latest['editorial_text']??'') ?></textarea></label>
+<?php
+$structureCurrent=is_array($latest['structure']??null)
+    ? (string)json_encode($latest['structure'],JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)
+    : '';
+$structureHints=[
+ 'recette'=>'Ingrédients (chaînes pour recettes historiques ou objets quantité/unité/nom), étapes titre/texte, temps et portions.',
+ 'culture'=>'Sections composées d’un titre et de paragraphes.',
+ 'atelier'=>'Étapes pédagogiques, phases avec actions et scripts proposés ; les MP3 en production restent inchangés.',
+ 'ingredient'=>'Paragraphes détaillés, usages et conseils.',
+ 'technique'=>'Fournitures, étapes et alternatives.'
+];
+?>
+<label>Changements structurés proposés — facultatif (JSON validé, schéma 1)
+<textarea name="structure_json" maxlength="20000" rows="10"
+ placeholder='{"schema_version":1}' spellcheck="false"><?= cmsEsc($structureCurrent) ?></textarea></label>
+<p class="small muted"><?= cmsEsc($structureHints[$selected['kind']]??'') ?>
+Seuls les champs présents constituent une proposition de modification : les autres données de la fiche ne sont pas effacées.
+La sauvegarde n'écrit aucun fichier Astro, média ou MP3. Pour une structure complète,
+une relecture des modèles réels et une PR restent nécessaires.</p>
 <label>Note pour la relecture<textarea name="editor_note" maxlength="2000" rows="3"><?= cmsEsc($latest['editor_note']??'') ?></textarea></label>
 <label>État privé du brouillon
 <select name="state">
@@ -259,6 +279,11 @@ d'écraser une version récente. Comparer la source et reprendre le travail apr�
 <h3><?= cmsEsc($display['title']) ?></h3>
 <p class="preview-text"><?= cmsEsc($display['summary']) ?></p>
 <div class="preview-text"><?= cmsEsc($display['editorial_text']) ?></div>
+<?php if(is_array($display['structure']??null)): ?>
+<h3>Changements structurés proposés</h3>
+<pre class="preview-text"><?= cmsEsc((string)json_encode($display['structure'],
+JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)) ?></pre>
+<?php endif; ?>
 <?php if($display['editor_note']!==''): ?>
 <h3>Note de relecture</h3><p class="preview-text"><?= cmsEsc($display['editor_note']) ?></p>
 <?php endif; ?>
