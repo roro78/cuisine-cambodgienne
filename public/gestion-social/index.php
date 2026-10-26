@@ -250,7 +250,7 @@ if ($authenticated) {
         $status = (string)($_GET['status'] ?? 'draft');
         $allowed = ['all', 'draft', 'approved', 'revision_requested', 'rejected', 'publishing', 'published', 'manual_review', 'sources'];
         if (!in_array($status, $allowed, true)) $status = 'draft';
-        $sql = 'SELECT id::text AS id,source_id,source_fingerprint,source_snapshot,scheduled_date::text AS scheduled_date,facebook_caption,instagram_caption,image_url,status,fb_state,ig_state,human_decision,human_note,decided_at::text AS decided_at,approved_at::text AS approved_at,published_at,facebook_post_id,instagram_post_id FROM cuisine_social.posts';
+        $sql = 'SELECT id::text AS id,source_id,source_fingerprint,source_snapshot,scheduled_date::text AS scheduled_date,facebook_caption,instagram_caption,image_url,status,fb_state,ig_state,human_decision,human_note,decided_at::text AS decided_at,approved_at::text AS approved_at,published_at::text AS published_at,facebook_post_id,instagram_post_id FROM cuisine_social.posts';
         if ($status !== 'all' && $status !== 'sources') $sql .= ' WHERE status = :status';
         $candidate = filter_var($_GET['page'] ?? 1, FILTER_VALIDATE_INT,
             ['options' => ['min_range' => 1, 'max_range' => 100000]]);
