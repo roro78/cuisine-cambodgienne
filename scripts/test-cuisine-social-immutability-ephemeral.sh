@@ -27,4 +27,10 @@ docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < automa
 # The reader provisioning must also be idempotent for controlled retries.
 docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < automation/n8n/sql/social-viewer-role-provisioning-REVIEW.sql >/dev/null
 docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < tests/sql/social-viewer-role-smoke.sql
+# Test draft>1 reservation permissions on disposable data only. The SQL is
+# review-only in GitHub; it is NEVER sent to Supabase by CI.
+docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < tests/sql/social-validation-dispatch-policy-fixture.sql >/dev/null
+docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < automation/n8n/sql/social-validation-dispatch-policy-REVIEW.sql >/dev/null
+docker exec -i "$id" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < tests/sql/social-validation-dispatch-policy-smoke.sql
+
 
