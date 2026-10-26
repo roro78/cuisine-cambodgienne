@@ -15,6 +15,7 @@ on:
       - "tests/social-private-dashboard-contract.test.mjs"
       - "tests/social-private-dashboard-history.test.mjs"
       - "tests/social-private-dashboard-http-smoke.test.mjs"
+      - "scripts/verify-social-dashboard-scope.mjs"
   workflow_dispatch:
 
 permissions:
@@ -30,6 +31,10 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Enforce dashboard-only PR scope (no n8n/catalog regressions)
+        run: node scripts/verify-social-dashboard-scope.mjs
       - name: PHP syntax
         run: |
           php -l public/gestion-social/index.php

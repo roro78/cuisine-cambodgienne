@@ -191,3 +191,8 @@ Le pont n8n sépare maintenant les **GET metadata** de l'API publique :
 Il refuse tout affichage de bouton si la liste dépasse 20 exécutions, est paginée, contient des IDs dupliqués, si le détail manque ou si le statut change entre les GET. Il ne crée aucune exécution ; les tests simulent une liste sans données puis une lecture détaillée, les états périmés, réponses tronquées, autres workflows et IDs erronés. En cas d'échec, le lien de validation déjà envoyé par e-mail reste utilisable.
 
 **Invariant permanent :** nouveau contenu du catalogue → proposition sociale du workflow 01 (selon son planning existant) → file `draft` → décision humaine via le même `Wait` → workflows 02/03 inchangés. Ne pas modifier les exports 01/02/03, ni générer de nouveau mail, ni publier en production au cours de cette livraison.
+
+
+### Anti-régression automatique sur la PR #129
+
+La CI ciblée exécute désormais `scripts/verify-social-dashboard-scope.mjs` sur le vrai diff `origin/main...HEAD`. La liste d'autorisations contient uniquement **le PHP du dashboard, les tests, le diagnostic SQL en lecture seule et la documentation**. Toute modification de `automation/n8n/01-drafts-email-approval.json`, de `02`, de `03`, du schéma n8n, de `src/data/socialCatalog.ts` ou de `src/pages/social-feed.json.ts` fait **échouer la CI**. Ce garde-fou ne protège pas le runtime n8n lui-même : il protège le périmètre des commits GitHub de cette PR, sans toucher à la production.
