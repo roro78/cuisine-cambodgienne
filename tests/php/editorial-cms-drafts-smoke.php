@@ -147,6 +147,72 @@ try{
     'Révision structurée autorisée échouée');
   check(count(glob($dir.'/*.json'))===4,'Publication involontaire');
 
+  // Guided form: only edit specific rows, preserve inaccessible media/metadata.
+  $guidedRecipe=['id'=>$id,'model'=>'recipes','editable'=>true,
+    'fingerprint'=>str_repeat('a',64),
+    'fields'=>['baseServings'=>4,'prepTime'=>'30 min','cookTime'=>'25 min',
+      'ingredients'=>[
+        ['quantity'=>600,'unit'=>'g','name'=>'poisson','group'=>'Base','scalable'=>false],
+        ['quantity'=>250,'unit'=>'ml','name'=>'coco','note'=>'sans sucre']
+      ],
+      'steps'=>[['title'=>'Préparer','text'=>'Avant la cuisson','cue'=>'Base homogène']]]];
+  $guidedWorkshop=['id'=>'atelier:atelier-test','model'=>'workshops','editable'=>true,
+    'fingerprint'=>str_repeat('a',64),
+    'fields'=>['steps'=>[['title'=>'Mortier','action'=>'Piler doucement',
+       'observe'=>'La texture','cue'=>'Pâte fine','success'=>'Arômes libérés']]]];
+  $guide=cmsGuidedSourceList(['product'=>'cuisine-du-cambodge',
+    'schemaVersion'=>1,'dataContract'=>'approved-public-form-fields-v1',
+    'items'=>[$guidedRecipe,$guidedWorkshop]],$canon);
+  check(count($guide)===2,'Formulaire guidé absent');
+  $input=['baseServings'=>'4','prepTime'=>'35 min','cookTime'=>'25 min',
+    'ingredients'=>[
+      ['quantity'=>'650','unit'=>'g','name'=>'poisson blanc'],
+      ['quantity'=>'250,5','unit'=>'ml','name'=>'lait coco']
+    ],
+    'steps'=>[['title'=>'Préparer','text'=>'Mélanger avant cuisson',
+      'cue'=>'La base est homogène']]];
+  $json=cmsBuildGuidedPatch($guide[$id],$input);
+  $parsed=json_decode($json,true,20,JSON_THROW_ON_ERROR);
+  check($parsed['ingredients'][0]['quantity']===650
+     && $parsed['ingredients'][1]['quantity']===250.5,
+     'Modification quantité mobile non reconnue');
+  check($parsed['ingredients'][0]['scalable']===false
+     && $parsed['ingredients'][0]['group']==='Base'
+     && $parsed['ingredients'][1]['note']==='sans sucre',
+     'Champs non édités supprimés');
+  check($parsed['steps'][0]['cue']==='La base est homogène',
+     'Repère de recette perdu');
+  $badForm=$input;
+  $badForm['ingredients'][0]['evil']='secret';
+  $blocked=false;
+  try{cmsBuildGuidedPatch($guide[$id],$badForm);}
+  catch(InvalidArgumentException $e){$blocked=true;}
+  check($blocked,'Modification hors formulaire acceptée');
+  $badForm=$input;
+  array_pop($badForm['ingredients']);
+  $blocked=false;
+  try{cmsBuildGuidedPatch($guide[$id],$badForm);}
+  catch(InvalidArgumentException $e){$blocked=true;}
+  check($blocked,'Suppression de ligne autorisée');
+  $badFeed=$guidedRecipe;$badFeed['fingerprint']=str_repeat('b',64);
+  $blocked=false;
+  try{cmsGuidedSourceList(['product'=>'cuisine-du-cambodge','schemaVersion'=>1,
+     'dataContract'=>'approved-public-form-fields-v1','items'=>[$badFeed]],$canon);}
+  catch(UnexpectedValueException $e){$blocked=true;}
+  check($blocked,'Ancien formulaire source accepté');
+  $workshopInput=['steps'=>[['title'=>'Mortier','action'=>'Piler',
+    'observe'=>'Pâte','cue'=>'Texture fine','success'=>'Pâte prête']]];
+  $workshopPatch=cmsBuildGuidedPatch($guide['atelier:atelier-test'],$workshopInput);
+  check(json_decode($workshopPatch,true,10,JSON_THROW_ON_ERROR)['steps'][0]['action']==='Piler',
+    'Atelier visuel non validé');
+  $readOnly=['id'=>'atelier:atelier-test','model'=>'cookingWorkshopGuides',
+     'editable'=>false,'fingerprint'=>str_repeat('a',64),
+     'fields'=>['phases'=>[['id'=>'preparer','title'=>'Avant','learning'=>'Le geste']]]];
+  $blocked=false;
+  try{cmsBuildGuidedPatch($readOnly,['phases'=>[]]);}
+  catch(InvalidArgumentException $e){$blocked=true;}
+  check($blocked,'Atelier audio modifiable sans contrôle');
+
   echo "CMS_PRIVATE_DRAFTS_APPEND_ONLY_PASS\n";
 }finally{
   if(is_dir($base.'/editorial-drafts')){
