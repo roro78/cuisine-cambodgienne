@@ -10,8 +10,9 @@ BEGIN
     CREATE ROLE cuisine_social_viewer LOGIN NOINHERIT;
   END IF;
 END $$;
--- Refuser les deux sens d'une appartenance à un rôle : héritage ou usage accordé
--- à un tiers. Le rôle est réservé exclusivement au portail de consultation.
+-- Refuser toutes les appartenances, sauf celle que Supabase attribue automatiquement
+-- à postgres avec ADMIN=true, INHERIT=false, SET=false. Aucune autre exception.
+-- Le rôle est réservé exclusivement au portail de consultation.
 -- Refuser de réutiliser silencieusement un rôle existant trop privilégié.
 -- NOINHERIT seul ne protège pas contre SET ROLE et BYPASSRLS.
 DO $$
@@ -21,7 +22,17 @@ BEGIN
      WHERE r.rolname='cuisine_social_viewer'
        AND (NOT r.rolcanlogin OR r.rolinherit OR r.rolsuper OR r.rolbypassrls
             OR r.rolcreatedb OR r.rolcreaterole OR r.rolreplication
-            OR EXISTS(SELECT 1 FROM pg_auth_members m WHERE m.member=r.oid OR m.roleid=r.oid))
+            OR EXISTS(
+              SELECT 1 FROM pg_auth_members m
+              LEFT JOIN pg_roles member_role ON member_role.oid=m.member
+              WHERE m.member=r.oid
+                 OR (m.roleid=r.oid AND NOT (
+                       member_role.rolname='postgres'
+                       AND m.admin_option=true
+                       AND m.inherit_option=false
+                       AND m.set_option=false
+                    ))
+            ))
   ) THEN
     RAISE EXCEPTION 'cuisine_social_viewer role is unsafe; manual remediation required';
   END IF;

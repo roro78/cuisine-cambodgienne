@@ -76,7 +76,12 @@ test('viewer role is fixed, cannot inherit privileges or bypass PostgreSQL RLS',
    assert.ok(src.includes(part),part);
  assert.match(src,/pg_auth_members/);
  assert.match(src,/pg_policies/);
- assert.match(src,/m\.member=r\.oid OR m\.roleid=r\.oid/);
+ assert.match(src,/m\.member=r\.oid/);
+ assert.match(src,/m\.roleid=r\.oid/);
+ for(const clause of [
+   "member_role.rolname='postgres'",
+   'm.admin_option=true','m.inherit_option=false','m.set_option=false'
+ ])assert.ok(src.includes(clause),'Missing strict Supabase membership predicate: '+clause);
  assert.match(src,/qual='true' AND with_check IS NULL/);
  assert.match(src,/roles=ARRAY\['cuisine_social_viewer'\]::name\[\]/);
  assert.match(src,/is_link\(\$path\)/);
@@ -102,6 +107,10 @@ test('provisioning refuses elevated viewer roles and checks policy drift',()=>{
    assert.ok(sql.includes(part),part);
  assert.match(sql,/BEGIN;[\s\S]*COMMIT;/);
  assert.doesNotMatch(sql,/PASSWORD\s+'[^']+'/i);
+ for(const clause of [
+   "member_role.rolname='postgres'",
+   'm.admin_option=true','m.inherit_option=false','m.set_option=false'
+ ])assert.ok(sql.includes(clause),'Missing safe platform membership predicate: '+clause);
 });
 
 

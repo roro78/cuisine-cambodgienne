@@ -211,7 +211,17 @@ if ($authenticated) {
         $identity = $pdo->query(
             "SELECT current_user AS db_user, r.rolcanlogin, r.rolinherit, r.rolsuper,
                     r.rolbypassrls, r.rolcreatedb, r.rolcreaterole, r.rolreplication,
-                    EXISTS(SELECT 1 FROM pg_auth_members m WHERE m.member=r.oid OR m.roleid=r.oid) AS has_memberships,
+                    EXISTS(
+                      SELECT 1 FROM pg_auth_members m
+                      LEFT JOIN pg_roles member_role ON member_role.oid=m.member
+                      WHERE m.member=r.oid
+                         OR (m.roleid=r.oid AND NOT (
+                             member_role.rolname='postgres'
+                             AND m.admin_option=true
+                             AND m.inherit_option=false
+                             AND m.set_option=false
+                         ))
+                    ) AS has_memberships,
                     (SELECT c.relrowsecurity FROM pg_class c
                        JOIN pg_namespace n ON n.oid=c.relnamespace
                       WHERE n.nspname='cuisine_social' AND c.relname='posts') AS rls_enabled,

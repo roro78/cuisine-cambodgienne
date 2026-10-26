@@ -225,3 +225,12 @@ Le rapprochement n8n affiche désormais un bouton seulement si **tous** les cont
 6. **STOP** sur toute dérive, doublon, erreur de credential, délai expiré ou indisponibilité. Pas d'activation de tâche ou d'envoi automatique sans contrôle.
 
 **Ensuite seulement** : la bibliothèque pourra ajouter progressivement « Corriger », « Mettre en brouillon » et « Dépublier » pour les contenus du site, avec versions, aperçu et déploiement contrôlé, **sans confondre dépublication d'une page et suppression d'un post Meta**.
+
+
+### Provisionnement en production : lecteur Supabase — 26 octobre 2026
+
+Avec accord utilisateur, la migration `cuisine_social_viewer_read_only_20261026` a été appliquée au seul projet Cuisine du Cambodge. Rôle `cuisine_social_viewer` LOGIN/NOINHERIT sans mot de passe initial ni attribut élevé. Permissions revérifiées : `USAGE` du schéma, `SELECT` de `cuisine_social.posts`, aucun `INSERT`, `UPDATE`, `DELETE`, `TRUNCATE` ni accès aux réservations `validation_dispatches`. La policy RLS de lecture est dédiée ; les cinq policies n8n initiales restent inchangées. Le post historique est conservé.
+
+Supabase attribue automatiquement l'appartenance administrative `postgres → cuisine_social_viewer` avec `ADMIN=true, INHERIT=false, SET=false`. Le dashboard et le script de provisionnement REVIEW acceptent désormais uniquement cette appartenance administrative sans héritage ni prise de rôle, tout en refusant toute autre relation à un rôle. Aucune appartenance supplémentaire n'a été ajoutée ni retirée.
+
+Le dashboard OVH n'est pas encore raccordé : mot de passe du rôle non configuré (volontairement), secrets à conserver hors webroot, compatibilité PHP/pdo_pgsql/TLS et expérience Android encore à réceptionner. Aucun workflow n8n ni publication Meta modifié.
