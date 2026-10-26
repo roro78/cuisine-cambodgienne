@@ -27,7 +27,7 @@ test('the dashboard explains catalog-to-draft intake and exposes per-source revi
  for(const fragment of [
   'social-feed.json','chaque jour à 7 h','cuisine_social.posts',
   'créer une page ne déclenche pas immédiatement un e-mail',
-  "'draft' ?? 0", "'revision_requested' ?? 0",
+  "'draft'] ?? 0", "'revision_requested'] ?? 0",
   'Aucun brouillon en attente de validation','sourceKindLabels',
   'Carnet culturel','Recette','Atelier','À valider'
  ]) assert.ok(src.includes(fragment),fragment);
