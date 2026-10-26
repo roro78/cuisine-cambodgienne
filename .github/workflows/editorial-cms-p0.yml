@@ -1,0 +1,50 @@
+name: CMS editorial P0 targeted tests
+on:
+  push:
+    branches: ['cms/editorial-drafts-p0-20261026']
+    paths:
+      - 'public/gestion-contenus/**'
+      - 'tests/php/editorial-cms-drafts-smoke.php'
+      - 'tests/editorial-cms-contract.test.mjs'
+      - '.github/workflows/editorial-cms-p0.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cms-p0-isolated-check
+  cancel-in-progress: true
+
+jobs:
+  cms-private:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: PHP syntax
+        run: |
+          php -l public/gestion-contenus/lib.php
+          php -l public/gestion-contenus/index.php
+          php -l tests/php/editorial-cms-drafts-smoke.php
+      - name: Real isolated private draft revisions
+        run: php tests/php/editorial-cms-drafts-smoke.php
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: CMS security contract
+        run: node --test tests/editorial-cms-contract.test.mjs
+      - name: Guard existing Astro and social sources unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main
+          CHANGED=$(git diff --name-only origin/main...HEAD)
+          echo "$CHANGED"
+          if echo "$CHANGED" | grep -v -E '^(public/gestion-contenus/|tests/php/editorial-cms-drafts-smoke.php$|tests/editorial-cms-contract.test.mjs$|docs/CMS-EDITORIAL-PLAN-20261026.md$|.github/workflows/editorial-cms-p0.yml$)' | grep .; then
+            echo 'CMS_P0_SCOPE_FAIL'
+            exit 1
+          fi
+          echo 'CMS_P0_SCOPE_PASS'
