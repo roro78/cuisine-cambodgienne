@@ -55,3 +55,21 @@ La PR #130 contient maintenant un validateur de patchs JSON partiels par type de
 **P0B NON TERMINÉ :** l'interface propose pour l'instant une saisie JSON validée destinée à préparer la transition ; elle ne charge pas encore le contenu Astro intégral sous forme de champs guidés. Il manque le manifeste canonique à SHA complet, l'éditeur de formulaires de tous les champs natifs, le diff GitHub épinglé et la revue build Astro. L'empreinte actuelle du social-feed, centrée sur les extraits sociaux, ne couvre pas exhaustivement les ingrédients/MP3. Il est donc interdit de considérer ces patchs comme applicables automatiquement à la production.
 
 **Discipline PR :** #128 a été clôturée sans fusion, ses documents de pilotage conservés dans #127. #127 reste la revue d'images Carnets ; #129 la réception dashboard social ; #130 le CMS. Aucune nouvelle PR P0B, aucune activation ou publication de contenu.
+
+
+## 27 octobre — empreinte exhaustive du modèle Astro (P0B / garde avant écriture)
+
+Ajout de `/editorial-source-index.json`, **index public non confidentiel contenant uniquement** les identifiants, familles, noms de modèles et SHA-256 des **enregistrements complets**. Les ingrédients, toutes les étapes, scripts d'atelier, liens médias et références internes contribuent au SHA-256, **mais ne figurent pas dans le JSON transmis**. Aucun contenu éditorial original n'est dupliqué dans cette URL ; pas d'impact sur `social-feed.json` ni sur la logique des trois workflows n8n.
+
+Le CMS PHP confronte chaque proposition structurée à cet index complet et vérifie :
+- présence de chaque `source_id` du catalogue, unicité et modèle autorisé ;
+- empreinte exacte affichée à l'ouverture et soumise à l'enregistrement ;
+- absence de variation depuis la révision privée précédente (blocage fail-closed) ;
+- rejet d'une suppression silencieuse de la structure d'un brouillon ;
+- conservation de l'historique append-only et du circuit distinct pour les seules propositions textuelles.
+
+**Compatibilité :** si `editorial-source-index.json` n'a pas encore été déployé sur OVH, le CMS permet encore les propositions textuelles P0A, mais **refuse toute sauvegarde structurée**. Il ne doit jamais inventer une empreinte ou se rabattre sur celle du catalogue social. Les anciens brouillons structurés sans empreinte canonique nécessitent une réconciliation éditoriale explicite, pas un écrasement automatique.
+
+**Limites :** cet index est calculé lors du build et décrit la version du site servi par OVH, pas nécessairement le `main` actuel après de nouveaux commits. L'étape ultérieure de génération de PR doit vérifier l'identité du blob GitHub source et la version du contenu canonique **au moment de l'application**, puis reconstruire/tester Astro. L'interface P0B reste une édition de propositions JSON, pas encore une édition guidée de tous les champs ni un éditeur de MP3. Aucun déploiement ni lancement n8n/Meta/Resend n'est autorisé par ce jalon.
+
+**Tests :** ajout des contrôles PHP de refus des index absents, modifiés ou dupliqués et des tests Node construisant le vrai catalogue Astro pour vérifier les identifiants et les variations de digest lors du changement d'une quantité, d'une narration ou d'une référence MP3. Les tests rejoignent la CI principale. Si elle échoue, ne pas fusionner.
