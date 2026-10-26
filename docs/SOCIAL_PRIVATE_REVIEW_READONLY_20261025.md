@@ -198,3 +198,8 @@ N8N_API_KEY="$N8N_API_KEY" N8N_WAIT_BASIC_CREDENTIAL_ID="$N8N_WAIT_BASIC_CREDENT
 ```
 
 Cette commande **ne peut pas écrire** dans n8n : aucun argument d'application n'est accepté. Après validation du rapport, toute pose du credential Basic Auth devra être une opération séparée avec revue, sauvegarde et procédure de rollback, en conservant le seul `Wait` existant.
+
+
+### Jalon de sécurité supplémentaire — contrôle d'exécutions exhaustif
+
+L'audit GET-only ne se contente plus des requêtes n8n filtrées `status=waiting/running` : il recense aussi **sans filtre de statut** toutes les exécutions conservées pour le workflow 01, avec pagination bornée, rejet des curseurs répétés, vérification de `workflowId` sur chaque ligne et liste blanche des états terminés (`success`, `error`, `canceled`, `crashed`). Les états `running`, `waiting`, `new` et inconnus sont bloquants, même lorsqu'une API défaillante renvoie zéro résultat aux filtres. Si la liste est trop longue pour être parcourue complètement, le contrôle échoue fermé. **Attention : l'absence d'exécutions dans l'historique conservé n'est pas la preuve définitive qu'aucune reprise Wait n'existe au runtime** ; un contrôle humain dans n8n reste obligatoire avant toute édition.

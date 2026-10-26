@@ -25,8 +25,10 @@ test('GET-only audit checks workflows, running/waiting executions, then plans sa
  };
  const x=await dryRunWaitFormAuth({request,credential:ref});
  assert.equal(x.changed,true);
- assert.equal(seen.length,5);
+ assert.equal(seen.length,6);
  assert.ok(seen.every(p=>p.startsWith('/workflows')||p.startsWith('/executions')||p.startsWith('/credentials')));
+ assert.ok(seen.some(p=>p.startsWith('/executions?workflowId=wf_123&limit=100')),
+   'Audit must independently inspect unfiltered execution states');
  assert.ok(seen.some(p=>p.includes('status=waiting')));
  assert.ok(seen.some(p=>p.includes('status=running')));
 });
@@ -63,6 +65,62 @@ test('missing, unknown or wrong-type credential fails closed',async()=>{
    if(path.startsWith('/credentials?'))return {data:bad};
    if(path==='/workflows/wf_123')return workflow();
    throw Error('unknown path');
+  };
+  await assert.rejects(dryRunWaitFormAuth({request,credential:ref}));
+ }
+});
+
+test('unfiltered history refuses live or unfamiliar states even when filtered API lies',async()=>{
+ const statuses=['running','waiting','new','paused','unknown'];
+ for(const status of statuses){
+  const request=async path=>{
+   if(path.startsWith('/workflows?'))return {data:[{name:target.name,id:'wf_123'}]};
+   if(path.includes('status=waiting')||path.includes('status=running'))return {data:[]};
+   if(path.startsWith('/executions?'))return {data:[{workflowId:'wf_123',status,id:'ex1'}]};
+   if(path.startsWith('/credentials?'))return {data:[{id:ref.id,name:ref.name,type:'httpBasicAuth'}]};
+   if(path==='/workflows/wf_123')return workflow();
+   throw Error('unexpected path');
+  };
+  await assert.rejects(dryRunWaitFormAuth({request,credential:ref}));
+ }
+});
+test('unfiltered history accepts only completed states with exact workflow identity',async()=>{
+ let count=0;
+ const request=async path=>{
+  if(path.startsWith('/workflows?'))return {data:[{name:target.name,id:'wf_123'}]};
+  if(path.includes('status=waiting')||path.includes('status=running'))return {data:[]};
+  if(path.startsWith('/executions?')){
+   if(path.includes('cursor=next'))return {data:[{workflowId:'wf_123',status:'crashed'}]};
+   count++;
+   return {data:[
+     {workflowId:'wf_123',status:'success'},{workflowId:'wf_123',status:'error'},
+     {workflowId:'wf_123',status:'canceled'}],nextCursor:'next'};
+  }
+  if(path.startsWith('/credentials?'))return {data:[{id:ref.id,name:ref.name,type:'httpBasicAuth'}]};
+  if(path==='/workflows/wf_123')return workflow();
+  throw Error('unexpected path');
+ };
+ const result=await dryRunWaitFormAuth({request,credential:ref});
+ assert.equal(result.inspectedExecutions,4);
+ assert.equal(count,1);
+});
+test('repeated cursors, missing workflow identity or API pagination ambiguity fail closed',async()=>{
+ for(const failure of ['cursor','missing-id','foreign-id','bad-cursor']){
+  const request=async path=>{
+   if(path.startsWith('/workflows?')){
+    if(failure==='cursor')return {data:[],nextCursor:'repeat'};
+    return {data:[{name:target.name,id:'wf_123'}]};
+   }
+   if(path.includes('status=waiting')||path.includes('status=running'))return {data:[]};
+   if(path.startsWith('/executions?')){
+    if(failure==='missing-id')return {data:[{status:'success'}]};
+    if(failure==='foreign-id')return {data:[{workflowId:'other',status:'success'}]};
+    if(failure==='bad-cursor')return {data:[],nextCursor:12345};
+    return {data:[]};
+   }
+   if(path.startsWith('/credentials?'))return {data:[{id:ref.id,name:ref.name,type:'httpBasicAuth'}]};
+   if(path==='/workflows/wf_123')return workflow();
+   throw Error('unexpected path');
   };
   await assert.rejects(dryRunWaitFormAuth({request,credential:ref}));
  }

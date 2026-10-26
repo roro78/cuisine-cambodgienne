@@ -10,16 +10,30 @@ import {pathToFileURL} from 'node:url';
 import {planWaitFormBasicAuth} from './cuisine-social-wait-form-auth-plan.mjs';
 const NAME='Cuisine du Cambodge - 01 - Brouillon IA et validation email';
 const load=p=>JSON.parse(readFileSync(new URL(p,import.meta.url),'utf8'));
-export async function dryRunWaitFormAuth({request,credential}){
-  let cursor, found=[];
-  do {
+// Refuse pagination loops, excessive/ambiguous listing, and hidden concurrent edits.
+async function readPaged(request,endpoint,collect,{maxPages=20}={}){
+  const cursors=new Set();
+  let cursor=null;
+  for(let pageNo=0;pageNo<maxPages;pageNo++){
     const query=new URLSearchParams({limit:'100'});
-    if(cursor) query.set('cursor',cursor);
-    const page=await request('/workflows?'+query);
-    assert.ok(Array.isArray(page.data),'Invalid n8n workflow list');
-    found.push(...page.data.filter(w=>w.name===NAME).map(w=>String(w.id)));
-    cursor=page.nextCursor||null;
-  } while(cursor);
+    if(cursor)query.set('cursor',cursor);
+    const page=await request(endpoint+(endpoint.includes('?')?'&':'?')+query.toString());
+    assert.ok(Array.isArray(page?.data),'Malformed n8n list: '+endpoint.split('?')[0]);
+    for(const item of page.data)collect(item);
+    if(!page.nextCursor)return;
+    assert.ok(typeof page.nextCursor==='string'&&page.nextCursor.length<=1024,
+      'Invalid n8n cursor');
+    assert.ok(!cursors.has(page.nextCursor),'Repeated n8n cursor');
+    cursors.add(page.nextCursor);
+    cursor=page.nextCursor;
+  }
+  throw Error('n8n list too large for a complete GET-only safety audit');
+}
+export async function dryRunWaitFormAuth({request,credential}){
+  let found=[];
+  await readPaged(request,'/workflows',w=>{
+    if(w?.name===NAME)found.push(String(w.id));
+  });
   assert.equal(found.length,1,'Missing or ambiguous Cuisine 01 workflow');
   const id=found[0];
   assert.match(id,/^[A-Za-z0-9_-]+$/,'Unsafe workflow id');
@@ -30,17 +44,24 @@ export async function dryRunWaitFormAuth({request,credential}){
     assert.equal(page.data.length,0,'Live '+status+' execution: do not change Wait authentication');
     assert.ok(!page.nextCursor,'Ambiguous n8n '+status+' pagination');
   }
+  // An independent, UNFILTERED inspection defeats false confidence from
+  // API implementations ignoring the waiting/running query parameter.
+  // Any incomplete history, missing identity, or unfamiliar state fails closed.
+  const completedStates=new Set(['success','error','canceled','crashed']);
+  let inspected=0;
+  await readPaged(request,'/executions?workflowId='+encodeURIComponent(id),execution=>{
+    inspected++;
+    assert.ok(execution&&String(execution.workflowId)===id,
+      'n8n execution missing/mismatched workflow ID');
+    assert.ok(completedStates.has(execution.status),
+      'Unfinished or unfamiliar execution state: migration blocked');
+  });
   // Credential metadata only: private API never exposes Basic Auth secrets.
   // An API key without credential:list permission fails closed.
-  let credentials=[],credentialCursor;
-  do{
-    const q=new URLSearchParams({limit:'100'});
-    if(credentialCursor)q.set('cursor',credentialCursor);
-    const page=await request('/credentials?'+q);
-    assert.ok(Array.isArray(page.data),'Credential metadata API unavailable');
-    credentials.push(...page.data.filter(c=>String(c.id)===credential?.id));
-    credentialCursor=page.nextCursor||null;
-  }while(credentialCursor);
+  let credentials=[];
+  await readPaged(request,'/credentials',c=>{
+    if(c&&String(c.id)===credential?.id)credentials.push(c);
+  });
   assert.equal(credentials.length,1,'Wait credential missing, ambiguous or not visible');
   assert.equal(credentials[0].name,credential.name,'Wrong Wait credential name');
   assert.equal(credentials[0].type,'httpBasicAuth','Credential is not HTTP Basic Auth');
@@ -51,7 +72,7 @@ export async function dryRunWaitFormAuth({request,credential}){
     load('../tests/fixtures/social-resend-email-predecessor.json').body,
     credential);
   return {changed:outcome.changed,workflowId:id,versionId:live.versionId,
-    credentialName:outcome.credentialReference.name};
+    inspectedExecutions:inspected,credentialName:outcome.credentialReference.name};
 }
 async function main(){
   assert.equal(process.argv.length,2,'Read-only preflight accepts no write arguments');
