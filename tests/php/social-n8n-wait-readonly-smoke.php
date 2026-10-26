@@ -38,4 +38,53 @@ foreach(['status','workflow','fingerprint','caption','post-status','post-id','si
   requireTrue(socialExecutionWaitLinks($items,[$row],$workflow)===[],'Unsafe mapping for '.$failure);
 }
 requireTrue(socialExistingN8nWaitLinks([],[$post])===null,'Missing config must not access n8n');
+
+$cfg=['n8n_readonly_api_key'=>str_repeat('a',32),'n8n_social_workflow_id'=>$workflow];
+$requests=[];
+$workflowDefinition=['id'=>$workflow,'name'=>'Cuisine du Cambodge - 01 - Brouillon IA et validation email',
+ 'nodes'=>[['name'=>'Attendre une décision via formulaire',
+            'type'=>'n8n-nodes-base.wait','parameters'=>['resume'=>'form']]]];
+$detail=['id'=>'123']+$execution;
+$reader=static function(string $requested,string $apiKey) use (&$requests,$workflowDefinition,$workflow,$detail):?array {
+  $requests[]=$requested;
+  requireTrue($apiKey===str_repeat('a',32),'Unexpected credential');
+  if(str_contains($requested,'/workflows/'))return $workflowDefinition;
+  if(str_contains($requested,'/executions?'))return ['data'=>[
+    ['id'=>'123','workflowId'=>$workflow,'status'=>'waiting']
+  ]];
+  if(str_contains($requested,'/executions/123?includeData=true'))return $detail;
+  throw new RuntimeException('Unexpected read URL');
+};
+requireTrue(socialExistingN8nWaitLinks($cfg,[$post],$reader)===[$id=>$url],
+ 'Split list/detail API GET did not find exact existing Wait form');
+requireTrue(count($requests)===3,'Expected workflow, list and detailed execution GET');
+requireTrue(!str_contains($requests[1],'includeData=true'),
+ 'Listing must avoid heavyweight execution payloads');
+requireTrue(str_contains($requests[2],'/executions/123?includeData=true'),
+ 'Read full waiting execution only by ID');
+foreach(['wrong-id','stale-status','redacted','truncated','duplicate','wrong-workflow'] as $flaw) {
+ $badReader=static function(string $request,string $apiKey)use($reader,$flaw,$detail):?array{
+  if(str_contains($request,'/executions?')){
+   if($flaw==='truncated')return ['data'=>[
+      ['id'=>'123','workflowId'=>'test_workflow_id','status'=>'waiting']
+    ],'nextCursor'=>'more'];
+   if($flaw==='duplicate')return ['data'=>[
+     ['id'=>'123','workflowId'=>'test_workflow_id','status'=>'waiting'],
+     ['id'=>'123','workflowId'=>'test_workflow_id','status'=>'waiting']
+   ]];
+  }
+  if(str_contains($request,'/executions/123?includeData=true')){
+    $d=$detail;
+    if($flaw==='wrong-id')$d['id']='999';
+    if($flaw==='stale-status')$d['status']='success';
+    if($flaw==='redacted')unset($d['data']);
+    if($flaw==='wrong-workflow')$d['workflowId']='foreign';
+    return $d;
+  }
+  return $reader($request,$apiKey);
+ };
+ requireTrue(socialExistingN8nWaitLinks($cfg,[$post],$badReader)===null,
+   'Fail-closed n8n API invariant violated: '.$flaw);
+}
+
 echo "SOCIAL_EXISTING_N8N_WAIT_READONLY_PASS\n";

@@ -83,14 +83,15 @@ function socialN8nGet(string $url,string $apiKey): ?array {
     }catch(JsonException $e){return null;}
 }
 /** Returns null if not configured / API unavailable; never expose API key. */
-function socialExistingN8nWaitLinks(array $cfg,array $posts): ?array {
+function socialExistingN8nWaitLinks(array $cfg,array $posts,?callable $request=null): ?array {
+    $request ??= 'socialN8nGet';
     $key=$cfg['n8n_readonly_api_key']??null;
     $id=$cfg['n8n_social_workflow_id']??null;
     if(!is_string($key)||strlen($key)<16||!is_string($id)
         ||!preg_match('/^[A-Za-z0-9_-]{1,120}$/D',$id))return null;
     if(count($posts)>50)return null;
     $api='https://n8n.orvekio.com/api/v1/';
-    $workflow=socialN8nGet($api.'workflows/'.rawurlencode($id),$key);
+    $workflow=$request($api.'workflows/'.rawurlencode($id),$key);
     if(!is_array($workflow)
         || (string)($workflow['id']??'')!==$id
         || ($workflow['name']??'')!=='Cuisine du Cambodge - 01 - Brouillon IA et validation email')
@@ -102,11 +103,29 @@ function socialExistingN8nWaitLinks(array $cfg,array $posts): ?array {
         &&($n['type']??'')==='n8n-nodes-base.wait'
         &&($n['parameters']['resume']??'')==='form'));
     if(count($waitNodes)!==1)return null;
+    // List endpoint yields lightweight records; saved runData and Wait metadata
+    // must be retrieved from GET /executions/{id}?includeData=true instead.
+    // Bound the workload: if the queue is larger than we can verify, refuse
+    // EVERY direct link and preserve the existing e-mail validation path.
     $query=http_build_query(['workflowId'=>$id,'status'=>'waiting',
-                             'includeData'=>'true','limit'=>100],'','&',PHP_QUERY_RFC3986);
-    $page=socialN8nGet($api.'executions?'.$query,$key);
+                             'limit'=>21],'','&',PHP_QUERY_RFC3986);
+    $page=$request($api.'executions?'.$query,$key);
     if(!is_array($page)||!isset($page['data'])||!is_array($page['data'])
-        ||count($page['data'])>100 || !empty($page['nextCursor']))return null;
-    // Unavailable, redacted or unsaved data will simply yield no buttons.
-    return socialExecutionWaitLinks($page['data'],$posts,$id);
+        ||count($page['data'])>20 || !empty($page['nextCursor']))return null;
+    $details=[];
+    $ids=[];
+    foreach($page['data'] as $summary) {
+        if(!is_array($summary) || (string)($summary['workflowId']??'')!==$id
+            || ($summary['status']??null)!=='waiting')return null;
+        $executionId=socialPostId($summary['id']??null);
+        if($executionId===null || isset($ids[$executionId]))return null;
+        $ids[$executionId]=true;
+        $execution=$request($api.'executions/'.rawurlencode($executionId).'?includeData=true',$key);
+        if(!is_array($execution) || socialPostId($execution['id']??null)!==$executionId
+            || (string)($execution['workflowId']??'')!==$id
+            || ($execution['status']??null)!=='waiting'
+            || !is_array($execution['data']['resultData']['runData']??null))return null;
+        $details[]=$execution;
+    }
+    return socialExecutionWaitLinks($details,$posts,$id);
 }

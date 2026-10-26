@@ -180,3 +180,14 @@ sans preuve de conformité de l'exécution en attente, aucun bouton direct
 ne doit apparaître. La base de production n'a actuellement aucun brouillon
 `draft`, donc la fonction ne peut pas être testée de bout en bout en live
 sans nouveau brouillon explicitement autorisé. Pas de workflow 01/02/03 modifié.
+
+
+### Réception du pont Wait — lecture détaillée sans mutation
+
+Le pont n8n sépare maintenant les **GET metadata** de l'API publique :
+- `GET /api/v1/executions?workflowId=…&status=waiting&limit=21` (liste légère),
+- `GET /api/v1/executions/{id}?includeData=true` **uniquement pour les exécutions réellement en attente**, après validation de l'ID, du workflow et du statut.
+
+Il refuse tout affichage de bouton si la liste dépasse 20 exécutions, est paginée, contient des IDs dupliqués, si le détail manque ou si le statut change entre les GET. Il ne crée aucune exécution ; les tests simulent une liste sans données puis une lecture détaillée, les états périmés, réponses tronquées, autres workflows et IDs erronés. En cas d'échec, le lien de validation déjà envoyé par e-mail reste utilisable.
+
+**Invariant permanent :** nouveau contenu du catalogue → proposition sociale du workflow 01 (selon son planning existant) → file `draft` → décision humaine via le même `Wait` → workflows 02/03 inchangés. Ne pas modifier les exports 01/02/03, ni générer de nouveau mail, ni publier en production au cours de cette livraison.
