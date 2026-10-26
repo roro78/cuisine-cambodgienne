@@ -1,0 +1,175 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+
+// Static security contracts for the standalone OVH PHP reader.
+// This is not a runtime PHP/DB test and must not be mistaken for one.
+const src=readFileSync(new URL('../public/gestion-social/index.php',import.meta.url),'utf8');
+
+test('read-only social view is a PHP backend that fails closed',()=>{
+ assert.match(src,/^<\?php\s/);
+ assert.match(src,/function failClosed\(\): never/);
+ assert.match(src,/http_response_code\(503\)/);
+ assert.match(src,/dirname\(__DIR__, 3\).*\.cuisine-asset-portal/);
+ assert.match(src,/social_readonly_dsn/);
+ assert.match(src,/social_readonly_user/);
+ assert.match(src,/social_readonly_password/);
+ assert.doesNotMatch(src,/supabase_service_role|service_role_key|N8N_API_KEY|github_token.*\]/i);
+});
+test('login enforces HTTPS, strict session, CSRF, expiry and rate limits',()=>{
+ for(const key of [
+  'HTTPS obligatoire','session.use_strict_mode','session.use_only_cookies',
+  "'secure' => true","'httponly' => true","'samesite' => 'Strict'",
+  "hash_equals((string)$_SESSION['csrf']", 'password_verify(', 'session_regenerate_id(true)',
+  'rateLimit(', "count($times) >= 5", '1800'
+ ])assert.ok(src.includes(key),key);
+});
+test('client does not receive database credentials or broad script execution',()=>{
+ assert.match(src,/Content-Security-Policy: default-src 'none'/);
+ assert.match(src,/frame-ancestors 'none'/);
+ assert.match(src,/style-src 'nonce-/);
+ assert.match(src,/Referrer-Policy: no-referrer/);
+ assert.match(src,/Cache-Control: no-store/);
+ assert.doesNotMatch(src,/<script\b|XMLHttpRequest|<iframe\b/i);
+});
+test('database role must be SELECT-only and session becomes read-only',()=>{
+ assert.match(src,/has_table_privilege\(current_user,'cuisine_social.posts','SELECT'\)/);
+ for(const priv of ['INSERT','UPDATE','DELETE'])
+   assert.ok(src.includes("has_table_privilege(current_user,'cuisine_social.posts','"+priv+"')"),priv);
+ assert.match(src,/SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY/);
+ assert.match(src,/PDO::ATTR_EMULATE_PREPARES => false/);
+ assert.match(src,/PDO::PARAM_STR/);
+ assert.match(src,/LIMIT 50/);
+ assert.doesNotMatch(src,/\b(?:INSERT INTO|UPDATE cuisine_social|DELETE FROM|DROP TABLE|TRUNCATE\s+(?:TABLE\s+)?cuisine_social)\b/i);
+});
+test('safe image and canonical destination URLs, escaping and compact mobile photographs',()=>{
+ assert.match(src,/function pageUrl\(/);
+ assert.match(src,/function photoUrl\(/);
+ assert.match(src,/preg_match\('~\^https:\/\/www\[\.\]cuisine-du-cambodge/);
+ assert.match(src,/htmlspecialchars\(/);
+ assert.match(src,/white-space:pre-wrap/);
+ assert.match(src,/grid-template-columns:1fr/);
+ assert.match(src,/width:min\(100%,190px\)/);
+});
+test('existing signed Wait relay preserves the original decision authority',()=>{
+ assert.match(src,/function existingWaitUrl\(/);
+ assert.match(src,/form-waiting/);
+ assert.match(src,/\$authenticated && isset\(\$_POST\['open_existing_wait'\]\)/);
+ assert.match(src,/header\('Location: ' \./);
+ assert.match(src,/true, 303/);
+ assert.match(src,/name="wait_link"/);
+ assert.doesNotMatch(src, /name="decision"|name="approve"|\/api\/v1\/executions/i);
+});
+test('no approval bypass: this view is informative only',()=>{
+ assert.match(src,/Liste en consultation/);
+ assert.match(src,/Lien de validation reçu par e-mail/);
+ assert.doesNotMatch(src,/\bapprovePost\(|POST \/approve|\bstatus\s*=\s*['"]approved['"]/);
+ assert.match(src,/À valider/);
+ assert.match(src,/Instagram/);
+ assert.match(src,/Facebook/);
+});
+
+test('viewer role is fixed, cannot inherit privileges or bypass PostgreSQL RLS',()=>{
+ assert.match(src,/\$cfg\['social_readonly_user'\] !== \$expectedPgUser/);
+ assert.match(src,/sessionPoolerHost/);
+ assert.match(src,/\(\$dsnValues\['port'\] \?\? '5432'\) !== '5432'/);
+ assert.match(src,/\$dsnValues\['dbname'\] !== 'postgres'/);
+ assert.match(src,/cuisine_social_viewer[.]kljbnfjxwloiodwlbrrz/);
+ for(const part of ['rolinherit','rolsuper','rolbypassrls','rolcreaterole','rolcreatedb',
+   'rolreplication','has_memberships','rls_enabled','viewer_policy'])
+   assert.ok(src.includes(part),part);
+ assert.match(src,/pg_auth_members/);
+ assert.match(src,/pg_policies/);
+ assert.match(src,/m\.member=r\.oid/);
+ assert.match(src,/m\.roleid=r\.oid/);
+ for(const clause of [
+   "member_role.rolname='postgres'",
+   'm.admin_option=true','m.inherit_option=false','m.set_option=false'
+ ])assert.ok(src.includes(clause),'Missing strict Supabase membership predicate: '+clause);
+ assert.match(src,/qual='true' AND with_check IS NULL/);
+ assert.match(src,/roles=ARRAY\['cuisine_social_viewer'\]::name\[\]/);
+ assert.match(src,/is_link\(\$path\)/);
+ assert.match(src,/JSON_THROW_ON_ERROR/);
+ assert.match(src,/array_is_list\(\$times\)/);
+ assert.match(src,/fwrite\(\$f, \$encoded\) !== strlen\(\$encoded\)/);
+ assert.match(src,/directPgHost/);
+ assert.match(src,/sessionPoolerHost/);
+ assert.match(src,/pooler\[\.\]supabase/);
+ assert.match(src,/kljbnfjxwloiodwlbrrz/);
+});
+test('viewer cannot inspect dispatch reservations and paginates future posts safely',()=>{
+ for(const priv of ['SELECT','INSERT','UPDATE','DELETE'])
+   assert.ok(src.includes("has_table_privilege(current_user,'cuisine_social.validation_dispatches','"+priv+"')"),priv);
+ assert.match(src,/OFFSET :offset/);
+ assert.match(src,/PDO::PARAM_INT/);
+ assert.match(src,/max_range' => 100000/);
+ assert.match(src,/Page suivante/);
+});
+test('provisioning refuses elevated viewer roles and checks policy drift',()=>{
+ const sql=readFileSync(new URL('../automation/n8n/sql/social-viewer-role-provisioning-REVIEW.sql',import.meta.url),'utf8');
+ for(const part of ['rolbypassrls','pg_auth_members','relrowsecurity',
+   'REVOKE ALL PRIVILEGES','validation_dispatches','roles=ARRAY','manual review required'])
+   assert.ok(sql.includes(part),part);
+ assert.match(sql,/BEGIN;[\s\S]*COMMIT;/);
+ assert.doesNotMatch(sql,/PASSWORD\s+'[^']+'/i);
+ for(const clause of [
+   "member_role.rolname='postgres'",
+   'm.admin_option=true','m.inherit_option=false','m.set_option=false'
+ ])assert.ok(sql.includes(clause),'Missing safe platform membership predicate: '+clause);
+});
+
+
+test('Wait bridge and catalogue are read-only by contract, and a stale draft cannot resume',()=>{
+ const wait=readFileSync(new URL('../public/gestion-social/n8n-wait-readonly.php',import.meta.url),'utf8');
+ const feed=readFileSync(new URL('../public/gestion-social/catalog-readonly.php',import.meta.url),'utf8');
+ assert.match(wait,/function socialIsUndecidedDraft\(/);
+ for(const col of ['fb_state','ig_state','human_decision','decided_at','approved_at',
+                   'published_at','facebook_post_id','instagram_post_id','instagram_container_id'])
+   assert.ok(wait.includes(col),'Wait safety predicate missing '+col);
+ for(const col of ['approved_at','published_at','facebook_post_id',
+                   'instagram_post_id','instagram_container_id'])
+   assert.ok(src.includes(col),'SQL recheck missing '+col);
+ assert.match(src,/socialIsUndecidedDraft|socialExistingN8nWaitLinks/);
+ assert.match(wait,/CURLOPT_HTTPGET\s*=>\s*true/);
+ assert.match(feed,/CURLOPT_HTTPGET\s*=>\s*true/);
+ assert.match(wait,/CURLOPT_FOLLOWLOCATION\s*=>\s*false/);
+ assert.match(feed,/CURLOPT_FOLLOWLOCATION\s*=>\s*false/);
+ assert.match(wait,/CURLOPT_SSL_VERIFYPEER\s*=>\s*true/);
+ assert.match(wait,/CURLOPT_SSL_VERIFYHOST\s*=>\s*2/);
+ assert.match(wait,/includeData=true/);
+ for(const [name,code] of [['Wait',wait],['catalogue',feed]]){
+   assert.doesNotMatch(code,/\bCURLOPT_POST\b|\bCURLOPT_CUSTOMREQUEST\b|curl_setopt\([^)]*CURLOPT_POST/,'Unexpected write capability in '+name);
+   assert.doesNotMatch(code,/\b(?:INSERT INTO|UPDATE cuisine_social|DELETE FROM|DROP TABLE)\b/i,'Unexpected DB write in '+name);
+   assert.doesNotMatch(code,/api\.resend\.com|graph\.facebook\.com|graph\.instagram\.com/,'Publishing endpoint in '+name);
+ }
+});
+
+test('catalogue library shows compact true JPEG thumbnails and actionable counts',()=>{
+ const feed=readFileSync(new URL('../public/gestion-social/catalog-readonly.php',import.meta.url),'utf8');
+ assert.match(feed,/\x27image_url\x27\s*=>\s*\$ready\s*\?\s*\$image\s*:\s*null/);
+ assert.match(src,/array_count_values\(array_column\(\$catalogItems, 'state'\)\)/);
+ assert.match(src,/\$sourceStates\['available'\]/);
+ assert.match(src,/\$sourceStates\['changed'\]/);
+ assert.match(src,/\$sourceStates\['missing_image'\]/);
+ assert.match(src,/\$sourceStates\['seen'\]/);
+ assert.match(src,/loading="lazy" decoding="async"/);
+ assert.match(src,/class="source-photo"/);
+ assert.match(src,/width="88" height="88"/);
+ assert.match(src,/JPEG social absent/);
+ assert.match(src,/object-fit:cover/);
+});
+
+test('catalogue library filtering is server-rendered, bounded and does not alter n8n queue',()=>{
+ const feed=readFileSync(new URL('../public/gestion-social/catalog-readonly.php',import.meta.url),'utf8');
+ assert.match(feed,/function socialFilterCatalogCandidates\(/);
+ assert.match(feed,/strlen\(\$query\)>80/);
+ assert.match(feed,/array_filter\(\$items/);
+ assert.match(src,/name="kind"/);
+ assert.match(src,/name="source_state"/);
+ assert.match(src,/name="q"/);
+ assert.match(src,/count\(\$filteredCatalogItems \?\? \[\]\)/);
+ assert.match(src,/foreach \(\(\$filteredCatalogItems \?\? \[\]\) as \$item\)/);
+ assert.match(src,/Aucun contenu ne correspond à ces filtres/);
+ assert.match(src,/Les filtres ne changent pas les programmations n8n/);
+ assert.doesNotMatch(feed,/\b(?:INSERT INTO|UPDATE cuisine_social|DELETE FROM|PATCH|CURLOPT_POST)\b/i);
+});
