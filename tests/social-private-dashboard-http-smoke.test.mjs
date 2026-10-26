@@ -80,8 +80,9 @@ test('private portal native HTTP smoke: HTTPS, session, CSRF, login, logout and 
   const freshCsrf=logout.html.match(/name="csrf" value="([a-f0-9]{48})"/)?.[1];
   const freshCookie=logout.res.headers.get('set-cookie')?.split(';')[0]||authenticatedCookie;
   assert.ok(freshCsrf,'Missing new logout CSRF');
-  // Five bad passwords block even the correct one for this source IP.
-  for(let n=0;n<5;n++){
+  // One failed login earlier in this test + four here = five within 15min.
+  // The next (even correct) login must be blocked for this source IP.
+  for(let n=0;n<4;n++){
     const wrong=await send({csrf:freshCsrf,login:'1',username:'fixture-operator',
       password:'incorrect-'+n},freshCookie);
     assert.equal(wrong.res.status,200);
