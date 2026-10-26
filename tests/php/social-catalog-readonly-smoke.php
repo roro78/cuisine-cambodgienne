@@ -30,7 +30,9 @@ ensure($result[3]['previous_status']==='draft','Pending post incorrectly conside
 $badMedia=$feed;
 $badMedia['items'][0]['imageUrl']='https://attacker.test/hijack.jpg';
 $noMedia=socialCatalogCandidates($badMedia,$history);
-ensure($noMedia[0]['state']==='missing_image' && $noMedia[0]['image_url']===null,
+$noMediaIndex=array_search('recette:new',array_column($noMedia,'id'),true);
+ensure($noMediaIndex!==false && $noMedia[$noMediaIndex]['state']==='missing_image'
+    && $noMedia[$noMediaIndex]['image_url']===null,
   'Untrusted remote thumbnail was accepted');
 foreach ([
   static function(&$f){$f['schemaVersion']=99;},
