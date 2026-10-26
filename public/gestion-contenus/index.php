@@ -87,7 +87,7 @@ if($method==='POST'){
         }
     }
 }
-$catalog=[];$canonicalById=[];$selectedCanonical=null;$dir='';$selected=null;$latest=null;$versions=[];$display=null;$latestById=[];$staleDraft=false;
+$catalog=[];$canonicalById=[];$selectedCanonical=null;$guidedSelected=null;$guidedEditable=false;$guidedValues=[];$editorMode='json';$dir='';$selected=null;$latest=null;$versions=[];$display=null;$latestById=[];$staleDraft=false;
 $kind=(string)($_GET['kind']??'all');
 if(!in_array($kind,['all','recette','culture','atelier','ingredient','technique'],true))$kind='all';
 $q=is_string($_GET['q']??null)?trim($_GET['q']):'';
@@ -116,6 +116,33 @@ if($auth){
     $id=cmsId($_POST['source_id']??($_GET['id']??null));
     if($id!==null && isset($catalog[$id]))$selected=$catalog[$id];
     if($selected)$selectedCanonical=$canonicalById[$selected['id']]??null;
+    if($selected && $selectedCanonical && in_array($selected['kind'],['recette','atelier'],true)){
+        try{
+            $feed=cmsGetGuidedFields();
+            if(is_array($feed)){
+                $guides=cmsGuidedSourceList($feed,$canonicalById);
+                $guidedSelected=$guides[$selected['id']]??null;
+            }
+        }catch(Throwable $e){$guidedSelected=null;}
+    }
+
+    $guidedEditable=$guidedSelected!==null && ($guidedSelected['editable']??false)===true;
+    if($guidedEditable){
+        $guidedValues=$guidedSelected['fields'];
+        if(isset($latestById[$selected['id']]['structure'])
+           && is_array($latestById[$selected['id']]['structure'])){
+            $patch=$latestById[$selected['id']]['structure'];
+            $compatible=true;
+            foreach($guidedValues as $key=>$value){
+                if(!array_key_exists($key,$patch)
+                   || (is_array($value) && (!is_array($patch[$key])
+                   || count($patch[$key])!==count($value)))){$compatible=false;break;}
+            }
+            if($compatible)$guidedValues=array_replace($guidedValues,$patch);
+            else $guidedEditable=false; // legacy partial JSON stays editable in advanced mode.
+        }
+    }
+    $editorMode=$guidedEditable && ($_GET['mode']??'')!=='json'?'guided':'json';
     if($method==='POST' && isset($_POST['save'])){
         if(!$selected){http_response_code(422);$error='Contenu inexistant dans le catalogue.';}
         else {
@@ -124,13 +151,16 @@ if($auth){
             if($expected===false){http_response_code(422);$error='Version du brouillon invalide.';}
             else {
                 try{
+                    $incomingStructure=($_POST['editor_mode']??'json')==='guided'
+                        ?cmsBuildGuidedPatch($guidedSelected??[],$_POST['guided']??null)
+                        :($_POST['structure_json']??'');
                     cmsSave($private,$selected,[
                         'title'=>$_POST['title']??null,
                         'summary'=>$_POST['summary']??null,
                         'editorial_text'=>$_POST['editorial_text']??null,
                         'editor_note'=>$_POST['editor_note']??null,
                         'state'=>$_POST['state']??null,
-                        'structure_json'=>$_POST['structure_json']??''
+                        'structure_json'=>$incomingStructure
                     ],$expected,(string)($_POST['source_fingerprint']??''),$selectedCanonical,
                        is_string($_POST['canonical_fingerprint']??null)
                          ?$_POST['canonical_fingerprint']:null);
@@ -139,6 +169,9 @@ if($auth){
                     http_response_code(422);$error=str_starts_with($e->getMessage(),'STRUCTURE_')
                         ?'Structure invalide : vérifiez le JSON, le schéma 1 et les champs autorisés pour cette catégorie.'
                         :'Champs manquants ou trop longs.';
+                    if(($_POST['editor_mode']??'')==='guided'
+                       && isset($_POST['guided']) && is_array($_POST['guided']))
+                        $guidedValues=$_POST['guided'];
                 }catch(RuntimeException $e){
                     http_response_code(409);$error='Brouillon non enregistré : version dépassée, contenu source modifié ou stockage indisponible. Rechargez la page.';
                 }
@@ -206,6 +239,14 @@ nav.versions{display:flex;flex-wrap:wrap;gap:9px}
 nav.versions a{padding:6px 9px;background:#edf4ea;border-radius:6px}
 .summary{max-width:72ch}.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .note{border-left:3px solid #d8a038;padding:9px 12px;background:#fff9e8}
+.guided-group{border:1px solid #d9ddd5;border-radius:10px;padding:12px;margin:10px 0;background:#fcfcf9}
+.guided-group legend{font-weight:700;padding:0 6px}
+.guided-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.guided-wide{grid-column:1/-1}
+.guided-row textarea{min-height:85px}
+.guided-nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+@media(max-width:650px){.guided-row{grid-template-columns:1fr}.guided-wide{grid-column:1}}
+
 @media(max-width:650px){.cards,.grid{grid-template-columns:1fr}.card img{width:72px;height:72px}}
 </style></head><body><main>
 <header><div><strong>Cuisine du Cambodge</strong> · Studio éditorial privé</div>
@@ -259,6 +300,7 @@ d'écraser une version récente. Comparer la source et reprendre le travail apr�
 <input type="hidden" name="canonical_fingerprint"
  value="<?= cmsEsc($selectedCanonical['fingerprint']??'') ?>">
 <input type="hidden" name="expected_version" value="<?= $latest?(int)$latest['version']:0 ?>">
+<input type="hidden" name="editor_mode" value="<?= cmsEsc($editorMode) ?>">
 <label>Titre proposé<input name="title" required maxlength="180"
  value="<?= cmsEsc($latest['title']??$selected['title']) ?>"></label>
 <label>Résumé proposé<textarea name="summary" maxlength="1500" rows="4"><?= cmsEsc($latest['summary']??$selected['summary']) ?></textarea></label>
@@ -276,6 +318,58 @@ $structureHints=[
  'technique'=>'Fournitures, étapes et alternatives.'
 ];
 ?>
+<?php if($guidedEditable && $editorMode==='guided'): ?>
+<div class="guided-nav">
+<strong>Éditeur guidé des <?= $selected['kind']==='recette'?'recettes':'ateliers' ?></strong>
+<a href="?id=<?= rawurlencode($selected['id']) ?>&amp;mode=json">Mode avancé (JSON)</a>
+</div>
+<p class="small muted">Modifiez les champs existants. Les lignes ne sont ni ajoutées ni supprimées ici.
+Leurs propriétés annexes sont préservées ; tout reste une proposition privée sans publication.
+La recette canonique, les médias et les MP3 ne sont jamais modifiés.</p>
+<?php foreach($guidedValues as $field=>$value): ?>
+<?php if(is_array($value)): ?>
+<h3><?= cmsEsc($field==='ingredients'?'Ingrédients':'Étapes') ?></h3>
+<?php foreach($value as $rowIndex=>$row): ?>
+<fieldset class="guided-group"><legend><?= cmsEsc($field==='ingredients'?'Ingrédient ':'Étape ') ?><?= (int)$rowIndex+1 ?></legend>
+<?php if(is_string($row)): ?>
+<label>Ingrédient
+<textarea name="guided[<?= cmsEsc($field) ?>][<?= (int)$rowIndex ?>]" rows="2" required maxlength="450"><?= cmsEsc($row) ?></textarea></label>
+<?php elseif(is_array($row)): ?>
+<div class="guided-row">
+<?php foreach($row as $rowKey=>$rowValue): ?>
+<?php if(in_array($rowKey,['name','quantity','unit','title','text','action','observe','cue','success','mistake'],true)): ?>
+<label class="<?= in_array($rowKey,['text','action','observe','cue','success','mistake'],true)?'guided-wide':'' ?>">
+<?= cmsEsc(['name'=>'Nom','quantity'=>'Quantité','unit'=>'Unité','title'=>'Titre',
+ 'text'=>'Instruction','action'=>'Action','observe'=>'Observation',
+ 'cue'=>'Repère','success'=>'Résultat attendu','mistake'=>'Erreur à éviter'][$rowKey]) ?>
+<?php if(in_array($rowKey,['text','action','observe','cue','success','mistake'],true)): ?>
+<textarea name="guided[<?= cmsEsc($field) ?>][<?= (int)$rowIndex ?>][<?= cmsEsc($rowKey) ?>]"
+ rows="3" required maxlength="3000"><?= cmsEsc((string)$rowValue) ?></textarea>
+<?php else: ?>
+<input name="guided[<?= cmsEsc($field) ?>][<?= (int)$rowIndex ?>][<?= cmsEsc($rowKey) ?>]"
+ value="<?= cmsEsc((string)$rowValue) ?>" required maxlength="2000"
+ <?= $rowKey==='quantity'?'inputmode="decimal"':'' ?>>
+<?php endif; ?></label>
+<?php endif; ?>
+<?php endforeach; ?>
+</div>
+<?php endif; ?></fieldset>
+<?php endforeach; ?>
+<?php else: ?>
+<label><?= cmsEsc(['baseServings'=>'Nombre de portions','prepTime'=>'Durée de préparation',
+'cookTime'=>'Durée de cuisson'][$field]??$field) ?>
+<input name="guided[<?= cmsEsc($field) ?>]" required
+ value="<?= cmsEsc((string)$value) ?>" <?= $field==='baseServings'?'type="number" min="1" max="100"':'maxlength="100"' ?>></label>
+<?php endif; ?>
+<?php endforeach; ?>
+<?php else: ?>
+<?php if($guidedEditable): ?>
+<p class="small"><a href="?id=<?= rawurlencode($selected['id']) ?>">Utiliser l'éditeur guidé</a></p>
+<?php elseif($guidedSelected && !$guidedSelected['editable']): ?>
+<p class="note">Cet atelier utilise le parcours audio validé : les phases restent protégées.
+Décrivez les changements souhaités dans le texte éditorial ou dans un brouillon avancé.
+Aucune modification de script ou de MP3 n'est appliquée.</p>
+<?php endif; ?>
 <label>Changements structurés proposés — facultatif (JSON validé, schéma 1)
 <textarea name="structure_json" maxlength="20000" rows="10"
  spellcheck="false"><?= cmsEsc($structureCurrent) ?></textarea></label>
@@ -283,6 +377,7 @@ $structureHints=[
 Seuls les champs présents constituent une proposition de modification : les autres données de la fiche ne sont pas effacées.
 La sauvegarde n'écrit aucun fichier Astro, média ou MP3. Pour une structure complète,
 une relecture des modèles réels et une PR restent nécessaires.</p>
+<?php endif; ?>
 <label>Note pour la relecture<textarea name="editor_note" maxlength="2000" rows="3"><?= cmsEsc($latest['editor_note']??'') ?></textarea></label>
 <label>État privé du brouillon
 <select name="state">

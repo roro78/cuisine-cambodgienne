@@ -83,7 +83,7 @@ function mbLen(string $s): int {
     return function_exists('mb_strlen') ? mb_strlen($s,'UTF-8') : strlen($s);
 }
 function cmsFetchPublicIndex(string $name): ?array {
-    if(!in_array($name,['social-feed.json','editorial-source-index.json'],true))return null;
+    if(!in_array($name,['social-feed.json','editorial-source-index.json','editorial-guided-fields.json'],true))return null;
     if (!function_exists('curl_init')) return null;
     $c=curl_init('https://www.cuisine-du-cambodge.com/'.$name);
     if ($c===false) return null;
@@ -107,6 +107,123 @@ function cmsFetchPublicIndex(string $name): ?array {
         return is_array($data)?$data:null;
     } catch(JsonException $e) { return null; }
 }
+/**
+ * Approved public subset. The matching full-record fingerprint is mandatory;
+ * mismatching/partial deployments fail closed for guided forms.
+ */
+function cmsGuidedSourceList(array $payload,array $canonical): array {
+    if(($payload['product']??null)!=='cuisine-du-cambodge'
+       || ($payload['schemaVersion']??null)!==1
+       || ($payload['dataContract']??null)!=='approved-public-form-fields-v1'
+       || !is_array($payload['items']??null)
+       || !array_is_list($payload['items']) || count($payload['items'])>100)
+        throw new UnexpectedValueException('GUIDED_FEED');
+    $items=[];
+    foreach($payload['items'] as $item){
+        if(!is_array($item) || !cmsId($item['id']??null)
+           || isset($items[$item['id']])
+           || !isset($canonical[$item['id']])
+           || !is_bool($item['editable']??null)
+           || !is_string($item['model']??null)
+           || !is_string($item['fingerprint']??null)
+           || !is_array($item['fields']??null)
+           || !hash_equals($canonical[$item['id']]['fingerprint'],$item['fingerprint'])
+           || $canonical[$item['id']]['model']!==$item['model']
+           || !in_array($item['model'],['recipes','restoredRecipes','workshops','cookingWorkshopGuides'],true)
+           || ($item['editable']!==($item['model']!=='cookingWorkshopGuides')))
+            throw new UnexpectedValueException('GUIDED_SOURCE');
+        $kind=explode(':',$item['id'],2)[0];
+        if(!in_array($kind,['recette','atelier'],true)
+            || ($kind==='recette' && !in_array($item['model'],['recipes','restoredRecipes'],true))
+            || ($kind==='atelier' && !in_array($item['model'],['workshops','cookingWorkshopGuides'],true)))
+            throw new UnexpectedValueException('GUIDED_TYPE');
+        // Check that every editable value already satisfies the canonical
+        // typed shape; reject incomplete, overlong or unexpected fields.
+        $fields=$item['fields'];
+        if($item['editable']){
+            $required=$item['model']==='recipes'
+                ?['baseServings','prepTime','cookTime','ingredients','steps']
+                :($item['model']==='restoredRecipes'
+                    ?['prepTime','cookTime','ingredients','steps']:['steps']);
+            if(array_keys($fields)!==$required)throw new UnexpectedValueException('GUIDED_FIELDS');
+            try{cmsValidateStructuredDraft($kind,json_encode(
+                ['schema_version'=>1]+$fields,JSON_THROW_ON_ERROR));
+            }catch(Throwable $e){throw new UnexpectedValueException('GUIDED_FIELDS');}
+        }elseif(array_keys($fields)!==['phases']
+            || !is_array($fields['phases'])
+            || count($fields['phases'])<1 || count($fields['phases'])>10)
+            throw new UnexpectedValueException('GUIDED_PHASES');
+        $items[$item['id']]=$item;
+    }
+    return $items;
+}
+function cmsGetGuidedFields(): ?array {
+    return cmsFetchPublicIndex('editorial-guided-fields.json');
+}
+/**
+ * Transform fixed-length, server-authorized HTML rows into a typed proposal.
+ * Every unedited optional field is carried forward: never drop note, cue,
+ * quantity scaling flags or safety hints by accident.
+ */
+function cmsBuildGuidedPatch(array $entry,mixed $post): string {
+    if(($entry['editable']??false)!==true || !is_array($post)
+       || !isset($entry['fields']) || !is_array($entry['fields']))
+        throw new InvalidArgumentException('STRUCTURE_GUIDED');
+    $encoded=json_encode($post,JSON_THROW_ON_ERROR);
+    if(strlen($encoded)>26000)throw new InvalidArgumentException('STRUCTURE_GUIDED_SIZE');
+    $original=$entry['fields'];
+    if(array_keys($post)!==array_keys($original))
+        throw new InvalidArgumentException('STRUCTURE_GUIDED_KEYS');
+    $patch=['schema_version'=>1];
+    foreach($original as $key=>$value){
+        if(in_array($key,['baseServings','prepTime','cookTime'],true)){
+            if(!is_string($post[$key]) && !is_int($post[$key]))
+                throw new InvalidArgumentException('STRUCTURE_GUIDED_SCALAR');
+            $v=trim((string)$post[$key]);
+            if($key==='baseServings'){
+                if(!preg_match('/^[1-9][0-9]{0,2}$/D',$v))throw new InvalidArgumentException('STRUCTURE_SERVINGS');
+                $patch[$key]=(int)$v;
+            }else $patch[$key]=cmsPatchText($v,100);
+            continue;
+        }
+        if(!in_array($key,['ingredients','steps'],true)
+           || !is_array($value) || !is_array($post[$key])
+           || !array_is_list($post[$key])
+           || count($value)!==count($post[$key]))
+            throw new InvalidArgumentException('STRUCTURE_GUIDED_ROWS');
+        $out=[];
+        foreach($value as $i=>$one){
+            $input=$post[$key][$i];
+            if(is_string($one)){
+                $out[]=cmsPatchText($input,450);
+                continue;
+            }
+            if(!is_array($one) || !is_array($input) || array_is_list($input)
+               || array_keys($input)!==array_keys(array_filter(
+                  $one,static fn($v,$k)=>in_array($k,['name','quantity','unit','title','text',
+                     'action','observe','cue','success','mistake'],true),ARRAY_FILTER_USE_BOTH)))
+                throw new InvalidArgumentException('STRUCTURE_GUIDED_ROW_KEYS');
+            $row=$one;
+            foreach($input as $k=>$v){
+                if(!is_string($v) && !is_int($v))throw new InvalidArgumentException('STRUCTURE_GUIDED_VALUE');
+                if($k==='quantity'){
+                    $raw=str_replace(',','.',trim((string)$v));
+                    if(!preg_match('/^(?:[0-9]{1,6})(?:\\.[0-9]{1,3})?$/D',$raw))
+                        throw new InvalidArgumentException('STRUCTURE_QUANTITY');
+                    $num=(float)$raw;
+                    if($num<=0 || $num>100000)throw new InvalidArgumentException('STRUCTURE_QUANTITY');
+                    $row[$k]=(floor($num)===$num)?(int)$num:$num;
+                }else $row[$k]=cmsPatchText((string)$v,$k==='text'?3000:2000);
+            }
+            $out[]=$row;
+        }
+        $patch[$key]=$out;
+    }
+    $json=json_encode($patch,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+    cmsValidateStructuredDraft(explode(':',$entry['id'],2)[0],$json);
+    return $json;
+}
+
 function cmsGetFeed(): ?array { return cmsFetchPublicIndex('social-feed.json'); }
 function cmsGetEditorialIndex(): ?array { return cmsFetchPublicIndex('editorial-source-index.json'); }
 
