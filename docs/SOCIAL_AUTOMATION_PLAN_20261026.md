@@ -47,3 +47,47 @@ Les tests PostgreSQL 17 jetables prouvent : état historique #1 conservé, broui
 
 ## Pilotage et responsabilités
 Les migrations SQL REVIEW et n8n ne sont pas des commandes de production. L'opérateur doit conserver les credentials dans n8n/OVH et vérifier l'absence de Wait en cours ; aucune clé/API ne doit figurer dans le chat. Les tests CI ne prouvent pas la connectivité OVH ni le comportement réel de Meta/Resend. **Statut global : chantier en développement, P0 de bout en bout non reçu.**
+
+## Jalon technique validé — 26 octobre 2026
+
+La [CI #40301687770](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40301687770) est **SUCCESS** :
+**85/85 tests Node PASS**, essais HTTP PHP natifs PASS, permissions RLS du portail PASS,
+intégrité post-approbation PostgreSQL 17 PASS et nouveau test
+`SOCIAL_MULTI_DRAFT_DISPATCH_RLS_PASS`.
+
+La migration en revue `automation/n8n/sql/social-validation-dispatch-policy-REVIEW.sql`
+a été **exécutée exclusivement sur une base PostgreSQL 17 jetable**. Elle remplace dans ce
+clone les politiques de réservation limitées à `post_id=1` par un contrat multi-brouillons
+strict pour `cuisine_n8n`. Les tests couvrent la réservation d'un nouveau brouillon,
+l'unicité, l'interdiction d'une réservation à mauvais identifiant, l'interdiction de réserver
+un brouillon déjà décidé, le refus d'UPDATE et l'absence de lecture pour le rôle dashboard.
+La réservation historique `draft-1` est conservée. Le test tient compte des trous possibles
+dans les identifiants BIGINT.
+
+**Important : ce nouveau SQL ne doit PAS encore être appliqué sur Supabase.**
+L'export du workflow 01 conserve le chemin direct
+`Enregistrer le brouillon → Brouillon inséré ? → Envoyer la demande de validation Resend`
+sans nœud de réservation ; l'automatisation n'est pas sécurisée contre les envois
+répétés après relance. La migration RLS ne change aucun workflow n8n.
+
+## Objectifs de réception mesurables
+
+| Priorité | Résultat final attendu | Preuve exigée |
+|---|---|---|
+| P0 — sécurité | Aucun envoi Meta ou Resend sans vérification humaine de la version exacte ; aucun double envoi ; accès privé protégé | Tests concurrence, rejeu, délai de 72 h, panne réseau et rapprochement fournisseur, puis essai réel contrôlé |
+| P0 — dashboard | Depuis Android : voir l'image/légendes, demander une modification, refuser ou approuver sans confusion | Les trois décisions exécutées de bout en bout vers **le même Wait n8n**, sans deuxième chemin SQL |
+| P0 — production | Une nouvelle publication explicitement validée est publiée **une seule fois** sur FB et IG | IDs vérifiés sur les plateformes, aucun doublon, rollback manuel testé |
+| P1 — production éditoriale | Créer une recette, un carnet culturel ou un atelier MP3 réellement nouveau, cohérent sur toutes les pages et réseaux | Recherche d'antériorité, relecture culinaire, images distinctes, narration synchronisée, approbation avant diffusion |
+| P2 — acquisition | Chaque publication renvoie vers la page canonique, avec attribution du trafic et suivi de communauté | UTMs contrôlés, tableau de bord des clics/visites/réactions/commentaires et réponse assistée avec validation humaine |
+
+La cadence de publication et les objectifs chiffrés de trafic seront proposés **après**
+un premier cycle de mesures réelles ; ne pas les inventer avant la réception de l'analytics.
+
+### Définition de « chantier terminé »
+
+**Un fonctionnement complet constaté, pas seulement une CI verte :** au moins un nouveau
+contenu original sans doublon ; validation privée sur Android ; prise en compte d'une
+révision et d'un refus ; approbation verrouillée ; réservations Resend fiables ; publication
+unique FB/IG ; liens vers le site traçables ; retour d'expérience éditorial consigné.
+Les contenus historiques doivent être préservés. Un audit positif de l'ancien post Kroeung
+est une condition séparée, jamais un prétexte pour le republier.
