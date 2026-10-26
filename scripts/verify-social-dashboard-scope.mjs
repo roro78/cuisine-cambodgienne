@@ -14,6 +14,7 @@ const allow=new Set([
   'docs/SOCIAL_PRIVATE_REVIEW_READONLY_20261025.md',
   'public/gestion-social/catalog-readonly.php',
   'public/gestion-social/index.php',
+  'public/gestion-social/diagnostic-cli.php',
   'public/gestion-social/n8n-wait-readonly.php',
   'scripts/verify-social-dashboard-scope.mjs',
   'tests/php/social-catalog-readonly-smoke.php',
@@ -21,7 +22,8 @@ const allow=new Set([
   'tests/social-private-dashboard-contract.test.mjs',
   'tests/social-private-dashboard-history.test.mjs',
   'tests/social-private-dashboard-http-smoke.test.mjs',
-  'tests/social-one-shot-decision-flow.test.mjs'
+  'tests/social-one-shot-decision-flow.test.mjs',
+  'tests/social-viewer-ovh-cli-smoke.test.mjs'
 ]);
 const git=(...args)=>execFileSync('git',args,{encoding:'utf8',maxBuffer:1024*1024});
 try {

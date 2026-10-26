@@ -234,3 +234,53 @@ Avec accord utilisateur, la migration `cuisine_social_viewer_read_only_20261026`
 Supabase attribue automatiquement l'appartenance administrative `postgres → cuisine_social_viewer` avec `ADMIN=true, INHERIT=false, SET=false`. Le dashboard et le script de provisionnement REVIEW acceptent désormais uniquement cette appartenance administrative sans héritage ni prise de rôle, tout en refusant toute autre relation à un rôle. Aucune appartenance supplémentaire n'a été ajoutée ni retirée.
 
 Le dashboard OVH n'est pas encore raccordé : mot de passe du rôle non configuré (volontairement), secrets à conserver hors webroot, compatibilité PHP/pdo_pgsql/TLS et expérience Android encore à réceptionner. Aucun workflow n8n ni publication Meta modifié.
+
+
+## Diagnostic OVH réel — CLI strict, sans donnée sensible (26 octobre 2026)
+
+Le rôle lecteur a été créé et vérifié au niveau des privilèges/RLS Supabase.
+Le compte ne possède **aucun mot de passe initial**, et aucun moyen d'exécuter
+`SET ROLE cuisine_social_viewer` depuis `postgres` n'a été accordé :
+Supabase a explicitement mis `SET=false` à cette appartenance administrative.
+L'essai de `SET LOCAL ROLE` a échoué comme prévu. **Cela ne remplace PAS**
+une connexion réellement établie sous le rôle lecteur.
+
+Un outil CLI **`public/gestion-social/diagnostic-cli.php`** permet de
+réceptionner le portail sur OVH **après installation**, sans divulguer le
+mot de passe : `php gestion-social/diagnostic-cli.php` depuis la racine du
+site. Il refuse une requête HTTP (404), vérifie la version PHP, les extensions
+`pdo_pgsql` et `curl`, la présence du fichier secret
+`~/.cuisine-asset-portal/config.php`, le DSN PostgreSQL et les
+autorisations réelles sous `cuisine_social_viewer`, l'absence de droits
+sur les réservations Resend, la RLS, la présence de TLS sur la connexion
+ainsi qu'une lecture `SELECT COUNT(*)` des posts. **Il n'exécute aucune
+écriture** et n'affiche ni DSN, ni secret, ni message brut PDO/PostgreSQL.
+Il affiche uniquement `PORTAL_READINESS_PASS: ...` ou
+`PORTAL_READINESS_FAIL: ...`.
+
+**Préparation privée (action opérateur, pas via le chat ou GitHub) :**
+
+1. Depuis un terminal de confiance, se connecter à la base Cuisine du
+   Cambodge avec `psql`, puis exécuter `\\password cuisine_social_viewer`.
+   Cette commande interactive demande deux fois le nouveau mot de passe
+   **sans l'écrire en clair dans la requête SQL ou dans l'historique shell**.
+   N'utiliser ni le service-role Supabase, ni le credential `cuisine_n8n`.
+2. Sur OVH, conserver le mot de passe du lecteur exclusivement dans
+   `~/.cuisine-asset-portal/config.php` hors webroot (mode 0600).
+   Conserver les clés `admin_user` et `password_hash` existantes et
+   ajouter seulement `social_readonly_dsn`,
+   `social_readonly_user='cuisine_social_viewer'`, et
+   `social_readonly_password`. Le DSN doit imposer TLS et le serveur
+   direct du projet ou le pooler Supabase approuvé.
+3. Ne déployer que les fichiers de la PR après revue/fusion, puis lancer
+   `php gestion-social/diagnostic-cli.php` via SSH depuis le bon répertoire.
+   N'activer la page privée /gestion-social/ que si le dernier indicateur
+   est `READY_FOR_PRIVATE_ANDROID_TEST`. Éviter l'affichage du mot de
+   passe dans les captures et journaux.
+4. Vérifier l'affichage depuis Android, et **ensuite seulement** effectuer
+   un seul test supervisé `Demander une modification`, jamais
+   `Approuver` lors du test. Les exports n8n 01/02/03 restent inchangés.
+
+**Limite :** cet outil ne garantit pas à lui seul l'envoi de Resend,
+l'accessibilité des exécutions Wait ou une publication Meta ; il vérifie
+uniquement la disponibilité et les privilèges du **lecteur** privé.
