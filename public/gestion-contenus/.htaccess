@@ -1,0 +1,8 @@
+Options -Indexes
+DirectoryIndex index.php
+<Files "lib.php">
+  Require all denied
+</Files>
+<FilesMatch "^\.(.*)$">
+  Require all denied
+</FilesMatch>
