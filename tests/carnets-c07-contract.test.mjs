@@ -24,8 +24,8 @@ assert.match(c07,/imageAlt: 'Illustration éditoriale de convives partageant des
 for(const width of [800,1200,1440]) {
   assert.ok(existsSync(`public/images/cuisine/v19-table-partage-desktop-${width}.webp`),`Missing image variant ${width}`);
 }
-assert.match(c07,/socialImage: '\/images\/cuisine\/v17-table-meal-1600\.jpg'/,'Preexisting social image must stay available');
-assert.match(c07,/socialImageRole: 'article'/,'Preexisting social photo must not be relabeled as AI illustration');
+assert.match(c07,/socialImage: '\/images\/cuisine\/v19-table-partage-desktop-1440\.webp'/,'Social image matches the shared meal hero');
+assert.match(c07,/socialImageRole: 'illustration'/,'Generated cultural illustration must not be labeled documentary');
 assert.match(social,/article\.socialImageRole \?\? 'illustration'/,'Social compatibility gate');
 assert.match(credits,/une composition éditoriale d’un repas autour d’une table/,'The existing credit/illustrative disclaimer must remain');
 assert.ok(!/culture-related|relatedContent/.test(template) && !template.includes('/recettes/') && !template.includes('/ingredients/'), 'Culture article template must never recommend recipes or ingredients');

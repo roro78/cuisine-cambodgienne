@@ -20,8 +20,8 @@ assert.match(c03,/imageAlt: 'Scène illustrative de deux générations/,'New cov
 for(const width of [480,800,1200,1600]) {
   assert.ok(existsSync(`public/images/cuisine/kroeung-${width}.webp`),`Old hero variant ${width} must remain available`);
 }
-assert.match(c03,/socialImage: '\/images\/cuisine\/kroeung-1600\.webp'/,'Legacy social image preserved');
-assert.match(c03,/socialImageRole: 'article'/);
+assert.match(c03,/socialImage: '\/images\/cuisine\/carnet-kroeung-memoire-1536\.webp'/,'Social image matches the cultural hero');
+assert.match(c03,/socialImageRole: 'illustration'/,'Generative illustration must not be mislabeled a documentary photo');
 for(const width of [480,800,1200,1536]) assert.ok(existsSync('public/images/cuisine/carnet-kroeung-memoire-'+width+'.webp'),'Missing new C03 variant '+width);
 assert.match(social,/article\.socialImage \?\? article\.image/,'Other social cards remain compatible');
 assert.doesNotMatch(c03,/tourismGuide|tourismcambodia\.org/,'Broken generic document must not appear in C03');

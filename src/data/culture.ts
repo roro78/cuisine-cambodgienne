@@ -86,7 +86,7 @@ export const cultureArticles: CultureArticle[] = [
         ]
       }
     ],
-    socialImage: '/images/cuisine/v17-table-meal-1600.jpg',
+    socialImage: '/images/cuisine/v17-khmer-table-1280.webp',
     image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Cambodia%27s_rice_fields.jpg/1280px-Cambodia%27s_rice_fields.jpg',
     imageAlt: 'Rizières verdoyantes près de Siem Reap, au Cambodge, avec des palmiers à l’horizon',
     imageWidth: 1280,
@@ -262,8 +262,8 @@ export const cultureArticles: CultureArticle[] = [
     imageWidth: 1536,
     imageHeight: 1024,
     imageWidths: [480, 800, 1200, 1536],
-    socialImage: '/images/cuisine/kroeung-1600.webp',
-    socialImageRole: 'article',
+    socialImage: '/images/cuisine/carnet-kroeung-memoire-1536.webp',
+    socialImageRole: 'illustration',
     sources: [
       { label: 'Journal of Ethnic Foods (2019) — place du kroeung dans le répertoire khmer', url: 'https://link.springer.com/article/10.1186/s42779-019-0027-1' },
       { label: 'Mekong Review (mai 2018) — histoire récente et transmission de la cuisine cambodgienne', url: 'https://mekongreview.com/eating-amok/' },
@@ -549,8 +549,8 @@ export const cultureArticles: CultureArticle[] = [
     imageWidth: 1440,
     imageHeight: 810,
     imageWidths: [800, 1200, 1440],
-    socialImage: '/images/cuisine/v17-table-meal-1600.jpg',
-    socialImageRole: 'article',
+    socialImage: '/images/cuisine/v19-table-partage-desktop-1440.webp',
+    socialImageRole: 'illustration',
     sources: [
       { label: 'Chef Nak — guide des tables et repas cambodgiens', url: 'https://www.chefnak.com/cambodian-cuisine-guide' },
       { label: 'Recherche en santé publique — enquête qualitative sur les choix alimentaires des familles', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC13499906/' },

@@ -3,14 +3,14 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import sharp from 'sharp';
 
-test('six ready-to-review cards contain real inlined square JPEGs and checked captions',async()=>{
+test('ten ready-to-review cards contain real inlined square JPEGs and checked captions',async()=>{
   const html=await readFile(new URL('../artifacts/social-editorial-review.html',import.meta.url),'utf8');
   const found=html.match(/<script type="application\/json" id="review-payload">([\s\S]*?)<\/script>/);
   assert.ok(found,'self contained embedded review data is required');
   const entries=JSON.parse(found[1]);
-  assert.equal(entries.length,3);
+  assert.equal(entries.length,5);
   assert.deepEqual(entries.map(x=>x.id),[
-    'ingredient:kroeung','recette:amok-trey','culture:le-riz-symbole-de-vie-au-cambodge'
+    'ingredient:kroeung','recette:amok-trey','culture:le-riz-symbole-de-vie-au-cambodge','culture:comprendre-le-kroeung','culture:construire-repas-cambodgien'
   ]);
   for(const post of entries){
     assert.match(post.imageData,/^data:image\/jpeg;base64,/);
@@ -30,6 +30,15 @@ test('six ready-to-review cards contain real inlined square JPEGs and checked ca
   }
   assert.match(html,/APERÇU HORS LIGNE/);
   assert.match(html,/Exporter mon avis/);
+  // Regression for mobile mockup: do not render the 1080px media as an enormous page image.
+  assert.match(html,/data-scale="compact"/);
+  assert.match(html,/data-scale="feed"/);
+  assert.match(html,/body\[data-scale="compact"\] \.card \{width:min\(100%,300px\)/);
+  assert.match(html,/body\[data-scale="feed"\] \.card \{width:min\(100%,370px\)/);
+  assert.match(html,/object-fit:contain/,'Main feed must preserve the square source without CSS cropping');
+  assert.match(html,/grid-crop img \{height:96px;width:72px;aspect-ratio:3\/4;object-fit:cover/);
+  assert.match(html,/Facebook displays copy before the photo; Instagram normally shows it below/);
+  assert.match(html,/simulation_only_no_publication/);
   assert.doesNotMatch(html,/<img[^>]+src=["']https?:/i);
   assert.doesNotMatch(html,/<script[^>]+src=/i);
   assert.doesNotMatch(html,/\bfetch\s*\(/);
