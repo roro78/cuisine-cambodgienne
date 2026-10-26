@@ -109,7 +109,7 @@ $error = '';
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     if (!is_string($_POST['csrf'] ?? null) || !hash_equals((string)$_SESSION['csrf'], $_POST['csrf'])) {
         http_response_code(403);
-        $error = 'Session expirée : rechargez cette page.';
+        exit('Session expirée : rechargez cette page.');
     } elseif ($authenticated && isset($_POST['open_existing_wait'])) {
         // No new approval path: HTTP 303 opens the original n8n Wait form.
         $resumeUrl = existingWaitUrl($_POST['wait_link'] ?? null);
