@@ -22,6 +22,8 @@ test('private portal native HTTP smoke: HTTPS, session, CSRF, login, logout and 
   // Test the complete production portal, including its new catalogue helper.
   copyFileSync(fileURLToPath(new URL('../public/gestion-social/catalog-readonly.php',import.meta.url)),
     join(portal,'catalog-readonly.php'));
+  copyFileSync(fileURLToPath(new URL('../public/gestion-social/n8n-wait-readonly.php',import.meta.url)),
+    join(portal,'n8n-wait-readonly.php'));
   const hash=execFileSync('php',['-r','echo password_hash("fixture-password", PASSWORD_DEFAULT);'],
     {encoding:'utf8'}).trim();
   assert.match(hash,/^\$2/);

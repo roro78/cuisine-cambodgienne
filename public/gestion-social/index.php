@@ -8,6 +8,7 @@ declare(strict_types=1);
  * PostgreSQL account may be used for this screen.
  */
 require_once __DIR__ . '/catalog-readonly.php';
+require_once __DIR__ . '/n8n-wait-readonly.php';
 ini_set('display_errors', '0');
 header('Content-Type: text/html; charset=UTF-8');
 header('X-Robots-Tag: noindex, nofollow, noarchive');
@@ -120,6 +121,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         }
         header('Location: ' . $resumeUrl, true, 303);
         exit;
+    } elseif ($authenticated && isset($_POST['open_wait_post'])) {
+        // Resolve the existing signed URL only after reloading the draft
+        // and checking n8n's matching waiting execution; no stored token.
+        $requestedWaitPost = socialPostId($_POST['open_wait_post']);
+        if ($requestedWaitPost === null) {
+            http_response_code(422);
+            exit('Identifiant de brouillon invalide.');
+        }
     } elseif (isset($_POST['logout'])) {
         $_SESSION = [];
         session_regenerate_id(true);
@@ -149,6 +158,8 @@ $rows = [];
 $counts = [];
 $catalogItems = null;
 $catalogStatus = null;
+$existingWaitLinks = [];
+$existingWaitStatus = null;
 $humanDecisionLabels = ['approved' => 'Approuvée', 'revision_requested' => 'Modification demandée', 'rejected' => 'Refusée'];
 $sourceKindLabels = ['recette' => 'Recette', 'culture' => 'Carnet culturel',
     'atelier' => 'Atelier', 'ingredient' => 'Ingrédient', 'technique' => 'Technique'];
@@ -239,7 +250,7 @@ if ($authenticated) {
         $status = (string)($_GET['status'] ?? 'draft');
         $allowed = ['all', 'draft', 'approved', 'revision_requested', 'rejected', 'publishing', 'published', 'manual_review', 'sources'];
         if (!in_array($status, $allowed, true)) $status = 'draft';
-        $sql = 'SELECT id::text AS id,source_id,source_snapshot,scheduled_date::text AS scheduled_date,facebook_caption,instagram_caption,image_url,status,fb_state,ig_state,human_decision,human_note,decided_at::text AS decided_at,approved_at::text AS approved_at,published_at::text AS published_at,facebook_post_id,instagram_post_id FROM cuisine_social.posts';
+        $sql = 'SELECT id::text AS id,source_id,source_fingerprint,source_snapshot,scheduled_date::text AS scheduled_date,facebook_caption,instagram_caption,image_url,status,fb_state,ig_state,human_decision,human_note,decided_at::text AS decided_at,approved_at::text AS approved_at,published_at,facebook_post_id,instagram_post_id FROM cuisine_social.posts';
         if ($status !== 'all' && $status !== 'sources') $sql .= ' WHERE status = :status';
         $candidate = filter_var($_GET['page'] ?? 1, FILTER_VALIDATE_INT,
             ['options' => ['min_range' => 1, 'max_range' => 100000]]);
@@ -250,6 +261,32 @@ if ($authenticated) {
         $stmt->bindValue(':offset', ($page - 1) * 50, PDO::PARAM_INT);
         $stmt->execute();
         $rows = $status === 'sources' ? [] : $stmt->fetchAll();
+        if (isset($requestedWaitPost)) {
+            $query = $pdo->prepare('SELECT id::text AS id,source_id,source_fingerprint,
+                scheduled_date::text AS scheduled_date,facebook_caption,instagram_caption,
+                image_url,status,human_decision
+                FROM cuisine_social.posts WHERE id=:id AND status=\'draft\' AND human_decision IS NULL');
+            $query->bindValue(':id',$requestedWaitPost,PDO::PARAM_STR);
+            $query->execute();
+            $target=$query->fetch();
+            if (!$target) {
+                http_response_code(409);
+                exit('Cette publication n’est plus en attente de décision.');
+            }
+            $links=socialExistingN8nWaitLinks($cfg,[$target]);
+            $safe=$links[$requestedWaitPost]??null;
+            if ($safe===null) {
+                http_response_code(409);
+                exit('Formulaire n8n non vérifié : utiliser le lien du courriel.');
+            }
+            header('Location: '.$safe,true,303);
+            exit;
+        }
+        if ($status === 'draft' && $rows) {
+            $existingWaitLinks = socialExistingN8nWaitLinks($cfg,$rows) ?? [];
+            if (!$existingWaitLinks) $existingWaitStatus =
+                'Lien direct non disponible : le formulaire reçu par e-mail reste utilisable.';
+        }
         $counts = $pdo->query('SELECT status,count(*)::int AS total FROM cuisine_social.posts GROUP BY status')->fetchAll(PDO::FETCH_KEY_PAIR);
         if ($status === 'sources') {
             // Independent views: public static catalogue = editorial candidates;
@@ -353,6 +390,9 @@ d'une image sociale compatible et enregistre un brouillon dans
 <a href="?status=sources">Voir les sources du catalogue</a>.
 Les autres sujets du catalogue ne sont pas encore des propositions à valider.</p>
 </section>
+<?php if ($status === 'draft' && $existingWaitStatus !== null): ?>
+<p class="small" role="status"><?= h($existingWaitStatus) ?></p>
+<?php endif; ?>
 <nav class="filters" aria-label="Filtrer les publications">
 <?php foreach (['draft'=>'À valider','approved'=>'Approuvées','revision_requested'=>'À corriger','published'=>'Publiées','manual_review'=>'À examiner','rejected'=>'Refusées','all'=>'Toutes','sources'=>'Sources du site'] as $key=>$label): ?>
 <a class="<?= ($status===$key?'selected':'') ?>" href="?status=<?= h($key) ?>"><?= h($label) ?> (<?= $key==='all' ? array_sum(array_map('intval',$counts)) : ($key==='sources' ? 'catalogue' : (int)($counts[$key] ?? 0)) ?>)</a>
@@ -429,6 +469,15 @@ nécessairement déjà transformée en post social.
 <span class="badge">Prévu : <?= h((string)$row['scheduled_date']) ?></span>
 </div>
 <p class="small">Référence : <?= h((string)$row['source_id']) ?> · Brouillon n°<?= h((string)$row['id']) ?></p>
+<?php if ($row['status'] === 'draft' && isset($existingWaitLinks[(string)$row['id']])): ?>
+<form method="post" autocomplete="off">
+<input type="hidden" name="csrf" value="<?= h((string)$_SESSION['csrf']) ?>">
+<button type="submit" name="open_wait_post" value="<?= h((string)$row['id']) ?>">
+Examiner et décider dans le formulaire n8n existant</button>
+</form>
+<p class="small">L'identifiant du brouillon est rapproché des données de
+l'exécution Wait. Le formulaire s'ouvre sans approuver automatiquement.</p>
+<?php endif; ?>
 <?php if ($row['human_decision'] !== null): ?>
 <section class="review-history" aria-label="Historique de la validation">
 <strong>Décision humaine : <?= h($humanDecisionLabels[(string)$row['human_decision']] ?? (string)$row['human_decision']) ?></strong>

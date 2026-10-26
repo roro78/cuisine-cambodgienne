@@ -8,6 +8,8 @@ on:
       - ".github/workflows/social-backoffice-p0-check.yml"
       - "public/gestion-social/index.php"
       - "public/gestion-social/catalog-readonly.php"
+      - "public/gestion-social/n8n-wait-readonly.php"
+      - "tests/php/social-n8n-wait-readonly-smoke.php"
       - "tests/php/social-catalog-readonly-smoke.php"
       - "automation/n8n/sql/social-viewer-role-provisioning-REVIEW.sql"
       - "tests/social-private-dashboard-contract.test.mjs"
@@ -32,6 +34,9 @@ jobs:
         run: |
           php -l public/gestion-social/index.php
           php -l public/gestion-social/catalog-readonly.php
+          php -l public/gestion-social/n8n-wait-readonly.php
+          php -l tests/php/social-n8n-wait-readonly-smoke.php
+          php tests/php/social-n8n-wait-readonly-smoke.php
           php -l tests/php/social-catalog-readonly-smoke.php
           php tests/php/social-catalog-readonly-smoke.php
       - uses: actions/setup-node@v4

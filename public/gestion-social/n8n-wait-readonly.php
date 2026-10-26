@@ -1,0 +1,112 @@
+<?php
+declare(strict_types=1);
+/**
+ * Optional GET-ONLY connector to an existing n8n Workflow 01 waiting execution.
+ * NO PATCH/POST and NO execution creation. Signed URL stays server-side
+ * until an authenticated POST/CSRF handoff has revalidated draft/version.
+ */
+function socialPostId(mixed $value): ?string {
+    if (is_int($value)) $value = (string)$value;
+    if (!is_string($value) || !preg_match('/^[1-9][0-9]{0,18}$/D',$value))return null;
+    return strlen($value)<19 || strcmp($value,'9223372036854775807')<=0 ? $value : null;
+}
+function socialRunOutput(array $data,string $node): ?array {
+    $value=$data[$node][0]['data']['main'][0][0]['json']??null;
+    return is_array($value)?$value:null;
+}
+function socialExecutionWaitLinks(array $executions,array $posts,string $workflowId): array {
+    $target=[];
+    foreach($posts as $post){
+        $id=socialPostId($post['id']??null);
+        if($id===null || ($post['status']??null)!=='draft'
+            || ($post['human_decision']??null)!==null)continue;
+        $target[$id]=$post;
+    }
+    $matches=[];$ambiguous=[];
+    foreach($executions as $execution){
+        if(!is_array($execution) || (string)($execution['workflowId']??'')!==$workflowId
+            || ($execution['status']??null)!=='waiting')continue;
+        $run=$execution['data']['resultData']['runData']??null;
+        if(!is_array($run))continue;
+        $saved=socialRunOutput($run,'Enregistrer le brouillon');
+        $prepared=socialRunOutput($run,'Vérifier et cadrer les textes');
+        $waitMeta=$run['Attendre une décision via formulaire'][0]['metadata']??null;
+        if(!$saved || !$prepared || !is_array($waitMeta))continue;
+        $id=socialPostId($saved['id']??null);
+        if($id===null || !isset($target[$id]))continue;
+        $post=$target[$id];
+        foreach([
+            'sourceId'=>'source_id','fingerprint'=>'source_fingerprint',
+            'scheduledDate'=>'scheduled_date','facebookCaption'=>'facebook_caption',
+            'instagramCaption'=>'instagram_caption','imageUrl'=>'image_url'
+        ] as $from=>$to){
+            if(!is_string($prepared[$from]??null)
+                || !hash_equals((string)$post[$to],$prepared[$from]))continue 2;
+        }
+        $url=existingWaitUrl($waitMeta['resumeFormUrl']??null);
+        if($url===null)continue;
+        // No guessing by post ID or catalog category. The actual Wait
+        // metadata + exact frozen draft values prove this correspondence.
+        if(isset($matches[$id])) {
+            $ambiguous[$id]=true;
+            unset($matches[$id]);
+            continue;
+        }
+        if(!isset($ambiguous[$id]))$matches[$id]=$url;
+    }
+    return $matches;
+}
+function socialN8nGet(string $url,string $apiKey): ?array {
+    if(!function_exists('curl_init'))return null;
+    $ch=curl_init($url);
+    if($ch===false)return null;
+    $body='';
+    curl_setopt_array($ch,[
+        CURLOPT_HTTPGET=>true,CURLOPT_FOLLOWLOCATION=>false,
+        CURLOPT_CONNECTTIMEOUT=>3,CURLOPT_TIMEOUT=>7,
+        CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2,
+        CURLOPT_HTTPHEADER=>['Accept: application/json','X-N8N-API-KEY: '.$apiKey],
+        CURLOPT_WRITEFUNCTION=>static function($handle,string $chunk)use(&$body):int{
+            if(strlen($body)+strlen($chunk)>1048576)return 0;
+            $body.=$chunk;return strlen($chunk);
+        }
+    ]);
+    if(defined('CURLOPT_PROTOCOLS_STR'))curl_setopt($ch,constant('CURLOPT_PROTOCOLS_STR'),'https');
+    elseif(defined('CURLOPT_PROTOCOLS'))curl_setopt($ch,CURLOPT_PROTOCOLS,CURLPROTO_HTTPS);
+    $ok=curl_exec($ch);
+    $status=curl_getinfo($ch,CURLINFO_RESPONSE_CODE);
+    curl_close($ch);
+    if($ok!==true || $status!==200 || $body==='')return null;
+    try{
+        $data=json_decode($body,true,64,JSON_THROW_ON_ERROR);
+        return is_array($data)?$data:null;
+    }catch(JsonException $e){return null;}
+}
+/** Returns null if not configured / API unavailable; never expose API key. */
+function socialExistingN8nWaitLinks(array $cfg,array $posts): ?array {
+    $key=$cfg['n8n_readonly_api_key']??null;
+    $id=$cfg['n8n_social_workflow_id']??null;
+    if(!is_string($key)||strlen($key)<16||!is_string($id)
+        ||!preg_match('/^[A-Za-z0-9_-]{1,120}$/D',$id))return null;
+    if(count($posts)>50)return null;
+    $api='https://n8n.orvekio.com/api/v1/';
+    $workflow=socialN8nGet($api.'workflows/'.rawurlencode($id),$key);
+    if(!is_array($workflow)
+        || (string)($workflow['id']??'')!==$id
+        || ($workflow['name']??'')!=='Cuisine du Cambodge - 01 - Brouillon IA et validation email')
+        return null;
+    $nodes=$workflow['nodes']??null;
+    if(!is_array($nodes))return null;
+    $waitNodes=array_values(array_filter($nodes,static fn($n):bool=>
+        is_array($n)&&($n['name']??'')==='Attendre une décision via formulaire'
+        &&($n['type']??'')==='n8n-nodes-base.wait'
+        &&($n['parameters']['resume']??'')==='form'));
+    if(count($waitNodes)!==1)return null;
+    $query=http_build_query(['workflowId'=>$id,'status'=>'waiting',
+                             'includeData'=>'true','limit'=>100],'','&',PHP_QUERY_RFC3986);
+    $page=socialN8nGet($api.'executions?'.$query,$key);
+    if(!is_array($page)||!isset($page['data'])||!is_array($page['data'])
+        ||count($page['data'])>100 || !empty($page['nextCursor']))return null;
+    // Unavailable, redacted or unsaved data will simply yield no buttons.
+    return socialExecutionWaitLinks($page['data'],$posts,$id);
+}

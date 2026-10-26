@@ -144,3 +144,39 @@ d'une demande de validation**, avec stockage privé chiffré/court terme
 et liaison stricte au brouillon. Aucun appel n8n 02/03, aucune décision
 alternative ni mutation de `posts` ne sont requis. Cette interface
 n'est **pas encore branchée** ; ne pas afficher de boutons factices.
+
+
+## Pont direct vers le Wait existant : OPTION READ-ONLY
+
+Le module `public/gestion-social/n8n-wait-readonly.php` utilise,
+**uniquement si des variables privées sont disponibles sur OVH**,
+la **public API n8n en GET uniquement** :
+1. `GET /api/v1/workflows/{id}` pour vérifier le nom du workflow 01 et son
+   nœud `Attendre une décision via formulaire` en mode `form`.
+2. `GET /api/v1/executions?workflowId={id}&status=waiting&includeData=true&limit=100`
+   pour récupérer les seules exécutions Wait non terminées, avec leur
+   contexte sauvegardé.
+3. Appariement **strict** de `Enregistrer le brouillon → id`,
+   `Vérifier et cadrer les textes → sourceId/fingerprint/date/légendes/image`,
+   et des métadonnées signées
+   `Attendre une décision via formulaire.metadata.resumeFormUrl`.
+   Toute ambiguïté, redaction, valeur absente ou dérive fait disparaître
+   le bouton direct. Le jeton n'est jamais rendu en HTML ni enregistré
+   dans la base ; l'utilisateur authentifié déclenche seulement
+   **un POST CSRF et une 303** vers n8n, qui reste l'autorité finale.
+
+Configuration **facultative** dans `.cuisine-asset-portal/config.php`
+hors webroot : `n8n_readonly_api_key` (droits de lecture workflows/executions,
+pas de droit d'écriture), `n8n_social_workflow_id` (ID du workflow 01).
+Ne pas communiquer ni committer ces valeurs. L'absence de configuration
+laisse le formulaire e-mail disponible ; rien n'est activé côté n8n.
+La requête serveur ne cible que `https://n8n.orvekio.com`, exige TLS,
+interdit les redirections, taille max 1 MiB et délai max 7 secondes.
+
+**Important : adaptation fondée sur le contrat n8n 2.x mais non encore
+réceptionnée dans notre runtime.** Le format de `metadata.resumeFormUrl`
+peut dépendre des données sauvegardées et des permissions de redaction API :
+sans preuve de conformité de l'exécution en attente, aucun bouton direct
+ne doit apparaître. La base de production n'a actuellement aucun brouillon
+`draft`, donc la fonction ne peut pas être testée de bout en bout en live
+sans nouveau brouillon explicitement autorisé. Pas de workflow 01/02/03 modifié.
