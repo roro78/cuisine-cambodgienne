@@ -21,8 +21,17 @@ $history=['culture:changed'=>['fingerprint'=>$a,'status'=>'published'],
 $result=socialCatalogCandidates($feed,$history);
 ensure(array_column($result,'state')===['available','changed','missing_image','seen'],'Classification/order mismatch');
 ensure($result[0]['id']==='recette:new','Fresh source not ranked first');
+ensure($result[0]['image_url']===$image,'Validated JPEG not returned for thumbnail');
+ensure($result[1]['image_url']===$image,'Changed source thumbnail was lost');
+ensure($result[2]['image_url']===null,'Missing image must never become a thumbnail');
 ensure($result[1]['previous_status']==='published','History status lost');
 ensure($result[3]['previous_status']==='draft','Pending post incorrectly considered new');
+// Ineligible/foreign images are never rendered even if a valid source ID exists.
+$badMedia=$feed;
+$badMedia['items'][0]['imageUrl']='https://attacker.test/hijack.jpg';
+$noMedia=socialCatalogCandidates($badMedia,$history);
+ensure($noMedia[0]['state']==='missing_image' && $noMedia[0]['image_url']===null,
+  'Untrusted remote thumbnail was accepted');
 foreach ([
   static function(&$f){$f['schemaVersion']=99;},
   static function(&$f){$f['items'][0]['url']='https://attacker.test/recettes/new/';},

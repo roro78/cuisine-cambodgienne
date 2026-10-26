@@ -143,3 +143,18 @@ test('Wait bridge and catalogue are read-only by contract, and a stale draft can
    assert.doesNotMatch(code,/api\.resend\.com|graph\.facebook\.com|graph\.instagram\.com/,'Publishing endpoint in '+name);
  }
 });
+
+test('catalogue library shows compact true JPEG thumbnails and actionable counts',()=>{
+ const feed=readFileSync(new URL('../public/gestion-social/catalog-readonly.php',import.meta.url),'utf8');
+ assert.match(feed,/\x27image_url\x27\s*=>\s*\$ready\s*\?\s*\$image\s*:\s*null/);
+ assert.match(src,/array_count_values\(array_column\(\$catalogItems, 'state'\)\)/);
+ assert.match(src,/\$sourceStates\['available'\]/);
+ assert.match(src,/\$sourceStates\['changed'\]/);
+ assert.match(src,/\$sourceStates\['missing_image'\]/);
+ assert.match(src,/\$sourceStates\['seen'\]/);
+ assert.match(src,/loading="lazy" decoding="async"/);
+ assert.match(src,/class="source-photo"/);
+ assert.match(src,/width="88" height="88"/);
+ assert.match(src,/JPEG social absent/);
+ assert.match(src,/object-fit:cover/);
+});

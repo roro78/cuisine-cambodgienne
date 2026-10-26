@@ -52,6 +52,7 @@ function socialCatalogCandidates(array $feed, array $history): array {
             $state = 'seen';
         }
         $items[] = ['id'=>$id,'kind'=>$kind,'title'=>$title,'url'=>$url,
+                    'image_url'=>$ready?$image:null,
                     'state'=>$state,'previous_status'=>$previous['status'] ?? null];
     }
     $rank=['available'=>0,'changed'=>1,'missing_image'=>2,'seen'=>3];

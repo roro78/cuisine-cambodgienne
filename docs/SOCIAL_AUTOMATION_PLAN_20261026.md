@@ -293,3 +293,12 @@ La documentation Supabase précise que les connexions PostgreSQL **directes** ut
 **Corrigé sans toucher aux droits SQL** : le DSN doit pointer exclusivement vers `db.kljbnfjxwloiodwlbrrz.supabase.co:5432` avec l'utilisateur `cuisine_social_viewer`, **ou** vers le serveur `*.pooler.supabase.com:5432` copié depuis le panneau « Connect → Session pooler » du vrai projet avec l'utilisateur `cuisine_social_viewer.kljbnfjxwloiodwlbrrz`. Base `postgres` obligatoire ; port 6543 interdit (transaction-pooling incompatible avec certaines propriétés de session / requêtes préparées). TLS obligatoire. Après connexion, la session SQL doit toujours répondre `current_user = cuisine_social_viewer` et rester strictement SELECT-only. Aucun identifiant complet de connexion ni mot de passe ne doit être commité.
 
 **Important** : le hostname réel du pooler doit être copié depuis le panneau Connect du projet. Ne pas le déduire de la région ; plusieurs clusters existent. L'endpoint IPv4 n'est pas encore testé depuis OVH et ce code reste sur la PR #129.
+
+
+### Réconciliation catalogue de production GitHub et Supabase, 26 octobre — 20 h 28
+
+Audit **en lecture seule** sur la branche statique GitHub `ovh-production`, artefact `social-feed.json` : **35 sources** indexées (16 recettes, 4 ingrédients, 7 Carnets culturels, 6 ateliers, 2 techniques). Pour **32** sources, le flux expose une URL JPEG sociale et l'artefact `ovh-production` contient bien le fichier JPEG correspondant ; **3 recettes** historiques n'ont aucune image sociale : `curry-poulet-khmer`, `nom-krob-totim`, `samla-mchou-yuon`.
+
+Relecture Supabase : `cuisine_social.posts` ne contient toujours qu'un historique `ingredient:kroeung` en `published` Facebook et Instagram, avec empreinte identique au catalogue statique. **31 sources avec JPEG n'ont jamais été proposées**, 3 sont dépourvues d'image et 1 est déjà proposée/publiée. Ce résultat explique pourquoi la file `À valider` n'affiche pas 35 éléments : elle contient **uniquement les `draft` réellement créés par le workflow 01**, actuellement aucun.
+
+Le tableau de bord affiche désormais dans « Sources du site » les décomptes `available / changed / missing_image / seen` en lecture seule et une **vignette JPEG de 88×88 px** pour chaque source à URL validée ; sans JPEG, un carré avec `JPEG social absent`. Image `loading=lazy`, affichage mobile compact, sans création de brouillon ou appel Meta. Les données du flux sont déclaratives : l'existence des JPEG a été vérifiée dans l'artefact GitHub, mais **pas au niveau HTTP du serveur réellement servi**.

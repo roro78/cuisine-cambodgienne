@@ -366,6 +366,11 @@ input{display:block;width:100%;padding:12px;margin:6px 0 14px;border:1px solid #
 .network strong{display:block;margin:0 0 12px}.network img{display:block;margin:0 auto 12px;width:min(100%,220px);height:auto;aspect-ratio:1;object-fit:contain;border-radius:8px}
 .caption{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.55}
 .review-history{border:1px solid #dce1da;border-radius:9px;background:#f8faf7;padding:11px 13px;margin:12px 0;font-size:13px;overflow-wrap:anywhere}
+.source-card{display:flex;align-items:flex-start;gap:12px}
+.source-photo{display:block;flex:0 0 88px;width:88px;height:88px;max-width:88px;object-fit:cover;border-radius:8px;background:#ebede7}
+.source-photo-empty{display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;background:#ebe9e2;color:#56635c;font-size:11px;line-height:1.25}
+.source-content{min-width:0;flex:1}
+.source-content p{margin:8px 0 0}
 .small{font-size:12px;color:#526458}.warning{background:#fff5df;border-left:3px solid #bd892c;padding:13px}
 .empty{padding:24px;background:white;border:1px dashed #bac8be;border-radius:12px}
 @media(max-width:700px){.socials{grid-template-columns:1fr}.network{padding:12px}.network img{width:min(100%,190px)}}
@@ -431,11 +436,26 @@ pilotée par le workflow 01 au rythme actuel.</p>
 <?php if ($catalogStatus !== null): ?>
 <p class="warning" role="status"><?= h($catalogStatus) ?></p>
 <?php elseif ($catalogItems !== null): ?>
-<p class="muted"><?= count($catalogItems) ?> sources présentes dans le flux déployé ;
-elles ne sont pas toutes en cours de validation.</p>
+<?php $sourceStates = array_count_values(array_column($catalogItems, 'state')); ?>
+<p class="muted" role="status">
+<strong><?= count($catalogItems) ?> sources au catalogue</strong> ·
+<?= (int)($sourceStates['available'] ?? 0) ?> inédites avec image ·
+<?= (int)($sourceStates['changed'] ?? 0) ?> modifiées ·
+<?= (int)($sourceStates['missing_image'] ?? 0) ?> sans JPEG social ·
+<?= (int)($sourceStates['seen'] ?? 0) ?> déjà proposées.
+Ces chiffres proviennent du flux déployé et de l'historique PostgreSQL, pas du nombre de posts à valider.
+</p>
 <?php if (!$catalogItems): ?><p class="empty">Aucune source dans le flux publié.</p><?php endif; ?>
 <?php foreach ($catalogItems as $item): ?>
-<div class="review-history">
+<div class="review-history source-card">
+<?php if ($item['image_url'] !== null): ?>
+<img class="source-photo" src="<?= h($item['image_url']) ?>"
+     alt="Visuel social : <?= h($item['title']) ?>" width="88" height="88"
+     loading="lazy" decoding="async">
+<?php else: ?>
+<div class="source-photo source-photo-empty" aria-label="Visuel social indisponible">JPEG social absent</div>
+<?php endif; ?>
+<div class="source-content">
 <div class="badges">
 <span class="badge"><?= h($sourceKindLabels[$item['kind']] ?? 'Autre') ?></span>
 <span class="badge"><?php
@@ -451,6 +471,7 @@ echo h(match($item['state']) {
 <?php if ($item['previous_status'] !== null): ?>
 <p class="small">Dernier état connu : <?= h($postStatusLabels[$item['previous_status']] ?? $item['previous_status']) ?></p>
 <?php endif; ?>
+</div>
 </div>
 <?php endforeach; ?>
 <?php endif; ?>
