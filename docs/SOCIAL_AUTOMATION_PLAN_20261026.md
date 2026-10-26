@@ -261,7 +261,7 @@ Il affiche uniquement `PORTAL_READINESS_PASS: ...` ou
 **Préparation privée (action opérateur, pas via le chat ou GitHub) :**
 
 1. Depuis un terminal de confiance, se connecter à la base Cuisine du
-   Cambodge avec `psql`, puis exécuter `\\password cuisine_social_viewer`.
+   Cambodge avec `psql`, puis exécuter `\password cuisine_social_viewer`.
    Cette commande interactive demande deux fois le nouveau mot de passe
    **sans l'écrire en clair dans la requête SQL ou dans l'historique shell**.
    N'utiliser ni le service-role Supabase, ni le credential `cuisine_n8n`.
