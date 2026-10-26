@@ -182,3 +182,19 @@ Un module de planification pur `scripts/cuisine-social-wait-form-auth-plan.mjs` 
 Préconditions de mise en service : (1) vérification humaine de la version et du nœud déployé, (2) création d'un credential Basic Auth propre à Cuisine du Cambodge, avec mot de passe fort et unique saisi **uniquement dans n8n**, (3) confirmation qu'aucune exécution Wait n'attend une décision, (4) test contrôlé de GET et POST du formulaire sans authentification (refusés) puis avec authentification (autorisés) sur une exécution de test sans publication, (5) sauvegarde et migration séparée approuvée. Un changement de credential au niveau du Wait d'une exécution déjà en cours est interdit.
 
 **Aucun paramètre du Wait actuellement exporté n'a été changé et aucune mutation n8n n'a été déclenchée.** Le statut du chantier demeure `PR DRAFT / P0 NON REÇU`.
+
+### CI de réception du garde Basic Auth — 26 octobre 2026
+
+La [CI ciblée #40248395057](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40248395057) s'est terminée **SUCCESS** : **76 tests Node / 76 PASS**, essais HTTP PHP local, création du lecteur PostgreSQL RLS/SELECT-only (2 lignes visibles, aucune écriture), test d'immuabilité PostgreSQL 17 et lint PHP PASS. Commit de réception `3b03e23a8660433519789256cbdc6a860530840c`.
+
+L'audit n8n en GET-only consulte aussi `/api/v1/credentials` (métadonnées **sans secrets** : identifiant, nom, type), avec pagination. Si le credential n'existe pas, n'est pas un `httpBasicAuth`, possède un autre nom ou n'est pas visible avec les permissions disponibles, il refuse le plan. Aucun identifiant ni clé API n'est affiché en console. Le compte API doit avoir une permission de **lecture des métadonnées credentials** ; un refus 403 constitue un résultat sûr, et non une invitation à contourner les permissions.
+
+**Frontière de cette réception :** les 76 tests prouvent le *plan et l'audit simulés*, pas le comportement HTTP Basic du formulaire réel de n8n 2.32.7. Le formulaire actuellement exporté reste `resume=form` sans `incomingAuthentication=basicAuth` ; le déploiement reste bloqué faute de credential réel et de preuve runtime GET-only. Il n'existe toujours aucun bouton d'approbation actif dans le dashboard PHP.
+
+**Commande prévue uniquement sur un poste/runner privé disposant déjà d'une clé API n8n autorisée (ne partager aucune valeur dans un chat) :**
+
+```bash
+N8N_API_KEY="$N8N_API_KEY" N8N_WAIT_BASIC_CREDENTIAL_ID="$N8N_WAIT_BASIC_CREDENTIAL_ID" node scripts/audit-cuisine-social-wait-form-auth.mjs
+```
+
+Cette commande **ne peut pas écrire** dans n8n : aucun argument d'application n'est accepté. Après validation du rapport, toute pose du credential Basic Auth devra être une opération séparée avec revue, sauvegarde et procédure de rollback, en conservant le seul `Wait` existant.
