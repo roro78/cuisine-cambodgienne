@@ -17,44 +17,57 @@ BEGIN
 END;
 $smoke$;
 INSERT INTO cuisine_social.validation_dispatches(post_id,idempotency_key)
- VALUES(3,'cuisine-social-validation/draft-3');
+ SELECT id, 'cuisine-social-validation/draft-' || id::text
+   FROM cuisine_social.posts WHERE source_id='recette:new-01';
 DO $smoke$
+DECLARE first_draft BIGINT;
+        second_draft BIGINT;
+        reviewed_post BIGINT;
 BEGIN
+  SELECT id INTO STRICT first_draft FROM cuisine_social.posts
+    WHERE source_id='recette:new-01';
+  SELECT id INTO STRICT second_draft FROM cuisine_social.posts
+    WHERE source_id='recette:new-02';
+  SELECT id INTO STRICT reviewed_post FROM cuisine_social.posts
+    WHERE source_id='recette:b';
+  IF first_draft <= 1 OR second_draft <= 1 OR first_draft = second_draft THEN
+    RAISE EXCEPTION 'Expected distinct new draft IDs';
+  END IF;
   -- Existing unique post_id and idempotency_key forbid a second reservation.
   BEGIN
     INSERT INTO cuisine_social.validation_dispatches(post_id,idempotency_key)
-      VALUES(3,'cuisine-social-validation/draft-3');
+      VALUES(first_draft,'cuisine-social-validation/draft-' || first_draft::text);
     RAISE EXCEPTION 'Duplicate reservation unexpectedly succeeded';
   EXCEPTION WHEN unique_violation THEN NULL;
   END;
   BEGIN
     INSERT INTO cuisine_social.validation_dispatches(post_id,idempotency_key)
-      VALUES(4,'draft-4-WRONG');
+      VALUES(second_draft,'WRONG-' || second_draft::text);
     RAISE EXCEPTION 'Wrong idempotency key unexpectedly succeeded';
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
   BEGIN
     INSERT INTO cuisine_social.validation_dispatches(post_id,idempotency_key,state)
-      VALUES(4,'cuisine-social-validation/draft-4','accepted');
+      VALUES(second_draft,'cuisine-social-validation/draft-' || second_draft::text,'accepted');
     RAISE EXCEPTION 'Pre-accepted reservation unexpectedly succeeded';
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
   BEGIN
     INSERT INTO cuisine_social.validation_dispatches
       (post_id,idempotency_key,resend_message_id)
-      VALUES(4,'cuisine-social-validation/draft-4','fake');
+      VALUES(second_draft,'cuisine-social-validation/draft-' || second_draft::text,'fake');
     RAISE EXCEPTION 'Pre-sent reservation unexpectedly succeeded';
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
   BEGIN
     INSERT INTO cuisine_social.validation_dispatches(post_id,idempotency_key)
-      VALUES(1,'cuisine-social-validation/draft-1');
-    RAISE EXCEPTION 'Reservation for published post unexpectedly succeeded';
+      VALUES(reviewed_post,'cuisine-social-validation/draft-' || reviewed_post::text);
+    RAISE EXCEPTION 'Reservation for reviewed post unexpectedly succeeded';
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
   BEGIN
     UPDATE cuisine_social.validation_dispatches
-       SET state='accepted' WHERE post_id=3;
+       SET state='accepted' WHERE post_id=first_draft;
     RAISE EXCEPTION 'Writer role unexpectedly updated dispatch state';
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;

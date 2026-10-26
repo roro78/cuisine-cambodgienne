@@ -28,11 +28,17 @@ INSERT INTO cuisine_social.posts
   ('recette:new-02','new02','{"title":"New Draft 2"}','2026-10-30','FB2','IG2','img2');
 SET ROLE cuisine_n8n;
 DO $before$
+DECLARE first_draft BIGINT;
 BEGIN
+  -- PostgreSQL identity sequences have gaps after rolled-back inserts.
+  -- Never assume next post_id is 3: resolve exact BIGINT from source identity.
+  SELECT id INTO STRICT first_draft FROM cuisine_social.posts
+    WHERE source_id='recette:new-01';
+  IF first_draft <= 1 THEN RAISE EXCEPTION 'Unexpected first draft id'; END IF;
   BEGIN
     INSERT INTO cuisine_social.validation_dispatches(post_id,idempotency_key)
-      VALUES (3,'cuisine-social-validation/draft-3');
-    RAISE EXCEPTION 'The old policy unexpectedly accepted draft 3';
+      VALUES (first_draft, 'cuisine-social-validation/draft-' || first_draft::text);
+    RAISE EXCEPTION 'Old draft-1 policy unexpectedly accepted a newer draft';
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
 END;
