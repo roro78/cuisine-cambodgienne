@@ -5,7 +5,7 @@ import { restoredRecipes } from '../data/restoredRecipes';
 import { cultureArticles } from '../data/culture';
 import { ingredientGuides } from '../data/ingredients';
 import { workshops } from '../data/workshops';
-import { cookingWorkshopGuides, completeCookingWorkshopCutoverReady, releasedCookingWorkshopGuides } from '../data/cookingWorkshopGuides';
+import { completeCookingWorkshopCutoverReady, releasedCookingWorkshopGuides } from '../data/cookingWorkshopGuides';
 import { recipeTechniqueGuides } from '../data/recipeTechniques';
 import { getSocialCatalog } from '../data/socialCatalog';
 
@@ -17,11 +17,15 @@ import { getSocialCatalog } from '../data/socialCatalog';
  */
 type ContentKind = 'recette' | 'culture' | 'atelier' | 'ingredient' | 'technique';
 type Item = { id: string; kind: ContentKind; model: string; fingerprint: string };
+/** Complete canonical record digest: changes to quantities, scripts, sources and media all invalidate it. */
+export function editorialRecordFingerprint(model: string, fullRecord: object): string {
+  return createHash('sha256').update(JSON.stringify({ model, record: fullRecord })).digest('hex');
+}
 const records: Item[] = [];
 function add(kind: ContentKind, slug: string, model: string, fullRecord: object): void {
   records.push({
     id: `${kind}:${slug}`, kind, model,
-    fingerprint: createHash('sha256').update(JSON.stringify({ model, record: fullRecord })).digest('hex')
+    fingerprint: editorialRecordFingerprint(model, fullRecord)
   });
 }
 
