@@ -147,6 +147,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 $rows = [];
 $counts = [];
 $humanDecisionLabels = ['approved' => 'Approuvée', 'revision_requested' => 'Modification demandée', 'rejected' => 'Refusée'];
+$sourceKindLabels = ['recette' => 'Recette', 'culture' => 'Carnet culturel',
+    'atelier' => 'Atelier', 'ingredient' => 'Ingrédient', 'technique' => 'Technique'];
+$postStatusLabels = ['draft' => 'À valider', 'approved' => 'Approuvée',
+    'revision_requested' => 'Modification demandée', 'rejected' => 'Refusée',
+    'publishing' => 'Publication en cours', 'published' => 'Publiée',
+    'manual_review' => 'Vérification manuelle'];
 $platformStateLabels = ['pending' => 'En attente', 'submitting' => 'Transmission en cours',
     'creating' => 'Préparation du média', 'checking' => 'Vérification Meta',
     'container_created' => 'Média préparé', 'published' => 'Publiée', 'manual_review' => 'Vérification manuelle'];
@@ -302,6 +308,19 @@ input{display:block;width:100%;padding:12px;margin:6px 0 14px;border:1px solid #
 <p class="small">Ce lien n'est ni stocké ni envoyé à un autre service. La décision s'effectue dans n8n ; le dashboard ne publie rien.</p>
 </section>
 <p class="warning"><strong>Liste en consultation.</strong> L'e-mail reste la source du lien de validation. Les trois décisions sont enregistrées par le formulaire n8n existant, sans nouvelle logique SQL.</p>
+<section class="review-history" aria-label="Origine des propositions éditoriales">
+<strong>Comment une publication arrive ici</strong>
+<p class="small">Les recettes, Carnets et ateliers intégrés au catalogue du site alimentent
+<code>/social-feed.json</code> après déploiement. Le workflow n8n 01 parcourt ce catalogue
+chaque jour à 7 h (heure de Paris), sélectionne au maximum un contenu doté
+d'une image sociale compatible et enregistre un brouillon dans
+<code>cuisine_social.posts</code>. Seuls ces brouillons sont affichés dans la file
+« À valider » : créer une page ne déclenche pas immédiatement un e-mail.</p>
+<p class="small" role="status"><strong>File actuelle :</strong>
+<?= (int)($counts['draft'] ?? 0) ?> à valider ·
+<?= (int)($counts['revision_requested'] ?? 0) ?> modification(s) demandée(s).
+Les autres sujets du catalogue ne sont pas encore des propositions à valider.</p>
+</section>
 <nav class="filters" aria-label="Filtrer les publications">
 <?php foreach (['draft'=>'À valider','approved'=>'Approuvées','revision_requested'=>'À corriger','published'=>'Publiées','manual_review'=>'À examiner','rejected'=>'Refusées','all'=>'Toutes'] as $key=>$label): ?>
 <a class="<?= ($status===$key?'selected':'') ?>" href="?status=<?= h($key) ?>"><?= h($label) ?> (<?= $key==='all' ? array_sum(array_map('intval',$counts)) : (int)($counts[$key] ?? 0) ?>)</a>
@@ -314,18 +333,27 @@ input{display:block;width:100%;padding:12px;margin:6px 0 14px;border:1px solid #
 <span class="muted">Page <?= $page ?> · <?= $visibleTotal ?> publication(s)</span>
 <?php if ($page * 50 < $visibleTotal): ?><a href="?status=<?= h($status) ?>&amp;page=<?= $page + 1 ?>">Page suivante</a><?php endif; ?>
 </nav>
-<?php if (!$rows): ?><div class="empty">Aucune publication dans cette catégorie.</div><?php endif; ?>
+<?php if (!$rows): ?><div class="empty"><?php if ($status === 'draft'): ?>
+Aucun brouillon en attente de validation. Les nouvelles recettes, les Carnets et les ateliers
+deviennent éligibles après mise en ligne du catalogue et le prochain passage du workflow 01,
+sous réserve d'une image sociale compatible. Une source publiée sur le site n'est pas
+nécessairement déjà transformée en post social.
+<?php else: ?>Aucune publication dans cette catégorie.<?php endif; ?></div><?php endif; ?>
 <?php foreach ($rows as $row):
     $snap = json_decode((string)$row['source_snapshot'], true);
     if (!is_array($snap)) $snap=[];
     $title = is_string($snap['title'] ?? null) ? (string)$snap['title'] : (string)$row['source_id'];
+    $sourceKind = is_string($snap['kind'] ?? null) ? $snap['kind'] :
+        explode(':', (string)$row['source_id'], 2)[0];
+    $kindLabel = $sourceKindLabels[$sourceKind] ?? 'Autre contenu';
     $destination = pageUrl($snap['url'] ?? null);
     $image=photoUrl($row['image_url'] ?? null);
 ?>
 <article class="entry">
 <h2><?= h($title) ?></h2>
 <div class="badges">
-<span class="badge"><?= h((string)$row['status']) ?></span>
+<span class="badge"><?= h($kindLabel) ?></span>
+<span class="badge"><?= h($postStatusLabels[(string)$row['status']] ?? (string)$row['status']) ?></span>
 <span class="badge">Facebook : <?= h($platformStateLabels[(string)$row['fb_state']] ?? (string)$row['fb_state']) ?></span>
 <span class="badge">Instagram : <?= h($platformStateLabels[(string)$row['ig_state']] ?? (string)$row['ig_state']) ?></span>
 <span class="badge">Prévu : <?= h((string)$row['scheduled_date']) ?></span>

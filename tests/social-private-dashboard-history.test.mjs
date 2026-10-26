@@ -22,3 +22,15 @@ test('complete captions remain accessible without an inner scrolling trap on sma
  assert.match(rule,/overflow-wrap:anywhere/);
  assert.doesNotMatch(rule,/max-height|overflow:auto|line-clamp/);
 });
+
+test('the dashboard explains catalog-to-draft intake and exposes per-source review counts',()=>{
+ for(const fragment of [
+  'social-feed.json','chaque jour à 7 h','cuisine_social.posts',
+  'créer une page ne déclenche pas immédiatement un e-mail',
+  "'draft' ?? 0", "'revision_requested' ?? 0",
+  'Aucun brouillon en attente de validation','sourceKindLabels',
+  'Carnet culturel','Recette','Atelier','À valider'
+ ]) assert.ok(src.includes(fragment),fragment);
+ assert.match(src,/h\(\$kindLabel\)/,'Content kind must be escaped in HTML');
+ assert.match(src,/\$snap\['kind'\]/,'Source kind must use immutable draft snapshot');
+});

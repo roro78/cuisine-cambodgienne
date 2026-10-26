@@ -60,3 +60,49 @@ Ne pas inventer ni activer une seconde API de décision.
 Les autres chantiers (plans média, recettes et ateliers IA, migrations
 générales des réservations) sont **hors périmètre** et ne conditionnent pas
 ce dashboard.
+
+
+## Origine réelle des futures propositions : audit code du 26 octobre 2026
+
+La question de « quelle est la source qui entre dans le pipeline ? » est résolue
+par lecture des modules existants sur `main`, sans modification n8n :
+
+1. **Auteur du site / IA éditoriale** : un article, une recette ou un atelier
+   est intégré dans la collection structurée correspondante du site
+   (`src/data/recipes.ts`, `restoredRecipes`, `culture.ts`,
+   `workshops.ts` ou `cookingWorkshopGuides.ts` après leur gate
+   `release_ready`). Une page Astro isolée qui n'est pas référencée
+   dans ces collections ne sera **pas** automatiquement découverte.
+2. **Agrégation du catalogue** : `src/data/socialCatalog.ts` rassemble
+   également ingrédients et techniques, fabrique un `source.id` stable
+   (`recette:slug`, `culture:slug`, `atelier:slug`) et une empreinte
+   éditoriale `fingerprint`. `src/pages/social-feed.json.ts` expose
+   `/social-feed.json`, généré lors du build/déploiement statique.
+3. **Workflow 01 existant** : à 07:00 Europe/Paris, GET
+   `https://www.cuisine-du-cambodge.com/social-feed.json`. Il consulte
+   l'historique de `cuisine_social.posts` puis **choisit un seul sujet**,
+   en donnant priorité aux sources inédites et aux catégories selon le jour.
+   Critère bloquant : `imageUrl` JPEG
+   `https://www.cuisine-du-cambodge.com/social-assets/…jpg` valide.
+   **Pas de déclenchement immédiat à chaque création de page**, et une
+   source du catalogue n'est pas nécessairement un post proposé ce jour.
+4. **Transformation en post à valider** : uniquement après
+   `INSERT INTO cuisine_social.posts` réussi, le post prend
+   `status=draft`. Le workflow envoie le mail Resend et passe dans
+   l'ancien `Wait` n8n (72 heures). Le dashboard est une **vue sur
+   cette table**, pas une seconde source ou une file recréée.
+5. **Décision** : `draft` apparaît dans le filtre « À valider » ;
+   `revision_requested` dans « À corriger », `approved` puis
+   `published` continuent dans les workflows existants 02/03.
+
+**Écart fonctionnel à arbitrer ultérieurement, sans régression :** si l'on
+souhaite « nouvelle page validée ⇒ proposition immédiate dans le dashboard »,
+un déclencheur de nouveauté ou un scan sur événement de déploiement serait à
+ajouter. Il n'existe **pas** actuellement. Avant de l'implémenter, conserver
+la règle d'une seule proposition quotidienne et les protections d'idempotence,
+pour ne pas réémettre des mails ni déclencher plusieurs posts.
+
+**Amélioration P0 dashboard incluse dans cette PR :** explication concise
+de cette origine, compteurs À valider/À corriger, catégories Recette/Carnet/
+Atelier/Ingrédient/Technique sur chaque carte, et état vide explicite.
+Aucune connexion externe ni exécution n8n supplémentaire.
