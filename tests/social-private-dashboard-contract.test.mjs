@@ -51,9 +51,18 @@ test('safe image and canonical destination URLs, escaping and compact mobile pho
  assert.match(src,/grid-template-columns:1fr/);
  assert.match(src,/width:min\(100%,190px\)/);
 });
+test('existing signed Wait relay preserves the original decision authority',()=>{
+ assert.match(src,/function existingWaitUrl\(/);
+ assert.match(src,/form-waiting/);
+ assert.match(src,/\$authenticated && isset\(\$_POST\['open_existing_wait'\]\)/);
+ assert.match(src,/header\('Location: ' \./);
+ assert.match(src,/true, 303/);
+ assert.match(src,/name="wait_link"/);
+ assert.doesNotMatch(src, /name="decision"|name="approve"|\/api\/v1\/executions/i);
+});
 test('no approval bypass: this view is informative only',()=>{
- assert.match(src,/Consultation uniquement/);
- assert.match(src,/le formulaire de validation reçu par e-mail/);
+ assert.match(src,/Liste en consultation/);
+ assert.match(src,/Lien de validation reçu par e-mail/);
  assert.doesNotMatch(src,/\bapprovePost\(|POST \/approve|\bstatus\s*=\s*['"]approved['"]/);
  assert.match(src,/À valider/);
  assert.match(src,/Instagram/);

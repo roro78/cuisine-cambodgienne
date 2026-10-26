@@ -36,6 +36,21 @@ function photoUrl(mixed $s): ?string {
     if (!is_string($s) || strlen($s) > 300) return null;
     return preg_match('~^https://www[.]cuisine-du-cambodge[.]com/social-assets/[a-z0-9-]+[.]jpg$~D', $s) ? $s : null;
 }
+/** Only pass through the signed form link from the existing validation email.
+ * The link is never stored, re-issued, or used to submit a decision. */
+function existingWaitUrl(mixed $value): ?string {
+    if (!is_string($value) || strlen($value) > 1100 ||
+        preg_match('/[\x00-\x20\x7f\\\\]/', $value)) return null;
+    $p = parse_url($value);
+    if (!is_array($p) || ($p['scheme'] ?? null) !== 'https'
+        || ($p['host'] ?? null) !== 'n8n.orvekio.com'
+        || isset($p['user']) || isset($p['pass']) || isset($p['port'])
+        || isset($p['fragment'])) return null;
+    if (!preg_match('~^/form-waiting/[A-Za-z0-9_-]{1,100}$~D', (string)($p['path'] ?? ''))) return null;
+    if (!preg_match('/^signature=[A-Za-z0-9_.%-]{16,700}$/D', (string)($p['query'] ?? ''))) return null;
+    return $value;
+}
+
 function rateLimit(string $secretDir, string $remote, bool $failed = false): bool {
     // Corrupt/unwritable throttle state is a security failure, NEVER reset it.
     // The path is deterministic, server-side and outside the web root.
@@ -95,6 +110,15 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     if (!is_string($_POST['csrf'] ?? null) || !hash_equals((string)$_SESSION['csrf'], $_POST['csrf'])) {
         http_response_code(403);
         $error = 'Session expirée : rechargez cette page.';
+    } elseif ($authenticated && isset($_POST['open_existing_wait'])) {
+        // No new approval path: HTTP 303 opens the original n8n Wait form.
+        $resumeUrl = existingWaitUrl($_POST['wait_link'] ?? null);
+        if ($resumeUrl === null) {
+            http_response_code(422);
+            exit('Lien de validation non conforme : utilisez le lien reçu par e-mail.');
+        }
+        header('Location: ' . $resumeUrl, true, 303);
+        exit;
     } elseif (isset($_POST['logout'])) {
         $_SESSION = [];
         session_regenerate_id(true);
@@ -265,7 +289,19 @@ input{display:block;width:100%;padding:12px;margin:6px 0 14px;border:1px solid #
 <label>Mot de passe <input type="password" name="password" autocomplete="current-password" required></label>
 <button name="login" type="submit">Se connecter</button></form></section>
 <?php else: ?>
-<p class="warning"><strong>Consultation uniquement.</strong> Pour approuver, corriger ou refuser un post, utilisez pour l'instant le formulaire de validation reçu par e-mail. Cette page n'écrit jamais dans PostgreSQL et ne publie rien sur Meta.</p>
+<section class="entry" aria-label="Reprendre une validation existante">
+<h2>Accéder au formulaire de validation n8n</h2>
+<p class="help">Collez le lien « Examiner et donner ma décision » de l'e-mail correspondant à la publication. Le formulaire existant vous propose <strong>Approuver</strong>, <strong>Demander une modification</strong> ou <strong>Refuser</strong>.</p>
+<form method="post" autocomplete="off">
+<input type="hidden" name="csrf" value="<?= h((string)$_SESSION['csrf']) ?>">
+<label for="wait-link">Lien de validation reçu par e-mail</label>
+<input id="wait-link" type="url" name="wait_link" required autocomplete="off"
+    spellcheck="false" inputmode="url" placeholder="https://n8n.orvekio.com/form-waiting/…">
+<button name="open_existing_wait" type="submit" value="1">Ouvrir le formulaire existant</button>
+</form>
+<p class="small">Ce lien n'est ni stocké ni envoyé à un autre service. La décision s'effectue dans n8n ; le dashboard ne publie rien.</p>
+</section>
+<p class="warning"><strong>Liste en consultation.</strong> L'e-mail reste la source du lien de validation. Les trois décisions sont enregistrées par le formulaire n8n existant, sans nouvelle logique SQL.</p>
 <nav class="filters" aria-label="Filtrer les publications">
 <?php foreach (['draft'=>'À valider','approved'=>'Approuvées','revision_requested'=>'À corriger','published'=>'Publiées','manual_review'=>'À examiner','rejected'=>'Refusées','all'=>'Toutes'] as $key=>$label): ?>
 <a class="<?= ($status===$key?'selected':'') ?>" href="?status=<?= h($key) ?>"><?= h($label) ?> (<?= $key==='all' ? array_sum(array_map('intval',$counts)) : (int)($counts[$key] ?? 0) ?>)</a>

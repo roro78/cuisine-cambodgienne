@@ -73,6 +73,28 @@ test('private portal native HTTP smoke: HTTPS, session, CSRF, login, logout and 
   const authenticatedCookie=good.res.headers.get('set-cookie')?.split(';')[0]||cookie;
   const again=await fetch(url,{headers:{...headers,'Cookie':authenticatedCookie}});
   assert.equal(again.status,503,'Authenticated session must remain protected by DB gate');
+  // Existing Wait form: no n8n call, just a signed 303 handoff.
+  const signed='https://n8n.orvekio.com/form-waiting/12345?signature=0123456789abcdef0123456789abcdef';
+  const valid=await send({csrf,open_existing_wait:'1',wait_link:signed},authenticatedCookie);
+  assert.equal(valid.res.status,303);
+  assert.equal(valid.res.headers.get('location'),signed);
+  assert.equal(valid.res.headers.get('referrer-policy'),'no-referrer');
+  for(const unsafe of [
+    'http://n8n.orvekio.com/form-waiting/12345?signature=0123456789abcdef',
+    'https://n8n.orvekio.com.attacker.test/form-waiting/12345?signature=0123456789abcdef',
+    'https://n8n.orvekio.com/webhook-waiting/12345?signature=0123456789abcdef',
+    'https://n8n.orvekio.com/form-waiting/12345',
+    'https://n8n.orvekio.com/form-waiting/12345?signature=0123456789abcdef&extra=1',
+    'https://n8n.orvekio.com/form-waiting/12345?signature=0123456789abcdef#fragment'
+  ]){
+    const denied=await send({csrf,open_existing_wait:'1',wait_link:unsafe},authenticatedCookie);
+    assert.equal(denied.res.status,422);
+    assert.equal(denied.res.headers.get('location'),null);
+  }
+  const noCsrf=await send({csrf:'invalid',open_existing_wait:'1',wait_link:signed},authenticatedCookie);
+  assert.equal(noCsrf.res.status,403);
+  const anon=await send({csrf,open_existing_wait:'1',wait_link:signed},'CDC_SOCIAL_REVIEW=invalid');
+  assert.notEqual(anon.res.status,303);
   const logout=await send({csrf,logout:'1'},authenticatedCookie);
   assert.equal(logout.res.status,200,'Logout must not require database connectivity');
   assert.match(logout.html,/Connexion privée/);

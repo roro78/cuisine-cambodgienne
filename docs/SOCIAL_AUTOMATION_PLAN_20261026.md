@@ -111,3 +111,12 @@ n'apportent pas à elles seules une mise en production.
 
 **Dernière version du plan :** commit code et tests `2097fd3b1065ed1bb189b7a157ccf5102197dac4`,
 CI `40301687770` verte. Les commits documentaires suivants ne changent pas le code testé.
+
+
+## Recadrage du 26 octobre — finalisation du dashboard uniquement
+
+Les workflows 01/02/03 fonctionnaient déjà avant ce chantier : **aucune modification de leur logique de publication ne doit être appliquée**. Les migrations SQL, refontes des réservations et modifications Basic Auth étudiées sont **hors du périmètre immédiat** ; les garder en revue sans les déployer pour avancer sur l'interface.
+
+**Avancement concret de l'interface :** un utilisateur authentifié peut maintenant coller le lien signé du Wait reçu dans son courriel et ouvrir le même formulaire n8n via une redirection POST/CSRF et HTTPS strict, sans créer de nouvelle API d'approbation ni enregistrer le lien dans la base. Ce relais constitue une première intégration sans régression du système déjà validé. Les trois choix continuent d'être enregistrés exclusivement dans n8n.
+
+**Limite connue :** l'utilisateur doit encore récupérer manuellement l'URL dans son e-mail. Trois boutons qui agiraient directement depuis le dashboard ne sont **pas encore implémentés**, faute d'un canal serveur sécurisé reliant chaque brouillon à son URL de reprise ; ne pas confondre ce relais avec une validation intégrée entièrement automatique. Aucun accès n8n/OVH live n'a été modifié.
