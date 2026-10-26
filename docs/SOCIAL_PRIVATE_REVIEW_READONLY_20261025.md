@@ -209,3 +209,14 @@ L'audit GET-only ne se contente plus des requêtes n8n filtrées `status=waiting
 Le script `scripts/migrate-cuisine-social-wait-form-auth.mjs` installe **uniquement** la référence du credential `httpBasicAuth` sur le nœud `Wait` existant. Son mode par défaut est GET-only ; l'application exige ensemble `--apply --approve-single-wait-auth-update`, plus `N8N_FORM_AUTH_MAINTENANCE_CONFIRMED=YES_NO_RUNNING_WAITS` posé par l'opérateur **après vérification manuelle du runtime**. Il recoupe la liste des exécutions et la version n8n **deux fois**, refuse le credential ou le graphe dérivés, crée une sauvegarde privée 0600 avant tout PUT et relit le serveur après le PUT. L'outil ne publie, n'active ou n'exécute aucun workflow. Un rollback ne doit jamais être automatique si une lecture de contrôle échoue.
 
 **Risques non couverts par les tests :** n8n public API PUT ne garantit pas nécessairement de contrôle de concurrence atomique malgré le re-GET/versionId ; un nouveau `Wait` peut naître entre le dernier GET et le PUT. Exiger une **fenêtre de maintenance effective**, aucune exécution `Wait` en cours confirmée dans l'UI/DB n8n, puis essais de formulaire GET/POST non authentifié/authentifié dans un environnement contrôlé. Une API qui a purgé des exécutions ne constitue pas une preuve suffisante. Les identifiants Basic Auth restent exclusivement dans n8n. Script **non exécuté**, pas de modification du runtime.
+
+### Réception du 26 octobre — 85 tests validés
+
+- [GitHub Actions #40296580181](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40296580181) : **SUCCESS**.
+- **85 tests Node PASS sur 85**, le test HTTP PHP et les contrôles PostgreSQL 17 éphémères/immutabilité restent PASS.
+- `scripts/migrate-cuisine-social-wait-form-auth.mjs` : lecture seule par défaut ; mode écriture seulement après **2 options exactes** et confirmation de maintenance hors dépôt ; préflight complet et re-préflight avant un PUT ; double contrôle de version, backup 0600 et vérification après mutation.
+- Tests : aucune écriture par défaut, aucun backup dans ce mode, échec sans approbations, idempotence, refus de Wait en cours et des versions concurrentes, échec si les champs n8n hors du Wait ont changé après PUT.
+- **Ni l'audit n8n authentifié ni la migration n8n n'ont été exécutés en production.** Pas de mise à jour du workflow de production, pas de nouveau credential, pas de validation du formulaire de bout en bout.
+- **Réserve d'architecture** : une fenêtre de maintenance **réelle** et la vérification humaine des exécutions Wait restent nécessaires. Le contrôle pré-GET ne saurait rendre l'API PUT de n8n atomique. À défaut, ne pas appliquer.
+
+Prochaine étape de réception : n8n GET-only en accès privé, credential Basic Auth exclusivement géré dans n8n, tests contrôlés des accès form GET/POST non authentifiés et authentifiés, puis raccordement des actions du dashboard à une seule autorité de décision.
