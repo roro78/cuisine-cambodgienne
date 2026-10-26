@@ -196,3 +196,8 @@ Il refuse tout affichage de bouton si la liste dépasse 20 exécutions, est pagi
 ### Anti-régression automatique sur la PR #129
 
 La CI ciblée exécute désormais `scripts/verify-social-dashboard-scope.mjs` sur le vrai diff `origin/main...HEAD`. La liste d'autorisations contient uniquement **le PHP du dashboard, les tests, le diagnostic SQL en lecture seule et la documentation**. Toute modification de `automation/n8n/01-drafts-email-approval.json`, de `02`, de `03`, du schéma n8n, de `src/data/socialCatalog.ts` ou de `src/pages/social-feed.json.ts` fait **échouer la CI**. Ce garde-fou ne protège pas le runtime n8n lui-même : il protège le périmètre des commits GitHub de cette PR, sans toucher à la production.
+
+
+### Garde de reprise sur un brouillon déjà décidé ou en publication (26/10)
+
+Le rapprochement n8n affiche désormais un bouton seulement si **tous** les contrôles métier sont satisfaits : `posts.status=draft`, `fb_state=pending`, `ig_state=pending`, aucune décision, aucune date de décision/approbation/publication, aucun ID Facebook, Instagram ou conteneur Instagram. Les champs absents, identités BIGINT dupliquées et incohérences font disparaître l'accès direct. La requête SQL ciblée lors du clic relit aussi ces champs : pas de confiance dans les données de la page déjà affichée. Ceci renforce uniquement le portail, ne modifie pas les états de la base ni les workflows 01/02/03.

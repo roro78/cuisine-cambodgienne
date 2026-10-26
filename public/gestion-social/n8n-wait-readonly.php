@@ -10,6 +10,22 @@ function socialPostId(mixed $value): ?string {
     if (!is_string($value) || !preg_match('/^[1-9][0-9]{0,18}$/D',$value))return null;
     return strlen($value)<19 || strcmp($value,'9223372036854775807')<=0 ? $value : null;
 }
+/**
+ * A draft is eligible for a link ONLY if absolutely no decision or Meta
+ * publication can already have started. Unknown/missing state fails closed.
+ */
+function socialIsUndecidedDraft(array $post): bool {
+    if (socialPostId($post['id']??null)===null
+        || ($post['status']??null)!=='draft'
+        || ($post['fb_state']??null)!=='pending'
+        || ($post['ig_state']??null)!=='pending')return false;
+    foreach(['human_decision','decided_at','approved_at','published_at',
+             'facebook_post_id','instagram_post_id','instagram_container_id'] as $field){
+        if(!array_key_exists($field,$post) || $post[$field]!==null)return false;
+    }
+    return true;
+}
+
 function socialRunOutput(array $data,string $node): ?array {
     $value=$data[$node][0]['data']['main'][0][0]['json']??null;
     return is_array($value)?$value:null;
@@ -18,8 +34,8 @@ function socialExecutionWaitLinks(array $executions,array $posts,string $workflo
     $target=[];
     foreach($posts as $post){
         $id=socialPostId($post['id']??null);
-        if($id===null || ($post['status']??null)!=='draft'
-            || ($post['human_decision']??null)!==null)continue;
+        if($id===null || !socialIsUndecidedDraft($post))continue;
+        if(isset($target[$id]))return []; // Duplicate DB identity: no redirects.
         $target[$id]=$post;
     }
     $matches=[];$ambiguous=[];

@@ -9,7 +9,10 @@ function requireTrue(bool $ok,string $message):void {if(!$ok)throw new RuntimeEx
 $id='9007199254740993';$workflow='test_workflow_id';
 $post=['id'=>$id,'status'=>'draft','human_decision'=>null,'source_id'=>'culture:riz',
   'source_fingerprint'=>'aaaaaaaaaaaaaaaa','scheduled_date'=>'2026-10-26',
-  'facebook_caption'=>'FB caption','instagram_caption'=>'IG caption','image_url'=>'https://www.cuisine-du-cambodge.com/social-assets/culture-riz.jpg'];
+  'facebook_caption'=>'FB caption','instagram_caption'=>'IG caption','image_url'=>'https://www.cuisine-du-cambodge.com/social-assets/culture-riz.jpg',
+  'fb_state'=>'pending','ig_state'=>'pending','decided_at'=>null,
+  'approved_at'=>null,'published_at'=>null,'facebook_post_id'=>null,
+  'instagram_post_id'=>null,'instagram_container_id'=>null];
 $preview=['sourceId'=>$post['source_id'],'fingerprint'=>$post['source_fingerprint'],
  'scheduledDate'=>$post['scheduled_date'],'facebookCaption'=>$post['facebook_caption'],
  'instagramCaption'=>$post['instagram_caption'],'imageUrl'=>$post['image_url']];
@@ -20,9 +23,13 @@ $execution=['workflowId'=>$workflow,'status'=>'waiting','data'=>['resultData'=>[
  'Attendre une décision via formulaire'=>[['metadata'=>['resumeFormUrl'=>$url]]]
 ]]]];
 requireTrue(socialPostId($id)===$id,'BIGINT string must remain exact');
+requireTrue(socialIsUndecidedDraft($post),'Genuine unreviewed draft rejected');
 requireTrue(socialPostId('9223372036854775808')===null,'Out-of-range BIGINT accepted');
 requireTrue(socialExecutionWaitLinks([$execution],[$post],$workflow)===[$id=>$url],'Valid waiting form not matched');
-foreach(['status','workflow','fingerprint','caption','post-status','post-id','signature','metadata','duplicate'] as $failure) {
+foreach(['status','workflow','fingerprint','caption','post-status','post-id',
+  'signature','metadata','duplicate','already-approved','fb-started',
+  'ig-started','fb-published','ig-container','unknown-state',
+  'missing-approved-at','decided-at','post-duplicate'] as $failure) {
   $items=[$execution];$row=$post;
   switch($failure){
     case 'status':$items[0]['status']='success';break;
@@ -34,8 +41,18 @@ foreach(['status','workflow','fingerprint','caption','post-status','post-id','si
     case 'signature':$items[0]['data']['resultData']['runData']['Attendre une décision via formulaire'][0]['metadata']['resumeFormUrl']='https://malicious.test/form-waiting/123';break;
     case 'metadata':$items[0]['data']['resultData']['runData']['Attendre une décision via formulaire'][0]['metadata']=[];break;
     case 'duplicate':$items[]=$items[0];break;
+    case 'already-approved':$row['approved_at']='2026-10-26T10:00:00Z';break;
+    case 'fb-started':$row['fb_state']='submitting';break;
+    case 'ig-started':$row['ig_state']='creating';break;
+    case 'fb-published':$row['facebook_post_id']='fb_existing_1';break;
+    case 'ig-container':$row['instagram_container_id']='ig_existing_1';break;
+    case 'unknown-state':unset($row['ig_state']);break;
+    case 'missing-approved-at':unset($row['approved_at']);break;
+    case 'decided-at':$row['decided_at']='2026-10-26T10:00:00Z';break;
+    case 'post-duplicate':break;
   }
-  requireTrue(socialExecutionWaitLinks($items,[$row],$workflow)===[],'Unsafe mapping for '.$failure);
+  $postRows=$failure==='post-duplicate'?[$row,$row]:[$row];
+  requireTrue(socialExecutionWaitLinks($items,$postRows,$workflow)===[],'Unsafe mapping for '.$failure);
 }
 requireTrue(socialExistingN8nWaitLinks([],[$post])===null,'Missing config must not access n8n');
 
