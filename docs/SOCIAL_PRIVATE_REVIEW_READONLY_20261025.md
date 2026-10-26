@@ -147,3 +147,24 @@ Le schéma de référence `automation/n8n/schema.sql` définit désormais la tab
 Le portail `public/gestion-social/index.php` refuse maintenant les héritages et les **délégations entrantes** du rôle lecteur, exige le libellé exact `USING (true)` de sa policy RLS et rejette les DSN PostgreSQL avec paramètres dupliqués (notamment `sslmode`), options non reconnues ou mots de passe intégrés. Il accepte uniquement `host`, `port`, `dbname`, `sslmode` et `sslrootcert`, ainsi que `require`, `verify-ca`, `verify-full` pour TLS. `verify-full` reste préférable une fois la chaîne de certificats hébergeur vérifiée. Ces règles doivent être confrontées à la configuration OVH réelle avant déploiement.
 
 **Sécurité :** aucun SQL n'a été envoyé en écriture au Supabase de production et aucune activation/édition live n8n n'a été tentée. L'approbation depuis le dashboard reste volontairement absente jusqu'à la réception de l'interface sécurisée vers le Wait existant.
+
+### Réception des correctifs de schéma et de privilèges
+
+- Commit `82573458940165d7a105082c1423ba4d69c23041` — [CI native ciblée #40247137712](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40247137712) : **SUCCESS**.
+- **68/68 tests Node PASS**, sans appel extérieur durant ces tests.
+- Le même conteneur PostgreSQL 17 exécute deux fois le schéma corrigé et le script de création du lecteur : **idempotence validée**. Le test des états FB/IG approuvés, RLS, `SELECT` (2 lignes) et interdiction d'écriture reste **PASS**.
+- `php -l` et l'essai HTTP local du portail (session/CSRF/logout/TLS factice limité au routeur de test) restent PASS. La version réelle OVH de PHP et ses extensions ne sont toujours pas connues.
+- **Contrôle négatif ajouté** : refus de configuration `sslmode` dupliquée et de délégation entrante du rôle lecteur. La policy RLS ne doit pas dériver de son expression attendue.
+- Aucun DDL sur Supabase ; la réservation de Kroeung n'a pas été modifiée ; aucune modification de l'instance n8n ou publication Meta.
+
+### Décision de sécurité — intégration unique dans le dashboard
+
+La documentation officielle du nœud Wait de n8n distingue deux mécanismes :
+- `On Form Submitted` : formulaire généré par n8n, utilisé aujourd'hui, mais **sans paramètre d'authentification documenté pour ce mode** ;
+- `On Webhook Call` : URL de reprise unique `$execution.resumeUrl`, avec paramètres explicites d'authentification Basic/Header/JWT.
+
+Il serait trompeur d'ajouter trois boutons dans PHP et de les considérer « sécurisés » s'ils transmettent simplement vers le lien public du formulaire existant. L'accès privé au dashboard n'authentifie pas le destinataire du lien de reprise n8n distribué par email.
+
+**Option d'intégration à évaluer après audit GET-only du runtime** : convertir le *même* nœud Wait vers `On Webhook Call` authentifié par Header Auth, avec un unique relais serveur depuis le dashboard qui vérifie la session et les champs du brouillon, puis transmet la décision vers l'URL n8n stockée uniquement côté serveur. La persistance atomique reste le même nœud SQL n8n, sans second UPDATE depuis PHP. Cela nécessiterait une migration coordonnée et des tests de protocole HTTP sur le runtime 2.x, des gardes anti-double clic et une preuve d'absence d'exécution en attente avant application. **Aucun changement de type du Wait n'a été effectué** ; il ne faut pas promettre d'approbation directement depuis le dashboard avant ces contrôles.
+
+Documentation du fournisseur : https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/
