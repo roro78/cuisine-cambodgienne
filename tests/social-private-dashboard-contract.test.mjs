@@ -103,3 +103,29 @@ test('provisioning refuses elevated viewer roles and checks policy drift',()=>{
  assert.match(sql,/BEGIN;[\s\S]*COMMIT;/);
  assert.doesNotMatch(sql,/PASSWORD\s+'[^']+'/i);
 });
+
+
+test('Wait bridge and catalogue are read-only by contract, and a stale draft cannot resume',()=>{
+ const wait=readFileSync(new URL('../public/gestion-social/n8n-wait-readonly.php',import.meta.url),'utf8');
+ const feed=readFileSync(new URL('../public/gestion-social/catalog-readonly.php',import.meta.url),'utf8');
+ assert.match(wait,/function socialIsUndecidedDraft\(/);
+ for(const col of ['fb_state','ig_state','human_decision','decided_at','approved_at',
+                   'published_at','facebook_post_id','instagram_post_id','instagram_container_id'])
+   assert.ok(wait.includes(col),'Wait safety predicate missing '+col);
+ for(const col of ['approved_at','published_at','facebook_post_id',
+                   'instagram_post_id','instagram_container_id'])
+   assert.ok(src.includes(col),'SQL recheck missing '+col);
+ assert.match(src,/socialIsUndecidedDraft|socialExistingN8nWaitLinks/);
+ assert.match(wait,/CURLOPT_HTTPGET\s*=>\s*true/);
+ assert.match(feed,/CURLOPT_HTTPGET\s*=>\s*true/);
+ assert.match(wait,/CURLOPT_FOLLOWLOCATION\s*=>\s*false/);
+ assert.match(feed,/CURLOPT_FOLLOWLOCATION\s*=>\s*false/);
+ assert.match(wait,/CURLOPT_SSL_VERIFYPEER\s*=>\s*true/);
+ assert.match(wait,/CURLOPT_SSL_VERIFYHOST\s*=>\s*2/);
+ assert.match(wait,/includeData=true/);
+ for(const [name,code] of [['Wait',wait],['catalogue',feed]]){
+   assert.doesNotMatch(code,/\bCURLOPT_POST\b|\bCURLOPT_CUSTOMREQUEST\b|curl_setopt\([^)]*CURLOPT_POST/,'Unexpected write capability in '+name);
+   assert.doesNotMatch(code,/\b(?:INSERT INTO|UPDATE cuisine_social|DELETE FROM|DROP TABLE)\b/i,'Unexpected DB write in '+name);
+   assert.doesNotMatch(code,/api\.resend\.com|graph\.facebook\.com|graph\.instagram\.com/,'Publishing endpoint in '+name);
+ }
+});
