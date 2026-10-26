@@ -119,7 +119,129 @@ function cmsVersions(string $dir,string $id): array {
     if($versions && min($versions)!==1)throw new RuntimeException('VERSIONS_GAP');
     return $versions;
 }
-function cmsCleanFields(array $input): array {
+
+/**
+ * P0B: validate typed edit *proposals* against current Astro data shapes.
+ * A patch is intentionally partial, never an authoritative replacement.
+ * In particular it never edits MP3, media paths, slugs or source references.
+ */
+function cmsPatchText(mixed $value,int $max=2000): string {
+    if (!is_string($value) || trim($value)==='' || strlen($value)>$max*4
+        || !preg_match('//u',$value) || str_contains($value,"\0")
+        || mbLen($value)>$max) throw new InvalidArgumentException('STRUCTURE_TEXT');
+    return trim($value);
+}
+function cmsPatchRows(mixed $rows,array $required,array $optional=[],int $maxRows=40): array {
+    if(!is_array($rows) || !array_is_list($rows) || count($rows)<1
+        || count($rows)>$maxRows)throw new InvalidArgumentException('STRUCTURE_ROWS');
+    $out=[];
+    foreach($rows as $row){
+        if(!is_array($row) || array_is_list($row) || count($row)>count($required)+count($optional)
+            || array_diff(array_keys($row),array_merge($required,$optional))
+            || array_diff($required,array_keys($row)))
+            throw new InvalidArgumentException('STRUCTURE_ROW');
+        $clean=[];
+        foreach($row as $key=>$value){
+            if($key==='minutes'){
+                if(!is_int($value) || $value<0 || $value>240)throw new InvalidArgumentException('STRUCTURE_MINUTES');
+                $clean[$key]=$value;
+            }elseif($key==='actions' || $key==='paragraphs'){
+                $clean[$key]=cmsPatchTextList($value,18,3000);
+            }else{
+                $clean[$key]=cmsPatchText($value,$key==='audioScript'?9000:3000);
+            }
+        }
+        $out[]=$clean;
+    }
+    return $out;
+}
+function cmsPatchTextList(mixed $list,int $maxItems=40,int $maxText=2000): array {
+    if(!is_array($list) || !array_is_list($list) || count($list)<1
+        || count($list)>$maxItems)throw new InvalidArgumentException('STRUCTURE_LIST');
+    return array_map(static fn(mixed $v):string=>cmsPatchText($v,$maxText),$list);
+}
+function cmsValidateStructuredDraft(string $kind,mixed $raw): ?array {
+    if($raw===null || $raw==='')return null;
+    if(!is_string($raw) || strlen($raw)>20000 || !preg_match('//u',$raw))
+        throw new InvalidArgumentException('STRUCTURE_SIZE');
+    try{$patch=json_decode($raw,true,24,JSON_THROW_ON_ERROR);}
+    catch(JsonException $e){throw new InvalidArgumentException('STRUCTURE_JSON');}
+    if(!is_array($patch) || array_is_list($patch) || ($patch['schema_version']??null)!==1)
+        throw new InvalidArgumentException('STRUCTURE_SCHEMA');
+    $schemas=[
+        'recette'=>['ingredients','steps','baseServings','prepTime','cookTime'],
+        'culture'=>['sections'],
+        'atelier'=>['steps','phases','prepare','outcomes'],
+        'ingredient'=>['deepDive','uses','tips'],
+        'technique'=>['supplies','steps','alternatives']
+    ];
+    if(!isset($schemas[$kind]) || count($patch)<2
+       || array_diff(array_keys($patch),array_merge(['schema_version'],$schemas[$kind])))
+        throw new InvalidArgumentException('STRUCTURE_FIELDS');
+    $clean=['schema_version'=>1];
+    foreach($patch as $key=>$value){
+        if($key==='schema_version')continue;
+        if($key==='baseServings'){
+            if(!is_int($value) || $value<1 || $value>100)throw new InvalidArgumentException('STRUCTURE_SERVINGS');
+            $clean[$key]=$value;
+        }elseif(in_array($key,['prepTime','cookTime'],true)){
+            $clean[$key]=cmsPatchText($value,100);
+        }elseif($key==='ingredients'){
+            if(!is_array($value) || !array_is_list($value) || count($value)<1
+                || count($value)>60)throw new InvalidArgumentException('STRUCTURE_INGREDIENTS');
+            $rows=[];
+            $format=null;
+            foreach($value as $one){
+                $current=is_string($one)?'restored':(is_array($one)?'detailed':'invalid');
+                if($format!==null && $format!==$current)throw new InvalidArgumentException('STRUCTURE_INGREDIENT_FORMAT');
+                $format=$current;
+                if($current==='restored'){$rows[]=cmsPatchText($one,450);continue;}
+                if($current!=='detailed' || array_is_list($one) || !isset($one['name'])
+                    || array_diff(array_keys($one),['name','quantity','unit','note','group','scalable']))
+                    throw new InvalidArgumentException('STRUCTURE_INGREDIENT_ROW');
+                $item=['name'=>cmsPatchText($one['name'],200)];
+                foreach(['unit','note','group'] as $field){
+                    if(array_key_exists($field,$one))$item[$field]=cmsPatchText($one[$field],170);
+                }
+                if(array_key_exists('quantity',$one)){
+                    $quantity=$one['quantity'];
+                    if(!is_int($quantity) && !is_float($quantity))throw new InvalidArgumentException('STRUCTURE_QUANTITY');
+                    if(!is_finite((float)$quantity) || $quantity<=0 || $quantity>100000)throw new InvalidArgumentException('STRUCTURE_QUANTITY');
+                    $item['quantity']=$quantity;
+                }
+                if(array_key_exists('scalable',$one)){
+                    if(!is_bool($one['scalable']))throw new InvalidArgumentException('STRUCTURE_SCALABLE');
+                    $item['scalable']=$one['scalable'];
+                }
+                $rows[]=$item;
+            }
+            $clean[$key]=$rows;
+        }elseif($key==='sections'){
+            $clean[$key]=cmsPatchRows($value,['title','paragraphs'],[],25);
+        }elseif($key==='steps'){
+            $clean[$key]=$kind==='atelier'
+                ?cmsPatchRows($value,['title','action','observe','cue','success'],['mistake'],40)
+                :cmsPatchRows($value,['title','text'],
+                    $kind==='recette'?['duration','cue','mistake']:[],50);
+        }elseif($key==='phases'){
+            // Approved audio assets are NEVER overwritten by a script proposal.
+            $clean[$key]=cmsPatchRows($value,['id','title','minutes','actions','observe','check','learning','audioScript'],
+                ['mistake','recovery','pausePrompt','safety'],10);
+            $ids=array_column($clean[$key],'id');
+            if(count($ids)!==count(array_unique($ids))
+                || count(array_filter($ids,static fn(string $id):bool=>
+                    (bool)preg_match('/^[a-z][a-z0-9-]{0,60}$/D',$id)))!==count($ids))
+                throw new InvalidArgumentException('STRUCTURE_PHASE_IDS');
+        }elseif($key==='alternatives'){
+            $clean[$key]=cmsPatchRows($value,['title','text'],[],30);
+        }else{
+            $clean[$key]=cmsPatchTextList($value);
+        }
+    }
+    return $clean;
+}
+
+function cmsCleanFields(array $input,string $kind): array {
     $limits=['title'=>180,'summary'=>1500,'editorial_text'=>12000,'editor_note'=>2000];
     $out=[];
     foreach($limits as $key=>$max){
@@ -134,6 +256,7 @@ function cmsCleanFields(array $input): array {
     $state=$input['state']??null;
     if(!in_array($state,['draft','review'],true))throw new InvalidArgumentException('STATE');
     $out['state']=$state;
+    $out['structure']=cmsValidateStructuredDraft($kind,$input['structure_json']??'');
     return $out;
 }
 /**
@@ -145,7 +268,7 @@ function cmsSave(string $private,array $source,array $fields,int $expected,strin
     if (!cmsId($id) || !preg_match('/^[a-f0-9]{16}$/D',$fingerprint)
         || !hash_equals($source['fingerprint']??'', $fingerprint)
         || $expected<0 || $expected>=9999)throw new RuntimeException('CONFLICT');
-    $fields=cmsCleanFields($fields);
+    $fields=cmsCleanFields($fields,(string)($source['kind']??''));
     $dir=cmsDraftDir($private);
     $key=cmsKey($id);
     $lockFile=$dir.'/'.$key.'.lock';
