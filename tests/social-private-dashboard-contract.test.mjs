@@ -70,6 +70,13 @@ test('viewer role is fixed, cannot inherit privileges or bypass PostgreSQL RLS',
  assert.match(src,/m\.member=r\.oid OR m\.roleid=r\.oid/);
  assert.match(src,/qual='true' AND with_check IS NULL/);
  assert.match(src,/roles=ARRAY\['cuisine_social_viewer'\]::name\[\]/);
+ assert.match(src,/is_link\(\$path\)/);
+ assert.match(src,/JSON_THROW_ON_ERROR/);
+ assert.match(src,/array_is_list\(\$times\)/);
+ assert.match(src,/fwrite\(\$f, \$encoded\) !== strlen\(\$encoded\)/);
+ assert.match(src,/trustedPgHost/);
+ assert.match(src,/pooler\[\.\]supabase/);
+ assert.match(src,/kljbnfjxwloiodwlbrrz/);
 });
 test('viewer cannot inspect dispatch reservations and paginates future posts safely',()=>{
  for(const priv of ['SELECT','INSERT','UPDATE','DELETE'])

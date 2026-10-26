@@ -37,22 +37,32 @@ function photoUrl(mixed $s): ?string {
     return preg_match('~^https://www[.]cuisine-du-cambodge[.]com/social-assets/[a-z0-9-]+[.]jpg$~D', $s) ? $s : null;
 }
 function rateLimit(string $secretDir, string $remote, bool $failed = false): bool {
+    // Corrupt/unwritable throttle state is a security failure, NEVER reset it.
+    // The path is deterministic, server-side and outside the web root.
     $path = $secretDir . '/social-login-' . hash('sha256', $remote) . '.json';
+    if (is_link($path)) failClosed();
     $f = @fopen($path, 'c+');
     if ($f === false || !flock($f, LOCK_EX)) failClosed();
+    $stat = fstat($f);
+    if (!is_array($stat) || ($stat['size'] ?? 0) > 2048) failClosed();
     $raw = stream_get_contents($f);
-    $times = json_decode($raw ?: '[]', true);
-    if (!is_array($times)) $times = [];
-    $times = array_values(array_filter($times, static fn($t) => is_int($t) && $t >= time() - 900));
+    if ($raw === false) failClosed();
+    try {
+        $times = json_decode($raw === '' ? '[]' : $raw, true, 512, JSON_THROW_ON_ERROR);
+    } catch (JsonException $e) {
+        failClosed();
+    }
+    if (!is_array($times) || !array_is_list($times) || count($times) > 5
+        || count(array_filter($times, 'is_int')) !== count($times)) failClosed();
+    $times = array_values(array_filter($times,
+        static fn(int $t): bool => $t >= time() - 900 && $t <= time()));
     $blocked = count($times) >= 5;
     if (!$blocked && $failed) $times[] = time();
-    rewind($f);
-    ftruncate($f, 0);
-    fwrite($f, json_encode($times, JSON_THROW_ON_ERROR));
-    fflush($f);
-    flock($f, LOCK_UN);
-    fclose($f);
-    @chmod($path, 0600);
+    $encoded = json_encode($times, JSON_THROW_ON_ERROR);
+    if (!rewind($f) || !ftruncate($f, 0) ||
+        fwrite($f, $encoded) !== strlen($encoded) || !fflush($f)) failClosed();
+    if (!flock($f, LOCK_UN) || !fclose($f)) failClosed();
+    if (!@chmod($path, 0600)) failClosed();
     return $blocked;
 }
 
@@ -134,6 +144,13 @@ if ($authenticated) {
     }
     if (empty($dsnValues['host']) || empty($dsnValues['dbname']) ||
         !in_array($dsnValues['sslmode'] ?? '', ['require', 'verify-ca', 'verify-full'], true)) failClosed();
+    // Never accept localhost, Unix sockets, IP literals or a lookalike host.
+    // Only this Supabase project's direct endpoint or its regional pooler
+    // may receive the dedicated read-only database credentials.
+    $trustedPgHost = preg_match('/^db[.]kljbnfjxwloiodwlbrrz[.]supabase[.]co$/D',
+            $dsnValues['host'])
+        || preg_match('/^[a-z0-9-]+[.]pooler[.]supabase[.]com$/D', $dsnValues['host']);
+    if (!$trustedPgHost) failClosed();
     if ($cfg['social_readonly_user'] !== 'cuisine_social_viewer') failClosed();
     try {
         $pdo = new PDO(

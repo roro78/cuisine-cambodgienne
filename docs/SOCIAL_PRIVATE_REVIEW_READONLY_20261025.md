@@ -220,3 +220,10 @@ Le script `scripts/migrate-cuisine-social-wait-form-auth.mjs` installe **uniquem
 - **Réserve d'architecture** : une fenêtre de maintenance **réelle** et la vérification humaine des exécutions Wait restent nécessaires. Le contrôle pré-GET ne saurait rendre l'API PUT de n8n atomique. À défaut, ne pas appliquer.
 
 Prochaine étape de réception : n8n GET-only en accès privé, credential Basic Auth exclusivement géré dans n8n, tests contrôlés des accès form GET/POST non authentifiés et authentifiés, puis raccordement des actions du dashboard à une seule autorité de décision.
+
+
+### Hardening P0 — connexion PostgreSQL et anti-bruteforce
+
+Le portail refuse désormais les DSN vers `localhost`, sockets Unix, IP brutes ou domaines imitant Supabase : seuls le serveur direct `db.kljbnfjxwloiodwlbrrz.supabase.co` ou le pooler régional `<identifiant>.pooler.supabase.com` peuvent recevoir les identifiants du rôle SQL lecteur. La protection TLS préexistante reste exigée ; la connexion OVH réelle doit encore être testée. Cette restriction de destination limite les erreurs de configuration et les tentatives d'envoi de secrets vers un autre hôte. Une validation de certificat serveur (`verify-full`) demeure recommandée.
+
+Le compteur de tentatives de connexion échoue fermé si son JSON est malformé, excessif, non liste, non entier, placé sous forme de lien symbolique ou non enregistrable sur disque. Après cinq échecs, les identifiants corrects sont également refusés jusqu'à la fin de la fenêtre de 15 minutes. Tests HTTP PHP réels : cinq erreurs puis `429`, JSON corrompu puis `503`. Aucun secret ni message SQL n'est retourné au navigateur.

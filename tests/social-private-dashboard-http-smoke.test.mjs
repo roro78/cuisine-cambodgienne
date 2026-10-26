@@ -77,6 +77,29 @@ test('private portal native HTTP smoke: HTTPS, session, CSRF, login, logout and 
   assert.equal(logout.res.status,200,'Logout must not require database connectivity');
   assert.match(logout.html,/Connexion privée/);
   assert.doesNotMatch(logout.html,/Référence Facebook|Brouillon n°/);
+  const freshCsrf=logout.html.match(/name="csrf" value="([a-f0-9]{48})"/)?.[1];
+  const freshCookie=logout.res.headers.get('set-cookie')?.split(';')[0]||authenticatedCookie;
+  assert.ok(freshCsrf,'Missing new logout CSRF');
+  // Five bad passwords block even the correct one for this source IP.
+  for(let n=0;n<5;n++){
+    const wrong=await send({csrf:freshCsrf,login:'1',username:'fixture-operator',
+      password:'incorrect-'+n},freshCookie);
+    assert.equal(wrong.res.status,200);
+  }
+  const locked=await send({csrf:freshCsrf,login:'1',username:'fixture-operator',
+    password:'fixture-password'},freshCookie);
+  assert.equal(locked.res.status,429);
+  assert.match(locked.html,/Trop de tentatives/);
+  // Corrupted rate counters cannot be reinterpreted as zero failed attempts.
+  const {createHash}=await import('node:crypto');
+  const counter=join(secret,'social-login-'+createHash('sha256')
+    .update('127.0.0.1').digest('hex')+'.json');
+  writeFileSync(counter,'NOT JSON');
+  const corrupt=await send({csrf:freshCsrf,login:'1',username:'fixture-operator',
+    password:'fixture-password'},freshCookie);
+  assert.equal(corrupt.res.status,503);
+  assert.match(corrupt.html,/non configuré ou indisponible/);
+  assert.doesNotMatch(corrupt.html,/PDO|password|postgres|DSN/i);
   // No test-only fake HTTPS header exists in the real production PHP.
   assert.doesNotMatch(readFileSync(sourceFile,'utf8'),/HTTP_X_TEST_TLS/);
 });
