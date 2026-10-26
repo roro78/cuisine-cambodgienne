@@ -28,7 +28,7 @@ function cmsSourceList(array $feed): array {
         $url=parse_url($i['url']);
         if (!is_array($url) || ($url['scheme']??null)!=='https'
             || ($url['host']??null)!=='www.cuisine-du-cambodge.com'
-            || isset($url['user'],$url['pass']) || isset($url['port'])
+            || isset($url['user']) || isset($url['pass']) || isset($url['port'])
             || isset($url['query']) || isset($url['fragment'])
             || !preg_match('~^/(recettes|culture|apprendre|ingredients|techniques)/[a-z0-9/-]+/?$~D', $url['path']??''))
             throw new UnexpectedValueException('CATALOG_URL');
