@@ -30,6 +30,20 @@ export async function dryRunWaitFormAuth({request,credential}){
     assert.equal(page.data.length,0,'Live '+status+' execution: do not change Wait authentication');
     assert.ok(!page.nextCursor,'Ambiguous n8n '+status+' pagination');
   }
+  // Credential metadata only: private API never exposes Basic Auth secrets.
+  // An API key without credential:list permission fails closed.
+  let credentials=[],credentialCursor;
+  do{
+    const q=new URLSearchParams({limit:'100'});
+    if(credentialCursor)q.set('cursor',credentialCursor);
+    const page=await request('/credentials?'+q);
+    assert.ok(Array.isArray(page.data),'Credential metadata API unavailable');
+    credentials.push(...page.data.filter(c=>String(c.id)===credential?.id));
+    credentialCursor=page.nextCursor||null;
+  }while(credentialCursor);
+  assert.equal(credentials.length,1,'Wait credential missing, ambiguous or not visible');
+  assert.equal(credentials[0].name,credential.name,'Wrong Wait credential name');
+  assert.equal(credentials[0].type,'httpBasicAuth','Credential is not HTTP Basic Auth');
   const live=await request('/workflows/'+encodeURIComponent(id));
   assert.equal(live.id,id,'Workflow identity mismatch');
   const outcome=planWaitFormBasicAuth(live,
