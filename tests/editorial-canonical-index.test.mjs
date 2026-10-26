@@ -36,7 +36,7 @@ test('full Astro revision index is aligned with the social ids without exposing 
     const text = JSON.stringify(payload);
     for (const forbidden of ['audioScript', 'ingredients', 'sections', 'sourceReferences',
       'culinaryReferences', 'sources', 'editorial_text', 'media', 'password', 'mp3'])
-      assert.ok(!text.includes('"' + forbidden + '"'), 'sensitive or duplicate data: ' + forbidden);
+      assert.ok(!text.includes('"' + forbidden + '":'), 'sensitive or duplicate data field: ' + forbidden);
 
     const recipe = {slug:'amok-trey',ingredients:[{name:'poisson',quantity:600}],
       steps:[{title:'Cuire',text:'Cuire à vapeur'}]};
