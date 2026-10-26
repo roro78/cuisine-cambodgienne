@@ -19,13 +19,14 @@ test('GET-only audit checks workflows, running/waiting executions, then plans sa
   seen.push(path);
   if(path.startsWith('/workflows?'))return {data:[{name:target.name,id:'wf_123'}],nextCursor:null};
   if(path.startsWith('/executions?'))return {data:[],nextCursor:null};
+  if(path.startsWith('/credentials?'))return {data:[{id:ref.id,name:ref.name,type:'httpBasicAuth'}]};
   if(path==='/workflows/wf_123')return workflow();
   throw Error('unexpected path');
  };
  const x=await dryRunWaitFormAuth({request,credential:ref});
  assert.equal(x.changed,true);
- assert.equal(seen.length,4);
- assert.ok(seen.every(p=>p.startsWith('/workflows')||p.startsWith('/executions')));
+ assert.equal(seen.length,5);
+ assert.ok(seen.every(p=>p.startsWith('/workflows')||p.startsWith('/executions')||p.startsWith('/credentials')));
  assert.ok(seen.some(p=>p.includes('status=waiting')));
  assert.ok(seen.some(p=>p.includes('status=running')));
 });
@@ -35,6 +36,7 @@ test('running, waiting and unknown n8n API state all fail closed',async()=>{
    if(path.startsWith('/workflows?'))return {data:[{name:target.name,id:'wf_123'}]};
    if(path.startsWith('/executions?'))return failure==='invalid'?{success:true}:
     path.includes('status='+failure)?{data:[{id:'in-flight'}]}:{data:[]};
+   if(path.startsWith('/credentials?'))return {data:[{id:ref.id,name:ref.name,type:'httpBasicAuth'}]};
    if(path==='/workflows/wf_123')return workflow();
    throw Error('unknown path');
   };
@@ -46,4 +48,22 @@ test('CLI cannot apply any mutations, even with flags',()=>{
  assert.ok(s.includes('process.argv.length,2'));
  assert.doesNotMatch(s,/method:'(?:POST|PUT|PATCH|DELETE)'/);
  assert.ok(!s.includes('writeFileSync')&&!s.includes('UPDATE cuisine_social')&&!s.includes('api.resend.com'));
+});
+
+test('missing, unknown or wrong-type credential fails closed',async()=>{
+ for(const bad of [
+  [],
+  [{id:ref.id,name:'Shared Basic',type:'httpBasicAuth'}],
+  [{id:ref.id,name:ref.name,type:'httpHeaderAuth'}],
+  [{id:ref.id,name:ref.name,type:'httpBasicAuth'},{id:ref.id,name:ref.name,type:'httpBasicAuth'}]
+ ]){
+  const request=async path=>{
+   if(path.startsWith('/workflows?'))return {data:[{name:target.name,id:'wf_123'}]};
+   if(path.startsWith('/executions?'))return {data:[]};
+   if(path.startsWith('/credentials?'))return {data:bad};
+   if(path==='/workflows/wf_123')return workflow();
+   throw Error('unknown path');
+  };
+  await assert.rejects(dryRunWaitFormAuth({request,credential:ref}));
+ }
 });
