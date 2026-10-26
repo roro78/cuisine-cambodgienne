@@ -120,3 +120,60 @@ Les workflows 01/02/03 fonctionnaient déjà avant ce chantier : **aucune modifi
 **Avancement concret de l'interface :** un utilisateur authentifié peut maintenant coller le lien signé du Wait reçu dans son courriel et ouvrir le même formulaire n8n via une redirection POST/CSRF et HTTPS strict, sans créer de nouvelle API d'approbation ni enregistrer le lien dans la base. Ce relais constitue une première intégration sans régression du système déjà validé. Les trois choix continuent d'être enregistrés exclusivement dans n8n.
 
 **Limite connue :** l'utilisateur doit encore récupérer manuellement l'URL dans son e-mail. Trois boutons qui agiraient directement depuis le dashboard ne sont **pas encore implémentés**, faute d'un canal serveur sécurisé reliant chaque brouillon à son URL de reprise ; ne pas confondre ce relais avec une validation intégrée entièrement automatique. Aucun accès n8n/OVH live n'a été modifié.
+
+
+## GEL DU PÉRIMÈTRE ET PROTECTION ANTI-RÉGRESSION — 26/10/2026
+
+**Décision utilisateur explicite : ne pas reconstruire ni réévaluer toute l'automatisation sociale.**
+Les workflows 01/02/03 étaient déjà validés ; une publication Kroeung avait été
+effectuée. L'objectif de cette PR est de **terminer l'interface privée de validation**.
+
+### Contrôle d'intégrité du périmètre
+La comparaison des SHA des exports 01, 02 et 03 entre le dernier point de
+recadrage et le commit fonctionnel `9f2104088214b070d2f62579adca30e1d24732f6`
+confirme **aucun changement de leurs fichiers**. Le nouvel écran n'appelle ni
+API de publication Meta, ni méthode UPDATE PostgreSQL, ni API n8n exécutant
+un autre workflow.
+
+**Livraison réalisée dans le dashboard :** un utilisateur connecté peut
+coller la **vraie URL de reprise signée** qu'il a reçue dans son email. Une
+requête POST protégée par CSRF vérifie une origine HTTPS n8n exacte, un
+chemin `/form-waiting/` et le format de la signature, puis répond par
+redirection HTTP 303 vers le **formulaire Wait existant**. Le serveur n'interprète
+pas la décision et ne conserve pas le jeton. Le lien est validé définitivement
+par n8n lui-même. Les tentatives sans authentification, sans CSRF ou avec un
+autre hôte/chemin sont refusées en tests HTTP.
+
+**Ce n'est pas encore une validation directement intégrée à la carte du post :**
+l'URL n8n demeure exclusivement dans le courriel et l'utilisateur doit la
+coller pour ouvrir son formulaire. Ne pas prétendre qu'une URL par brouillon
+est disponible depuis le SELECT SQL du dashboard.
+
+**Tests :** [GitHub Actions #40304409166](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40304409166)
+SUCCESS — **86/86 tests Node PASS**, test HTTP PHP de redirection signée,
+authentification, CSRF et anti-redirection extérieure PASS, PostgreSQL 17 PASS.
+Aucun runtime n8n, OVH ou Supabase n'a été modifié par ce correctif.
+
+### Suite strictement autorisée
+1. Recevoir le dashboard PHP en environnement OVH (lecture seule), vérifier
+   `pdo_pgsql`, TLS et le rôle `cuisine_social_viewer` sans toucher aux
+   credentials des workflows sociaux existants.
+2. Faire fonctionner le circuit actuel sur une **nouvelle demande déjà générée** :
+   ouvrir l'URL via le dashboard, décider via le Wait existant, constater le
+   statut ensuite. Aucun nouvel e-mail ni publication pour ce test.
+3. Si la saisie manuelle du lien n'est pas acceptable comme objectif final,
+   définir un **canal serveur minimal pour récupérer le lien de reprise
+   existant par brouillon**, avec audit de correspondance post/version.
+   Ce besoin ne justifie **aucune réécriture** des workflows Meta 02/03
+   ni de leurs réservations déjà validées.
+
+### Hors de ce chantier (gel explicite)
+Migration RLS générale des réservations, nouvel algorithme de génération IA,
+refonte des workflows 01/02/03, automatisation de commentaires et lancement
+de nouvelles publications. Les scripts de recherche REVIEW déjà présents
+dans la PR ne sont **pas des prérequis au dashboard**. Les conserver en
+attente de revue et éviter de les appliquer ou de les fusionner sans réduction
+du périmètre de la PR.
+
+**Statut : pont sécurisé vers la validation existante livré dans GitHub ;
+dashboard OVH réel et automatisation du rattachement des liens non reçus.**
