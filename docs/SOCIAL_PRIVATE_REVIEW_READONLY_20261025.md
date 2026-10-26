@@ -168,3 +168,17 @@ Il serait trompeur d'ajouter trois boutons dans PHP et de les considérer « sé
 **Option d'intégration à évaluer après audit GET-only du runtime** : convertir le *même* nœud Wait vers `On Webhook Call` authentifié par Header Auth, avec un unique relais serveur depuis le dashboard qui vérifie la session et les champs du brouillon, puis transmet la décision vers l'URL n8n stockée uniquement côté serveur. La persistance atomique reste le même nœud SQL n8n, sans second UPDATE depuis PHP. Cela nécessiterait une migration coordonnée et des tests de protocole HTTP sur le runtime 2.x, des gardes anti-double clic et une preuve d'absence d'exécution en attente avant application. **Aucun changement de type du Wait n'a été effectué** ; il ne faut pas promettre d'approbation directement depuis le dashboard avant ces contrôles.
 
 Documentation du fournisseur : https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/
+
+## 26 octobre 2026 — Authentification Basic du Wait « formulaire » sans changement de mode
+
+La comparaison du **code source n8n@2.32.7** révèle que `incomingAuthentication: 'basicAuth'` est pris en charge par le nœud `Wait` lorsque `resume: 'form'`. Le type de credential requis est `httpBasicAuth`. Références upstream figées :
+- https://raw.githubusercontent.com/n8n-io/n8n/n8n%402.32.7/packages/nodes-base/nodes/Wait/Wait.node.ts
+- https://raw.githubusercontent.com/n8n-io/n8n/n8n%402.32.7/packages/nodes-base/nodes/Webhook/description.ts
+
+**Rectification du plan précédent :** Il n'est pas nécessaire de basculer vers `On Webhook Call` uniquement pour sécuriser le formulaire n8n existant. Une conversion de type est plus invasive et pourrait casser les anciens liens reçus. La validation depuis les boutons du dashboard reste un chantier séparé et ne doit pas être implémentée par une simple URL publique non authentifiée.
+
+Un module de planification pur `scripts/cuisine-social-wait-form-auth-plan.mjs` et un audit `scripts/audit-cuisine-social-wait-form-auth.mjs` ont été ajoutés. Le second ne comporte **aucune opération d'écriture**, effectue des **GET-only**, refuse les exécutions `waiting/running`, les changements de workflow, le mauvais credential ou toute dérive des paramètres et du formulaire Wait. Il ne publie ni n'active rien. Aucun username/password de Basic Auth n'est stocké en dépôt : uniquement une référence de credential (ID et nom), à configurer dans n8n.
+
+Préconditions de mise en service : (1) vérification humaine de la version et du nœud déployé, (2) création d'un credential Basic Auth propre à Cuisine du Cambodge, avec mot de passe fort et unique saisi **uniquement dans n8n**, (3) confirmation qu'aucune exécution Wait n'attend une décision, (4) test contrôlé de GET et POST du formulaire sans authentification (refusés) puis avec authentification (autorisés) sur une exécution de test sans publication, (5) sauvegarde et migration séparée approuvée. Un changement de credential au niveau du Wait d'une exécution déjà en cours est interdit.
+
+**Aucun paramètre du Wait actuellement exporté n'a été changé et aucune mutation n8n n'a été déclenchée.** Le statut du chantier demeure `PR DRAFT / P0 NON REÇU`.
