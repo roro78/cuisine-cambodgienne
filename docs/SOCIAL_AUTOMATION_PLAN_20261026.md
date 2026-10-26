@@ -91,3 +91,23 @@ révision et d'un refus ; approbation verrouillée ; réservations Resend fiable
 unique FB/IG ; liens vers le site traçables ; retour d'expérience éditorial consigné.
 Les contenus historiques doivent être préservés. Un audit positif de l'ancien post Kroeung
 est une condition séparée, jamais un prétexte pour le republier.
+
+## Organisation des PR ouvertes — contrôle du 26 octobre 2026
+
+Le dépôt comporte **4 PR ouvertes, toutes en brouillon** :
+
+| PR | Périmètre | Décision |
+|---|---|---|
+| [#113](https://github.com/roro78/cuisine-cambodgienne/pull/113) | Atelier pratique sauce tamarin, MP3 et recette | Chantier ateliers séparé ; ne pas intégrer sans réception du pilote |
+| [#127](https://github.com/roro78/cuisine-cambodgienne/pull/127) | Diversité photographique des Carnets, catalogue social | Examiner les photos et le contrat social avant fusion |
+| [#128](https://github.com/roro78/cuisine-cambodgienne/pull/128) | Aperçus mobiles Facebook/Instagram, recadrage, plan éditorial | Coordonner avec #127 : **fichiers communs** `scripts/social-review-template.html` et `tests/social-review-preview.test.mjs` |
+| [#129](https://github.com/roro78/cuisine-cambodgienne/pull/129) | Dashboard privé, e-mail visuel, n8n, RLS et sécurité P0 | **PR suivie dans ce chantier**, non fusionnée ; tests isolés PASS mais critères runtime incomplets |
+
+**Intégration sans régression :** pas de fusion en masse. Revalider #127 et #128 ensemble
+sur une branche d'intégration éphémère ou via rebase contrôlé, avec vérification de leur
+prévisualisation commune, avant publication OVH manuelle. #129 reste autonome pour
+l'instant et ne doit pas modifier le catalogue historique. Les quatre PR en brouillon
+n'apportent pas à elles seules une mise en production.
+
+**Dernière version du plan :** commit code et tests `2097fd3b1065ed1bb189b7a157ccf5102197dac4`,
+CI `40301687770` verte. Les commits documentaires suivants ne changent pas le code testé.
