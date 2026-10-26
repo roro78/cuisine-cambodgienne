@@ -46,12 +46,46 @@ function cmsSourceList(array $feed): array {
     ksort($out,SORT_STRING);
     return $out;
 }
+
+/**
+ * Read-only full-content revision index. Contains hashes ONLY, never prose
+ * or internal source references; independent from n8n's social fingerprint.
+ */
+function cmsCanonicalSourceList(array $index,array $catalog): array {
+    if(($index['product']??null)!=='cuisine-du-cambodge'
+        || ($index['schemaVersion']??null)!==1
+        || ($index['digest']??null)!=='sha256-full-astro-record-v1'
+        || !is_array($index['items']??null) || count($index['items'])>250
+        || count($index['items'])!==count($catalog))
+        throw new UnexpectedValueException('CANONICAL_INDEX');
+    $models=['recette'=>['recipes','restoredRecipes'],
+        'culture'=>['culture'],'atelier'=>['workshops','cookingWorkshopGuides'],
+        'ingredient'=>['ingredients'],'technique'=>['recipeTechniques']];
+    $out=[];
+    foreach($index['items'] as $item){
+        if(!is_array($item) || count($item)!==4)throw new UnexpectedValueException('CANONICAL_ITEM');
+        $id=cmsId($item['id']??null);
+        $kind=$item['kind']??null;
+        $model=$item['model']??null;
+        $fingerprint=$item['fingerprint']??null;
+        if(!$id || !isset($catalog[$id]) || isset($out[$id])
+            || !is_string($kind) || $catalog[$id]['kind']!==$kind
+            || !is_string($model) || !in_array($model,$models[$kind]??[],true)
+            || !is_string($fingerprint) || !preg_match('/^[a-f0-9]{64}$/D',$fingerprint))
+            throw new UnexpectedValueException('CANONICAL_ITEM');
+        $out[$id]=['id'=>$id,'kind'=>$kind,'model'=>$model,'fingerprint'=>$fingerprint];
+    }
+    if(count($out)!==count($catalog))throw new UnexpectedValueException('CANONICAL_MISSING');
+    return $out;
+}
+
 function mbLen(string $s): int {
     return function_exists('mb_strlen') ? mb_strlen($s,'UTF-8') : strlen($s);
 }
-function cmsGetFeed(): ?array {
+function cmsFetchPublicIndex(string $name): ?array {
+    if(!in_array($name,['social-feed.json','editorial-source-index.json'],true))return null;
     if (!function_exists('curl_init')) return null;
-    $c=curl_init('https://www.cuisine-du-cambodge.com/social-feed.json');
+    $c=curl_init('https://www.cuisine-du-cambodge.com/'.$name);
     if ($c===false) return null;
     $raw='';
     curl_setopt_array($c,[
@@ -73,6 +107,9 @@ function cmsGetFeed(): ?array {
         return is_array($data)?$data:null;
     } catch(JsonException $e) { return null; }
 }
+function cmsGetFeed(): ?array { return cmsFetchPublicIndex('social-feed.json'); }
+function cmsGetEditorialIndex(): ?array { return cmsFetchPublicIndex('editorial-source-index.json'); }
+
 function cmsDraftDir(string $private): string {
     if (!is_dir($private) || is_link($private)) throw new RuntimeException('STORE_INACCESSIBLE');
     $dir=$private.'/editorial-drafts';
@@ -263,12 +300,24 @@ function cmsCleanFields(array $input,string $kind): array {
  * Locked optimistic, append-only local revision. No publication side effects.
  * Source fingerprint must match the snapshot the operator started from.
  */
-function cmsSave(string $private,array $source,array $fields,int $expected,string $fingerprint): array {
+function cmsSave(string $private,array $source,array $fields,int $expected,string $fingerprint,?array $canonical=null,?string $expectedCanonical=null): array {
     $id=$source['id']??null;
     if (!cmsId($id) || !preg_match('/^[a-f0-9]{16}$/D',$fingerprint)
         || !hash_equals($source['fingerprint']??'', $fingerprint)
         || $expected<0 || $expected>=9999)throw new RuntimeException('CONFLICT');
     $fields=cmsCleanFields($fields,(string)($source['kind']??''));
+    if(is_array($fields['structure'])){
+        if(!is_array($canonical) || ($canonical['id']??null)!==$id
+            || ($canonical['kind']??null)!==($source['kind']??null)
+            || !is_string($canonical['fingerprint']??null)
+            || !preg_match('/^[a-f0-9]{64}$/D',$canonical['fingerprint'])
+            || !is_string($expectedCanonical)
+            || !hash_equals($canonical['fingerprint'],$expectedCanonical))
+            throw new RuntimeException('CANONICAL_STALE_OR_MISSING');
+        $fields['canonical_fingerprint']=$canonical['fingerprint'];
+        $fields['canonical_model']=$canonical['model'];
+    }
+
     $dir=cmsDraftDir($private);
     $key=cmsKey($id);
     $lockFile=$dir.'/'.$key.'.lock';
@@ -284,6 +333,13 @@ function cmsSave(string $private,array $source,array $fields,int $expected,strin
         $prev=$head ? cmsReadVersion($dir,$id,$head):null;
         if ($prev && !hash_equals($prev['source_fingerprint'],$source['fingerprint']))
             throw new RuntimeException('SOURCE_CHANGED');
+        if($prev && is_array($prev['structure']??null)){
+            if(!is_array($fields['structure']))throw new RuntimeException('STRUCTURE_DROP_BLOCKED');
+            if(!is_string($prev['canonical_fingerprint']??null)
+                || !hash_equals($prev['canonical_fingerprint'],$fields['canonical_fingerprint']))
+                throw new RuntimeException('CANONICAL_CHANGED_OR_LEGACY');
+        }
+
         $version=$head+1;
         $v=array_merge($fields,[
             'schema_version'=>1,

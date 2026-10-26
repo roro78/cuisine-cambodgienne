@@ -87,7 +87,7 @@ if($method==='POST'){
         }
     }
 }
-$catalog=[];$dir='';$selected=null;$latest=null;$versions=[];$display=null;$latestById=[];$staleDraft=false;
+$catalog=[];$canonicalById=[];$selectedCanonical=null;$dir='';$selected=null;$latest=null;$versions=[];$display=null;$latestById=[];$staleDraft=false;
 $kind=(string)($_GET['kind']??'all');
 if(!in_array($kind,['all','recette','culture','atelier','ingredient','technique'],true))$kind='all';
 $q=is_string($_GET['q']??null)?trim($_GET['q']):'';
@@ -97,6 +97,12 @@ if($auth){
         $data=cmsGetFeed();
         if($data===null)throw new RuntimeException('CATALOG_UNAVAILABLE');
         $catalog=cmsSourceList($data);
+        // A missing or malformed canonical index disables structured edits,
+        // not legacy text-only draft preparation.
+        try {
+            $fullIndex=cmsGetEditorialIndex();
+            if(is_array($fullIndex))$canonicalById=cmsCanonicalSourceList($fullIndex,$catalog);
+        }catch(Throwable $e){ $canonicalById=[]; }
         $dir=cmsDraftDir($private);
     }catch(Throwable $e){cmsUnavailable();}
     // Source identity -> last private proposal, never the social status.
@@ -109,6 +115,7 @@ if($auth){
     // The feed is authoritative; unknown or removed IDs cannot be edited.
     $id=cmsId($_POST['source_id']??($_GET['id']??null));
     if($id!==null && isset($catalog[$id]))$selected=$catalog[$id];
+    if($selected)$selectedCanonical=$canonicalById[$selected['id']]??null;
     if($method==='POST' && isset($_POST['save'])){
         if(!$selected){http_response_code(422);$error='Contenu inexistant dans le catalogue.';}
         else {
@@ -124,7 +131,9 @@ if($auth){
                         'editor_note'=>$_POST['editor_note']??null,
                         'state'=>$_POST['state']??null,
                         'structure_json'=>$_POST['structure_json']??''
-                    ],$expected,(string)($_POST['source_fingerprint']??''));
+                    ],$expected,(string)($_POST['source_fingerprint']??''),$selectedCanonical,
+                       is_string($_POST['canonical_fingerprint']??null)
+                         ?$_POST['canonical_fingerprint']:null);
                     header('Location: ?id='.rawurlencode($id).'&saved=1',true,303);exit;
                 }catch(InvalidArgumentException $e){
                     http_response_code(422);$error=str_starts_with($e->getMessage(),'STRUCTURE_')
@@ -229,6 +238,16 @@ Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
 <h2><?= $latest?'Modifier la proposition (version '.(int)$latest['version'].')':'Créer une proposition' ?></h2>
 <p class="small muted">Texte proposé uniquement : les données complètes d'Astro, les ingrédients,
 les étapes culinaires et les MP3 ne seront pas remplacés par cette saisie.</p>
+<?php if(!$selectedCanonical): ?>
+<p class="note" role="status">L'index des versions complètes Astro n'est pas disponible sur ce serveur.
+Vous pouvez préparer le texte d'une proposition, mais les changements structurés restent
+bloqués jusqu'à la mise en place et la vérification de cet index.</p>
+<?php else: ?>
+<p class="small muted">Version complète Astro protégée :
+<code><?= cmsEsc(substr($selectedCanonical['fingerprint'],0,16)) ?></code>
+(<?= cmsEsc($selectedCanonical['model']) ?>).
+Toute modification de la fiche d'origine exige une nouvelle revue.</p>
+<?php endif; ?>
 <?php if($staleDraft): ?><p class="note" role="alert">
 La page d'origine a changé depuis cette proposition. Nouvelle sauvegarde bloquée pour éviter
 d'écraser une version récente. Comparer la source et reprendre le travail après relecture.
@@ -237,6 +256,8 @@ d'écraser une version récente. Comparer la source et reprendre le travail apr�
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <input type="hidden" name="source_id" value="<?= cmsEsc($selected['id']) ?>">
 <input type="hidden" name="source_fingerprint" value="<?= cmsEsc($selected['fingerprint']) ?>">
+<input type="hidden" name="canonical_fingerprint"
+ value="<?= cmsEsc($selectedCanonical['fingerprint']??'') ?>">
 <input type="hidden" name="expected_version" value="<?= $latest?(int)$latest['version']:0 ?>">
 <label>Titre proposé<input name="title" required maxlength="180"
  value="<?= cmsEsc($latest['title']??$selected['title']) ?>"></label>

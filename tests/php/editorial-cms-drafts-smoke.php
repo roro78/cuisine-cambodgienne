@@ -96,12 +96,56 @@ try{
   }
   $structuredFields=$data;
   $structuredFields['structure_json']=json_encode($recipePatch,JSON_THROW_ON_ERROR);
-  $third=cmsSave($base,$source,$structuredFields,2,'aaaaaaaaaaaaaaaa');
+  $canonEntries=[];
+  $models=['recette'=>'recipes','culture'=>'culture','atelier'=>'workshops',
+           'ingredient'=>'ingredients','technique'=>'recipeTechniques'];
+  foreach($sourceList as $src){
+    $canonEntries[]=['id'=>$src['id'],'kind'=>$src['kind'],
+      'model'=>$models[$src['kind']],'fingerprint'=>str_repeat('a',64)];
+  }
+  $canon=cmsCanonicalSourceList(['product'=>'cuisine-du-cambodge',
+    'schemaVersion'=>1,'digest'=>'sha256-full-astro-record-v1',
+    'items'=>$canonEntries],$sourceList);
+  check(count($canon)===5,'Index canonique incomplet');
+  $missingCanonical=false;
+  try{cmsSave($base,$source,$structuredFields,2,'aaaaaaaaaaaaaaaa');}
+  catch(RuntimeException $e){$missingCanonical=$e->getMessage()==='CANONICAL_STALE_OR_MISSING';}
+  check($missingCanonical,'Édition structurée autorisée sans index complet');
+  $staleCanonical=false;
+  try{cmsSave($base,$source,$structuredFields,2,'aaaaaaaaaaaaaaaa',
+       $canon[$id],str_repeat('b',64));}
+  catch(RuntimeException $e){$staleCanonical=$e->getMessage()==='CANONICAL_STALE_OR_MISSING';}
+  check($staleCanonical,'Empreinte complète périmée acceptée');
+  $third=cmsSave($base,$source,$structuredFields,2,'aaaaaaaaaaaaaaaa',
+    $canon[$id],str_repeat('a',64));
   check(($third['structure']['schema_version']??0)===1 && $third['version']===3,
     'La proposition structurée ne se sauvegarde pas');
   check((cmsReadVersion($dir,$id,1)['structure']??null)===null,
     'Ancienne version modifiée par la proposition structurée');
-  check(count(glob($dir.'/*.json'))===3,'Publication involontaire');
+  check(($third['canonical_fingerprint']??null)===str_repeat('a',64),
+    'Empreinte de la vraie fiche Astro non mémorisée');
+  $changed=$canon[$id];$changed['fingerprint']=str_repeat('b',64);
+  $changedBlocked=false;
+  try{cmsSave($base,$source,$structuredFields,3,'aaaaaaaaaaaaaaaa',
+    $changed,str_repeat('b',64));}
+  catch(RuntimeException $e){$changedBlocked=$e->getMessage()==='CANONICAL_CHANGED_OR_LEGACY';}
+  check($changedBlocked,'Modification des ingrédients/MP3 Astro non détectée');
+  $dropBlocked=false;
+  try{cmsSave($base,$source,$data,3,'aaaaaaaaaaaaaaaa');}
+  catch(RuntimeException $e){$dropBlocked=$e->getMessage()==='STRUCTURE_DROP_BLOCKED';}
+  check($dropBlocked,'Effacement silencieux d’une proposition structurée accepté');
+  $duplicates=$canonEntries;$duplicates[1]['id']=$duplicates[0]['id'];
+  $rejectedDuplicate=false;
+  try{cmsCanonicalSourceList(['product'=>'cuisine-du-cambodge',
+    'schemaVersion'=>1,'digest'=>'sha256-full-astro-record-v1',
+    'items'=>$duplicates],$sourceList);}
+  catch(UnexpectedValueException $e){$rejectedDuplicate=true;}
+  check($rejectedDuplicate,'Index canonique avec doublons accepté');
+  $fourth=cmsSave($base,$source,$structuredFields,3,'aaaaaaaaaaaaaaaa',
+    $canon[$id],str_repeat('a',64));
+  check($fourth['version']===4 && cmsVersions($dir,$id)===[4,3,2,1],
+    'Révision structurée autorisée échouée');
+  check(count(glob($dir.'/*.json'))===4,'Publication involontaire');
 
   echo "CMS_PRIVATE_DRAFTS_APPEND_ONLY_PASS\n";
 }finally{
