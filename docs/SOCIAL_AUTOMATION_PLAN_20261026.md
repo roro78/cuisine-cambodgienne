@@ -201,3 +201,27 @@ La CI ciblée exécute désormais `scripts/verify-social-dashboard-scope.mjs` su
 ### Garde de reprise sur un brouillon déjà décidé ou en publication (26/10)
 
 Le rapprochement n8n affiche désormais un bouton seulement si **tous** les contrôles métier sont satisfaits : `posts.status=draft`, `fb_state=pending`, `ig_state=pending`, aucune décision, aucune date de décision/approbation/publication, aucun ID Facebook, Instagram ou conteneur Instagram. Les champs absents, identités BIGINT dupliquées et incohérences font disparaître l'accès direct. La requête SQL ciblée lors du clic relit aussi ces champs : pas de confiance dans les données de la page déjà affichée. Ceci renforce uniquement le portail, ne modifie pas les états de la base ni les workflows 01/02/03.
+
+
+## Test unique accepté — sans publication Meta (26 octobre 2026)
+
+**Objectif permanent** : contenu existant → sélection par n8n 01 → post `draft` → e-mail Resend → décision humaine via le `Wait` original → historique du même post dans le dashboard. Le périmètre CMS (éditer/dépublier) vient APRÈS cette réception, sur les collections existantes ; ne pas créer une seconde automatisation.
+
+**Preflight production en lecture seule le 26/10** :
+- `cuisine_social.posts` : exactement **1 publication `published` approuvée**, **0 draft**. Pas de formulaire à tester en live pour le moment.
+- `cuisine_social.validation_dispatches` : **1 état `reserved`** ; **ne pas re-tenter** cet e-mail sans diagnostic de livraison pour éviter un doublon.
+- RLS de `posts` : actif ; rôle SQL `cuisine_social_viewer` : **absent** en production. La réception du dashboard privé sur OVH est impossible sans provisionnement contrôlé du seul rôle lecteur et configuration serveur.
+- Code exporté du workflow 01 : Schedule 07:00 Europe/Paris, insertion `ON CONFLICT (scheduled_date) DO NOTHING`, Resend puis Wait (72h), choix `Demander une modification` exige un commentaire, écrit `revision_requested` uniquement sur `status=draft`.
+- Aucun accès n8n runtime privé/OVH depuis ce diagnostic : activation réelle et gestion des credentials **non vérifiées**. L'export GitHub contient des placeholders pour Resend, qui peuvent différer du runtime déjà configuré.
+
+**Test automatisé ajouté** : `tests/social-one-shot-decision-flow.test.mjs` lit et exécute réellement (VM Node isolée) les deux nœuds Code EXISTANTS `Choisir un contenu original` et `Interpréter la décision`, avec des données fictives. Vérifie une seule source éligible, image absente exclue, formulaire original, e-mail avec `resumeFormUrl`, 72h, idempotence SQL et décision de demande de modification liée au BIGINT précis. Zéro appel n8n/SQL/Resend/Meta. Ce test **n'est pas** une validation du runtime live.
+
+**Étapes du seul essai réel, après raccordements** :
+1. Réceptionner l'accès au dashboard OVH (rôle SELECT-only, configuration privée et tests Android).
+2. Vérifier que le Workflow 01 réel est actif/configuré ; utiliser **une seule exécution normale à 7h**, sans relancer la réservation d'e-mail historique et sans déclencheur concurrent.
+3. Contrôler l'arrivée d'**un unique brouillon** et d'un unique e-mail Resend ; accéder depuis Android au dashboard et au Wait existant.
+4. Choisir **« Demander une modification »** en saisissant « Test unique de validation — aucune publication autorisée » ; vérifier `revision_requested`, `human_note`, `decided_at`, FB et IG toujours `pending`.
+5. Vérifier 0 nouvelles références Facebook/Instagram pour ce post. Ne pas valider « Approuver » pendant cet essai.
+6. **STOP** sur toute dérive, doublon, erreur de credential, délai expiré ou indisponibilité. Pas d'activation de tâche ou d'envoi automatique sans contrôle.
+
+**Ensuite seulement** : la bibliothèque pourra ajouter progressivement « Corriger », « Mettre en brouillon » et « Dépublier » pour les contenus du site, avec versions, aperçu et déploiement contrôlé, **sans confondre dépublication d'une page et suppression d'un post Meta**.

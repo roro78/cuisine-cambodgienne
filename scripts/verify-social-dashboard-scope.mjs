@@ -20,7 +20,8 @@ const allow=new Set([
   'tests/php/social-n8n-wait-readonly-smoke.php',
   'tests/social-private-dashboard-contract.test.mjs',
   'tests/social-private-dashboard-history.test.mjs',
-  'tests/social-private-dashboard-http-smoke.test.mjs'
+  'tests/social-private-dashboard-http-smoke.test.mjs',
+  'tests/social-one-shot-decision-flow.test.mjs'
 ]);
 const git=(...args)=>execFileSync('git',args,{encoding:'utf8',maxBuffer:1024*1024});
 try {

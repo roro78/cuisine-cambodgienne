@@ -15,6 +15,7 @@ on:
       - "tests/social-private-dashboard-contract.test.mjs"
       - "tests/social-private-dashboard-history.test.mjs"
       - "tests/social-private-dashboard-http-smoke.test.mjs"
+      - "tests/social-one-shot-decision-flow.test.mjs"
       - "scripts/verify-social-dashboard-scope.mjs"
   workflow_dispatch:
 
@@ -48,6 +49,6 @@ jobs:
         with:
           node-version: '22'
       - name: PHP dashboard static contracts
-        run: node --test tests/social-private-dashboard-contract.test.mjs tests/social-private-dashboard-history.test.mjs
+        run: node --test tests/social-private-dashboard-contract.test.mjs tests/social-private-dashboard-history.test.mjs tests/social-one-shot-decision-flow.test.mjs
       - name: Isolated PHP HTTP login, CSRF and original Wait handoff
         run: node --test tests/social-private-dashboard-http-smoke.test.mjs
