@@ -158,3 +158,18 @@ test('catalogue library shows compact true JPEG thumbnails and actionable counts
  assert.match(src,/JPEG social absent/);
  assert.match(src,/object-fit:cover/);
 });
+
+test('catalogue library filtering is server-rendered, bounded and does not alter n8n queue',()=>{
+ const feed=readFileSync(new URL('../public/gestion-social/catalog-readonly.php',import.meta.url),'utf8');
+ assert.match(feed,/function socialFilterCatalogCandidates\(/);
+ assert.match(feed,/strlen\(\$query\)>80/);
+ assert.match(feed,/array_filter\(\$items/);
+ assert.match(src,/name="kind"/);
+ assert.match(src,/name="source_state"/);
+ assert.match(src,/name="q"/);
+ assert.match(src,/count\(\$filteredCatalogItems \?\? \[\]\)/);
+ assert.match(src,/foreach \(\(\$filteredCatalogItems \?\? \[\]\) as \$item\)/);
+ assert.match(src,/Aucun contenu ne correspond à ces filtres/);
+ assert.match(src,/Les filtres ne changent pas les programmations n8n/);
+ assert.doesNotMatch(feed,/\b(?:INSERT INTO|UPDATE cuisine_social|DELETE FROM|PATCH|CURLOPT_POST)\b/i);
+});

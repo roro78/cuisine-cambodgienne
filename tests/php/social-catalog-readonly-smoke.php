@@ -34,6 +34,21 @@ $noMediaIndex=array_search('recette:new',array_column($noMedia,'id'),true);
 ensure($noMediaIndex!==false && $noMedia[$noMediaIndex]['state']==='missing_image'
     && $noMedia[$noMediaIndex]['image_url']===null,
   'Untrusted remote thumbnail was accepted');
+ensure(count(socialFilterCatalogCandidates($result,'all','all',''))===4,'Default filter lost sources');
+ensure(array_column(socialFilterCatalogCandidates($result,'recette','all',''),'id')
+  ===['recette:new','recette:seen'],'Category filter mismatch');
+ensure(array_column(socialFilterCatalogCandidates($result,'all','missing_image',''),'id')
+  ===['atelier:missing'],'State filter mismatch');
+ensure(array_column(socialFilterCatalogCandidates($result,'all','all','changed'),'id')
+  ===['culture:changed'],'Case-insensitive title/id search mismatch');
+ensure(count(socialFilterCatalogCandidates($result,'recette','missing_image',''))===0,
+  'Combined filters should be empty');
+ensure(count(socialFilterCatalogCandidates($result,'all','all','nomatch'))===0,
+  'Search should never invent items');
+ensure(count(socialFilterCatalogCandidates($result,'<malicious>','malicious',''))===4,
+  'Unrecognized filter values must be ignored');
+ensure(count(socialFilterCatalogCandidates($result,'all','all',str_repeat('x',100)))===4,
+  'Oversize text filter must be ignored');
 foreach ([
   static function(&$f){$f['schemaVersion']=99;},
   static function(&$f){$f['items'][0]['url']='https://attacker.test/recettes/new/';},

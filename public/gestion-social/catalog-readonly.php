@@ -61,6 +61,30 @@ function socialCatalogCandidates(array $feed, array $history): array {
         ?: strcmp($a['id'],$b['id']));
     return $items;
 }
+
+/**
+ * Local display-only filters for the public editorial catalogue.
+ * This does NOT affect n8n's candidate selection or database records.
+ */
+function socialFilterCatalogCandidates(array $items, string $kind, string $state, string $query): array {
+    $kinds=['all','recette','culture','atelier','ingredient','technique'];
+    $states=['all','available','changed','missing_image','seen'];
+    if(!in_array($kind,$kinds,true))$kind='all';
+    if(!in_array($state,$states,true))$state='all';
+    $query=trim($query);
+    // Drop invalid or oversized filters entirely rather than let them affect SQL.
+    if(strlen($query)>80 || preg_match('/[\x00-\x1f\x7f]/',$query)
+        || !preg_match('//u',$query))$query='';
+    return array_values(array_filter($items,static function(array $item)use($kind,$state,$query):bool{
+        if($kind!=='all' && $item['kind']!==$kind)return false;
+        if($state!=='all' && $item['state']!==$state)return false;
+        if($query==='')return true;
+        $haystack=$item['title'].' '.$item['id'];
+        if(function_exists('mb_stripos'))return mb_stripos($haystack,$query,0,'UTF-8')!==false;
+        return stripos($haystack,$query)!==false;
+    }));
+}
+
 /** Returns null on network/unavailable feed (not an empty catalogue). */
 function readDeployedSocialFeed(): ?array {
     if (!function_exists('curl_init')) return null;

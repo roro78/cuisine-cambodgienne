@@ -158,6 +158,10 @@ $rows = [];
 $counts = [];
 $catalogItems = null;
 $catalogStatus = null;
+$sourceKindFilter='all';
+$sourceStateFilter='all';
+$sourceQuery='';
+$filteredCatalogItems=null;
 $existingWaitLinks = [];
 $existingWaitStatus = null;
 $humanDecisionLabels = ['approved' => 'Approuvée', 'revision_requested' => 'Modification demandée', 'rejected' => 'Refusée'];
@@ -330,6 +334,21 @@ if ($authenticated) {
                 } else {
                     try {
                         $catalogItems = socialCatalogCandidates($liveFeed,$history);
+                        // GET filters only change the displayed rows, never the feed or n8n queue.
+                        $rawKind=$_GET['kind']??'all';
+                        $rawState=$_GET['source_state']??'all';
+                        $rawQuery=$_GET['q']??'';
+                        $sourceKindFilter=is_string($rawKind)
+                            && in_array($rawKind,['all','recette','culture','atelier','ingredient','technique'],true)
+                            ? $rawKind : 'all';
+                        $sourceStateFilter=is_string($rawState)
+                            && in_array($rawState,['all','available','changed','missing_image','seen'],true)
+                            ? $rawState : 'all';
+                        $sourceQuery=is_string($rawQuery) && strlen($rawQuery)<=80
+                            && !preg_match('/[\x00-\x1f\x7f]/',$rawQuery)
+                            && preg_match('//u',$rawQuery) ? trim($rawQuery) : '';
+                        $filteredCatalogItems=socialFilterCatalogCandidates(
+                            $catalogItems,$sourceKindFilter,$sourceStateFilter,$sourceQuery);
                     } catch (UnexpectedValueException $e) {
                         $catalogStatus = 'Catalogue invalide. Aucune source non vérifiée n’est affichée.';
                     }
@@ -371,6 +390,13 @@ input{display:block;width:100%;padding:12px;margin:6px 0 14px;border:1px solid #
 .source-photo-empty{display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;background:#ebe9e2;color:#56635c;font-size:11px;line-height:1.25}
 .source-content{min-width:0;flex:1}
 .source-content p{margin:8px 0 0}
+.catalog-tools{display:flex;flex-wrap:wrap;align-items:end;gap:10px;margin:16px 0}
+.catalog-tools label{flex:1 1 175px;min-width:135px;font-size:13px;font-weight:600}
+.catalog-tools input,.catalog-tools select{display:block;width:100%;font:inherit;font-weight:400;
+margin:5px 0 0;padding:10px;background:#fff;border:1px solid #bac8be;border-radius:7px}
+.catalog-tools button{padding:11px 17px}
+.catalog-tools .reset-link{display:inline-block;padding:10px 4px}
+.catalog-summary{margin-top:10px}
 .small{font-size:12px;color:#526458}.warning{background:#fff5df;border-left:3px solid #bd892c;padding:13px}
 .empty{padding:24px;background:white;border:1px dashed #bac8be;border-radius:12px}
 @media(max-width:700px){.socials{grid-template-columns:1fr}.network{padding:12px}.network img{width:min(100%,190px)}}
@@ -445,8 +471,37 @@ pilotée par le workflow 01 au rythme actuel.</p>
 <?= (int)($sourceStates['seen'] ?? 0) ?> déjà proposées.
 Ces chiffres proviennent du flux déployé et de l'historique PostgreSQL, pas du nombre de posts à valider.
 </p>
+<form method="get" class="catalog-tools" aria-label="Rechercher et filtrer les contenus">
+<input type="hidden" name="status" value="sources">
+<label>Type de contenu
+<select name="kind">
+<?php foreach (['all'=>'Tous les types','recette'=>'Recettes','culture'=>'Carnets',
+ 'atelier'=>'Ateliers','ingredient'=>'Ingrédients','technique'=>'Techniques'] as $value=>$label): ?>
+<option value="<?= h($value) ?>"<?= $sourceKindFilter===$value?' selected':'' ?>><?= h($label) ?></option>
+<?php endforeach; ?>
+</select></label>
+<label>État de la proposition sociale
+<select name="source_state">
+<?php foreach (['all'=>'Tous les états','available'=>'Jamais proposé, JPEG prêt',
+ 'changed'=>'Contenu modifié','missing_image'=>'JPEG social manquant',
+ 'seen'=>'Déjà proposé'] as $value=>$label): ?>
+<option value="<?= h($value) ?>"<?= $sourceStateFilter===$value?' selected':'' ?>><?= h($label) ?></option>
+<?php endforeach; ?>
+</select></label>
+<label>Rechercher un titre
+<input type="search" name="q" maxlength="80" placeholder="Ex. Amok ou Kroeung"
+ value="<?= h($sourceQuery) ?>">
+</label>
+<button type="submit">Filtrer</button>
+<a class="reset-link" href="?status=sources">Tout afficher</a>
+</form>
+<p class="small catalog-summary" role="status"><strong><?= count($filteredCatalogItems ?? []) ?> contenu(s) affiché(s)</strong>
+sur <?= count($catalogItems) ?> sources. Les filtres ne changent pas les programmations n8n.</p>
 <?php if (!$catalogItems): ?><p class="empty">Aucune source dans le flux publié.</p><?php endif; ?>
-<?php foreach ($catalogItems as $item): ?>
+<?php if ($catalogItems && !$filteredCatalogItems): ?>
+<p class="empty">Aucun contenu ne correspond à ces filtres. <a href="?status=sources">Réinitialiser</a>.</p>
+<?php endif; ?>
+<?php foreach (($filteredCatalogItems ?? []) as $item): ?>
 <div class="review-history source-card">
 <?php if ($item['image_url'] !== null): ?>
 <img class="source-photo" src="<?= h($item['image_url']) ?>"
