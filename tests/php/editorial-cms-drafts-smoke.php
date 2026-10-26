@@ -62,7 +62,47 @@ try{
   $bad=$feed;$bad['items'][0]['url']='https://evil@www.cuisine-du-cambodge.com/recettes/a/';
   try{cmsSourceList($bad);throw new RuntimeException('Utilisateur dans URL accepté');}
   catch(UnexpectedValueException $e){}
-  check(count(glob($dir.'/*.json'))===2,'Publication involontaire');
+
+  // P0B: real Astro-shaped proposed patches (no writes to public content).
+  $recipePatch=['schema_version'=>1,'baseServings'=>4,
+    'ingredients'=>[['quantity'=>250,'unit'=>'ml','name'=>'lait de coco']],
+    'steps'=>[['title'=>'Mélanger','text'=>'Mélanger les ingrédients avant cuisson.']]];
+  $p=cmsValidateStructuredDraft('recette',json_encode($recipePatch,JSON_THROW_ON_ERROR));
+  check($p['baseServings']===4 && count($p['steps'])===1,'Recette structurée rejetée');
+  $restored=cmsValidateStructuredDraft('recette',
+    '{"schema_version":1,"ingredients":["200 ml de lait de coco"]}');
+  check($restored['ingredients'][0]==='200 ml de lait de coco','Recette historique rejetée');
+  $culture=cmsValidateStructuredDraft('culture',
+    '{"schema_version":1,"sections":[{"title":"Le riz","paragraphs":["Texte culturel."]}]}');
+  check($culture['sections'][0]['title']==='Le riz','Carnet structuré rejeté');
+  $atelier=cmsValidateStructuredDraft('atelier',json_encode(['schema_version'=>1,
+    'phases'=>[['id'=>'preparer','title'=>'Préparer','minutes'=>4,
+      'actions'=>['Préparer le mortier'],'observe'=>'Texture homogène',
+      'check'=>'Tous les ingrédients sont prêts','learning'=>'Reconnaître la texture',
+      'audioScript'=>'Texte proposé, aucun MP3 écrasé.']]],
+    JSON_THROW_ON_ERROR));
+  check(count($atelier['phases'])===1,'Phase atelier rejetée');
+  foreach([
+    ['recette','{"schema_version":1,"mp3_path":"/secret"}'],
+    ['recette','{"schema_version":1,"ingredients":[{"name":"poisson","quantity":-1}]}'],
+    ['atelier','{"schema_version":1,"phases":[{"id":"../bad","title":"X","minutes":1,"actions":["Go"],"observe":"X","check":"X","learning":"X","audioScript":"X"}]}'],
+    ['culture','{"schema_version":1,"sections":[{"title":"X","paragraphs":[]}]}'],
+    ['technique','{"schema_version":1,"steps":[{"title":"X","text":""}]}']
+  ] as [$kind,$invalid]){
+    $blocked=false;
+    try{cmsValidateStructuredDraft($kind,$invalid);}
+    catch(InvalidArgumentException $e){$blocked=true;}
+    check($blocked,'Structure dangereuse acceptée pour '.$kind);
+  }
+  $structuredFields=$data;
+  $structuredFields['structure_json']=json_encode($recipePatch,JSON_THROW_ON_ERROR);
+  $third=cmsSave($base,$source,$structuredFields,2,'aaaaaaaaaaaaaaaa');
+  check(($third['structure']['schema_version']??0)===1 && $third['version']===3,
+    'La proposition structurée ne se sauvegarde pas');
+  check((cmsReadVersion($dir,$id,1)['structure']??null)===null,
+    'Ancienne version modifiée par la proposition structurée');
+  check(count(glob($dir.'/*.json'))===3,'Publication involontaire');
+
   echo "CMS_PRIVATE_DRAFTS_APPEND_ONLY_PASS\n";
 }finally{
   if(is_dir($base.'/editorial-drafts')){
