@@ -127,7 +127,9 @@ if($auth){
                     ],$expected,(string)($_POST['source_fingerprint']??''));
                     header('Location: ?id='.rawurlencode($id).'&saved=1',true,303);exit;
                 }catch(InvalidArgumentException $e){
-                    http_response_code(422);$error='Champs manquants ou trop longs.';
+                    http_response_code(422);$error=str_starts_with($e->getMessage(),'STRUCTURE_')
+                        ?'Structure invalide : vérifiez le JSON, le schéma 1 et les champs autorisés pour cette catégorie.'
+                        :'Champs manquants ou trop longs.';
                 }catch(RuntimeException $e){
                     http_response_code(409);$error='Brouillon non enregistré : version dépassée, contenu source modifié ou stockage indisponible. Rechargez la page.';
                 }
@@ -255,7 +257,7 @@ $structureHints=[
 ?>
 <label>Changements structurés proposés — facultatif (JSON validé, schéma 1)
 <textarea name="structure_json" maxlength="20000" rows="10"
- placeholder='{"schema_version":1}' spellcheck="false"><?= cmsEsc($structureCurrent) ?></textarea></label>
+ spellcheck="false"><?= cmsEsc($structureCurrent) ?></textarea></label>
 <p class="small muted"><?= cmsEsc($structureHints[$selected['kind']]??'') ?>
 Seuls les champs présents constituent une proposition de modification : les autres données de la fiche ne sont pas effacées.
 La sauvegarde n'écrit aucun fichier Astro, média ou MP3. Pour une structure complète,
