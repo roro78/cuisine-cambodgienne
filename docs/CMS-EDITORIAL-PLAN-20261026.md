@@ -40,3 +40,18 @@ P5 — À faire : intégration UX dans l'unique espace administrateur et récept
 
 
 P0A — Amélioration de lisibilité : la bibliothèque identifie désormais pour chaque contenu une proposition déjà enregistrée, son état privé (Brouillon/Prêt pour relecture), sa version, et une alerte si l'empreinte publique a évolué. En cas de dérive, le formulaire refuse une sauvegarde tant que la source n'a pas été revue. Aucun effet sur la publication sociale.
+
+
+## P0B — propositions structurées, 26 octobre 2026 (livraison partielle)
+
+La PR #130 contient maintenant un validateur de patchs JSON partiels par type de contenu. Les propositions et leur schéma sont enregistrés dans les révisions privées, jamais dans Astro. Une valeur omise ne constitue **pas** une demande de suppression.
+
+- **Recettes :** ingrédients objets détaillés (nom, quantité, unité, groupe, etc.) ou chaînes pour les anciennes fiches, étapes et temps, portions.
+- **Carnets :** sections titrées avec paragraphes.
+- **Ateliers :** étapes pédagogiques, phases avec actions et script audio proposés, sans remplacement MP3.
+- **Ingrédients :** textes approfondis, usages, conseils.
+- **Techniques :** matériel, étapes et alternatives.
+
+**P0B NON TERMINÉ :** l'interface propose pour l'instant une saisie JSON validée destinée à préparer la transition ; elle ne charge pas encore le contenu Astro intégral sous forme de champs guidés. Il manque le manifeste canonique à SHA complet, l'éditeur de formulaires de tous les champs natifs, le diff GitHub épinglé et la revue build Astro. L'empreinte actuelle du social-feed, centrée sur les extraits sociaux, ne couvre pas exhaustivement les ingrédients/MP3. Il est donc interdit de considérer ces patchs comme applicables automatiquement à la production.
+
+**Discipline PR :** #128 a été clôturée sans fusion, ses documents de pilotage conservés dans #127. #127 reste la revue d'images Carnets ; #129 la réception dashboard social ; #130 le CMS. Aucune nouvelle PR P0B, aucune activation ou publication de contenu.
