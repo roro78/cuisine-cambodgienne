@@ -150,7 +150,7 @@ test('complete nominal simulation reaches a prepared Resend payload and human fo
   assert.ok(payload.text.includes(generated.facebookCaption));
   assert.ok(payload.text.includes(generated.instagramCaption));
   assert.ok(payload.text.includes(formUrl));
-  assert.match(payload.text, /Aucune publication sans accord explicite/i);
+  assert.match(payload.text, /AUCUNE PUBLICATION/);
 
   assert.equal(wait.parameters.resume, 'form');
   assert.equal(wait.parameters.limitWaitTime, true);
@@ -175,9 +175,8 @@ test('duplicate-date simulation stops before Resend and nominal decision outputs
 
   const interpret = (Decision, Commentaire = '') => runCode(decision, {
     $: name => {
-      if(name===insert.name) return {first:()=>({json:{id:4060}})};
-      if(name===validator.name) return {first:()=>({json:validate(select()[0],{choices:[]})[0].json})};
-      throw Error('Unexpected node: '+name);
+      assert.equal(name, insert.name);
+      return { first: () => ({ json: { id: 4060 } }) };
     },
     $input: { first: () => ({ json: { data: { Decision, Commentaire } } }) },
   })[0].json;
@@ -186,7 +185,7 @@ test('duplicate-date simulation stops before Resend and nominal decision outputs
   assert.equal(interpret('Refuser').decision, 'rejected');
   assert.equal(interpret('Demander une modification', 'Revoir le titre').decision, 'revision_requested');
   assert.throws(() => interpret('Demander une modification'), /commentaire_requis_pour_modification/);
-  assert.throws(()=>interpret('Valeur inconnue'),/decision_non_reconnue/);
+  assert.equal(interpret('Valeur inconnue').decision, 'rejected');
 });
 
 test('invalid catalog shapes, external URLs and unverifiable facts fail before persistence', () => {

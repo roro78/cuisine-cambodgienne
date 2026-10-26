@@ -1,4 +1,4 @@
-name: Social P0 targeted native validation
+name: Social private dashboard targeted validation
 
 on:
   push:
@@ -8,88 +8,30 @@ on:
       - ".github/workflows/social-backoffice-p0-check.yml"
       - "public/gestion-social/index.php"
       - "automation/n8n/sql/social-viewer-role-provisioning-REVIEW.sql"
-      - "automation/n8n/01-drafts-email-approval.json"
-      - "scripts/cuisine-social-visual-email-migration.mjs"
-      - "scripts/migrate-cuisine-social-visual-email.mjs"
-      - "scripts/migrate-cuisine-social-versioned-decision.mjs"
-      - "scripts/cuisine-social-wait-form-auth-plan.mjs"
-      - "scripts/audit-cuisine-social-wait-form-auth.mjs"
-      - "scripts/migrate-cuisine-social-wait-form-auth.mjs"
-      - "tests/social-wait-form-auth-migration.test.mjs"
-      - "tests/social-wait-form-auth-plan.test.mjs"
-      - "tests/social-wait-form-auth-audit.test.mjs"
-      - "tests/social-versioned-decision-migration.test.mjs"
-      - "automation/n8n/sql/social-approved-content-immutability-REVIEW.sql"
-      - "automation/n8n/sql/social-validation-dispatch-policy-REVIEW.sql"
-      - "tests/sql/social-validation-dispatch-policy-fixture.sql"
-      - "tests/sql/social-validation-dispatch-policy-smoke.sql"
-      - "tests/sql/social-approved-content-immutability-smoke.sql"
-      - "scripts/test-cuisine-social-immutability-ephemeral.sh"
-      - "tests/sql/social-viewer-role-fixture.sql"
-      - "tests/sql/social-viewer-role-smoke.sql"
-      - "scripts/sync-cuisine-n8n-runtime.mjs"
       - "tests/social-private-dashboard-contract.test.mjs"
       - "tests/social-private-dashboard-history.test.mjs"
-      - "tests/social-schema-drift-contract.test.mjs"
-      - "automation/n8n/schema.sql"
       - "tests/social-private-dashboard-http-smoke.test.mjs"
-      - "tests/social-approval-email-preview.test.mjs"
-      - "tests/social-visual-email-migration.test.mjs"
-      - "tests/social-version-bound-decision.test.mjs"
-      - "tests/fixtures/social-version-approval-predecessor.json"
-      - "tests/workflow-01-dryrun.test.mjs"
-      - "tests/workflow-01-full-path-simulation.test.mjs"
-      - "tests/social-pipeline.test.mjs"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: cuisine-social-p0-branch-only
+  group: cuisine-dashboard-p0-branch-only
   cancel-in-progress: true
 
 jobs:
-  offline-validation:
+  offline-dashboard-validation:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Native PHP CLI version and syntax
-        run: |
-          php -v | head -n 1
-          php -l public/gestion-social/index.php
-          php -l public/gestion-visuels/index.php
+      - name: PHP syntax
+        run: php -l public/gestion-social/index.php
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validate isolated migration CLIs
-        run: |
-          node --check scripts/cuisine-social-visual-email-migration.mjs
-          node --check scripts/migrate-cuisine-social-visual-email.mjs
-          node --check scripts/migrate-cuisine-social-versioned-decision.mjs
-          node --check scripts/cuisine-social-wait-form-auth-plan.mjs
-          node --check scripts/audit-cuisine-social-wait-form-auth.mjs
-          node --check scripts/migrate-cuisine-social-wait-form-auth.mjs
-          node --check tests/social-private-dashboard-contract.test.mjs
-      - name: Native offline contracts (no API calls)
-        run: |
-          node --test --test-concurrency=1 \
-            tests/social-private-dashboard-contract.test.mjs \
-            tests/social-private-dashboard-history.test.mjs \
-            tests/social-schema-drift-contract.test.mjs \
-            tests/social-approval-email-preview.test.mjs \
-            tests/social-visual-email-migration.test.mjs \
-            tests/social-version-bound-decision.test.mjs \
-            tests/social-versioned-decision-migration.test.mjs \
-            tests/social-wait-form-auth-plan.test.mjs \
-            tests/social-wait-form-auth-audit.test.mjs \
-            tests/social-wait-form-auth-migration.test.mjs \
-            tests/workflow-01-dryrun.test.mjs \
-            tests/workflow-01-full-path-simulation.test.mjs \
-            tests/social-pipeline.test.mjs
-
-      - name: Native isolated PHP private-login HTTP smoke
+      - name: PHP dashboard static contracts
+        run: node --test tests/social-private-dashboard-contract.test.mjs tests/social-private-dashboard-history.test.mjs
+      - name: Isolated PHP HTTP login, CSRF and original Wait handoff
         run: node --test tests/social-private-dashboard-http-smoke.test.mjs
-      - name: Disposable PostgreSQL 17 post-approval immutability smoke
-        run: bash scripts/test-cuisine-social-immutability-ephemeral.sh

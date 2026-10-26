@@ -105,14 +105,13 @@ test('Resend email never runs when PostgreSQL draft insertion returns no id', ()
   assert.equal(w.active,false,'Do not activate workflow when modifying export');
 });
 
-test('approval uses the explicit human Wait form; missing decision fails closed', () => {
+test('approval uses email and an explicit form POST; missing action defaults to rejection', () => {
   const w=n8n('01-drafts-email-approval.json');
   const approval=w.nodes.find(n=>n.name==='Attendre une décision via formulaire');
   assert.equal(approval.parameters.resume,'form');
   assert.equal(approval.parameters.limitWaitTime,true);
   const decision=w.nodes.find(n=>n.name==='Interpréter la décision');
   assert.match(decision.parameters.jsCode,/d==='Approuver'\?'approved'/);
-  assert.match(decision.parameters.jsCode,/decision_non_reconnue/);
   assert.doesNotMatch(decision.parameters.jsCode,/Number\(saved\.id\)/);
   assert.match(decision.parameters.jsCode,/9223372036854775807/);
   assert.match(decision.parameters.jsCode,/const id=text\.replace\(\/\^0\+\//);

@@ -184,10 +184,8 @@ const decide = function (decision, note = '', savedId) {
   const persistedId = arguments.length >= 3 ? savedId : 42;
   return execute(workflow01, 'Interpréter la décision', {
   $: name => {
-    if (name === 'Enregistrer le brouillon') return { first: () => ({ json: { id: persistedId } }) };
-    if (name === 'Vérifier et cadrer les textes')
-      return { first: () => ({ json: validate(modelResponse({}))[0].json }) };
-    throw Error('Unexpected node: ' + name);
+    assert.equal(name, 'Enregistrer le brouillon');
+    return { first: () => ({ json: { id: persistedId } }) };
   },
   $input: { first: () => ({ json: { data: { Decision: decision, Commentaire: note } } }) },
 });
@@ -204,7 +202,7 @@ test('approval is explicitly human and revision requires a comment', () => {
     assert.equal(out[0].json.id, '42');
   }
   assert.throws(() => decide('Demander une modification'), /commentaire_requis_pour_modification/);
-  assert.throws(() => decide('Inconnu'), /decision_non_reconnue/);
+  assert.equal(decide('Inconnu')[0].json.decision, 'rejected');
   });
 };
 
