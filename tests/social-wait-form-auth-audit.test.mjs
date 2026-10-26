@@ -43,7 +43,7 @@ test('running, waiting and unknown n8n API state all fail closed',async()=>{
 });
 test('CLI cannot apply any mutations, even with flags',()=>{
  const s=readFileSync(new URL('../scripts/audit-cuisine-social-wait-form-auth.mjs',import.meta.url),'utf8');
- assert.match(s,/process\\.argv\\.length,2/);
+ assert.ok(s.includes('process.argv.length,2'));
  assert.doesNotMatch(s,/method:'(?:POST|PUT|PATCH|DELETE)'/);
  assert.ok(!s.includes('writeFileSync')&&!s.includes('UPDATE cuisine_social')&&!s.includes('api.resend.com'));
 });
