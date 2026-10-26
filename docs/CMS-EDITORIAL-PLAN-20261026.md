@@ -37,3 +37,6 @@ P5 — À faire : intégration UX dans l'unique espace administrateur et récept
 - La branche CMS et ses tests restent **distincts** de la PR #129.
 - Le workflow GitHub Actions propre au CMS est uniquement un contrôle ciblé ; pas de déploiement automatique.
 - En production il faudra fusion contrôlée, publication statique manuelle, synchronisation SSH OVH et test de permissions, **uniquement après accord**. La CI verte ne vaut pas une mise en ligne.
+
+
+P0A — Amélioration de lisibilité : la bibliothèque identifie désormais pour chaque contenu une proposition déjà enregistrée, son état privé (Brouillon/Prêt pour relecture), sa version, et une alerte si l'empreinte publique a évolué. En cas de dérive, le formulaire refuse une sauvegarde tant que la source n'a pas été revue. Aucun effet sur la publication sociale.

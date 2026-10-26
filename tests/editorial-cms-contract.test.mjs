@@ -30,3 +30,12 @@ test('Propositions versionnées sans publication directe',()=>{
  assert.doesNotMatch(ui+lib,/\b(?:INSERT INTO|UPDATE cuisine_social|DELETE FROM|DROP TABLE)\b/i);
  assert.doesNotMatch(ui+lib,/graph\.facebook\.com|graph\.instagram\.com|api\.resend\.com|api\/v1\/executions/);
 });
+
+test('la bibliothèque distingue brouillons et source modifiée sans publication',()=>{
+ assert.match(ui,/\$latestById/);
+ assert.match(ui,/cmsVersions\(\$dir,\$src\['id'\]\)/);
+ assert.match(ui,/Prêt pour relecture/);
+ assert.match(ui,/Source actualisée depuis le brouillon/);
+ assert.match(ui,/Nouvelle sauvegarde bloquée/);
+ assert.match(ui,/\$staleDraft\?' disabled'/);
+});

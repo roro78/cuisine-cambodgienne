@@ -87,7 +87,7 @@ if($method==='POST'){
         }
     }
 }
-$catalog=[];$dir='';$selected=null;$latest=null;$versions=[];$display=null;
+$catalog=[];$dir='';$selected=null;$latest=null;$versions=[];$display=null;$latestById=[];$staleDraft=false;
 $kind=(string)($_GET['kind']??'all');
 if(!in_array($kind,['all','recette','culture','atelier','ingredient','technique'],true))$kind='all';
 $q=is_string($_GET['q']??null)?trim($_GET['q']):'';
@@ -98,6 +98,13 @@ if($auth){
         if($data===null)throw new RuntimeException('CATALOG_UNAVAILABLE');
         $catalog=cmsSourceList($data);
         $dir=cmsDraftDir($private);
+    }catch(Throwable $e){cmsUnavailable();}
+    // Source identity -> last private proposal, never the social status.
+    try{
+        foreach($catalog as $src){
+            $revisions=cmsVersions($dir,$src['id']);
+            if($revisions)$latestById[$src['id']]=cmsReadVersion($dir,$src['id'],$revisions[0]);
+        }
     }catch(Throwable $e){cmsUnavailable();}
     // The feed is authoritative; unknown or removed IDs cannot be edited.
     $id=cmsId($_POST['source_id']??($_GET['id']??null));
@@ -130,6 +137,8 @@ if($auth){
         try{
             $versions=cmsVersions($dir,$selected['id']);
             $latest=$versions ? cmsReadVersion($dir,$selected['id'],$versions[0]):null;
+            $staleDraft=$latest && !hash_equals(
+                $latest['source_fingerprint'],$selected['fingerprint']);
             $requested=filter_var($_GET['revision']??null,FILTER_VALIDATE_INT,
                 ['options'=>['min_range'=>1,'max_range'=>9999]]);
             $display=($requested!==false && in_array($requested,$versions,true))
@@ -217,6 +226,10 @@ Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
 <h2><?= $latest?'Modifier la proposition (version '.(int)$latest['version'].')':'Créer une proposition' ?></h2>
 <p class="small muted">Texte proposé uniquement : les données complètes d'Astro, les ingrédients,
 les étapes culinaires et les MP3 ne seront pas remplacés par cette saisie.</p>
+<?php if($staleDraft): ?><p class="note" role="alert">
+La page d'origine a changé depuis cette proposition. Nouvelle sauvegarde bloquée pour éviter
+d'écraser une version récente. Comparer la source et reprendre le travail après relecture.
+</p><?php endif; ?>
 <form method="post" class="stack">
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <input type="hidden" name="source_id" value="<?= cmsEsc($selected['id']) ?>">
@@ -233,7 +246,7 @@ les étapes culinaires et les MP3 ne seront pas remplacés par cette saisie.</p>
 <option value="draft"<?= ($latest['state']??'draft')==='draft'?' selected':'' ?>>Brouillon de travail</option>
 <option value="review"<?= ($latest['state']??'draft')==='review'?' selected':'' ?>>Prêt pour relecture (non publié)</option>
 </select></label>
-<div class="actions"><button name="save" value="1">Enregistrer une nouvelle version</button></div>
+<div class="actions"><button name="save" value="1"<?= $staleDraft?' disabled':'' ?>>Enregistrer une nouvelle version</button></div>
 </form>
 </section>
 <section><h2>Aperçu de la version enregistrée</h2>
@@ -280,7 +293,15 @@ Cette liste n'est ni un calendrier ni une file de validation sociale.</p>
 <?php endif; ?>
 <div class="card-text"><span class="badge"><?= cmsEsc($kindLabels[$src['kind']]??'Contenu') ?></span>
 <h3><?= cmsEsc($src['title']) ?></h3>
-<a href="?id=<?= rawurlencode($src['id']) ?>">Préparer un brouillon</a>
+<?php $prev=$latestById[$src['id']]??null; ?>
+<?php if($prev): ?>
+<p class="small"><span class="badge"><?= $prev['state']==='review'?'Prêt pour relecture':'Brouillon' ?>
+· v<?= (int)$prev['version'] ?></span></p>
+<?php if(!hash_equals($prev['source_fingerprint'],$src['fingerprint'])): ?>
+<p class="small note">Source actualisée depuis le brouillon : relecture nécessaire.</p>
+<?php endif; ?>
+<?php endif; ?>
+<a href="?id=<?= rawurlencode($src['id']) ?>"><?= $prev?'Voir et modifier le brouillon':'Préparer un brouillon' ?></a>
 </div></article>
 <?php endforeach; ?>
 </div>
