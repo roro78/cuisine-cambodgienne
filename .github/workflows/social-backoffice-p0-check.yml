@@ -14,6 +14,8 @@ on:
       - "scripts/migrate-cuisine-social-versioned-decision.mjs"
       - "scripts/cuisine-social-wait-form-auth-plan.mjs"
       - "scripts/audit-cuisine-social-wait-form-auth.mjs"
+      - "scripts/migrate-cuisine-social-wait-form-auth.mjs"
+      - "tests/social-wait-form-auth-migration.test.mjs"
       - "tests/social-wait-form-auth-plan.test.mjs"
       - "tests/social-wait-form-auth-audit.test.mjs"
       - "tests/social-versioned-decision-migration.test.mjs"
@@ -65,6 +67,7 @@ jobs:
           node --check scripts/migrate-cuisine-social-versioned-decision.mjs
           node --check scripts/cuisine-social-wait-form-auth-plan.mjs
           node --check scripts/audit-cuisine-social-wait-form-auth.mjs
+          node --check scripts/migrate-cuisine-social-wait-form-auth.mjs
           node --check tests/social-private-dashboard-contract.test.mjs
       - name: Native offline contracts (no API calls)
         run: |
@@ -78,6 +81,7 @@ jobs:
             tests/social-versioned-decision-migration.test.mjs \
             tests/social-wait-form-auth-plan.test.mjs \
             tests/social-wait-form-auth-audit.test.mjs \
+            tests/social-wait-form-auth-migration.test.mjs \
             tests/workflow-01-dryrun.test.mjs \
             tests/workflow-01-full-path-simulation.test.mjs \
             tests/social-pipeline.test.mjs
