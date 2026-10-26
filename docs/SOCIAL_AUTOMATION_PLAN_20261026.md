@@ -106,3 +106,41 @@ pour ne pas réémettre des mails ni déclencher plusieurs posts.
 de cette origine, compteurs À valider/À corriger, catégories Recette/Carnet/
 Atelier/Ingrédient/Technique sur chaque carte, et état vide explicite.
 Aucune connexion externe ni exécution n8n supplémentaire.
+
+
+## Livraison en cours — onglet sources réelles du site (26/10)
+
+Le dashboard comporte désormais un filtre **Sources du site** qui lit
+exclusivement le **`/social-feed.json` effectivement déployé**,
+comme le workflow 01 à 07 h, puis rapproche en lecture seule les
+`source_id`, `source_fingerprint` et états déjà présents en base
+`cuisine_social.posts`. Affichage mobile par recette, carnet, atelier,
+ingrédient ou technique avec les états **disponible mais non proposée**,
+**modifiée depuis la dernière proposition**, **sans JPEG éligible**,
+**déjà proposée**.
+
+Un contenu apparu dans les collections `socialCatalog.ts` doit encore
+être buildé et déployé sur le site pour apparaître dans ce flux. Même
+ensuite, **le workflow existant ne crée pas immédiatement un brouillon** ;
+il sélectionne un sujet à chaque passage. Les sources en attente ne sont
+pas considérées comme des demandes de validation et le dashboard n'envoie
+aucun e-mail. Ceci évite la fausse promesse « article créé = post draft ».
+
+Le chargement HTTP est limité à une destination HTTPS fixe
+`www.cuisine-du-cambodge.com/social-feed.json`, redirects interdits,
+vérification TLS, 5 s max et 512 Kio max ; la réponse est strictement
+validée avant affichage et les titres sont échappés en HTML. Si le
+réseau/extension cURL est indisponible, l'onglet indique clairement
+que le catalogue n'a pas pu être chargé, sans bloquer la file des posts.
+
+**Deuxième raccordement (URL Wait automatique)** : le formulaire existant
+n8n fabrique `$execution.resumeFormUrl` dans le nœud de notification
+Resend. Ce jeton n'existe **ni dans le catalogue public**, ni dans les
+colonnes du post consultées par le dashboard. On ne peut pas reconstruire
+une URL signée fiable depuis `post_id` ou `source_id`. Pour ajouter un
+bouton direct à chaque brouillon, il faudra une transmission serveur
+contrôlée de cette URL par le workflow 01 **uniquement lors de la création
+d'une demande de validation**, avec stockage privé chiffré/court terme
+et liaison stricte au brouillon. Aucun appel n8n 02/03, aucune décision
+alternative ni mutation de `posts` ne sont requis. Cette interface
+n'est **pas encore branchée** ; ne pas afficher de boutons factices.

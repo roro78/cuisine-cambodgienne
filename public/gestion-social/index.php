@@ -7,6 +7,7 @@ declare(strict_types=1);
  * Secrets stay outside the web root. Only a separately provisioned SELECT-only
  * PostgreSQL account may be used for this screen.
  */
+require_once __DIR__ . '/catalog-readonly.php';
 ini_set('display_errors', '0');
 header('Content-Type: text/html; charset=UTF-8');
 header('X-Robots-Tag: noindex, nofollow, noarchive');
@@ -146,6 +147,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 
 $rows = [];
 $counts = [];
+$catalogItems = null;
+$catalogStatus = null;
 $humanDecisionLabels = ['approved' => 'Approuvée', 'revision_requested' => 'Modification demandée', 'rejected' => 'Refusée'];
 $sourceKindLabels = ['recette' => 'Recette', 'culture' => 'Carnet culturel',
     'atelier' => 'Atelier', 'ingredient' => 'Ingrédient', 'technique' => 'Technique'];
@@ -234,20 +237,48 @@ if ($authenticated) {
             if ($truthy($rights[$danger] ?? false)) failClosed();
         $pdo->exec('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY');
         $status = (string)($_GET['status'] ?? 'draft');
-        $allowed = ['all', 'draft', 'approved', 'revision_requested', 'rejected', 'publishing', 'published', 'manual_review'];
+        $allowed = ['all', 'draft', 'approved', 'revision_requested', 'rejected', 'publishing', 'published', 'manual_review', 'sources'];
         if (!in_array($status, $allowed, true)) $status = 'draft';
         $sql = 'SELECT id::text AS id,source_id,source_snapshot,scheduled_date::text AS scheduled_date,facebook_caption,instagram_caption,image_url,status,fb_state,ig_state,human_decision,human_note,decided_at::text AS decided_at,approved_at::text AS approved_at,published_at::text AS published_at,facebook_post_id,instagram_post_id FROM cuisine_social.posts';
-        if ($status !== 'all') $sql .= ' WHERE status = :status';
+        if ($status !== 'all' && $status !== 'sources') $sql .= ' WHERE status = :status';
         $candidate = filter_var($_GET['page'] ?? 1, FILTER_VALIDATE_INT,
             ['options' => ['min_range' => 1, 'max_range' => 100000]]);
         $page = $candidate === false ? 1 : $candidate;
         $sql .= ' ORDER BY scheduled_date DESC,id DESC LIMIT 50 OFFSET :offset';
         $stmt = $pdo->prepare($sql);
-        if ($status !== 'all') $stmt->bindValue(':status', $status, PDO::PARAM_STR);
+        if ($status !== 'all' && $status !== 'sources') $stmt->bindValue(':status', $status, PDO::PARAM_STR);
         $stmt->bindValue(':offset', ($page - 1) * 50, PDO::PARAM_INT);
         $stmt->execute();
-        $rows = $stmt->fetchAll();
+        $rows = $status === 'sources' ? [] : $stmt->fetchAll();
         $counts = $pdo->query('SELECT status,count(*)::int AS total FROM cuisine_social.posts GROUP BY status')->fetchAll(PDO::FETCH_KEY_PAIR);
+        if ($status === 'sources') {
+            // Independent views: public static catalogue = editorial candidates;
+            // PostgreSQL drafts = n8n-selected review tasks. Never queue a source here.
+            $historyRows = $pdo->query(
+                'SELECT DISTINCT ON (source_id) source_id,source_fingerprint,status
+                 FROM cuisine_social.posts
+                 ORDER BY source_id,scheduled_date DESC,id DESC LIMIT 1001'
+            )->fetchAll();
+            if (count($historyRows) > 1000) {
+                $catalogStatus = 'Historique trop volumineux pour comparer les sources.';
+            } else {
+                $history = [];
+                foreach ($historyRows as $record) $history[(string)$record['source_id']] = [
+                    'fingerprint'=>(string)$record['source_fingerprint'],
+                    'status'=>(string)$record['status']
+                ];
+                $liveFeed = readDeployedSocialFeed();
+                if ($liveFeed === null) {
+                    $catalogStatus = 'Catalogue du site indisponible. La file des brouillons reste consultable.';
+                } else {
+                    try {
+                        $catalogItems = socialCatalogCandidates($liveFeed,$history);
+                    } catch (UnexpectedValueException $e) {
+                        $catalogStatus = 'Catalogue invalide. Aucune source non vérifiée n’est affichée.';
+                    }
+                }
+            }
+        }
     } catch (Throwable $e) {
         error_log('Cuisine social review: read-only database unavailable');
         failClosed();
@@ -319,13 +350,52 @@ d'une image sociale compatible et enregistre un brouillon dans
 <p class="small" role="status"><strong>File actuelle :</strong>
 <?= (int)($counts['draft'] ?? 0) ?> à valider ·
 <?= (int)($counts['revision_requested'] ?? 0) ?> modification(s) demandée(s).
+<a href="?status=sources">Voir les sources du catalogue</a>.
 Les autres sujets du catalogue ne sont pas encore des propositions à valider.</p>
 </section>
 <nav class="filters" aria-label="Filtrer les publications">
-<?php foreach (['draft'=>'À valider','approved'=>'Approuvées','revision_requested'=>'À corriger','published'=>'Publiées','manual_review'=>'À examiner','rejected'=>'Refusées','all'=>'Toutes'] as $key=>$label): ?>
-<a class="<?= ($status===$key?'selected':'') ?>" href="?status=<?= h($key) ?>"><?= h($label) ?> (<?= $key==='all' ? array_sum(array_map('intval',$counts)) : (int)($counts[$key] ?? 0) ?>)</a>
+<?php foreach (['draft'=>'À valider','approved'=>'Approuvées','revision_requested'=>'À corriger','published'=>'Publiées','manual_review'=>'À examiner','rejected'=>'Refusées','all'=>'Toutes','sources'=>'Sources du site'] as $key=>$label): ?>
+<a class="<?= ($status===$key?'selected':'') ?>" href="?status=<?= h($key) ?>"><?= h($label) ?> (<?= $key==='all' ? array_sum(array_map('intval',$counts)) : ($key==='sources' ? 'catalogue' : (int)($counts[$key] ?? 0)) ?>)</a>
 <?php endforeach; ?>
 </nav>
+<p class="muted">La file de validation provient de PostgreSQL. Les sources du site
+sont affichées séparément à partir du même flux public que lit n8n 01.
+Aucune proposition sociale n'est créée depuis cette page.</p>
+<?php if ($status === 'sources'): ?>
+<section class="entry" aria-label="Sources éditoriales disponibles">
+<h2>Sources du site, en attente de sélection éventuelle par n8n</h2>
+<p class="small">Ce catalogue est celui du site <code>/social-feed.json</code>.
+« Disponible » signifie qu'un contenu possède le visuel social nécessaire,
+<strong>pas qu'un e-mail ou un brouillon a été créé</strong>. La sélection reste
+pilotée par le workflow 01 au rythme actuel.</p>
+<?php if ($catalogStatus !== null): ?>
+<p class="warning" role="status"><?= h($catalogStatus) ?></p>
+<?php elseif ($catalogItems !== null): ?>
+<p class="muted"><?= count($catalogItems) ?> sources présentes dans le flux déployé ;
+elles ne sont pas toutes en cours de validation.</p>
+<?php if (!$catalogItems): ?><p class="empty">Aucune source dans le flux publié.</p><?php endif; ?>
+<?php foreach ($catalogItems as $item): ?>
+<div class="review-history">
+<div class="badges">
+<span class="badge"><?= h($sourceKindLabels[$item['kind']] ?? 'Autre') ?></span>
+<span class="badge"><?php
+echo h(match($item['state']) {
+ 'available'=>'Disponible pour n8n, non proposée',
+ 'changed'=>'Contenu modifié depuis la dernière proposition',
+ 'missing_image'=>'Image sociale JPEG requise',
+ default=>'Déjà proposé au moins une fois'
+}); ?></span>
+</div>
+<p><strong><?= h($item['title']) ?></strong> ·
+<a href="<?= h($item['url']) ?>" target="_blank" rel="noopener noreferrer">Voir la page</a></p>
+<?php if ($item['previous_status'] !== null): ?>
+<p class="small">Dernier état connu : <?= h($postStatusLabels[$item['previous_status']] ?? $item['previous_status']) ?></p>
+<?php endif; ?>
+</div>
+<?php endforeach; ?>
+<?php endif; ?>
+</section>
+<?php else: ?>
 <p class="muted">50 publications par page. États issus de PostgreSQL, sans vérification Meta indépendante.</p>
 <?php $visibleTotal = $status === 'all' ? array_sum(array_map('intval', $counts)) : (int)($counts[$status] ?? 0); ?>
 <nav class="filters" aria-label="Parcourir les publications">
@@ -384,5 +454,6 @@ nécessairement déjà transformée en post social.
 <p class="small">Aperçus indicatifs, non captures officielles de Meta. L'image originale peut être recadrée dans l'application.</p>
 </article>
 <?php endforeach; ?>
+<?php endif; ?>
 <?php endif; ?>
 </main></body></html>

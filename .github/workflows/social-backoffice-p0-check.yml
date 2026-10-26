@@ -7,6 +7,8 @@ on:
     paths:
       - ".github/workflows/social-backoffice-p0-check.yml"
       - "public/gestion-social/index.php"
+      - "public/gestion-social/catalog-readonly.php"
+      - "tests/php/social-catalog-readonly-smoke.php"
       - "automation/n8n/sql/social-viewer-role-provisioning-REVIEW.sql"
       - "tests/social-private-dashboard-contract.test.mjs"
       - "tests/social-private-dashboard-history.test.mjs"
@@ -27,7 +29,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: PHP syntax
-        run: php -l public/gestion-social/index.php
+        run: |
+          php -l public/gestion-social/index.php
+          php -l public/gestion-social/catalog-readonly.php
+          php -l tests/php/social-catalog-readonly-smoke.php
+          php tests/php/social-catalog-readonly-smoke.php
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
