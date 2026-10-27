@@ -28,7 +28,7 @@ export function verifyCmsIndexes(feeds) {
     fail('CANONICAL_FEED_INVALID');
   if(guided?.product!=='cuisine-du-cambodge'||guided?.schemaVersion!==1
      || guided?.dataContract!=='approved-public-form-fields-v2'
-     || !Array.isArray(guided.items)||guided.items.length>100)
+     || !Array.isArray(guided.items)||guided.items.length>250)
     fail('GUIDED_FEED_INVALID');
   const socialIds=new Set;
   for(const item of social.items){
@@ -88,6 +88,12 @@ export function verifyCmsIndexes(feeds) {
     const fields=JSON.stringify(item.fields);
     for(const key of sensitiveKeys)if(fields.includes('"'+key+'":'))fail('GUIDED_PRIVATE_FIELDS');
   }
+  // Every published canonical content must inherit the same guided editor.
+  // A future recipe/Carnet/atelier cannot silently fall back to a raw JSON form.
+  // Check exact ID equality, not a fixed count (35 is today's snapshot only).
+  if(guidedIds.size!==canonicalById.size
+     || [...canonicalById.keys()].some(id=>!guidedIds.has(id)))
+    fail('GUIDED_COVERAGE_INCOMPLETE');
   return {social:social.items.length,canonical:canonical.items.length,guided:guided.items.length};
 }
 export function verifyCmsLogin({status,headers,body}){
