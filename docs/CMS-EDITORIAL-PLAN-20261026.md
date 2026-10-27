@@ -106,3 +106,20 @@ npm run check && npm run test:recipes && npm run build
 **Réserves structurantes :** le champ `title`, `summary` ou `editorial_text` du brouillon ne s'applique pas implicitement à la recette ; seul le patch structuré est compilé. Les tests empêchent les suppressions de lignes, l'ajout de propriétés arbitraires, la mutation de métadonnées de mise à l'échelle ou le changement de slug/média. Une demande JSON exportée n'est pas une preuve cryptographique d'approbation : le diff et la décision humaine restent obligatoires. Pas de publication automatique depuis le CMS ni de credential GitHub dans le CMS. Le pipeline « bouton -> PR automatique -> review » n'est **pas encore développé**.
 
 **Conditions avant réception OVH :** les flux `social-feed.json`, `editorial-source-index.json` et `editorial-guided-fields.json` doivent être cohérents et disponibles sur le serveur public ; la session administrateur HTTPS/CSRF et la conservation privée des brouillons doivent être testées sur OVH. Ne pas annoncer la production sans ces preuves.
+
+
+## 27 octobre — Correction des filtres et éditeur transversal (suite à la réception OVH)
+
+**Retour utilisateur :** les filtres de la bibliothèque ne semblaient pas fonctionner ; les Carnets, les fiches ingrédients et techniques ne disposaient pas de formulaires natifs complets ; les ateliers Coral étaient essentiellement cantonnés à des propositions JSON.
+
+**Correction côté GitHub, non déployée sur OVH tant que la CI n'est pas validée :**
+
+- Filtres en GET réellement exécutés côté serveur, par catégorie, recherche texte (titre, identifiant, résumé) et état privé (sans brouillon, brouillon, prêt pour relecture, source modifiée). Le contexte de recherche est conservé en ouvrant une fiche et en revenant à la bibliothèque. Aucun JavaScript requis.
+- Le manifeste guidé public passe au contrat **`approved-public-form-fields-v2`**. Il couvre toutes les 35 fiches du catalogue : recettes actuelles/historiques, Carnets, ingrédients, techniques et ateliers. Il n'expose que du texte déjà public, avec digest canonique intégral ; aucune source documentaire interne, aucun script audio ni URL MP3 privée.
+- Le formulaire PHP permet de proposer une modification des sections culturelles et paragraphes, des listes de conseils, étapes, questions/réponses, temps, portions et repères pédagogiques de chaque chapitre Coral. Les identifiants de phase, la mise à l'échelle protégée, les médias, la narration Coral et les métadonnées d'autorisation de sortie restent inchangés.
+- Stockage privé append-only, contrôle CSRF/version/SHA-256, sans altération de recettes live. Les tests PHP s'exécutent contre les **vraies 35 fiches** du build Astro, avec simulation des champs HTML et contrôle des filtres. L'index v2 et les fichiers PHP doivent être déployés *ensemble* ; un mélange v1/v2 doit être refusé.
+
+**Limites explicites :** ceci crée et conserve des propositions éditoriales. La modification des contenus effectivement publiés nécessite encore une PR validée, des contrôles Astro et un déploiement OVH distinct. Pour les Carnets, ingrédients, techniques et ateliers, le compilateur GitHub universel n'est **pas encore développé** : pas de bouton Publier automatique. Ajouter/supprimer une étape, importer une image et régénérer le MP3 restent des chantiers séparés, avec réception humaine, pour éviter toute régression des URL, de l'éditorial et de l'audio.
+
+**Déploiement :** ne pas lancer la publication OVH globale. Une fois la CI de la PR de correction réussie et la fusion approuvée, construire le paquet ciblé de six fichiers via `scripts/package-cms-ovh-release.mjs`. Avant transfert, faire une sauvegarde des six versions sur l'hébergement ; ensuite vérifier `scripts/check-cms-ovh-readiness.mjs --url ...` et tester connexion, filtres, enregistrement, relecture sur Android. L'ancien paquet v1 ne convient plus.
+

@@ -19,9 +19,9 @@ test('public guided fields match full canonical source versions without leaking 
   const guided=await import(pathToFileURL(guidedPath).href), canon=await import(pathToFileURL(indexPath).href);
   const payload=await (await guided.GET({})).json();
   assert.equal(payload.schemaVersion,1);
-  assert.equal(payload.dataContract,'approved-public-form-fields-v1');
+  assert.equal(payload.dataContract,'approved-public-form-fields-v2');
   const index=new Map(canon.getEditorialSourceIndex().map(x=>[x.id,x]));
-  assert.ok(payload.items.length>=15);
+  assert.equal(payload.items.length,index.size);
   assert.equal(payload.items.length,new Set(payload.items.map(x=>x.id)).size);
   for(const item of payload.items){
    const original=index.get(item.id);
@@ -29,16 +29,21 @@ test('public guided fields match full canonical source versions without leaking 
    assert.equal(item.fingerprint,original.fingerprint,'full-record digest mismatch for '+item.id);
    assert.equal(item.model,original.model);
    assert.deepEqual(Object.keys(item).sort(),['editable','fields','fingerprint','id','model']);
-   assert.ok(['recette','atelier'].includes(item.id.split(':')[0]));
+   assert.ok(['recette','atelier','culture','ingredient','technique'].includes(item.id.split(':')[0]));
+   assert.equal(item.editable,true);
    if(item.model==='cookingWorkshopGuides'){
-    assert.equal(item.editable,false);
     assert.ok(item.fields.phases.every(x=>Object.keys(x).sort().join(',')==='id,learning,title'));
-   }else assert.equal(item.editable,true);
+    assert.ok(item.fields.beforeStarting.length>0);
+   }
   }
   const recipe=payload.items.find(x=>x.id==='recette:amok-trey');
   assert.ok(recipe);
   assert.ok(recipe.fields.ingredients.some(x=>x.scalable===false));
   assert.ok(recipe.fields.steps.some(x=>x.cue));
+  for(const id of ['culture:le-riz-symbole-de-vie-au-cambodge','ingredient:kroeung',
+    'technique:bouillon-leger-maison']){
+    assert.ok(payload.items.some(x=>x.id===id),'guided coverage '+id);
+  }
   const serialized=JSON.stringify(payload);
   for(const key of ['audioScript','culinaryReferences','sourceReferences','sources','password_hash',
     'imageWidths','audioPath','n8n','private_config']){
@@ -55,9 +60,9 @@ test('PHP view only renders typed forms in guarded private session', async()=>{
  assert.match(ui,/cmsBuildGuidedPatch/);
  assert.match(ui,/csrf/);
  assert.match(ui,/canonical_fingerprint/);
- assert.match(ui,/cmsEsc\(\(string\)\$rowValue\)/);
- assert.match(ui,/Cet atelier utilise le parcours audio validé/);
+ assert.match(ui,/cmsGuidedHtml/);
+ assert.match(ui,/Les narrations et MP3 Coral restent entièrement protégés/);
  assert.match(lib,/GUIDED_SOURCE/);
- assert.match(lib,/STRUCTURE_GUIDED_ROW_KEYS/);
+ assert.match(lib,/STRUCTURE_GUIDED_KEYS/);
  assert.doesNotMatch(ui,/\b(?:INSERT INTO|DELETE FROM|graph\.facebook\.com)\b/);
 });

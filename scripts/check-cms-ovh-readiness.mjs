@@ -27,7 +27,7 @@ export function verifyCmsIndexes(feeds) {
      || !Array.isArray(canonical.items)||canonical.items.length!==social.items.length)
     fail('CANONICAL_FEED_INVALID');
   if(guided?.product!=='cuisine-du-cambodge'||guided?.schemaVersion!==1
-     || guided?.dataContract!=='approved-public-form-fields-v1'
+     || guided?.dataContract!=='approved-public-form-fields-v2'
      || !Array.isArray(guided.items)||guided.items.length>100)
     fail('GUIDED_FEED_INVALID');
   const socialIds=new Set;
@@ -54,16 +54,37 @@ export function verifyCmsIndexes(feeds) {
     const base=canonicalById.get(item.id);
     if(!base || guidedIds.has(item.id) || item.model!==base.model
        || item.fingerprint!==base.fingerprint || typeof item.editable!=='boolean'
-       || !plain(item.fields)||!['recette','atelier'].includes(item.id.split(':')[0])
-       || !['recipes','restoredRecipes','workshops','cookingWorkshopGuides'].includes(item.model)
-       || item.editable===(item.model==='cookingWorkshopGuides'))
+       || !plain(item.fields)||!['recette','atelier','culture','ingredient','technique'].includes(item.id.split(':')[0])
+       || !['recipes','restoredRecipes','workshops','cookingWorkshopGuides','culture','ingredients','recipeTechniques'].includes(item.model)
+       || item.editable!==true)
       fail('GUIDED_DIGEST_MISMATCH');
     guidedIds.add(item.id);
-    const allowed=item.model==='recipes'
-      ?['baseServings','prepTime','cookTime','ingredients','steps']
-      :item.model==='restoredRecipes'?['prepTime','cookTime','ingredients','steps']
-      :item.model==='workshops'?['steps']:['phases'];
-    requireKeys(item.fields,allowed);
+    const allowed={
+      recipes:['intro','description','context','beforeYouStart','prepHeading',
+        'servingTip','servingHeading','servingsLabel','moment','location','keyPoints',
+        'notes','substitutions','equipment','faqs','baseServings','prepTime',
+        'cookTime','ingredients','steps'],
+      restoredRecipes:['kicker','description','intro','servings','imageCaption',
+        'tips','prepTime','cookTime','ingredients','steps'],
+      culture:['eyebrow','intro','seoDescription','readingTime','sections'],
+      ingredients:['intro','seoDescription','role','deepDive','profile','uses',
+        'tips','choose','keep','pairings','mistakes','seoKeywords'],
+      recipeTechniques:['description','introduction','preparation','yieldLabel',
+        'supplies','steps','alternatives','questions'],
+      workshops:['steps'],
+      cookingWorkshopGuides:['finalPreparation','learningGoal','portionLabel',
+        'beforeStarting','equipment','phases']
+    };
+    const required={
+      recipes:['intro','description','context','baseServings','prepTime','cookTime','ingredients','steps'],
+      restoredRecipes:['description','intro','prepTime','cookTime','ingredients','steps'],
+      culture:['eyebrow','intro','seoDescription','sections'],
+      ingredients:['intro','seoDescription','role','uses'],
+      recipeTechniques:['description','introduction','steps'],
+      workshops:['steps'],
+      cookingWorkshopGuides:['finalPreparation','learningGoal','phases']
+    };
+    requireKeys(item.fields,allowed[item.model],required[item.model]);
     const fields=JSON.stringify(item.fields);
     for(const key of sensitiveKeys)if(fields.includes('"'+key+'":'))fail('GUIDED_PRIVATE_FIELDS');
   }

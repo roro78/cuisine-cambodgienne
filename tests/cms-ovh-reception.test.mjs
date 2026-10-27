@@ -14,9 +14,9 @@ function fixture(){
   digest:'sha256-full-astro-record-v1',
   items:[{id:source,kind:'recette',model,fingerprint:sha}]};
  const guided={product:'cuisine-du-cambodge',schemaVersion:1,
-  dataContract:'approved-public-form-fields-v1',
+  dataContract:'approved-public-form-fields-v2',
   items:[{id:source,model,fingerprint:sha,editable:true,
-   fields:{baseServings:4,prepTime:'30 min',cookTime:'25 min',
+   fields:{intro:'Un délicieux poisson',description:'Une recette facile',context:'Un plat traditionnel',baseServings:4,prepTime:'30 min',cookTime:'25 min',
     ingredients:[{quantity:600,unit:'g',name:'poisson'}],
     steps:[{title:'Préparer',text:'Mélanger'}]}}]};
  return {'social-feed.json':social,'editorial-source-index.json':canonical,

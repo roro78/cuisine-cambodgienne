@@ -34,7 +34,7 @@ test('Propositions versionnées sans publication directe',()=>{
 test('P0B conserve uniquement des propositions structurees sans mutations des MP3',()=>{
  for(const marker of ['cmsValidateStructuredDraft','STRUCTURE_FIELDS',
    'STRUCTURE_QUANTITY','STRUCTURE_PHASE_IDS','cmsPatchTextList',
-   "['ingredients','steps','baseServings','prepTime','cookTime']"])
+   "'recette'=>['ingredients','steps','baseServings','prepTime','cookTime'"])
    assert.ok(lib.includes(marker),marker);
  assert.match(ui,/name="structure_json"/);
  assert.match(ui,/les MP3 en production restent inchangés/);
