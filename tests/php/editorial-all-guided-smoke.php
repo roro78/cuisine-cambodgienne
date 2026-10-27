@@ -16,7 +16,17 @@ function jsonFile(string $folder,string $name):array {
 $catalog=cmsSourceList(jsonFile($dist,'social-feed.json'));
 $canon=cmsCanonicalSourceList(jsonFile($dist,'editorial-source-index.json'),$catalog);
 $guides=cmsGuidedSourceList(jsonFile($dist,'editorial-guided-fields.json'),$canon);
-ensure(count($catalog)===35 && count($canon)===35 && count($guides)===35,'INCOMPLETE_FAMILY');
+// Never freeze today's catalog size in a test. Newly created content must
+// inherit the shared editor automatically, or fail this CI contract.
+ensure(count($catalog)>0 && count($catalog)===count($canon)
+    && count($canon)===count($guides),'INCOMPLETE_FAMILY');
+cmsAssertGuidedCoverage($guides,$canon);
+$missing=$guides;
+unset($missing[array_key_first($missing)]);
+$blocked=false;
+try{cmsAssertGuidedCoverage($missing,$canon);}
+catch(UnexpectedValueException $e){$blocked=$e->getMessage()==='GUIDED_COVERAGE_INCOMPLETE';}
+ensure($blocked,'FUTURE_PAGE_MISSING_EDITOR_ACCEPTED');
 // Simulate POST serialization faithfully (HTML excludes only protected row metadata).
 function postValue(mixed $value):mixed {
     if(is_array($value)){
