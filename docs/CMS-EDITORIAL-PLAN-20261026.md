@@ -73,3 +73,36 @@ Le CMS PHP confronte chaque proposition structurée à cet index complet et vér
 **Limites :** cet index est calculé lors du build et décrit la version du site servi par OVH, pas nécessairement le `main` actuel après de nouveaux commits. L'étape ultérieure de génération de PR doit vérifier l'identité du blob GitHub source et la version du contenu canonique **au moment de l'application**, puis reconstruire/tester Astro. L'interface P0B reste une édition de propositions JSON, pas encore une édition guidée de tous les champs ni un éditeur de MP3. Aucun déploiement ni lancement n8n/Meta/Resend n'est autorisé par ce jalon.
 
 **Tests :** ajout des contrôles PHP de refus des index absents, modifiés ou dupliqués et des tests Node construisant le vrai catalogue Astro pour vérifier les identifiants et les variations de digest lors du changement d'une quantité, d'une narration ou d'une référence MP3. Les tests rejoignent la CI principale. Si elle échoue, ne pas fusionner.
+
+
+## 27 octobre — P1A, circuit de modification contrôlée des recettes
+
+**Objectif :** faire passer une proposition structurée déjà marquée *Prêt pour relecture* dans un fichier de demande de modification contrôlé, puis un patch GitHub sur une branche isolée. Ce jalon ne touche qu'aux **recettes classiques et historiques** : les MP3 Coral, les ateliers, les Carnets, l'automatisation IA et la publication OVH restent exclus.
+
+### Exécution en deux zones de confiance
+1. Après authentification, le CMS compare \`source_id\`, l'empreinte sociale, l'empreinte SHA-256 de la fiche Astro entière, son modèle et le dernier numéro de version. Il n'exporte que les propositions de recettes en état \`review\`, depuis une requête POST avec CSRF. Un GET ne valide rien et n'exporte pas.
+2. Le téléchargement \`cms-recipe-<slug>-v<version>.json\` comporte uniquement un **contrat de demande**, sans token GitHub, sans droit d'écriture ni état de publication.
+3. Dans une copie locale du dépôt ou dans une exécution contrôlée, utiliser \`scripts/apply-reviewed-recipe-request.mjs\` : le script reconstitue la vraie recette à partir de TypeScript, contrôle le SHA-256 complet, l'identité de la fiche, les champs modifiables, le nombre d'étapes/ingrédients et les propriétés non éditables. Aucune modification de la source si le SHA ne correspond pas.
+4. **Simulation par défaut** (affiche les anciennes/nouvelles valeurs, aucun fichier modifié). Pour écrire, spécifier \`--write\`, être sur une branche propre de la forme \`cms/content-...\`, avoir un \`main\` local **épinglé** au commit demandé et une branche créée sur ce commit. Aucun commit, push, PR, fusion ni déploiement n'est effectué par ce script.
+5. Une personne vérifie \`git diff\`, les quantités, les allergènes et le contexte de la recette, lance \`npm run check\`, \`npm run test:recipes\` et \`npm run build\`, puis ouvre une PR GitHub. Re-vérifier la base \`main\` avant la fusion, et effectuer séparément le déploiement manuel OVH.
+
+**Commandes en local sur copie Git de confiance :**
+
+\`\`\`bash
+git fetch origin main
+git switch main
+git pull --ff-only
+git switch -c cms/content-recette-REVUE
+SHA="$(git rev-parse main)"
+node scripts/apply-reviewed-recipe-request.mjs --request /chemin/prive/cms-recipe-v3.json --base-sha "$SHA"
+# Après contrôle du résultat simulé :
+node scripts/apply-reviewed-recipe-request.mjs --request /chemin/prive/cms-recipe-v3.json --base-sha "$SHA" --write
+git diff --check
+git diff -- src/data/recipes.ts src/data/restoredRecipes.ts
+npm run check && npm run test:recipes && npm run build
+# Commit et PR GitHub uniquement après examen du diff.
+\`\`\`
+
+**Réserves structurantes :** le champ \`title\`, \`summary\` ou \`editorial_text\` du brouillon ne s'applique pas implicitement à la recette ; seul le patch structuré est compilé. Les tests empêchent les suppressions de lignes, l'ajout de propriétés arbitraires, la mutation de métadonnées de mise à l'échelle ou le changement de slug/média. Une demande JSON exportée n'est pas une preuve cryptographique d'approbation : le diff et la décision humaine restent obligatoires. Pas de publication automatique depuis le CMS ni de credential GitHub dans le CMS. Le pipeline « bouton -> PR automatique -> review » n'est **pas encore développé**.
+
+**Conditions avant réception OVH :** les flux \`social-feed.json\`, \`editorial-source-index.json\` et \`editorial-guided-fields.json\` doivent être cohérents et disponibles sur le serveur public ; la session administrateur HTTPS/CSRF et la conservation privée des brouillons doivent être testées sur OVH. Ne pas annoncer la production sans ces preuves.
