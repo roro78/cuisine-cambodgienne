@@ -194,7 +194,11 @@ function cmsGuidedConvert(mixed $original,mixed $received,string $key='',int $de
     }
     $editable=array_values(array_filter(array_keys($original),
         static fn(string $name):bool=>!in_array($name,['id','scalable'],true)));
-    if(array_keys($received)!==$editable)
+    // PHP's JSON validator canonicalizes associative key order.
+    // A saved revision must remain editable, but added/missing keys are rejected.
+    if(count($received)!==count($editable)
+       || array_diff(array_keys($received),$editable)
+       || array_diff($editable,array_keys($received)))
         throw new InvalidArgumentException('STRUCTURE_GUIDED_KEYS');
     $row=$original;
     foreach($editable as $name)
@@ -208,7 +212,9 @@ function cmsBuildGuidedPatch(array $entry,mixed $post): string {
     $encoded=json_encode($post,JSON_THROW_ON_ERROR);
     if(strlen($encoded)>90000)throw new InvalidArgumentException('STRUCTURE_GUIDED_SIZE');
     $original=$entry['fields'];
-    if(array_keys($post)!==array_keys($original))
+    if(count($post)!==count($original)
+       || array_diff(array_keys($post),array_keys($original))
+       || array_diff(array_keys($original),array_keys($post)))
         throw new InvalidArgumentException('STRUCTURE_GUIDED_KEYS');
     $patch=['schema_version'=>1];
     foreach($original as $key=>$value)
