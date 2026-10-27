@@ -255,6 +255,26 @@ function cmsGuidedLabel(string $name): string {
     return $labels[$name]??ucfirst($name);
 }
 /** HTML escaping on every field and name; no script needed on Android. */
+/** A useful short excerpt in each collapsed mobile section, including string lists. */
+function cmsGuidedRowTitle(mixed $row,int $index,string $key): string {
+    $candidate=is_string($row)?$row:null;
+    if(is_array($row)){
+        foreach(['title','name','question','action','text','learning'] as $field){
+            if(is_string($row[$field]??null) && trim($row[$field])!==''){
+                $candidate=$row[$field];break;
+            }
+        }
+    }
+    if(is_string($candidate) && trim($candidate)!==''){
+        $candidate=trim(preg_replace('/\\s+/u',' ',$candidate)??$candidate);
+        if(mbLen($candidate)>82){
+            $candidate=(function_exists('mb_substr')
+                ?mb_substr($candidate,0,79,'UTF-8'):substr($candidate,0,79)).'…';
+        }
+        return $candidate;
+    }
+    return cmsGuidedLabel($key).' '.($index+1);
+}
 function cmsGuidedHtml(string $name,mixed $value,string $key,int $depth=0): string {
     if($depth>7)throw new UnexpectedValueException('GUIDED_DEPTH');
     $title=cmsEsc(cmsGuidedLabel($key));
@@ -262,11 +282,18 @@ function cmsGuidedHtml(string $name,mixed $value,string $key,int $depth=0): stri
     if(is_string($value)){
         $safe=cmsEsc($value);
         $limit=9000;
-        if(mbLen($value)<135 && !in_array($key,['intro','role','description','context'],true))
+        // Only truly short metadata belongs in a one-line field. Long prose
+        // was clipped on Android, even when the original text was under 135 chars.
+        $compact=in_array($key,['unit','prepTime','cookTime','readingTime',
+            'quantity','name','group','location','moment','servings',
+            'servingsLabel','portionLabel','yieldLabel'],true)
+            && mbLen($value)<=48 && !str_contains($value,"\\n");
+        if($compact)
             return '<label>'.$title.'<input name="'.$safeName.'" required maxlength="'.$limit
                 .'" value="'.$safe.'"></label>';
-        return '<label>'.$title.'<textarea name="'.$safeName
-            .'" required maxlength="'.$limit.'" rows="4">'.$safe.'</textarea></label>';
+        $rows=mbLen($value)>220?4:2;
+        return '<label class="guided-text">'.$title.'<textarea name="'.$safeName
+            .'" required maxlength="'.$limit.'" rows="'.$rows.'">'.$safe.'</textarea></label>';
     }
     if(is_int($value) || is_float($value)){
         return '<label>'.$title.'<input name="'.$safeName.'" required inputmode="decimal"'
@@ -280,9 +307,7 @@ function cmsGuidedHtml(string $name,mixed $value,string $key,int $depth=0): stri
         $html='<div class="guided-collection"><h3>'.$title.' ('.count($value).')</h3>';
         foreach($value as $i=>$row){
             $suffix='['.(int)$i.']';
-            $rowTitle=(is_array($row)&&is_string($row['title']??null))
-                ?cmsEsc($row['title'])
-                :$title.' '.((int)$i+1);
+            $rowTitle=cmsEsc(cmsGuidedRowTitle($row,(int)$i,$key));
             $html.='<details class="guided-group"><summary>'.$rowTitle.'</summary><div class="stack">'
                 .cmsGuidedHtml($name.$suffix,$row,$key,$depth+1).'</div></details>';
         }
@@ -296,6 +321,33 @@ function cmsGuidedHtml(string $name,mixed $value,string $key,int $depth=0): stri
             continue;
         }
         $html.=cmsGuidedHtml($name.'['.$child.']',$one,(string)$child,$depth+1);
+    }
+    return $html.'</div>';
+}
+/** Accessible, HTML-escaped human review of draft fields. Never raw JSON by default. */
+function cmsGuidedPreviewHtml(string $key,mixed $value,int $depth=0): string {
+    if($depth>8)throw new UnexpectedValueException('PREVIEW_DEPTH');
+    if(is_string($value) || is_int($value) || is_float($value))
+        return '<p class="preview-text">'.cmsEsc((string)$value).'</p>';
+    if(is_bool($value))return '<p>'.($value?'Oui':'Non').'</p>';
+    if(!is_array($value))return '';
+    if(array_is_list($value)){
+        $html='<ol class="preview-list">';
+        foreach($value as $row){
+            $html.='<li>';
+            if(is_array($row) && is_string($row['title']??null))
+                $html.='<strong>'.cmsEsc($row['title']).'</strong>';
+            $html.=cmsGuidedPreviewHtml($key,$row,$depth+1).'</li>';
+        }
+        return $html.'</ol>';
+    }
+    $html='<div class="preview-fields">';
+    foreach($value as $field=>$v){
+        if(in_array($field,['schema_version','id','scalable'],true))continue;
+        if($field==='title' && $key==='row')continue;
+        $html.='<div class="preview-entry"><h4>'.cmsEsc(cmsGuidedLabel((string)$field)).'</h4>'
+            .cmsGuidedPreviewHtml(is_array($v)&&array_is_list($v)?(string)$field:'row',
+                $v,$depth+1).'</div>';
     }
     return $html.'</div>';
 }
