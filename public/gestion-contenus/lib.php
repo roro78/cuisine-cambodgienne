@@ -316,11 +316,17 @@ function cmsValidateStructuredDraft(string $kind,mixed $raw): ?array {
     if(!is_array($patch) || array_is_list($patch) || ($patch['schema_version']??null)!==1)
         throw new InvalidArgumentException('STRUCTURE_SCHEMA');
     $schemas=[
-        'recette'=>['ingredients','steps','baseServings','prepTime','cookTime'],
-        'culture'=>['sections'],
-        'atelier'=>['steps','phases','prepare','outcomes'],
-        'ingredient'=>['deepDive','uses','tips'],
-        'technique'=>['supplies','steps','alternatives']
+        'recette'=>['ingredients','steps','baseServings','prepTime','cookTime',
+            'intro','description','context','beforeYouStart','prepHeading','servingTip',
+            'servingHeading','servingsLabel','moment','location','keyPoints','notes',
+            'substitutions','equipment','faqs','kicker','servings','imageCaption','tips'],
+        'culture'=>['sections','eyebrow','intro','seoDescription','readingTime'],
+        'atelier'=>['steps','phases','prepare','outcomes','finalPreparation','learningGoal',
+            'portionLabel','beforeStarting','equipment'],
+        'ingredient'=>['deepDive','uses','tips','intro','seoDescription','role',
+            'profile','choose','keep','pairings','mistakes','seoKeywords'],
+        'technique'=>['supplies','steps','alternatives','description','introduction',
+            'preparation','yieldLabel','questions']
     ];
     if(!isset($schemas[$kind]) || count($patch)<2
        || array_diff(array_keys($patch),array_merge(['schema_version'],$schemas[$kind])))
@@ -371,9 +377,14 @@ function cmsValidateStructuredDraft(string $kind,mixed $raw): ?array {
                 :cmsPatchRows($value,['title','text'],
                     $kind==='recette'?['duration','cue','mistake']:[],50);
         }elseif($key==='phases'){
-            // Approved audio assets are NEVER overwritten by a script proposal.
-            $clean[$key]=cmsPatchRows($value,['id','title','minutes','actions','observe','check','learning','audioScript'],
-                ['mistake','recovery','pausePrompt','safety'],10);
+            // Approved MP3 and narrated script remain protected. Only short
+            // pedagogical labels/learning may be proposed by the guided editor.
+            $guided=isset($value[0]) && is_array($value[0])
+                && !array_diff(array_keys($value[0]),['id','title','learning']);
+            $clean[$key]=$guided
+                ?cmsPatchRows($value,['id','title','learning'],[],10)
+                :cmsPatchRows($value,['id','title','minutes','actions','observe','check','learning','audioScript'],
+                  ['mistake','recovery','pausePrompt','safety'],10);
             $ids=array_column($clean[$key],'id');
             if(count($ids)!==count(array_unique($ids))
                 || count(array_filter($ids,static fn(string $id):bool=>
@@ -381,8 +392,16 @@ function cmsValidateStructuredDraft(string $kind,mixed $raw): ?array {
                 throw new InvalidArgumentException('STRUCTURE_PHASE_IDS');
         }elseif($key==='alternatives'){
             $clean[$key]=cmsPatchRows($value,['title','text'],[],30);
+        }elseif(in_array($key,['questions','faqs'],true)){
+            $clean[$key]=cmsPatchRows($value,['question','answer'],[],30);
+        }elseif(in_array($key,['intro','description','context','beforeYouStart',
+            'prepHeading','servingTip','servingHeading','servingsLabel','moment',
+            'location','kicker','servings','imageCaption','eyebrow','seoDescription',
+            'readingTime','finalPreparation','learningGoal','portionLabel','role',
+            'preparation','introduction','yieldLabel'],true)){
+            $clean[$key]=cmsPatchText($value,9000);
         }else{
-            $clean[$key]=cmsPatchTextList($value);
+            $clean[$key]=cmsPatchTextList($value,60,9000);
         }
     }
     return $clean;
