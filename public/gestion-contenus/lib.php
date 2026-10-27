@@ -337,7 +337,7 @@ function cmsGuidedPreviewHtml(string $key,mixed $value,int $depth=0): string {
             $html.='<li>';
             if(is_array($row) && is_string($row['title']??null))
                 $html.='<strong>'.cmsEsc($row['title']).'</strong>';
-            $html.=cmsGuidedPreviewHtml($key,$row,$depth+1).'</li>';
+            $html.=cmsGuidedPreviewHtml(is_array($row)?'row':$key,$row,$depth+1).'</li>';
         }
         return $html.'</ol>';
     }
