@@ -213,6 +213,32 @@ try{
   catch(InvalidArgumentException $e){$blocked=true;}
   check($blocked,'Atelier audio modifiable sans contrôle');
 
+  // Review export: authenticated caller has supplied the current canonical
+  // metadata and the immutable reviewed revision, never GitHub credentials.
+  $reviewRequest=cmsBuildReviewedRecipeRequest($source,$canon[$id],$fourth,4);
+  check(($reviewRequest['contract']??null)==='cuisine-cms-recipe-patch-v1'
+     && ($reviewRequest['source_model']??null)==='recipes'
+     && ($reviewRequest['review_version']??null)===4
+     && ($reviewRequest['publication']??null)==='none'
+     && ($reviewRequest['changes']['ingredients'][0]['name']??null)==='lait de coco',
+     'Export de brouillon relu invalide');
+  $bad=$fourth;$bad['state']='draft';$blocked=false;
+  try{cmsBuildReviewedRecipeRequest($source,$canon[$id],$bad,4);}
+  catch(RuntimeException $e){$blocked=true;}
+  check($blocked,'Export non relu autorisé');
+  $bad=$fourth;$bad['canonical_fingerprint']=str_repeat('b',64);$blocked=false;
+  try{cmsBuildReviewedRecipeRequest($source,$canon[$id],$bad,4);}
+  catch(RuntimeException $e){$blocked=true;}
+  check($blocked,'Export sur recette modifiée autorisé');
+  $blocked=false;
+  try{cmsBuildReviewedRecipeRequest($source,$canon[$id],$fourth,3);}
+  catch(RuntimeException $e){$blocked=true;}
+  check($blocked,'Export d’une mauvaise version autorisé');
+  $badCanon=$canon[$id];$badCanon['model']='cookingWorkshopGuides';$blocked=false;
+  try{cmsBuildReviewedRecipeRequest($source,$badCanon,$fourth,4);}
+  catch(RuntimeException $e){$blocked=true;}
+  check($blocked,'Export recette vers atelier autorisé');
+
   echo "CMS_PRIVATE_DRAFTS_APPEND_ONLY_PASS\n";
 }finally{
   if(is_dir($base.'/editorial-drafts')){
