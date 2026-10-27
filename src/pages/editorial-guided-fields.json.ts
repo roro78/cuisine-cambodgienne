@@ -44,7 +44,7 @@ export function getGuidedEditorialFields(): GuidedItem[] {
       intro: guide.intro, seoDescription: guide.seoDescription, role: guide.role,
       ...Object.fromEntries(['deepDive','profile','uses','tips','choose','keep',
         'pairings','mistakes','seoKeywords'].map(key =>
-          [key, [...guide[key as keyof typeof guide] as string[]]]))
+          [key, [...(guide[key as keyof typeof guide] as string[])]]))
     }
   });
   for (const guide of recipeTechniqueGuides) out.push({
