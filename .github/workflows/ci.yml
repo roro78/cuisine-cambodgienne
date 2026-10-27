@@ -141,6 +141,9 @@ jobs:
       - name: Production build
         run: npm run build
 
+      - name: Verify every real Astro editorial form with PHP and server filters
+        run: php tests/php/editorial-all-guided-smoke.php dist
+
       - name: Generate autonomous six-post social review (offline)
         run: node scripts/build-social-review.mjs
 
