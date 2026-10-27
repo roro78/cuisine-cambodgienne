@@ -91,6 +91,10 @@ $catalog=[];$canonicalById=[];$selectedCanonical=null;$guidedSelected=null;$guid
 $kind=(string)($_GET['kind']??'all');
 if(!in_array($kind,['all','recette','culture','atelier','ingredient','technique'],true))$kind='all';
 $q=is_string($_GET['q']??null)?trim($_GET['q']):'';
+$status=(string)($_GET['status']??'all');
+if(!in_array($status,['all','without','draft','review','stale'],true))$status='all';
+$filters=['kind'=>$kind,'q'=>$q,'status'=>$status];
+$filtersUrl=http_build_query($filters,'','&',PHP_QUERY_RFC3986);
 if(mbLen($q)>80 || preg_match('/[\x00-\x1f\x7f]/',$q) || !preg_match('//u',$q))$q='';
 if($auth){
     try{
@@ -197,7 +201,7 @@ if($auth){
                     ],$expected,(string)($_POST['source_fingerprint']??''),$selectedCanonical,
                        is_string($_POST['canonical_fingerprint']??null)
                          ?$_POST['canonical_fingerprint']:null);
-                    header('Location: ?id='.rawurlencode($id).'&saved=1',true,303);exit;
+                    header('Location: ?id='.rawurlencode($id).'&'.$filtersUrl.'&saved=1',true,303);exit;
                 }catch(InvalidArgumentException $e){
                     http_response_code(422);$error=str_starts_with($e->getMessage(),'STRUCTURE_')
                         ?'Structure invalide : vérifiez le JSON, le schéma 1 et les champs autorisés pour cette catégorie.'
@@ -226,19 +230,7 @@ if($auth){
 }
 $kindLabels=['recette'=>'Recette','culture'=>'Carnet','atelier'=>'Atelier',
     'ingredient'=>'Ingrédient','technique'=>'Technique'];
-$shown=[];
-if($auth){
-    foreach($catalog as $src){
-        if($kind!=='all' && $src['kind']!==$kind)continue;
-        if($q!==''){
-            $hay=$src['title'].' '.$src['id'];
-            if(function_exists('mb_stripos')){
-                if(mb_stripos($hay,$q,0,'UTF-8')===false)continue;
-            }elseif(stripos($hay,$q)===false)continue;
-        }
-        $shown[]=$src;
-    }
-}
+$shown=$auth?cmsFilterCatalog($catalog,$latestById,$kind,$q,$status):[];
 ?>
 <!doctype html><html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -298,8 +290,27 @@ Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
 <button name="login" value="1">Accéder au studio</button>
 </form></section>
 <?php else: ?>
+<section aria-label="Filtres de la bibliothèque">
+<form method="get" action="" class="toolbar">
+<label>Catégorie<select name="kind">
+<?php foreach(['all'=>'Toutes les catégories','recette'=>'Recettes','culture'=>'Carnets',
+'atelier'=>'Ateliers','ingredient'=>'Ingrédients','technique'=>'Techniques'] as $value=>$label): ?>
+<option value="<?= cmsEsc($value) ?>"<?= $kind===$value?' selected':'' ?>><?= cmsEsc($label) ?></option>
+<?php endforeach; ?></select></label>
+<label>Rechercher<input type="search" name="q" maxlength="80" value="<?= cmsEsc($q) ?>"
+ placeholder="Titre, ingrédient, sujet…" autocomplete="off"></label>
+<label>Suivi des brouillons<select name="status">
+<?php foreach(['all'=>'Tous','without'=>'Sans brouillon','draft'=>'Brouillons',
+'review'=>'Prêts pour relecture','stale'=>'Source actualisée'] as $value=>$label): ?>
+<option value="<?= cmsEsc($value) ?>"<?= $status===$value?' selected':'' ?>><?= cmsEsc($label) ?></option>
+<?php endforeach; ?></select></label>
+<button type="submit">Appliquer les filtres</button>
+<a href="?">Tout afficher</a></form>
+<p class="small muted" role="status"><?= count($shown) ?> résultat(s) sur <?= count($catalog) ?> contenus
+ · Recherche et filtres côté serveur, sans JavaScript.</p>
+</section>
 <?php if($selected): ?>
-<p><a href="?">Retour à la bibliothèque</a> · <a href="<?= cmsEsc($selected['url']) ?>" target="_blank"
+<p><a href="?<?= cmsEsc($filtersUrl) ?>">Retour à la bibliothèque (filtres conservés)</a> · <a href="<?= cmsEsc($selected['url']) ?>" target="_blank"
  rel="noopener noreferrer">Consulter la page actuellement publiée</a></p>
 <section><span class="badge"><?= cmsEsc($kindLabels[$selected['kind']]??'Contenu') ?></span>
 <h2><?= cmsEsc($selected['title']) ?></h2>
@@ -468,17 +479,6 @@ Télécharger la demande de modification (JSON)</button>
 <section><h2>Contenus disponibles à la préparation</h2>
 <p class="small muted"><?= count($catalog) ?> contenus reconnus dans le catalogue public actuel.
 Cette liste n'est ni un calendrier ni une file de validation sociale.</p>
-<form method="get" class="toolbar">
-<label>Catégorie<select name="kind">
-<?php foreach(['all'=>'Toutes','recette'=>'Recettes','culture'=>'Carnets',
-'atelier'=>'Ateliers','ingredient'=>'Ingrédients','technique'=>'Techniques'] as $value=>$label): ?>
-<option value="<?= cmsEsc($value) ?>"<?= $kind===$value?' selected':'' ?>><?= cmsEsc($label) ?></option>
-<?php endforeach; ?>
-</select></label>
-<label>Rechercher<input type="search" name="q" maxlength="80" value="<?= cmsEsc($q) ?>" placeholder="Ex. Amok"></label>
-<button type="submit">Filtrer</button><a href="?">Effacer les filtres</a>
-</form>
-<p class="small" role="status"><?= count($shown) ?> résultat(s) sur <?= count($catalog) ?></p>
 <div class="cards">
 <?php foreach($shown as $src): ?>
 <article class="card">
@@ -495,7 +495,7 @@ Cette liste n'est ni un calendrier ni une file de validation sociale.</p>
 <p class="small note">Source actualisée depuis le brouillon : relecture nécessaire.</p>
 <?php endif; ?>
 <?php endif; ?>
-<a href="?id=<?= rawurlencode($src['id']) ?>"><?= $prev?'Voir et modifier le brouillon':'Préparer un brouillon' ?></a>
+<a href="?id=<?= rawurlencode($src['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>"><?= $prev?'Voir et modifier le brouillon':'Préparer un brouillon' ?></a>
 </div></article>
 <?php endforeach; ?>
 </div>
