@@ -161,13 +161,13 @@ try{
     'fields'=>['steps'=>[['title'=>'Mortier','action'=>'Piler doucement',
        'observe'=>'La texture','cue'=>'Pâte fine','success'=>'Arômes libérés']]]];
   $guide=cmsGuidedSourceList(['product'=>'cuisine-du-cambodge',
-    'schemaVersion'=>1,'dataContract'=>'approved-public-form-fields-v1',
+    'schemaVersion'=>1,'dataContract'=>'approved-public-form-fields-v2',
     'items'=>[$guidedRecipe,$guidedWorkshop]],$canon);
   check(count($guide)===2,'Formulaire guidé absent');
   $input=['baseServings'=>'4','prepTime'=>'35 min','cookTime'=>'25 min',
     'ingredients'=>[
-      ['quantity'=>'650','unit'=>'g','name'=>'poisson blanc'],
-      ['quantity'=>'250,5','unit'=>'ml','name'=>'lait coco']
+      ['quantity'=>'650','unit'=>'g','name'=>'poisson blanc','group'=>'Base'],
+      ['quantity'=>'250,5','unit'=>'ml','name'=>'lait coco','note'=>'sans sucre']
     ],
     'steps'=>[['title'=>'Préparer','text'=>'Mélanger avant cuisson',
       'cue'=>'La base est homogène']]];
@@ -197,7 +197,7 @@ try{
   $badFeed=$guidedRecipe;$badFeed['fingerprint']=str_repeat('b',64);
   $blocked=false;
   try{cmsGuidedSourceList(['product'=>'cuisine-du-cambodge','schemaVersion'=>1,
-     'dataContract'=>'approved-public-form-fields-v1','items'=>[$badFeed]],$canon);}
+     'dataContract'=>'approved-public-form-fields-v2','items'=>[$badFeed]],$canon);}
   catch(UnexpectedValueException $e){$blocked=true;}
   check($blocked,'Ancien formulaire source accepté');
   $workshopInput=['steps'=>[['title'=>'Mortier','action'=>'Piler',
