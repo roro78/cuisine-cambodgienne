@@ -87,7 +87,7 @@ if($method==='POST'){
         }
     }
 }
-$catalog=[];$canonicalById=[];$selectedCanonical=null;$guidedSelected=null;$guidedEditable=false;$guidedValues=[];$editorMode='json';$dir='';$selected=null;$latest=null;$versions=[];$display=null;$latestById=[];$staleDraft=false;
+$catalog=[];$canonicalById=[];$selectedCanonical=null;$guidedSelected=null;$guidedEditable=false;$guidedValues=[];$editorMode='json';$dir='';$selected=null;$latest=null;$versions=[];$display=null;$latestById=[];$staleDraft=false;$guidedContractError=false;
 $kind=(string)($_GET['kind']??'all');
 if(!in_array($kind,['all','recette','culture','atelier','ingredient','technique'],true))$kind='all';
 $q=is_string($_GET['q']??null)?trim($_GET['q']):'';
@@ -125,9 +125,10 @@ if($auth){
             $feed=cmsGetGuidedFields();
             if(is_array($feed)){
                 $guides=cmsGuidedSourceList($feed,$canonicalById);
+                cmsAssertGuidedCoverage($guides,$canonicalById);
                 $guidedSelected=$guides[$selected['id']]??null;
             }
-        }catch(Throwable $e){$guidedSelected=null;}
+        }catch(Throwable $e){$guidedSelected=null;$guidedContractError=true;}
     }
 
     $guidedEditable=$guidedSelected!==null && ($guidedSelected['editable']??false)===true;
@@ -353,6 +354,12 @@ bloqués jusqu'à la mise en place et la vérification de cet index.</p>
 (<?= cmsEsc($selectedCanonical['model']) ?>).
 Toute modification de la fiche d'origine exige une nouvelle revue.</p>
 <?php endif; ?>
+<?php if($guidedContractError): ?>
+<p class="note" role="alert">Les champs guidés de cette fiche sont momentanément
+indisponibles : le manifeste éditorial ne correspond pas à toutes les pages publiées.
+Une correction du modèle et une nouvelle réception technique sont nécessaires.
+Les brouillons déjà enregistrés restent conservés.</p>
+<?php endif; ?>
 <?php if($staleDraft): ?><p class="note" role="alert">
 La page d'origine a changé depuis cette proposition. Nouvelle sauvegarde bloquée pour éviter
 d'écraser une version récente. Comparer la source et reprendre le travail après relecture.
@@ -369,8 +376,8 @@ d'écraser une version récente. Comparer la source et reprendre le travail apr�
  class="title-editor"><?= cmsEsc($latest['title']??$selected['title']) ?></textarea></label>
 <label>Résumé du catalogue (proposition)<textarea name="summary" maxlength="1500"
  rows="4"><?= cmsEsc($latest['summary']??$selected['summary']) ?></textarea></label>
-<p class="small muted">Ce résumé présente l'atelier dans le catalogue. L'objectif
-pédagogique décrit ce que la personne apprendra : ce sont deux champs distincts.</p>
+<p class="small muted">Ce résumé présente la fiche dans le catalogue.
+Les informations détaillées propres à chaque rubrique se modifient dans les champs guidés.</p>
 <details class="guided-group editorial-note">
 <summary>Texte éditorial proposé — consignes générales (facultatif)</summary>
 <p class="small muted">Utilisez ce champ pour une proposition globale.
