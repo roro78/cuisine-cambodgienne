@@ -224,6 +224,44 @@ function cmsBuildGuidedPatch(array $entry,mixed $post): string {
     return $json;
 }
 
+
+/**
+ * Deterministic, server-side filtering. Never trust client-side filtering as
+ * the only mechanism; GET must work on Android and without JavaScript.
+ */
+function cmsSearchText(string $text): string {
+    $text=trim(mb_strtolower($text,'UTF-8'));
+    if(function_exists('transliterator_transliterate')){
+        $fold=transliterator_transliterate('NFD; [:Nonspacing Mark:] Remove; NFC',$text);
+        if(is_string($fold))return $fold;
+    }
+    if(function_exists('iconv')){
+        $fold=iconv('UTF-8','ASCII//TRANSLIT//IGNORE',$text);
+        if(is_string($fold))return strtolower($fold);
+    }
+    return $text;
+}
+function cmsFilterCatalog(array $catalog,array $latestById,string $kind,string $q,string $status): array {
+    if(!in_array($kind,['all','recette','culture','atelier','ingredient','technique'],true))
+        $kind='all';
+    if(!in_array($status,['all','without','draft','review','stale'],true))$status='all';
+    $needle=cmsSearchText($q);
+    $shown=[];
+    foreach($catalog as $src){
+        if($kind!=='all' && $src['kind']!==$kind)continue;
+        $draft=$latestById[$src['id']]??null;
+        $stale=is_array($draft) && is_string($draft['source_fingerprint']??null)
+            && !hash_equals($src['fingerprint'],$draft['source_fingerprint']);
+        if($status==='without' && $draft!==null)continue;
+        if($status==='draft' && ($draft['state']??null)!=='draft')continue;
+        if($status==='review' && ($draft['state']??null)!=='review')continue;
+        if($status==='stale' && !$stale)continue;
+        $hay=cmsSearchText($src['title'].' '.$src['id'].' '.$src['summary']);
+        if($needle!=='' && !str_contains($hay,$needle))continue;
+        $shown[]=$src;
+    }
+    return $shown;
+}
 function cmsGetFeed(): ?array { return cmsFetchPublicIndex('social-feed.json'); }
 function cmsGetEditorialIndex(): ?array { return cmsFetchPublicIndex('editorial-source-index.json'); }
 
