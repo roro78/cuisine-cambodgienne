@@ -16,6 +16,9 @@ Les recettes se consultent, se filtrent, s’enregistrent (favoris) et s’impri
 
 ## Chantiers documentés
 
+- **Architecture du Studio éditorial (définitive)** — [gabarit partagé, règles valables pour toutes les pages actuelles et futures, tests anti-régression](docs/CMS-STUDIO-ARCHITECTURE.md). Consulter ce contrat avant toute modification du CMS.
+
+
 - **Refonte des Carnets** — [plan de pilotage, objectifs, jalons et journal de suivi](docs/carnets/PLAN-REFONTE-CARNETS.md). C'est la référence à rouvrir lors d'un changement de conversation.
 
 ## Nom de domaine
