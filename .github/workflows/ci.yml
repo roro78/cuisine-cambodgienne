@@ -44,7 +44,7 @@ jobs:
           php -l public/gestion-contenus/index.php
           php -l tests/php/editorial-cms-drafts-smoke.php
           php tests/php/editorial-cms-drafts-smoke.php
-          node --test tests/editorial-cms-contract.test.mjs tests/editorial-canonical-index.test.mjs tests/editorial-guided-fields.test.mjs
+          node --test tests/editorial-cms-contract.test.mjs tests/editorial-canonical-index.test.mjs tests/editorial-guided-fields.test.mjs tests/editorial-recipe-patch.test.mjs
 
       - name: Motion regression contract
         run: npm run test:motion
