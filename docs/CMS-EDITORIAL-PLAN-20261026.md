@@ -1,5 +1,8 @@
 # Cuisine du Cambodge — plan durable du CMS éditorial
 
+> **Règle permanente depuis le 28 octobre 2026 :** [Architecture du Studio pour toutes les fiches, présentes et futures](CMS-STUDIO-ARCHITECTURE.md). Les corrections ergonomiques de la PR #136 sont un gabarit unique partagé, jamais une exception pour Bai Sach Chrouk. Les trois index doivent couvrir exactement les mêmes identifiants ; aucun nouveau contenu sans éditeur guidé correspondant.
+
+
 Démarrage : 26 octobre 2026. Branche de travail isolée : cms/editorial-drafts-p0-20261026. Cette branche part de main et n'inclut pas la PR sociale #129 (dashboard distinct, non déployé).
 
 ## Objectif du CMS
