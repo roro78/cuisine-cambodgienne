@@ -43,7 +43,31 @@ foreach($guides as $id=>$entry){
     $html=cmsGuidedHtml('guided',$entry['fields'],'Fiche');
     ensure(str_contains($html,'name="guided['),'HTML_INPUT_MISSING_'.$id);
     ensure(!str_contains($html,'audioScript'),'AUDIO_LEAK_'.$id);
+    $preview=cmsGuidedPreviewHtml('fiche',$patch);
+    ensure(str_contains($preview,'preview-fields'),'HUMAN_PREVIEW_MISSING_'.$id);
+    ensure(!str_contains($preview,'audioScript'),'PREVIEW_AUDIO_LEAK_'.$id);
 }
+// Mobile usability regression: no truncated single-line workshop text.
+$mobile=cmsGuidedHtml('guided[finalPreparation]',
+    'Des assiettes de Bai Sach Chrouk avec porc entierement cuit et riz jasmin chaud.',
+    'finalPreparation');
+ensure(str_contains($mobile,'<textarea'),'MOBILE_LONG_TEXT_CLIPPED');
+$initial=cmsGuidedHtml('guided[beforeStarting]',
+    ['Indiquez le nombre de personnes à table.', 'Préparez les pickles et la sauce.'],
+    'beforeStarting');
+ensure(str_contains($initial,'Indiquez le nombre de personnes à table.'),
+    'COLLAPSED_LABEL_GENERIC');
+ensure(!str_contains($initial,'Préparation initiale 1</summary>'),
+    'COLLAPSED_LABEL_UNHELPFUL');
+$unsafe=cmsGuidedHtml('guided[beforeStarting]',
+    ['<img src=x onerror=alert(1)>'], 'beforeStarting');
+ensure(!str_contains($unsafe,'<img'),'COLLAPSED_LABEL_HTML_INJECTION');
+$unsafePreview=cmsGuidedPreviewHtml('fiche',
+    ['intro'=>'<script>alert(1)</script>', 'steps'=>[['title'=>'A',
+        'text'=>'Texte de test']]]);
+ensure(!str_contains($unsafePreview,'<script>') && str_contains($unsafePreview,'&lt;script&gt;'),
+    'PREVIEW_HTML_INJECTION');
+
 // Server filters: category, search, review statuses, stale record.
 $fake=[
     'recette:amok-trey'=>['id'=>'recette:amok-trey','title'=>'Amok Trey','summary'=>'Poisson au coco','kind'=>'recette','fingerprint'=>str_repeat('a',16)],

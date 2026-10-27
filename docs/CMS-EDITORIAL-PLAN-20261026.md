@@ -123,3 +123,15 @@ npm run check && npm run test:recipes && npm run build
 
 **Déploiement :** ne pas lancer la publication OVH globale. Une fois la CI de la PR de correction réussie et la fusion approuvée, construire le paquet ciblé de six fichiers via `scripts/package-cms-ovh-release.mjs`. Avant transfert, faire une sauvegarde des six versions sur l'hébergement ; ensuite vérifier `scripts/check-cms-ovh-readiness.mjs --url ...` et tester connexion, filtres, enregistrement, relecture sur Android. L'ancien paquet v1 ne convient plus.
 
+
+
+## 28 octobre — Réception Android du Studio V2 et amélioration de l'ergonomie
+
+Retour de production : capture de l'atelier **Bai Sach Chrouk** sur téléphone. Les blocs guidés `beforeStarting`, `equipment` et les 6 `phases` sont présents. Le message « Nouvelle version privée enregistrée » et la version 1 horodatée confirment une sauvegarde privée réelle dans cet atelier. Les filtres et les autres familles ne sont pas encore individuellement réceptionnés par capture.
+
+Défauts d'ergonomie observés et corrections préparées dans une PR distincte, sans toucher aux données : résumé du catalogue doublonnant visuellement l'objectif pédagogique ; texte libre facultatif occupant inutilement tout l'écran ; certains champs d'une ligne tronqués sur mobile ; intitulés génériques « Préparation initiale 1 » ; aperçu enregistré présenté en JSON brut.
+
+Corrections : distinguer les rôles des deux résumés sans en modifier les valeurs ; replier les consignes générales facultatives ; utiliser un `textarea` pour les textes (titres, résultats, paragraphes) et réserver les champs d'une ligne aux métadonnées réellement courtes ; afficher un extrait de chaque liste repliée, y compris les chaînes ; créer un aperçu humain en lecture seule avec sections et listes, garder le JSON dans une section experte facultative ; fournir des liens d'accès rapide aux champs, à l'enregistrement et au brouillon. Tous les textes issus de brouillons sont échappés en HTML.
+
+Contrat inchangé : le V2 `approved-public-form-fields-v2` et les trois index restent identiques ; stockage append-only, empreintes, CSRF, journaux de versions, scripts et MP3 Coral protégés, aucune publication automatique. Les modifications sont une évolution d'interface **à déployer séparément après CI et sauvegarde**, pas une modification du site actuellement en ligne.
+

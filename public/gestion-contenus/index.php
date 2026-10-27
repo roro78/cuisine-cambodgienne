@@ -247,6 +247,19 @@ button.secondary{background:#eef3eb;color:#203228;border:1px solid #d1dbcd}
 input,select,textarea{font:inherit;padding:10px;border:1px solid #a7b3a6;
 border-radius:7px;width:100%;background:white;color:#203228}
 textarea{resize:vertical;min-height:110px}
+.guided-text textarea{min-height:75px;line-height:1.5}
+.guided-group summary{line-height:1.4;overflow-wrap:anywhere}
+.preview-fields{display:grid;gap:8px}
+.preview-entry{padding:8px 0;border-bottom:1px solid #e5e9e1;min-width:0}
+.preview-entry h4{font-size:.89rem;margin:4px 0;color:#31503c}
+.preview-entry p{margin:5px 0}
+.preview-list{padding-left:24px;display:grid;gap:10px}
+.preview-list li{padding:4px 0;overflow-wrap:anywhere}
+.preview-list .preview-entry{padding:2px 0;border-bottom:0}
+.preview-list .preview-entry h4{font-size:.8rem;margin:2px 0}
+.preview-list .preview-fields{gap:3px}
+.editor-shortcuts{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0;font-size:.91rem}
+#cms-preview,#cms-save,#cms-fields{scroll-margin-top:18px}
 label{display:block;font-size:.9rem;font-weight:650}
 label input,label textarea,label select{margin-top:5px;font-weight:400}
 section,.panel{background:white;border:1px solid #d9ddd5;border-radius:13px;
@@ -268,7 +281,9 @@ nav.versions a{padding:6px 9px;background:#edf4ea;border-radius:6px}
 .guided-group summary{font-weight:700;cursor:pointer;padding:5px 0;color:#17663b}.guided-group[open] summary{margin-bottom:12px}
 .guided-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .guided-wide{grid-column:1/-1}
-.guided-row textarea{min-height:85px}.guided-collection{padding:8px 0}.guided-row-fields{padding:6px}.guided-collection .guided-collection{padding-left:10px;border-left:2px solid #e3e8dc}
+.guided-row textarea{min-height:85px}.title-editor{min-height:74px}
+.editorial-note{margin:0}.editorial-note summary{font-size:.93rem}
+.preview-text{white-space:pre-wrap;overflow-wrap:anywhere}.guided-collection{padding:8px 0}.guided-row-fields{padding:6px}.guided-collection .guided-collection{padding-left:10px;border-left:2px solid #e3e8dc}
 .guided-nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 @media(max-width:650px){.guided-row{grid-template-columns:1fr}.guided-wide{grid-column:1}}
 
@@ -318,11 +333,16 @@ Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
 <code><?= cmsEsc($selected['fingerprint']) ?></code></p>
 <p class="summary"><strong>Présentation actuellement utilisée par le catalogue social :</strong>
 <?= cmsEsc($selected['summary']) ?></p></section>
+<nav class="editor-shortcuts" aria-label="Accès rapide à l'édition">
+<a href="#cms-fields">Champs de la fiche</a>
+<a href="#cms-save">Enregistrer</a>
+<a href="#cms-preview">Dernier brouillon</a>
+</nav>
 <div class="grid">
 <section>
 <h2><?= $latest?'Modifier la proposition (version '.(int)$latest['version'].')':'Créer une proposition' ?></h2>
-<p class="small muted">Texte proposé uniquement : les données complètes d'Astro, les ingrédients,
-les étapes culinaires et les MP3 ne seront pas remplacés par cette saisie.</p>
+<p class="small muted">Modifiez les champs de cette fiche ci-dessous. Chaque enregistrement crée
+un brouillon privé : il ne modifie pas la page publiée, les médias ni les MP3.</p>
 <?php if(!$selectedCanonical): ?>
 <p class="note" role="status">L'index des versions complètes Astro n'est pas disponible sur ce serveur.
 Vous pouvez préparer le texte d'une proposition, mais les changements structurés restent
@@ -337,7 +357,7 @@ Toute modification de la fiche d'origine exige une nouvelle revue.</p>
 La page d'origine a changé depuis cette proposition. Nouvelle sauvegarde bloquée pour éviter
 d'écraser une version récente. Comparer la source et reprendre le travail après relecture.
 </p><?php endif; ?>
-<form method="post" class="stack">
+<form method="post" class="stack" id="cms-fields">
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <input type="hidden" name="source_id" value="<?= cmsEsc($selected['id']) ?>">
 <input type="hidden" name="source_fingerprint" value="<?= cmsEsc($selected['fingerprint']) ?>">
@@ -345,11 +365,19 @@ d'écraser une version récente. Comparer la source et reprendre le travail apr�
  value="<?= cmsEsc($selectedCanonical['fingerprint']??'') ?>">
 <input type="hidden" name="expected_version" value="<?= $latest?(int)$latest['version']:0 ?>">
 <input type="hidden" name="editor_mode" value="<?= cmsEsc($editorMode) ?>">
-<label>Titre proposé<input name="title" required maxlength="180"
- value="<?= cmsEsc($latest['title']??$selected['title']) ?>"></label>
-<label>Résumé proposé<textarea name="summary" maxlength="1500" rows="4"><?= cmsEsc($latest['summary']??$selected['summary']) ?></textarea></label>
-<label>Texte éditorial proposé<textarea name="editorial_text" maxlength="12000" rows="12"
- placeholder="Préparer une proposition de réécriture, sans remplacer automatiquement la recette."><?= cmsEsc($latest['editorial_text']??'') ?></textarea></label>
+<label>Titre proposé<textarea name="title" required maxlength="180" rows="2"
+ class="title-editor"><?= cmsEsc($latest['title']??$selected['title']) ?></textarea></label>
+<label>Résumé du catalogue (proposition)<textarea name="summary" maxlength="1500"
+ rows="4"><?= cmsEsc($latest['summary']??$selected['summary']) ?></textarea></label>
+<p class="small muted">Ce résumé présente l'atelier dans le catalogue. L'objectif
+pédagogique décrit ce que la personne apprendra : ce sont deux champs distincts.</p>
+<details class="guided-group editorial-note">
+<summary>Texte éditorial proposé — consignes générales (facultatif)</summary>
+<p class="small muted">Utilisez ce champ pour une proposition globale.
+Pour modifier une étape ou un paragraphe existant, utilisez directement l'éditeur guidé.</p>
+<label>Consignes de réécriture<textarea name="editorial_text" maxlength="12000" rows="5"
+ placeholder="Facultatif : instructions pour une future relecture."><?= cmsEsc($latest['editorial_text']??'') ?></textarea></label>
+</details>
 <?php
 $structureCurrent=is_array($latest['structure']??null)
     ? (string)json_encode($latest['structure'],JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)
@@ -396,10 +424,12 @@ une relecture des modèles réels et une PR restent nécessaires.</p>
 <option value="draft"<?= ($latest['state']??'draft')==='draft'?' selected':'' ?>>Brouillon de travail</option>
 <option value="review"<?= ($latest['state']??'draft')==='review'?' selected':'' ?>>Prêt pour relecture (non publié)</option>
 </select></label>
-<div class="actions"><button name="save" value="1"<?= $staleDraft?' disabled':'' ?>>Enregistrer une nouvelle version</button></div>
+<div id="cms-save" class="actions"><button name="save" value="1"<?= $staleDraft?' disabled':'' ?>>Enregistrer une nouvelle version</button></div>
 </form>
 </section>
-<section><h2>Aperçu de la version enregistrée</h2>
+<section id="cms-preview"><h2>Aperçu du brouillon enregistré</h2>
+<p class="small muted">Lecture simplifiée de la proposition sauvegardée, et non
+prévisualisation exacte de la page publiée.</p>
 <?php if(isset($_GET['saved'])): ?><p class="notice" role="status">Nouvelle version privée enregistrée.</p><?php endif; ?>
 <?php if(!$display): ?><p class="muted">Aucune version enregistrée. Complète puis sauvegarde le formulaire.</p>
 <?php else: ?>
@@ -410,9 +440,13 @@ une relecture des modèles réels et une PR restent nécessaires.</p>
 <p class="preview-text"><?= cmsEsc($display['summary']) ?></p>
 <div class="preview-text"><?= cmsEsc($display['editorial_text']) ?></div>
 <?php if(is_array($display['structure']??null)): ?>
-<h3>Changements structurés proposés</h3>
+<h3>Changements proposés dans la fiche</h3>
+<?= cmsGuidedPreviewHtml('fiche',$display['structure']) ?>
+<details class="guided-group">
+<summary>Afficher le JSON technique (mode expert)</summary>
 <pre class="preview-text"><?= cmsEsc((string)json_encode($display['structure'],
 JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)) ?></pre>
+</details>
 <?php endif; ?>
 <?php if($display['editor_note']!==''): ?>
 <h3>Note de relecture</h3><p class="preview-text"><?= cmsEsc($display['editor_note']) ?></p>
