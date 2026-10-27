@@ -217,6 +217,82 @@ function cmsBuildGuidedPatch(array $entry,mixed $post): string {
     cmsValidateStructuredDraft(explode(':',$entry['id'],2)[0],$json);
     return $json;
 }
+
+function cmsGuidedLabel(string $name): string {
+    $labels=[
+       'intro'=>'Introduction','description'=>'Description','context'=>'Contexte',
+       'eyebrow'=>'Rubrique','seoDescription'=>'Description SEO','readingTime'=>'Temps de lecture',
+       'role'=>'Rôle culinaire','deepDive'=>'Pour approfondir','profile'=>'Profil aromatique',
+       'uses'=>'Utilisations','tips'=>'Conseils','choose'=>'Bien choisir','keep'=>'Conservation',
+       'pairings'=>'Accords','mistakes'=>'Erreurs à éviter','seoKeywords'=>'Mots-clés SEO',
+       'sections'=>'Sections du Carnet','paragraphs'=>'Paragraphes','steps'=>'Étapes',
+       'ingredients'=>'Ingrédients','baseServings'=>'Nombre de portions',
+       'prepTime'=>'Durée de préparation','cookTime'=>'Durée de cuisson',
+       'name'=>'Nom','unit'=>'Unité','quantity'=>'Quantité','title'=>'Titre',
+       'text'=>'Texte','duration'=>'Durée','cue'=>'Repère','mistake'=>'Erreur à éviter',
+       'scalable'=>'Quantité ajustable (protégée)','group'=>'Groupe','note'=>'Note',
+       'beforeYouStart'=>'Avant de commencer','prepHeading'=>'Titre préparation',
+       'servingTip'=>'Conseil de service','servingHeading'=>'Titre service',
+       'servingsLabel'=>'Libellé des portions','servings'=>'Portions',
+       'moment'=>'Moment','location'=>'Région','keyPoints'=>'Points clés',
+       'notes'=>'Notes','substitutions'=>'Substitutions','equipment'=>'Matériel',
+       'faqs'=>'Questions fréquentes','question'=>'Question','answer'=>'Réponse',
+       'kicker'=>'Surtitre','imageCaption'=>'Légende photo','supplies'=>'Fournitures',
+       'alternatives'=>'Alternatives','questions'=>'Questions fréquentes',
+       'preparation'=>'Préparation','introduction'=>'Introduction',
+       'yieldLabel'=>'Rendement','finalPreparation'=>'Résultat final',
+       'learningGoal'=>'Objectif pédagogique','portionLabel'=>'Libellé des portions',
+       'beforeStarting'=>'Préparation initiale','phases'=>'Chapitres de l’atelier',
+       'id'=>'Identifiant protégé','learning'=>'À retenir','action'=>'Action',
+       'observe'=>'Observation','success'=>'Résultat attendu'
+    ];
+    return $labels[$name]??ucfirst($name);
+}
+/** HTML escaping on every field and name; no script needed on Android. */
+function cmsGuidedHtml(string $name,mixed $value,string $key,int $depth=0): string {
+    if($depth>7)throw new UnexpectedValueException('GUIDED_DEPTH');
+    $title=cmsEsc(cmsGuidedLabel($key));
+    $safeName=cmsEsc($name);
+    if(is_string($value)){
+        $safe=cmsEsc($value);
+        $limit=9000;
+        if(mbLen($value)<135 && !in_array($key,['intro','role','description','context'],true))
+            return '<label>'.$title.'<input name="'.$safeName.'" required maxlength="'.$limit
+                .'" value="'.$safe.'"></label>';
+        return '<label>'.$title.'<textarea name="'.$safeName
+            .'" required maxlength="'.$limit.'" rows="4">'.$safe.'</textarea></label>';
+    }
+    if(is_int($value) || is_float($value)){
+        return '<label>'.$title.'<input name="'.$safeName.'" required inputmode="decimal"'
+          .' value="'.cmsEsc((string)$value).'"></label>';
+    }
+    if(is_bool($value))return '<p class="small muted">'.$title.': '.($value?'Oui':'Non')
+        .' — paramètre protégé</p>';
+    if(!is_array($value))throw new UnexpectedValueException('GUIDED_VALUE');
+    $html='';
+    if(array_is_list($value)){
+        $html='<div class="guided-collection"><h3>'.$title.' ('.count($value).')</h3>';
+        foreach($value as $i=>$row){
+            $suffix='['.(int)$i.']';
+            $rowTitle=(is_array($row)&&is_string($row['title']??null))
+                ?cmsEsc($row['title'])
+                :$title.' '.((int)$i+1);
+            $html.='<details class="guided-group"><summary>'.$rowTitle.'</summary><div class="stack">'
+                .cmsGuidedHtml($name.$suffix,$row,$key,$depth+1).'</div></details>';
+        }
+        return $html.'</div>';
+    }
+    $html='<div class="stack guided-row-fields">';
+    foreach($value as $child=>$one){
+        if(in_array($child,['id','scalable'],true)){
+            $html.='<p class="small muted">'.cmsEsc(cmsGuidedLabel((string)$child)).': '
+                .cmsEsc(is_bool($one)?($one?'Oui':'Non'):(string)$one).' — protégé</p>';
+            continue;
+        }
+        $html.=cmsGuidedHtml($name.'['.$child.']',$one,(string)$child,$depth+1);
+    }
+    return $html.'</div>';
+}
 function cmsGetFeed(): ?array { return cmsFetchPublicIndex('social-feed.json'); }
 function cmsGetEditorialIndex(): ?array { return cmsFetchPublicIndex('editorial-source-index.json'); }
 
