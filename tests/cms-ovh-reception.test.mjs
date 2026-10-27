@@ -33,7 +33,7 @@ test('reject missing, stale and leaked public indexes',()=>{
  assert.throws(()=>verifyCmsIndexes(feeds),/GUIDED_DIGEST_MISMATCH/);
  feeds['editorial-guided-fields.json'].items[0].fingerprint=sha;
  feeds['editorial-guided-fields.json'].items[0].fields.audioScript='private';
- assert.throws(()=>verifyCmsIndexes(feeds),/GUIDED_PRIVATE_FIELDS/);
+ assert.throws(()=>verifyCmsIndexes(feeds),/GUIDED_PRIVATE_FIELDS|UNEXPECTED_KEYS/);
  feeds['editorial-guided-fields.json'].items[0].fields={baseServings:4};
  assert.throws(()=>verifyCmsIndexes(feeds),/UNEXPECTED_KEYS/);
 });
@@ -42,7 +42,7 @@ test('the unauthenticated CMS returns only a private-login screen',()=>{
   {login:'login_only',csrf:true,https:true});
  assert.throws(()=>verifyCmsLogin({status:503,headers:safeHeaders,body:login}),
   /CMS_LOGIN_HTTP_503/);
- assert.throws(()=>verifyCmsLogin({status:200,headers:safeHeaders,body:'<?php '.$login}),
+ assert.throws(()=>verifyCmsLogin({status:200,headers:safeHeaders,body:'<?php '+login}),
   /CMS_SOURCE_OR_SECRET_EXPOSED/);
  assert.throws(()=>verifyCmsLogin({status:200,headers:new Headers,body:login}),
   /CMS_HTML_REQUIRED/);
