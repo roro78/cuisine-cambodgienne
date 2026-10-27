@@ -413,6 +413,54 @@ function cmsCleanFields(array $input,string $kind): array {
     $out['structure']=cmsValidateStructuredDraft($kind,$input['structure_json']??'');
     return $out;
 }
+
+/**
+ * Export a deliberately narrow, review-only request. No GitHub token, external
+ * request or production write. Recipe source content is independently checked
+ * against both public feed and canonical full-record index before export.
+ *
+ * A downloaded request is NOT an approval credential. It still requires a
+ * source-pinned patch and human review of the resulting GitHub diff.
+ */
+function cmsBuildReviewedRecipeRequest(array $source,?array $canonical,array $draft,int $expectedVersion): array {
+    if(($source['kind']??null)!=='recette'
+        || !cmsId($source['id']??null)
+        || !is_array($canonical)
+        || ($canonical['id']??null)!==$source['id']
+        || ($canonical['kind']??null)!=='recette'
+        || !in_array($canonical['model']??null,['recipes','restoredRecipes'],true)
+        || !is_string($canonical['fingerprint']??null)
+        || !preg_match('/^[0-9a-f]{64}$/D',$canonical['fingerprint'])
+        || ($draft['source_id']??null)!==$source['id']
+        || ($draft['state']??null)!=='review'
+        || ($draft['version']??null)!==$expectedVersion
+        || !is_int($expectedVersion) || $expectedVersion<1
+        || ($draft['schema_version']??null)!==1
+        || !is_string($draft['source_fingerprint']??null)
+        || !hash_equals($source['fingerprint'],$draft['source_fingerprint'])
+        || !is_string($draft['canonical_fingerprint']??null)
+        || !hash_equals($canonical['fingerprint'],$draft['canonical_fingerprint'])
+        || ($draft['canonical_model']??null)!==$canonical['model']
+        || !is_array($draft['structure']??null))
+        throw new RuntimeException('REVIEW_EXPORT_BLOCKED');
+    $raw=json_encode($draft['structure'],JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+    $patch=cmsValidateStructuredDraft('recette',$raw);
+    if(!is_array($patch) || count($patch)<2)
+        throw new RuntimeException('REVIEW_NO_CHANGES');
+    return [
+        'contract'=>'cuisine-cms-recipe-patch-v1',
+        'source_id'=>$source['id'],
+        'source_model'=>$canonical['model'],
+        'source_path'=>$canonical['model']==='recipes'
+            ?'src/data/recipes.ts':'src/data/restoredRecipes.ts',
+        'canonical_sha256'=>$canonical['fingerprint'],
+        'social_fingerprint'=>$source['fingerprint'],
+        'review_version'=>$expectedVersion,
+        'changes'=>$patch,
+        'publication'=>'none',
+    ];
+}
+
 /**
  * Locked optimistic, append-only local revision. No publication side effects.
  * Source fingerprint must match the snapshot the operator started from.

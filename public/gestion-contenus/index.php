@@ -143,6 +143,39 @@ if($auth){
         }
     }
     $editorMode=$guidedEditable && ($_GET['mode']??'')!=='json'?'guided':'json';
+    // Protected export of an already reviewed, immutable draft. No mutation.
+    if($method==='POST' && isset($_POST['export_review'])){
+        try {
+            if(!$selected || !$selectedCanonical
+                || !is_string($_POST['source_fingerprint']??null)
+                || !hash_equals($selected['fingerprint'],$_POST['source_fingerprint'])
+                || !is_string($_POST['canonical_fingerprint']??null)
+                || !hash_equals($selectedCanonical['fingerprint'],$_POST['canonical_fingerprint']))
+                throw new RuntimeException('REVIEW_EXPORT_BLOCKED');
+            $versionsNow=cmsVersions($dir,$selected['id']);
+            $latestVersion=$versionsNow[0]??0;
+            $requestedVersion=filter_var($_POST['export_version']??null,FILTER_VALIDATE_INT,
+                ['options'=>['min_range'=>1,'max_range'=>9999]]);
+            if($requestedVersion===false || $requestedVersion!==$latestVersion)
+                throw new RuntimeException('REVIEW_VERSION_STALE');
+            $approvedDraft=cmsReadVersion($dir,$selected['id'],$latestVersion);
+            if(!is_array($approvedDraft))throw new RuntimeException('REVIEW_MISSING');
+            $request=cmsBuildReviewedRecipeRequest(
+                $selected,$selectedCanonical,$approvedDraft,$latestVersion);
+            $json=json_encode($request,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES
+                |JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n";
+            $slug=substr($selected['id'],strlen('recette:'));
+            header('Content-Type: application/json; charset=UTF-8');
+            header('Content-Disposition: attachment; filename="cms-recipe-'
+                .$slug.'-v'.$latestVersion.'.json"');
+            header('Cache-Control: no-store, private, max-age=0');
+            echo $json;
+            exit;
+        }catch(Throwable $e){
+            http_response_code(409);
+            $error='Export refusé : version non validée, ancienne ou différente de la recette actuelle.';
+        }
+    }
     if($method==='POST' && isset($_POST['save'])){
         if(!$selected){http_response_code(422);$error='Contenu inexistant dans le catalogue.';}
         else {
@@ -405,6 +438,24 @@ JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)) ?></pre>
 <?php if($display['editor_note']!==''): ?>
 <h3>Note de relecture</h3><p class="preview-text"><?= cmsEsc($display['editor_note']) ?></p>
 <?php endif; ?>
+<?php endif; ?>
+<?php if($latest && $latest['state']==='review'
+ && is_array($latest['structure']??null) && $selected['kind']==='recette'): ?>
+<h3>Préparer une modification GitHub</h3>
+<p class="small muted">Télécharge une demande de modification à partir de cette version
+relue. Elle ne modifie ni GitHub ni le site : le fichier devra être contrôlé
+contre la recette actuelle, puis appliqué sur une branche distincte avec
+diff lisible et validation humaine. Un changement de fiche bloque l'export.</p>
+<form method="post">
+<input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
+<input type="hidden" name="source_id" value="<?= cmsEsc($selected['id']) ?>">
+<input type="hidden" name="source_fingerprint" value="<?= cmsEsc($selected['fingerprint']) ?>">
+<input type="hidden" name="canonical_fingerprint"
+ value="<?= cmsEsc($selectedCanonical['fingerprint']??'') ?>">
+<input type="hidden" name="export_version" value="<?= (int)$latest['version'] ?>">
+<button name="export_review" value="1"<?= $staleDraft || !$selectedCanonical?' disabled':'' ?>>
+Télécharger la demande de modification (JSON)</button>
+</form>
 <?php endif; ?>
 <?php if($versions): ?><h3>Historique immuable</h3><nav class="versions" aria-label="Versions du brouillon">
 <?php foreach($versions as $v): ?>
