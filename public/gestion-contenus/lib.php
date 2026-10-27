@@ -118,7 +118,7 @@ function cmsGuidedSourceList(array $payload,array $canonical): array {
        || ($payload['schemaVersion']??null)!==1
        || ($payload['dataContract']??null)!=='approved-public-form-fields-v2'
        || !is_array($payload['items']??null)
-       || !array_is_list($payload['items']) || count($payload['items'])>100)
+       || !array_is_list($payload['items']) || count($payload['items'])>250)
         throw new UnexpectedValueException('GUIDED_FEED');
     $models=[
         'recette'=>['recipes','restoredRecipes'],
@@ -166,6 +166,18 @@ function cmsGuidedSourceList(array $payload,array $canonical): array {
         $items[$item['id']]=$item;
     }
     return $items;
+}
+/**
+ * Lock the global Studio template for every catalogued page, present and future.
+ * A newly registered content without a typed guided projection is a broken
+ * deployment, not permission to silently serve a second, JSON-only interface.
+ * This is checked in CI and again when the authenticated editor loads.
+ */
+function cmsAssertGuidedCoverage(array $guided,array $canonical): void {
+    if(count($guided)!==count($canonical)
+       || array_diff(array_keys($canonical),array_keys($guided))
+       || array_diff(array_keys($guided),array_keys($canonical)))
+        throw new UnexpectedValueException('GUIDED_COVERAGE_INCOMPLETE');
 }
 function cmsGetGuidedFields(): ?array {
     return cmsFetchPublicIndex('editorial-guided-fields.json');
