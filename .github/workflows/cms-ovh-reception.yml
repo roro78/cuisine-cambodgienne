@@ -1,0 +1,85 @@
+name: CMS OVH isolated reception and scoped package
+
+on:
+  push:
+    branches:
+      - feat/cms-ovh-reception-20261027
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cms-ovh-reception-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reception:
+    name: Build CMS-only bundle and probe production safely
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Test CMS reception invariants
+        run: |
+          node --test tests/cms-ovh-reception.test.mjs
+          php -l public/gestion-contenus/lib.php
+          php -l public/gestion-contenus/index.php
+          php tests/php/editorial-cms-drafts-smoke.php
+
+      - name: Build website locally without publication
+        run: npm run build
+
+      - name: Validate the generated CMS files
+        run: node scripts/check-cms-ovh-readiness.mjs --dir dist
+
+      - name: Prepare isolated OVH upload package
+        run: |
+          node scripts/package-cms-ovh-release.mjs dist /tmp/cuisine-ovh-cms-scoped
+          tar -czf cms-ovh-scoped-release.tar.gz -C /tmp/cuisine-ovh-cms-scoped .
+          sha256sum cms-ovh-scoped-release.tar.gz | tee cms-ovh-scoped-release.sha256
+          cp /tmp/cuisine-ovh-cms-scoped/CMS-OVH-MANIFEST.json .
+          echo '### CMS code package: ready, NO deployment performed' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Contains only three static indexes and three PHP/Apache files.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload scoped CMS bundle (download only)
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-ovh-scoped-release
+          path: |
+            cms-ovh-scoped-release.tar.gz
+            cms-ovh-scoped-release.sha256
+            CMS-OVH-MANIFEST.json
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: Check live OVH anonymously without credentials or mutation
+        id: ovh
+        continue-on-error: true
+        env:
+          CMS_SITE_ORIGIN: https://www.cuisine-du-cambodge.com/
+        run: node scripts/check-cms-ovh-readiness.mjs --url "$CMS_SITE_ORIGIN"
+
+      - name: Report independent OVH readiness verdict
+        if: always()
+        env:
+          RECEPTION_RESULT: ${{ steps.ovh.outcome }}
+        run: |
+          if [ "$RECEPTION_RESULT" = success ]; then
+            echo '### LIVE OVH CMS: anonymous checks PASS' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Authenticated login and editing still need a private human acceptance test.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo '### LIVE OVH CMS: NOT YET VERIFIED / NOT READY' >> "$GITHUB_STEP_SUMMARY"
+            echo 'No upload, deployment, workflow dispatch or social publication was attempted.' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Review the read-only probe outcome; provision the scoped bundle only after backing up existing files and confirming PHP HTTPS protections.' >> "$GITHUB_STEP_SUMMARY"
+          fi
