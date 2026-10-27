@@ -60,7 +60,7 @@ test('PHP view only renders typed forms in guarded private session', async()=>{
  assert.match(ui,/cmsBuildGuidedPatch/);
  assert.match(ui,/csrf/);
  assert.match(ui,/canonical_fingerprint/);
- assert.match(ui,/cmsEsc\(\(string\)\$rowValue\)/);
+ assert.match(ui,/cmsGuidedHtml/);
  assert.match(ui,/Les narrations et MP3 Coral restent entièrement protégés/);
  assert.match(lib,/GUIDED_SOURCE/);
  assert.match(lib,/STRUCTURE_GUIDED_KEYS/);
