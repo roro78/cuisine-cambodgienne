@@ -120,7 +120,7 @@ if($auth){
     $id=cmsId($_POST['source_id']??($_GET['id']??null));
     if($id!==null && isset($catalog[$id]))$selected=$catalog[$id];
     if($selected)$selectedCanonical=$canonicalById[$selected['id']]??null;
-    if($selected && $selectedCanonical && in_array($selected['kind'],['recette','atelier'],true)){
+    if($selected && $selectedCanonical){
         try{
             $feed=cmsGetGuidedFields();
             if(is_array($feed)){
@@ -265,10 +265,10 @@ nav.versions a{padding:6px 9px;background:#edf4ea;border-radius:6px}
 .summary{max-width:72ch}.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .note{border-left:3px solid #d8a038;padding:9px 12px;background:#fff9e8}
 .guided-group{border:1px solid #d9ddd5;border-radius:10px;padding:12px;margin:10px 0;background:#fcfcf9}
-.guided-group legend{font-weight:700;padding:0 6px}
+.guided-group summary{font-weight:700;cursor:pointer;padding:5px 0;color:#17663b}.guided-group[open] summary{margin-bottom:12px}
 .guided-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .guided-wide{grid-column:1/-1}
-.guided-row textarea{min-height:85px}
+.guided-row textarea{min-height:85px}.guided-collection{padding:8px 0}.guided-row-fields{padding:6px}.guided-collection .guided-collection{padding-left:10px;border-left:2px solid #e3e8dc}
 .guided-nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 @media(max-width:650px){.guided-row{grid-template-columns:1fr}.guided-wide{grid-column:1}}
 
@@ -364,47 +364,15 @@ $structureHints=[
 ?>
 <?php if($guidedEditable && $editorMode==='guided'): ?>
 <div class="guided-nav">
-<strong>Éditeur guidé des <?= $selected['kind']==='recette'?'recettes':'ateliers' ?></strong>
+<strong>Éditeur guidé — <?= cmsEsc($kindLabels[$selected['kind']]??'Contenu') ?></strong>
 <a href="?id=<?= rawurlencode($selected['id']) ?>&amp;mode=json">Mode avancé (JSON)</a>
 </div>
-<p class="small muted">Modifiez les champs existants. Les lignes ne sont ni ajoutées ni supprimées ici.
-Leurs propriétés annexes sont préservées ; tout reste une proposition privée sans publication.
-La recette canonique, les médias et les MP3 ne sont jamais modifiés.</p>
+<p class="small muted">Dépliez les sections pour modifier chaque paragraphe, étape ou conseil.
+Les lignes existantes restent au même nombre et dans le même ordre, sans perte des métadonnées.
+Les fiches canoniques et les médias ne changent pas tant que les propositions n'ont pas été approuvées.
+Les narrations et MP3 Coral restent entièrement protégés.</p>
 <?php foreach($guidedValues as $field=>$value): ?>
-<?php if(is_array($value)): ?>
-<h3><?= cmsEsc($field==='ingredients'?'Ingrédients':'Étapes') ?></h3>
-<?php foreach($value as $rowIndex=>$row): ?>
-<fieldset class="guided-group"><legend><?= cmsEsc($field==='ingredients'?'Ingrédient ':'Étape ') ?><?= (int)$rowIndex+1 ?></legend>
-<?php if(is_string($row)): ?>
-<label>Ingrédient
-<textarea name="guided[<?= cmsEsc($field) ?>][<?= (int)$rowIndex ?>]" rows="2" required maxlength="450"><?= cmsEsc($row) ?></textarea></label>
-<?php elseif(is_array($row)): ?>
-<div class="guided-row">
-<?php foreach($row as $rowKey=>$rowValue): ?>
-<?php if(in_array($rowKey,['name','quantity','unit','title','text','action','observe','cue','success','mistake'],true)): ?>
-<label class="<?= in_array($rowKey,['text','action','observe','cue','success','mistake'],true)?'guided-wide':'' ?>">
-<?= cmsEsc(['name'=>'Nom','quantity'=>'Quantité','unit'=>'Unité','title'=>'Titre',
- 'text'=>'Instruction','action'=>'Action','observe'=>'Observation',
- 'cue'=>'Repère','success'=>'Résultat attendu','mistake'=>'Erreur à éviter'][$rowKey]) ?>
-<?php if(in_array($rowKey,['text','action','observe','cue','success','mistake'],true)): ?>
-<textarea name="guided[<?= cmsEsc($field) ?>][<?= (int)$rowIndex ?>][<?= cmsEsc($rowKey) ?>]"
- rows="3" required maxlength="3000"><?= cmsEsc((string)$rowValue) ?></textarea>
-<?php else: ?>
-<input name="guided[<?= cmsEsc($field) ?>][<?= (int)$rowIndex ?>][<?= cmsEsc($rowKey) ?>]"
- value="<?= cmsEsc((string)$rowValue) ?>" required maxlength="2000"
- <?= $rowKey==='quantity'?'inputmode="decimal"':'' ?>>
-<?php endif; ?></label>
-<?php endif; ?>
-<?php endforeach; ?>
-</div>
-<?php endif; ?></fieldset>
-<?php endforeach; ?>
-<?php else: ?>
-<label><?= cmsEsc(['baseServings'=>'Nombre de portions','prepTime'=>'Durée de préparation',
-'cookTime'=>'Durée de cuisson'][$field]??$field) ?>
-<input name="guided[<?= cmsEsc($field) ?>]" required
- value="<?= cmsEsc((string)$value) ?>" <?= $field==='baseServings'?'type="number" min="1" max="100"':'maxlength="100"' ?>></label>
-<?php endif; ?>
+<?= cmsGuidedHtml('guided['.$field.']',$value,(string)$field) ?>
 <?php endforeach; ?>
 <?php else: ?>
 <?php if($guidedEditable): ?>
@@ -414,7 +382,7 @@ La recette canonique, les médias et les MP3 ne sont jamais modifiés.</p>
 Décrivez les changements souhaités dans le texte éditorial ou dans un brouillon avancé.
 Aucune modification de script ou de MP3 n'est appliquée.</p>
 <?php endif; ?>
-<label>Changements structurés proposés — facultatif (JSON validé, schéma 1)
+<label>Mode expert — proposition structurée JSON (facultatif)
 <textarea name="structure_json" maxlength="20000" rows="10"
  spellcheck="false"><?= cmsEsc($structureCurrent) ?></textarea></label>
 <p class="small muted"><?= cmsEsc($structureHints[$selected['kind']]??'') ?>
