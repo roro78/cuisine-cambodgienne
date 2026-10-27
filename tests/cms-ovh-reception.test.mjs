@@ -37,6 +37,23 @@ test('reject missing, stale and leaked public indexes',()=>{
  feeds['editorial-guided-fields.json'].items[0].fields={baseServings:4};
  assert.throws(()=>verifyCmsIndexes(feeds),/UNEXPECTED_KEYS/);
 });
+test('a future page inherits the same V2 form, and an unregistered page blocks release',()=>{
+ const feeds=fixture();
+ const contentId='recette:future-recipe';
+ const social=feeds['social-feed.json'];
+ const canonical=feeds['editorial-source-index.json'];
+ const guided=feeds['editorial-guided-fields.json'];
+ social.items.push({...social.items[0],id:contentId});
+ canonical.items.push({...canonical.items[0],id:contentId});
+ guided.items.push({...guided.items[0],id:contentId});
+ assert.deepEqual(verifyCmsIndexes(feeds),{social:2,canonical:2,guided:2});
+ // No hard-coded 35: every new page must have a corresponding exact source-hash
+ // editor. Otherwise a production upload with a partial guided index is blocked.
+ guided.items.pop();
+ assert.throws(()=>verifyCmsIndexes(feeds),/GUIDED_COVERAGE_INCOMPLETE/);
+ guided.items.push({...guided.items[0],id:'recette:wrong-page'});
+ assert.throws(()=>verifyCmsIndexes(feeds),/GUIDED_DIGEST_MISMATCH/);
+});
 test('the unauthenticated CMS returns only a private-login screen',()=>{
  assert.deepEqual(verifyCmsLogin({status:200,headers:safeHeaders,body:login}),
   {login:'login_only',csrf:true,https:true});
