@@ -80,15 +80,15 @@ Le CMS PHP confronte chaque proposition structurée à cet index complet et vér
 **Objectif :** faire passer une proposition structurée déjà marquée *Prêt pour relecture* dans un fichier de demande de modification contrôlé, puis un patch GitHub sur une branche isolée. Ce jalon ne touche qu'aux **recettes classiques et historiques** : les MP3 Coral, les ateliers, les Carnets, l'automatisation IA et la publication OVH restent exclus.
 
 ### Exécution en deux zones de confiance
-1. Après authentification, le CMS compare \`source_id\`, l'empreinte sociale, l'empreinte SHA-256 de la fiche Astro entière, son modèle et le dernier numéro de version. Il n'exporte que les propositions de recettes en état \`review\`, depuis une requête POST avec CSRF. Un GET ne valide rien et n'exporte pas.
-2. Le téléchargement \`cms-recipe-<slug>-v<version>.json\` comporte uniquement un **contrat de demande**, sans token GitHub, sans droit d'écriture ni état de publication.
-3. Dans une copie locale du dépôt ou dans une exécution contrôlée, utiliser \`scripts/apply-reviewed-recipe-request.mjs\` : le script reconstitue la vraie recette à partir de TypeScript, contrôle le SHA-256 complet, l'identité de la fiche, les champs modifiables, le nombre d'étapes/ingrédients et les propriétés non éditables. Aucune modification de la source si le SHA ne correspond pas.
-4. **Simulation par défaut** (affiche les anciennes/nouvelles valeurs, aucun fichier modifié). Pour écrire, spécifier \`--write\`, être sur une branche propre de la forme \`cms/content-...\`, avoir un \`main\` local **épinglé** au commit demandé et une branche créée sur ce commit. Aucun commit, push, PR, fusion ni déploiement n'est effectué par ce script.
-5. Une personne vérifie \`git diff\`, les quantités, les allergènes et le contexte de la recette, lance \`npm run check\`, \`npm run test:recipes\` et \`npm run build\`, puis ouvre une PR GitHub. Re-vérifier la base \`main\` avant la fusion, et effectuer séparément le déploiement manuel OVH.
+1. Après authentification, le CMS compare `source_id`, l'empreinte sociale, l'empreinte SHA-256 de la fiche Astro entière, son modèle et le dernier numéro de version. Il n'exporte que les propositions de recettes en état `review`, depuis une requête POST avec CSRF. Un GET ne valide rien et n'exporte pas.
+2. Le téléchargement `cms-recipe-<slug>-v<version>.json` comporte uniquement un **contrat de demande**, sans token GitHub, sans droit d'écriture ni état de publication.
+3. Dans une copie locale du dépôt ou dans une exécution contrôlée, utiliser `scripts/apply-reviewed-recipe-request.mjs` : le script reconstitue la vraie recette à partir de TypeScript, contrôle le SHA-256 complet, l'identité de la fiche, les champs modifiables, le nombre d'étapes/ingrédients et les propriétés non éditables. Aucune modification de la source si le SHA ne correspond pas.
+4. **Simulation par défaut** (affiche les anciennes/nouvelles valeurs, aucun fichier modifié). Pour écrire, spécifier `--write`, être sur une branche propre de la forme `cms/content-...`, avoir un `main` local **épinglé** au commit demandé et une branche créée sur ce commit. Aucun commit, push, PR, fusion ni déploiement n'est effectué par ce script.
+5. Une personne vérifie `git diff`, les quantités, les allergènes et le contexte de la recette, lance `npm run check`, `npm run test:recipes` et `npm run build`, puis ouvre une PR GitHub. Re-vérifier la base `main` avant la fusion, et effectuer séparément le déploiement manuel OVH.
 
 **Commandes en local sur copie Git de confiance :**
 
-\`\`\`bash
+```bash
 git fetch origin main
 git switch main
 git pull --ff-only
@@ -101,8 +101,8 @@ git diff --check
 git diff -- src/data/recipes.ts src/data/restoredRecipes.ts
 npm run check && npm run test:recipes && npm run build
 # Commit et PR GitHub uniquement après examen du diff.
-\`\`\`
+```
 
-**Réserves structurantes :** le champ \`title\`, \`summary\` ou \`editorial_text\` du brouillon ne s'applique pas implicitement à la recette ; seul le patch structuré est compilé. Les tests empêchent les suppressions de lignes, l'ajout de propriétés arbitraires, la mutation de métadonnées de mise à l'échelle ou le changement de slug/média. Une demande JSON exportée n'est pas une preuve cryptographique d'approbation : le diff et la décision humaine restent obligatoires. Pas de publication automatique depuis le CMS ni de credential GitHub dans le CMS. Le pipeline « bouton -> PR automatique -> review » n'est **pas encore développé**.
+**Réserves structurantes :** le champ `title`, `summary` ou `editorial_text` du brouillon ne s'applique pas implicitement à la recette ; seul le patch structuré est compilé. Les tests empêchent les suppressions de lignes, l'ajout de propriétés arbitraires, la mutation de métadonnées de mise à l'échelle ou le changement de slug/média. Une demande JSON exportée n'est pas une preuve cryptographique d'approbation : le diff et la décision humaine restent obligatoires. Pas de publication automatique depuis le CMS ni de credential GitHub dans le CMS. Le pipeline « bouton -> PR automatique -> review » n'est **pas encore développé**.
 
-**Conditions avant réception OVH :** les flux \`social-feed.json\`, \`editorial-source-index.json\` et \`editorial-guided-fields.json\` doivent être cohérents et disponibles sur le serveur public ; la session administrateur HTTPS/CSRF et la conservation privée des brouillons doivent être testées sur OVH. Ne pas annoncer la production sans ces preuves.
+**Conditions avant réception OVH :** les flux `social-feed.json`, `editorial-source-index.json` et `editorial-guided-fields.json` doivent être cohérents et disponibles sur le serveur public ; la session administrateur HTTPS/CSRF et la conservation privée des brouillons doivent être testées sur OVH. Ne pas annoncer la production sans ces preuves.
