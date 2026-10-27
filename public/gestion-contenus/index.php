@@ -357,7 +357,7 @@ Toute modification de la fiche d'origine exige une nouvelle revue.</p>
 La page d'origine a changé depuis cette proposition. Nouvelle sauvegarde bloquée pour éviter
 d'écraser une version récente. Comparer la source et reprendre le travail après relecture.
 </p><?php endif; ?>
-<form method="post" class="stack">
+<form method="post" class="stack" id="cms-fields">
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <input type="hidden" name="source_id" value="<?= cmsEsc($selected['id']) ?>">
 <input type="hidden" name="source_fingerprint" value="<?= cmsEsc($selected['fingerprint']) ?>">
@@ -391,7 +391,7 @@ $structureHints=[
 ];
 ?>
 <?php if($guidedEditable && $editorMode==='guided'): ?>
-<div id="cms-fields" class="guided-nav">
+<div class="guided-nav">
 <strong>Éditeur guidé — <?= cmsEsc($kindLabels[$selected['kind']]??'Contenu') ?></strong>
 <a href="?id=<?= rawurlencode($selected['id']) ?>&amp;mode=json">Mode avancé (JSON)</a>
 </div>
