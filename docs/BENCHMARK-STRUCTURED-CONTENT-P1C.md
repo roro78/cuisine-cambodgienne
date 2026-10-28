@@ -116,6 +116,7 @@ Depuis un environnement PHP 8.3/8.4 disposant du build Astro et du dépôt :
 ```bash
 npm run build
 umask 077
+mkdir -p artifacts/benchmark
 # Préparer un seul cas S1 synthétique et son schéma exact.
 php scripts/editorial-ai-structured-benchmark.php request culture dist > artifacts/benchmark/culture-s1-request.json
 # Après un appel explicite au modèle, enregistrer uniquement son JSON de réponse
