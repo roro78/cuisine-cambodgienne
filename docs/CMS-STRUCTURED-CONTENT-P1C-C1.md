@@ -52,6 +52,10 @@ Les fonctions restent dans `public/gestion-contenus/lib.php` :
 - Les consignes par famille appliquent les référentiels existants : récit culturel
   documentaire pour Carnets, six phases pour ateliers, cohérence ingrédients/gestes,
   prudence factuelle et alimentaire, recherches réservées aux notes privées.
+  Les chemins `references` assurent la traçabilité ; ils ne donnent pas au modèle
+  un accès aux documents. Le futur raccordement devra transmettre les prescriptions
+  spécialisées utiles et vérifier leur respect. Ces consignes de contrat ne
+  remplacent pas les référentiels complets ni une revue rédactionnelle.
 - `cmsAiContentCandidate` contrôle le JSON (60 000 octets au maximum), ses types,
   clés, tailles et caractères ; il transforme listes et paragraphes vers les
   valeurs du formulaire commun puis repasse par **`cmsCreationCleanFields`** et
@@ -97,6 +101,12 @@ rejet des clés sensibles, types trompeurs, tailles excessives, phases manquante
 sources périmées/incomplètes et absence d'export d'objet source entier. Il ne fait
 aucun appel modèle et ne sauvegarde aucun candidat. Il est ajouté aux deux jobs
 CI PHP 8.3 et 8.4. PHP n'est pas installé localement.
+
+**Résultats locaux acquis :** 37 contrats Node PASS ; `npm run check` : 0 erreur,
+0 warning, 24 hints ; `npm run build` : 48 pages ; `git diff --check` PASS.
+Les preuves PHP et la CI complète sont à lire sur la
+[PR #150](https://github.com/roro78/cuisine-cambodgienne/pull/150), pour son SHA
+exact, sans assimiler ces contrôles hors ligne à une génération réelle.
 
 Avant d'ajouter le déclenchement au Studio : mesurer le moteur réel, adapter son
 transport à ce contrat et à un budget autorisé, contrôler les doublons **avant**
