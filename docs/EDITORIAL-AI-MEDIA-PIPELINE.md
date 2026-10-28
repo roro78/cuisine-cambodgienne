@@ -4,6 +4,8 @@
 **Statut : plan de réalisation et contrat de données du premier maillon. Pas un système de génération IA actif.**  
 **À lire avec :** [Architecture du Studio éditorial](CMS-STUDIO-ARCHITECTURE.md) et [Plan CMS](CMS-EDITORIAL-PLAN-20261026.md).
 
+**Norme permanente pour les textes et visuels :** [Référentiel de génération IA éditoriale et visuelle](REFERENTIEL-GENERATION-IA-EDITORIALE-VISUELLE.md), qui consolide les contrats existants par catégorie, sans les remplacer.
+
 ## Intention produit
 
 **Le pipeline commence avant n8n et Meta : il commence par la CRÉATION du contenu.**
