@@ -105,6 +105,7 @@ $createForm=[];$creation=null;$creations=[];$createVersion=null;
 $calendarMode=!$newMode && isset($_GET['calendar']);
 $calendarMonth=gmdate('Y-m');$calendarKind='all';$calendarStatus='all';
 $calendarPlan=null;$calendarPrev='';$calendarNext='';$calendarError='';
+$calendarRuntimeInfo='';$calendarFileHashes=[];
 if($calendarMode){
     try{
         $calendarMonth=cmsCalendarMonth($_GET['month']??gmdate('Y-m'));
@@ -115,8 +116,7 @@ if($calendarMode){
     $calendarKind=is_string($_GET['calendar_kind']??null)
         && isset(cmsCreationKinds()[$_GET['calendar_kind']])
         ? $_GET['calendar_kind']:'all';
-    $calendarStatus=in_array($_GET['calendar_status']??'all',
-        ['all','draft','review'],true)?$_GET['calendar_status']:'all';
+    $calendarStatus=cmsCalendarStatus($_GET['calendar_status']??'all');
     $cursor=new DateTimeImmutable($calendarMonth.'-01',new DateTimeZone('UTC'));
     $calendarPrev=$cursor->modify('-1 month')->format('Y-m');
     $calendarNext=$cursor->modify('+1 month')->format('Y-m');
@@ -173,11 +173,26 @@ if($auth){
                     $calendarError='CALENDAR_RECORD_RUNTIME_ERROR';
                 }catch(Throwable $ignored){
                     $calendarError='CALENDAR_ENGINE_RUNTIME_ERROR';
+                    try{
+                        $calendarRuntimeInfo=function_exists('cmsCalendarRuntimeDiagnostic')
+                            ?cmsCalendarRuntimeDiagnostic($ignored):'DIAGNOSTIC_HELPER_MISSING';
+                    }catch(Throwable $diagnosticError){
+                        $calendarRuntimeInfo='DIAGNOSTIC_UNAVAILABLE';
+                    }
                 }
+            }
+            // Disk fingerprints identify the two deployed public-code files,
+            // not the private config or drafts, and do not certify OPcache.
+            foreach(['index.php','lib.php'] as $calendarCodeFile){
+                $digest=function_exists('hash_file')
+                    ?@hash_file('sha256',__DIR__.'/'.$calendarCodeFile):false;
+                $calendarFileHashes[$calendarCodeFile]=is_string($digest)
+                    && preg_match('/^[a-f0-9]{64}$/D',$digest)?$digest:'UNAVAILABLE';
             }
             error_log('[CDC_CMS_CALENDAR] '.$calendarError.' '
                 .($e instanceof UnexpectedValueException?'unexpected_value':
-                  ($e instanceof Error?'php_error':'calendar_error')));
+                  ($e instanceof Error?'php_error':'calendar_error'))
+                .' '.$calendarRuntimeInfo);
             http_response_code(503);
         }
     }
@@ -484,6 +499,17 @@ restent conservés. Revenez à la <a href="?">bibliothèque</a> ; vérifiez
 que les fichiers <code>index.php</code> et <code>lib.php</code> proviennent
 de la même livraison. Le journal d'erreurs PHP conserve uniquement le code
 de diagnostic, sans contenu privé.</p>
+<details><summary>Référence technique pour le diagnostic</summary>
+<?php if($calendarRuntimeInfo!==''): ?>
+<p class="small preview-text"><code><?= cmsEsc($calendarRuntimeInfo) ?></code></p>
+<?php endif; ?>
+<p class="small">Empreintes des fichiers présents sur le serveur.
+Elles ne prouvent pas que le cache PHP a été renouvelé.</p>
+<?php foreach($calendarFileHashes as $calendarCodeFile=>$digest): ?>
+<p class="small preview-text"><strong><?= cmsEsc($calendarCodeFile) ?></strong><br>
+<code><?= cmsEsc($digest) ?></code></p>
+<?php endforeach; ?>
+</details>
 <?php else: ?>
 <form method="get" class="toolbar">
 <input type="hidden" name="calendar" value="1">

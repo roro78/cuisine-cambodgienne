@@ -73,6 +73,17 @@ foreach([[],['recette'],123,true,null] as $invalidKind){
     catch(RuntimeException $e){$blocked=$e->getMessage()==='CALENDAR_CORRUPT_DRAFT';}
     requireCalendar($blocked,'MALFORMED_KIND_GUARD');
 }
+foreach([[],true,123,'2026-02-29','2026-11-31','2026-11-00'] as $invalidDate){
+    $typed=$items;
+    $typed['c-000000000000000000000001']['target_date']=$invalidDate;
+    $before=json_encode($typed,JSON_THROW_ON_ERROR);
+    $blocked=false;
+    try{cmsCalendarPlan($typed,'2026-11');}
+    catch(RuntimeException $e){$blocked=$e->getMessage()==='CALENDAR_CORRUPT_DATE';}
+    requireCalendar($blocked,'MALFORMED_DATE_GUARD');
+    requireCalendar(json_encode($typed,JSON_THROW_ON_ERROR)===$before,
+        'INVALID_RECORD_NOT_MUTATED');
+}
 $unsafe=$items;
 $unsafe['c-000000000000000000000001']['title']='<script>alert(1)</script>';
 $plan=cmsCalendarPlan($unsafe,'2026-11');

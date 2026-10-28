@@ -1,5 +1,9 @@
 # Cuisine du Cambodge — Pipeline éditorial IA, manuel et calendrier média
 
+> **Réception du calendrier, 28 octobre :** transfert du correctif `106537c` et fonctionnement des filtres/versions confirmés par le propriétaire ; contrôle public GET PASS, CI PHP 8.3/8.4 SUCCESS. Le jalon A est réceptionné. **P1C peut commencer par les briefs IA privés**, sur une branche/PR séparée ; aucune IA n'est activée par cette réception.
+
+> **État de reprise du 28 octobre :** [rapport vérifié et jalons A–G](CMS-REPRISE-20261028.md). Création manuelle et calendrier testés en CI sur `1264e7d` ; contrôle public OVH PASS, calendrier authentifié encore à réceptionner. P1C est audité, sans appel IA ni activation avant réception du calendrier.
+
 **Décision structurante : 28 octobre 2026.**  
 **Statut : plan de réalisation et contrat de données du premier maillon. Pas un système de génération IA actif.**  
 **À lire avec :** [Architecture du Studio éditorial](CMS-STUDIO-ARCHITECTURE.md) et [Plan CMS](CMS-EDITORIAL-PLAN-20261026.md).
