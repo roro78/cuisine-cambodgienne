@@ -12,6 +12,16 @@
 - Pas de mutation silencieuse de sources Astro, pas de publication sociale, pas de remplacement des images/MP3 Coral. Sauvegarde et approbation obligatoires avant déploiement OVH.
 - Les changements d'architecture ou de gabarit doivent passer les contrats Node et les tests PHP sur **tous les contenus réels** après build, puis la CI complète. Aucune PR cassée à fusionner.
 
+## Nouveau premier maillon — création éditoriale avant réseaux sociaux
+
+Lire `docs/EDITORIAL-AI-MEDIA-PIPELINE.md` pour les chantiers de création manuelle/IA et calendrier média.
+
+- Le CMS doit permettre de **créer** de nouvelles fiches des cinq familles, en plus d'éditer les fiches existantes ; même gabarit et mêmes composants pour le mode manuel ou IA.
+- Le module `scripts/editorial-content-pipeline.mjs` fixe le premier contrat d'idées, vérification anti-doublons et revue humaine. Ce n'est pas une API IA ni un outil de publication.
+- Aucun nouveau contenu ou plan social sans vérification des titres et slugs déjà publiés **et** des propositions non publiées ; la similarité sémantique requiert aussi une revue.
+- Toute réponse IA est un **brouillon** ; ni une date du calendrier ni un statut de génération ne valent autorisation de publication.
+- Les pages et ateliers nouvellement approuvés doivent rejoindre les mêmes données Astro, gabarits, contrôles et médias que les anciennes ; ne jamais inventer une filière parallèle d'édition/publication.
+
 ## Autres garde-fous
 
 Utiliser une seule PR par chantier. Ne pas modifier `main` directement ; ne jamais perdre le travail local. Ne pas présenter une CI GitHub verte comme preuve d'un transfert OVH. Les brouillons privés existants en production sont conservés et non migrés sans décision spécifique.
