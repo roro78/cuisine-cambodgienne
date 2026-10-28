@@ -102,6 +102,25 @@ $createKind=is_string($_POST['kind']??null)?$_POST['kind']:
     (is_string($_GET['kind']??null)?$_GET['kind']:'recette');
 if(!isset(cmsCreationKinds()[$createKind]))$createKind='recette';
 $createForm=[];$creation=null;$creations=[];$createVersion=null;
+$calendarMode=!$newMode && isset($_GET['calendar']);
+$calendarMonth=gmdate('Y-m');$calendarKind='all';$calendarStatus='all';
+$calendarPlan=null;$calendarPrev='';$calendarNext='';
+if($calendarMode){
+    try{
+        $calendarMonth=cmsCalendarMonth($_GET['month']??gmdate('Y-m'));
+    }catch(InvalidArgumentException $e){
+        http_response_code(422);$error='Mois invalide : utilisez AAAA-MM.';
+        $calendarMonth=gmdate('Y-m');
+    }
+    $calendarKind=is_string($_GET['calendar_kind']??null)
+        && isset(cmsCreationKinds()[$_GET['calendar_kind']])
+        ? $_GET['calendar_kind']:'all';
+    $calendarStatus=in_array($_GET['calendar_status']??'all',
+        ['all','draft','review'],true)?$_GET['calendar_status']:'all';
+    $cursor=new DateTimeImmutable($calendarMonth.'-01',new DateTimeZone('UTC'));
+    $calendarPrev=$cursor->modify('-1 month')->format('Y-m');
+    $calendarNext=$cursor->modify('+1 month')->format('Y-m');
+}
 if(mbLen($q)>80 || preg_match('/[\x00-\x1f\x7f]/',$q) || !preg_match('//u',$q))$q='';
 if($auth){
     try{
@@ -121,6 +140,8 @@ if($auth){
     try{
         $creationDir=cmsCreationDir($private);
         $creations=cmsCreationList($creationDir);
+        if($calendarMode)
+            $calendarPlan=cmsCalendarPlan($creations,$calendarMonth,$calendarKind,$calendarStatus);
     }catch(Throwable $e){cmsUnavailable();}
     if($newMode){
         $cid=cmsCreationId($_POST['creation_id']??($_GET['cid']??null));
@@ -320,6 +341,16 @@ textarea{resize:vertical;min-height:110px}
 .new-actions{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
 .create-meta{border-left:3px solid #d8a038;padding:10px 12px;background:#fff9e8}
 .create-card{border:1px solid #d9ddd5;border-radius:10px;padding:12px;margin-bottom:10px}
+.calendar-days{display:grid;gap:12px;margin:18px 0}
+.calendar-day{border:1px solid #d9ddd5;border-radius:10px;padding:12px;min-width:0}
+.calendar-day h3{margin:0 0 10px;font-size:1rem}
+.calendar-items{display:grid;gap:9px}
+.calendar-item{padding:10px;border-radius:8px;background:#f5f7ef;overflow-wrap:anywhere}
+.calendar-item a{font-weight:700}
+.calendar-item p{margin:5px 0 0}
+.calendar-undated{border-left:3px solid #d8a038;padding:8px 12px}
+.calendar-pagination{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.calendar-summary{display:flex;flex-wrap:wrap;gap:14px;padding:12px 0}
 .guided-text textarea{min-height:75px;line-height:1.5}
 .guided-group summary{line-height:1.4;overflow-wrap:anywhere}
 .preview-fields{display:grid;gap:8px}
@@ -380,9 +411,10 @@ Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
 <?php else: ?>
 <nav class="new-actions" aria-label="Actions éditoriales">
 <a class="btn" href="?new=1">+ Nouveau contenu</a>
+<a href="?calendar=1">Calendrier éditorial</a>
 <a href="?">Bibliothèque des pages publiées</a>
 </nav>
-<section aria-label="Filtres de la bibliothèque"<?= $newMode?' hidden':'' ?>>
+<section aria-label="Filtres de la bibliothèque"<?= ($newMode||$calendarMode)?' hidden':'' ?>>
 <form method="get" action="" class="toolbar">
 <label>Catégorie<select name="kind">
 <?php foreach(['all'=>'Toutes les catégories','recette'=>'Recettes','culture'=>'Carnets',
@@ -401,7 +433,83 @@ Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
 <p class="small muted" role="status"><?= count($shown) ?> résultat(s) sur <?= count($catalog) ?> contenus
  · Recherche et filtres côté serveur, sans JavaScript.</p>
 </section>
-<?php if($newMode): ?>
+<?php if($calendarMode): ?>
+<section id="editorial-calendar" aria-label="Calendrier éditorial privé">
+<span class="badge">Planification privée · aucune publication automatique</span>
+<h2>Calendrier éditorial — <?= cmsEsc($calendarMonth) ?></h2>
+<p class="small muted">Dates cibles des projets de nouvelles pages.
+Elles ne déclenchent aucune publication sur le site, Facebook ou Instagram.</p>
+<form method="get" class="toolbar">
+<input type="hidden" name="calendar" value="1">
+<label>Mois<input type="month" name="month" min="2020-01" max="2099-12"
+ value="<?= cmsEsc($calendarMonth) ?>"></label>
+<label>Catégorie<select name="calendar_kind">
+<option value="all">Toutes</option>
+<?php foreach(cmsCreationKinds() as $value=>$label): ?>
+<option value="<?= cmsEsc($value) ?>"<?= $calendarKind===$value?' selected':'' ?>><?= cmsEsc($label) ?></option>
+<?php endforeach; ?>
+</select></label>
+<label>État<select name="calendar_status">
+<option value="all"<?= $calendarStatus==='all'?' selected':'' ?>>Tous les brouillons</option>
+<option value="draft"<?= $calendarStatus==='draft'?' selected':'' ?>>En rédaction</option>
+<option value="review"<?= $calendarStatus==='review'?' selected':'' ?>>À relire</option>
+</select></label>
+<button type="submit">Filtrer le planning</button>
+</form>
+<div class="calendar-pagination">
+<a href="?calendar=1&amp;month=<?= cmsEsc($calendarPrev) ?>&amp;calendar_kind=<?= cmsEsc($calendarKind) ?>&amp;calendar_status=<?= cmsEsc($calendarStatus) ?>">Mois précédent</a>
+<a href="?calendar=1&amp;month=<?= cmsEsc($calendarNext) ?>&amp;calendar_kind=<?= cmsEsc($calendarKind) ?>&amp;calendar_status=<?= cmsEsc($calendarStatus) ?>">Mois suivant</a>
+</div>
+<div class="calendar-summary small" role="status">
+<strong><?= (int)$calendarPlan['month_count'] ?> projet(s) ce mois</strong>
+<span><?= (int)$calendarPlan['undated_count'] ?> sans date</span>
+<span><?= (int)count($calendarPlan['other']) ?> hors du mois affiché</span>
+</div>
+<div class="calendar-days">
+<?php foreach($calendarPlan['days'] as $date=>$items): ?>
+<div class="calendar-day">
+<h3><time datetime="<?= cmsEsc($date) ?>"><?= cmsEsc($date) ?></time>
+ · <?= count($items) ?> projet(s)</h3>
+<div class="calendar-items">
+<?php foreach($items as $item): ?>
+<div class="calendar-item">
+<a href="?new=1&amp;cid=<?= cmsEsc($item['id']) ?>"><?= cmsEsc($item['title']) ?></a>
+<span class="badge"><?= cmsEsc(cmsCreationKinds()[$item['kind']]) ?></span>
+<p class="small"><?= $item['state']==='review'?'À relire':'En rédaction' ?>
+ · v<?= (int)$item['version'] ?> · <?= cmsEsc($item['origin']) ?></p>
+</div>
+<?php endforeach; ?>
+</div></div>
+<?php endforeach; ?>
+<?php if(!$calendarPlan['days']): ?>
+<p class="muted">Aucun projet daté pour le mois sélectionné.</p>
+<?php endif; ?>
+</div>
+<?php if($calendarPlan['undated']): ?>
+<div class="calendar-undated">
+<h3>À planifier — sans date cible</h3>
+<?php foreach($calendarPlan['undated'] as $item): ?>
+<p><a href="?new=1&amp;cid=<?= cmsEsc($item['id']) ?>"><?= cmsEsc($item['title']) ?></a>
+ · <?= cmsEsc(cmsCreationKinds()[$item['kind']]) ?>
+ · <?= $item['state']==='review'?'À relire':'En rédaction' ?></p>
+<?php endforeach; ?>
+</div>
+<?php endif; ?>
+<?php if($calendarPlan['other']): ?>
+<details class="guided-group"><summary>Voir les projets datés hors du mois affiché
+ (<?= count($calendarPlan['other']) ?>)</summary>
+<?php foreach($calendarPlan['other'] as $item): ?>
+<p><?= cmsEsc((string)$item['target_date']) ?> —
+<a href="?new=1&amp;cid=<?= cmsEsc($item['id']) ?>"><?= cmsEsc($item['title']) ?></a>
+</p>
+<?php endforeach; ?>
+</details>
+<?php endif; ?>
+<p class="note">Ce calendrier est un outil de planification éditoriale.
+Aucune date, même pour une fiche à relire, n'autorise la mise en ligne.
+L'IA, les créneaux Facebook/Instagram et les statistiques viendront dans des étapes ultérieures.</p>
+</section>
+<?php elseif($newMode): ?>
 <p><a href="?">Retour à la bibliothèque</a></p>
 <section>
 <span class="badge">Création privée · aucune publication</span>
