@@ -1053,3 +1053,54 @@ function cmsCreationFormHtml(string $kind,array $values=[]): string {
     }
     return $html;
 }
+
+
+/**
+ * Private content calendar, derived exclusively from the latest saved revision
+ * of each new-content draft. It plans work; it does NOT schedule execution.
+ * A planned date or "review" status never authorizes Meta / n8n / site publish.
+ */
+function cmsCalendarMonth(mixed $value): string {
+    if(!is_string($value) || !preg_match('/^(20[2-9][0-9])-(0[1-9]|1[0-2])$/D',$value))
+        throw new InvalidArgumentException('CALENDAR_MONTH_INVALID');
+    return $value;
+}
+function cmsCalendarPlan(array $creations,string $month,
+    string $kind='all',string $status='all'): array {
+    cmsCalendarMonth($month);
+    if($kind!=='all' && !array_key_exists($kind,cmsCreationKinds()))
+        throw new InvalidArgumentException('CALENDAR_KIND');
+    if(!in_array($status,['all','draft','review'],true))
+        throw new InvalidArgumentException('CALENDAR_STATUS');
+    $days=[];$undated=[];$other=[];$count=0;
+    foreach($creations as $item){
+        if(!is_array($item) || !cmsCreationId($item['id']??null)
+           || !isset(cmsCreationKinds()[$item['kind']??''])
+           || !in_array($item['state']??null,['draft','review'],true)
+           || !is_string($item['title']??null)
+           || mbLen($item['title'])>180)
+            throw new RuntimeException('CALENDAR_CORRUPT_DRAFT');
+        if($kind!=='all' && $item['kind']!==$kind)continue;
+        if($status!=='all' && $item['state']!==$status)continue;
+        $date=$item['target_date']??null;
+        if($date!==null && (!is_string($date)
+            || !preg_match('/^(20[2-9][0-9])-(0[1-9]|1[0-2])-([0-3][0-9])$/D',$date)
+            || !checkdate((int)substr($date,5,2),(int)substr($date,8,2),
+                (int)substr($date,0,4))))
+            throw new RuntimeException('CALENDAR_CORRUPT_DATE');
+        ++$count;
+        if($date===null)$undated[]=$item;
+        elseif(substr($date,0,7)===$month)$days[$date][]=$item;
+        else $other[]=$item;
+    }
+    ksort($days,SORT_STRING);
+    foreach($days as &$list)usort($list,static fn(array $a,array $b):int=>
+        strcmp($a['title'],$b['title']));unset($list);
+    foreach([&$undated,&$other] as &$list)
+        usort($list,static fn(array $a,array $b):int=>
+            strcmp((string)$a['title'],(string)$b['title']));
+    unset($list);
+    return ['month'=>$month,'days'=>$days,'undated'=>$undated,'other'=>$other,
+       'total'=>$count,'month_count'=>array_sum(array_map('count',$days)),
+       'undated_count'=>count($undated)];
+}
