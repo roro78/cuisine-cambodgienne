@@ -168,3 +168,16 @@ Signalement après transfert SFTP de `index.php` et `lib.php` (livraison `c13023
 
 **Réception requise** : comparer le SHA-256 des deux fichiers réellement retéléchargés depuis OVH avec le manifeste de livraison ; vérifier que le dossier privé `editorial-drafts/new-content` est présent et correctement protégé ; répéter le test du calendrier sur un mois vide, des projets datés et non datés ; vérifier la bibliothèque, la création et les versions existantes. Ne pas supposer la cause avant ce test. Le contrôle public `CMS_OVH_RECEPTION_PASS` ne vérifie pas le calendrier après authentification.
 
+### Suivi incident OVH — diagnostic affiné après `CALENDAR_DATA_UNAVAILABLE` (28 octobre 2026)
+
+Après déploiement du correctif #141, le Studio connecté affiche désormais `CALENDAR_DATA_UNAVAILABLE` pour le calendrier. Ce signal prouve uniquement qu'une exception a été interceptée **pendant la projection** `cmsCalendarPlan`, après l'appel de chargement du catalogue de nouvelles créations ; il ne démontre pas une corruption des brouillons ni ne permet d'identifier la cause.
+
+**Nouveau diagnostic non sensible (correctif à déployer séparément, non encore réceptionné sur OVH) :**
+- `CALENDAR_CODE_MISMATCH` : fonction calendrier absente dans la bibliothèque chargée.
+- `CALENDAR_DRAFT_INVALID` : un enregistrement lu n'a pas le schéma attendu (ne pas le modifier avant une sauvegarde et une analyse).
+- `CALENDAR_DATE_INVALID` : date cible non reconnue dans une révision (ne pas réécrire les données).
+- `CALENDAR_FILTER_INVALID` : entrée de filtre rejetée.
+- `CALENDAR_RUNTIME_ERROR` : erreur moteur PHP dans la projection, à rapprocher des versions exactes des deux PHP et de l'environnement.
+- `CALENDAR_DATA_UNAVAILABLE` : exception non reconnue (le traitement continue d'échouer **fermement**, sans afficher de données partielles).
+
+Ces codes sont constants : **aucun titre, ID, note privée, chemin serveur ou message brut d'exception** n'est renvoyé au navigateur ni au log applicatif. Seul `index.php` doit changer pour affiner le diagnostic, après vérification que `lib.php` correspond à la même livraison. Les tests isolés couvrent des enregistrements privés réellement sauvegardés, les mois vides et les dates/stats invalides. La vue calendrier reste **en lecture seule**, les données existantes sont conservées. L'authentification OVH et les fichiers effectivement présents sur l'hébergement doivent encore être réceptionnés manuellement. Ne pas conclure que le problème est résolu du seul fait d'une CI verte.
