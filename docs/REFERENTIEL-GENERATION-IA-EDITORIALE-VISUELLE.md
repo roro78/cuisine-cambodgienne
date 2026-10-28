@@ -2,6 +2,13 @@
 
 **Version 1.0 — 28 octobre 2026.** Contrat **cible** de production, non annonce d'une IA déjà raccordée au Studio. À appliquer à toute nouvelle recette, tout atelier, Carnet, ingrédient ou technique, sans recréer de gabarit ni réécrire le contenu existant. L'IA reste un assistant sous validation humaine.
 
+**État prioritaire après #149 :** briefs privés et adaptateur optionnel intégrés
+dans GitHub ; aucune activation IA OVH ni mesure qualitative réelle attestée.
+Le [contrat structuré P1C-C1](CMS-STRUCTURED-CONTENT-P1C-C1.md), préparé en branche,
+dérive les champs du formulaire commun et liste les écarts avec les modèles Astro
+complets. Il ne déclenche pas de génération et ne constitue pas une page publiable.
+Cet état prévaut sur les mentions historiques « en branche/PR » du premier lot B.
+
 **Références normatives existantes, à préserver :**
 - \`CMS-STUDIO-ARCHITECTURE.md\` — éditeur partagé, stockage privé, contrat des fiches et publication.
 - \`EDITORIAL-AI-MEDIA-PIPELINE.md\` — étapes P0–P5, entrées manuelles/IA et calendrier.

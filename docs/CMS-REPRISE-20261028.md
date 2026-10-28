@@ -1,5 +1,29 @@
 # Reprise du Studio — 28 octobre 2026
 
+## État de reprise actuel — après les PR #146 à #149
+
+Cet état prévaut sur les instantanés historiques ci-dessous. `main` local est
+synchronisé sur `46fef8caa03cc1beb6cc92f12996de90908e36f9`, PR #146–#149 fusionnées,
+[CI #40777733812 SUCCESS](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40777733812).
+Les branches et `artifacts/` sont conservés. Le calendrier OVH reste réceptionné
+par le propriétaire ; le GET public actuel est PASS. Aucun déploiement des lots
+IA ni activation de fournisseur n'est attesté par cette reprise.
+
+Le propriétaire signale une session n8n connectée, mais aucun outil de cette
+session ne permet de la piloter. Aucun accès IA n'est configuré dans le processus ;
+l'inventaire Ollama local est inaccessible. **Aucun benchmark réel, classement de
+qualité, coût ou modèle distant installé n'est attesté.** Ce blocage d'accès
+n'empêche pas la préparation du [contrat structuré P1C-C1](CMS-STRUCTURED-CONTENT-P1C-C1.md),
+dans une branche/PR séparée : champs issus du formulaire commun pour les cinq
+familles, validation stricte et références publiques canoniques pour ateliers.
+Ce contrat ne déclenche ni modèle ni sauvegarde et n'est pas raccordé à l'interface.
+
+Suite prioritaire : essai du moteur depuis l'infrastructure n8n/Ollama existante,
+puis transport et sauvegarde avec provenance/quota partagés, compléments des vrais
+modèles Astro, briefs visuels, aperçu Astro fidèle, publication approuvée et
+calendrier média avancé. Les décisions et preuves historiques restent conservées
+ci-dessous ; leurs mentions « PR ouverte » ou « calendrier à recevoir » sont datées.
+
 ## État vérifié et limites de preuve
 
 Le dépôt local a été synchronisé par avance rapide de `c13023b6015f709411854d8738bf7a694be17af0` vers `1264e7d45b948623be323d724daf94b457ff856a`. Les fichiers non suivis de `artifacts/` et les anciennes livraisons sont conservés. Les travaux de réception sont sur la branche isolée `fix/cms-calendar-php84-reception-20261028`, sans modification directe de `main`.

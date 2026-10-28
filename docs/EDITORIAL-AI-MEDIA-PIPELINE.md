@@ -1,5 +1,15 @@
 # Cuisine du Cambodge — Pipeline éditorial IA, manuel et calendrier média
 
+> **État actuel prioritaire, après #149 (28 octobre 2026) :** `main` synchronisé
+> sur `46fef8c`, CI SUCCESS ; #146–#149 fusionnées. Calendrier OVH réceptionné,
+> GET public PASS ; briefs/adaptateur/benchmark intégrés côté GitHub, activation
+> et déploiement IA non attestés. [P1C-C1 — contrat de brouillon structuré](CMS-STRUCTURED-CONTENT-P1C-C1.md)
+> préparé dans une branche distincte, dérivé du formulaire commun des cinq familles,
+> sans appel fournisseur ni sauvegarde. Essai réel depuis la session n8n signalée
+> par le propriétaire encore nécessaire : session non pilotable avec les outils
+> disponibles. Les instantanés ci-dessous conservent l'historique et ne changent
+> pas cet état de reprise.
+
 > **Comparatif Ollama/n8n — premier lot hors ligne (28 octobre 2026) :** [Banc d'essai des 3 modèles et 5 catégories](BENCHMARK-OLLAMA-EDITORIAL-P1C.md). Un workflow n8n MANUEL et isolé et un exécuteur CLI à activation explicite sont préparés, sans toucher à n8n 01/02/03, ni lancer de modèle, ni exporter de contenu privé. La qualité réelle de Llama 3.2, Qwen3 8B et Gemma 3 12B n'est pas mesurée ; l'étape suivante est la recette sur l'infrastructure existante. Les briefs P1C et l'adaptateur OpenAI optionnel sont déjà fusionnés dans GitHub, mais pas activés sur OVH.\n\n
 > **Réception du calendrier, 28 octobre :** transfert du correctif `106537c` et fonctionnement des filtres/versions confirmés par le propriétaire ; contrôle public GET PASS, CI PHP 8.3/8.4 SUCCESS. Le jalon A est réceptionné. **P1C peut commencer par les briefs IA privés**, sur une branche/PR séparée ; aucune IA n'est activée par cette réception.
 
@@ -117,12 +127,12 @@ Le planning peut proposer des dates, mais aucune date par défaut n'est une auto
 | Jalon | Résultat testable | État |
 |---|---|---|
 | P0 — Architecture universelle | Gabarit Studio commun, 35 fiches du catalogue éditables en proposition, contrôle des futurs IDs | **Acquis** (PR #137), déploiement OVH des dernières corrections à confirmer |
-| **P1A — Contrat de création** | Identité des cinq familles, provenance IA/manuelle, anti-doublons, états, calendrier et preuves de validation ; tests sur vrai catalogue | **Implémenté en branche** (à intégrer seulement si CI PASS) |
-| **P1B — Créer manuellement** | Bouton « Nouveau contenu » dans le Studio, formulaires par famille, blocs de texte ajoutables, stockage privé versionné, projets et anti-doublons publiés + projets | **Implémentation en PR** — réception OVH, aperçu Astro fidèle et publication encore distincts |
-| **P1C — Générer avec IA** | Même formulaire prérempli par IA après brief, retour en brouillon, contrôles factuels, citations de travail internes et validation humaine ; aucun jeton dans navigateur | **À développer** |
+| **P1A — Contrat de création** | Identité des cinq familles, provenance IA/manuelle, anti-doublons, états, calendrier et preuves de validation ; tests sur vrai catalogue | **Intégré**, contrats CI ; pas d'autorisation de publication implicite |
+| **P1B — Créer manuellement** | Bouton « Nouveau contenu » dans le Studio, formulaires par famille, blocs de texte ajoutables, stockage privé versionné, projets et anti-doublons publiés + projets | **Intégré**, smokes cinq familles ; réception connectée exhaustive distincte de celle du calendrier |
+| **P1C — Générer avec IA** | Même formulaire prérempli par IA après brief, retour en brouillon, contrôles factuels, citations de travail internes et validation humaine ; aucun jeton dans navigateur | **Partiel** : briefs #147 et adaptateur facultatif #148 intégrés, non activés ; benchmark #149 sans mesure réelle ; contrat structuré C1 préparé en branche |
 | P2 — Aperçu éditorial fidèle | Prévisualisation réelle Astro au format du type choisi, médias à valider et comparaison source/brouillon | **À développer** |
 | P3 — Conversion et mise en ligne du site | Génération de données Astro sur branche, PR, CI et déploiement **après approbation**, contrôle de non-régression sur SEO/audio/médias | **À développer** |
-| P4 — Calendrier média | Planning glissant, génération de variantes sociales contrôlées et validations | **Vue privée de planification mensuelle en développement**, IA et réseaux encore à réaliser |
+| P4 — Calendrier média | Planning glissant, génération de variantes sociales contrôlées et validations | **Vue mensuelle privée réceptionnée** ; planning multicanal, IA et réseaux encore à réaliser |
 | P5 — n8n / Meta | Rebrancher workflows existants **uniquement** après restauration des accès Meta et preuves de publication/non-doublon ; suivi performances | **Bloqué accès Meta**, indépendant du développement P1 |
 
 ### Critères de réception du premier véritable module Studio (P1B)

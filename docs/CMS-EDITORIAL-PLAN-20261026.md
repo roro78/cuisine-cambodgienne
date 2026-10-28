@@ -1,5 +1,13 @@
 # Cuisine du Cambodge — plan durable du CMS éditorial
 
+> **État prioritaire après #149, 28 octobre :** `main` synchronisé sur `46fef8c`,
+> CI SUCCESS ; #146–#149 fusionnées. Calendrier reçu sur OVH, contrôle GET public
+> PASS. Briefs et transport API facultatif intégrés dans GitHub, activation OVH
+> non attestée ; benchmark réel encore à exécuter depuis n8n/Ollama.
+> [Contrat de champs structurés P1C-C1](CMS-STRUCTURED-CONTENT-P1C-C1.md) préparé
+> en branche distincte pour les cinq familles, avec audit des écarts Astro.
+> Les instantanés ci-dessous conservent les étapes historiques et leurs limites.
+
 > **Nouvelle étape P1C (28 octobre 2026) :** les PR #146, #147 et #148 ont été fusionnées : calendrier corrigé et reçu sur OVH, briefs privés P1C intégrés côté GitHub, adaptateur OpenAI facultatif NON activé. [Comparatif Ollama et réception n8n](BENCHMARK-OLLAMA-EDITORIAL-P1C.md) : 3 candidats × 5 familles, tests simulés et protocole humain, aucun résultat qualitatif réel ni déploiement n8n effectué.\n\n
 > **Réception calendrier confirmée le 28 octobre :** après transfert du correctif `106537c`, le propriétaire confirme « Calendrier ouvert, filtres et versions existantes vérifiés ». Contrôle public GET PASS et [CI PHP 8.3/8.4 SUCCESS](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40764488613). **A réceptionné ; début de P1C, brief IA privé, en chantier séparé.** La PR #146 n'est pas fusionnée automatiquement. Voir [le rapport et les limites de preuve](CMS-REPRISE-20261028.md).
 
