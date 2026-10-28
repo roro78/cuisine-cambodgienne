@@ -1073,9 +1073,14 @@ function cmsCalendarPlan(array $creations,string $month,
     if(!in_array($status,['all','draft','review'],true))
         throw new InvalidArgumentException('CALENDAR_STATUS');
     $days=[];$undated=[];$other=[];$count=0;
+    $knownKinds=cmsCreationKinds();
     foreach($creations as $item){
+        // Real private JSON is not intrinsically trusted. An array-shaped
+        // "kind" used as an array offset throws TypeError on PHP 8.4;
+        // classify it as invalid draft data without leaking its contents.
         if(!is_array($item) || !cmsCreationId($item['id']??null)
-           || !isset(cmsCreationKinds()[$item['kind']??''])
+           || !is_string($item['kind']??null)
+           || !isset($knownKinds[$item['kind']])
            || !in_array($item['state']??null,['draft','review'],true)
            || !is_string($item['title']??null)
            || mbLen($item['title'])>180)

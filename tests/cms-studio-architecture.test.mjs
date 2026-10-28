@@ -59,6 +59,14 @@ test('security and append-only private drafts cannot be replaced by a generic pu
  assert.doesNotMatch(ui+lib,/(?:graph\.facebook\.com|graph\.instagram\.com|api\/v1\/executions)/);
 });
 
+test('calendar runtime diagnostics distinguish helper vs record errors without private leakage',()=>{
+ assert.match(ui,/cmsCalendarPlan\(\[\],\$calendarMonth,\$calendarKind,\$calendarStatus\)/);
+ assert.ok(ui.includes("'CALENDAR_ENGINE_RUNTIME_ERROR'"));
+ assert.ok(ui.includes("'CALENDAR_RECORD_RUNTIME_ERROR'"));
+ assert.match(lib,/!is_string\(\$item\['kind'\]\?\?null\)/);
+ assert.match(lib,/!isset\(\$knownKinds\[\$item\['kind'\]\]\)/);
+});
+
 test('calendar reports safe, specific diagnostics without revealing private draft contents',()=>{
  for(const code of ['CALENDAR_CODE_MISMATCH','CALENDAR_DRAFT_INVALID',
   'CALENDAR_DATE_INVALID','CALENDAR_FILTER_INVALID',

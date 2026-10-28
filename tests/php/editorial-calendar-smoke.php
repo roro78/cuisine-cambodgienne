@@ -63,6 +63,16 @@ $blocked=false;
 try{cmsCalendarPlan($badDraft,'2026-11');}
 catch(RuntimeException $e){$blocked=$e->getMessage()==='CALENDAR_CORRUPT_DRAFT';}
 requireCalendar($blocked,'CORRUPT_DRAFT');
+// A corrupted record's kind must not trigger PHP 8.4 TypeError; it must be
+// rejected as invalid private data without echoing the record's content.
+foreach([[],['recette'],123,true,null] as $invalidKind){
+    $typed=$items;
+    $typed['c-000000000000000000000001']['kind']=$invalidKind;
+    $blocked=false;
+    try{cmsCalendarPlan($typed,'2026-11');}
+    catch(RuntimeException $e){$blocked=$e->getMessage()==='CALENDAR_CORRUPT_DRAFT';}
+    requireCalendar($blocked,'MALFORMED_KIND_GUARD');
+}
 $unsafe=$items;
 $unsafe['c-000000000000000000000001']['title']='<script>alert(1)</script>';
 $plan=cmsCalendarPlan($unsafe,'2026-11');

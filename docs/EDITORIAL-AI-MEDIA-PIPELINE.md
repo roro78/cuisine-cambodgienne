@@ -181,3 +181,14 @@ Après déploiement du correctif #141, le Studio connecté affiche désormais `C
 - `CALENDAR_DATA_UNAVAILABLE` : exception non reconnue (le traitement continue d'échouer **fermement**, sans afficher de données partielles).
 
 Ces codes sont constants : **aucun titre, ID, note privée, chemin serveur ou message brut d'exception** n'est renvoyé au navigateur ni au log applicatif. Seul `index.php` doit changer pour affiner le diagnostic, après vérification que `lib.php` correspond à la même livraison. Les tests isolés couvrent des enregistrements privés réellement sauvegardés, les mois vides et les dates/stats invalides. La vue calendrier reste **en lecture seule**, les données existantes sont conservées. L'authentification OVH et les fichiers effectivement présents sur l'hébergement doivent encore être réceptionnés manuellement. Ne pas conclure que le problème est résolu du seul fait d'une CI verte.
+
+### Réception après `CALENDAR_RUNTIME_ERROR` (28 octobre 2026)
+
+OVH a confirmé que la projection du calendrier lève un `Error` PHP et que le navigateur retourne 503. La CI du dépôt valide un calendrier vide et des enregistrements complets, mais **ne démontre pas** que le `lib.php` réellement en production est identique au dépôt ou que les révisions privées réelles ont le même schéma.
+
+Le correctif de sécurité complémentaire :
+1. Rejette explicitement les catégories de brouillon non textuelles avant l'accès à un index PHP, au lieu d'un `TypeError` sur PHP 8.4. Une donnée de ce type devient `CALENDAR_DRAFT_INVALID`, et n'est jamais modifiée.
+2. En cas de **vraie erreur PHP** pendant la projection, exécute un contrôle **sans données** via `cmsCalendarPlan([],...)` : `CALENDAR_ENGINE_RUNTIME_ERROR` si le moteur échoue même à vide ; `CALENDAR_RECORD_RUNTIME_ERROR` si le moteur réussit à vide et que l'erreur dépend des enregistrements. Il s'agit d'une localisation, **pas** d'une preuve de corruption ni d'une réparation.
+3. Continue à consigner exclusivement un code fixe, sans message d'exception, donnée privée ou chemin serveur.
+
+Après une CI réussie, sauvegarder les fichiers OVH et déployer **ensemble** `gestion-contenus/index.php` et `gestion-contenus/lib.php` depuis le même commit. Confirmer la version réelle sur OVH avant de conclure. Pas de suppression ni de réécriture des versions privées. Si le code persiste, lire le journal PHP côté hébergeur (et non les seules lignes de requêtes HTTP), sans publier le cookie de session.

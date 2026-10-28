@@ -164,6 +164,17 @@ if($auth){
             ];
             $calendarError=$calendarErrors[$e->getMessage()]??(
                 $e instanceof Error?'CALENDAR_RUNTIME_ERROR':'CALENDAR_DATA_UNAVAILABLE');
+            if($calendarError==='CALENDAR_RUNTIME_ERROR'){
+                // Read-only control on empty input. Distinguishes a runtime
+                // failure inherent to the calendar helper from one triggered
+                // by records in the private catalogue. Never log raw errors.
+                try{
+                    cmsCalendarPlan([],$calendarMonth,$calendarKind,$calendarStatus);
+                    $calendarError='CALENDAR_RECORD_RUNTIME_ERROR';
+                }catch(Throwable $ignored){
+                    $calendarError='CALENDAR_ENGINE_RUNTIME_ERROR';
+                }
+            }
             error_log('[CDC_CMS_CALENDAR] '.$calendarError.' '
                 .($e instanceof UnexpectedValueException?'unexpected_value':
                   ($e instanceof Error?'php_error':'calendar_error')));
