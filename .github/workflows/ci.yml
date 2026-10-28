@@ -149,6 +149,9 @@ jobs:
       - name: Verify all new content forms, duplicate guards and private versions
         run: php tests/php/editorial-create-manual-smoke.php dist
 
+      - name: Verify the private editorial calendar and its filters
+        run: php tests/php/editorial-calendar-smoke.php
+
       - name: Generate autonomous six-post social review (offline)
         run: node scripts/build-social-review.mjs
 
