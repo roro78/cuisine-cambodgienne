@@ -207,6 +207,7 @@ if($auth){
             else{$creation=$creations[$cid];$createKind=$creation['kind'];}
         }
         $createForm=$creation??[];
+        $createExpected=(int)($creation['version']??0);
         try{$aiSettings=cmsAiBriefSettings($cfg);}catch(Throwable $e){$aiSettings=null;}
         try{$aiContentSettings=cmsAiContentSettings($cfg);}catch(Throwable $e){$aiContentSettings=null;}
         $candidateToken=$_POST['candidate_token']??($_GET['candidate']??'');
@@ -220,7 +221,9 @@ if($auth){
                     $candidate=$pendingContent['candidate'];
                     foreach(['title','angle','summary','research_note','fields'] as $field)
                         $createForm[$field]=$candidate[$field];
-                    $createForm['state']='draft';$createForm['target_date']='';
+                    $createForm['state']='draft';
+                    // Keep an explicit human planning date; the model cannot set one.
+                    $createForm['target_date']=$pendingContent['before_form']['target_date']??'';
                 }
             }catch(Throwable $e){
                 $pendingContent=null;http_response_code(409);
@@ -252,6 +255,7 @@ if($auth){
                     $expected=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
                         ['options'=>['min_range'=>0,'max_range'=>9998]]);
                     if($expected===false)throw new InvalidArgumentException('AI_CONTENT_INPUT');
+                    $createExpected=$expected;
                     // Validate the local form snapshot before calling; it is NOT sent.
                     cmsCreationCleanFields($createKind,$contentPosted['fields']);
                     if(strlen(json_encode($contentPosted,JSON_THROW_ON_ERROR))>100000)
@@ -324,6 +328,7 @@ if($auth){
                 ['options'=>['min_range'=>0,'max_range'=>9998]]);
             if($expected===false){http_response_code(422);$error='Version invalide.';}
             else{
+                $createExpected=$expected;
                 try{
                     $posted=[
                         'kind'=>$_POST['kind']??null,
@@ -723,7 +728,7 @@ qui restent à vérifier avant tout enregistrement.</p>
 <div class="note" role="status"><strong>Proposition générée — non enregistrée.</strong>
 <p>Relisez et corrigez les champs ci-dessous, puis enregistrez explicitement un brouillon.
 Cette proposition temporaire est valable au plus 30 minutes, tant que cette session reste ouverte.
-Elle n’est ni une page Astro complète ni une validation humaine.</p>
+Elle reste à compléter et à vérifier avant toute publication.</p>
 <p class="small"><?= cmsEsc($pendingContent['metadata']['provider_label']) ?> ·
 <?= cmsEsc($pendingContent['metadata']['model_label']) ?> ·
 <?= cmsEsc($pendingContent['metadata']['generated_at']) ?></p>
@@ -781,7 +786,7 @@ Vous pouvez créer le contenu manuellement ci-dessous.</p>
 <form method="post" class="stack" id="cms-new-editor">
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <input type="hidden" name="creation_id" value="<?= cmsEsc($creation['id']??'') ?>">
-<input type="hidden" name="expected_version" value="<?= (int)($pendingContent['expected_version']??($creation['version']??0)) ?>">
+<input type="hidden" name="expected_version" value="<?= (int)($pendingContent['expected_version']??$createExpected) ?>">
 <input type="hidden" name="kind" value="<?= cmsEsc($createKind) ?>">
 <?php if($pendingContent!==null): ?>
 <input type="hidden" name="candidate_token" value="<?= cmsEsc($pendingContent['token']) ?>">

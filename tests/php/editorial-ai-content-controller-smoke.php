@@ -93,7 +93,7 @@ PHP;
         'creation_id'=>'','expected_version'=>'0','kind'=>'recette','title'=>'Sujet HTTP distinct',
         'angle'=>'Angle HTTP à vérifier','objective'=>'Objectif HTTP','context'=>'Contexte explicite',
         'reference_id'=>'','semantic_review'=>'1','transmission_review'=>'1','summary'=>'SUMMARY_MUST_SURVIVE',
-        'research_note'=>'PRIVATE_NEVER_SENT','fields'=>$fixture['form_fields'],'state'=>'draft','target_date'=>''];
+        'research_note'=>'PRIVATE_NEVER_SENT','fields'=>$fixture['form_fields'],'state'=>'draft','target_date'=>'2099-12-20'];
     $post['fields']['intro']='PREVIOUS_INPUT_MUST_SURVIVE';
     $bad=$post;$bad['csrf']='invalid';[$status]=$request('/gestion-contenus/?new=1',$bad);
     httpCheck($status===403&&(int)file_get_contents($base.'/calls.txt')===0,'CSRF_BEFORE_PROVIDER');
@@ -106,6 +106,7 @@ PHP;
     httpCheck((glob($private.'/editorial-drafts/new-content/c-*.json')?:[])===[],'NO_AUTOMATIC_DRAFT');
     [$status,$html]=$request('/gestion-contenus/'.$location);
     httpCheck($status===200&&str_contains($html,'Proposition générée')&&substr_count($html,'id="cms-new-editor"')===1,'COMMON_EDITOR_CANDIDATE');
+    httpCheck(httpHidden($html,'target_date')==='2099-12-20','EXPLICIT_HUMAN_DATE_PRESERVED');
     $candidateToken=httpHidden($html,'candidate_token');
     [$status]=$request('/gestion-contenus/?new=1',$post);
     httpCheck($status===503&&(int)file_get_contents($base.'/calls.txt')===1,'REPLAY_NO_PROVIDER_CALL');
@@ -124,12 +125,13 @@ PHP;
     $save=['csrf'=>$csrf,'create_save'=>'1','candidate_token'=>$candidateToken,'kind'=>'recette',
         'creation_id'=>'','expected_version'=>'0','title'=>$fixture['title'],'angle'=>$fixture['angle'],
         'summary'=>$fixture['summary'],'research_note'=>$fixture['research_note'],
-        'fields'=>$fixture['form_fields'],'state'=>'draft','target_date'=>''];
+        'fields'=>$fixture['form_fields'],'state'=>'draft','target_date'=>'2099-12-20'];
     $save['fields']['intro']='Correction HTTP humaine';
     [$status]=$request('/gestion-contenus/?new=1',$save);httpCheck($status===303,'EXPLICIT_SAVE');
     $files=glob($private.'/editorial-drafts/new-content/c-*.json');httpCheck(count($files)===1,'ONE_SAVED_VERSION');
     $record=json_decode(file_get_contents($files[0]),true);$hash=hash_file('sha256',$files[0]);
     httpCheck($record['origin']==='ai'&&$record['reviewed']===false&&$record['state']==='draft'
+        &&$record['target_date']==='2099-12-20'
         &&in_array('fields.intro',$record['ai_content_edits'],true),'PROVENANCE_HUMAN_EDITS');
     [$status]=$request('/gestion-contenus/?new=1',$save);
     httpCheck($status===409&&count(glob($private.'/editorial-drafts/new-content/c-*.json'))===1,'NO_DOUBLE_SAVE');
@@ -137,9 +139,12 @@ PHP;
         // Reset only the isolated fixture ledger, never a production quota.
         file_put_contents($private.'/editorial-drafts/ai-brief-attempts.json','[]');
         [, $html]=$request('/gestion-contenus/?new=1');$post['ai_content_request_token']=httpHidden($html,'ai_content_request_token');
-        $post['context']=$mode;
+        $post['context']=$mode;$post['title']='Sujet HTTP distinct '.$mode;
+        $beforeCalls=(int)file_get_contents($base.'/calls.txt');
         [$status,$html]=$request('/gestion-contenus/?new=1',$post);
-        httpCheck(in_array($status,[422,503],true)&&str_contains($html,'SUMMARY_MUST_SURVIVE')
+        httpCheck($status===($mode==='BAD_JSON'?422:503)
+            &&(int)file_get_contents($base.'/calls.txt')===$beforeCalls+1
+            &&str_contains($html,'SUMMARY_MUST_SURVIVE')
             &&str_contains($html,'PREVIOUS_INPUT_MUST_SURVIVE')&&!str_contains($html,'SENSITIVE_PROVIDER_ERROR'),'FAILURE_PRESERVES_FORM');
         httpCheck(hash_file('sha256',$files[0])===$hash,'FAILURE_PRESERVES_VERSIONS');
     }
@@ -149,6 +154,17 @@ PHP;
     $manual=$save;unset($manual['candidate_token']);$manual['title']='Création manuelle HTTP distincte';$manual['fields']=[];
     [$status]=$request('/gestion-contenus/?new=1',$manual);
     httpCheck($status===303&&count(glob($private.'/editorial-drafts/new-content/c-*.json'))===2,'DISABLED_MANUAL_WORKS');
+    $manualRecord=null;
+    foreach(glob($private.'/editorial-drafts/new-content/c-*.json') as $path){
+        $value=json_decode(file_get_contents($path),true);if($value['origin']==='manual')$manualRecord=$value;
+    }
+    httpCheck(is_array($manualRecord),'MANUAL_RECORD');
+    $manual['creation_id']=$manualRecord['id'];$manual['expected_version']='1';
+    [$status]=$request('/gestion-contenus/?new=1',$manual);httpCheck($status===303,'MANUAL_V2');
+    [$status,$html]=$request('/gestion-contenus/?new=1',$manual);
+    httpCheck($status===409&&httpHidden($html,'expected_version')==='1','CONFLICT_DOES_NOT_ACK_NEW_VERSION');
+    [$status]=$request('/gestion-contenus/?new=1',$manual);
+    httpCheck($status===409,'REPEATED_STALE_SAVE_BLOCKED');
     echo "CMS_AI_CONTENT_CONTROLLER_HTTP_PASS {\"csrf\":true,\"session\":true,\"explicitSave\":true,\"realProviderCalls\":0,\"https\":\"simulated_loopback\"}\n";
 }finally{
     if(is_resource($server)){proc_terminate($server);foreach([1,2] as $i)if(isset($pipes[$i])&&is_resource($pipes[$i]))fclose($pipes[$i]);proc_close($server);}

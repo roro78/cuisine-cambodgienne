@@ -27,6 +27,8 @@ Les branches antérieures, `artifacts/`, historiques et configurations sont cons
 7. **Enregistrer une nouvelle version privée** appelle `cmsAiContentSave`, puis
    `cmsCreationSave` sous son verrou existant. La première sauvegarde d'un candidat
    est un `draft`, `reviewed: false`, canal `site` ; aucune publication ni audio.
+   Une date de planification déjà saisie par l'humain est conservée ; le modèle
+   ne peut ni en produire une ni en faire une autorisation de publication.
 8. Écarter une proposition restaure la saisie précédente dans ce formulaire,
    sans réécrire les révisions déjà enregistrées.
 
@@ -125,6 +127,12 @@ reste dans le formulaire. Aucun brouillon historique n'est migré ou supprimé.
 Local : 37 contrats Node PASS ; Astro 0 erreur/0 warning (24 hints) ; build
 48 pages ; diff check. PHP absent sur Windows : la preuve PHP est exclusivement
 la CI de la [PR #151](https://github.com/roro78/cuisine-cambodgienne/pull/151), au SHA exact.
+
+Première preuve C2 acquise : [CI #40787379466 SUCCESS](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40787379466)
+sur `355189c`, y compris cinq familles, deux processus de quota et serveur HTTP
+PHP 8.3/8.4. La tête suivante renforce les assertions des erreurs fournisseur,
+des dates humaines et du maintien de la version attendue après conflit ; recevoir
+sa CI complète dans la même PR avant revue finale.
 
 Les nouveaux tests PHP 8.3/8.4 couvrent :
 
