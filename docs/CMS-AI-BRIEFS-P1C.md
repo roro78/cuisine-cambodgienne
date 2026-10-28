@@ -59,6 +59,8 @@ La réponse est limitée à 16 000 octets avant décodage et à une profondeur J
 
 Les smokes PHP 8.3/8.4 utilisent uniquement des adaptateurs simulés et le vrai catalogue du build. Ils couvrent les cinq familles, référence recette pour atelier, absence de fuite de configuration/brouillons, refus avant appel, schéma de sortie, XSS, quotas, erreur sans retry, course entre projets, provenance et historique, formulaire commun et calendrier sans date. Les contrats Node existants restent obligatoires.
 
-Les résultats de la CI du commit final sont à consulter dans la PR P1C. **Aucun appel à un vrai modèle, aucun test privé mobile de cette interface, aucune configuration OVH et aucun déploiement P1C ne sont attestés par ces smokes.** La réception du calendrier du jalon A reste acquise séparément.
+**Première preuve acquise :** [CI #40768379266](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40768379266), commit `c53cbd89719ea3a56c4c3784c10de6481f130abd`, **SUCCESS** pour le job principal et PHP 8.3/8.4, avec `CMS_AI_BRIEFS_OFFLINE_PASS` sur les cinq familles. La [PR #147](https://github.com/roro78/cuisine-cambodgienne/pull/147) cible la branche de #146 ; elle devra être réévaluée vers `main` après fusion autorisée du parent. Vérifier également la CI de la dernière tête de #147 avant fusion.
+
+**Aucun appel à un vrai modèle, aucun test privé mobile de cette interface, aucune configuration OVH et aucun déploiement P1C ne sont attestés par ces smokes.** La réception du calendrier du jalon A reste acquise séparément.
 
 Suite : valider un adaptateur serveur existant ou son raccordement minimal, effectuer une recette de brief contrôlée avec quota, puis réaliser le jalon C (champs métier des cinq familles). Direction artistique, génération d'images, aperçu Astro, conversion/publication et calendrier média avancé restent leurs propres étapes.

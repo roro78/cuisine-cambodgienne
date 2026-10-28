@@ -417,6 +417,7 @@ padding:11px 16px;font:inherit;cursor:pointer}.btn{text-decoration:none;display:
 button.secondary{background:#eef3eb;color:#203228;border:1px solid #d1dbcd}
 input,select,textarea{font:inherit;padding:10px;border:1px solid #a7b3a6;
 border-radius:7px;width:100%;background:white;color:#203228}
+input[type=checkbox]{width:1.25rem;height:1.25rem;padding:0;vertical-align:middle;margin-right:8px}
 textarea{resize:vertical;min-height:110px}
 .create-collection{border:1px solid #d9ddd5;border-radius:10px;padding:12px;min-width:0}
 .create-collection legend{font-weight:700;padding:0 5px}
