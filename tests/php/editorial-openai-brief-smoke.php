@@ -17,7 +17,10 @@ foreach(array_keys(cmsCreationKinds()) as $kind){
         'contract'=>'cdc-editorial-ai-brief-request-v1',
         'kind'=>$kind,'title'=>'Sujet de travail','angle'=>'Angle spécifique',
         'objective'=>'Question du lecteur','context'=>'Contexte soumis expressément',
-        'reference'=>null,'max_output_tokens'=>1200,'timeout_seconds'=>20
+        'reference'=>['id'=>'recette:publique','kind'=>'recette',
+            'title'=>'Recette publique','summary'=>'Résumé public',
+            'private_secret'=>'DO_NOT_TRANSMIT'],
+        'max_output_tokens'=>1200,'timeout_seconds'=>20
     ];
     $reply=['title'=>'Proposition','angle'=>'Angle utile',
         'summary'=>'Résumé à relire','research_note'=>'Source à contrôler'];
@@ -48,6 +51,8 @@ foreach(array_keys(cmsCreationKinds()) as $kind){
         $sent=json_decode($payload['input'][0]['content'][0]['text'],true,5,JSON_THROW_ON_ERROR);
         checkOpenAi($sent['famille']===$kind && count($sent)===6,
             'ONLY_EXPLICIT_BRIEF_AND_PUBLIC_REFERENCE');
+        checkOpenAi(count($sent['reference_publique'])===4
+            && !str_contains($body,'DO_NOT_TRANSMIT'),'PUBLIC_REFERENCE_WHITELIST');
         return $fakeResponse;
     };
     $response=cmsOpenAiBriefOpenAi($input,$apiKey,'gpt-6-luna',$fake);
@@ -61,6 +66,10 @@ foreach(array_keys(cmsCreationKinds()) as $kind){
     foreach([
         ['status'=>'incomplete','output'=>[]],
         ['status'=>'completed','output'=>[]],
+        ['status'=>'completed','output'=>[
+            ['type'=>'function_call','name'=>'exfiltrate','arguments'=>'{}'],
+            ['type'=>'message','role'=>'assistant','content'=>[
+                ['type'=>'output_text','text'=>$replyJson]]]]],
         ['status'=>'completed','output'=>[
             ['type'=>'message','role'=>'assistant','content'=>[['type'=>'refusal','refusal'=>'No']]]]],
         ['status'=>'completed','output'=>[
