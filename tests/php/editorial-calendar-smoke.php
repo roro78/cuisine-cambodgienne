@@ -29,6 +29,10 @@ foreach(['2026-00','2026-13','2026-1','<img>','2026-11-01','2019-11'] as $bad){
     try{cmsCalendarMonth($bad);}catch(InvalidArgumentException $e){$invalid=true;}
     requireCalendar($invalid,'BAD_MONTH_'.$bad);
 }
+$empty=cmsCalendarPlan([],'2026-10');
+requireCalendar($empty['total']===0 && $empty['month_count']===0
+    && $empty['undated_count']===0 && $empty['days']===[],
+    'FIRST_EMPTY_PRODUCTION_CALENDAR');
 $nov=cmsCalendarPlan($items,'2026-11');
 requireCalendar($nov['total']===5 && $nov['month_count']===2
     && $nov['undated_count']===1 && count($nov['other'])===2,'MONTH_TOTALS');

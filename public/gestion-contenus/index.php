@@ -104,7 +104,7 @@ if(!isset(cmsCreationKinds()[$createKind]))$createKind='recette';
 $createForm=[];$creation=null;$creations=[];$createVersion=null;
 $calendarMode=!$newMode && isset($_GET['calendar']);
 $calendarMonth=gmdate('Y-m');$calendarKind='all';$calendarStatus='all';
-$calendarPlan=null;$calendarPrev='';$calendarNext='';
+$calendarPlan=null;$calendarPrev='';$calendarNext='';$calendarError='';
 if($calendarMode){
     try{
         $calendarMonth=cmsCalendarMonth($_GET['month']??gmdate('Y-m'));
@@ -140,9 +140,25 @@ if($auth){
     try{
         $creationDir=cmsCreationDir($private);
         $creations=cmsCreationList($creationDir);
-        if($calendarMode)
-            $calendarPlan=cmsCalendarPlan($creations,$calendarMonth,$calendarKind,$calendarStatus);
     }catch(Throwable $e){cmsUnavailable();}
+    // A calendar is only a READ-ONLY view. A failure in its projection must not
+    // hide the whole CMS or masquerade as an expired login. Fail closed for the
+    // affected view, preserve all private drafts and report a safe diagnostic.
+    if($calendarMode){
+        try{
+            if(!function_exists('cmsCalendarPlan'))
+                throw new RuntimeException('CALENDAR_HELPER_MISSING');
+            $calendarPlan=cmsCalendarPlan(
+                $creations,$calendarMonth,$calendarKind,$calendarStatus);
+        }catch(Throwable $e){
+            $calendarError=$e->getMessage()==='CALENDAR_HELPER_MISSING'
+                ? 'CALENDAR_CODE_MISMATCH' : 'CALENDAR_DATA_UNAVAILABLE';
+            error_log('[CDC_CMS_CALENDAR] '.$calendarError.' '
+                .($e instanceof UnexpectedValueException?'unexpected_value':
+                  ($e instanceof Error?'php_error':'calendar_error')));
+            http_response_code(503);
+        }
+    }
     if($newMode){
         $cid=cmsCreationId($_POST['creation_id']??($_GET['cid']??null));
         if($cid!==null){
@@ -439,6 +455,14 @@ Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
 <h2>Calendrier éditorial — <?= cmsEsc($calendarMonth) ?></h2>
 <p class="small muted">Dates cibles des projets de nouvelles pages.
 Elles ne déclenchent aucune publication sur le site, Facebook ou Instagram.</p>
+<?php if($calendarError!==''): ?>
+<p class="notice" role="alert">Impossible de charger ce calendrier :
+<strong><?= cmsEsc($calendarError) ?></strong>. Les projets privés et leurs versions
+restent conservés. Revenez à la <a href="?">bibliothèque</a> ; vérifiez
+que les fichiers <code>index.php</code> et <code>lib.php</code> proviennent
+de la même livraison. Le journal d'erreurs PHP conserve uniquement le code
+de diagnostic, sans contenu privé.</p>
+<?php else: ?>
 <form method="get" class="toolbar">
 <input type="hidden" name="calendar" value="1">
 <label>Mois<input type="month" name="month" min="2020-01" max="2099-12"
@@ -508,6 +532,7 @@ Elles ne déclenchent aucune publication sur le site, Facebook ou Instagram.</p>
 <p class="note">Ce calendrier est un outil de planification éditoriale.
 Aucune date, même pour une fiche à relire, n'autorise la mise en ligne.
 L'IA, les créneaux Facebook/Instagram et les statistiques viendront dans des étapes ultérieures.</p>
+<?php endif; ?>
 </section>
 <?php elseif($newMode): ?>
 <p><a href="?">Retour à la bibliothèque</a></p>
