@@ -17,8 +17,11 @@ test('CMS privé sous HTTPS et protégé contre les modifications anonymes',()=>
  // The new row add/remove controls need a single nonce-bound inline helper.
  // Retain strict CSP and forbid scripts without the exact generated nonce.
  assert.match(ui,/script-src 'nonce-\{\$nonce\}'/);
- const scripts=[...ui.matchAll(/<script\b[^>]*>/g)].map(x=>x[0]);
- assert.deepEqual(scripts,['<script nonce="<?= cmsEsc($nonce) ?>">']);
+ // A PHP short echo contains "?>" inside the HTML attribute; do not
+ // mistake that ">" for the end of the opening <script> tag.
+ assert.equal((ui.match(/<script\b/g)||[]).length,1);
+ assert.equal((ui.match(/<script nonce="<\?= cmsEsc\(\$nonce\) \?>">/g)||[]).length,1);
+ assert.doesNotMatch(ui,/<script[^\n]+src=/);
  assert.doesNotMatch(ui,/github_token|N8N_API_KEY|service_role/);
 });
 test('Propositions versionnées sans publication directe',()=>{
