@@ -1,5 +1,7 @@
 # Cuisine du Cambodge — plan durable du CMS éditorial
 
+> **Nouveau chantier prioritaire :** [Pipeline de création manuelle + IA et calendrier média](EDITORIAL-AI-MEDIA-PIPELINE.md). Création de nouvelles pages dans les gabarits actuels, doublons, revue et calendrier AVANT publication sur le site et n8n/Meta. Le contrat technique P1A est distinct de l'interface de création P1B (non encore livrée).
+>
 > **Règle permanente depuis le 28 octobre 2026 :** [Architecture du Studio pour toutes les fiches, présentes et futures](CMS-STUDIO-ARCHITECTURE.md). Les corrections ergonomiques de la PR #136 sont un gabarit unique partagé, jamais une exception pour Bai Sach Chrouk. Les trois index doivent couvrir exactement les mêmes identifiants ; aucun nouveau contenu sans éditeur guidé correspondant.
 
 
