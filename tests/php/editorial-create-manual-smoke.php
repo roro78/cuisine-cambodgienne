@@ -78,6 +78,12 @@ try{
         if($first===null)$first=$record;
     }
     requireCreation(count(cmsCreationList($dir))===$count,'PLANNED_CATALOG');
+    // Calendar must accept actual append-only draft records, not only synthetic fixtures.
+    $calendar=cmsCalendarPlan(cmsCreationList($dir),'2026-11');
+    requireCreation($calendar['total']===$count
+        && $calendar['month_count']===$count
+        && $calendar['undated_count']===0,
+        'REAL_PERSISTED_DRAFTS_CALENDAR');
     // Block published content title of the SAME kind; preserve complementary cultural angles.
     $publishedRecipe=null;
     foreach($published as $page)if($page['kind']==='recette'){$publishedRecipe=$page;break;}
