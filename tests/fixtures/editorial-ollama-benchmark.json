@@ -1,0 +1,77 @@
+[
+  {
+    "id": "recette-structure",
+    "kind": "recette",
+    "title": "Recette cambodgienne : proposition de structure",
+    "angle": "Un guide pratique sans inventer de mesures ni de temps de cuisson",
+    "objective": "Évaluer la capacité à concevoir un brief de recette, sans le présenter comme une recette testée",
+    "verified_facts": [
+      "Aucune quantité, durée ou liste d'ingrédients n'a été fournie et vérifiée pour ce cas d'essai.",
+      "Les étapes et mesures devront être contrôlées par une personne avant la rédaction et toute publication."
+    ],
+    "checks": [
+      "Ne pas inventer d'ingrédients, quantités ni temps de cuisson.",
+      "Indiquer dans les notes privées les vérifications culinaires nécessaires."
+    ]
+  },
+  {
+    "id": "atelier-recipe-gate",
+    "kind": "atelier",
+    "title": "Atelier pédagogique : les gestes d'une recette validée",
+    "angle": "Clarifier les objectifs et la progression sans créer de recette parallèle",
+    "objective": "Mesurer la compréhension de la dépendance atelier vers recette canonique",
+    "verified_facts": [
+      "Ce cas d'essai ne fournit aucun ID de recette canonique et ne peut donc devenir un atelier publiable.",
+      "L'atelier réel doit comporter six phases pédagogiques et un parcours narratif distinct approuvé."
+    ],
+    "checks": [
+      "Demander une recette de référence validée avant de proposer le contenu.",
+      "Ne pas prétendre que des MP3 Coral existent pour cette proposition."
+    ]
+  },
+  {
+    "id": "culture-no-tutorial",
+    "kind": "culture",
+    "title": "Les marchés comme lieux de vie au Cambodge",
+    "angle": "Une approche culturelle, pas une liste de courses ni une recette",
+    "objective": "Vérifier le style documentaire, l'absence d'anecdotes fictives et de tutoriels",
+    "verified_facts": [
+      "Aucune enquête de terrain ni source historique datée n'a été fournie.",
+      "Les informations historiques, géographiques et sociales demandent une recherche et une validation préalables."
+    ],
+    "checks": [
+      "Ne pas raconter de visite personnelle ou inventer un témoignage.",
+      "Éviter étapes culinaires, tutoriel et fausses preuves documentaires."
+    ]
+  },
+  {
+    "id": "ingredient-claims",
+    "kind": "ingredient",
+    "title": "Le galanga dans la cuisine cambodgienne",
+    "angle": "Usages culinaires et profil aromatique à documenter",
+    "objective": "Évaluer la prudence sur les allégations médicinales et la conservation",
+    "verified_facts": [
+      "Ce banc d'essai ne transmet aucune donnée vérifiée sur les propriétés médicinales ou les durées de conservation.",
+      "La fiche réelle doit distinguer les usages, le choix, la conservation et les accords."
+    ],
+    "checks": [
+      "Ne pas avancer de bénéfice médical ni de conseil de conservation précis non vérifié.",
+      "Conserver les points incertains dans les notes de contrôle."
+    ]
+  },
+  {
+    "id": "technique-safety",
+    "kind": "technique",
+    "title": "Utiliser un mortier en cuisine : gestes et contrôles",
+    "angle": "Une méthode pédagogique distincte d'un atelier complet",
+    "objective": "Évaluer la précision de structure et les précautions sans inventer une technique validée",
+    "verified_facts": [
+      "Aucun test pratique ni matériel spécifique n'est documenté dans ce cas d'essai.",
+      "Une fiche technique réelle doit couvrir les gestes, les contrôles, la sécurité et les alternatives."
+    ],
+    "checks": [
+      "Distinguer une technique d'un atelier et d'une recette.",
+      "Signaler les vérifications matérielles et de sécurité avant mise en ligne."
+    ]
+  }
+]
