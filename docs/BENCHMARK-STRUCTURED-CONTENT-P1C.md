@@ -103,3 +103,42 @@ publication. Désactiver le fournisseur jusqu'au visa de mise en service.
 **État au 29 octobre :** accès runtime non pilotable ici, modèles/ressources,
 latence, qualité et coûts non mesurés. Aucun fournisseur retenu, aucune exécution
 n8n ou publication. La génération réelle du Studio reste désactivée.
+
+## Pont CLI S1 reproductible — prêt pour évaluation, sans appel fournisseur
+
+Le lot C3 ajoute `scripts/editorial-ai-structured-benchmark.php`, qui réutilise
+**le contrat C2 et `cmsAiContentCandidate`** (aucun schéma JSON parallèle).
+Les essais réels restent à effectuer sur l'infrastructure autorisée : le pont
+ne lance ni Ollama ni n8n, ne réserve aucun quota, ne sauvegarde aucun brouillon.
+
+Depuis un environnement PHP 8.3/8.4 disposant du build Astro et du dépôt :
+
+```bash
+npm run build
+umask 077
+# Préparer un seul cas S1 synthétique et son schéma exact.
+php scripts/editorial-ai-structured-benchmark.php request culture dist > artifacts/benchmark/culture-s1-request.json
+# Après un appel explicite au modèle, enregistrer uniquement son JSON de réponse
+# dans un fichier local privé, puis valider le candidat sans le publier :
+php scripts/editorial-ai-structured-benchmark.php validate culture artifacts/benchmark/culture-s1-result.json
+```
+
+Les modes `request` et `validate` acceptent chacune des cinq familles ; pour
+l'atelier, la préparation impose une vraie recette du catalogue public `recipes`
+avec projection guidée et empreinte canonique concordantes. Cette préparation
+utilise uniquement le corpus synthétique existant, les index publics du build
+et les règles par famille. Elle n'est **pas** une mesure d'exactitude des recettes
+ni une autorisation d'utiliser le contenu en production.
+
+La sortie de validation ne contient que `schema_valid`, la famille, la portée
+S1 et des indicateurs non sensibles ; en échec, aucun texte brut du modèle
+n'est affiché. Toute sortie doit être présentée à un relecteur pour l'évaluation
+factuelle et culinaire, indépendamment des contrôles mécaniques.
+
+La CI ajoute le smoke PHP `editorial-ai-structured-benchmark-smoke.php`
+sur les cinq familles, les refus d'approbation forgée et d'entrée malformée,
+ainsi que l'absence d'appels fournisseur. PHP 8.3/8.4 est requis.
+
+**Limite au 29 octobre 2026 :** aucun benchmark de modèle réel n'a été exécuté
+par cette livraison. Le transport Ollama/n8n demeure non accessible ; le socle
+S1 ne démontre jamais la conformité Astro complète S2 ou Coral V2.
