@@ -722,7 +722,7 @@ qui restent à vérifier avant tout enregistrement.</p>
 <?php if($pendingContent!==null): ?>
 <div class="note" role="status"><strong>Proposition générée — non enregistrée.</strong>
 <p>Relisez et corrigez les champs ci-dessous, puis enregistrez explicitement un brouillon.
-Cette proposition temporaire reste disponible 30 minutes dans cette session.
+Cette proposition temporaire est valable au plus 30 minutes, tant que cette session reste ouverte.
 Elle n’est ni une page Astro complète ni une validation humaine.</p>
 <p class="small"><?= cmsEsc($pendingContent['metadata']['provider_label']) ?> ·
 <?= cmsEsc($pendingContent['metadata']['model_label']) ?> ·

@@ -109,6 +109,18 @@ PHP;
     $candidateToken=httpHidden($html,'candidate_token');
     [$status]=$request('/gestion-contenus/?new=1',$post);
     httpCheck($status===503&&(int)file_get_contents($base.'/calls.txt')===1,'REPLAY_NO_PROVIDER_CALL');
+    $discard=$post;unset($discard['ai_content_generate']);
+    $discard['ai_content_discard']='1';$discard['candidate_token']=$candidateToken;
+    [$status,$html]=$request('/gestion-contenus/?new=1',$discard);
+    httpCheck($status===200&&str_contains($html,'saisie précédente est restaurée')
+        &&str_contains($html,'PREVIOUS_INPUT_MUST_SURVIVE')
+        &&(glob($private.'/editorial-drafts/new-content/c-*.json')?:[])===[],'DISCARD_RESTORES_INPUT');
+    $post['ai_content_request_token']=httpHidden($html,'ai_content_request_token');
+    // Reset the isolated fixture ledger to exercise the next explicit action.
+    file_put_contents($private.'/editorial-drafts/ai-brief-attempts.json','[]');
+    [$status,,$location]=$request('/gestion-contenus/?new=1',$post);
+    httpCheck($status===303,'GENERATE_AFTER_DISCARD');
+    [, $html]=$request('/gestion-contenus/'.$location);$candidateToken=httpHidden($html,'candidate_token');
     $save=['csrf'=>$csrf,'create_save'=>'1','candidate_token'=>$candidateToken,'kind'=>'recette',
         'creation_id'=>'','expected_version'=>'0','title'=>$fixture['title'],'angle'=>$fixture['angle'],
         'summary'=>$fixture['summary'],'research_note'=>$fixture['research_note'],

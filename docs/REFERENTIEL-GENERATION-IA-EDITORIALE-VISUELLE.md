@@ -2,6 +2,13 @@
 
 **Version 1.0 — 28 octobre 2026.** Contrat **cible** de production, non annonce d'une IA déjà raccordée au Studio. À appliquer à toute nouvelle recette, tout atelier, Carnet, ingrédient ou technique, sans recréer de gabarit ni réécrire le contenu existant. L'IA reste un assistant sous validation humaine.
 
+**29 octobre :** C1 fusionné (#150). [C2 en PR #151](CMS-STRUCTURED-GENERATION-P1C-C2.md)
+raccorde le socle de champs à une proposition temporaire, corrigible puis
+enregistrée explicitement dans les versions privées. Aucun fournisseur activé,
+article complet, média ou MP3 généré. Les exigences spécialisées et les gates
+de validation restent obligatoires ; le socle actuel n'est pas une autorisation
+de conversion ou publication Astro.
+
 **État prioritaire après #149 :** briefs privés et adaptateur optionnel intégrés
 dans GitHub ; aucune activation IA OVH ni mesure qualitative réelle attestée.
 Le [contrat structuré P1C-C1](CMS-STRUCTURED-CONTENT-P1C-C1.md), préparé en branche,

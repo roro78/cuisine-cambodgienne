@@ -145,6 +145,28 @@ try{
         return c2Json($v);
     });
     c2Fail(static fn()=>cmsAiContentGenerate($private,$input,$catalog,$cfg,$canonical,$guided),'CREATION_DUPLICATE');
+    // A collision arising AFTER generation is refused again at explicit save.
+    $private=$fresh('race-final-save');
+    $cfg=c2Config(static fn():string=>c2Json(contentFixture('recette')));
+    $pending=cmsAiContentGenerate($private,$input,$catalog,$cfg,$canonical,$guided);
+    cmsCreationSave($private,['kind'=>'recette','title'=>$input['title'],'angle'=>'Concurrent','fields'=>[]],$catalog,0);
+    $posted=['kind'=>'recette','title'=>$pending['candidate']['title'],'angle'=>$pending['candidate']['angle'],
+        'summary'=>$pending['candidate']['summary'],'research_note'=>$pending['candidate']['research_note'],
+        'fields'=>$pending['candidate']['form_fields'],'state'=>'draft'];
+    c2Fail(static fn()=>cmsAiContentSave($private,$posted,$catalog,0,null,$pending,$canonical),'CREATION_DUPLICATE');
+    c2Check(count(cmsCreationList(cmsCreationDir($private)))===1,'NO_DUPLICATE_PROJECT');
+    // Legacy brief provenance coexists, without altering its immutable v1.
+    $private=$fresh('legacy-brief');
+    $legacy=['contract'=>'cdc-editorial-ai-brief-v1','model_label'=>'synthetic-brief',
+        'input_title'=>$input['title'],'input_angle'=>$input['angle'],'objective'=>$input['objective'],
+        'context'=>'Legacy explicit brief context','reference_id'=>'',
+        'requested_at'=>gmdate('Y-m-d\TH:i:s\Z'),'idea_review_confirmed'=>true];
+    $old=cmsCreationSave($private,['kind'=>'recette','title'=>$input['title'],'angle'=>$input['angle'],'fields'=>[]],$catalog,0,null,$legacy);
+    $oldFile=cmsCreationDir($private).'/'.$old['id'].'.0001.json';$oldHash=hash_file('sha256',$oldFile);
+    $pending=cmsAiContentGenerate($private,$input,$catalog,$cfg,$canonical,$guided,$old['id'],1);
+    $saved=cmsAiContentSave($private,$posted,$catalog,1,$old['id'],$pending,$canonical);
+    c2Check($saved['ai_brief']===$old['ai_brief']&&isset($saved['ai_content'])
+        &&hash_file('sha256',$oldFile)===$oldHash,'LEGACY_BRIEF_PRESERVED');
     // Shared quota in two real PHP processes: only one reservation wins cooldown.
     $private=$fresh('race-quota');cmsDraftDir($private);$processes=[];
     for($i=0;$i<2;$i++){
@@ -159,7 +181,8 @@ try{
     $ledger=cmsDraftDir($private).'/ai-brief-attempts.json';
     c2Check(count(json_decode(file_get_contents($ledger),true))===1&&(fileperms($ledger)&0077)===0,'SHARED_LEDGER');
     $gateway='https://n8n.orvekio.com/webhook/synthetic-test-only';$token=str_repeat('A',40);
-    $request=cmsAiContentRequest($input,$catalog,$canonical,$guided);
+    $gatewayInput=$input;unset($gatewayInput['transmission_review']);
+    $request=cmsAiContentRequest($gatewayInput,$catalog,$canonical,$guided);
     $request['timeout_seconds']=20;$request['max_output_tokens']=6000;$request['response_max_bytes']=30000;
     $httpCalls=0;
     $result=cmsAiContentGatewayCall($request,$gateway,$token,static function($url,$body,$key)use(&$httpCalls,$token):string{
