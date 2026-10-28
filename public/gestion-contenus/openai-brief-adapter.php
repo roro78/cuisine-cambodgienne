@@ -26,11 +26,15 @@ function cmsOpenAiBriefPayload(array $request,string $model): array {
         throw new RuntimeException('AI_BRIEF_PROVIDER_CONFIG');
     // Whitelist exactly the editorial inputs. Private sessions, drafts, and
     // configuration cannot enter the provider payload accidentally.
+    $publicReference=$reference===null?null:[
+        'id'=>$reference['id'],'kind'=>$reference['kind'],
+        'title'=>$reference['title'],'summary'=>$reference['summary']
+    ];
     $brief=[
         'famille'=>$request['kind'],'sujet'=>$request['title'],
         'angle'=>$request['angle'],'objectif'=>$request['objective'],
         'contexte_explicitement_soumis'=>$request['context'],
-        'reference_publique'=>$reference
+        'reference_publique'=>$publicReference
     ];
     $fields=[];
     foreach(['title','angle','summary','research_note'] as $name)
@@ -74,7 +78,10 @@ function cmsOpenAiBriefExtract(string $raw): string {
     $texts=[];
     foreach($data['output'] as $item){
         if(!is_array($item))throw new RuntimeException('AI_BRIEF_PROVIDER_RESPONSE');
-        if(($item['type']??null)!=='message')continue;
+        if(($item['type']??null)==='reasoning')continue;
+        // Never accept tool calls or unrecognized response items as editorial text.
+        if(($item['type']??null)!=='message')
+            throw new RuntimeException('AI_BRIEF_PROVIDER_RESPONSE');
         if(($item['role']??null)!=='assistant' || !is_array($item['content']??null))
             throw new RuntimeException('AI_BRIEF_PROVIDER_RESPONSE');
         foreach($item['content'] as $part){
