@@ -71,6 +71,12 @@ L'édition guidée universelle **n'est pas** une publication universelle : publi
 
 **Tout changement qui casse ce contrat doit échouer en CI et être corrigé avant fusion.** Les adaptations de design restent possibles, mais doivent être réalisées **sur le composant partagé** et testées pour l'ensemble du catalogue, jamais sur une seule fiche.
 
+## 6 bis. Création de nouveaux contenus (P1B)
+
+L'éditeur de page publiée et le formulaire de nouvelle page restent dans **un seul Studio**. `?new=1` propose les cinq types dans un formulaire de création basé sur les composants de `cmsCreationFormHtml` (PHP), sans aucune page PHP supplémentaire, aucune duplication par recette et aucun JS dépendant d'un service externe. Les propositions utilisent `cmsCreationSave` et le stockage privé append-only `editorial-drafts/new-content`, séparé du stockage des propositions de modification SHA-locked. Le titre identique de même famille est refusé ; les titres proches restent soumis à une revue humaine.
+
+Un statut « Prêt pour relecture » ne vaut **pas** publication, validation de source, création de page Astro, génération audio ou autorisation Meta. Le contrat d'entrée commun manuel / IA est décrit dans `EDITORIAL-AI-MEDIA-PIPELINE.md`.
+
 ## 7. Cycle standard de création de contenu
 
 1. Vérifier anti-doublon, angle éditorial et autorisations médias/audio.

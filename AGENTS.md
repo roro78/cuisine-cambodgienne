@@ -17,6 +17,7 @@
 Lire `docs/EDITORIAL-AI-MEDIA-PIPELINE.md` pour les chantiers de création manuelle/IA et calendrier média.
 
 - Le CMS doit permettre de **créer** de nouvelles fiches des cinq familles, en plus d'éditer les fiches existantes ; même gabarit et mêmes composants pour le mode manuel ou IA.
+- La création manuelle P1B s'effectue avec le formulaire commun `cmsCreationFormHtml` et le stockage privé de `cmsCreationSave`; jamais en écrivant directement dans les sources Astro. Ne pas confondre « prêt pour relecture » avec « approuvé », et préserver l'historique déjà présent.
 - Le module `scripts/editorial-content-pipeline.mjs` fixe le premier contrat d'idées, vérification anti-doublons et revue humaine. Ce n'est pas une API IA ni un outil de publication.
 - Aucun nouveau contenu ou plan social sans vérification des titres et slugs déjà publiés **et** des propositions non publiées ; la similarité sémantique requiert aussi une revue.
 - Toute réponse IA est un **brouillon** ; ni une date du calendrier ni un statut de génération ne valent autorisation de publication.
