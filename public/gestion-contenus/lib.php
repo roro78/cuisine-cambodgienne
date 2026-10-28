@@ -985,7 +985,7 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
             throw new RuntimeException('CREATION_CONFLICT');
         $similar=cmsCreationDuplicateCheck($kind,$slug,$catalog,$all,$id);
         $id=$id??'c-'.bin2hex(random_bytes(12));
-        if(isset($all[$id]))throw new RuntimeException('CREATION_CONFLICT');
+        if($previous===null && isset($all[$id]))throw new RuntimeException('CREATION_CONFLICT');
         $version=$expected+1;
         $record=[
             'contract'=>'cdc-editorial-new-content-v1',
