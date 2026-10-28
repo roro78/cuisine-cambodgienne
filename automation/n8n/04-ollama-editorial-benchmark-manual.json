@@ -1,0 +1,116 @@
+{
+  "name": "Cuisine du Cambodge - 04 - Banc essai Ollama éditorial MANUEL (isolé)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "4b7f1d88-d12a-4bcb-9010-ecb36b5b2f08",
+      "name": "Déclenchement manuel uniquement",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// BENCHMARK MANUEL UNIQUEMENT : modifier ces deux paramètres pour un essai.\n// Ne jamais y coller de clés, brouillons privés, identifiants, ni recettes non publiques.\nconst model='llama3.2:latest'; // puis qwen3:8b / gemma3:12b si installés\nconst kind='culture'; // recette | atelier | culture | ingredient | technique\nif(!['llama3.2:latest','qwen3:8b','gemma3:12b'].includes(model))throw Error('BENCH_MODEL');\nif(!['recette','atelier','culture','ingredient','technique'].includes(kind))throw Error('BENCH_KIND');\nconst cases={\n recette:['Recette cambodgienne : brief sans mesures fournies','Ne pas inventer ingrédients, cuisson ni quantités.'],\n atelier:['Atelier théorique autour d’une recette canonique','Aucun ID de recette validée fourni : ne pas prétendre atelier publiable ni audio validé.'],\n culture:['Les marchés comme lieux de vie au Cambodge','Aucune source historique ni témoignage fournis : rester documentaire et prudent.'],\n ingredient:['Le galanga et ses usages culinaires','Pas de preuve de bénéfice médical ni de durée de conservation fournie.'],\n technique:['Les gestes du mortier','Aucun test pratique documenté : noter les précautions à vérifier.']\n};\nconst [title,fact]=cases[kind];\nconst limits={title:180,angle:700,summary:2000,research_note:3000};\nconst properties=Object.fromEntries(Object.entries(limits).map(([name,maxLength])=>[name,{type:'string',minLength:1,maxLength}]));\nconst request={\n model,stream:false,think:false,keep_alive:'1m',\n options:{temperature:0,num_predict:1200,num_ctx:4096},\n format:{type:'object',properties,required:Object.keys(properties),additionalProperties:false},\n messages:[\n {role:'system',content:'Rédige en français un BRIEF non approuvé. JSON uniquement : title, angle, summary, research_note. Ne pas inventer faits, recettes, témoignages, droits, sources ou MP3. Un Carnet culturel n’est pas une recette. Les notes sont privées, la publication est interdite.'},\n {role:'user',content:JSON.stringify({famille:kind,sujet:title,fait_a_respecter:fact,contexte:'Cas synthétique non publiable; les sources ne sont pas fournies.'})}\n ]};\nreturn [{json:{contract:'cdc-ollama-editorial-benchmark-v1',model,kind,request}}];"
+      },
+      "id": "efbe1661-71f0-480b-9bdb-803e786c5f00",
+      "name": "Préparer essai synthétique",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://ollama:11434/api/chat",
+        "options": {
+          "timeout": 120000
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{JSON.stringify($json.request)}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "id": "8f3ca479-aa34-466e-8f90-4b9791a3e940",
+      "name": "Appeler Ollama interne - pas de cloud",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const source=$('Préparer essai synthétique').first().json;\nconst response=$input.first().json;\nconst limits={title:180,angle:700,summary:2000,research_note:3000};\nlet fields=null,issues=[];\ntry{\n if(response.done!==true||typeof response.message?.content!=='string')throw Error('INCOMPLETE');\n fields=JSON.parse(response.message.content);\n if(!fields||typeof fields!=='object'||Array.isArray(fields)\n   ||Object.keys(fields).length!==4\n   ||Object.keys(fields).some(k=>!(k in limits)))throw Error('SCHEMA');\n for(const [key,max] of Object.entries(limits)){\n   if(typeof fields[key]!=='string'||!fields[key].trim()\n      ||[...fields[key]].length>max)throw Error('FIELDS');\n }\n}catch{fields=null;issues.push('INVALID_OR_INCOMPLETE_RESPONSE');}\nreturn [{json:{\n contract:source.contract,model:source.model,kind:source.kind,\n schema_valid:issues.length===0,issues,\n brief_for_human_review:fields,\n human_approved:false,publishable:false,\n note:'Une sortie JSON correcte ne prouve ni exactitude ni authenticité. Aucune publication.'\n}}];"
+      },
+      "id": "f2d975a4-9a2e-49b8-83b2-b8a4b84c6e42",
+      "name": "Évaluer schéma sans publier",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        980,
+        200
+      ]
+    }
+  ],
+  "connections": {
+    "Déclenchement manuel uniquement": {
+      "main": [
+        [
+          {
+            "node": "Préparer essai synthétique",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Préparer essai synthétique": {
+      "main": [
+        [
+          {
+            "node": "Appeler Ollama interne - pas de cloud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Appeler Ollama interne - pas de cloud": {
+      "main": [
+        [
+          {
+            "node": "Évaluer schéma sans publier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Paris"
+  },
+  "active": false,
+  "pinData": {},
+  "tags": []
+}
