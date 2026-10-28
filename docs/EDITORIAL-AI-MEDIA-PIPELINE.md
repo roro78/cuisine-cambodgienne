@@ -1,5 +1,6 @@
 # Cuisine du Cambodge — Pipeline éditorial IA, manuel et calendrier média
 
+> **Comparatif Ollama/n8n — premier lot hors ligne (28 octobre 2026) :** [Banc d'essai des 3 modèles et 5 catégories](BENCHMARK-OLLAMA-EDITORIAL-P1C.md). Un workflow n8n MANUEL et isolé et un exécuteur CLI à activation explicite sont préparés, sans toucher à n8n 01/02/03, ni lancer de modèle, ni exporter de contenu privé. La qualité réelle de Llama 3.2, Qwen3 8B et Gemma 3 12B n'est pas mesurée ; l'étape suivante est la recette sur l'infrastructure existante. Les briefs P1C et l'adaptateur OpenAI optionnel sont déjà fusionnés dans GitHub, mais pas activés sur OVH.\n\n
 > **Réception du calendrier, 28 octobre :** transfert du correctif `106537c` et fonctionnement des filtres/versions confirmés par le propriétaire ; contrôle public GET PASS, CI PHP 8.3/8.4 SUCCESS. Le jalon A est réceptionné. **P1C peut commencer par les briefs IA privés**, sur une branche/PR séparée ; aucune IA n'est activée par cette réception.
 
 > **P1C-B en branche séparée :** [contrat des briefs IA privés, adaptateur et garde-fous](CMS-AI-BRIEFS-P1C.md). Premier lot limité aux sujets/angles/résumés et notes privées dans le formulaire commun ; fournisseur non raccordé, mode désactivé par défaut, simulations uniquement dans les tests. La rédaction des champs métier complets et les médias restent à réaliser.
