@@ -21,6 +21,7 @@ Lire `docs/EDITORIAL-AI-MEDIA-PIPELINE.md` pour les chantiers de création manue
 - Le module `scripts/editorial-content-pipeline.mjs` fixe le premier contrat d'idées, vérification anti-doublons et revue humaine. Ce n'est pas une API IA ni un outil de publication.
 - Aucun nouveau contenu ou plan social sans vérification des titres et slugs déjà publiés **et** des propositions non publiées ; la similarité sémantique requiert aussi une revue.
 - Toute réponse IA est un **brouillon** ; ni une date du calendrier ni un statut de génération ne valent autorisation de publication.
+- Le calendrier privé `?calendar=1` projette les **dernières versions de création manuelle** pour organiser le mois et les tâches sans date ; une date cible ne déclenche aucun traitement en tâche de fond ni aucune publication.
 - Les pages et ateliers nouvellement approuvés doivent rejoindre les mêmes données Astro, gabarits, contrôles et médias que les anciennes ; ne jamais inventer une filière parallèle d'édition/publication.
 
 ## Autres garde-fous
