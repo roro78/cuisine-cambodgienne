@@ -91,5 +91,5 @@ test('missing models or malformed output get explicit statuses, never fake score
   assert.equal(outcome.cases.filter(x=>x.status==='NOT_INSTALLED').length,5);
   assert.equal(requests,6);
   assert.ok(outcome.cases.every(x=>!('quality_score' in x)));
-  assert.throws(()=>runBench({models:['junk model']}),/BENCH_CONFIG_INVALID/);
+  await assert.rejects(()=>runBench({models:['junk model'],fetcher:stub}),/BENCH_CONFIG_INVALID/);
 });
