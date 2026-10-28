@@ -113,7 +113,7 @@ Le planning peut proposer des dates, mais aucune date par défaut n'est une auto
 | **P1C — Générer avec IA** | Même formulaire prérempli par IA après brief, retour en brouillon, contrôles factuels, citations de travail internes et validation humaine ; aucun jeton dans navigateur | **À développer** |
 | P2 — Aperçu éditorial fidèle | Prévisualisation réelle Astro au format du type choisi, médias à valider et comparaison source/brouillon | **À développer** |
 | P3 — Conversion et mise en ligne du site | Génération de données Astro sur branche, PR, CI et déploiement **après approbation**, contrôle de non-régression sur SEO/audio/médias | **À développer** |
-| P4 — Calendrier média | Planning glissant, génération de variantes sociales contrôlées et validations | **À développer** |
+| P4 — Calendrier média | Planning glissant, génération de variantes sociales contrôlées et validations | **Vue privée de planification mensuelle en développement**, IA et réseaux encore à réaliser |
 | P5 — n8n / Meta | Rebrancher workflows existants **uniquement** après restauration des accès Meta et preuves de publication/non-doublon ; suivi performances | **Bloqué accès Meta**, indépendant du développement P1 |
 
 ### Critères de réception du premier véritable module Studio (P1B)
@@ -148,3 +148,11 @@ L'éditeur distingue `Brouillon` (champs partiels autorisés) de `Soumettre à r
 **Limites à respecter :** la fiche créée n'est pas encore une entrée `recipes`/`culture`/`ingredients`/`workshops`/`recipeTechniques` d'Astro. Une révision prête à relire n'est ni une approbation finale ni une page publiable. Le prochain jalon doit convertir le contenu en source typée complète avec médias obligatoires, aperçus publics et PR/CI — uniquement après contrôle humain. L'IA ne rédige encore aucun contenu depuis le CMS. Le calendrier graphique reste à développer. Les MP3 Coral et les données des ateliers publiés demeurent intacts.
 
 **Déploiement :** cette étape ne change que les fichiers `public/gestion-contenus/index.php` et `public/gestion-contenus/lib.php`. Le paquet de 6 fichiers existant demeure compatible, mais après une fusion CI complète il faudra sauvegarder et transférer ces deux PHP uniquement sur OVH, puis vérifier le nouveau flux en Android. Ne pas confondre tests GitHub et réception de production.
+
+### Jalons intermédiaires du calendrier (28 octobre 2026)
+
+La vue `?calendar=1` du Studio utilise **uniquement** les dernières révisions privées des nouvelles pages. Elle présente le mois, la catégorie, l'état du brouillon, les dates cibles et les travaux à planifier, avec des liens vers les formulaires communs. Une date ne déclenche jamais de publication. C'est une **vue éditoriale de production**, pas encore le calendrier média multicanal ni une génération de sujets IA.
+
+Le calendrier social complet devra ensuite relier chaque page validée à ses adaptations Facebook/Instagram, au contrôle anti-doublon et aux autorisations des workflows n8n, sans déduire un consentement des dates indiquées.
+
+**Déploiement OVH :** ne pas déployer de sources Astro ou de médias pour afficher cette vue. Après CI et sauvegarde, seules les versions compatibles `public/gestion-contenus/index.php` et `lib.php` sont nécessaires ; les index publics V2 existants ne changent pas.
