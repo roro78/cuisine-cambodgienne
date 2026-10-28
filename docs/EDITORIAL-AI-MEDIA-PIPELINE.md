@@ -156,3 +156,13 @@ La vue `?calendar=1` du Studio utilise **uniquement** les dernières révisions 
 Le calendrier social complet devra ensuite relier chaque page validée à ses adaptations Facebook/Instagram, au contrôle anti-doublon et aux autorisations des workflows n8n, sans déduire un consentement des dates indiquées.
 
 **Déploiement OVH :** ne pas déployer de sources Astro ou de médias pour afficher cette vue. Après CI et sauvegarde, seules les versions compatibles `public/gestion-contenus/index.php` et `lib.php` sont nécessaires ; les index publics V2 existants ne changent pas.
+
+
+### Incident de réception OVH — calendrier privé, 28 octobre 2026
+
+Signalement après transfert SFTP de `index.php` et `lib.php` (livraison `c13023b`) : connexion et bibliothèque fonctionnelles, mais le clic « Calendrier éditorial » affiche « Espace CMS privé indisponible. ». Le message ne prouve **ni** l'expiration d'une session **ni** la perte d'un brouillon. Le code traitait les erreurs de projection du calendrier comme un arrêt total `cmsUnavailable()`, sans diagnostic.
+
+**Correction préparée** : isoler la projection en lecture seule, rendre un avis explicite sur la seule vue calendrier, conserver les autres outils accessibles, journaliser un code sûr sans contenu utilisateur. `CALENDAR_CODE_MISMATCH` suggère une version PHP incompatible ou un cache OPcache non renouvelé ; `CALENDAR_DATA_UNAVAILABLE` exige de vérifier la validité des projets privés et les logs PHP, sans suppression.
+
+**Réception requise** : comparer le SHA-256 des deux fichiers réellement retéléchargés depuis OVH avec le manifeste de livraison ; vérifier que le dossier privé `editorial-drafts/new-content` est présent et correctement protégé ; répéter le test du calendrier sur un mois vide, des projets datés et non datés ; vérifier la bibliothèque, la création et les versions existantes. Ne pas supposer la cause avant ce test. Le contrôle public `CMS_OVH_RECEPTION_PASS` ne vérifie pas le calendrier après authentification.
+
