@@ -79,6 +79,8 @@ Un statut « Prêt pour relecture » ne vaut **pas** publication, validation de 
 
 ## 7. Cycle standard de création de contenu
 
+**Premier lot P1C-B, en branche/PR :** les [briefs IA privés](CMS-AI-BRIEFS-P1C.md) empruntent `cmsCreationSave`, le même formulaire et le même calendrier. La provenance IA est déterminée côté serveur et conservée au fil des versions. Les quatre textes du brief ne constituent pas une page complète ni une approbation ; l'adaptateur reste désactivé par défaut tant que le fournisseur n'est pas raccordé et réceptionné.
+
 1. Vérifier anti-doublon, angle éditorial et autorisations médias/audio.
 2. Ajouter la fiche dans la collection TypeScript appropriée.
 3. Vérifier que catalogue, empreinte canonique et manifeste éditorial ont le même ID.

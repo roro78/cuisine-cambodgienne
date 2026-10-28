@@ -20,7 +20,7 @@ En cas de divergence, le **référentiel spécifique à la catégorie** prévaut
 - Les réponses IA doivent être validées côté serveur contre une **projection publique explicitement autorisée** du modèle Astro ; ne jamais générer du PHP ou du TypeScript libre susceptible de changer l'architecture.
 - Le formulaire \`public/gestion-contenus/index.php\` et les composants de \`lib.php\` restent les seuls gabarits d'administration. Les champs métiers varient, l'UX et le cycle de vie ne varient pas.
 
-Le module de planification \`scripts/editorial-content-pipeline.mjs\` et ses états sont déjà présents. **Le bouton « Générer avec l'IA », l'appel modèle, la conversion complète vers Astro, la génération d'image depuis le Studio et le calendrier média multicanal ne sont pas encore implémentés.** Ne pas les déclarer opérationnels.
+Le module de planification \`scripts/editorial-content-pipeline.mjs\` et ses états sont déjà présents. Un [premier lot de briefs IA privés P1C-B](CMS-AI-BRIEFS-P1C.md) est préparé sur branche dédiée : contrat/adaptateur serveur, quatre textes de brief, stockage commun, provenance et garde-fous, avec fournisseur désactivé par défaut et simulations uniquement dans les tests. **La rédaction IA complète des champs métier, le raccordement d'un vrai modèle, la conversion complète vers Astro, la génération d'image depuis le Studio et le calendrier média multicanal ne sont pas encore opérationnels.**
 
 ## 2. Brief commun obligatoire avant toute génération
 
@@ -88,7 +88,7 @@ Une IA peut suggérer des idées et des briefs ; elle ne peut pas inventer une �
 - **Aucun doublon** garanti par un simple seuil de similarité : contrôle mécanique + vérification éditoriale/humaine.
 - **Coûts IA** : prévenir les synthèses Coral inutiles, ne générer qu'après vérification du brief et de l'absence de doublon, relancer par étape sans altérer les MP3 approuvés.
 - **Tests de régression** : tests des cinq modèles existants, contrat guided, slug/canonical, sorties HTML, sécurité/CSRF, images responsive, SEO, recette complète, MP3 et mobile. Bloquer une nouvelle catégorie mal définie plutôt que l'envoyer à un modèle libre.
-- **État actuel** : la saisie manuelle privée P1B est intégrée, ainsi que la première vue de calendrier en lecture seule, **mais la réception OVH du calendrier signale un incident au 28 octobre**. La génération rédactionnelle IA, génération visuelle en self-service, aperçu Astro fidèle de nouvelles pages, conversion et diffusion automatisée ne sont pas encore livrées.
+- **État actuel** : la saisie manuelle privée P1B est intégrée. Le calendrier, corrigé par `106537c`, est **réceptionné par le propriétaire le 28 octobre : filtres et versions existantes vérifiés**, avec contrôle public GET PASS distinct. Le premier lot P1C-B reste en branche/PR, sans fournisseur activé ni déploiement ; rédaction complète, génération visuelle en self-service, aperçu Astro fidèle, conversion et diffusion automatisée restent à réaliser.
 - **À chaque nouvelle conversation/IDE** : relire ce document et les référentiels spécialisés, ne pas réinventer une nouvelle trame, mettre à jour l'état de chaque gate avec preuve réelle.
 
 **Objectif :** produire du contenu cambodgien original, exact, agréable à lire, illustré avec fidélité, homogène sur le site et les réseaux, et totalement révisable/validable par le propriétaire avant toute publication.
