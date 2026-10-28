@@ -1,5 +1,10 @@
 <?php
 declare(strict_types=1);
+// This provider adapter is an include-only library, never a public endpoint.
+if(isset($_SERVER['SCRIPT_FILENAME'])
+   && realpath((string)$_SERVER['SCRIPT_FILENAME'])===__FILE__){
+    http_response_code(404);exit;
+}
 /**
  * Optional P1C-B OpenAI Responses transport. No executable side effects on
  * include, and no credentials or customer content are stored in this file.
