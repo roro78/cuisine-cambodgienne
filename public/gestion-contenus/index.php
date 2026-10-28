@@ -98,12 +98,14 @@ $filtersUrl=http_build_query($filters,'','&',PHP_QUERY_RFC3986);
 // A new editorial idea is deliberately distinct from a published source ID.
 // Both paths still use the SAME authenticated Studio and shared field renderer.
 $newMode=isset($_GET['new']) || ($method==='POST'
-    && (isset($_POST['create_save']) || isset($_POST['ai_brief_generate'])));
+    && (isset($_POST['create_save']) || isset($_POST['ai_brief_generate'])
+        || isset($_POST['ai_content_generate']) || isset($_POST['ai_content_discard'])));
 $createKind=is_string($_POST['kind']??null)?$_POST['kind']:
     (is_string($_GET['kind']??null)?$_GET['kind']:'recette');
 if(!isset(cmsCreationKinds()[$createKind]))$createKind='recette';
 $createForm=[];$creation=null;$creations=[];$createVersion=null;
 $aiSettings=null;$aiInputForm=[];
+$aiContentSettings=null;$aiContentInputForm=[];$pendingContent=null;
 $calendarMode=!$newMode && isset($_GET['calendar']);
 $calendarMonth=gmdate('Y-m');$calendarKind='all';$calendarStatus='all';
 $calendarPlan=null;$calendarPrev='';$calendarNext='';$calendarError='';
@@ -206,6 +208,85 @@ if($auth){
         }
         $createForm=$creation??[];
         try{$aiSettings=cmsAiBriefSettings($cfg);}catch(Throwable $e){$aiSettings=null;}
+        try{$aiContentSettings=cmsAiContentSettings($cfg);}catch(Throwable $e){$aiContentSettings=null;}
+        $candidateToken=$_POST['candidate_token']??($_GET['candidate']??'');
+        if($candidateToken!==''){
+            try{
+                $pendingContent=cmsAiContentPending($_SESSION,$candidateToken);
+                if($pendingContent['creation_id']!==$cid
+                    || $pendingContent['candidate']['kind']!==$createKind)
+                    throw new RuntimeException('AI_CONTENT_SESSION');
+                if($method!=='POST'){
+                    $candidate=$pendingContent['candidate'];
+                    foreach(['title','angle','summary','research_note','fields'] as $field)
+                        $createForm[$field]=$candidate[$field];
+                    $createForm['state']='draft';$createForm['target_date']='';
+                }
+            }catch(Throwable $e){
+                $pendingContent=null;http_response_code(409);
+                $error='Proposition temporaire indisponible ou expirée. Le brouillon enregistré reste conservé.';
+            }
+        }
+        if($method==='POST' && (isset($_POST['ai_content_generate'])||isset($_POST['ai_content_discard']))){
+            $contentPosted=cmsCreationPosted($_POST);
+            $createForm=$contentPosted;
+            foreach(['objective','context','reference_id'] as $field)
+                $aiContentInputForm[$field]=is_string($_POST[$field]??null)
+                    && strlen($_POST[$field])<=8000?$_POST[$field]:'';
+            try{
+                $actions=array_intersect(['ai_content_generate','ai_content_discard','ai_brief_generate','create_save'],array_keys($_POST));
+                if(count($actions)!==1)throw new InvalidArgumentException('AI_CONTENT_INPUT');
+                if(isset($_POST['ai_content_discard'])){
+                    $pending=cmsAiContentPending($_SESSION,$candidateToken);
+                    if($pending['creation_id']!==$cid)throw new RuntimeException('AI_CONTENT_SESSION');
+                    $createForm=$pending['before_form'];
+                    unset($_SESSION['ai_content_pending'][$pending['token']]);
+                    $pendingContent=null;$candidateToken='';
+                    $notice='Proposition écartée ; votre saisie précédente est restaurée.';
+                }else{
+                    if($candidateToken!=='' || (($_POST['creation_id']??'')!==''&&$creation===null))
+                        throw new InvalidArgumentException('AI_CONTENT_INPUT');
+                    cmsAiContentIntent($_SESSION,$_POST['ai_content_request_token']??null);
+                    cmsAiContentSessionRoom($_SESSION);
+                    if($aiContentSettings===null)throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
+                    $expected=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
+                        ['options'=>['min_range'=>0,'max_range'=>9998]]);
+                    if($expected===false)throw new InvalidArgumentException('AI_CONTENT_INPUT');
+                    // Validate the local form snapshot before calling; it is NOT sent.
+                    cmsCreationCleanFields($createKind,$contentPosted['fields']);
+                    if(strlen(json_encode($contentPosted,JSON_THROW_ON_ERROR))>100000)
+                        throw new InvalidArgumentException('AI_CONTENT_INPUT');
+                    $guidedFeed=cmsGetGuidedFields();
+                    if(!is_array($guidedFeed))throw new RuntimeException('AI_CONTENT_REFERENCE');
+                    $contentGuides=cmsGuidedSourceList($guidedFeed,$canonicalById);
+                    cmsAssertGuidedCoverage($contentGuides,$canonicalById);
+                    $raw=[];
+                    foreach(['kind','title','angle','objective','context','reference_id','semantic_review','transmission_review'] as $field)
+                        $raw[$field]=$_POST[$field]??'';
+                    $pending=cmsAiContentGenerate($private,$raw,$catalog,$cfg,
+                        $canonicalById,$contentGuides,$cid,$expected);
+                    $pending['before_form']=$contentPosted;
+                    $_SESSION['ai_content_pending'][$pending['token']]=$pending;
+                    // Post/Redirect/Get prevents refresh from repeating a paid request.
+                    header('Location: ?new=1&kind='.rawurlencode($createKind)
+                        .($cid!==null?'&cid='.rawurlencode($cid):'')
+                        .'&candidate='.$pending['token'],true,303);exit;
+                }
+            }catch(Throwable $e){
+                $code=$e->getMessage();
+                http_response_code($code==='AI_BRIEF_LIMIT'?429:
+                    ($e instanceof InvalidArgumentException?422:503));
+                $error=match($code){
+                    'CREATION_DUPLICATE'=>'Ce sujet existe déjà : choisissez un autre angle ou enrichissez la fiche existante.',
+                    'AI_BRIEF_LIMIT'=>'Limite de demandes atteinte. Votre saisie est conservée ; aucun nouvel appel automatique.',
+                    'CREATION_CONFLICT'=>'Le brief a changé pendant la préparation. Votre saisie est conservée ; comparez les versions.',
+                    'AI_CONTENT_RIGHTS_REQUIRED'=>'Confirmez le droit de transmettre les seules informations du brief.',
+                    'AI_BRIEF_REVIEW_REQUIRED'=>'Vérifiez les doublons, variantes et intentions avant la génération.',
+                    'AI_CONTENT_SESSION_FULL'=>'Trois propositions sont déjà en attente. Enregistrez ou écartez-en une avant de générer.',
+                    default=>'Proposition indisponible ou demande invalide. Votre saisie est conservée. Aucun nouvel appel automatique ; la création manuelle reste disponible.'
+                };
+            }
+        }
         if($method==='POST' && isset($_POST['ai_brief_generate'])){
             $aiPosted=[];
             foreach(['kind','title','angle','objective','context','reference_id','semantic_review'] as $field)
@@ -216,7 +297,7 @@ if($auth){
                     && strlen($aiPosted[$field])<=$max*4?$aiPosted[$field]:'';
             try{
                 if($creation!==null || ($_POST['creation_id']??'')!==''
-                    || isset($_POST['create_save']))
+                    || isset($_POST['create_save'])||isset($_POST['ai_content_generate'])||isset($_POST['ai_content_discard']))
                     throw new InvalidArgumentException('AI_BRIEF_INPUT');
                 $saved=cmsAiBriefGenerate($private,$aiPosted,$catalog,$cfg);
                 header('Location: ?new=1&cid='.rawurlencode($saved['id'])
@@ -237,7 +318,8 @@ if($auth){
                     :'Le brief IA n’a pas été enregistré. Vérifiez les projets avant toute nouvelle tentative ; la création manuelle reste disponible.';
             }
         }
-        if($method==='POST' && isset($_POST['create_save']) && !isset($_POST['ai_brief_generate'])){
+        if($method==='POST' && isset($_POST['create_save']) && !isset($_POST['ai_brief_generate'])
+            && !isset($_POST['ai_content_generate']) && !isset($_POST['ai_content_discard'])){
             $expected=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
                 ['options'=>['min_range'=>0,'max_range'=>9998]]);
             if($expected===false){http_response_code(422);$error='Version invalide.';}
@@ -253,7 +335,11 @@ if($auth){
                         'state'=>$_POST['state']??null,
                         'fields'=>$_POST['fields']??null
                     ];
-                    $saved=cmsCreationSave($private,$posted,$catalog,$expected,$cid);
+                    if($candidateToken!==''){
+                        $pending=cmsAiContentPending($_SESSION,$candidateToken);
+                        $saved=cmsAiContentSave($private,$posted,$catalog,$expected,$cid,$pending,$canonicalById);
+                        unset($_SESSION['ai_content_pending'][$pending['token']]);
+                    }else $saved=cmsCreationSave($private,$posted,$catalog,$expected,$cid);
                     header('Location: ?new=1&cid='.rawurlencode($saved['id'])
                         .'&saved_new=1',true,303);
                     exit;
@@ -267,11 +353,12 @@ if($auth){
                     $createForm=$posted;
                 }catch(Throwable $e){
                     http_response_code(409);
-                    $error='Brouillon non enregistré : version dépassée ou stockage indisponible. Rechargez la fiche.';
+                    $error='Brouillon non enregistré : proposition expirée, référence modifiée, version dépassée ou stockage indisponible. Votre saisie est conservée ; comparez la dernière version avant de recharger.';
                     $createForm=$posted;
                 }
             }
         }
+        $_SESSION['ai_content_intent']=bin2hex(random_bytes(24));
         if($creation){
             $requested=filter_var($_GET['revision']??null,FILTER_VALIDATE_INT,
                 ['options'=>['min_range'=>1,'max_range'=>9999]]);
@@ -488,6 +575,7 @@ nav.versions a{padding:6px 9px;background:#edf4ea;border-radius:6px}
 <p class="note">Version de préparation : <strong>les brouillons ne modifient pas le site publié</strong>.
 Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
 <?php if($error!==''): ?><p class="notice" role="alert"><?= cmsEsc($error) ?></p><?php endif; ?>
+<?php if($notice!==''): ?><p class="notice" role="status"><?= cmsEsc($notice) ?></p><?php endif; ?>
 <?php if(!$auth): ?>
 <section><h2>Connexion administrateur</h2>
 <form method="post" class="stack">
@@ -624,7 +712,30 @@ L'IA, les créneaux Facebook/Instagram et les statistiques viendront dans des é
 <h2><?= $creation?'Modifier le brouillon de nouvelle page':'Créer un nouveau contenu' ?></h2>
 <p class="small muted">Même Studio pour les cinq familles, sans JSON. Choisissez les champs
 propres à la rubrique et sauvegardez : rien ne sera publié sur le site ni sur les réseaux.
-Un brief IA prépare le sujet, l’angle et le résumé ; les champs métier restent à compléter.</p>
+Un brief IA prépare le sujet ; une proposition structurée remplit les champs de travail,
+qui restent à vérifier avant tout enregistrement.</p>
+<?php foreach(($_SESSION['ai_content_pending']??[]) as $waiting): ?>
+<?php if($waiting['expires_at']<time())continue; ?>
+<p class="small">Proposition temporaire :
+<a href="?new=1&amp;kind=<?= cmsEsc($waiting['candidate']['kind']) ?>&amp;candidate=<?= cmsEsc($waiting['token']) ?><?= $waiting['creation_id']!==null?'&amp;cid='.cmsEsc($waiting['creation_id']):'' ?>"><?= cmsEsc($waiting['candidate']['title']) ?></a></p>
+<?php endforeach; ?>
+<?php if($pendingContent!==null): ?>
+<div class="note" role="status"><strong>Proposition générée — non enregistrée.</strong>
+<p>Relisez et corrigez les champs ci-dessous, puis enregistrez explicitement un brouillon.
+Cette proposition temporaire reste disponible 30 minutes dans cette session.
+Elle n’est ni une page Astro complète ni une validation humaine.</p>
+<p class="small"><?= cmsEsc($pendingContent['metadata']['provider_label']) ?> ·
+<?= cmsEsc($pendingContent['metadata']['model_label']) ?> ·
+<?= cmsEsc($pendingContent['metadata']['generated_at']) ?></p>
+<?php foreach($pendingContent['similar_titles'] as $match): ?>
+<p class="small">Sujet proche à examiner : <?= cmsEsc($match['title']) ?></p>
+<?php endforeach; ?>
+<details class="guided-group"><summary>Relire la proposition avant correction</summary>
+<h3><?= cmsEsc($pendingContent['candidate']['title']) ?></h3>
+<p class="preview-text"><?= cmsEsc($pendingContent['candidate']['summary']) ?></p>
+<?= cmsGuidedPreviewHtml('fiche',$pendingContent['candidate']['fields']) ?>
+</details></div>
+<?php endif; ?>
 <?php if(!$creation): ?>
 <nav class="new-actions" aria-label="Catégorie de la nouvelle page">
 <?php foreach(cmsCreationKinds() as $value=>$label): ?>
@@ -670,8 +781,13 @@ Vous pouvez créer le contenu manuellement ci-dessous.</p>
 <form method="post" class="stack" id="cms-new-editor">
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <input type="hidden" name="creation_id" value="<?= cmsEsc($creation['id']??'') ?>">
-<input type="hidden" name="expected_version" value="<?= (int)($creation['version']??0) ?>">
+<input type="hidden" name="expected_version" value="<?= (int)($pendingContent['expected_version']??($creation['version']??0)) ?>">
 <input type="hidden" name="kind" value="<?= cmsEsc($createKind) ?>">
+<?php if($pendingContent!==null): ?>
+<input type="hidden" name="candidate_token" value="<?= cmsEsc($pendingContent['token']) ?>">
+<?php elseif($candidateToken!==''): ?>
+<input type="hidden" name="candidate_token" value="<?= cmsEsc(is_string($candidateToken)?$candidateToken:'invalid') ?>">
+<?php endif; ?>
 <label>Catégorie<input value="<?= cmsEsc(cmsCreationKinds()[$createKind]) ?>" disabled></label>
 <label>Titre de la nouvelle page<textarea name="title" rows="2" maxlength="180" required><?= cmsEsc((string)($createForm['title']??'')) ?></textarea></label>
 <label>Angle éditorial — en quoi ce contenu est-il différent ?
@@ -680,6 +796,33 @@ Vous pouvez créer le contenu manuellement ci-dessous.</p>
 <div class="create-meta small">Les sujets identiques aux pages ou brouillons existants
 de la même catégorie sont refusés. Les sujets proches sont signalés pour relecture.
 Un Carnet culturel peut traiter l'histoire d'un plat sans répéter sa recette.</div>
+<?php if($pendingContent===null && $candidateToken===''): ?>
+<details class="guided-group"<?= $aiContentInputForm?' open':'' ?>>
+<summary>Générer une proposition structurée avec l’IA</summary>
+<?php if($aiContentSettings!==null): ?>
+<p class="small">Le titre et l’angle ci-dessus servent de brief. Les champs déjà saisis et
+les notes privées ne sont pas transmis. Le résultat restera à relire et à enregistrer.</p>
+<input type="hidden" name="ai_content_request_token" value="<?= cmsEsc($_SESSION['ai_content_intent']) ?>">
+<label>Objectif pour le lecteur<textarea name="objective" maxlength="700" rows="3"><?= cmsEsc($aiContentInputForm['objective']??'') ?></textarea></label>
+<label>Contexte à transmettre pour cette demande uniquement<textarea name="context" maxlength="2000" rows="3"><?= cmsEsc($aiContentInputForm['context']??'') ?></textarea></label>
+<label>Référence publique<?= $createKind==='atelier'?' : recette structurée obligatoire':' (facultative)' ?>
+<select name="reference_id"><option value="">Choisir une référence</option>
+<?php foreach($catalog as $reference): ?>
+<?php if($createKind==='atelier'&&($canonicalById[$reference['id']]['model']??null)!=='recipes')continue; ?>
+<option value="<?= cmsEsc($reference['id']) ?>"<?= ($aiContentInputForm['reference_id']??'')===$reference['id']?' selected':'' ?>><?= cmsEsc($reference['title']) ?></option>
+<?php endforeach; ?></select></label>
+<label><input type="checkbox" name="semantic_review" value="1">
+J’ai contrôlé les doublons, variantes de noms et intentions dans les pages et projets privés.</label>
+<label><input type="checkbox" name="transmission_review" value="1">
+J’ai le droit de transmettre les seules informations de ce brief et la référence publique choisie.</label>
+<p class="small muted">Un échec compte dans le quota commun aux briefs. Aucune relance automatique.
+Un atelier reçoit ici un plan de six phases ; la narration Coral reste une étape distincte.</p>
+<button name="ai_content_generate" value="1">Générer une proposition à relire</button>
+<p class="small" data-ai-content-status role="status" aria-live="polite"></p>
+<?php else: ?>
+<p class="small muted">La génération structurée est indisponible. Vous pouvez rédiger et enregistrer manuellement.</p>
+<?php endif; ?></details>
+<?php endif; ?>
 <h3>Contenu de la fiche — <?= cmsEsc(cmsCreationKinds()[$createKind]) ?></h3>
 <?= cmsCreationFormHtml($createKind,
     is_array($createForm['fields']??null)?$createForm['fields']:[]) ?>
@@ -689,9 +832,14 @@ Un Carnet culturel peut traiter l'histoire d'un plat sans répéter sa recette.<
 <input type="date" name="target_date" value="<?= cmsEsc((string)($createForm['target_date']??'')) ?>"></label>
 <label>Statut<select name="state">
 <option value="draft"<?= ($createForm['state']??'draft')==='draft'?' selected':'' ?>>Brouillon de travail</option>
+<?php if($pendingContent===null): ?>
 <option value="review"<?= ($createForm['state']??'draft')==='review'?' selected':'' ?>>Soumettre à relecture (non publié)</option>
+<?php endif; ?>
 </select></label>
 <button name="create_save" value="1">Enregistrer une nouvelle version privée</button>
+<?php if($pendingContent!==null): ?>
+<button name="ai_content_discard" value="1" class="secondary" formnovalidate>Écarter la proposition et restaurer ma saisie</button>
+<?php endif; ?>
 </form></section>
 <?php if($creation): ?>
 <section id="cms-preview">
@@ -703,6 +851,11 @@ Un Carnet culturel peut traiter l'histoire d'un plat sans répéter sa recette.<
 <?= cmsEsc($creation['recorded_at']) ?> ·
 <?= $creation['state']==='review'?'Prêt pour relecture':'Brouillon' ?>
 · <?= cmsEsc($creation['origin']) ?> · cible : <?= cmsEsc((string)($creation['target_date']??'non définie')) ?></p>
+<?php if(isset($creation['ai_content'])): ?>
+<p class="small muted">Proposition IA : <?= cmsEsc($creation['ai_content']['provider_label']) ?> ·
+<?= cmsEsc($creation['ai_content']['model_label']) ?> · <?= cmsEsc($creation['ai_content']['generated_at']) ?>.
+<?= count($creation['ai_content_edits']??[]) ?> champ(s) modifié(s) depuis la proposition. Validation humaine requise.</p>
+<?php endif; ?>
 <h3><?= cmsEsc($creation['title']) ?></h3>
 <p><?= cmsEsc($creation['summary']) ?></p>
 <p><strong>Angle :</strong> <?= cmsEsc($creation['angle']) ?></p>
@@ -923,6 +1076,14 @@ Cette liste n'est ni un calendrier ni une file de validation sociale.</p>
 <?php endif; ?>
 <?php endif; ?>
 <script nonce="<?= cmsEsc($nonce) ?>">
+document.querySelector('#cms-new-editor')?.addEventListener('submit',event=>{
+  if(event.submitter?.name!=='ai_content_generate')return;
+  if(event.currentTarget.dataset.generating==='1'){event.preventDefault();return;}
+  event.currentTarget.dataset.generating='1';
+  event.submitter.setAttribute('aria-disabled','true');
+  const status=event.currentTarget.querySelector('[data-ai-content-status]');
+  if(status)status.textContent='Génération en cours… Votre saisie reste dans ce formulaire.';
+});
 document.querySelectorAll('[data-create-add]').forEach(button=>{
   button.addEventListener('click',()=>{
     const target=button.dataset.createAdd;
