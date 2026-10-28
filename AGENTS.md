@@ -15,6 +15,7 @@
 ## Nouveau premier maillon — création éditoriale avant réseaux sociaux
 
 Lire `docs/EDITORIAL-AI-MEDIA-PIPELINE.md` pour les chantiers de création manuelle/IA et calendrier média.
+Lire aussi **`docs/REFERENTIEL-GENERATION-IA-EDITORIALE-VISUELLE.md`** avant de générer **le moindre texte ou visuel** pour le site ou les réseaux : référentiel commun aux cinq familles, avec priorité aux modèles spécialisés ateliers/Carnets et interdiction de fausses photos documentaires.
 
 - Le CMS doit permettre de **créer** de nouvelles fiches des cinq familles, en plus d'éditer les fiches existantes ; même gabarit et mêmes composants pour le mode manuel ou IA.
 - La création manuelle P1B s'effectue avec le formulaire commun `cmsCreationFormHtml` et le stockage privé de `cmsCreationSave`; jamais en écrivant directement dans les sources Astro. Ne pas confondre « prêt pour relecture » avec « approuvé », et préserver l'historique déjà présent.
