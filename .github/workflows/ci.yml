@@ -51,6 +51,12 @@ jobs:
           php tests/php/editorial-create-manual-smoke.php dist
           php tests/php/editorial-calendar-smoke.php
           php -n tests/php/editorial-calendar-smoke.php
+          php -l tests/php/editorial-calendar-runtime-smoke.php
+          php tests/php/editorial-calendar-runtime-smoke.php
+          php -n -d disable_functions=array_sum tests/php/editorial-calendar-runtime-smoke.php array_sum
+          php -n -d disable_functions=array_map tests/php/editorial-calendar-runtime-smoke.php array_map
+          php -n -d disable_functions=usort tests/php/editorial-calendar-runtime-smoke.php usort
+          php -n -d disable_functions=ksort tests/php/editorial-calendar-runtime-smoke.php ksort
 
   validate:
     name: Astro check & build

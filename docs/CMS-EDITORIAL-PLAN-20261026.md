@@ -1,6 +1,7 @@
 # Cuisine du Cambodge — plan durable du CMS éditorial
 
 > **Reprise du 28 octobre :** [preuves Git/CI, livraison calendrier PHP 8.4 et suite du chantier](CMS-REPRISE-20261028.md). `main` synchronisé sur `1264e7d`, CI après #145 SUCCESS, contrôle public OVH PASS ; réception du calendrier connecté toujours ouverte. La matrice PHP 8.3/8.4 et les tests de conservation des révisions de la PR #146 sont **PASS** ([run #40756940900](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40756940900)), sans transfert OVH.
+> **Nouveau retour OVH : `CALENDAR_ENGINE_RUNTIME_ERROR`.** La même PR #146 complète le diagnostic à vide avec une référence expurgée, les empreintes des deux PHP sur disque et des reproductions CLI de fonctions désactivées. Ce complément ne prouve ni la cause OVH ni sa réparation ; vérifier la CI de sa nouvelle tête et réceptionner la paire PHP avant P1C.
 
 > **Nouveau chantier prioritaire :** [Pipeline de création manuelle + IA et calendrier média](EDITORIAL-AI-MEDIA-PIPELINE.md). Création de nouvelles pages dans les gabarits actuels, doublons, revue et calendrier AVANT publication sur le site et n8n/Meta. Le contrat technique P1A est distinct de l'interface de création P1B (non encore livrée).
 >

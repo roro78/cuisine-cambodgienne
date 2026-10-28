@@ -18,7 +18,21 @@ Le contrôle HTTPS distant `node scripts/check-cms-ovh-readiness.mjs --url https
 
 ## Calendrier OVH — diagnostic encore ouvert
 
-Le dernier incident rapporté reste un 503 `CALENDAR_RUNTIME_ERROR` sous PHP 8.4. La PR #145 protège une catégorie non textuelle et distingue moteur à vide / données privées. Cela ne démontre pas que la cause réelle OVH est réparée. Les empreintes des deux PHP en production, l'état OPcache et le nouveau diagnostic connecté ne sont pas disponibles dans cette reprise.
+**Dernier retour du propriétaire : `CALENDAR_ENGINE_RUNTIME_ERROR`.** Le contrôle `cmsCalendarPlan([],...)` échoue donc lui aussi, sans lire les projets privés. Ce résultat oriente l'enquête vers le code réellement exécuté ou son environnement ; il ne prouve pas un défaut des brouillons, une restriction PHP particulière ni un cache périmé. La CI PHP 8.4 standard et sans `php.ini` réussit sur le code Git. Les empreintes des deux PHP en production et l'état OPcache restent à comparer.
+
+### Complément de diagnostic de la même PR #146
+
+La vue d'erreur authentifiée propose désormais « Référence technique pour le diagnostic ». Elle ne crée aucun endpoint ni page d'administration supplémentaire. Le contrôle à vide conserve son code principal et ajoute :
+
+- un vocabulaire fermé `RUNTIME_DIAG_V1_*` : classe générale de l'erreur, opération connue uniquement, numéro de ligne dans la bibliothèque publique si l'erreur vient effectivement de celle-ci et version PHP ;
+- les SHA-256 **sur disque** de `index.php` et `lib.php`, sans lire le fichier de configuration ni les brouillons ; ces empreintes ne certifient pas le code déjà mis en cache par OPcache ;
+- `DIAGNOSTIC_HELPER_MISSING` si la bibliothèque chargée ne possède pas le nouveau helper, même si les fichiers présents sur disque ont été transférés.
+
+Le message brut, la trace, le chemin serveur et les données des projets ne sont jamais affichés ni journalisés. Une fonction absente n'est identifiée que si son nom appartient à la liste fermée des dépendances du calendrier. Une exception inconnue reste `UNKNOWN`, sans divulgation de texte.
+
+Pour reproduire **une catégorie possible** d'échec du moteur (sans prétendre reproduire la configuration OVH), les deux jobs PHP 8.3/8.4 désactivent séparément `array_sum`, `array_map`, `usort` et `ksort` dans des processus CLI de test. Ils vérifient que le véritable appel à vide échoue et que le diagnostic identifie précisément la fonction absente. Le comportement PHP 8 des fonctions désactivées est décrit dans la [documentation PHP](https://www.php.net/manual/en/ini.core.php#ini.disable-functions). Des exceptions contenant des titres et chemins privés synthétiques doivent rester expurgées. Aucune configuration OVH n'est modifiée par ces tests.
+
+**Réception suivante :** après sauvegarde et livraison de la paire PHP du nouveau commit validé, relever la référence `RUNTIME_DIAG_V1_*` et les deux empreintes dans ce volet. Cela permet d'identifier la dépendance ou la ligne réelle avant de corriger. Si `DIAGNOSTIC_HELPER_MISSING` apparaît, vérifier la paire transférée et le mécanisme hébergeur de renouvellement du cache. Ne pas utiliser d'endpoint public `phpinfo` ou de reset OPcache.
 
 L'accès indiqué par le propriétaire est **FileZilla « cdc » uniquement**. Conserver `ftp.cluster002.hosting.ovh.net` et vérifier le dossier `www/cdc2017/gestion-contenus/`. Aucun accès SFTP fonctionnel n'est présumé. Aucun outil de contrôle de la session FileZilla ou d'une session Studio connectée n'est disponible dans cette intervention. **Aucune sauvegarde distante, aucun transfert et aucune mutation des brouillons n'ont été effectués.** Ne pas recopier d'identifiant secret, de cookie ni de contenu privé dans les rapports.
 
@@ -34,7 +48,7 @@ Le smoke de création prend désormais une empreinte de chaque révision tempora
 
 ## Paquet ciblé disponible localement
 
-Paquet : `artifacts/cms-calendar-ovh-1264e7d-20261028-exact.zip`, avec dossier décompressé de même nom. Les deux PHP sont extraits de `1264e7d` par `git -c core.autocrlf=false -c core.eol=lf archive`. Une première archive de préparation avait subi la conversion CRLF Windows ; elle est conservée sous le nom `*.CRLF-DO-NOT-TRANSFER.zip` et son dossier porte un avertissement. **Utiliser exclusivement la livraison `-exact`.** Ses empreintes sont vérifiées indépendamment avec PowerShell `Get-FileHash`, et ses identifiants `git hash-object --no-filters` correspondent exactement aux deux blobs du commit :
+**Livraison précédente, avant le complément `RUNTIME_DIAG_V1` :** `artifacts/cms-calendar-ovh-1264e7d-20261028-exact.zip`, avec dossier décompressé de même nom. Elle ne fournit pas le nouveau volet technique. Les deux PHP sont extraits de `1264e7d` par `git -c core.autocrlf=false -c core.eol=lf archive`. Une première archive de préparation avait subi la conversion CRLF Windows ; elle est conservée sous le nom `*.CRLF-DO-NOT-TRANSFER.zip` et son dossier porte un avertissement. Les empreintes de la livraison précédente `-exact` sont vérifiées indépendamment avec PowerShell `Get-FileHash`, et ses identifiants `git hash-object --no-filters` correspondent exactement aux deux blobs du commit :
 
 | Fichier distant | Octets | SHA-256 |
 |---|---:|---|

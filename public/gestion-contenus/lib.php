@@ -1055,6 +1055,33 @@ function cmsCreationFormHtml(string $kind,array $values=[]): string {
 }
 
 
+/** Fixed diagnostic vocabulary only: never expose an exception message or path. */
+function cmsCalendarRuntimeDiagnostic(Throwable $error): string {
+    $type=$error instanceof TypeError?'TYPE_ERROR':
+        ($error instanceof ValueError?'VALUE_ERROR':
+        ($error instanceof Error?'PHP_ERROR':'EXCEPTION'));
+    $operation='UNKNOWN';
+    // A disabled internal function is undefined on PHP 8+. Match exact known
+    // symbols; a private title that happens to occur in a message is not output.
+    foreach([
+        'cmsCalendarMonth'=>'MONTH','cmsCreationKinds'=>'KINDS',
+        'preg_match'=>'PREG_MATCH','array_key_exists'=>'ARRAY_KEY_EXISTS',
+        'in_array'=>'IN_ARRAY','ksort'=>'KSORT','usort'=>'USORT',
+        'strcmp'=>'STRCMP','array_sum'=>'ARRAY_SUM','array_map'=>'ARRAY_MAP',
+        'count'=>'COUNT'
+    ] as $symbol=>$code){
+        if($error->getMessage()==='Call to undefined function '.$symbol.'()'){
+            $operation='MISSING_'.$code;break;
+        }
+        if(str_starts_with($error->getMessage(),$symbol.'():')){
+            $operation=$code;break;
+        }
+    }
+    $location=$error->getFile()===__FILE__
+        ?'LIB_'.max(0,$error->getLine()):'OTHER_SOURCE';
+    return 'RUNTIME_DIAG_V1_'.$type.'_'.$operation.'_'.$location
+        .'_PHP_'.PHP_MAJOR_VERSION.'_'.PHP_MINOR_VERSION.'_'.PHP_RELEASE_VERSION;
+}
 /**
  * Private content calendar, derived exclusively from the latest saved revision
  * of each new-content draft. It plans work; it does NOT schedule execution.
