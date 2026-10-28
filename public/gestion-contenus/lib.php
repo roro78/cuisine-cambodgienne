@@ -1092,6 +1092,9 @@ function cmsCalendarMonth(mixed $value): string {
         throw new InvalidArgumentException('CALENDAR_MONTH_INVALID');
     return $value;
 }
+function cmsCalendarStatus(mixed $value): string {
+    return in_array($value,['all','draft','review'],true)?$value:'all';
+}
 function cmsCalendarPlan(array $creations,string $month,
     string $kind='all',string $status='all'): array {
     cmsCalendarMonth($month);

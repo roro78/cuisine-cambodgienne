@@ -116,8 +116,7 @@ if($calendarMode){
     $calendarKind=is_string($_GET['calendar_kind']??null)
         && isset(cmsCreationKinds()[$_GET['calendar_kind']])
         ? $_GET['calendar_kind']:'all';
-    $calendarStatus=in_array($_GET['calendar_status']??'all',
-        ['all','draft','review'],true)?$_GET['calendar_status']:'all';
+    $calendarStatus=cmsCalendarStatus($_GET['calendar_status']??'all');
     $cursor=new DateTimeImmutable($calendarMonth.'-01',new DateTimeZone('UTC'));
     $calendarPrev=$cursor->modify('-1 month')->format('Y-m');
     $calendarNext=$cursor->modify('+1 month')->format('Y-m');

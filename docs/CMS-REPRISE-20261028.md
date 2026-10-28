@@ -16,9 +16,15 @@ Contrôles locaux exécutés sur le code synchronisé : `npm run check` (**0 err
 
 Le contrôle HTTPS distant `node scripts/check-cms-ovh-readiness.mjs --url https://www.cuisine-du-cambodge.com/` retourne **`CMS_OVH_RECEPTION_PASS`** : trois index de même couverture, connexion protégée, accès direct à `lib.php` refusé. **Ce contrôle public ne teste ni la session administrateur, ni le calendrier privé, ni la sauvegarde ou les permissions des brouillons sur OVH.**
 
-## Calendrier OVH — diagnostic encore ouvert
+## Calendrier OVH — cause identifiée, réception encore ouverte
 
-**Dernier retour du propriétaire : `CALENDAR_ENGINE_RUNTIME_ERROR`.** Le contrôle `cmsCalendarPlan([],...)` échoue donc lui aussi, sans lire les projets privés. Ce résultat oriente l'enquête vers le code réellement exécuté ou son environnement ; il ne prouve pas un défaut des brouillons, une restriction PHP particulière ni un cache périmé. La CI PHP 8.4 standard et sans `php.ini` réussit sur le code Git. Les empreintes des deux PHP en production et l'état OPcache restent à comparer.
+**Cause identifiée après le dernier retour du propriétaire : `RUNTIME_DIAG_V1_TYPE_ERROR_UNKNOWN_LIB_1095_PHP_8_4_27`.** Les deux SHA-256 rapportés correspondent exactement à la livraison `c51e35e` (index `94d2ce9ad6e6c12955195a47e96daefab7ffdc54e20d5de063fcbcc074fe3ab8`, bibliothèque `3c8104348e34c7d608a0574edad217021118afd9e946088c5b79f95ebc466dcf`). Dans cette version, la ligne 1095 est la **déclaration typée** de `cmsCalendarPlan`, avant lecture des projets.
+
+Le lien initial `?calendar=1` omet `calendar_status`. Le code évaluait `in_array($_GET['calendar_status'] ?? 'all', ['all','draft','review'], true)` à vrai, puis lisait **`$_GET['calendar_status']` sans défaut** dans la branche positive. Il transmettait donc `null` au quatrième argument déclaré `string`. Cela produit un `TypeError` à l'entrée de la fonction, même avec `[]`. Les tests du helper passaient car ils fournissaient directement une chaîne ou utilisaient le paramètre par défaut de la fonction ; ils ne traversaient pas l'initialisation de la page. Ni les brouillons ni une fonction PHP désactivée ne sont nécessaires pour reproduire ce défaut.
+
+**Correction dans la même PR #146 :** `cmsCalendarStatus` normalise uniquement `all/draft/review` et renvoie toujours une chaîne ; l'entrée de la page lui transmet la valeur ou son défaut. Le test `editorial-calendar-request-smoke.php` exécute le **bloc réel d'initialisation de la page**, isolé de l'authentification, du réseau et du stockage privé, sur onze requêtes (filtre absent, partiel, valide, null ou invalide), puis projette un calendrier vide. Les jobs PHP 8.3/8.4 vérifient aussi la reproduction du `TypeError` à partir du fichier exact de `c51e35e`. Le code testé par `eval` appartient au dépôt ; aucun contenu reçu du navigateur ou d'un brouillon n'est exécuté.
+
+La correction doit encore réussir la CI de sa nouvelle tête et être réceptionnée sur OVH après sauvegarde. Les empreintes rapportées prouvent les fichiers présents sur disque, sans certifier indépendamment OPcache. Le calendrier connecté n'est pas encore déclaré réparé.
 
 ### Complément de diagnostic de la même PR #146
 

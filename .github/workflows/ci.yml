@@ -57,6 +57,16 @@ jobs:
           php -n -d disable_functions=array_map tests/php/editorial-calendar-runtime-smoke.php array_map
           php -n -d disable_functions=usort tests/php/editorial-calendar-runtime-smoke.php usort
           php -n -d disable_functions=ksort tests/php/editorial-calendar-runtime-smoke.php ksort
+          php -l tests/php/editorial-calendar-request-smoke.php
+          php tests/php/editorial-calendar-request-smoke.php
+          php -n tests/php/editorial-calendar-request-smoke.php
+
+      - name: Reproduce the reported request failure on the exact previous source
+        if: github.ref == 'refs/heads/fix/cms-calendar-php84-reception-20261028'
+        run: |
+          git fetch --no-tags --depth=1 origin c51e35e1d3df7c8e9ed7416cd3433b7be23c30f0
+          git show c51e35e1d3df7c8e9ed7416cd3433b7be23c30f0:public/gestion-contenus/index.php > "$RUNNER_TEMP/cms-calendar-before-status-fix.php"
+          php tests/php/editorial-calendar-request-smoke.php "$RUNNER_TEMP/cms-calendar-before-status-fix.php"
 
   validate:
     name: Astro check & build
