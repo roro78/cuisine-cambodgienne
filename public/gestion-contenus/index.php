@@ -502,12 +502,12 @@ de la même livraison. Le journal d'erreurs PHP conserve uniquement le code
 de diagnostic, sans contenu privé.</p>
 <details><summary>Référence technique pour le diagnostic</summary>
 <?php if($calendarRuntimeInfo!==''): ?>
-<p><code><?= cmsEsc($calendarRuntimeInfo) ?></code></p>
+<p class="small preview-text"><code><?= cmsEsc($calendarRuntimeInfo) ?></code></p>
 <?php endif; ?>
 <p class="small">Empreintes des fichiers présents sur le serveur.
 Elles ne prouvent pas que le cache PHP a été renouvelé.</p>
 <?php foreach($calendarFileHashes as $calendarCodeFile=>$digest): ?>
-<p class="small"><strong><?= cmsEsc($calendarCodeFile) ?></strong><br>
+<p class="small preview-text"><strong><?= cmsEsc($calendarCodeFile) ?></strong><br>
 <code><?= cmsEsc($digest) ?></code></p>
 <?php endforeach; ?>
 </details>
