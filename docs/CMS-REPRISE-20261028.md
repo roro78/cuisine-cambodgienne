@@ -28,16 +28,18 @@ Le code utilise toujours l'authentification HTTPS, la session sécurisée, le CS
 
 La CI historique dépend du PHP préinstallé du runner sans sélectionner 8.4. Cette PR ajoute deux jobs explicites PHP **8.3 / 8.4**, après le build validé. Ils téléchargent exclusivement les trois index **publics** de ce build, exécutent les tests de toutes les fiches, de création manuelle et du calendrier ; le calendrier est aussi testé sans `php.ini` (`php -n`). L'action de sélection est documentée par [setup-php](https://github.com/shivammathur/setup-php).
 
-Le smoke de création prend désormais une empreinte de chaque révision temporaire et de ses permissions avant/après lecture du calendrier : projets datés/sans date, mois sans projet daté, filtres et dernière version seulement. Les dates invalides sont refusées sans modifier l'entrée. Les fixtures sont éphémères dans le répertoire temporaire du runner ; ce test ne lit pas les données OVH. **La matrice n'est acquise qu'après SUCCESS des deux jobs du commit de cette PR.**
+Le smoke de création prend désormais une empreinte de chaque révision temporaire et de ses permissions avant/après lecture du calendrier : projets datés/sans date, mois sans projet daté, filtres et dernière version seulement. Les dates invalides sont refusées sans modifier l'entrée. Les fixtures sont éphémères dans le répertoire temporaire du runner ; ce test ne lit pas les données OVH.
+
+**Preuve acquise :** [CI #40756940900](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40756940900), commit de tests `0ca255f2b9b2937056d64f4e9db2da7ba258c4d5`, **SUCCESS** pour le job principal et les deux jobs PHP 8.3 / 8.4, y compris `php -n`. [PR #146](https://github.com/roro78/cuisine-cambodgienne/pull/146) ouverte, non fusionnée. Les deux PHP testés n'ont aucun écart avec `1264e7d` ; cette preuve technique ne réceptionne toujours pas le calendrier OVH connecté.
 
 ## Paquet ciblé disponible localement
 
-Paquet : `artifacts/cms-calendar-ovh-1264e7d-20261028.zip`, avec dossier décompressé de même nom. Les deux PHP sont extraits des blobs Git exacts de `1264e7d` par `git archive`, sans conversion CRLF Windows. Empreintes vérifiées indépendamment avec PowerShell `Get-FileHash` :
+Paquet : `artifacts/cms-calendar-ovh-1264e7d-20261028-exact.zip`, avec dossier décompressé de même nom. Les deux PHP sont extraits de `1264e7d` par `git -c core.autocrlf=false -c core.eol=lf archive`. Une première archive de préparation avait subi la conversion CRLF Windows ; elle est conservée sous le nom `*.CRLF-DO-NOT-TRANSFER.zip` et son dossier porte un avertissement. **Utiliser exclusivement la livraison `-exact`.** Ses empreintes sont vérifiées indépendamment avec PowerShell `Get-FileHash`, et ses identifiants `git hash-object --no-filters` correspondent exactement aux deux blobs du commit :
 
 | Fichier distant | Octets | SHA-256 |
 |---|---:|---|
-| `gestion-contenus/index.php` | 50693 | `9eff0356acc64c4c3130cd33ea19d648f76f814493edc61df1a313b9ebab92b9` |
-| `gestion-contenus/lib.php` | 59801 | `302cdb2f83713fd87681bcf3958d7a074d99a70789cceae4e1e77c3eb8ef0711` |
+| `gestion-contenus/index.php` | 49832 | `845b8d2e05535c4f86f55dcb0b23acfae6e2ef44f3eea509e388fdfb7ec54048` |
+| `gestion-contenus/lib.php` | 58690 | `72c32887ffbf26cd7cc7cd83fd4b929f19e6dc297b17c02be5755628c915ec62` |
 
 Le manifeste et le README accompagnent les deux fichiers ; **ne pas les transférer dans la racine publique**. Le paquet de réception de cette reprise ne comprend ni Astro, ni index à remplacer, ni médias, ni configuration privée. Les anciennes livraisons restent intactes.
 
