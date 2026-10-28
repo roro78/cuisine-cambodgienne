@@ -1,5 +1,12 @@
 # Cuisine du Cambodge — plan durable du CMS éditorial
 
+> **29 octobre :** #150 fusionnée après revue et accord explicite, `main` `c0ab780`,
+> CI post-fusion SUCCESS. [P1C-C2 / PR #151](CMS-STRUCTURED-GENERATION-P1C-C2.md) :
+> génération structurée vers candidat temporaire du formulaire partagé, sauvegarde
+> privée explicite avec provenance/versions et quota commun. Réel désactivé,
+> aucune publication ou livraison OVH. Moteur encore à qualifier avec les
+> protocoles briefs puis [contenus structurés](BENCHMARK-STRUCTURED-CONTENT-P1C.md).
+
 > **État prioritaire après #149, 28 octobre :** `main` synchronisé sur `46fef8c`,
 > CI SUCCESS ; #146–#149 fusionnées. Calendrier reçu sur OVH, contrôle GET public
 > PASS. Briefs et transport API facultatif intégrés dans GitHub, activation OVH

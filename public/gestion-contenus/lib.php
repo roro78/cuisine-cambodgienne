@@ -933,9 +933,11 @@ function cmsCreationDuplicateCheck(string $kind,string $slug,
     $similar=[];
     foreach(array_merge(array_values($catalog),array_values($proposals)) as $item){
         if(($item['kind']??null)!==$kind || ($item['id']??null)===$self)continue;
-        $original=is_array($item['ai_brief']??null)?($item['ai_brief']['input_title']??null):null;
-        if(is_string($original) && cmsCreationSlug($original)===$slug)
-            throw new InvalidArgumentException('CREATION_DUPLICATE');
+        foreach(['ai_brief','ai_content'] as $provenanceKey){
+            $original=is_array($item[$provenanceKey]??null)?($item[$provenanceKey]['input_title']??null):null;
+            if(is_string($original) && cmsCreationSlug($original)===$slug)
+                throw new InvalidArgumentException('CREATION_DUPLICATE');
+        }
         $existingSlug=(string)($item['slug']??'');
         if($existingSlug===''){
             $id=(string)($item['id']??'');
@@ -954,9 +956,11 @@ function cmsCreationDuplicateCheck(string $kind,string $slug,
     return $similar;
 }
 function cmsCreationSave(string $private,array $posted,array $catalog,
-    int $expected,?string $id=null,?array $aiBrief=null): array {
+    int $expected,?string $id=null,?array $aiBrief=null,?array $aiContent=null): array {
     // Provenance is a SERVER argument, never a browser field or model decision.
     if($aiBrief!==null)$aiBrief=cmsAiBriefMetadata($aiBrief);
+    if($aiContent!==null)$aiContent=cmsAiContentMetadata($aiContent);
+    if($aiBrief!==null && $aiContent!==null)throw new InvalidArgumentException('CREATION_PROVENANCE');
     if($id!==null && !cmsCreationId($id))throw new InvalidArgumentException('CREATION_ID');
     $kind=cmsCreationText($posted['kind']??'',30);
     if(!isset(cmsCreationKinds()[$kind]))throw new InvalidArgumentException('CREATION_KIND');
@@ -990,18 +994,25 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
             throw new RuntimeException('CREATION_CONFLICT');
         if($aiBrief!==null && $previous!==null)
             throw new RuntimeException('CREATION_CONFLICT');
-        $origin=$previous['origin']??($aiBrief!==null?'ai':'manual');
+        $origin=$aiContent!==null?'ai':($previous['origin']??($aiBrief!==null?'ai':'manual'));
         if(!in_array($origin,['manual','ai'],true))
             throw new RuntimeException('CREATION_PROVENANCE');
         $provenance=$previous['ai_brief']??$aiBrief;
+        $contentProvenance=$aiContent??($previous['ai_content']??null);
         if($origin==='ai'){
-            if(!is_array($provenance))throw new RuntimeException('CREATION_PROVENANCE');
-            $provenance=cmsAiBriefMetadata($provenance);
+            if($provenance===null && $contentProvenance===null)
+                throw new RuntimeException('CREATION_PROVENANCE');
+            if($provenance!==null)$provenance=cmsAiBriefMetadata($provenance);
+            if($contentProvenance!==null)$contentProvenance=cmsAiContentMetadata($contentProvenance);
+            if($contentProvenance!==null && $contentProvenance['kind']!==$kind)
+                throw new RuntimeException('CREATION_PROVENANCE');
         }
         $similarByTitle=[];
-        if($origin==='ai')
-            foreach(cmsCreationDuplicateCheck($kind,cmsCreationSlug($provenance['input_title']),
+        foreach([$provenance,$contentProvenance] as $inputProvenance){
+            if($origin!=='ai' || $inputProvenance===null)continue;
+            foreach(cmsCreationDuplicateCheck($kind,cmsCreationSlug($inputProvenance['input_title']),
                 $catalog,$all,$id) as $match)$similarByTitle[$match['title']]=$match;
+        }
         foreach(cmsCreationDuplicateCheck($kind,$slug,$catalog,$all,$id) as $match)
             $similarByTitle[$match['title']]=$match;
         $similar=array_values($similarByTitle);
@@ -1017,7 +1028,11 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
             'similar_titles'=>$similar,'version'=>$version,
             'recorded_at'=>gmdate('Y-m-d\TH:i:s\Z')
         ];
-        if($origin==='ai')$record['ai_brief']=$provenance;
+        if($origin==='ai' && $provenance!==null)$record['ai_brief']=$provenance;
+        if($origin==='ai' && $contentProvenance!==null){
+            $record['ai_content']=$contentProvenance;
+            $record['ai_content_edits']=cmsAiContentEdits($contentProvenance['proposal'],$record);
+        }
         $json=json_encode($record,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
         if(strlen($json)>100000)throw new InvalidArgumentException('CREATION_SIZE');
         $path=$dir.'/'.$id.'.'.sprintf('%04d',$version).'.json';
@@ -1034,6 +1049,16 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
     }finally{flock($lock,LOCK_UN);fclose($lock);}
 }
 /** P1C-B: provider-independent brief contract. No model or transport is enabled by default. */
+function cmsAiDailyLimit(array $cfg,int $limit): int {
+    foreach(['editorial_ai_briefs','editorial_ai_content'] as $key){
+        $options=$cfg[$key]??null;
+        if(!is_array($options)||($options['enabled']??false)!==true)continue;
+        $bound=$options['max_attempts_per_day']??null;
+        if(!is_int($bound)||$bound<1||$bound>5)throw new RuntimeException('AI_BRIEF_UNAVAILABLE');
+        $limit=min($limit,$bound);
+    }
+    return $limit;
+}
 function cmsAiBriefSettings(array $cfg): ?array {
     $options=$cfg['editorial_ai_briefs']??null;
     if(!is_array($options) || ($options['enabled']??false)!==true)return null;
@@ -1044,7 +1069,7 @@ function cmsAiBriefSettings(array $cfg): ?array {
         || $options['max_attempts_per_day']<1 || $options['max_attempts_per_day']>5)
         throw new RuntimeException('AI_BRIEF_UNAVAILABLE');
     return ['adapter'=>$options['adapter'],'model_label'=>$options['model_label'],
-        'max_attempts_per_day'=>$options['max_attempts_per_day']];
+        'max_attempts_per_day'=>cmsAiDailyLimit($cfg,$options['max_attempts_per_day'])];
 }
 function cmsAiBriefInput(array $raw,array $catalog): array {
     if(array_diff(array_keys($raw),['kind','title','angle','objective','context',
@@ -1335,6 +1360,188 @@ function cmsAiContentCandidate(string $kind,mixed $response): array {
             'research_note'=>$value['research_note'],'form_fields'=>$form,'fields'=>$fields,
             'requires_human_review'=>true,'publication_ready'=>false];
     }catch(Throwable $e){throw new InvalidArgumentException('AI_CONTENT_RESPONSE');}
+}
+/** C2 settings belong to the existing PRIVATE server configuration only. */
+function cmsCreationPosted(array $raw): array {
+    $posted=[];
+    foreach(['kind','title','angle','summary','research_note','target_date','state'] as $key)
+        $posted[$key]=$raw[$key]??'';
+    $posted['fields']=$raw['fields']??[];
+    return $posted;
+}
+function cmsAiContentSettings(array $cfg): ?array {
+    $options=$cfg['editorial_ai_content']??null;
+    if(!is_array($options)||($options['enabled']??false)!==true)return null;
+    foreach(['provider_label','model_label'] as $key)
+        if(!is_string($options[$key]??null)
+            || !preg_match('/^[a-zA-Z0-9][a-zA-Z0-9._:\/ -]{0,79}$/D',$options[$key]))
+            throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
+    if(!is_callable($options['adapter']??null))throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
+    try{$limit=cmsAiDailyLimit($cfg,5);}
+    catch(Throwable $e){throw new RuntimeException('AI_CONTENT_UNAVAILABLE');}
+    return ['adapter'=>$options['adapter'],'provider_label'=>$options['provider_label'],
+        'model_label'=>$options['model_label'],'max_attempts_per_day'=>$limit];
+}
+/** One explicit generation intent can be submitted once, including on failure. */
+function cmsAiContentIntent(array &$session,mixed $token): void {
+    $expected=$session['ai_content_intent']??null;
+    if(!is_string($token)||!is_string($expected)||!preg_match('/^[0-9a-f]{48}$/D',$token)
+        || !hash_equals($expected,$token))throw new RuntimeException('AI_CONTENT_INTENT');
+    unset($session['ai_content_intent']);
+}
+function cmsAiContentPreflight(string $private,string $kind,string $title,
+    array $catalog,?string $id,int $expected): array {
+    $all=cmsCreationList(cmsCreationDir($private));
+    if(($id===null&&$expected!==0)||($id!==null&&(!cmsCreationId($id)
+        || !isset($all[$id])||$all[$id]['version']!==$expected||$all[$id]['kind']!==$kind)))
+        throw new RuntimeException('CREATION_CONFLICT');
+    return cmsCreationDuplicateCheck($kind,cmsCreationSlug($title),$catalog,$all,$id);
+}
+/** Closed provenance, stored with the explicit private save; never from POST. */
+function cmsAiContentMetadata(array $raw): array {
+    $keys=['contract','kind','provider_label','model_label','generated_at','request_contract',
+        'scope','brief_id','brief_version','brief_digest','input_title','reference_id',
+        'reference_fingerprint','transmission_confirmed','proposal'];
+    if(count($raw)!==count($keys)||array_diff(array_keys($raw),$keys)
+        || ($raw['contract']??null)!=='cdc-editorial-ai-content-provenance-v1'
+        || ($raw['request_contract']??null)!=='cdc-editorial-ai-content-request-v1'
+        || ($raw['scope']??null)!=='creation-form-core-v1'
+        || ($raw['transmission_confirmed']??null)!==true
+        || !is_string($raw['kind']??null)||!isset(cmsCreationKinds()[$raw['kind']])
+        || !is_int($raw['brief_version']??null)||$raw['brief_version']<0||$raw['brief_version']>9998
+        || !is_array($raw['proposal']??null))throw new InvalidArgumentException('AI_CONTENT_PROVENANCE');
+    foreach(['provider_label','model_label'] as $key)
+        if(!is_string($raw[$key]??null)||!preg_match('/^[a-zA-Z0-9][a-zA-Z0-9._:\/ -]{0,79}$/D',$raw[$key]))
+            throw new InvalidArgumentException('AI_CONTENT_PROVENANCE');
+    foreach(['brief_digest','reference_fingerprint'] as $key)
+        if(!is_string($raw[$key]??null)||($raw[$key]!==''&&!preg_match('/^[0-9a-f]{64}$/D',$raw[$key])))
+            throw new InvalidArgumentException('AI_CONTENT_PROVENANCE');
+    if($raw['brief_digest']===''||!is_string($raw['brief_id']??null)
+        || ($raw['brief_id']===''?$raw['brief_version']!==0:
+            (!cmsCreationId($raw['brief_id'])||$raw['brief_version']<1))
+        || !is_string($raw['reference_id']??null)
+        || ($raw['reference_id']!==''&&!cmsId($raw['reference_id']))
+        || ($raw['kind']==='atelier'&&(!str_starts_with($raw['reference_id'],'recette:')
+            || $raw['reference_fingerprint']===''))
+        || !is_string($raw['generated_at']??null)
+        || !preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/D',$raw['generated_at']))
+        throw new InvalidArgumentException('AI_CONTENT_PROVENANCE');
+    $raw['input_title']=cmsCreationText($raw['input_title']??null,180);
+    if($raw['input_title']==='')throw new InvalidArgumentException('AI_CONTENT_PROVENANCE');
+    try{
+        $wire=$raw['proposal'];
+        if($raw['kind']==='recette'){
+            $n=$wire['fields']['baseServings']??null;
+            if(!is_string($n)||!ctype_digit($n))throw new InvalidArgumentException('AI_CONTENT_PROVENANCE');
+            $wire['fields']['baseServings']=(int)$n;
+        }
+        $json=json_encode($wire,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
+        if(strlen($json)>35000)throw new InvalidArgumentException('AI_CONTENT_PROVENANCE');
+        $candidate=cmsAiContentCandidate($raw['kind'],$json);
+        $proposal=[];
+        foreach(['title','angle','summary','research_note','fields'] as $key)$proposal[$key]=$candidate[$key];
+        $raw['proposal']=$proposal;
+    }catch(Throwable $e){throw new InvalidArgumentException('AI_CONTENT_PROVENANCE');}
+    return $raw;
+}
+function cmsAiContentEdits(array $proposal,array $record): array {
+    $paths=[];
+    foreach(['title','angle','summary','research_note'] as $key)
+        if(($proposal[$key]??null)!==($record[$key]??null))$paths[]=$key;
+    foreach($proposal['fields'] as $key=>$value)
+        if($value!==($record['fields'][$key]??null))$paths[]='fields.'.$key;
+    return $paths;
+}
+/** Generate once, validate, and return a session candidate. NO draft is saved. */
+function cmsAiContentGenerate(string $private,array $raw,array $catalog,array $cfg,
+    array $canonical,array $guided,?string $id=null,int $expected=0): array {
+    $settings=cmsAiContentSettings($cfg);
+    if($settings===null)throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
+    if(!in_array($raw['transmission_review']??null,['1',true],true))
+        throw new InvalidArgumentException('AI_CONTENT_RIGHTS_REQUIRED');
+    unset($raw['transmission_review']);
+    $request=cmsAiContentRequest($raw,$catalog,$canonical,$guided);
+    $input=$request['brief'];
+    cmsAiContentPreflight($private,$input['kind'],$input['title'],$catalog,$id,$expected);
+    // Same persistent global ledger/cooldown/lock as briefs, strictest active limit.
+    cmsAiBriefReserve($private,$settings['max_attempts_per_day']);
+    $request['timeout_seconds']=20;$request['max_output_tokens']=6000;
+    $request['response_max_bytes']=30000;
+    $start=microtime(true);
+    try{$response=($settings['adapter'])($request);}
+    catch(Throwable $e){throw new RuntimeException('AI_CONTENT_PROVIDER');}
+    if(microtime(true)-$start>20)throw new RuntimeException('AI_CONTENT_TIMEOUT');
+    if(!is_string($response)||strlen($response)>30000)throw new RuntimeException('AI_CONTENT_RESPONSE');
+    $candidate=cmsAiContentCandidate($input['kind'],$response);
+    $similar=cmsAiContentPreflight($private,$input['kind'],$input['title'],$catalog,$id,$expected);
+    foreach(cmsAiContentPreflight($private,$input['kind'],$candidate['title'],$catalog,$id,$expected) as $item)
+        $similar[]=$item;
+    $proposal=[];
+    foreach(['title','angle','summary','research_note','fields'] as $key)$proposal[$key]=$candidate[$key];
+    $metadata=cmsAiContentMetadata([
+        'contract'=>'cdc-editorial-ai-content-provenance-v1','kind'=>$input['kind'],
+        'provider_label'=>$settings['provider_label'],'model_label'=>$settings['model_label'],
+        'generated_at'=>gmdate('Y-m-d\TH:i:s\Z'),'request_contract'=>$request['contract'],
+        'scope'=>$request['scope'],'brief_id'=>$id??'','brief_version'=>$expected,
+        'brief_digest'=>hash('sha256',json_encode($input,JSON_THROW_ON_ERROR)),
+        'input_title'=>$input['title'],'reference_id'=>$input['reference_id'],
+        'reference_fingerprint'=>$request['reference']['fingerprint']??'',
+        'transmission_confirmed'=>true,'proposal'=>$proposal
+    ]);
+    return ['token'=>bin2hex(random_bytes(24)),'expires_at'=>time()+1800,
+        'creation_id'=>$id,'expected_version'=>$expected,'candidate'=>$candidate,
+        'metadata'=>$metadata,'similar_titles'=>$similar];
+}
+/** Session-only holding area: bounded, no raw provider response or secret. */
+function cmsAiContentSessionRoom(array &$session): void {
+    if(!isset($session['ai_content_pending']))$session['ai_content_pending']=[];
+    if(!is_array($session['ai_content_pending']))throw new RuntimeException('AI_CONTENT_SESSION');
+    foreach($session['ai_content_pending'] as $token=>$pending)
+        if(is_array($pending)&&is_int($pending['expires_at']??null)&&$pending['expires_at']<time())
+            unset($session['ai_content_pending'][$token]);
+    if(count($session['ai_content_pending'])>=3)throw new RuntimeException('AI_CONTENT_SESSION_FULL');
+}
+function cmsAiContentPending(array $session,mixed $token): array {
+    if(!is_string($token)||!preg_match('/^[0-9a-f]{48}$/D',$token))
+        throw new RuntimeException('AI_CONTENT_SESSION');
+    $pending=$session['ai_content_pending'][$token]??null;
+    if(!is_array($pending)||($pending['token']??null)!==$token
+        || !is_int($pending['expires_at']??null)||$pending['expires_at']<time())
+        throw new RuntimeException('AI_CONTENT_SESSION');
+    return $pending;
+}
+function cmsAiContentSave(string $private,array $posted,array $catalog,int $expected,
+    ?string $id,array $pending,array $canonical): array {
+    if(!is_int($pending['expires_at']??null)||$pending['expires_at']<time()
+        || ($pending['creation_id']??null)!==$id||($pending['expected_version']??null)!==$expected)
+        throw new RuntimeException('AI_CONTENT_SESSION');
+    $metadata=cmsAiContentMetadata($pending['metadata']??[]);
+    if(($posted['kind']??null)!==$metadata['kind']||($posted['state']??null)!=='draft')
+        throw new InvalidArgumentException('AI_CONTENT_SAVE');
+    if($metadata['kind']==='atelier'){
+        $ref=$metadata['reference_id'];
+        if(($canonical[$ref]['model']??null)!=='recipes'
+            || !is_string($canonical[$ref]['fingerprint']??null)
+            || !hash_equals($metadata['reference_fingerprint'],$canonical[$ref]['fingerprint']))
+            throw new RuntimeException('AI_CONTENT_REFERENCE_CHANGED');
+    }
+    // Common append-only save repeats BOTH aliases and the final title under lock.
+    return cmsCreationSave($private,$posted,$catalog,$expected,$id,null,$metadata);
+}
+/** Next lot: data interface only, never an image generation or approval. */
+function cmsVisualBriefDraft(string $kind,array $raw): array {
+    if(!isset(cmsCreationKinds()[$kind])||array_diff(array_keys($raw),[
+        'subject','description','fidelity','format','provenance','rights','medium']))
+        throw new InvalidArgumentException('VISUAL_BRIEF');
+    $out=['contract'=>'cdc-editorial-visual-brief-v1','kind'=>$kind,'validation'=>'pending'];
+    foreach(['subject'=>180,'description'=>2000,'fidelity'=>1000,'format'=>100,
+        'provenance'=>700,'rights'=>700] as $key=>$max)
+        $out[$key]=cmsCreationText($raw[$key]??'',$max);
+    $medium=$raw['medium']??'';
+    if(!in_array($medium,['documentary_photo','real_photo','ai_illustration','educational_visual'],true))
+        throw new InvalidArgumentException('VISUAL_BRIEF');
+    $out['medium']=$medium;
+    return $out;
 }
 function cmsCreationFormHtml(string $kind,array $values=[]): string {
     $schema=cmsCreationSchema()[$kind]??null;

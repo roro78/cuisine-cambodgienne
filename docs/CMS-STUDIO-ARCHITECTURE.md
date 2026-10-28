@@ -79,6 +79,13 @@ Un statut « Prêt pour relecture » ne vaut **pas** publication, validation de 
 
 ## 7. Cycle standard de création de contenu
 
+**Raccordement C2 (29 octobre, en PR #151) :** le [contrat C1 fusionné #150](CMS-STRUCTURED-CONTENT-P1C-C1.md)
+alimente le même formulaire manuel, sous forme de candidat temporaire. Une action
+explicite sauvegarde ensuite avec `cmsCreationSave`, provenance serveur et historique
+conservés. Quota global partagé avec les briefs ; aucune ouverture GET ne génère.
+Le fournisseur reste désactivé tant qu'il n'est pas qualifié et autorisé. Voir
+[les limites, la recette C2 et les écarts Astro](CMS-STRUCTURED-GENERATION-P1C-C2.md).
+
 **Premier lot P1C-B, en branche/PR :** les [briefs IA privés](CMS-AI-BRIEFS-P1C.md) empruntent `cmsCreationSave`, le même formulaire et le même calendrier. La provenance IA est déterminée côté serveur et conservée au fil des versions. Les quatre textes du brief ne constituent pas une page complète ni une approbation ; l'adaptateur reste désactivé par défaut tant que le fournisseur n'est pas raccordé et réceptionné.
 
 1. Vérifier anti-doublon, angle éditorial et autorisations médias/audio.

@@ -53,6 +53,11 @@ jobs:
           php tests/php/editorial-ai-brief-smoke.php dist
           php -l tests/php/editorial-ai-content-contract-smoke.php
           php tests/php/editorial-ai-content-contract-smoke.php dist
+          php -l public/gestion-contenus/content-gateway-adapter.php
+          php -l tests/php/editorial-ai-content-generation-smoke.php
+          php tests/php/editorial-ai-content-generation-smoke.php dist
+          php -l tests/php/editorial-ai-content-controller-smoke.php
+          php tests/php/editorial-ai-content-controller-smoke.php dist
           php -l public/gestion-contenus/openai-brief-adapter.php
           php -l tests/php/editorial-openai-brief-smoke.php
           php tests/php/editorial-openai-brief-smoke.php

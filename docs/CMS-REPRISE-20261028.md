@@ -1,5 +1,35 @@
 # Reprise du Studio — 28 octobre 2026
 
+## Reprise du 29 octobre — C1 fusionné, raccordement C2
+
+Revue complète de #150 : aucun blocage identifié, tête `0eea28f` et CI complète
+#40782642281 SUCCESS. Fusion squash expressément demandée par le propriétaire,
+réalisée au SHA `c0ab78054af9610a47ae9cb3536b74ef2858d43b` ; `main` local synchronisé
+sans perte. [CI main #40785051928 SUCCESS](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40785051928).
+Les filtres des anciens déclencheurs OVH ont été vérifiés ; aucun déploiement lancé.
+
+Le [raccordement P1C-C2](CMS-STRUCTURED-GENERATION-P1C-C2.md) est développé dans
+la [PR #151](https://github.com/roro78/cuisine-cambodgienne/pull/151) : même formulaire,
+candidat temporaire à relire, sauvegarde privée explicite, provenance serveur et
+versions immuables, quota partagé, contrôles de doublons/références/concurrence et
+échecs sans retry. Fournisseur réel désactivé ; transport de passerelle facultatif
+préparé sans créer de webhook. Une interface de données de brief visuel reste
+`pending`, sans génération d'images. Aucun changement Astro, média, MP3 ou n8n 01/02/03.
+
+Local : 37 contrats Node PASS, Astro 0 erreur/0 warning (24 hints), build 48 pages.
+Les smokes C2 cinq familles et le parcours HTTP PHP avec sessions/CSRF sont ajoutés
+à la matrice 8.3/8.4 ; lire la CI au SHA final de #151. Le modèle y est simulé,
+HTTPS simulé sur loopback ; aucune recette OVH privée ou visuelle n'est déduite.
+
+Blocage moteur confirmé : aucune variable d'accès IA du processus, Ollama local
+inaccessible, pas d'outil exposé pour piloter la session n8n connectée signalée.
+Aucun test distant ni résultat/coût inventé. Un [protocole distinct de rédaction
+structurée](BENCHMARK-STRUCTURED-CONTENT-P1C.md) complète celui des briefs.
+
+Suite : qualifier le moteur et la passerelle privée, recette contrôlée après
+autorisation, combler les écarts Astro, briefs visuels, aperçu fidèle et publication
+validée. La réception calendrier est acquise. **Aucun transfert C2 sur OVH.**
+
 ## État de reprise actuel — après les PR #146 à #149
 
 Cet état prévaut sur les instantanés historiques ci-dessous. `main` local est

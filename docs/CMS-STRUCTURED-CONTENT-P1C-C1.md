@@ -1,5 +1,10 @@
 # P1C-C1 — Contrat de brouillon structuré des cinq familles
 
+**Mise à jour du 29 octobre :** #150 fusionnée au SHA `c0ab780`, CI de tête et
+après fusion SUCCESS. Le [raccordement C2](CMS-STRUCTURED-GENERATION-P1C-C2.md)
+est développé séparément dans #151. Les sections ci-dessous décrivent la livraison
+C1 et ses limites ; elles ne prétendent pas à une génération réelle activée.
+
 28 octobre 2026. **Préparation hors ligne dans une branche dédiée.** Ce lot ne
 raccorde aucun moteur, n'ajoute aucune action à l'interface et ne sauvegarde pas
 de sortie IA. Il prépare la réponse structurée du prochain raccordement dans le

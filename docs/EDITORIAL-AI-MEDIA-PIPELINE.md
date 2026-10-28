@@ -1,5 +1,14 @@
 # Cuisine du Cambodge — Pipeline éditorial IA, manuel et calendrier média
 
+> **État prioritaire au 29 octobre :** C1 (#150) revu et fusionné sur autorisation
+> explicite, `main` synchronisé sur `c0ab780`, CI après fusion SUCCESS.
+> [C2 / PR #151](CMS-STRUCTURED-GENERATION-P1C-C2.md) raccorde le formulaire commun
+> à un candidat de session puis une sauvegarde privée explicite, avec provenance,
+> quotas partagés et tests PHP HTTP/CSRF. Fournisseur réel désactivé, aucun transfert
+> OVH ou changement n8n social. Le [protocole structuré](BENCHMARK-STRUCTURED-CONTENT-P1C.md)
+> distingue socle du formulaire et contenu Astro complet. Les états ci-dessous
+> sont les instantanés historiques du chantier.
+
 > **État actuel prioritaire, après #149 (28 octobre 2026) :** `main` synchronisé
 > sur `46fef8c`, CI SUCCESS ; #146–#149 fusionnées. Calendrier OVH réceptionné,
 > GET public PASS ; briefs/adaptateur/benchmark intégrés côté GitHub, activation
