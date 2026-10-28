@@ -16,6 +16,7 @@ Les recettes se consultent, se filtrent, s’enregistrent (favoris) et s’impri
 
 ## Chantiers documentés
 
+- **Cahier des charges IA et images** — [référentiel transversal permanent, cinq familles et validations](docs/REFERENTIEL-GENERATION-IA-EDITORIALE-VISUELLE.md).
 - **Création de contenus manuelle/IA et calendrier média** — [plan du pipeline de création, anti-doublons et validations](docs/EDITORIAL-AI-MEDIA-PIPELINE.md). Le pipeline commence par le contenu, non par la diffusion sociale.
 - **Architecture du Studio éditorial (définitive)** — [gabarit partagé, règles valables pour toutes les pages actuelles et futures, tests anti-régression](docs/CMS-STUDIO-ARCHITECTURE.md). Consulter ce contrat avant toute modification du CMS.
 
