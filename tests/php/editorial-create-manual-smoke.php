@@ -84,6 +84,36 @@ try{
         && $calendar['month_count']===$count
         && $calendar['undated_count']===0,
         'REAL_PERSISTED_DRAFTS_CALENDAR');
+    $undated=createInput('culture','Projet calendrier sans date témoin');
+    $undated['target_date']='';
+    cmsCreationSave($base,$undated,$published,0);
+    // Snapshot only temporary fixtures, never real OVH data. Calendar reads must
+    // preserve every revision's bytes, filename and permissions, including v1.
+    $snapshot=static function(string $folder):array {
+        $out=[];
+        foreach(glob($folder.'/*')?:[] as $path){
+            clearstatcache(true,$path);
+            $out[basename($path)]=[hash_file('sha256',$path),fileperms($path)&0777];
+        }
+        ksort($out);
+        return $out;
+    };
+    $before=$snapshot($dir);
+    $latest=cmsCreationList($dir);
+    $dated=cmsCalendarPlan($latest,'2026-11');
+    $emptyMonth=cmsCalendarPlan($latest,'2026-10');
+    requireCreation($dated['month_count']===$count && $dated['undated_count']===1
+        && $emptyMonth['month_count']===0 && $emptyMonth['undated_count']===1,
+        'PERSISTED_DATED_AND_UNDATED');
+    requireCreation($dated['total']===count($latest)
+        && $latest[$first['id']]['version']===2,
+        'CALENDAR_LATEST_REVISIONS_ONLY');
+    foreach(array_keys(cmsCreationKinds()) as $family)
+        cmsCalendarPlan($latest,'2026-11',$family,'review');
+    requireCreation($before===$snapshot($dir),'CALENDAR_CHANGED_PRIVATE_FILES');
+    requireCreation((fileperms($dir)&0077)===0,'CALENDAR_PRIVATE_DIR_PERMISSIONS');
+    foreach($before as $entry)
+        requireCreation(($entry[1]&0077)===0,'CALENDAR_PRIVATE_FILE_PERMISSIONS');
     // Block published content title of the SAME kind; preserve complementary cultural angles.
     $publishedRecipe=null;
     foreach($published as $page)if($page['kind']==='recette'){$publishedRecipe=$page;break;}

@@ -16,6 +16,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  cms-php-runtime:
+    name: CMS calendar PHP ${{ matrix.php }}
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.4']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Select explicit PHP runtime
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: none
+      - name: Download actual public indexes from the validated build
+        uses: actions/download-artifact@v4
+        with:
+          name: cms-php-public-indexes
+          path: dist
+      - name: Lint and exercise the shared Studio on actual content
+        run: |
+          php --version
+          php -l public/gestion-contenus/index.php
+          php -l public/gestion-contenus/lib.php
+          php -l tests/php/editorial-calendar-smoke.php
+          php -l tests/php/editorial-create-manual-smoke.php
+          php tests/php/editorial-cms-drafts-smoke.php
+          php tests/php/editorial-all-guided-smoke.php dist
+          php tests/php/editorial-create-manual-smoke.php dist
+          php tests/php/editorial-calendar-smoke.php
+          php -n tests/php/editorial-calendar-smoke.php
+
   validate:
     name: Astro check & build
     runs-on: ubuntu-latest
@@ -142,6 +178,17 @@ jobs:
 
       - name: Production build
         run: npm run build
+
+      - name: Preserve only public CMS indexes for explicit PHP runtime checks
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-php-public-indexes
+          path: |
+            dist/social-feed.json
+            dist/editorial-source-index.json
+            dist/editorial-guided-fields.json
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Verify every real Astro editorial form with PHP and server filters
         run: php tests/php/editorial-all-guided-smoke.php dist
