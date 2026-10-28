@@ -109,7 +109,7 @@ Le planning peut proposer des dates, mais aucune date par défaut n'est une auto
 |---|---|---|
 | P0 — Architecture universelle | Gabarit Studio commun, 35 fiches du catalogue éditables en proposition, contrôle des futurs IDs | **Acquis** (PR #137), déploiement OVH des dernières corrections à confirmer |
 | **P1A — Contrat de création** | Identité des cinq familles, provenance IA/manuelle, anti-doublons, états, calendrier et preuves de validation ; tests sur vrai catalogue | **Implémenté en branche** (à intégrer seulement si CI PASS) |
-| **P1B — Créer manuellement** | Bouton « Nouveau contenu » dans le Studio, formulaire par famille issu du gabarit commun, stockage privé versionné, tableau des créations, anti-doublons publiés + projets | **À développer**, pas encore disponible sur OVH |
+| **P1B — Créer manuellement** | Bouton « Nouveau contenu » dans le Studio, formulaires par famille, blocs de texte ajoutables, stockage privé versionné, projets et anti-doublons publiés + projets | **Implémentation en PR** — réception OVH, aperçu Astro fidèle et publication encore distincts |
 | **P1C — Générer avec IA** | Même formulaire prérempli par IA après brief, retour en brouillon, contrôles factuels, citations de travail internes et validation humaine ; aucun jeton dans navigateur | **À développer** |
 | P2 — Aperçu éditorial fidèle | Prévisualisation réelle Astro au format du type choisi, médias à valider et comparaison source/brouillon | **À développer** |
 | P3 — Conversion et mise en ligne du site | Génération de données Astro sur branche, PR, CI et déploiement **après approbation**, contrôle de non-régression sur SEO/audio/médias | **À développer** |
@@ -138,3 +138,13 @@ Le planning peut proposer des dates, mais aucune date par défaut n'est une auto
 - Travailler en une PR par étape, sans modifier directement \`main\`, avec CI avant fusion et livraison OVH manuelle ciblée après sauvegarde.
 
 **Ce plan est le point de reprise principal du chantier « création IA + calendrier média », y compris après changement de conversation.**
+
+### P1B — Contrat de réception intermédiaire du Studio de création manuelle
+
+La création manuelle prépare une **nouvelle fiche privée** et non un changement sur une page existante. Ses révisions sont stockées dans `editorial-drafts/new-content` sous la racine privée du CMS. Un bouton « Nouveau contenu » ouvre les cinq familles déjà prises en charge ; les champs et les composants visuels sont issus d'un seul rendu partagé. Les tableaux structurés (étapes, sections, ingrédients, chapitres) admettent l'ajout ou le retrait de lignes **dans le formulaire**, jamais dans une source Astro directement.
+
+L'éditeur distingue `Brouillon` (champs partiels autorisés) de `Soumettre à relecture` (champs requis). Une sauvegarde ajoute une version immuable, sans écraser les anciennes. Les collisions exactes de titre/slug de **même catégorie** avec le catalogue publié ou un autre projet privé sont bloquées ; des titres proches sont signalés. Différentes familles peuvent traiter un thème commun avec des angles différents.
+
+**Limites à respecter :** la fiche créée n'est pas encore une entrée `recipes`/`culture`/`ingredients`/`workshops`/`recipeTechniques` d'Astro. Une révision prête à relire n'est ni une approbation finale ni une page publiable. Le prochain jalon doit convertir le contenu en source typée complète avec médias obligatoires, aperçus publics et PR/CI — uniquement après contrôle humain. L'IA ne rédige encore aucun contenu depuis le CMS. Le calendrier graphique reste à développer. Les MP3 Coral et les données des ateliers publiés demeurent intacts.
+
+**Déploiement :** cette étape ne change que les fichiers `public/gestion-contenus/index.php` et `public/gestion-contenus/lib.php`. Le paquet de 6 fichiers existant demeure compatible, mais après une fusion CI complète il faudra sauvegarder et transférer ces deux PHP uniquement sur OVH, puis vérifier le nouveau flux en Android. Ne pas confondre tests GitHub et réception de production.
