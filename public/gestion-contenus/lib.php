@@ -723,3 +723,333 @@ function cmsSave(string $private,array $source,array $fields,int $expected,strin
         } finally { if(is_file($tmp))@unlink($tmp); }
     } finally { flock($handle,LOCK_UN);fclose($handle); }
 }
+
+
+/**
+ * P1B: private creation of NEW editorial content in the same Studio.
+ * The typed form is shared between all five families; it does not publish,
+ * create Astro source files, upload assets, generate audio, or call an AI API.
+ */
+function cmsCreationSchema(): array {
+    return [
+      'recette'=>[
+        'intro'=>['Introduction','long'],'description'=>['Description SEO','long'],
+        'context'=>['Contexte culinaire','long'],'baseServings'=>['Nombre de portions','short'],
+        'prepTime'=>['Préparation','short'],'cookTime'=>['Cuisson','short'],
+        'ingredients'=>['Ingrédients','rows',['quantity'=>'Quantité','unit'=>'Unité','name'=>'Ingrédient']],
+        'steps'=>['Étapes','rows',['title'=>'Titre de l’étape','text'=>'Explication complète']],
+        'equipment'=>['Matériel','list']
+      ],
+      'culture'=>[
+        'eyebrow'=>['Rubrique','short'],'intro'=>['Introduction','long'],
+        'seoDescription'=>['Description SEO','long'],'readingTime'=>['Temps de lecture','short'],
+        'sections'=>['Sections du Carnet','rows',
+          ['title'=>'Titre de la section','paragraphs'=>'Paragraphes (séparer par une ligne vide)']]
+      ],
+      'atelier'=>[
+        'intro'=>['Présentation','long'],'learningGoal'=>['Objectif pédagogique','long'],
+        'finalPreparation'=>['Résultat final','long'],'portionLabel'=>['Portions ou participants','short'],
+        'beforeStarting'=>['Préparation initiale','list'],'equipment'=>['Matériel','list'],
+        'phases'=>['Chapitres pédagogiques','rows',
+          ['title'=>'Titre du chapitre','learning'=>'Apprentissage visé']]
+      ],
+      'ingredient'=>[
+        'intro'=>['Introduction','long'],'seoDescription'=>['Description SEO','long'],
+        'role'=>['Rôle culinaire','long'],'deepDive'=>['À approfondir','list'],
+        'profile'=>['Profil aromatique','list'],'uses'=>['Utilisations','list'],
+        'tips'=>['Conseils','list'],'choose'=>['Bien choisir','list'],
+        'keep'=>['Conservation','list'],'pairings'=>['Accords','list'],
+        'mistakes'=>['Erreurs à éviter','list'],'seoKeywords'=>['Mots-clés SEO','list']
+      ],
+      'technique'=>[
+        'description'=>['Description SEO','long'],'introduction'=>['Introduction','long'],
+        'preparation'=>['Temps de préparation','short'],'yieldLabel'=>['Rendement','short'],
+        'supplies'=>['Matériel et ingrédients','list'],
+        'steps'=>['Étapes','rows',['title'=>'Titre','text'=>'Action et repères']],
+        'alternatives'=>['Alternatives','rows',['title'=>'Variante','text'=>'Description']],
+        'questions'=>['Questions fréquentes','rows',['question'=>'Question','answer'=>'Réponse']]
+      ]
+    ];
+}
+function cmsCreationKinds(): array {
+    return ['recette'=>'Recette','atelier'=>'Atelier','culture'=>'Carnet culturel',
+        'ingredient'=>'Fiche ingrédient','technique'=>'Fiche technique'];
+}
+function cmsCreationText(mixed $raw,int $max=7000): string {
+    if(!is_string($raw) || strlen($raw)>$max*4
+       || !preg_match('//u',$raw) || str_contains($raw,"\0"))
+        throw new InvalidArgumentException('CREATION_TEXT');
+    $text=trim(str_replace(["\r\n","\r"],"\n",$raw));
+    if(mbLen($text)>$max)throw new InvalidArgumentException('CREATION_TEXT');
+    return $text;
+}
+function cmsCreationSlug(string $title): string {
+    $value=trim($title);
+    if(function_exists('transliterator_transliterate')){
+        $fold=transliterator_transliterate('Any-Latin; Latin-ASCII',$value);
+        if(is_string($fold))$value=$fold;
+    }elseif(function_exists('iconv')){
+        $fold=iconv('UTF-8','ASCII//TRANSLIT//IGNORE',$value);
+        if(is_string($fold))$value=$fold;
+    }
+    $value=strtolower($value);
+    $value=trim((string)preg_replace('/[^a-z0-9]+/','-',$value),'-');
+    if($value==='' || strlen($value)>100)
+        throw new InvalidArgumentException('CREATION_SLUG');
+    return $value;
+}
+function cmsCreationCleanFields(string $kind,mixed $raw): array {
+    $schema=cmsCreationSchema()[$kind]??null;
+    if(!$schema || !is_array($raw) || array_is_list($raw)
+       || array_diff(array_keys($raw),array_keys($schema)))
+        throw new InvalidArgumentException('CREATION_SCHEMA');
+    $out=[];
+    foreach($schema as $name=>$spec){
+        $type=$spec[1];
+        $value=$raw[$name]??($type==='rows'?[]:'');
+        if($type==='short' || $type==='long'){
+            $out[$name]=cmsCreationText($value,$type==='short'?300:7000);
+        }elseif($type==='list'){
+            $text=cmsCreationText($value,9000);
+            $list=preg_split('/\n+/u',$text);
+            $out[$name]=array_values(array_filter(array_map('trim',$list?:[]),
+                static fn(string $s):bool=>$s!==''));
+            if(count($out[$name])>40
+               || array_filter($out[$name],static fn(string $s):bool=>mbLen($s)>1500))
+                throw new InvalidArgumentException('CREATION_LIST');
+        }elseif($type==='rows'){
+            if(!is_array($value) || count($value)>25)
+                throw new InvalidArgumentException('CREATION_ROWS');
+            $rows=[];
+            foreach($value as $row){
+                if(!is_array($row)||array_is_list($row)
+                   || array_diff(array_keys($row),array_keys($spec[2])))
+                    throw new InvalidArgumentException('CREATION_ROW');
+                $clean=[];
+                foreach($spec[2] as $key=>$label)
+                    $clean[$key]=cmsCreationText($row[$key]??'',5000);
+                if(count(array_filter($clean,static fn(string $v):bool=>$v!==''))===0)
+                    continue;
+                // One row may be incomplete while working in a private draft.
+                if(array_key_exists('paragraphs',$clean)){
+                    $paragraphs=preg_split('/\n\s*\n/u',$clean['paragraphs']);
+                    $clean['paragraphs']=array_values(array_filter(array_map('trim',
+                        $paragraphs?:[]),static fn(string $v):bool=>$v!==''));
+                }
+                $rows[]=$clean;
+            }
+            $out[$name]=$rows;
+        }
+    }
+    return $out;
+}
+function cmsCreationReady(string $kind,array $fields,string $summary): bool {
+    if($summary==='' || !isset(cmsCreationSchema()[$kind]))return false;
+    foreach(cmsCreationSchema()[$kind] as $name=>$spec){
+        $value=$fields[$name]??null;
+        if($spec[1]==='short' || $spec[1]==='long'){
+            // All scalar fields in each native model are required for review,
+            // except the optional recipe equipment list.
+            if(!is_string($value) || $value==='')return false;
+        }elseif($spec[1]==='list'){
+            if($name==='equipment' && $kind==='recette')continue;
+            if(!is_array($value)||count($value)<1)return false;
+        }elseif($spec[1]==='rows'){
+            if(!is_array($value)||count($value)<1)return false;
+            foreach($value as $row){
+                foreach($spec[2] as $key=>$label){
+                    if($key==='quantity' || $key==='unit')continue;
+                    if(!isset($row[$key]) || $row[$key]==='' || $row[$key]===[])return false;
+                }
+            }
+        }
+    }
+    if($kind==='recette'){
+        $portions=$fields['baseServings']??'';
+        if(!ctype_digit((string)$portions) || (int)$portions<1 || (int)$portions>100)return false;
+    }
+    return true;
+}
+function cmsCreationDir(string $private): string {
+    $base=cmsDraftDir($private);
+    $dir=$base.'/new-content';
+    if(!is_dir($dir) && !@mkdir($dir,0700))throw new RuntimeException('CREATION_STORE');
+    if(is_link($dir)||!is_dir($dir)||!is_writable($dir)
+       || (fileperms($dir)&0077)!==0)throw new RuntimeException('CREATION_STORE');
+    return $dir;
+}
+function cmsCreationId(mixed $id): ?string {
+    return is_string($id)&&preg_match('/^c-[0-9a-f]{24}$/D',$id)?$id:null;
+}
+function cmsCreationVersions(string $dir,string $id): array {
+    if(!cmsCreationId($id))throw new RuntimeException('CREATION_ID');
+    $paths=glob($dir.'/'.$id.'.*.json');
+    if(!is_array($paths)||count($paths)>9999)throw new RuntimeException('CREATION_FILES');
+    $versions=[];
+    foreach($paths as $path){
+        if(is_link($path)||!is_file($path)
+           || !preg_match('/^'.preg_quote($id,'/').'\.([0-9]{4})\.json$/D',
+              basename($path),$m))throw new RuntimeException('CREATION_FILES');
+        $versions[]=(int)$m[1];
+    }
+    rsort($versions,SORT_NUMERIC);
+    if($versions && ($versions[count($versions)-1]!==1 || count($versions)!==$versions[0]))
+        throw new RuntimeException('CREATION_GAP');
+    return $versions;
+}
+function cmsCreationRead(string $dir,string $id,?int $version=null): ?array {
+    if(!cmsCreationId($id))return null;
+    $versions=cmsCreationVersions($dir,$id);
+    $version=$version??($versions[0]??null);
+    if($version===null)return null;
+    if(!in_array($version,$versions,true))return null;
+    $path=$dir.'/'.$id.'.'.sprintf('%04d',$version).'.json';
+    if(is_link($path)||!is_file($path)||filesize($path)>100000)
+        throw new RuntimeException('CREATION_FILE');
+    $raw=file_get_contents($path);
+    if(!is_string($raw))throw new RuntimeException('CREATION_FILE');
+    $data=json_decode($raw,true,32,JSON_THROW_ON_ERROR);
+    if(!is_array($data)||($data['id']??null)!==$id||($data['version']??null)!==$version)
+        throw new RuntimeException('CREATION_FILE');
+    return $data;
+}
+function cmsCreationList(string $dir): array {
+    $paths=glob($dir.'/c-*.0001.json');
+    if(!is_array($paths)||count($paths)>250)throw new RuntimeException('CREATION_CAPACITY');
+    $out=[];
+    foreach($paths as $path){
+        $id=substr(basename($path),0,-10); // remove ".0001.json"
+        if(!cmsCreationId($id)||is_link($path))throw new RuntimeException('CREATION_FILE');
+        $record=cmsCreationRead($dir,$id);
+        if(!$record)throw new RuntimeException('CREATION_FILE');
+        $out[$id]=$record;
+    }
+    uasort($out,static fn(array $a,array $b):int=>
+        strcmp((string)$b['recorded_at'],(string)$a['recorded_at']));
+    return $out;
+}
+function cmsCreationDuplicateCheck(string $kind,string $slug,
+    array $catalog,array $proposals,?string $self): array {
+    $similar=[];
+    foreach(array_merge(array_values($catalog),array_values($proposals)) as $item){
+        if(($item['kind']??null)!==$kind || ($item['id']??null)===$self)continue;
+        $existingSlug=(string)($item['slug']??'');
+        if($existingSlug===''){
+            $id=(string)($item['id']??'');
+            $existingSlug=str_contains($id,':')?explode(':',$id,2)[1]:'';
+        }
+        try{$titleSlug=cmsCreationSlug((string)($item['title']??''));}
+        catch(Throwable $e){$titleSlug='';}
+        if($existingSlug===$slug || $titleSlug===$slug)
+            throw new InvalidArgumentException('CREATION_DUPLICATE');
+        $left=array_unique(explode('-',$slug));
+        $right=array_unique(explode('-',$titleSlug));
+        $score=count(array_intersect($left,$right))
+            /max(1,max(count($left),count($right)));
+        if($score>=0.65)$similar[]=['title'=>(string)$item['title'],'score'=>$score];
+    }
+    return $similar;
+}
+function cmsCreationSave(string $private,array $posted,array $catalog,
+    int $expected,?string $id=null): array {
+    if($id!==null && !cmsCreationId($id))throw new InvalidArgumentException('CREATION_ID');
+    $kind=cmsCreationText($posted['kind']??'',30);
+    if(!isset(cmsCreationKinds()[$kind]))throw new InvalidArgumentException('CREATION_KIND');
+    $title=cmsCreationText($posted['title']??'',180);
+    $angle=cmsCreationText($posted['angle']??'',700);
+    $summary=cmsCreationText($posted['summary']??'',2000);
+    $note=cmsCreationText($posted['research_note']??'',3000);
+    $date=cmsCreationText($posted['target_date']??'',12);
+    $state=cmsCreationText($posted['state']??'draft',12);
+    if($title===''||$angle===''||!in_array($state,['draft','review'],true)
+       || ($date!=='' && (!preg_match('/^\d{4}-\d{2}-\d{2}$/D',$date)
+         || !checkdate((int)substr($date,5,2),(int)substr($date,8,2),(int)substr($date,0,4)))))
+        throw new InvalidArgumentException('CREATION_FIELDS');
+    $fields=cmsCreationCleanFields($kind,$posted['fields']??[]);
+    if($state==='review' && !cmsCreationReady($kind,$fields,$summary))
+        throw new InvalidArgumentException('CREATION_INCOMPLETE');
+    $slug=cmsCreationSlug($title);
+    $dir=cmsCreationDir($private);
+    $lockPath=$dir.'/catalog.lock';
+    if(is_link($lockPath))throw new RuntimeException('CREATION_LOCK');
+    $lock=fopen($lockPath,'c');
+    if(!$lock || !flock($lock,LOCK_EX))throw new RuntimeException('CREATION_LOCK');
+    try{
+        if(!@chmod($lockPath,0600))throw new RuntimeException('CREATION_LOCK');
+        $all=cmsCreationList($dir);
+        $previous=$id===null?null:($all[$id]??null);
+        if($id!==null && !$previous)throw new RuntimeException('CREATION_NOT_FOUND');
+        if($id===null && $expected!==0)throw new RuntimeException('CREATION_CONFLICT');
+        if($previous && ($previous['version']!==$expected
+            || $previous['kind']!==$kind))
+            throw new RuntimeException('CREATION_CONFLICT');
+        $similar=cmsCreationDuplicateCheck($kind,$slug,$catalog,$all,$id);
+        $id=$id??'c-'.bin2hex(random_bytes(12));
+        if(isset($all[$id]))throw new RuntimeException('CREATION_CONFLICT');
+        $version=$expected+1;
+        $record=[
+            'contract'=>'cdc-editorial-new-content-v1',
+            'id'=>$id,'kind'=>$kind,'origin'=>'manual','title'=>$title,
+            'slug'=>$slug,'angle'=>$angle,'summary'=>$summary,'fields'=>$fields,
+            'research_note'=>$note,'target_date'=>$date===''?null:$date,
+            'channels'=>['site'],'state'=>$state,'reviewed'=>false,
+            'similar_titles'=>$similar,'version'=>$version,
+            'recorded_at'=>gmdate('Y-m-d\TH:i:s\Z')
+        ];
+        $json=json_encode($record,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+        if(strlen($json)>100000)throw new InvalidArgumentException('CREATION_SIZE');
+        $path=$dir.'/'.$id.'.'.sprintf('%04d',$version).'.json';
+        if(file_exists($path)||is_link($path))throw new RuntimeException('CREATION_CONFLICT');
+        $temp=tempnam($dir,'new-');
+        if($temp===false)throw new RuntimeException('CREATION_STORE');
+        try{
+            if(is_link($temp)||!chmod($temp,0600)
+                || file_put_contents($temp,$json,LOCK_EX)!==strlen($json)
+                || !rename($temp,$path))
+                throw new RuntimeException('CREATION_STORE');
+        }finally{if(is_file($temp))@unlink($temp);}
+        return $record;
+    }finally{flock($lock,LOCK_UN);fclose($lock);}
+}
+function cmsCreationFormHtml(string $kind,array $values=[]): string {
+    $schema=cmsCreationSchema()[$kind]??null;
+    if(!$schema)throw new InvalidArgumentException('CREATION_KIND');
+    $html='';
+    foreach($schema as $field=>$spec){
+        [$label,$type]=$spec;
+        $name=cmsEsc($field);
+        $label=cmsEsc($label);
+        $value=$values[$field]??null;
+        if($type==='rows'){
+            $rows=is_array($value)&&$value?array_values($value):[[]];
+            $html.='<fieldset class="create-collection"><legend>'.$label.'</legend>'
+                .'<div class="create-rows" data-create-rows="'.$name.'">';
+            foreach($rows as $i=>$row){
+                $html.='<div class="create-row" data-create-row><strong>Élément '
+                    .((int)$i+1).'</strong>';
+                foreach($spec[2] as $key=>$lbl){
+                    $text=$row[$key]??'';
+                    if(is_array($text))$text=implode("\n\n",$text);
+                    $html.='<label>'.cmsEsc($lbl).'<textarea rows="3" maxlength="5000"'
+                        .' name="fields['.$name.']['.$i.']['.cmsEsc($key).']">'
+                        .cmsEsc((string)$text).'</textarea></label>';
+                }
+                $html.='<button type="button" class="secondary" data-create-remove>'
+                    .'Retirer cet élément</button></div>';
+            }
+            $html.='</div><button type="button" class="secondary" data-create-add="'
+                .$name.'">Ajouter un élément</button></fieldset>';
+        }elseif($type==='list'){
+            $text=is_array($value)?implode("\n",$value):(string)($value??'');
+            $html.='<label>'.$label.' <span class="small muted">(une ligne par élément)</span>'
+                .'<textarea name="fields['.$name.']" rows="4" maxlength="9000">'
+                .cmsEsc($text).'</textarea></label>';
+        }else{
+            $html.='<label>'.$label.'<textarea name="fields['.$name.']" rows="'
+                .($type==='short'?'2':'4').'" maxlength="'
+                .($type==='short'?'300':'7000').'">'
+                .cmsEsc((string)($value??'')).'</textarea></label>';
+        }
+    }
+    return $html;
+}
