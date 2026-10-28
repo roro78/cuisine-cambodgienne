@@ -128,6 +128,17 @@ foreach(['not json','[]','{}',str_repeat(' ',60001),"\xff",null,[]] as $bad)
 // Canonical recipe data, not an excerpt or arbitrary source, is mandatory for workshops.
 $input=['kind'=>'atelier','title'=>'Atelier témoin','angle'=>'Angle','objective'=>'Objectif',
     'reference_id'=>$recipe,'semantic_review'=>'1'];
+$recipeReferences=0;
+foreach($canonical as $id=>$source){
+    if($source['model']!=='recipes')continue;
+    $refInput=$input;$refInput['reference_id']=$id;
+    $refRequest=cmsAiContentRequest($refInput,$catalog,$canonical,$guided);
+    contentCheck($refRequest['reference']['fingerprint']===$source['fingerprint'],'ALL_RECIPE_HASHES');
+    contentCheck($refRequest['reference']['recipe_fields']['ingredients']===$guided[$id]['fields']['ingredients'],
+        'ALL_RECIPE_INGREDIENTS');
+    ++$recipeReferences;
+}
+contentCheck($recipeReferences>0,'DYNAMIC_REAL_RECIPE_REFERENCES');
 contentFails(static fn()=>cmsAiContentRequest($input,$catalog),'AI_CONTENT_REFERENCE');
 $badGuided=$guided;$badGuided[$recipe]['fingerprint']=str_repeat('f',64);
 contentFails(static fn()=>cmsAiContentRequest($input,$catalog,$canonical,$badGuided),'AI_CONTENT_REFERENCE');
@@ -148,5 +159,5 @@ foreach(['sources','audioScript','audioUrl','review','image'] as $key)
 $input['semantic_review']='0';
 contentFails(static fn()=>cmsAiContentRequest($input,$catalog,$canonical,$guided),'AI_BRIEF_REVIEW_REQUIRED');
 echo 'CMS_AI_CONTENT_CONTRACT_OFFLINE_PASS '.contentJson([
-    'families'=>count(cmsCreationKinds()),'realProviderCalls'=>0,'savedCandidates'=>0,
+    'families'=>count(cmsCreationKinds()),'canonicalRecipes'=>$recipeReferences,'realProviderCalls'=>0,'savedCandidates'=>0,
     'humanApproval'=>false,'scope'=>'creation-form-core-v1'])."\n";
