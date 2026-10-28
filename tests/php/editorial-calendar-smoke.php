@@ -54,8 +54,15 @@ requireCalendar($incomplete,'BAD_KIND');
 $corrupt=$items;
 $corrupt['c-000000000000000000000001']['target_date']='2026-11-31';
 $blocked=false;
-try{cmsCalendarPlan($corrupt,'2026-11');}catch(RuntimeException $e){$blocked=true;}
+try{cmsCalendarPlan($corrupt,'2026-11');}
+catch(RuntimeException $e){$blocked=$e->getMessage()==='CALENDAR_CORRUPT_DATE';}
 requireCalendar($blocked,'CORRUPT_DATE');
+$badDraft=$items;
+$badDraft['c-000000000000000000000001']['state']='obsolete';
+$blocked=false;
+try{cmsCalendarPlan($badDraft,'2026-11');}
+catch(RuntimeException $e){$blocked=$e->getMessage()==='CALENDAR_CORRUPT_DRAFT';}
+requireCalendar($blocked,'CORRUPT_DRAFT');
 $unsafe=$items;
 $unsafe['c-000000000000000000000001']['title']='<script>alert(1)</script>';
 $plan=cmsCalendarPlan($unsafe,'2026-11');
