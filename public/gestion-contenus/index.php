@@ -10,7 +10,7 @@ header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('Referrer-Policy: no-referrer');
 $nonce=base64_encode(random_bytes(18));
-header("Content-Security-Policy: default-src 'none'; style-src 'nonce-{$nonce}'; img-src https://www.cuisine-du-cambodge.com; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
+header("Content-Security-Policy: default-src 'none'; style-src 'nonce-{$nonce}'; script-src 'nonce-{$nonce}'; img-src https://www.cuisine-du-cambodge.com; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
 function cmsUnavailable(): never { http_response_code(503);exit('Espace CMS privé indisponible.'); }
 $https=(!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS'])!=='off')
     || (string)($_SERVER['SERVER_PORT']??'')==='443';
@@ -95,6 +95,13 @@ $status=(string)($_GET['status']??'all');
 if(!in_array($status,['all','without','draft','review','stale'],true))$status='all';
 $filters=['kind'=>$kind,'q'=>$q,'status'=>$status];
 $filtersUrl=http_build_query($filters,'','&',PHP_QUERY_RFC3986);
+// A new editorial idea is deliberately distinct from a published source ID.
+// Both paths still use the SAME authenticated Studio and shared field renderer.
+$newMode=isset($_GET['new']) || ($method==='POST' && isset($_POST['create_save']));
+$createKind=is_string($_POST['kind']??null)?$_POST['kind']:
+    (is_string($_GET['kind']??null)?$_GET['kind']:'recette');
+if(!isset(cmsCreationKinds()[$createKind]))$createKind='recette';
+$createForm=[];$creation=null;$creations=[];$createVersion=null;
 if(mbLen($q)>80 || preg_match('/[\x00-\x1f\x7f]/',$q) || !preg_match('//u',$q))$q='';
 if($auth){
     try{
@@ -109,6 +116,61 @@ if($auth){
         }catch(Throwable $e){ $canonicalById=[]; }
         $dir=cmsDraftDir($private);
     }catch(Throwable $e){cmsUnavailable();}
+    // Separate append-only namespace for NEW pages; never mix with edits of
+    // an already published source (which are SHA-locked to the canonical feed).
+    try{
+        $creationDir=cmsCreationDir($private);
+        $creations=cmsCreationList($creationDir);
+    }catch(Throwable $e){cmsUnavailable();}
+    if($newMode){
+        $cid=cmsCreationId($_POST['creation_id']??($_GET['cid']??null));
+        if($cid!==null){
+            if(!isset($creations[$cid])){http_response_code(404);$error='Brouillon de création introuvable.';}
+            else{$creation=$creations[$cid];$createKind=$creation['kind'];}
+        }
+        $createForm=$creation??[];
+        if($method==='POST' && isset($_POST['create_save'])){
+            $expected=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
+                ['options'=>['min_range'=>0,'max_range'=>9998]]);
+            if($expected===false){http_response_code(422);$error='Version invalide.';}
+            else{
+                try{
+                    $posted=[
+                        'kind'=>$_POST['kind']??null,
+                        'title'=>$_POST['title']??null,
+                        'angle'=>$_POST['angle']??null,
+                        'summary'=>$_POST['summary']??null,
+                        'research_note'=>$_POST['research_note']??null,
+                        'target_date'=>$_POST['target_date']??null,
+                        'state'=>$_POST['state']??null,
+                        'fields'=>$_POST['fields']??null
+                    ];
+                    $saved=cmsCreationSave($private,$posted,$catalog,$expected,$cid);
+                    header('Location: ?new=1&cid='.rawurlencode($saved['id'])
+                        .'&saved_new=1',true,303);
+                    exit;
+                }catch(InvalidArgumentException $e){
+                    http_response_code(422);
+                    $error=$e->getMessage()==='CREATION_DUPLICATE'
+                        ?'Cette catégorie possède déjà une fiche ou un projet avec le même titre ou identifiant.'
+                        :($e->getMessage()==='CREATION_INCOMPLETE'
+                            ?'Complétez les champs et les sections avant de demander la relecture.'
+                            :'Saisie invalide : vérifiez le titre, la date et les champs.');
+                    $createForm=$posted;
+                }catch(Throwable $e){
+                    http_response_code(409);
+                    $error='Brouillon non enregistré : version dépassée ou stockage indisponible. Rechargez la fiche.';
+                    $createForm=$posted;
+                }
+            }
+        }
+        if($creation){
+            $requested=filter_var($_GET['revision']??null,FILTER_VALIDATE_INT,
+                ['options'=>['min_range'=>1,'max_range'=>9999]]);
+            if($requested!==false)
+                $createVersion=cmsCreationRead($creationDir,$creation['id'],$requested);
+        }
+    }
     // Source identity -> last private proposal, never the social status.
     try{
         foreach($catalog as $src){
@@ -248,6 +310,16 @@ button.secondary{background:#eef3eb;color:#203228;border:1px solid #d1dbcd}
 input,select,textarea{font:inherit;padding:10px;border:1px solid #a7b3a6;
 border-radius:7px;width:100%;background:white;color:#203228}
 textarea{resize:vertical;min-height:110px}
+.create-collection{border:1px solid #d9ddd5;border-radius:10px;padding:12px;min-width:0}
+.create-collection legend{font-weight:700;padding:0 5px}
+.create-rows{display:grid;gap:12px;margin:12px 0}
+.create-row{display:grid;gap:9px;border:1px solid #e0e5dc;border-radius:10px;
+ padding:12px;background:#fcfcf8;min-width:0}
+.create-row strong{color:#17663b}
+.create-row button{justify-self:start}
+.new-actions{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+.create-meta{border-left:3px solid #d8a038;padding:10px 12px;background:#fff9e8}
+.create-card{border:1px solid #d9ddd5;border-radius:10px;padding:12px;margin-bottom:10px}
 .guided-text textarea{min-height:75px;line-height:1.5}
 .guided-group summary{line-height:1.4;overflow-wrap:anywhere}
 .preview-fields{display:grid;gap:8px}
@@ -306,7 +378,11 @@ Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
 <button name="login" value="1">Accéder au studio</button>
 </form></section>
 <?php else: ?>
-<section aria-label="Filtres de la bibliothèque">
+<nav class="new-actions" aria-label="Actions éditoriales">
+<a class="btn" href="?new=1">+ Nouveau contenu</a>
+<a href="?">Bibliothèque des pages publiées</a>
+</nav>
+<section aria-label="Filtres de la bibliothèque"<?= $newMode?' hidden':'' ?>>
 <form method="get" action="" class="toolbar">
 <label>Catégorie<select name="kind">
 <?php foreach(['all'=>'Toutes les catégories','recette'=>'Recettes','culture'=>'Carnets',
@@ -325,7 +401,91 @@ Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
 <p class="small muted" role="status"><?= count($shown) ?> résultat(s) sur <?= count($catalog) ?> contenus
  · Recherche et filtres côté serveur, sans JavaScript.</p>
 </section>
-<?php if($selected): ?>
+<?php if($newMode): ?>
+<p><a href="?">Retour à la bibliothèque</a></p>
+<section>
+<span class="badge">Création privée · aucune publication</span>
+<h2><?= $creation?'Modifier le brouillon de nouvelle page':'Créer un nouveau contenu' ?></h2>
+<p class="small muted">Même Studio pour les cinq familles, sans JSON. Choisissez les champs
+propres à la rubrique et sauvegardez : rien ne sera publié sur le site ni sur les réseaux.
+Le bouton IA remplira ce même formulaire dans une phase ultérieure.</p>
+<?php if(!$creation): ?>
+<nav class="new-actions" aria-label="Catégorie de la nouvelle page">
+<?php foreach(cmsCreationKinds() as $value=>$label): ?>
+<a href="?new=1&amp;kind=<?= cmsEsc($value) ?>"
+ <?= $createKind===$value?'aria-current="page"':'' ?>><?= cmsEsc($label) ?></a>
+<?php endforeach; ?>
+</nav>
+<?php endif; ?>
+<form method="post" class="stack" id="cms-new-editor">
+<input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
+<input type="hidden" name="creation_id" value="<?= cmsEsc($creation['id']??'') ?>">
+<input type="hidden" name="expected_version" value="<?= (int)($creation['version']??0) ?>">
+<input type="hidden" name="kind" value="<?= cmsEsc($createKind) ?>">
+<label>Catégorie<input value="<?= cmsEsc(cmsCreationKinds()[$createKind]) ?>" disabled></label>
+<label>Titre de la nouvelle page<textarea name="title" rows="2" maxlength="180" required><?= cmsEsc((string)($createForm['title']??'')) ?></textarea></label>
+<label>Angle éditorial — en quoi ce contenu est-il différent ?
+<textarea name="angle" rows="3" maxlength="700" required><?= cmsEsc((string)($createForm['angle']??'')) ?></textarea></label>
+<label>Résumé<textarea name="summary" rows="3" maxlength="2000"><?= cmsEsc((string)($createForm['summary']??'')) ?></textarea></label>
+<div class="create-meta small">Les sujets identiques aux pages ou brouillons existants
+de la même catégorie sont refusés. Les sujets proches sont signalés pour relecture.
+Un Carnet culturel peut traiter l'histoire d'un plat sans répéter sa recette.</div>
+<h3>Contenu de la fiche — <?= cmsEsc(cmsCreationKinds()[$createKind]) ?></h3>
+<?= cmsCreationFormHtml($createKind,
+    is_array($createForm['fields']??null)?$createForm['fields']:[]) ?>
+<label>Notes de recherche privées (jamais publiées)
+<textarea name="research_note" rows="3" maxlength="3000"><?= cmsEsc((string)($createForm['research_note']??'')) ?></textarea></label>
+<label>Date cible du calendrier éditorial (facultative)
+<input type="date" name="target_date" value="<?= cmsEsc((string)($createForm['target_date']??'')) ?>"></label>
+<label>Statut<select name="state">
+<option value="draft"<?= ($createForm['state']??'draft')==='draft'?' selected':'' ?>>Brouillon de travail</option>
+<option value="review"<?= ($createForm['state']??'draft')==='review'?' selected':'' ?>>Soumettre à relecture (non publié)</option>
+</select></label>
+<button name="create_save" value="1">Enregistrer une nouvelle version privée</button>
+</form></section>
+<?php if($creation): ?>
+<section id="cms-preview">
+<h2>Aperçu de la création</h2>
+<?php if(isset($_GET['saved_new'])): ?>
+<p role="status" class="notice">Nouvelle version privée enregistrée.</p>
+<?php endif; ?>
+<p class="small muted">Version <?= (int)$creation['version'] ?> ·
+<?= cmsEsc($creation['recorded_at']) ?> ·
+<?= $creation['state']==='review'?'Prêt pour relecture':'Brouillon' ?>
+· <?= cmsEsc($creation['origin']) ?> · cible : <?= cmsEsc((string)($creation['target_date']??'non définie')) ?></p>
+<h3><?= cmsEsc($creation['title']) ?></h3>
+<p><?= cmsEsc($creation['summary']) ?></p>
+<p><strong>Angle :</strong> <?= cmsEsc($creation['angle']) ?></p>
+<?= cmsGuidedPreviewHtml('fiche',$creation['fields']) ?>
+<?php if($creation['similar_titles']): ?>
+<div class="note"><strong>Sujets proches à examiner :</strong>
+<?php foreach($creation['similar_titles'] as $match): ?>
+<p><?= cmsEsc($match['title']) ?></p><?php endforeach; ?></div>
+<?php endif; ?>
+<?php if($createVersion): ?>
+<h3>Version historique <?= (int)$createVersion['version'] ?></h3>
+<p><?= cmsEsc($createVersion['title']) ?> — <?= cmsEsc($createVersion['recorded_at']) ?></p>
+<?= cmsGuidedPreviewHtml('fiche',$createVersion['fields']) ?>
+<?php endif; ?>
+<h3>Historique privé</h3><nav class="versions">
+<?php foreach(cmsCreationVersions($creationDir,$creation['id']) as $v): ?>
+<a href="?new=1&amp;cid=<?= cmsEsc($creation['id']) ?>&amp;revision=<?= (int)$v ?>">Version <?= (int)$v ?></a>
+<?php endforeach; ?></nav>
+<p class="small muted">Ce brouillon ne crée pas encore de page publique.
+La génération Astro et la publication feront l'objet d'un circuit séparé,
+avec validation humaine et tests.</p>
+</section>
+<?php endif; ?>
+<section><h2>Autres créations privées</h2>
+<?php if(!$creations): ?><p>Aucun projet pour le moment.</p><?php endif; ?>
+<?php foreach($creations as $item): ?>
+<div class="create-card"><span class="badge"><?= cmsEsc(cmsCreationKinds()[$item['kind']]) ?></span>
+<strong><?= cmsEsc($item['title']) ?></strong> · v<?= (int)$item['version'] ?>
+· <?= $item['state']==='review'?'À relire':'Brouillon' ?>
+<p><a href="?new=1&amp;cid=<?= cmsEsc($item['id']) ?>">Ouvrir ce projet</a></p></div>
+<?php endforeach; ?>
+</section>
+<?php elseif($selected): ?>
 <p><a href="?<?= cmsEsc($filtersUrl) ?>">Retour à la bibliothèque (filtres conservés)</a> · <a href="<?= cmsEsc($selected['url']) ?>" target="_blank"
  rel="noopener noreferrer">Consulter la page actuellement publiée</a></p>
 <section><span class="badge"><?= cmsEsc($kindLabels[$selected['kind']]??'Contenu') ?></span>
@@ -512,4 +672,35 @@ Cette liste n'est ni un calendrier ni une file de validation sociale.</p>
 </section>
 <?php endif; ?>
 <?php endif; ?>
+<script nonce="<?= cmsEsc($nonce) ?>">
+document.querySelectorAll('[data-create-add]').forEach(button=>{
+  button.addEventListener('click',()=>{
+    const target=button.dataset.createAdd;
+    const container=document.querySelector('[data-create-rows="'+target+'"]');
+    if(!container)return;
+    const rows=container.querySelectorAll('[data-create-row]');
+    if(!rows.length||rows.length>=25)return;
+    const clone=rows[rows.length-1].cloneNode(true);
+    const ids=[...container.querySelectorAll('textarea[name]')]
+      .map(el=>el.name.match(/\[(\d+)\]\[/))
+      .filter(Boolean).map(m=>Number(m[1]));
+    const next=Math.max(-1,...ids)+1;
+    clone.querySelectorAll('textarea').forEach(el=>{
+      el.name=el.name.replace(/\[\d+\]\[/,'['+next+'][');
+      el.value='';
+    });
+    clone.querySelector('strong').textContent='Élément '+(next+1);
+    container.append(clone);
+  });
+});
+document.addEventListener('click',event=>{
+  const button=event.target.closest('[data-create-remove]');
+  if(!button)return;
+  const row=button.closest('[data-create-row]');
+  const group=row?.parentElement;
+  if(!row||!group)return;
+  if(group.querySelectorAll('[data-create-row]').length>1)row.remove();
+  else row.querySelectorAll('textarea').forEach(el=>{el.value='';});
+});
+</script>
 </main></body></html>
