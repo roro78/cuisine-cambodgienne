@@ -97,11 +97,13 @@ $filters=['kind'=>$kind,'q'=>$q,'status'=>$status];
 $filtersUrl=http_build_query($filters,'','&',PHP_QUERY_RFC3986);
 // A new editorial idea is deliberately distinct from a published source ID.
 // Both paths still use the SAME authenticated Studio and shared field renderer.
-$newMode=isset($_GET['new']) || ($method==='POST' && isset($_POST['create_save']));
+$newMode=isset($_GET['new']) || ($method==='POST'
+    && (isset($_POST['create_save']) || isset($_POST['ai_brief_generate'])));
 $createKind=is_string($_POST['kind']??null)?$_POST['kind']:
     (is_string($_GET['kind']??null)?$_GET['kind']:'recette');
 if(!isset(cmsCreationKinds()[$createKind]))$createKind='recette';
 $createForm=[];$creation=null;$creations=[];$createVersion=null;
+$aiSettings=null;$aiInputForm=[];
 $calendarMode=!$newMode && isset($_GET['calendar']);
 $calendarMonth=gmdate('Y-m');$calendarKind='all';$calendarStatus='all';
 $calendarPlan=null;$calendarPrev='';$calendarNext='';$calendarError='';
@@ -203,7 +205,39 @@ if($auth){
             else{$creation=$creations[$cid];$createKind=$creation['kind'];}
         }
         $createForm=$creation??[];
-        if($method==='POST' && isset($_POST['create_save'])){
+        try{$aiSettings=cmsAiBriefSettings($cfg);}catch(Throwable $e){$aiSettings=null;}
+        if($method==='POST' && isset($_POST['ai_brief_generate'])){
+            $aiPosted=[];
+            foreach(['kind','title','angle','objective','context','reference_id','semantic_review'] as $field)
+                $aiPosted[$field]=$_POST[$field]??'';
+            foreach(['title'=>180,'angle'=>700,'objective'=>700,'context'=>2000,
+                'reference_id'=>115] as $field=>$max)
+                $aiInputForm[$field]=is_string($aiPosted[$field])
+                    && strlen($aiPosted[$field])<=$max*4?$aiPosted[$field]:'';
+            try{
+                if($creation!==null || ($_POST['creation_id']??'')!==''
+                    || isset($_POST['create_save']))
+                    throw new InvalidArgumentException('AI_BRIEF_INPUT');
+                $saved=cmsAiBriefGenerate($private,$aiPosted,$catalog,$cfg);
+                header('Location: ?new=1&cid='.rawurlencode($saved['id'])
+                    .'&saved_new=1',true,303);
+                exit;
+            }catch(InvalidArgumentException $e){
+                http_response_code(422);
+                $error=match($e->getMessage()){
+                    'CREATION_DUPLICATE'=>'Ce sujet existe déjà dans cette catégorie. Enrichissez la fiche existante ou choisissez un autre sujet.',
+                    'AI_BRIEF_REVIEW_REQUIRED'=>'Vérifiez les sujets existants, les variantes et l’angle éditorial avant de demander un brief.',
+                    'AI_BRIEF_REFERENCE'=>'Choisissez une référence publiée valide ; un atelier doit partir d’une recette.',
+                    default=>'Brief invalide : vérifiez le sujet, l’angle et l’objectif.'
+                };
+            }catch(Throwable $e){
+                $limited=$e->getMessage()==='AI_BRIEF_LIMIT';
+                http_response_code($limited?429:503);
+                $error=$limited?'Limite de demandes atteinte. Réessayez plus tard.'
+                    :'Le brief IA n’a pas été enregistré. Vérifiez les projets avant toute nouvelle tentative ; la création manuelle reste disponible.';
+            }
+        }
+        if($method==='POST' && isset($_POST['create_save']) && !isset($_POST['ai_brief_generate'])){
             $expected=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
                 ['options'=>['min_range'=>0,'max_range'=>9998]]);
             if($expected===false){http_response_code(422);$error='Version invalide.';}
@@ -383,6 +417,7 @@ padding:11px 16px;font:inherit;cursor:pointer}.btn{text-decoration:none;display:
 button.secondary{background:#eef3eb;color:#203228;border:1px solid #d1dbcd}
 input,select,textarea{font:inherit;padding:10px;border:1px solid #a7b3a6;
 border-radius:7px;width:100%;background:white;color:#203228}
+input[type=checkbox]{width:1.25rem;height:1.25rem;padding:0;vertical-align:middle;margin-right:8px}
 textarea{resize:vertical;min-height:110px}
 .create-collection{border:1px solid #d9ddd5;border-radius:10px;padding:12px;min-width:0}
 .create-collection legend{font-weight:700;padding:0 5px}
@@ -589,7 +624,7 @@ L'IA, les créneaux Facebook/Instagram et les statistiques viendront dans des é
 <h2><?= $creation?'Modifier le brouillon de nouvelle page':'Créer un nouveau contenu' ?></h2>
 <p class="small muted">Même Studio pour les cinq familles, sans JSON. Choisissez les champs
 propres à la rubrique et sauvegardez : rien ne sera publié sur le site ni sur les réseaux.
-Le bouton IA remplira ce même formulaire dans une phase ultérieure.</p>
+Un brief IA prépare le sujet, l’angle et le résumé ; les champs métier restent à compléter.</p>
 <?php if(!$creation): ?>
 <nav class="new-actions" aria-label="Catégorie de la nouvelle page">
 <?php foreach(cmsCreationKinds() as $value=>$label): ?>
@@ -597,6 +632,40 @@ Le bouton IA remplira ce même formulaire dans une phase ultérieure.</p>
  <?= $createKind===$value?'aria-current="page"':'' ?>><?= cmsEsc($label) ?></a>
 <?php endforeach; ?>
 </nav>
+<details class="guided-group"<?= $aiInputForm?' open':'' ?>>
+<summary>Préparer un brief avec l’IA</summary>
+<?php if($aiSettings!==null): ?>
+<p class="small">La proposition sera enregistrée en brouillon privé dans le même formulaire.
+Elle restera à vérifier et ne constituera pas un contenu complet ou approuvé.</p>
+<form method="post" class="stack">
+<input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
+<input type="hidden" name="kind" value="<?= cmsEsc($createKind) ?>">
+<?php foreach(['title'=>['Sujet ou titre',180],'angle'=>['Angle éditorial',700],
+ 'objective'=>['Besoin du lecteur et objectif',700],
+ 'context'=>['Informations complémentaires à transmettre à l’IA',2000]] as $field=>$spec): ?>
+<label><?= cmsEsc($spec[0]) ?><textarea name="<?= cmsEsc($field) ?>" rows="3"
+ maxlength="<?= (int)$spec[1] ?>"<?= $field==='context'?'':' required' ?>><?= cmsEsc($aiInputForm[$field]??'') ?></textarea></label>
+<?php endforeach; ?>
+<label>Contenu publié de référence<?= $createKind==='atelier'?' (recette obligatoire)':' (facultatif)' ?>
+<select name="reference_id"<?= $createKind==='atelier'?' required':'' ?>>
+<option value="">Choisir une référence</option>
+<?php foreach($catalog as $reference): ?>
+<?php if($createKind==='atelier' && $reference['kind']!=='recette')continue; ?>
+<option value="<?= cmsEsc($reference['id']) ?>"<?= ($aiInputForm['reference_id']??'')===$reference['id']?' selected':'' ?>><?= cmsEsc($reference['title']) ?></option>
+<?php endforeach; ?>
+</select></label>
+<label><input type="checkbox" name="semantic_review" value="1" required>
+J’ai vérifié la bibliothèque et les projets privés, les variantes de noms et l’intention
+du sujet. L’angle proposé apporte une différence utile.</label>
+<p class="small muted">Seuls ce brief et la référence publique choisie seront transmis.
+Une demande échouée peut compter dans la limite ; vérifiez les projets avant de relancer.</p>
+<button name="ai_brief_generate" value="1">Générer un brief privé</button>
+</form>
+<?php else: ?>
+<p class="small muted">L’assistance IA n’est pas disponible pour le moment.
+Vous pouvez créer le contenu manuellement ci-dessous.</p>
+<?php endif; ?>
+</details>
 <?php endif; ?>
 <form method="post" class="stack" id="cms-new-editor">
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
