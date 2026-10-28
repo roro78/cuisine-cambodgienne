@@ -57,3 +57,15 @@ test('la bibliothèque distingue brouillons et source modifiée sans publication
  assert.match(ui,/Nouvelle sauvegarde bloquée/);
  assert.match(ui,/\$staleDraft\?' disabled'/);
 });
+
+
+test('calendrier privé : une projection défaillante ne bloque pas toute la bibliothèque',()=>{
+ assert.match(ui,/function_exists\('cmsCalendarPlan'\)/);
+ assert.match(ui,/CALENDAR_CODE_MISMATCH/);
+ assert.match(ui,/CALENDAR_DATA_UNAVAILABLE/);
+ assert.match(ui,/\[CDC_CMS_CALENDAR\]/);
+ assert.match(ui,/\\$calendarError!==''/);
+ assert.match(ui,/Les projets privés et leurs versions/);
+ assert.match(ui,/http_response_code\(503\)/);
+ assert.doesNotMatch(ui,/error_log\([^\n]*\$e->getMessage\(\)/);
+});
