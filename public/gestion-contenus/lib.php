@@ -800,7 +800,7 @@ function cmsCreationSlug(string $title): string {
 }
 function cmsCreationCleanFields(string $kind,mixed $raw): array {
     $schema=cmsCreationSchema()[$kind]??null;
-    if(!$schema || !is_array($raw) || array_is_list($raw)
+    if(!$schema || !is_array($raw) || ($raw!==[] && array_is_list($raw))
        || array_diff(array_keys($raw),array_keys($schema)))
         throw new InvalidArgumentException('CREATION_SCHEMA');
     $out=[];
