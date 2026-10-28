@@ -58,3 +58,17 @@ test('security and append-only private drafts cannot be replaced by a generic pu
  assert.match(guided,/NEVER export phase audioScript, MP3 URLs/);
  assert.doesNotMatch(ui+lib,/(?:graph\.facebook\.com|graph\.instagram\.com|api\/v1\/executions)/);
 });
+
+test('calendar reports safe, specific diagnostics without revealing private draft contents',()=>{
+ for(const code of ['CALENDAR_CODE_MISMATCH','CALENDAR_DRAFT_INVALID',
+  'CALENDAR_DATE_INVALID','CALENDAR_FILTER_INVALID',
+  'CALENDAR_RUNTIME_ERROR','CALENDAR_DATA_UNAVAILABLE'])
+   assert.ok(ui.includes("'"+code+"'"),'missing safe calendar code: '+code);
+ for(const code of ['CALENDAR_CORRUPT_DRAFT','CALENDAR_CORRUPT_DATE'])
+   assert.ok(ui.includes("'"+code+"'"),'missing known calendar exception: '+code);
+ assert.match(ui,/\$calendarErrors\[\$e->getMessage\(\)\]/);
+ assert.match(ui,/error_log\('\[CDC_CMS_CALENDAR\] '/);
+ assert.doesNotMatch(ui,/error_log\([^;]*\$e->getMessage\(\)/s);
+ assert.match(ui,/http_response_code\(503\)/);
+ assert.match(ui,/Les projets privés et leurs versions/);
+});
