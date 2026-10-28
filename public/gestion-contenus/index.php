@@ -151,8 +151,19 @@ if($auth){
             $calendarPlan=cmsCalendarPlan(
                 $creations,$calendarMonth,$calendarKind,$calendarStatus);
         }catch(Throwable $e){
-            $calendarError=$e->getMessage()==='CALENDAR_HELPER_MISSING'
-                ? 'CALENDAR_CODE_MISMATCH' : 'CALENDAR_DATA_UNAVAILABLE';
+            // Only fixed, non-sensitive codes may reach the UI or the PHP log.
+            // The exception message itself can contain private information and
+            // must never be printed or logged; unmapped errors stay generic.
+            $calendarErrors=[
+                'CALENDAR_HELPER_MISSING'=>'CALENDAR_CODE_MISMATCH',
+                'CALENDAR_CORRUPT_DRAFT'=>'CALENDAR_DRAFT_INVALID',
+                'CALENDAR_CORRUPT_DATE'=>'CALENDAR_DATE_INVALID',
+                'CALENDAR_MONTH_INVALID'=>'CALENDAR_FILTER_INVALID',
+                'CALENDAR_KIND'=>'CALENDAR_FILTER_INVALID',
+                'CALENDAR_STATUS'=>'CALENDAR_FILTER_INVALID'
+            ];
+            $calendarError=$calendarErrors[$e->getMessage()]??(
+                $e instanceof Error?'CALENDAR_RUNTIME_ERROR':'CALENDAR_DATA_UNAVAILABLE');
             error_log('[CDC_CMS_CALENDAR] '.$calendarError.' '
                 .($e instanceof UnexpectedValueException?'unexpected_value':
                   ($e instanceof Error?'php_error':'calendar_error')));
