@@ -1096,10 +1096,10 @@ function cmsCalendarPlan(array $creations,string $month,
     ksort($days,SORT_STRING);
     foreach($days as &$list)usort($list,static fn(array $a,array $b):int=>
         strcmp($a['title'],$b['title']));unset($list);
-    foreach([&$undated,&$other] as &$list)
-        usort($list,static fn(array $a,array $b):int=>
-            strcmp((string)$a['title'],(string)$b['title']));
-    unset($list);
+    usort($undated,static fn(array $a,array $b):int=>
+        strcmp((string)$a['title'],(string)$b['title']));
+    usort($other,static fn(array $a,array $b):int=>
+        strcmp((string)$a['title'],(string)$b['title']));
     return ['month'=>$month,'days'=>$days,'undated'=>$undated,'other'=>$other,
        'total'=>$count,'month_count'=>array_sum(array_map('count',$days)),
        'undated_count'=>count($undated)];
