@@ -223,6 +223,10 @@ if($auth){
                     foreach(['title','angle','summary','research_note','fields'] as $field)
                         $createForm[$field]=$candidate[$field];
                     $createForm['state']='draft';
+                    // The human-only Astro recipe profile belongs to the form snapshot,
+                    // never to the model response; preserve it across PRG.
+                    if($createKind==='recette')
+                        $createForm['recipe_astro']=$pendingContent['before_form']['recipe_astro']??null;
                     // Keep an explicit human planning date; the model cannot set one.
                     $createForm['target_date']=$pendingContent['before_form']['target_date']??'';
                 }
