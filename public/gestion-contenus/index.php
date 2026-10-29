@@ -1052,8 +1052,9 @@ les six phases complètes et les sept textes avant de viser ce chapitre.</p>
 <?php endif; ?>
 </details>
 <?php $recipeAudit=null;$recipeAuditUnavailable=false;$culinaryStatus=null;
+$coralPreflight=null;$coralPreflightUnavailable=false;
 $culinaryStatusUnavailable=false;
-if(isset($_GET['recipe_audit'])){
+if(isset($_GET['recipe_audit'])||isset($_GET['coral_preflight'])){
     try{
         if($canonicalById===[])throw new RuntimeException('CANONICAL_NOT_READY');
         $guidedPayload=cmsGetGuidedFields();
@@ -1062,12 +1063,20 @@ if(isset($_GET['recipe_audit'])){
         cmsAssertGuidedCoverage($guidedForAudit,$canonicalById);
         $recipeAudit=cmsAtelierCanonicalRecipeAudit(
             $creation,$catalog,$canonicalById,$guidedForAudit);
+        if(isset($_GET['coral_preflight'])){
+            try{$coralPreflight=cmsAtelierCoralPrereception(
+                $private,$creation,$catalog,$canonicalById,$guidedForAudit);}
+            catch(Throwable $ignored){$coralPreflightUnavailable=true;}
+        }
         if($recipeAudit['model_supported_for_quantity_review']){
             try{$culinaryStatus=cmsAtelierCulinaryStatus(
                 $creationDir,$creation,$catalog,$canonicalById,$guidedForAudit);}
             catch(Throwable $ignored){$culinaryStatusUnavailable=true;}
         }
-    }catch(Throwable $ignored){$recipeAuditUnavailable=true;}
+    }catch(Throwable $ignored){
+        $recipeAuditUnavailable=true;
+        if(isset($_GET['coral_preflight']))$coralPreflightUnavailable=true;
+    }
 } ?>
 <details class="guided-group" id="canonical-review" data-atelier-recipe-audit
  <?= isset($_GET['recipe_audit'])?'open':'' ?>>
@@ -1161,6 +1170,58 @@ attestation culinaire ne peut être enregistrée automatiquement.</p>
 <p class="small muted">Même avec les sept narrations visées et
 la revue culinaire consignée, le TTS Coral, les MP3 et la publication
 restent désactivés.</p>
+<?php endif; ?>
+</details>
+<details class="guided-group" id="coral-preflight" data-coral-prereception
+ <?= isset($_GET['coral_preflight'])?'open':'' ?>>
+<summary>Tableau Coral V2 — neuf contrôles avant toute production audio</summary>
+<p class="small muted">Dossier privé et non publiant. Ce tableau réunit les
+visas des sept textes, la relecture culinaire et les exigences média/audio.
+Il ne lance aucun service, ne traite aucun fichier MP3 et ne délivre aucune
+autorisation de génération.</p>
+<a href="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;coral_preflight=1#coral-preflight">
+Calculer le tableau de pré-réception sur les données actuelles</a>
+<?php if($coralPreflightUnavailable): ?>
+<p class="notice" role="alert">Diagnostic indisponible : index public,
+source de recette ou journal privé incohérent. Aucun accord audio possible.</p>
+<?php elseif($coralPreflight!==null): ?>
+<p class="small muted">Version <?= (int)$coralPreflight['creation_version'] ?>.
+Contrôles documentés :
+<strong><?= (int)$coralPreflight['completed_checks'] ?>/<?= (int)$coralPreflight['check_count'] ?></strong>.
+Textes approuvés : <strong><?= (int)$coralPreflight['human_text_visas_count'] ?>/7</strong>.</p>
+<ul>
+<?php foreach($coralPreflight['checks'] as $item): ?>
+<li><strong><?= $item['complete']?'Contrôlé':'Bloqué' ?></strong> —
+<?= cmsEsc($item['label']) ?></li>
+<?php endforeach; ?>
+</ul>
+<h3>Sept chapitres Coral — précontrôle, sans audio</h3>
+<p class="small muted">Durée des activités prévues dans les six phases :
+<?= (int)$coralPreflight['total_planned_activity_minutes'] ?> minute(s).
+Ce n’est <strong>pas</strong> la durée réelle d’un MP3. L’introduction
+ne possède pas de durée d’activité.</p>
+<ol>
+<?php foreach($coralPreflight['chapters'] as $chapter): ?>
+<li><strong><?= cmsEsc($chapter['id']) ?></strong> :
+<?= (int)$chapter['script_characters'] ?> caractère(s),
+texte <?= $chapter['script_drafted']?'rédigé':'incomplet' ?>,
+visa <?= $chapter['text_approved']?'actif':'absent' ?>,
+<?php if($chapter['planned_activity_minutes']!==null): ?>
+activité prévue <?= (int)$chapter['planned_activity_minutes'] ?> min ;
+<?php else: ?>activité non minutée ;
+<?php endif; ?>
+MP3/écoute/pauses : <strong>non vérifiés</strong>.</li>
+<?php endforeach; ?>
+</ol>
+<?php if($coralPreflight['blocking_notes']!==[]): ?>
+<p class="small muted">Points de blocage :</p>
+<ul><?php foreach($coralPreflight['blocking_notes'] as $note): ?>
+<li><?= cmsEsc($note) ?></li><?php endforeach; ?></ul>
+<?php endif; ?>
+<p class="notice">Génération TTS : <strong>non autorisée</strong>.
+Droits voix et images, sept MP3 réels, durées réelles, synchronisation
+des pauses et navigation mobile doivent être réceptionnés séparément.
+Aucun fichier existant n'est modifié.</p>
 <?php endif; ?>
 </details>
 <?php endif; ?>
