@@ -802,7 +802,7 @@ function cmsRecipeAstroProfileClean(mixed $raw): ?array {
         $value=cmsCreationText($tag,50);
         if($value===''||mbLen($value)>50)
             throw new InvalidArgumentException('RECIPE_ASTRO_TAGS');
-        $key=mb_strtolower($value,'UTF-8');
+        $key=function_exists('mb_strtolower')?mb_strtolower($value,'UTF-8'):strtolower($value);
         if(isset($seen[$key]))throw new InvalidArgumentException('RECIPE_ASTRO_TAGS');
         $seen[$key]=true;$tags[]=$value;
     }
@@ -1453,6 +1453,7 @@ function cmsCreationPosted(array $raw): array {
     foreach(['kind','title','angle','summary','research_note','target_date','state'] as $key)
         $posted[$key]=$raw[$key]??'';
     $posted['fields']=$raw['fields']??[];
+    $posted['recipe_astro']=$raw['recipe_astro']??null;
     return $posted;
 }
 function cmsAiContentSettings(array $cfg): ?array {
