@@ -43,6 +43,17 @@ champs Astro sont facultatifs et certains médias peuvent être réutilisés apr
 contrôle des droits. Il faudra distinguer les champs obligatoires, facultatifs
 et dérivables au moment de créer le convertisseur typé.
 
+## Livraison OVH future — dépendance obligatoire
+
+Le contrôleur `public/gestion-contenus/index.php` inclut désormais
+`publication-gap-audit.php`. **Ne jamais transférer le nouvel `index.php`
+sans ce fichier et la version cohérente de `lib.php`** : sinon le CMS
+répondrait en erreur dès son chargement, y compris à la connexion anonyme.
+
+Le smoke HTTP C2 en copie temporaire a été étendu pour embarquer ce helper
+et contrôler la présence du diagnostic sur une création sauvegardée.
+Aucune livraison OVH n'est autorisée par cette PR.
+
 ## Garanties
 
 - Même `index.php`, même parcours et même stockage pour les cinq familles.
