@@ -233,6 +233,8 @@ if($auth){
                         $createForm['culture_evidence']=$pendingContent['before_form']['culture_evidence']??null;
                     if($createKind==='technique')
                         $createForm['technique_links']=$pendingContent['before_form']['technique_links']??null;
+                    if($createKind==='atelier')
+                        $createForm['atelier_reference']=$pendingContent['before_form']['atelier_reference']??null;
                     // Keep an explicit human planning date; the model cannot set one.
                     $createForm['target_date']=$pendingContent['before_form']['target_date']??'';
                 }
@@ -353,7 +355,8 @@ if($auth){
                         'recipe_astro'=>$_POST['recipe_astro']??null,
                         'recipe_astro_details'=>$_POST['recipe_astro_details']??null,
                         'culture_evidence'=>$_POST['culture_evidence']??null,
-                        'technique_links'=>$_POST['technique_links']??null
+                        'technique_links'=>$_POST['technique_links']??null,
+                        'atelier_reference'=>$_POST['atelier_reference']??null
                     ];
                     if($candidateToken!==''){
                         $pending=cmsAiContentPending($_SESSION,$candidateToken);
@@ -857,6 +860,9 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?php if($createKind==='technique'): ?>
 <?= cmsTechniqueLinksHtml($createForm['technique_links']??null) ?>
 <?php endif; ?>
+<?php if($createKind==='atelier'): ?>
+<?= cmsAtelierReferenceHtml($createForm['atelier_reference']??null) ?>
+<?php endif; ?>
 <label>Notes de recherche privées (jamais publiées)
 <textarea name="research_note" rows="3" maxlength="3000"><?= cmsEsc((string)($createForm['research_note']??'')) ?></textarea></label>
 <label>Date cible du calendrier éditorial (facultative)
@@ -891,6 +897,26 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <p><?= cmsEsc($creation['summary']) ?></p>
 <p><strong>Angle :</strong> <?= cmsEsc($creation['angle']) ?></p>
 <?= cmsGuidedPreviewHtml('fiche',$creation['fields']) ?>
+<?php if($creation['kind']==='atelier'): ?>
+<?php $workshopCheck=null;
+try{$workshopCheck=cmsAtelierBlueprintPreflight($creation,$catalog);}
+catch(Throwable $ignored){$workshopCheck=null;} ?>
+<details class="guided-group" data-atelier-blueprint-preflight>
+<summary>Atelier Coral V2 — contrôles préalables privés</summary>
+<?php if($workshopCheck!==null): ?>
+<p class="small muted">Recette canonique reliée :
+<strong><?= $workshopCheck['canonical_reference_checked']?'oui':'non' ?></strong>.
+Six phases distinctes :
+<strong><?= $workshopCheck['six_distinct_phases']?'oui':'non' ?></strong>.
+Chapitres audio approuvés : <strong>non, sept scripts requis</strong>.</p>
+<?php else: ?>
+<p class="small muted">Référence ou données incomplètes :
+corriger le brouillon avant de préparer un blueprint.</p>
+<?php endif; ?>
+<p class="small muted">Aucun MP3, voix Coral, visuel ou droit
+de publication n’est déduit de ce contrôle.</p>
+</details>
+<?php endif; ?>
 <?php if($creation['kind']==='ingredient' || $creation['kind']==='technique'): ?>
 <?php $nativeProjection=null;
 try{

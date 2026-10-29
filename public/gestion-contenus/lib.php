@@ -1113,6 +1113,53 @@ function cmsTechniqueLinksHtml(mixed $raw=null): string {
         .cmsEsc($workshop).'</textarea></label></details>';
 }
 
+
+/**
+ * C4C3A: manually selected workshop source, checked against real published
+ * recipe catalog. The 16-digit feed fingerprint is a CHANGE detector, not
+ * a replacement for the full canonical recipe SHA256 used in C2.
+ * No model or browser supplies approval, media or source authority.
+ */
+function cmsAtelierReferenceClean(mixed $raw,array $catalog): ?array {
+    if($raw===null)return null;
+    if(!is_array($raw)||array_diff(array_keys($raw),
+        ['version','recipeSlug','catalogFingerprint'])
+       ||!in_array($raw['version']??null,[1,'1'],true))
+        throw new InvalidArgumentException('ATELIER_REFERENCE_SCHEMA');
+    $slug=cmsCreationText($raw['recipeSlug']??'',100);
+    if($slug!==''&&!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/D',$slug))
+        throw new InvalidArgumentException('ATELIER_REFERENCE_SLUG');
+    $fingerprint='';
+    if($slug!==''){
+        $source=$catalog['recette:'.$slug]??null;
+        if(!is_array($source)||($source['kind']??null)!=='recette'
+            ||!is_string($source['fingerprint']??null)
+            ||!preg_match('/^[a-f0-9]{16}$/D',$source['fingerprint']))
+            throw new InvalidArgumentException('ATELIER_REFERENCE_NOT_PUBLISHED');
+        $fingerprint=$source['fingerprint'];
+    }
+    // Older clients may send a saved profile rather than the two form fields.
+    // Reject stale refs or forged fingerprints instead of silently approving.
+    if(array_key_exists('catalogFingerprint',$raw)
+        &&$raw['catalogFingerprint']!==$fingerprint)
+        throw new InvalidArgumentException('ATELIER_REFERENCE_CHANGED');
+    return ['version'=>1,'recipeSlug'=>$slug,'catalogFingerprint'=>$fingerprint];
+}
+function cmsAtelierReferenceHtml(mixed $raw=null): string {
+    $slug=is_array($raw)&&is_string($raw['recipeSlug']??null)
+        ?$raw['recipeSlug']:'';
+    return '<details class="guided-group" data-atelier-canonical-source>'
+        .'<summary>Recette canonique — validation humaine</summary>'
+        .'<p class="small muted">Choisissez uniquement une recette déjà publiée. '
+        .'Ce lien est vérifié sur le catalogue lors de la sauvegarde. '
+        .'La correspondance des ingrédients, portions, six phases et sept scripts '
+        .'reste à contrôler : aucun MP3 n’est produit ni approuvé.</p>'
+        .'<input type="hidden" name="atelier_reference[version]" value="1">'
+        .'<label>Slug de la recette publiée (ex. bai-sach-chrouk)'
+        .'<input name="atelier_reference[recipeSlug]" maxlength="100"'
+        .' value="'.cmsEsc($slug).'"></label></details>';
+}
+
 function cmsCreationKinds(): array {
     return ['recette'=>'Recette','atelier'=>'Atelier','culture'=>'Carnet culturel',
         'ingredient'=>'Fiche ingrédient','technique'=>'Fiche technique'];
@@ -1357,6 +1404,12 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
             ?cmsTechniqueLinksClean(
                 $posted['technique_links']??($previous['technique_links']??null),$catalog)
             :null;
+        if($kind!=='atelier' && isset($posted['atelier_reference']))
+            throw new InvalidArgumentException('ATELIER_REFERENCE_SCHEMA');
+        $atelierRef=$kind==='atelier'
+            ?cmsAtelierReferenceClean(
+                $posted['atelier_reference']??($previous['atelier_reference']??null),$catalog)
+            :null;
         if($id!==null && !$previous)throw new RuntimeException('CREATION_NOT_FOUND');
         if($id===null && $expected!==0)throw new RuntimeException('CREATION_CONFLICT');
         if($previous && ($previous['version']!==$expected
@@ -1402,6 +1455,7 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
         if($recipeDetails!==null)$record['recipe_astro_details']=$recipeDetails;
         if($cultureEvidence!==null)$record['culture_evidence']=$cultureEvidence;
         if($techniqueLinks!==null)$record['technique_links']=$techniqueLinks;
+        if($atelierRef!==null)$record['atelier_reference']=$atelierRef;
         if($origin==='ai' && $provenance!==null)$record['ai_brief']=$provenance;
         if($origin==='ai' && $contentProvenance!==null){
             $record['ai_content']=$contentProvenance;
@@ -1745,6 +1799,7 @@ function cmsCreationPosted(array $raw): array {
     $posted['recipe_astro_details']=$raw['recipe_astro_details']??null;
     $posted['culture_evidence']=$raw['culture_evidence']??null;
     $posted['technique_links']=$raw['technique_links']??null;
+    $posted['atelier_reference']=$raw['atelier_reference']??null;
     return $posted;
 }
 function cmsAiContentSettings(array $cfg): ?array {
