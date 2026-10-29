@@ -24,6 +24,9 @@ try{
         copy($dist.'/'.$name,$base.'/'.$name);
     copy(__DIR__.'/fixtures/editorial-ai-content.php',$base.'/fixture.php');
     copy(__DIR__.'/../../public/gestion-contenus/index.php',$public.'/index.php');
+    // The controller also requires this shared read-only Astro gap helper.
+    copy(__DIR__.'/../../public/gestion-contenus/publication-gap-audit.php',
+        $public.'/publication-gap-audit.php');
     $lib=file_get_contents(__DIR__.'/../../public/gestion-contenus/lib.php');
     foreach(['cmsGetFeed','cmsGetEditorialIndex','cmsGetGuidedFields'] as $fn)
         $lib=str_replace('function '.$fn.'(','function fixtureOriginal'.$fn.'(',$lib);
