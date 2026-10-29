@@ -364,6 +364,148 @@ function cmsAtelierBlueprintPreflight(array $record,array $catalog): array {
     ];
 }
 
+
+/**
+ * C4C3D: append-only private, server-created human TEXT visa journal.
+ * A visa is scoped to one saved creation revision, exactly one chapter text,
+ * and the complete narrative-source digest. No TTS or publication authority.
+ * Caller MUST already be authenticated with the Studio CSRF gate.
+ */
+function cmsAtelierVisaJournal(string $dir,string $id): array {
+    if(!cmsCreationId($id))throw new InvalidArgumentException('ATELIER_VISA_ID');
+    $paths=glob($dir.'/script-visa-'.$id.'.*.json');
+    if(!is_array($paths)||count($paths)>9998)throw new RuntimeException('ATELIER_VISA_STORE');
+    $entries=[];$previousHash='';
+    foreach($paths as $path){
+        if(is_link($path)||!is_file($path)||filesize($path)>2000
+            ||!preg_match('/^script-visa-'.preg_quote($id,'/').'\\.([0-9]{4})\\.json$/D',
+                basename($path),$match))throw new RuntimeException('ATELIER_VISA_STORE');
+        $num=(int)$match[1];
+        if($num!==count($entries)+1)throw new RuntimeException('ATELIER_VISA_GAP');
+        $raw=file_get_contents($path);
+        if(!is_string($raw))throw new RuntimeException('ATELIER_VISA_STORE');
+        $entry=json_decode($raw,true,16,JSON_THROW_ON_ERROR);
+        $keys=['contract','creation_id','event','creation_version','chapter',
+            'action','text_sha256','binding_sha256','reviewed_at',
+            'reviewer','previous_event_sha256'];
+        if(!is_array($entry)||count($entry)!==count($keys)
+            ||array_diff(array_keys($entry),$keys)
+            ||($entry['contract']??null)!=='cdc-coral-human-text-visa-v1'
+            ||($entry['creation_id']??null)!==$id
+            ||($entry['event']??null)!==$num
+            ||!is_int($entry['creation_version']??null)
+            ||$entry['creation_version']<1||$entry['creation_version']>9999
+            ||!in_array($entry['chapter']??null,cmsAtelierScriptIds(),true)
+            ||!in_array($entry['action']??null,['approve','revoke'],true)
+            ||!is_string($entry['text_sha256']??null)
+            ||!preg_match('/^[a-f0-9]{64}$/D',$entry['text_sha256'])
+            ||!is_string($entry['binding_sha256']??null)
+            ||!preg_match('/^[a-f0-9]{64}$/D',$entry['binding_sha256'])
+            ||($entry['reviewer']??null)!=='authenticated-cms-owner'
+            ||!is_string($entry['reviewed_at']??null)
+            ||!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$/D',
+                $entry['reviewed_at'])
+            ||($entry['previous_event_sha256']??null)!==$previousHash)
+            throw new RuntimeException('ATELIER_VISA_CORRUPT');
+        $entries[]=$entry;$previousHash=hash('sha256',$raw);
+    }
+    return ['events'=>$entries,'last_hash'=>$previousHash];
+}
+function cmsAtelierVisaStatus(string $dir,array $record,array $catalog): array {
+    if(($record['kind']??null)!=='atelier'
+        ||!cmsCreationId($record['id']??null))
+        throw new InvalidArgumentException('ATELIER_VISA_ID');
+    $events=cmsAtelierVisaJournal($dir,$record['id'])['events'];
+    $last=[];
+    foreach($events as $event)$last[$event['chapter']]=$event;
+    $approved=[];$count=0;
+    try{
+        $gate=cmsAtelierBlueprintPreflight($record,$catalog);
+        $valid=($gate['ready_for_audio_review']??false)===true;
+        $scripts=$record['atelier_scripts']??[];
+        $binding=$scripts['bindingDigest']??'';
+    }catch(Throwable $e){$valid=false;$scripts=[];$binding='';}
+    foreach(cmsAtelierScriptIds() as $i=>$id){
+        $row=$scripts['chapters'][$i]??null;
+        $event=$last[$id]??null;
+        $matches=$valid && is_array($row)
+            &&($row['id']??null)===$id
+            &&is_string($row['text']??null)
+            &&is_array($event)&&$event['action']==='approve'
+            &&$event['creation_version']===($record['version']??null)
+            &&$event['binding_sha256']===$binding
+            &&hash_equals($event['text_sha256'],hash('sha256',$row['text']));
+        $approved[$id]=$matches;
+        if($matches)$count++;
+    }
+    return ['contract'=>'cdc-coral-human-text-visa-status-v1',
+        'approved_text_count'=>$count,'all_seven_texts_reviewed'=>$count===7,
+        'by_chapter'=>$approved,'event_count'=>count($events),
+        'authorizes_tts'=>false,'audio_approved'=>false,'publication_ready'=>false];
+}
+function cmsAtelierVisaAction(string $private,string $id,int $version,
+    string $chapter,string $action,bool $confirmed,bool $authenticated,
+    array $catalog): array {
+    if(!$authenticated)throw new RuntimeException('ATELIER_VISA_AUTH');
+    if(!$confirmed)throw new InvalidArgumentException('ATELIER_VISA_CONFIRM');
+    if(!cmsCreationId($id)||$version<1||$version>9998
+        ||!in_array($chapter,cmsAtelierScriptIds(),true)
+        ||!in_array($action,['approve','revoke'],true))
+        throw new InvalidArgumentException('ATELIER_VISA_INPUT');
+    $dir=cmsCreationDir($private);
+    // Serialize visae against all edits and concurrent approvals of this CMS.
+    $lockPath=$dir.'/catalog.lock';
+    if(is_link($lockPath))throw new RuntimeException('ATELIER_VISA_LOCK');
+    $handle=fopen($lockPath,'c');
+    if(!$handle||!flock($handle,LOCK_EX))throw new RuntimeException('ATELIER_VISA_LOCK');
+    try{
+        if(!@chmod($lockPath,0600))throw new RuntimeException('ATELIER_VISA_LOCK');
+        $record=cmsCreationRead($dir,$id);
+        if(!$record||($record['kind']??null)!=='atelier'
+            ||$record['version']!==$version)
+            throw new RuntimeException('ATELIER_VISA_CONFLICT');
+        $gate=cmsAtelierBlueprintPreflight($record,$catalog);
+        if(($gate['ready_for_audio_review']??false)!==true)
+            throw new InvalidArgumentException('ATELIER_VISA_NOT_READY');
+        $script=$record['atelier_scripts']??[];
+        $idx=array_search($chapter,cmsAtelierScriptIds(),true);
+        $row=$script['chapters'][$idx]??null;
+        if(!is_array($row)||($row['id']??null)!==$chapter
+            ||!is_string($row['text']??null))
+            throw new InvalidArgumentException('ATELIER_VISA_CHAPTER');
+        $status=cmsAtelierVisaStatus($dir,$record,$catalog);
+        if(($status['by_chapter'][$chapter]??false)===($action==='approve'))
+            throw new InvalidArgumentException('ATELIER_VISA_ALREADY_SET');
+        $journal=cmsAtelierVisaJournal($dir,$id);
+        $num=count($journal['events'])+1;
+        if($num>9998)throw new RuntimeException('ATELIER_VISA_CAPACITY');
+        $event=[
+            'contract'=>'cdc-coral-human-text-visa-v1',
+            'creation_id'=>$id,'event'=>$num,
+            'creation_version'=>$record['version'],
+            'chapter'=>$chapter,'action'=>$action,
+            'text_sha256'=>hash('sha256',$row['text']),
+            'binding_sha256'=>$script['bindingDigest'],
+            'reviewed_at'=>gmdate('Y-m-d\\TH:i:s\\Z'),
+            'reviewer'=>'authenticated-cms-owner',
+            'previous_event_sha256'=>$journal['last_hash']
+        ];
+        $json=json_encode($event,JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+        $target=$dir.'/script-visa-'.$id.'.'.sprintf('%04d',$num).'.json';
+        if(file_exists($target)||is_link($target))
+            throw new RuntimeException('ATELIER_VISA_CONFLICT');
+        $temp=tempnam($dir,'visa-');
+        if($temp===false)throw new RuntimeException('ATELIER_VISA_STORE');
+        try{
+            if(is_link($temp)||!@chmod($temp,0600)
+                ||file_put_contents($temp,$json,LOCK_EX)!==strlen($json)
+                ||!rename($temp,$target))
+                throw new RuntimeException('ATELIER_VISA_STORE');
+        }finally{if(is_file($temp))@unlink($temp);}
+        return $event;
+    }finally{flock($handle,LOCK_UN);fclose($handle);}
+}
+
 function cmsAstroPublicationGapReport(array $record): array {
     $kind=$record['kind']??null;
     $coverage=cmsAstroPublicationCoverage();
