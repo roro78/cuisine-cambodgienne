@@ -98,6 +98,8 @@ PHP;
         'reference_id'=>'','semantic_review'=>'1','transmission_review'=>'1','summary'=>'SUMMARY_MUST_SURVIVE',
         'research_note'=>'PRIVATE_NEVER_SENT','fields'=>$fixture['form_fields'],'state'=>'draft','target_date'=>'2099-12-20'];
     $post['fields']['intro']='PREVIOUS_INPUT_MUST_SURVIVE';
+    $post['recipe_astro']=['version'=>'1','difficulty'=>'Intermédiaire',
+        'category'=>'Plat principal','tags'=>"poisson\nplat principal"];
     $bad=$post;$bad['csrf']='invalid';[$status]=$request('/gestion-contenus/?new=1',$bad);
     httpCheck($status===403&&(int)file_get_contents($base.'/calls.txt')===0,'CSRF_BEFORE_PROVIDER');
     $bad=$post;$bad['create_save']='1';[$status]=$request('/gestion-contenus/?new=1',$bad);
@@ -118,6 +120,7 @@ PHP;
     [$status,$html]=$request('/gestion-contenus/?new=1',$discard);
     httpCheck($status===200&&str_contains($html,'saisie précédente est restaurée')
         &&str_contains($html,'PREVIOUS_INPUT_MUST_SURVIVE')
+        &&str_contains($html,'name="recipe_astro[tags]"')
         &&(glob($private.'/editorial-drafts/new-content/c-*.json')?:[])===[],'DISCARD_RESTORES_INPUT');
     $post['ai_content_request_token']=httpHidden($html,'ai_content_request_token');
     // Reset the isolated fixture ledger to exercise the next explicit action.
@@ -130,6 +133,7 @@ PHP;
         'summary'=>$fixture['summary'],'research_note'=>$fixture['research_note'],
         'fields'=>$fixture['form_fields'],'state'=>'draft','target_date'=>'2099-12-20'];
     $save['fields']['intro']='Correction HTTP humaine';
+    $save['recipe_astro']=$post['recipe_astro'];
     [$status]=$request('/gestion-contenus/?new=1',$save);httpCheck($status===303,'EXPLICIT_SAVE');
     $files=glob($private.'/editorial-drafts/new-content/c-*.json');httpCheck(count($files)===1,'ONE_SAVED_VERSION');
     $record=json_decode(file_get_contents($files[0]),true);$hash=hash_file('sha256',$files[0]);
@@ -141,7 +145,10 @@ PHP;
         'SAVED_ASTRO_GAP_PRIVATE_PREVIEW');
     httpCheck($record['origin']==='ai'&&$record['reviewed']===false&&$record['state']==='draft'
         &&$record['target_date']==='2099-12-20'
-        &&in_array('fields.intro',$record['ai_content_edits'],true),'PROVENANCE_HUMAN_EDITS');
+        &&in_array('fields.intro',$record['ai_content_edits'],true)
+        &&$record['recipe_astro']['difficulty']==='Intermédiaire'
+        &&$record['recipe_astro']['tags']===['poisson','plat principal'],
+        'PROVENANCE_HUMAN_EDITS_AND_RECIPE_PROFILE');
     [$status]=$request('/gestion-contenus/?new=1',$save);
     httpCheck($status===409&&count(glob($private.'/editorial-drafts/new-content/c-*.json'))===1,'NO_DOUBLE_SAVE');
     foreach(['BAD_JSON','NETWORK_FAIL'] as $mode){
