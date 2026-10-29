@@ -134,11 +134,14 @@ async function getRemote(origin,{fetcher=fetch}={}){
   const html=await response.text();
   if(html.length>262144)fail('CMS_LOGIN_TOO_LARGE');
   verifyCmsLogin({status:response.status,headers:response.headers,body:html});
-  // lib.php must not be served as public PHP source.
-  const lib=await fetcher(new URL('gestion-contenus/lib.php',base),{
-    method:'GET',redirect:'error',signal:AbortSignal.timeout(12000)});
-  const libBody=await lib.text();
-  if(lib.status===200 || libBody.includes('<?php'))fail('CMS_LIB_EXPOSED');
+  // Private PHP implementation must never be served or accessible directly.
+  for(const privateModule of ['lib.php','publication-gap-audit.php']){
+    const result=await fetcher(new URL('gestion-contenus/'+privateModule,base),{
+      method:'GET',redirect:'error',signal:AbortSignal.timeout(12000)});
+    const body=await result.text();
+    if(result.status===200 || body.includes('<?php'))
+      fail('CMS_PRIVATE_MODULE_EXPOSED_'+privateModule);
+  }
   return {...counts,login:'protected',library:'blocked'};
 }
 async function getDist(dir){
@@ -150,12 +153,18 @@ async function getDist(dir){
     out[name]=JSON.parse(await readFile(path,'utf8'));
   }
   const counts=verifyCmsIndexes(out);
-  for(const name of ['index.php','lib.php','.htaccess']){
+  for(const name of ['index.php','lib.php','publication-gap-audit.php','.htaccess']){
     const path=join(dir,'gestion-contenus',name);
     if(!(await stat(path)).isFile())fail('CMS_PHP_FILE_MISSING_'+name);
   }
   const ht=await readFile(join(dir,'gestion-contenus','.htaccess'),'utf8');
-  if(!ht.includes('Require all denied')||!ht.includes('lib.php'))fail('CMS_APACHE_PROTECTION_MISSING');
+  for(const module of ['lib.php','publication-gap-audit.php']){
+    const tag='<Files "'+module+'">';
+    const begin=ht.indexOf(tag);
+    const end=ht.indexOf('</Files>',begin);
+    if(begin<0||end<0||!ht.slice(begin,end).includes('Require all denied'))
+      fail('CMS_APACHE_PROTECTION_MISSING_'+module);
+  }
   return counts;
 }
 export async function cmsReception({dir,url,fetcher}={}){

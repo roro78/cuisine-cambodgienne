@@ -81,6 +81,32 @@ try{
         'PREFLIGHT');
     $dir=cmsCreationDir($root);
     $file=$dir.'/'.$id.'.0003.json';$hash=hash_file('sha256',$file);
+    $initialPreflight=cmsAtelierCoralPrereception(
+        $root,$v3,$catalog,$canonical,$guided);
+    visaAssert($initialPreflight['contract']==='cdc-coral-private-prereception-v1'
+        &&$initialPreflight['check_count']===9
+        &&$initialPreflight['chapters_count']===7
+        &&$initialPreflight['human_text_visas_count']===0
+        &&$initialPreflight['canonical_recipe_sha256']
+            ===$canonical['recette:'.$recipe]['fingerprint']
+        &&$initialPreflight['total_planned_activity_minutes']===30
+        &&$initialPreflight['completed_checks']===3
+        &&$initialPreflight['tts_authorized']===false
+        &&$initialPreflight['ready_for_audio_production']===false
+        &&$initialPreflight['publication_ready']===false,
+        'CORAL_PREFLIGHT_INIT');
+    foreach($initialPreflight['chapters'] as $n=>$chapter){
+        visaAssert($chapter['id']===cmsAtelierScriptIds()[$n]
+            &&$chapter['script_drafted']===true
+            &&$chapter['text_approved']===false
+            &&$chapter['planned_activity_minutes']===($n?5:null)
+            &&$chapter['coral_mp3_verified']===false
+            &&$chapter['audio_timing_verified']===false
+            &&$chapter['pause_sync_mobile_verified']===false,
+            'CORAL_CHAPTER_'.$n);
+    }
+    visaAssert(!str_contains(json_encode($initialPreflight,JSON_THROW_ON_ERROR),
+        'SECRET_PRIVATE_NOT_EXPOSED'),'NO_PRIVATE_RESEARCH_LEAK');
     $status=cmsAtelierVisaStatus($dir,$v3,$catalog);
     visaAssert($status['approved_text_count']===0
         &&$status['authorizes_tts']===false &&$status['publication_ready']===false,
@@ -122,6 +148,13 @@ try{
     visaAssert(hash_file('sha256',$file)===$hash
         &&($v3['reviewed']??null)===false,'DRAFT_FILE_IMMUTABLE');
 
+    $textsReady=cmsAtelierCoralPrereception($root,$v3,$catalog,$canonical,$guided);
+    visaAssert($textsReady['human_text_visas_count']===7
+        &&$textsReady['completed_checks']===4
+        &&($textsReady['checks'][3]['complete']??null)===true
+        &&($textsReady['checks'][4]['complete']??null)===false
+        &&$textsReady['ready_for_audio_production']===false,
+        'SEVEN_TEXT_VISAS_NO_CULINARY_APPROVAL');
     // C4C3F: the REAL canonical source and four explicit human checks.
     $recipeId='recette:'.$recipe;
     $culinary=cmsAtelierCulinaryContext($v3,$catalog,$canonical,$guided);
@@ -157,6 +190,18 @@ try{
         &&$review['review_event_count']===1
         &&$review['authorizes_tts']===false
         &&$review['publication_ready']===false,'HUMAN_REVIEW_NOT_TTS');
+    $bothChecked=cmsAtelierCoralPrereception(
+        $root,$v3,$catalog,$canonical,$guided);
+    visaAssert($bothChecked['completed_checks']===5
+        &&$bothChecked['human_text_visas_count']===7
+        &&($bothChecked['checks'][4]['complete']??null)===true
+        &&count(array_filter(array_slice($bothChecked['checks'],5),
+            static fn(array $c):bool=>$c['complete']))===0
+        &&$bothChecked['ready_for_audio_production']===false
+        &&$bothChecked['tts_authorized']===false
+        &&$bothChecked['seven_audio_scripts_approved']===false
+        &&$bothChecked['export_enabled']===false,
+        'NEVER_AUTO_AUTHORIZE_MP3');
     visaFail(static fn()=>$act('approve',$checks),'ATELIER_CULINARY_ALREADY_SET');
     visaFail(static fn()=>$act('revoke',$checks),'ATELIER_CULINARY_CHECKS');
     $firstFile=$dir.'/culinary-visa-'.$id.'.0001.json';
@@ -183,6 +228,12 @@ try{
     }
 
     $v4=cmsCreationSave($root,$posted,$catalog,3,$id);
+    $newVersionPreflight=cmsAtelierCoralPrereception(
+        $root,$v4,$catalog,$canonical,$guided);
+    visaAssert($newVersionPreflight['human_text_visas_count']===0
+        &&$newVersionPreflight['completed_checks']===3
+        &&$newVersionPreflight['ready_for_audio_production']===false,
+        'NEW_REVISION_INVALIDATES_DASHBOARD');
     $after=cmsAtelierVisaStatus($dir,$v4,$catalog);
     $culinaryAfter=cmsAtelierCulinaryStatus($dir,$v4,$catalog,$canonical,$guided);
     visaAssert($culinaryAfter['human_culinary_review_recorded']===false
@@ -218,6 +269,12 @@ try{
     file_put_contents($last,json_encode($data,JSON_THROW_ON_ERROR));
     visaFail(static fn()=>cmsAtelierVisaStatus($dir,$v5,$catalog),
         'ATELIER_VISA_CORRUPT');
+    $damagedReport=cmsAtelierCoralPrereception(
+        $root,$v5,$catalog,$canonical,$guided);
+    visaAssert(($damagedReport['checks'][3]['complete']??null)===false
+        &&count($damagedReport['blocking_notes'])>0
+        &&$damagedReport['publication_ready']===false,
+        'CORRUPT_JOURNAL_FAIL_CLOSED');
     // Independently corrupt the culinary audit chain.
     $culinaryFiles=glob($dir.'/culinary-visa-'.$id.'.*.json');
     $lastCulinary=$culinaryFiles[count($culinaryFiles)-1];
@@ -231,6 +288,12 @@ try{
         &&str_contains($html,'data-culinary-human-visa')
         &&str_contains($html,'culinary_checks[allergens]')
         &&str_contains($html,'cmsAssertGuidedCoverage'),'CULINARY_SAME_STUDIO');
+    visaAssert(str_contains($html,'data-coral-prereception')
+        &&str_contains($html,'coral_preflight=1')
+        &&str_contains($html,'cmsAtelierCoralPrereception')
+        &&str_contains($html,'Durée des activités prévues')
+        &&!str_contains($html,'Télécharger un MP3 Coral'),
+        'CORAL_READ_ONLY_UI');
     echo "CMS_CORAL_CULINARY_HUMAN_REVIEW_C4C3F_PASS ".
 
         json_encode(['authenticated'=>true,'csrf_gate_controller'=>true,

@@ -6,3 +6,6 @@ DirectoryIndex index.php
 <FilesMatch "^\.(.*)$">
   Require all denied
 </FilesMatch>
+<Files "publication-gap-audit.php">
+  Require all denied
+</Files>

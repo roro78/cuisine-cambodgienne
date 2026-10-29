@@ -79,7 +79,8 @@ if($legacy!==null){
 }
 $ui=file_get_contents(__DIR__.'/../../public/gestion-contenus/index.php');
 auditCheck(is_string($ui)
-    &&str_contains($ui,"if(isset(\$_GET['recipe_audit']))")
+    &&str_contains($ui,"if(isset(\$_GET['recipe_audit'])||isset(\$_GET['coral_preflight']))")
+    &&str_contains($ui,'data-coral-prereception')
     &&str_contains($ui,'cmsGetGuidedFields()')
     &&str_contains($ui,'cmsAssertGuidedCoverage')
     &&str_contains($ui,'data-atelier-recipe-audit')

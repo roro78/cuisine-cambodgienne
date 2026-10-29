@@ -769,6 +769,125 @@ function cmsAtelierCulinaryAction(string $private,string $id,int $expected,
     }finally{flock($handle,LOCK_UN);fclose($handle);}
 }
 
+
+/**
+ * C4C3G — single read-only private Coral V2 pre-reception dossier.
+ * Caller MUST supply canonical+guided indexes validated against the actual
+ * public build. No media, TTS, publication or new approvals are generated.
+ * Any source or journal inconsistency is a BLOCKER, never a green gate.
+ */
+function cmsAtelierCoralPrereception(string $private,array $record,array $catalog,
+    array $canonical,array $guided): array {
+    if(($record['kind']??null)!=='atelier'
+       ||!cmsCreationId($record['id']??null))
+        throw new InvalidArgumentException('CORAL_PRERECEPTION_KIND');
+    $id=$record['id'];
+    $dir=cmsCreationDir($private);
+    $gate=null;$recipe=null;$textVisas=null;$culinary=null;
+    $issues=[];$sourceValid=false;
+    try{
+        $gate=cmsAtelierBlueprintPreflight($record,$catalog);
+    }catch(Throwable $e){$issues[]='Structure pédagogique ou recette liée incohérente.';}
+    try{
+        $recipe=cmsAtelierCanonicalRecipeAudit($record,$catalog,$canonical,$guided);
+        $sourceValid=($recipe['model_supported_for_quantity_review']??false)===true;
+        if(!$sourceValid)$issues[]='Modèle historique : doses canoniques non comparables.';
+    }catch(Throwable $e){
+        $issues[]='Recette Astro publiée et empreinte complète indisponibles.';
+    }
+    try{$textVisas=cmsAtelierVisaStatus($dir,$record,$catalog);}
+    catch(Throwable $e){$issues[]='Journal privé des sept visas inaccessible ou corrompu.';}
+    if($sourceValid && $gate!==null){
+        try{$culinary=cmsAtelierCulinaryStatus(
+            $dir,$record,$catalog,$canonical,$guided);}
+        catch(Throwable $e){
+            $issues[]='Visa culinaire absent de cette source, invalide ou inaccessible.';
+        }
+    }
+    $stable=cmsAtelierScriptIds();
+    $phases=is_array($record['atelier_phase_details']['phases']??null)
+        ?$record['atelier_phase_details']['phases']:[];
+    $scripts=is_array($record['atelier_scripts']['chapters']??null)
+        ?$record['atelier_scripts']['chapters']:[];
+    $chapters=[];$phaseMinutes=0;
+    foreach($stable as $index=>$scriptId){
+        $script=$scripts[$index]??null;
+        $scriptMatches=is_array($script)
+            &&($script['id']??null)===$scriptId
+            &&($script['index']??null)===$index
+            &&is_string($script['text']??null);
+        $length=$scriptMatches?mbLen($script['text']):0;
+        $plannedMinutes=null;
+        if($index>0){
+            $phase=$phases[$index-1]??null;
+            if(is_array($phase)&&($phase['id']??null)===$scriptId
+                &&is_scalar($phase['minutes']??null)
+                &&preg_match('/^(?:[1-9][0-9]{0,2})$/D',(string)$phase['minutes'])
+                &&(int)$phase['minutes']<=240){
+                $plannedMinutes=(int)$phase['minutes'];
+                $phaseMinutes+=$plannedMinutes;
+            }
+        }
+        $chapters[]=[
+            'index'=>$index,'id'=>$scriptId,
+            'script_characters'=>$length,
+            'script_drafted'=>$length>=120,
+            'text_approved'=>($textVisas['by_chapter'][$scriptId]??false)===true,
+            'planned_activity_minutes'=>$plannedMinutes,
+            // Timings of actual Coral audio are never computed from text.
+            'coral_mp3_verified'=>false,
+            'audio_timing_verified'=>false,
+            'pause_sync_mobile_verified'=>false
+        ];
+    }
+    $summary=[
+        'canonical_source'=>($sourceValid &&$gate!==null
+            &&($gate['canonical_reference_checked']??false)===true),
+        'six_phases'=>($gate['phase_details_complete']??false)===true
+            &&($gate['six_distinct_phases']??false)===true,
+        'seven_drafts'=>($gate['seven_scripts_drafted']??false)===true,
+        'seven_human_text_visas'=>($textVisas['all_seven_texts_reviewed']??false)===true,
+        'human_culinary_visa'=>($culinary['human_culinary_review_recorded']??false)===true,
+        'media_rights_verified'=>false,
+        'seven_coral_mp3_verified'=>false,
+        'audio_durations_verified'=>false,
+        'mobile_pause_sync_verified'=>false
+    ];
+    $labels=[
+        'canonical_source'=>'Recette Astro et empreinte SHA256',
+        'six_phases'=>'Six phases culinaires complètes',
+        'seven_drafts'=>'Sept scripts narratifs complets',
+        'seven_human_text_visas'=>'Sept visas humains des textes',
+        'human_culinary_visa'=>'Visa de cohérence culinaire humain',
+        'media_rights_verified'=>'Droits des médias et de la voix',
+        'seven_coral_mp3_verified'=>'Sept MP3 Coral reçus et écoutés',
+        'audio_durations_verified'=>'Durées audio réellement mesurées',
+        'mobile_pause_sync_verified'=>'Pauses, chapitres et scroll testés sur mobile'
+    ];
+    $checks=[];
+    foreach($summary as $name=>$ok)$checks[]=[
+        'id'=>$name,'label'=>$labels[$name],
+        'complete'=>$ok,'status'=>$ok?'checked':'blocked'
+    ];
+    $approvedCount=(int)($textVisas['approved_text_count']??0);
+    return [
+        'contract'=>'cdc-coral-private-prereception-v1',
+        'creation_id'=>$id,'creation_version'=>$record['version']??null,
+        'canonical_recipe_sha256'=>$sourceValid
+            ?$recipe['canonical_sha256']:null,
+        'checks'=>$checks,'check_count'=>count($checks),
+        'completed_checks'=>count(array_filter($summary)),
+        'chapters'=>$chapters,'chapters_count'=>count($chapters),
+        'human_text_visas_count'=>$approvedCount,
+        'total_planned_activity_minutes'=>$phaseMinutes,
+        'blocking_notes'=>$issues,
+        // Media delivery, audio production and publication remain separate.
+        'tts_authorized'=>false,'ready_for_audio_production'=>false,
+        'seven_audio_scripts_approved'=>false,
+        'publication_ready'=>false,'export_enabled'=>false
+    ];
+}
+
 function cmsAstroPublicationGapReport(array $record): array {
     $kind=$record['kind']??null;
     $coverage=cmsAstroPublicationCoverage();
