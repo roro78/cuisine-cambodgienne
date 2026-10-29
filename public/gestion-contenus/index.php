@@ -274,7 +274,8 @@ if($auth){
                     :'Visa non enregistré. Vérifiez la confirmation et la complétude des sept scripts enregistrés.';
             }
         }
-        if($method==='POST' && (isset($_POST['ai_content_generate'])||isset($_POST['ai_content_discard']))){
+        if($method==='POST' && !isset($_POST['review_action'])
+            && (isset($_POST['ai_content_generate'])||isset($_POST['ai_content_discard']))){
             $contentPosted=cmsCreationPosted($_POST);
             $createForm=$contentPosted;
             foreach(['objective','context','reference_id'] as $field)
@@ -335,7 +336,8 @@ if($auth){
                 };
             }
         }
-        if($method==='POST' && isset($_POST['ai_brief_generate'])){
+        if($method==='POST' && isset($_POST['ai_brief_generate'])
+            && !isset($_POST['review_action'])){
             $aiPosted=[];
             foreach(['kind','title','angle','objective','context','reference_id','semantic_review'] as $field)
                 $aiPosted[$field]=$_POST[$field]??'';
@@ -366,7 +368,8 @@ if($auth){
                     :'Le brief IA n’a pas été enregistré. Vérifiez les projets avant toute nouvelle tentative ; la création manuelle reste disponible.';
             }
         }
-        if($method==='POST' && isset($_POST['create_save']) && !isset($_POST['ai_brief_generate'])
+        if($method==='POST' && isset($_POST['create_save']) && !isset($_POST['review_action'])
+            && !isset($_POST['ai_brief_generate'])
             && !isset($_POST['ai_content_generate']) && !isset($_POST['ai_content_discard'])){
             $expected=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
                 ['options'=>['min_range'=>0,'max_range'=>9998]]);
