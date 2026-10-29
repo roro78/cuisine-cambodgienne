@@ -84,6 +84,11 @@ try{
   assert.equal(await recipeFrame.locator('main .recipe-intro').innerText(),updatedIntro,'draft text in actual Astro layout');
   assert.equal(await recipeFrame.locator('.recipe-v15-hero').count(),1,'real recipe template retained');
   assert.ok(!(await page.locator('#cms-preview').innerText()).includes('publication autorisée'));
+  await page.setViewportSize({width:1440,height:1000});
+  assert.ok((await page.locator('[data-visual-preview] iframe').boundingBox()).width>=650,
+    'public template has a real desktop reading width');
+  await noOverflow('visual preview desktop');
+  await page.setViewportSize({width:390,height:844});
   await page.goto(origin+'/gestion-contenus/?kind=atelier');
   const link=page.locator(`a[href*="${encodeURIComponent(fixture.id)}"]`).first();
   assert.equal(await link.count(),1,'library workshop entry');await link.click();
