@@ -2,19 +2,47 @@
 
 **Version 1.0 — 28 octobre 2026.** Contrat **cible** de production, non annonce d'une IA déjà raccordée au Studio. À appliquer à toute nouvelle recette, tout atelier, Carnet, ingrédient ou technique, sans recréer de gabarit ni réécrire le contenu existant. L'IA reste un assistant sous validation humaine.
 
-**29 octobre :** C1 fusionné (#150). [C2 en PR #151](CMS-STRUCTURED-GENERATION-P1C-C2.md)
-raccorde le socle de champs à une proposition temporaire, corrigible puis
-enregistrée explicitement dans les versions privées. Aucun fournisseur activé,
-article complet, média ou MP3 généré. Les exigences spécialisées et les gates
-de validation restent obligatoires ; le socle actuel n'est pas une autorisation
-de conversion ou publication Astro.
+**Point de reprise confirmé — 29 octobre 2026 (GitHub) :**
 
-**État prioritaire après #149 :** briefs privés et adaptateur optionnel intégrés
-dans GitHub ; aucune activation IA OVH ni mesure qualitative réelle attestée.
-Le [contrat structuré P1C-C1](CMS-STRUCTURED-CONTENT-P1C-C1.md), préparé en branche,
-dérive les champs du formulaire commun et liste les écarts avec les modèles Astro
-complets. Il ne déclenche pas de génération et ne constitue pas une page publiable.
-Cet état prévaut sur les mentions historiques « en branche/PR » du premier lot B.
+| Lot | État et preuve | Portée réellement acquise |
+|---|---|---|
+| P1C-C1 | [PR #150](https://github.com/roro78/cuisine-cambodgienne/pull/150) fusionnée | Contrat structuré des cinq familles, sans fournisseur |
+| P1C-C2 | [PR #151](https://github.com/roro78/cuisine-cambodgienne/pull/151) fusionnée sur `0db7bcb` | Générer une proposition simulable → relire/corriger → sauvegarder **explicitement** en privé |
+| P1C-C3 S1 | [PR #152](https://github.com/roro78/cuisine-cambodgienne/pull/152) fusionnée sur `d14be5f` | Préparer/valider mécaniquement les sorties structurées, sans benchmark réel |
+| P1C-C4A | [PR #153](https://github.com/roro78/cuisine-cambodgienne/pull/153) fusionnée sur `7c46a3b` | Diagnostics des écarts Astro, publication systématiquement bloquée |
+| P1C-C4B1 | [PR #154](https://github.com/roro78/cuisine-cambodgienne/pull/154) fusionnée sur `dafea2d` | Profil **humain** recette (difficulté/catégorie/tags), versionné et séparé du contrat IA |
+| P1C-C4B2 | [PR #155](https://github.com/roro78/cuisine-cambodgienne/pull/155) fusionnée sur `5fcc50e` | Projection **privée** des champs de base Recipe avec quantités numériques strictement validées |
+
+Les CI des PR ci-dessus ont été vérifiées SUCCESS sous Astro/Node et PHP
+8.3/8.4. La CI **après** fusion de #155 doit être contrôlée séparément ; ne
+jamais assimiler une CI de branche au déploiement ni à une recette OVH.
+
+**Aucun fournisseur IA réel n'est activé, aucun modèle n'a été évalué en
+conditions réelles, aucune passerelle n8n n'est réceptionnée, aucune génération
+d'image/audio n'est lancée et aucun déploiement OVH n'a eu lieu.** Le contrat
+`creation-form-core-v1` demeure volontairement indépendant du profil humain
+C4B1 ; il ne produit pas encore une recette complète validée.
+
+**Priorités à poursuivre sans réinventer :**
+
+1. **Qualifier le fournisseur** : benchmark réel des briefs puis S1 structuré,
+   par modèle et famille, avec mesures de latence, qualité et coûts, et visa
+   humain. La session privée n8n n'est pas pilotable par les outils GitHub.
+2. **C4B3 recettes** : enrichir ingrédients/étapes, repères, liens et médias
+   sans rendre les vieux brouillons incompatibles ni laisser une IA décider
+   de l'approbation ou de la publication.
+3. **C4C autres familles** : compléter les contrats des Carnets, ingrédients,
+   techniques et surtout les blueprints ateliers Coral V2 avec recette
+   canonique, six phases et sept scripts à approuver.
+4. **P2/P3** : vrai aperçu Astro privé fidèle, conversion typée complète,
+   validations et PR de publication **distinctes** uniquement sur autorisation.
+5. **Exploitation** : conserver le calendrier et les workflows n8n 01/02/03
+   inchangés. Réceptionner le futur paquet OVH complet avant toute livraison,
+   notamment `index.php`, `lib.php` et `publication-gap-audit.php`.
+
+Ce point de reprise complète le présent référentiel et ne remplace pas les
+référentiels spécialisés. Les sources documentaires de travail restent privées ;
+les crédits obligatoires des médias doivent être respectés.
 
 **Références normatives existantes, à préserver :**
 - \`CMS-STUDIO-ARCHITECTURE.md\` — éditeur partagé, stockage privé, contrat des fiches et publication.
@@ -34,7 +62,7 @@ En cas de divergence, le **référentiel spécifique à la catégorie** prévaut
 - Les réponses IA doivent être validées côté serveur contre une **projection publique explicitement autorisée** du modèle Astro ; ne jamais générer du PHP ou du TypeScript libre susceptible de changer l'architecture.
 - Le formulaire \`public/gestion-contenus/index.php\` et les composants de \`lib.php\` restent les seuls gabarits d'administration. Les champs métiers varient, l'UX et le cycle de vie ne varient pas.
 
-Le module de planification \`scripts/editorial-content-pipeline.mjs\` et ses états sont déjà présents. Un [premier lot de briefs IA privés P1C-B](CMS-AI-BRIEFS-P1C.md) est préparé sur branche dédiée : contrat/adaptateur serveur, quatre textes de brief, stockage commun, provenance et garde-fous, avec fournisseur désactivé par défaut et simulations uniquement dans les tests. **La rédaction IA complète des champs métier, le raccordement d'un vrai modèle, la conversion complète vers Astro, la génération d'image depuis le Studio et le calendrier média multicanal ne sont pas encore opérationnels.**
+Le module de planification \`scripts/editorial-content-pipeline.mjs\` et ses états existent. Les lots P1C-B, C1, C2, C3 et C4A/C4B2 ont été intégrés dans GitHub, avec les protections de version, de provenance et de validation humaine décrites ci-dessus. **Le fournisseur IA réel, la rédaction complète de tous les champs métier, les blueprints Coral V2 générés, la conversion/pagination Astro prête à publier, les visuels en self-service et le calendrier média multicanal ne sont pas encore opérationnels.**
 
 ## 2. Brief commun obligatoire avant toute génération
 
