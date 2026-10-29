@@ -183,6 +183,8 @@ PHP;
     [, $html]=$request('/gestion-contenus/?new=1');
     httpCheck(str_contains($html,'La génération structurée est indisponible'),'DISABLED_NOTICE');
     $manual=$save;unset($manual['candidate_token']);$manual['title']='Création manuelle HTTP distincte';$manual['fields']=[];
+    // New independent manual record has no ingredient/step rows to anchor details.
+    unset($manual['recipe_astro_details']);
     [$status]=$request('/gestion-contenus/?new=1',$manual);
     httpCheck($status===303&&count(glob($private.'/editorial-drafts/new-content/c-*.json'))===2,'DISABLED_MANUAL_WORKS');
     $manualRecord=null;
