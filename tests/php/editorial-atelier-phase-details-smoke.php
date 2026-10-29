@@ -147,6 +147,24 @@ try{
         &&!str_contains($html,'<script>')
         &&str_contains($html,'name="atelier_phase_details[phases][0][observe]"'),
         'SIX_PHASE_HTML_ESCAPED');
+    // A temporary AI proposal restores the submitted form before a private
+    // save, with string HTML indices; those human details must not disappear.
+    $pending=$details;
+    $pending['phases'][0]['observe']='PENDING_USER_PHRASE_PRESERVED';
+    $pendingHtml=cmsAtelierPhaseDetailsHtml($pending,$v3['fields'],
+        $v3['atelier_reference']);
+    phaseCheck(str_contains($pendingHtml,'PENDING_USER_PHRASE_PRESERVED'),
+        'POST_SNAPSHOT_PRESERVED');
+    // A stale title must remain attached to the OLD source and be visibly
+    // flagged rather than silently wiping the safety instructions.
+    $changedFields=$v3['fields'];
+    $changedFields['phases'][0]['title']='Chapitre remplacé par IA';
+    $staleHtml=cmsAtelierPhaseDetailsHtml($v3['atelier_phase_details'],
+        $changedFields,$v3['atelier_reference']);
+    phaseCheck(str_contains($staleHtml,'Ces consignes sont périmées')
+        &&str_contains($staleHtml,'Contrôle qualité')
+        &&str_contains($staleHtml,'value="Installer"'),
+        'STALE_HUMAN_SAFETY_NOT_ERASED');
     $posted=cmsCreationPosted(['kind'=>'atelier','atelier_phase_details'=>$details]);
     phaseCheck($posted['atelier_phase_details']===$details
         &&!array_key_exists('atelier_phase_details',
