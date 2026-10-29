@@ -12,7 +12,7 @@ const files=[
   'src/data/recipes.ts',
   'src/data/restoredRecipes.ts',
   'src/data/workshops.ts',
-  'src/pages/apprendre/pratique/kroeung-jaune.astro',
+  'src/data/workshopPresentation.ts',
   'src/pages/apprendre/pratique/[slug].astro',
   'docs/ateliers/VALIDATION-RECETTES-ET-NARRATIONS-V2.md',
   ...slugs.map(s=>'src/data/atelier-recette-guides/'+s+'.json'),
