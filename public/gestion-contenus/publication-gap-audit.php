@@ -18,7 +18,7 @@ function cmsAstroPublicationCoverage(): array {
         'recette'=>[
             'model'=>'src/data/recipes.ts · Recipe',
             'not_covered'=>[
-                'profil recette Astro C4B1 à compléter ou vérifier (difficulté, catégorie, tags)',
+                'profil recette Astro C4B1 à compléter ou vérifier : difficulty / category / tags',
                 'ingredients.quantity typé en nombre, note, group, scalable',
                 'steps.duration, cue, mistake et cohérence ingrédients/gestes',
                 'keyPoints, substitutions, FAQ et liens utiles selon le sujet',
