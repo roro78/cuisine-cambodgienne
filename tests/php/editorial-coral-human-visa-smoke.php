@@ -132,7 +132,6 @@ try{
         &&str_contains($html,'$_SESSION[\'csrf\']')
         &&str_contains($html,'data-coral-human-visas')
         &&str_contains($html,'Révoquer ce visa'),'AUTHENTICATED_STUDIO_UI');
-    $last=end(glob($dir.'/script-visa-'.$id.'.*.json'));
     // Journal corruption must fail closed, never silently produce a green visa.
     $paths=glob($dir.'/script-visa-'.$id.'.*.json');
     $last=$paths[count($paths)-1];
