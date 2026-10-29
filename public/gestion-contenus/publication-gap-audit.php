@@ -303,6 +303,54 @@ function cmsTechniqueAstroDraftProjection(array $record): array {
         'requires_human_review'=>true,'publication_ready'=>false];
 }
 
+
+/**
+ * Workshop preparatory gate. Core six chapter titles are not six fully
+ * realized V2 phases; seven scripts and all release approvals are ABSENT.
+ * A C2 AI reference must match the separately selected human reference.
+ */
+function cmsAtelierBlueprintPreflight(array $record,array $catalog): array {
+    if(($record['kind']??null)!=='atelier')
+        throw new InvalidArgumentException('ATELIER_BLUEPRINT_KIND');
+    $source=cmsAtelierReferenceClean($record['atelier_reference']??null,$catalog);
+    $ref=$source!==null&&$source['recipeSlug']!=='';
+    $fields=$record['fields']??[];
+    $summary=$record['summary']??null;
+    $core=is_array($fields)&&is_string($summary)
+        &&cmsCreationReady('atelier',$fields,$summary);
+    $phases=is_array($fields['phases']??null)?$fields['phases']:[];
+    $seen=[];$six=count($phases)===6;
+    foreach($phases as $phase){
+        $title=is_array($phase)&&is_string($phase['title']??null)
+            ?trim($phase['title']):'';
+        $learning=is_array($phase)&&is_string($phase['learning']??null)
+            ?trim($phase['learning']):'';
+        $key=function_exists('mb_strtolower')?mb_strtolower($title,'UTF-8')
+            :strtolower($title);
+        if($title===''||$learning===''||isset($seen[$key]))$six=false;
+        $seen[$key]=true;
+    }
+    $meta=$record['ai_content']??null;
+    $aiReferenceConsistent=!is_array($meta)
+        ||!is_string($meta['reference_id']??null)
+        ||$meta['reference_id']===''
+        ||($ref&&$meta['reference_id']==='recette:'.$source['recipeSlug']);
+    return [
+        'contract'=>'cdc-editorial-workshop-blueprint-preflight-v1',
+        'source_version'=>$record['version']??null,
+        'form_core_complete'=>$core,'phase_count'=>count($phases),
+        'six_distinct_phases'=>$six,
+        'canonical_reference_checked'=>$ref,
+        'ai_recipe_reference_consistent'=>$aiReferenceConsistent,
+        'ready_for_blueprint_enrichment'=>$core&&$six&&$ref&&$aiReferenceConsistent,
+        // C2 core holds a learning goal per chapter, NOT stable IDs,
+        // validated recipeIngredients or audio-script approvals.
+        'stable_phase_ids_ready'=>false,'seven_audio_scripts_approved'=>false,
+        'canonical_recipe_details_revalidated'=>false,
+        'requires_human_review'=>true,'publication_ready'=>false
+    ];
+}
+
 function cmsAstroPublicationGapReport(array $record): array {
     $kind=$record['kind']??null;
     $coverage=cmsAstroPublicationCoverage();
