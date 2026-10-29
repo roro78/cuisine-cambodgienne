@@ -22,8 +22,9 @@
 | P1C-C4C3D | [PR #168](https://github.com/roro78/cuisine-cambodgienne/pull/168) fusionnée sur `ddaaf84` | Visas humains séparés des 7 textes, versionnés, révocables et audités ; **n'autorisent aucun MP3** |
 | P1C-C4C3E | [PR #169](https://github.com/roro78/cuisine-cambodgienne/pull/169) fusionnée sur `e2ec8ae` | Audit privé à la demande de la recette Astro : SHA256 complet, ingrédients, portions ; **sans validation culinaire automatique** |
 | P1C-C4C3F | [PR #171](https://github.com/roro78/cuisine-cambodgienne/pull/171) fusionnée sur `238d285` | Visa culinaire humain indépendant des sept textes : quatre confirmations et note, SHA256 de recette, révocation, invalidation automatique ; **aucun droit audio** |
+| P1C-C4C3G | [PR #173](https://github.com/roro78/cuisine-cambodgienne/pull/173) fusionnée sur `18b7b63` | Tableau privé **9 contrôles/7 chapitres** Coral, aucun TTS, et paquet OVH **sept fichiers** avec protection du module d'audit PHP |
 
-Les CI de branche des PR fonctionnelles jusqu'à **#171** sont SUCCESS
+Les CI de branche des PR fonctionnelles jusqu'à **#173** sont SUCCESS
 sous Astro/Node et PHP 8.3/8.4, avec non-régressions mobile et audio existant.
 Les CI **après fusion** de #166
 ([run #40850988200](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40850988200))
@@ -33,7 +34,7 @@ ainsi que la CI après fusion de #169
 ([run #40860575676](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40860575676))
 sont SUCCESS. La CI après fusion de #171
 ([run #40874011536](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40874011536))
-est à réceptionner séparément.
+est également SUCCESS. La CI du commit de fusion #173 doit être réceptionnée séparément.
 Une CI GitHub ne prouve ni un transfert OVH ni une recette en production.
 
 **Aucun fournisseur IA réel n'est activé, aucun modèle n'a été évalué en
@@ -42,7 +43,7 @@ d'image/audio n'est lancée et aucun déploiement OVH n'a eu lieu.** Le contrat
 `creation-form-core-v1` demeure volontairement indépendant du profil humain
 C4B1 ; il ne produit pas encore une recette complète validée.
 
-**Priorités à poursuivre sans réinventer (mise à jour C4C3F) :**
+**Priorités à poursuivre sans réinventer (mise à jour C4C3G) :**
 
 1. **Qualifier le fournisseur** : vérifier plus tard sur ordinateur l’accès
    authentifié au n8n OVH et au réseau Docker d’Ollama ; ne demander aucun
@@ -52,29 +53,33 @@ C4B1 ; il ne produit pas encore une recette complète validée.
 2. **C4B4/P2 recettes** : C4B3 (ingrédients et gestes) est fusionné ; préparer
    liens, FAQ, médias et droits vérifiés avant un aperçu Astro fidèle.
    Ne pas transformer une projection privée en autorisation de publier.
-3. **C4C3G — pré-réception audio, SANS production TTS** :
-   C4C3D permet de viser/révoquer chacun des **sept textes** par version.
-   C4C3E compare sur demande portions et ingrédients au SHA256 intégral
-   de la recette Astro source, sans inventer de doses. **C4C3F** consigne
-   désormais quatre contrôles **humains** (portions, quantités,
-   allergènes, gestes/cuissons), avec note, révocation et SHA256
-   canonique : il s'agit d'une attestation de relecture, pas d'une
-   certification alimentaire automatique. Les deux registres de visas
-   sont indépendants, privés, révocables et invalidés sur changement
-   de source ou de version. **Aucun de ces visas n'autorise TTS, MP3
-   ou publication.** Construire ensuite un pré-contrôle lisible des
-   droits, médias, scripts, voix, durée, pauses et cohérence des sept
-   chapitres ; une **autorisation de production audio séparée** serait
-   nécessaire après revue de sécurité, avec écoute et tests du scroll
-   mobile sur les vrais fichiers. Ne jamais écraser les MP3 validés.
-   Les fiches ingrédients/techniques C4C2 restent à compléter côté
-   médias et droits. Les sources documentaires des Carnets C4C1 restent
-   strictement **privées**.
+3. **C4C3H — réception des actifs réels, sans TTS automatique** :
+   C4C3G offre déjà un tableau privé **neuf contrôles** et sept
+   chapitres stables, combinant C4C3D (visas humains de textes),
+   C4C3E (recette canonique), C4C3F (visa culinaire humain) et
+   les blocages audio. Les durées calculées sont celles des
+   **activités**, jamais celles des MP3. Les quatre contrôles
+   droits médias/voix, fichiers Coral réellement reçus/écoutés,
+   durées audio mesurées et synchronisation mobile **restent
+   systématiquement bloqués**. Conserver cette frontière jusqu'à
+   une réception humaine réelle des actifs et de leurs licences,
+   avec circuits d'autorisation distincts. Ne jamais écraser les
+   MP3 déjà validés, ni faire croire qu'un visa de texte autorise
+   la génération. Les fiches ingrédients et techniques demandent
+   encore des visuels fidèles et des droits contrôlés. Les sources
+   documentaires des Carnets restent **privées**.
 4. **P2/P3** : vrai aperçu Astro privé fidèle, conversion typée complète,
    validations et PR de publication **distinctes** uniquement sur autorisation.
-5. **Exploitation** : conserver le calendrier et les workflows n8n 01/02/03
-   inchangés. Réceptionner le futur paquet OVH complet avant toute livraison,
-   notamment `index.php`, `lib.php` et `publication-gap-audit.php`.
+5. **Exploitation / OVH avant IA réelle** : conserver le calendrier et
+   les workflows n8n 01/02/03 inchangés. Le paquet CMS isolé est désormais
+   composé exactement de **7 fichiers** (3 index Astro publics et 4
+   fichiers `gestion-contenus/` : `index.php`, `lib.php`,
+   `publication-gap-audit.php`, `.htaccess`). Suivre
+   [le runbook C4C3G](CMS-CORAL-PRERECEPTION-OVH-C4C3G.md)
+   pour sauvegarde, transfert manuel, refus HTTP de deux modules
+   internes et recette Android. GitHub **n'est pas** OVH ; aucun
+   transfert n'est attesté par la seule CI. Après réception, lancer
+   un essai IA réel Ollama via n8n avec anti-doublons et validation.
 
 Ce point de reprise complète le présent référentiel et ne remplace pas les
 référentiels spécialisés. Les sources documentaires de travail restent privées ;
