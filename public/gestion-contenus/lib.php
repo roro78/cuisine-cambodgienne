@@ -771,6 +771,84 @@ function cmsCreationSchema(): array {
       ]
     ];
 }
+
+/**
+ * C4B1: an OPTIONAL, explicitly human-edited supplement to the original
+ * creation-form-core-v1 fields. AI output schema remains unchanged.
+ * Old private versions WITHOUT this supplement remain valid and untouched.
+ */
+function cmsRecipeAstroProfileClean(mixed $raw): ?array {
+    if($raw===null)return null;
+    $keys=['version','difficulty','category','tags'];
+    if(!is_array($raw)||count($raw)!==count($keys)
+        || array_diff(array_keys($raw),$keys)
+        || !in_array($raw['version']??null,[1,'1'],true))
+        throw new InvalidArgumentException('RECIPE_ASTRO_PROFILE');
+    $difficulty=cmsCreationText($raw['difficulty']??null,40);
+    $category=cmsCreationText($raw['category']??null,60);
+    if(!in_array($difficulty,['','Facile','Intermédiaire','Avancé'],true)
+        || !in_array($category,['','Plat principal','Soupe','Street food',
+            'Dessert','Base aromatique','Accompagnement'],true))
+        throw new InvalidArgumentException('RECIPE_ASTRO_PROFILE');
+    $tagsRaw=$raw['tags']??null;
+    if(is_string($tagsRaw)){
+        $tagsRaw=cmsCreationText($tagsRaw,1200);
+        $tagsRaw=preg_split('/\n+/u',$tagsRaw);
+    }
+    if(!is_array($tagsRaw)||count($tagsRaw)>12)
+        throw new InvalidArgumentException('RECIPE_ASTRO_TAGS');
+    $tags=[];$seen=[];
+    foreach($tagsRaw as $tag){
+        $value=cmsCreationText($tag,50);
+        if($value===''||mbLen($value)>50)
+            throw new InvalidArgumentException('RECIPE_ASTRO_TAGS');
+        $key=mb_strtolower($value,'UTF-8');
+        if(isset($seen[$key]))throw new InvalidArgumentException('RECIPE_ASTRO_TAGS');
+        $seen[$key]=true;$tags[]=$value;
+    }
+    return ['version'=>1,'difficulty'=>$difficulty,'category'=>$category,'tags'=>$tags];
+}
+function cmsRecipeAstroProfileComplete(mixed $raw): bool {
+    try{
+        $p=cmsRecipeAstroProfileClean($raw);
+        return $p!==null&&$p['difficulty']!==''&&$p['category']!==''&&count($p['tags'])>0;
+    }catch(Throwable $e){return false;}
+}
+/** Editable inside the SAME Studio creation form; no new page or publishing. */
+function cmsRecipeAstroProfileHtml(mixed $raw=null): string {
+    $raw=is_array($raw)?$raw:[];
+    $difficulty=is_string($raw['difficulty']??null)?$raw['difficulty']:'';
+    $category=is_string($raw['category']??null)?$raw['category']:'';
+    $tags=$raw['tags']??'';
+    if(is_array($tags))$tags=implode("\n",array_filter($tags,'is_string'));
+    if(!is_string($tags))$tags='';
+    $html='<details class="guided-group"><summary>Compléments recette pour Astro — relecture privée</summary>'
+        .'<p class="small muted">Difficulté, catégorie et mots-clés appartiennent au modèle Recipe. '
+        .'Ils ne sont pas fournis par le moteur IA C2 et ne suffisent pas à publier une page.</p>'
+        .'<input type="hidden" name="recipe_astro[version]" value="1">';
+    foreach([
+        'difficulty'=>['Difficulté',[''=>'À déterminer','Facile'=>'Facile',
+            'Intermédiaire'=>'Intermédiaire','Avancé'=>'Avancé']],
+        'category'=>['Catégorie',[''=>'À déterminer','Plat principal'=>'Plat principal',
+            'Soupe'=>'Soupe','Street food'=>'Street food','Dessert'=>'Dessert',
+            'Base aromatique'=>'Base aromatique','Accompagnement'=>'Accompagnement']]
+    ] as $field=>[$label,$options]){
+        $current=$field==='difficulty'?$difficulty:$category;
+        $html.='<label>'.cmsEsc($label).'<select name="recipe_astro['.$field.']">';
+        foreach($options as $value=>$name)
+            $html.='<option value="'.cmsEsc($value).'"'
+                .($current===$value?' selected':'').'>'.cmsEsc($name).'</option>';
+        $html.='</select></label>';
+    }
+    $html.='<label>Mots-clés éditoriaux (un par ligne, maximum 12)'
+        .'<textarea name="recipe_astro[tags]" rows="3" maxlength="1200">'
+        .cmsEsc($tags).'</textarea></label>'
+        .'<p class="small muted">Une recette nécessite ensuite la vérification des quantités, '
+        .'des gestes, des visuels, des liens et des droits avant toute publication.</p>'
+        .'</details>';
+    return $html;
+}
+
 function cmsCreationKinds(): array {
     return ['recette'=>'Recette','atelier'=>'Atelier','culture'=>'Carnet culturel',
         'ingredient'=>'Fiche ingrédient','technique'=>'Fiche technique'];
@@ -987,6 +1065,13 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
         if(!@chmod($lockPath,0600))throw new RuntimeException('CREATION_LOCK');
         $all=cmsCreationList($dir);
         $previous=$id===null?null:($all[$id]??null);
+        // Supplement is private, versioned together with this record.
+        // Missing POST data retains the previous version for compatibility.
+        if($kind!=='recette' && isset($posted['recipe_astro']))
+            throw new InvalidArgumentException('RECIPE_ASTRO_PROFILE');
+        $recipeAstro=$kind==='recette'
+            ?cmsRecipeAstroProfileClean($posted['recipe_astro']??($previous['recipe_astro']??null))
+            :null;
         if($id!==null && !$previous)throw new RuntimeException('CREATION_NOT_FOUND');
         if($id===null && $expected!==0)throw new RuntimeException('CREATION_CONFLICT');
         if($previous && ($previous['version']!==$expected
@@ -1028,6 +1113,7 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
             'similar_titles'=>$similar,'version'=>$version,
             'recorded_at'=>gmdate('Y-m-d\TH:i:s\Z')
         ];
+        if($recipeAstro!==null)$record['recipe_astro']=$recipeAstro;
         if($origin==='ai' && $provenance!==null)$record['ai_brief']=$provenance;
         if($origin==='ai' && $contentProvenance!==null){
             $record['ai_content']=$contentProvenance;
