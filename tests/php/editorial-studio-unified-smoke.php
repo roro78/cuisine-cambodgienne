@@ -20,6 +20,26 @@ $catalog=cmsSourceList(json_decode(file_get_contents($dist.'/social-feed.json'),
 $canonical=cmsCanonicalSourceList(json_decode(file_get_contents($dist.'/editorial-source-index.json'),true,64,JSON_THROW_ON_ERROR),$catalog);
 $guided=cmsGuidedSourceList(json_decode(file_get_contents($dist.'/editorial-guided-fields.json'),true,64,JSON_THROW_ON_ERROR),$canonical);
 cmsAssertGuidedCoverage($guided,$canonical);
+// V4 is read-only, model-bound and fail-closed: a partial or foreign projection is refused.
+$visualRecipeId=null;
+foreach($guided as $candidateId=>$entry){
+    if($entry['model']==='recipes'){$visualRecipeId=$candidateId;break;}
+}
+studioAssert(is_string($visualRecipeId),'VISUAL_RECIPE_AVAILABLE');
+$visualBase=$guided[$visualRecipeId]['fields'];
+$visualEdit=$visualBase;$visualEdit['intro'].=' — aperçu du brouillon';
+$visualDiff=cmsStudioVisualChanges($visualBase,['schema_version'=>1]+$visualEdit);
+studioAssert(count($visualDiff)===1
+    && $visualDiff[0]['path']==='fields.intro'
+    && $visualDiff[0]['to']===$visualEdit['intro'],'VISUAL_ONLY_CHANGED_FIELD');
+studioAssert(cmsStudioVisualChanges($visualBase,$visualBase)===[],'VISUAL_NO_CHANGES');
+studioAssert(cmsStudioVisualRoute($catalog[$visualRecipeId])!==null,'VISUAL_CANONICAL_ROUTE');
+studioAssert(cmsStudioVisualRoute(['url'=>'https://evil.example/recettes/test/'])===null,'VISUAL_FOREIGN_ROUTE');
+studioReject(fn()=>cmsStudioVisualChanges($visualBase,array_diff_key($visualBase,['intro'=>true])),'VISUAL_SHAPE');
+if(isset($visualBase['ingredients'][0]['scalable'])){
+    $forged=$visualBase;$forged['ingredients'][0]['scalable']=!$visualBase['ingredients'][0]['scalable'];
+    studioReject(fn()=>cmsStudioVisualChanges($visualBase,$forged),'VISUAL_IMMUTABLE');
+}
 $root=sys_get_temp_dir().'/cdc-unified-'.bin2hex(random_bytes(8));mkdir($root,0700);
 try{
     $count=0;
