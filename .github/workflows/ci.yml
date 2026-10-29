@@ -48,6 +48,8 @@ jobs:
           php -l tests/php/editorial-create-manual-smoke.php
           php tests/php/editorial-cms-drafts-smoke.php
           php tests/php/editorial-all-guided-smoke.php dist
+          php -l tests/php/editorial-studio-unified-smoke.php
+          php tests/php/editorial-studio-unified-smoke.php dist
           php tests/php/editorial-create-manual-smoke.php dist
           php -l public/gestion-contenus/publication-gap-audit.php
           php -l tests/php/editorial-astro-publication-gap-smoke.php
@@ -298,6 +300,20 @@ jobs:
         env:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
         run: npm run test:browser-experiences
+
+      - name: Private Studio unified editing on mobile and desktop (synthetic loopback only)
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/editorial-studio-browser.test.mjs
+
+      - name: Upload private Studio synthetic browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-unified-studio-browser
+          path: artifacts/cms-unified-review/*.png
+          retention-days: 7
+          if-no-files-found: ignore
 
       - name: Cinq ateliers complets - QA mobile et desktop
         env:

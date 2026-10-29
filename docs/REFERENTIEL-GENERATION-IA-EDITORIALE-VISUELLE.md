@@ -2,6 +2,23 @@
 
 **Version 1.0 — 28 octobre 2026.** Contrat **cible** de production, non annonce d'une IA déjà raccordée au Studio. À appliquer à toute nouvelle recette, tout atelier, Carnet, ingrédient ou technique, sans recréer de gabarit ni réécrire le contenu existant. L'IA reste un assistant sous validation humaine.
 
+**Reprise Studio unifié — 29 octobre 2026 :**
+[audit, architecture finale, compatibilité des historiques, tests et livraison](CMS-STUDIO-UNIFIED-20261029.md).
+Les cinq familles partagent les sections informations/contenu/aperçu/qualité/historique.
+Depuis un atelier publié, une transition **explicite** ouvre le formulaire commun
+Coral V2 avec une relation serveur à la même identité publique. Les versions
+historiques sont conservées en lecture seule après transition ; aucune migration
+automatique, duplication publique, reprise de visa, import MP3 ou publication.
+Les empreintes complètes et les versions restent bloquantes. La recette canonique
+est choisie et vérifiée par l’humain, jamais inférée du titre de l’atelier.
+L’aperçu demeure simplifié, la conversion Astro fidèle et les actifs réels
+restent des étapes distinctes. Le propriétaire signale le transfert manuel du
+Studio V2 antérieur ce jour ; **ce correctif n’est pas transféré sur OVH**.
+Cette précision prévaut sur les mentions historiques d’absence de déploiement.
+Les prochains travaux sont la réception manuelle Android de ce parcours puis
+la qualification du fournisseur et les gates médias déjà documentées, sans TTS
+ou publication automatique.
+
 **Point de reprise confirmé — 29 octobre 2026 (GitHub) :**
 
 | Lot | État et preuve | Portée réellement acquise |
