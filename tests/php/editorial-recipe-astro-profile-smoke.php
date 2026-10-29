@@ -39,6 +39,11 @@ try{
         'LEGACY_GAP');
     $dir=cmsCreationDir($private);$v1file=$dir.'/'.$v1['id'].'.0001.json';
     $hash=hash_file('sha256',$v1file);
+    // The Studio submits an empty profile on an ordinary new recipe.
+    $empty=cmsRecipeAstroProfileClean(['version'=>'1','difficulty'=>'',
+        'category'=>'','tags'=>'']);
+    recipeProfileCheck($empty['tags']===[] && !cmsRecipeAstroProfileComplete($empty),
+        'EMPTY_RECIPE_STILL_DRAFTABLE');
     $profile=['version'=>'1','difficulty'=>'Intermédiaire',
         'category'=>'Accompagnement','tags'=>"riz\naccompagnement"];
     $posted['recipe_astro']=$profile;
