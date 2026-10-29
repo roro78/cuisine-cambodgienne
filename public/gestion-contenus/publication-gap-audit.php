@@ -338,6 +338,9 @@ function cmsAtelierBlueprintPreflight(array $record,array $catalog): array {
     $details=cmsAtelierPhaseDetailsClean(
         $record['atelier_phase_details']??null,is_array($fields)?$fields:[],$source);
     $detailsReady=cmsAtelierPhaseDetailsComplete($details);
+    $scriptDraft=cmsAtelierScriptsClean($record['atelier_scripts']??null,
+        is_array($fields)?$fields:[],$source,$details);
+    $scriptsReady=cmsAtelierScriptsDraftComplete($scriptDraft);
     return [
         'contract'=>'cdc-editorial-workshop-blueprint-preflight-v1',
         'source_version'=>$record['version']??null,
@@ -347,6 +350,9 @@ function cmsAtelierBlueprintPreflight(array $record,array $catalog): array {
         'ai_recipe_reference_consistent'=>$aiReferenceConsistent,
         'ready_for_blueprint_enrichment'=>$core&&$six&&$ref&&$aiReferenceConsistent,
         'phase_details_complete'=>$detailsReady,
+        'script_draft_count'=>count($scriptDraft['chapters']??[]),
+        'seven_scripts_drafted'=>$scriptsReady,
+        'ready_for_audio_review'=>$scriptsReady&&$core&&$six&&$ref&&$aiReferenceConsistent&&$detailsReady,
         'ready_for_scripts_drafting'=>$core&&$six&&$ref&&$aiReferenceConsistent&&$detailsReady,
         // C4C3B stores the six stable phase IDs and human additions,
         // but NEVER validates actual recipe quantities or scripts.

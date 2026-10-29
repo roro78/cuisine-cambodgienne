@@ -237,6 +237,8 @@ if($auth){
                         $createForm['atelier_reference']=$pendingContent['before_form']['atelier_reference']??null;
                     if($createKind==='atelier')
                         $createForm['atelier_phase_details']=$pendingContent['before_form']['atelier_phase_details']??null;
+                    if($createKind==='atelier')
+                        $createForm['atelier_scripts']=$pendingContent['before_form']['atelier_scripts']??null;
                     // Keep an explicit human planning date; the model cannot set one.
                     $createForm['target_date']=$pendingContent['before_form']['target_date']??'';
                 }
@@ -359,7 +361,8 @@ if($auth){
                         'culture_evidence'=>$_POST['culture_evidence']??null,
                         'technique_links'=>$_POST['technique_links']??null,
                         'atelier_reference'=>$_POST['atelier_reference']??null,
-                        'atelier_phase_details'=>$_POST['atelier_phase_details']??null
+                        'atelier_phase_details'=>$_POST['atelier_phase_details']??null,
+                        'atelier_scripts'=>$_POST['atelier_scripts']??null
                     ];
                     if($candidateToken!==''){
                         $pending=cmsAiContentPending($_SESSION,$candidateToken);
@@ -868,6 +871,10 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?= cmsAtelierPhaseDetailsHtml($createForm['atelier_phase_details']??null,
     is_array($createForm['fields']??null)?$createForm['fields']:[],
     $createForm['atelier_reference']??null) ?>
+<?= cmsAtelierScriptsHtml($createForm['atelier_scripts']??null,
+    is_array($createForm['fields']??null)?$createForm['fields']:[],
+    $createForm['atelier_reference']??null,
+    $createForm['atelier_phase_details']??null) ?>
 <?php endif; ?>
 <label>Notes de recherche privées (jamais publiées)
 <textarea name="research_note" rows="3" maxlength="3000"><?= cmsEsc((string)($createForm['research_note']??'')) ?></textarea></label>
@@ -916,7 +923,9 @@ Six phases distinctes :
 <strong><?= $workshopCheck['six_distinct_phases']?'oui':'non' ?></strong>.
 Six phases détaillées :
 <strong><?= $workshopCheck['phase_details_complete']?'oui':'non' ?></strong>.
-Chapitres audio approuvés : <strong>non, sept scripts requis</strong>.</p>
+Sept textes narratifs rédigés :
+<strong><?= $workshopCheck['seven_scripts_drafted']?'oui':'non' ?></strong>.
+Chapitres audio approuvés : <strong>non, visa humain requis</strong>.</p>
 <?php else: ?>
 <p class="small muted">Référence ou données incomplètes :
 corriger le brouillon avant de préparer un blueprint.</p>
