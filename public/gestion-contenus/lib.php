@@ -1258,6 +1258,10 @@ function cmsAtelierPhaseDetailsHtml(mixed $raw,array $fields,mixed $reference): 
     $reference=is_array($reference)?$reference:[];
     $slug=is_string($reference['recipeSlug']??null)?$reference['recipeSlug']:'';
     $hash=is_string($reference['catalogFingerprint']??null)?$reference['catalogFingerprint']:'';
+    // Keep the ORIGINAL source anchors if edits made the saved detail stale.
+    // A failed save is safer than silently dropping human safety guidance.
+    $boundSlug=is_string($raw['recipeSlug']??null)?$raw['recipeSlug']:$slug;
+    $boundHash=is_string($raw['catalogFingerprint']??null)?$raw['catalogFingerprint']:$hash;
     $existing=[];
     foreach(($raw['phases']??[]) as $entry)
         if(is_array($entry)&&is_int($entry['index']??null))$existing[$entry['index']]=$entry;
@@ -1268,8 +1272,8 @@ function cmsAtelierPhaseDetailsHtml(mixed $raw,array $fields,mixed $reference): 
         .'humains, liés aux titres et à l’empreinte de recette actuels. '
         .'Aucune narration ni publication automatique.</p>'
         .'<input type="hidden" name="atelier_phase_details[version]" value="1">'
-        .'<input type="hidden" name="atelier_phase_details[recipeSlug]" value="'.cmsEsc($slug).'">'
-        .'<input type="hidden" name="atelier_phase_details[catalogFingerprint]" value="'.cmsEsc($hash).'">';
+        .'<input type="hidden" name="atelier_phase_details[recipeSlug]" value="'.cmsEsc($boundSlug).'">'
+        .'<input type="hidden" name="atelier_phase_details[catalogFingerprint]" value="'.cmsEsc($boundHash).'">';
     $core=is_array($fields['phases']??null)?array_values($fields['phases']):[];
     if(count($core)!==6)
         $html.='<p class="small muted">Il faut exactement six chapitres enregistrés pour préparer toutes les phases.</p>';
@@ -1279,18 +1283,20 @@ function cmsAtelierPhaseDetailsHtml(mixed $raw,array $fields,mixed $reference): 
         $learning=is_string($phase['learning']??null)?$phase['learning']:'';
         if($title===''||$learning==='')continue;
         $stored=$existing[$i]??[];
-        if(($stored['sourceTitle']??$title)!==$title
-           ||($stored['sourceLearning']??$learning)!==$learning
-           ||($raw['recipeSlug']??$slug)!==$slug
-           ||($raw['catalogFingerprint']??$hash)!==$hash)
-            $stored=[];
+        $stale=($stored['sourceTitle']??$title)!==$title
+            ||($stored['sourceLearning']??$learning)!==$learning
+            ||$boundSlug!==$slug||$boundHash!==$hash;
         $base='atelier_phase_details[phases]['.$i.']';
         $html.='<details class="guided-group"><summary>'
             .($i+1).'. '.cmsEsc($title).' ('.cmsEsc(cmsAtelierPhaseIds()[$i]).')</summary>'
             .'<input type="hidden" name="'.$base.'[index]" value="'.$i.'">'
             .'<input type="hidden" name="'.$base.'[id]" value="'.cmsAtelierPhaseIds()[$i].'">'
-            .'<input type="hidden" name="'.$base.'[sourceTitle]" value="'.cmsEsc($title).'">'
-            .'<input type="hidden" name="'.$base.'[sourceLearning]" value="'.cmsEsc($learning).'">';
+            .'<input type="hidden" name="'.$base.'[sourceTitle]" value="'.cmsEsc($stored['sourceTitle']??$title).'">'
+            .'<input type="hidden" name="'.$base.'[sourceLearning]" value="'.cmsEsc($stored['sourceLearning']??$learning).'">';
+        if($stale && $stored!==[])
+            $html.='<p class="small muted" role="alert">La recette ou le chapitre source a changé. '
+                .'Ces consignes sont périmées : effacez tous les détails de cette '
+                .'phase avant de les réécrire et de les enregistrer.</p>';
         $entryFields=['minutes'=>'Durée pratique (minutes, entier 1 à 240)',
             'ingredientNames'=>'Ingrédients concernés (un par ligne ; à vérifier face à la recette)',
             'actions'=>'Gestes précis (un par ligne)',
