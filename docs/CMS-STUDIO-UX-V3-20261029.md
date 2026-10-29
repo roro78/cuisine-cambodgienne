@@ -98,3 +98,30 @@ Le navigateur simulé ne remplace pas cette réception Android physique sur OVH.
 
 Les liens PR, SHA fusionné, CI finale et manifeste exact figurent dans le rapport
 accompagnant le paquet local de livraison. Aucun transfert OVH dans cette mission.
+
+
+## V3.1 — Reprendre les modifications dès l'ouverture (29/10/2026)
+
+Retour de réception sur OVH : pour retrouver un brouillon de travail, l'accès
+restait relégué en bas de la fiche. Le correctif V3.1 modifie uniquement la
+présentation et les liens de navigation du Studio :
+
+- encart « Modifications en cours » en tête de fiche et des brouillons enregistrés ;
+- accès principal « Reprendre le brouillon de travail » depuis l'atelier publié,
+  ou directement depuis sa carte dans la bibliothèque quand un brouillon lié existe ;
+- si le brouillon lié n'existe pas encore, formulaire de transition
+  historique en haut de fiche (confirmation, protection de version,
+  provenance et CSRF inchangés) ;
+- cas « Source à vérifier » clairement distingué, sans rendre la sauvegarde possible ;
+- accès secondaire à l'historique et à l'aperçu, sans confondre modification,
+  approbation humaine et publication.
+
+Tests navigateur étendus aux cinq familles, à l'encart d'atelier, à la reprise
+d'un brouillon lié depuis la bibliothèque, à la conservation du même identifiant
+et aux protections de sauvegarde. Aucun schéma, brouillon, MP3, index, publication,
+workflows ou API modifié.
+
+**Livraison OVH V3.1 : uniquement** gestion-contenus/index.php (après CI
+et vérification de la PR). Sauvegarde et empreintes du fichier distant obligatoires
+avant transfert. La fusion GitHub ne déploie pas le site. Recette Android réelle
+à refaire sur la nouvelle interface.

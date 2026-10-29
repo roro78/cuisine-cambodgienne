@@ -46,11 +46,16 @@ try{
     await page.goto(origin+'/gestion-contenus/?id='+encodeURIComponent(id));
     assert.equal(await page.locator('#cms-fields').count(),1,id);
     await sections();await noOverflow(id);
+    assert.equal(await page.locator('#cms-work-resume').count(),1,'resume card for '+id);
+    assert.equal(await page.locator('#cms-work-resume [data-work-resume-action], #cms-work-resume [data-studio-transition] button[name=studio_transition]').count(),1,'primary action for '+id);
   }
   await page.goto(origin+'/gestion-contenus/?kind=atelier');
   const link=page.locator(`a[href*="${encodeURIComponent(fixture.id)}"]`).first();
   assert.equal(await link.count(),1,'library workshop entry');await link.click();
   await sections();await noOverflow('published workshop');
+  assert.equal(await page.locator('#cms-work-resume [data-studio-transition]').count(),1,'transition visible at top');
+  assert.ok(await page.locator('#cms-work-resume').evaluate(el=>el.getBoundingClientRect().top) <
+    await page.locator('#cms-quality').evaluate(el=>el.getBoundingClientRect().top),'transition before quality');
   await page.locator('.editor-shortcuts a[href="#cms-quality"]').click();
   assert.equal(await page.locator('[data-coral-prereception]').count(),1);
   assert.equal(await page.locator('[data-coral-prereception] li').count(),9);
@@ -67,6 +72,8 @@ try{
   assert.equal(await hash(fixture.legacy),original,'immutable historical bytes');
   assert.equal(await page.locator('#cms-fields').count(),0,'one active editor');
   assert.equal(await page.locator('#cms-new-editor').count(),1);
+  assert.match(await page.locator('#cms-work-resume').innerText(),/Modifications en cours/,'linked draft resume banner');
+  assert.equal(await page.locator('#cms-work-resume a[data-work-resume-action][href="#cms-new-content"]').count(),1,'linked draft edit CTA');
   assert.equal(await page.locator('[data-atelier-seven-scripts] textarea[name$="[text]"]').count(),7);
   assert.equal(await page.locator('#cms-quality [data-coral-prereception]').count(),1);
   assert.equal(await page.locator('[data-coral-human-visas]').count(),1);
@@ -95,8 +102,11 @@ try{
   assert.ok(!record.atelier_scripts || record.atelier_scripts.chapters.every(c=>!c.text),'no invented narration');
   assert.equal(await hash(fixture.legacy),original);
   await page.goto(origin+'/gestion-contenus/?kind=atelier&status=draft');
-  const card=page.locator('.card').filter({has:page.locator(`a[href*="${encodeURIComponent(fixture.id)}"]`)});
+  const card=page.locator('.card').filter({has:page.locator(`a[data-library-resume][href*="cid=${cid}"]`)});
+  assert.equal(await card.count(),1,'library has one direct link to existing linked draft');
   assert.match(await card.innerText(),/v2/,'library displays current bound version');
+  await card.locator('[data-library-resume]').click();
+  assert.equal(new URL(page.url()).searchParams.get('cid'),cid,'library direct CTA reopens same draft');
   await page.goto(origin+'/gestion-contenus/?id='+encodeURIComponent(fixture.id));
   assert.equal(new URL(page.url()).searchParams.get('cid'),cid,'published entry reopens bound draft');
   await page.locator('a[href*="history=1"]').first().click();
