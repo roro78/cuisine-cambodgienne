@@ -875,12 +875,31 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <p><strong>Angle :</strong> <?= cmsEsc($creation['angle']) ?></p>
 <?= cmsGuidedPreviewHtml('fiche',$creation['fields']) ?>
 <?php if($creation['kind']==='recette'): ?>
-<?php $recipeProfile=$creation['recipe_astro']??null; ?>
+<?php $recipeProjection=null;
+try{$recipeProjection=cmsRecipeAstroDraftProjection($creation);}
+catch(Throwable $ignored){$recipeProjection=null;}
+$recipeProfile=$creation['recipe_astro']??null; ?>
 <p class="small muted">Profil Astro complémentaire : <strong><?=
  cmsRecipeAstroProfileComplete($recipeProfile)
     ?'difficulté, catégorie et mots-clés renseignés'
     :'difficulté, catégorie ou mots-clés encore à compléter' ?></strong>.
 Cela ne vaut pas validation d’une recette publiable.</p>
+<?php if($recipeProjection!==null): ?>
+<details class="guided-group" data-recipe-astro-projection>
+<summary>Projection typée Recipe — contrôle technique privé</summary>
+<p class="small muted">Une conversion non publiée a pu structurer
+<?= count($recipeProjection['draft']['ingredients']) ?> ingrédient(s),
+<?= count($recipeProjection['draft']['steps']) ?> étape(s) et
+<?= count($recipeProjection['draft']['tags']) ?> mot(s)-clé(s).
+Aucun média ni droit de publication n’est associé à cette projection.</p>
+<ul><?php foreach($recipeProjection['review_points'] as $point): ?>
+<li><?= cmsEsc($point) ?></li>
+<?php endforeach; ?></ul>
+</details>
+<?php elseif(cmsRecipeAstroProfileComplete($recipeProfile)): ?>
+<p class="small muted">Projection Recipe bloquée : corrigez les quantités,
+les champs ou la structure de la recette avant une future prévisualisation.</p>
+<?php endif; ?>
 <?php endif; ?>
 <?php if($creation['similar_titles']): ?>
 <div class="note"><strong>Sujets proches à examiner :</strong>

@@ -77,6 +77,77 @@ function cmsAstroPublicationCoverage(): array {
  * turn this diagnostic into a publication authorization. This function is
  * read-only and deliberately has NO "approve" operation.
  */
+
+/**
+ * C4B2 read-only TYPED projection from a saved private recipe into the
+ * minimal native Recipe shape. Never writes Astro, marks approval or publishes.
+ * No media, research notes, provider metadata or secrets are projected.
+ */
+function cmsRecipeAstroDraftProjection(array $record): array {
+    if(($record['kind']??null)!=='recette'
+        || !is_array($record['fields']??null)
+        || !is_string($record['summary']??null)
+        || !cmsCreationReady('recette',$record['fields'],$record['summary'])
+        || !cmsRecipeAstroProfileComplete($record['recipe_astro']??null))
+        throw new InvalidArgumentException('RECIPE_PROJECTION_INCOMPLETE');
+    $profile=cmsRecipeAstroProfileClean($record['recipe_astro']);
+    $fields=$record['fields'];
+    if(!is_string($record['slug']??null)
+        || !is_string($record['title']??null)
+        || cmsCreationSlug($record['title'])!==$record['slug'])
+        throw new InvalidArgumentException('RECIPE_PROJECTION_IDENTITY');
+    $ingredients=[];$review=[];
+    foreach($fields['ingredients'] as $index=>$row){
+        if(!is_array($row))throw new InvalidArgumentException('RECIPE_PROJECTION_INGREDIENT');
+        $name=cmsCreationText($row['name']??null,5000);
+        $unit=cmsCreationText($row['unit']??null,100);
+        $rawQuantity=cmsCreationText($row['quantity']??null,100);
+        if($name==='')throw new InvalidArgumentException('RECIPE_PROJECTION_INGREDIENT');
+        $entry=['name'=>$name];
+        if($rawQuantity===''){
+            $review[]='Quantité de l’ingrédient '.($index+1).' à vérifier';
+        }else{
+            if(!preg_match('/^[0-9]{1,6}(?:[.,][0-9]{1,3})?$/D',$rawQuantity))
+                throw new InvalidArgumentException('RECIPE_PROJECTION_QUANTITY');
+            $number=(float)str_replace(',','.',$rawQuantity);
+            if(!is_finite($number)||$number<=0||$number>100000)
+                throw new InvalidArgumentException('RECIPE_PROJECTION_QUANTITY');
+            $entry['quantity']=floor($number)===$number?(int)$number:$number;
+        }
+        if($unit!=='')$entry['unit']=$unit;
+        $ingredients[]=$entry;
+    }
+    $steps=[];
+    foreach($fields['steps'] as $step){
+        if(!is_array($step)||!is_string($step['title']??null)
+            || !is_string($step['text']??null)
+            || trim($step['title'])===''||trim($step['text'])==='')
+            throw new InvalidArgumentException('RECIPE_PROJECTION_STEP');
+        $steps[]=['title'=>$step['title'],'text'=>$step['text']];
+    }
+    if(!is_array($fields['equipment']??null))
+        throw new InvalidArgumentException('RECIPE_PROJECTION_EQUIPMENT');
+    $recipe=[
+        'slug'=>$record['slug'],'title'=>$record['title'],
+        'intro'=>$fields['intro'],'description'=>$fields['description'],
+        'context'=>$fields['context'],'baseServings'=>(int)$fields['baseServings'],
+        'prepTime'=>$fields['prepTime'],'cookTime'=>$fields['cookTime'],
+        'difficulty'=>$profile['difficulty'],'category'=>$profile['category'],
+        'ingredients'=>$ingredients,'steps'=>$steps,
+        'equipment'=>$fields['equipment'],'tags'=>$profile['tags']
+    ];
+    $review[]='Vérifier les étapes et sous-préparations avec les quantités de la recette';
+    $review[]='Compléter les liens, les repères culinaires et les visuels autorisés';
+    $review[]='Réception éditoriale et publication explicitement interdites à ce stade';
+    return [
+        'contract'=>'cdc-editorial-recipe-astro-projection-v1',
+        'native_model'=>'src/data/recipes.ts · Recipe',
+        'source_version'=>$record['version']??null,
+        'draft'=>$recipe,'review_points'=>$review,
+        'requires_human_review'=>true,'publication_ready'=>false
+    ];
+}
+
 function cmsAstroPublicationGapReport(array $record): array {
     $kind=$record['kind']??null;
     $coverage=cmsAstroPublicationCoverage();
