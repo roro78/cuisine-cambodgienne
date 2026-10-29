@@ -956,6 +956,109 @@ function cmsRecipeAstroDetailsHtml(mixed $raw,array $fields): string {
     return $html.'</details>';
 }
 
+
+/**
+ * C4C1: human-only internal documentary evidence for cultural Carnets.
+ * Evidence stays next to the private draft; never part of the provider
+ * schema, the public CultureArticle projection or public HTML.
+ */
+function cmsCultureEvidenceClean(mixed $raw): ?array {
+    if($raw===null)return null;
+    if(!is_array($raw)||array_diff(array_keys($raw),['version','items'])
+       ||!in_array($raw['version']??null,[1,'1'],true))
+        throw new InvalidArgumentException('CULTURE_EVIDENCE_SCHEMA');
+    $items=$raw['items']??[];
+    if(!is_array($items)||!array_is_list($items)||count($items)>12)
+        throw new InvalidArgumentException('CULTURE_EVIDENCE_SCHEMA');
+    $out=[];$seen=[];
+    foreach($items as $item){
+        if(!is_array($item)||array_diff(array_keys($item),
+            ['claim','source_label','source_url','status','checked_on','note']))
+            throw new InvalidArgumentException('CULTURE_EVIDENCE_SCHEMA');
+        $entry=[];
+        foreach(['claim'=>500,'source_label'=>200,'source_url'=>700,
+            'checked_on'=>10,'note'=>700] as $field=>$length)
+            $entry[$field]=cmsCreationText($item[$field]??'', $length);
+        $entry['status']=cmsCreationText($item['status']??'pending',12);
+        if(!in_array($entry['status'],['pending','checked','disputed'],true))
+            throw new InvalidArgumentException('CULTURE_EVIDENCE_STATUS');
+        // Blank UI rows may be submitted; they are never stored.
+        if($entry['claim']===''&&$entry['source_label']===''
+            &&$entry['source_url']===''&&$entry['checked_on']===''
+            &&$entry['note']===''&&$entry['status']==='pending')continue;
+        if($entry['claim']==='')
+            throw new InvalidArgumentException('CULTURE_EVIDENCE_CLAIM');
+        if(($entry['source_label']==='')!==($entry['source_url']===''))
+            throw new InvalidArgumentException('CULTURE_EVIDENCE_SOURCE');
+        if($entry['source_url']!==''){
+            $url=parse_url($entry['source_url']);
+            if(!is_array($url)||($url['scheme']??null)!=='https'
+                ||!is_string($url['host']??null)
+                ||!preg_match('/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/iD',$url['host'])
+                ||isset($url['user'])||isset($url['pass'])||isset($url['port'])
+                ||isset($url['fragment']))
+                throw new InvalidArgumentException('CULTURE_EVIDENCE_SOURCE');
+        }
+        if($entry['checked_on']!==''){
+            if(!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/D',$entry['checked_on'])
+                ||!checkdate((int)substr($entry['checked_on'],5,2),
+                    (int)substr($entry['checked_on'],8,2),
+                    (int)substr($entry['checked_on'],0,4)))
+                throw new InvalidArgumentException('CULTURE_EVIDENCE_DATE');
+        }
+        // A manual "checked" status is evidence workflow metadata, never a visa.
+        if($entry['status']==='checked'
+            &&($entry['source_url']===''||$entry['checked_on']===''))
+            throw new InvalidArgumentException('CULTURE_EVIDENCE_NOT_CHECKED');
+        if($entry['status']==='disputed'&&$entry['note']==='')
+            throw new InvalidArgumentException('CULTURE_EVIDENCE_DISPUTE_NOTE');
+        $fold=function_exists('mb_strtolower')
+            ?mb_strtolower($entry['claim'],'UTF-8'):strtolower($entry['claim']);
+        $key=hash('sha256',$fold."\n".$entry['source_url']);
+        if(isset($seen[$key]))throw new InvalidArgumentException('CULTURE_EVIDENCE_DUPLICATE');
+        $seen[$key]=true;$out[]=$entry;
+    }
+    return ['version'=>1,'items'=>$out];
+}
+/** The shared Studio exposes only the private research inputs to the owner. */
+function cmsCultureEvidenceHtml(mixed $raw=null): string {
+    $rows=is_array($raw)&&is_array($raw['items']??null)
+        ?$raw['items']:[];
+    if(count($rows)>12)$rows=array_slice($rows,0,12);
+    $count=min(12,max(3,count($rows)+1));
+    $html='<details class="guided-group" data-culture-evidence>'
+        .'<summary>Dossier documentaire privé — sources et vérifications</summary>'
+        .'<p class="small muted">Ces références sont exclusivement internes. '
+        .'Elles ne figurent jamais dans le texte public du Carnet. '
+        .'Une mention « vérifié » ne publie rien et nécessite toujours '
+        .'une relecture humaine.</p>'
+        .'<input type="hidden" name="culture_evidence[version]" value="1">';
+    foreach(range(0,$count-1) as $i){
+        $item=is_array($rows[$i]??null)?$rows[$i]:[];
+        $html.='<fieldset><legend>Vérification '.($i+1).'</legend>';
+        foreach(['claim'=>'Affirmation ou point à vérifier',
+            'source_label'=>'Nom interne de la référence',
+            'source_url'=>'Lien HTTPS de recherche (interne uniquement)',
+            'checked_on'=>'Date de vérification AAAA-MM-JJ',
+            'note'=>'Doutes, nuances ou conclusions privées'] as $name=>$label){
+            $value=is_string($item[$name]??null)?$item[$name]:'';
+            $html.='<label>'.cmsEsc($label)
+                .'<textarea rows="2" maxlength="'.($name==='source_url'?700:($name==='source_label'?200:($name==='checked_on'?10:($name==='claim'?500:700)))).'"'
+                .' name="culture_evidence[items]['.$i.']['.$name.']">'
+                .cmsEsc($value).'</textarea></label>';
+        }
+        $selected=is_string($item['status']??null)?$item['status']:'pending';
+        $html.='<label>État de vérification<select'
+            .' name="culture_evidence[items]['.$i.'][status]">';
+        foreach(['pending'=>'À vérifier','checked'=>'Vérifié manuellement',
+            'disputed'=>'Contesté ou incertain'] as $value=>$label)
+            $html.='<option value="'.$value.'"'
+                .($selected===$value?' selected':'').'>'.$label.'</option>';
+        $html.='</select></label></fieldset>';
+    }
+    return $html.'</details>';
+}
+
 function cmsCreationKinds(): array {
     return ['recette'=>'Recette','atelier'=>'Atelier','culture'=>'Carnet culturel',
         'ingredient'=>'Fiche ingrédient','technique'=>'Fiche technique'];
@@ -1187,6 +1290,13 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
             ?cmsRecipeAstroDetailsClean(
                 $posted['recipe_astro_details']??($previous['recipe_astro_details']??null),$fields)
             :null;
+        if($kind!=='culture' && isset($posted['culture_evidence']))
+            throw new InvalidArgumentException('CULTURE_EVIDENCE_SCHEMA');
+        // Optional, append-only human evidence. Legacy forms preserve it.
+        $cultureEvidence=$kind==='culture'
+            ?cmsCultureEvidenceClean(
+                $posted['culture_evidence']??($previous['culture_evidence']??null))
+            :null;
         if($id!==null && !$previous)throw new RuntimeException('CREATION_NOT_FOUND');
         if($id===null && $expected!==0)throw new RuntimeException('CREATION_CONFLICT');
         if($previous && ($previous['version']!==$expected
@@ -1230,6 +1340,7 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
         ];
         if($recipeAstro!==null)$record['recipe_astro']=$recipeAstro;
         if($recipeDetails!==null)$record['recipe_astro_details']=$recipeDetails;
+        if($cultureEvidence!==null)$record['culture_evidence']=$cultureEvidence;
         if($origin==='ai' && $provenance!==null)$record['ai_brief']=$provenance;
         if($origin==='ai' && $contentProvenance!==null){
             $record['ai_content']=$contentProvenance;
@@ -1571,6 +1682,7 @@ function cmsCreationPosted(array $raw): array {
     $posted['fields']=$raw['fields']??[];
     $posted['recipe_astro']=$raw['recipe_astro']??null;
     $posted['recipe_astro_details']=$raw['recipe_astro_details']??null;
+    $posted['culture_evidence']=$raw['culture_evidence']??null;
     return $posted;
 }
 function cmsAiContentSettings(array $cfg): ?array {

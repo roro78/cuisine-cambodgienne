@@ -164,6 +164,57 @@ function cmsRecipeAstroDraftProjection(array $record): array {
     ];
 }
 
+
+/**
+ * A read-only cultural structural draft. The public CultureArticle currently
+ * requires media and sources, so this is NEVER a publishable object.
+ * Internal evidence and links must not cross this boundary.
+ */
+function cmsCultureAstroDraftProjection(array $record): array {
+    if(($record['kind']??null)!=='culture'
+        || !is_array($record['fields']??null)
+        || !is_string($record['summary']??null)
+        || !cmsCreationReady('culture',$record['fields'],$record['summary']))
+        throw new InvalidArgumentException('CULTURE_PROJECTION_INCOMPLETE');
+    if(!is_string($record['slug']??null)
+        || !is_string($record['title']??null)
+        || cmsCreationSlug($record['title'])!==$record['slug'])
+        throw new InvalidArgumentException('CULTURE_PROJECTION_IDENTITY');
+    $fields=$record['fields'];
+    $sections=[];
+    foreach($fields['sections'] as $row){
+        if(!is_array($row)||!is_string($row['title']??null)
+            ||!is_array($row['paragraphs']??null)
+            ||trim($row['title'])===''||$row['paragraphs']===[])
+            throw new InvalidArgumentException('CULTURE_PROJECTION_SECTION');
+        $paras=[];
+        foreach($row['paragraphs'] as $paragraph){
+            if(!is_string($paragraph)||trim($paragraph)==='')
+                throw new InvalidArgumentException('CULTURE_PROJECTION_SECTION');
+            $paras[]=$paragraph;
+        }
+        $sections[]=['title'=>$row['title'],'paragraphs'=>$paras];
+    }
+    // No sources, image, source URL, private claim, note or approval is exported.
+    return [
+        'contract'=>'cdc-editorial-culture-astro-draft-v1',
+        'native_model'=>'src/data/culture.ts · CultureArticle',
+        'source_version'=>$record['version']??null,
+        'draft'=>[
+            'slug'=>$record['slug'],'title'=>$record['title'],
+            'eyebrow'=>$fields['eyebrow'],'intro'=>$fields['intro'],
+            'seoDescription'=>$fields['seoDescription'],
+            'readingTime'=>$fields['readingTime'],'sections'=>$sections
+        ],
+        'pending_gates'=>[
+            'Vérifier manuellement les faits et nuances dans le dossier privé',
+            'Valider médias, droits et légendes avant toute conversion complète',
+            'Ne pas afficher de bibliographie ni de sources de recherche sur la page'
+        ],
+        'requires_human_review'=>true,'publication_ready'=>false
+    ];
+}
+
 function cmsAstroPublicationGapReport(array $record): array {
     $kind=$record['kind']??null;
     $coverage=cmsAstroPublicationCoverage();
@@ -178,6 +229,11 @@ function cmsAstroPublicationGapReport(array $record): array {
         }catch(Throwable $ignored){$coreReady=false;}
     }
     $model=$coverage[$kind];
+    $cultureEvidence=$kind==='culture'
+        ?cmsCultureEvidenceClean($record['culture_evidence']??null):null;
+    $cultureCount=count($cultureEvidence['items']??[]);
+    $cultureChecked=count(array_filter($cultureEvidence['items']??[],
+        static fn(array $item):bool=>$item['status']==='checked'));
     $profileComplete=$kind==='recette'
         ?cmsRecipeAstroProfileComplete($record['recipe_astro']??null):null;
     $remaining=$model['not_covered'];
@@ -192,6 +248,8 @@ function cmsAstroPublicationGapReport(array $record): array {
         'native_model'=>$model['model'],
         'form_core_complete'=>$coreReady,
         'recipe_astro_profile_complete'=>$profileComplete,
+        'culture_evidence_count'=>$kind==='culture'?$cultureCount:null,
+        'culture_claims_marked_checked'=>$kind==='culture'?$cultureChecked:null,
         'not_covered'=>$remaining,
         'pending_gates'=>array_merge($model['gates'],[
             'Validation éditoriale humaine distincte du statut draft/review',
