@@ -60,6 +60,8 @@ jobs:
           php tests/php/editorial-recipe-astro-details-smoke.php
           php -l tests/php/editorial-culture-evidence-smoke.php
           php tests/php/editorial-culture-evidence-smoke.php
+          php -l tests/php/editorial-native-ingredient-technique-smoke.php
+          php tests/php/editorial-native-ingredient-technique-smoke.php
           php -l tests/php/editorial-ai-brief-smoke.php
           php tests/php/editorial-ai-brief-smoke.php dist
           php -l tests/php/editorial-ai-content-contract-smoke.php

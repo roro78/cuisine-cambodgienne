@@ -215,6 +215,94 @@ function cmsCultureAstroDraftProjection(array $record): array {
     ];
 }
 
+
+/**
+ * C4C2: structural projections, NOT full native records. Public media,
+ * rights, researched private notes and AI provenance are deliberately absent.
+ */
+function cmsIngredientAstroDraftProjection(array $record): array {
+    if(($record['kind']??null)!=='ingredient'
+        ||!is_array($record['fields']??null)
+        ||!is_string($record['summary']??null)
+        ||!cmsCreationReady('ingredient',$record['fields'],$record['summary']))
+        throw new InvalidArgumentException('INGREDIENT_PROJECTION_INCOMPLETE');
+    if(!is_string($record['title']??null)
+        ||($record['slug']??null)!==cmsCreationSlug($record['title']))
+        throw new InvalidArgumentException('INGREDIENT_PROJECTION_IDENTITY');
+    $fields=$record['fields'];
+    $scalar=['intro','seoDescription','role'];
+    $lists=['deepDive','profile','uses','tips','choose','keep','pairings','mistakes','seoKeywords'];
+    $draft=['slug'=>$record['slug'],'title'=>$record['title']];
+    foreach($scalar as $key){
+        if(!is_string($fields[$key]??null)||trim($fields[$key])==='')
+            throw new InvalidArgumentException('INGREDIENT_PROJECTION_FIELDS');
+        $draft[$key]=$fields[$key];
+    }
+    foreach($lists as $key){
+        if(!is_array($fields[$key]??null)||!array_is_list($fields[$key])
+            ||count($fields[$key])<1||count($fields[$key])>40)
+            throw new InvalidArgumentException('INGREDIENT_PROJECTION_LIST');
+        foreach($fields[$key] as $text)
+            if(!is_string($text)||trim($text)==='')
+                throw new InvalidArgumentException('INGREDIENT_PROJECTION_LIST');
+        $draft[$key]=$fields[$key];
+    }
+    return ['contract'=>'cdc-editorial-ingredient-astro-draft-v1',
+        'native_model'=>'src/data/ingredients.ts · IngredientGuide',
+        'source_version'=>$record['version']??null,'draft'=>$draft,
+        'pending_gates'=>[
+            'Vérifier les conseils de choix, conservation et substitutions',
+            'Contrôler les photographies, droits, texte alternatif et dimensions',
+            'Valider les faits et l’absence de promesses médicales'
+        ],
+        'requires_human_review'=>true,'publication_ready'=>false];
+}
+function cmsTechniqueAstroDraftProjection(array $record): array {
+    if(($record['kind']??null)!=='technique'
+        ||!is_array($record['fields']??null)
+        ||!is_string($record['summary']??null)
+        ||!cmsCreationReady('technique',$record['fields'],$record['summary']))
+        throw new InvalidArgumentException('TECHNIQUE_PROJECTION_INCOMPLETE');
+    if(!is_string($record['title']??null)
+        ||($record['slug']??null)!==cmsCreationSlug($record['title']))
+        throw new InvalidArgumentException('TECHNIQUE_PROJECTION_IDENTITY');
+    $fields=$record['fields'];
+    $draft=['slug'=>$record['slug'],'title'=>$record['title']];
+    foreach(['description','introduction','preparation','yieldLabel'] as $key){
+        if(!is_string($fields[$key]??null)||trim($fields[$key])==='')
+            throw new InvalidArgumentException('TECHNIQUE_PROJECTION_FIELDS');
+        $draft[$key]=$fields[$key];
+    }
+    if(!is_array($fields['supplies']??null)||!array_is_list($fields['supplies']))
+        throw new InvalidArgumentException('TECHNIQUE_PROJECTION_SUPPLIES');
+    $draft['supplies']=$fields['supplies'];
+    foreach(['steps'=>['title','text'],'alternatives'=>['title','text'],
+        'questions'=>['question','answer']] as $name=>$required){
+        $rows=$fields[$name]??null;
+        if(!is_array($rows)||!array_is_list($rows)||count($rows)<1)
+            throw new InvalidArgumentException('TECHNIQUE_PROJECTION_ROWS');
+        foreach($rows as $row)
+            if(!is_array($row)||array_diff(array_keys($row),$required)
+                ||!is_string($row[$required[0]]??null)
+                ||!is_string($row[$required[1]]??null)
+                ||trim($row[$required[0]])===''||trim($row[$required[1]])==='')
+                throw new InvalidArgumentException('TECHNIQUE_PROJECTION_ROWS');
+        $draft[$name]=$rows;
+    }
+    $links=cmsTechniqueLinksClean($record['technique_links']??null);
+    $draft['recipeSlugs']=$links['recipeSlugs']??[];
+    if(($links['workshopSlug']??'')!=='')$draft['workshopSlug']=$links['workshopSlug'];
+    return ['contract'=>'cdc-editorial-technique-astro-draft-v1',
+        'native_model'=>'src/data/recipeTechniques.ts · RecipeTechniqueGuide',
+        'source_version'=>$record['version']??null,'draft'=>$draft,
+        'pending_gates'=>[
+            'Revalider les liens et empreintes du catalogue à la publication',
+            'Vérifier la sécurité des gestes et les alternatives',
+            'Contrôler le visuel, les droits et la cohérence culinaire'
+        ],
+        'requires_human_review'=>true,'publication_ready'=>false];
+}
+
 function cmsAstroPublicationGapReport(array $record): array {
     $kind=$record['kind']??null;
     $coverage=cmsAstroPublicationCoverage();
@@ -232,6 +320,8 @@ function cmsAstroPublicationGapReport(array $record): array {
     $cultureEvidence=$kind==='culture'
         ?cmsCultureEvidenceClean($record['culture_evidence']??null):null;
     $cultureCount=count($cultureEvidence['items']??[]);
+    $techniqueLinks=$kind==='technique'
+        ?cmsTechniqueLinksClean($record['technique_links']??null):null;
     $cultureChecked=count(array_filter($cultureEvidence['items']??[],
         static fn(array $item):bool=>$item['status']==='checked'));
     $profileComplete=$kind==='recette'
@@ -249,6 +339,7 @@ function cmsAstroPublicationGapReport(array $record): array {
         'form_core_complete'=>$coreReady,
         'recipe_astro_profile_complete'=>$profileComplete,
         'culture_evidence_count'=>$kind==='culture'?$cultureCount:null,
+        'technique_recipe_links_count'=>$kind==='technique'?count($techniqueLinks['recipeSlugs']??[]):null,
         'culture_claims_marked_checked'=>$kind==='culture'?$cultureChecked:null,
         'not_covered'=>$remaining,
         'pending_gates'=>array_merge($model['gates'],[

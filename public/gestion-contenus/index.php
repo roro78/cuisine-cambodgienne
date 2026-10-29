@@ -231,6 +231,8 @@ if($auth){
                         $createForm['recipe_astro_details']=$pendingContent['before_form']['recipe_astro_details']??null;
                     if($createKind==='culture')
                         $createForm['culture_evidence']=$pendingContent['before_form']['culture_evidence']??null;
+                    if($createKind==='technique')
+                        $createForm['technique_links']=$pendingContent['before_form']['technique_links']??null;
                     // Keep an explicit human planning date; the model cannot set one.
                     $createForm['target_date']=$pendingContent['before_form']['target_date']??'';
                 }
@@ -350,7 +352,8 @@ if($auth){
                         'fields'=>$_POST['fields']??null,
                         'recipe_astro'=>$_POST['recipe_astro']??null,
                         'recipe_astro_details'=>$_POST['recipe_astro_details']??null,
-                        'culture_evidence'=>$_POST['culture_evidence']??null
+                        'culture_evidence'=>$_POST['culture_evidence']??null,
+                        'technique_links'=>$_POST['technique_links']??null
                     ];
                     if($candidateToken!==''){
                         $pending=cmsAiContentPending($_SESSION,$candidateToken);
@@ -851,6 +854,9 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?php if($createKind==='culture'): ?>
 <?= cmsCultureEvidenceHtml($createForm['culture_evidence']??null) ?>
 <?php endif; ?>
+<?php if($createKind==='technique'): ?>
+<?= cmsTechniqueLinksHtml($createForm['technique_links']??null) ?>
+<?php endif; ?>
 <label>Notes de recherche privées (jamais publiées)
 <textarea name="research_note" rows="3" maxlength="3000"><?= cmsEsc((string)($createForm['research_note']??'')) ?></textarea></label>
 <label>Date cible du calendrier éditorial (facultative)
@@ -885,6 +891,24 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <p><?= cmsEsc($creation['summary']) ?></p>
 <p><strong>Angle :</strong> <?= cmsEsc($creation['angle']) ?></p>
 <?= cmsGuidedPreviewHtml('fiche',$creation['fields']) ?>
+<?php if($creation['kind']==='ingredient' || $creation['kind']==='technique'): ?>
+<?php $nativeProjection=null;
+try{
+    $nativeProjection=$creation['kind']==='ingredient'
+        ?cmsIngredientAstroDraftProjection($creation)
+        :cmsTechniqueAstroDraftProjection($creation);
+}catch(Throwable $ignored){$nativeProjection=null;} ?>
+<details class="guided-group" data-native-draft-projection>
+<summary>Structure Astro privée — <?= cmsEsc(cmsCreationKinds()[$creation['kind']]) ?></summary>
+<p class="small muted"><?= $nativeProjection!==null
+    ?'Les champs éditoriaux sont structurés ; médias, droits et validation restent requis.'
+    :'Champs du brouillon incomplets. Complétez le formulaire avant vérification.' ?></p>
+<?php if($nativeProjection!==null): ?>
+<p class="small muted">Publication autorisée : non. Aucune création de page
+ ni modification d’un contenu publié.</p>
+<?php endif; ?>
+</details>
+<?php endif; ?>
 <?php if($creation['kind']==='culture'): ?>
 <?php $carnetProjection=null;
 try{$carnetProjection=cmsCultureAstroDraftProjection($creation);}
