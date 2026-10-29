@@ -1835,7 +1835,7 @@ document.querySelectorAll('[data-visual-preview]').forEach(panel=>{
         // published DOM. Refuse a guessed replacement rather than patching
         // the wrong element even when its text happens to be unique.
         if(item.path!=='title' && (item.from.trim().length<12
-          || /^\\d+(?:[.,]\\d+)?$/.test(item.from.trim()))){missing++;continue;}
+          || /^\d+(?:[.,]\d+)?$/.test(item.from.trim()))){missing++;continue;}
         let found;
         if(item.path==='title'){
           const heading=main.querySelector('h1');
