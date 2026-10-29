@@ -5,19 +5,19 @@ import SiteFooter from '../../../components/SiteFooter.astro';
 import { recipes } from '../../../data/recipes';
 import CookingWorkshopAudio from '../../../components/CookingWorkshopAudio.astro';
 import type { RecipeIngredient } from '../../../data/recipes';
-import lokLak from '../../../data/atelier-recette-guides/lok-lak.json';
-import samlorMachu from '../../../data/atelier-recette-guides/samlor-machu.json';
-import numBanhChok from '../../../data/atelier-recette-guides/num-banh-chok.json';
-import kuyTeav from '../../../data/atelier-recette-guides/kuy-teav.json';
-import baiSachChrouk from '../../../data/atelier-recette-guides/bai-sach-chrouk.json';
+import { releasedCookingWorkshopGuides } from '../../../data/cookingWorkshopGuides';
+import { getWorkshopPresentation } from '../../../data/workshopPresentation';
 
+/** One static Astro layout for every released cooking workshop, including Kroeung. */
 export function getStaticPaths() {
-  // Astro hoists getStaticPaths: local variables in component frontmatter are not available here.
-  const guides = [lokLak, samlorMachu, numBanhChok, kuyTeav, baiSachChrouk];
-  return guides.map((guide) => ({ params: { slug: guide.slug }, props: { guide } }));
+  return releasedCookingWorkshopGuides.map((guide) => ({
+    params: { slug: getWorkshopPresentation(guide).publicSlug },
+    props: { guide }
+  }));
 }
-type Guide = typeof lokLak | typeof samlorMachu | typeof numBanhChok | typeof kuyTeav | typeof baiSachChrouk;
+type Guide = (typeof releasedCookingWorkshopGuides)[number];
 const { guide } = Astro.props as { guide: Guide };
+const presentation = getWorkshopPresentation(guide);
 const recipe = recipes.find((item) => item.slug === guide.sourceRecipeSlug);
 if (!recipe) throw new Error('Source de recette manquante pour atelier complet : ' + guide.sourceRecipeSlug);
 const minutes = guide.duration.practicalMinutes + guide.duration.preparationMinutes + guide.duration.waitingMinutes;
@@ -72,7 +72,7 @@ const ingredientNames = (item: RecipeIngredient) => {
 };
 const recipeHref = '/recettes/' + recipe.slug + '/';
 const heroPicture=guide.media.finishedPreparationImage || recipe.image;
-const heroCaption='Visuel éditorial de la préparation.';
+const heroCaption=presentation.heroCaption;
 const recorded = import.meta.glob('../../../data/atelier-recette-audio/*.json', { eager:true, import:'default' }) as Record<string,{atelier:string;status:string;audioUrl:string;sha256:string;durationSec:number;chapters:{id:string;title:string;startSec:number;endSec:number}[];review:{acousticListening:boolean;mobile:boolean;desktop:boolean}}>;
 // Typed as optional: the V2 script-only Lok Lak deliberately has no current asset.
 const currentAudioAsset=(guide.audio as {asset?: {sha256:string; audioUrl:string}}).asset;
@@ -103,7 +103,9 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
         <p class="fca-objective">{guide.learningGoal}</p>
         <dl class="fca-facts">
           <div><dt>Durée estimée de l’atelier</dt><dd>{minutes} min indicatives</dd></div>
-          <div><dt>Rendement sélectionné</dt><dd data-workshop-servings-hero>{recipe.baseServings} {guide.sourceRecipeSlug==='samlor-machu'||guide.sourceRecipeSlug==='kuy-teav'||guide.sourceRecipeSlug==='num-banh-chok'?'bols':'assiettes'}</dd></div>
+          <div><dt>Rendement sélectionné</dt><dd data-workshop-servings-hero>{recipe.baseServings} {recipe.baseServings>1
+  ? presentation.portionKind==='pot'?'petits pots':presentation.singular+'s'
+  : presentation.singular}</dd></div>
           <div><dt>Niveau</dt><dd>{guide.difficulty}</dd></div>
         </dl>
         <a class="fca-primary" href="#ingredients">Préparer vos ingrédients <span aria-hidden="true">↘</span></a>
@@ -117,23 +119,23 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
 
     <section class="fca-promise" aria-labelledby="fca-promise-heading">
       <div><p class="fca-eyebrow">Ce que vous allez vraiment cuisiner</p><h2 id="fca-promise-heading">{guide.finalPreparation}</h2></div>
-      <p>Ce parcours part d’une recette complète, pas de conseils isolés. À chaque étape, vous cuisinez, observez le résultat, puis apprenez quoi corriger si nécessaire.</p>
+      <p>{presentation.promise ?? 'Ce parcours part d’une recette complète, pas de conseils isolés. À chaque étape, vous cuisinez, observez le résultat, puis apprenez quoi corriger si nécessaire.'}</p>
     </section>
 
-    <section id="ingredients" class="fca-section" aria-labelledby="fca-ingredients-heading" data-workshop-servings-root="" data-base-servings={recipe.baseServings} data-workshop-portion-kind={guide.sourceRecipeSlug==='samlor-machu'||guide.sourceRecipeSlug==='kuy-teav'||guide.sourceRecipeSlug==='num-banh-chok'?'bol':'assiette'}>
+    <section id="ingredients" class="fca-section" aria-labelledby="fca-ingredients-heading" data-workshop-servings-root="" data-base-servings={recipe.baseServings} data-workshop-portion-kind={presentation.portionKind}>
       <p class="fca-eyebrow">01 · Préparer</p>
       <h2 id="fca-ingredients-heading">Les ingrédients et le plan de travail.</h2>
-      <p>Quantités issues de la <a href={recipeHref}>recette {recipe.title}</a>{', adaptées au nombre de personnes que vous choisissez.'}{guide.sourceRecipeSlug==='lok-lak' && ' Une petite quantité d’huile neutre facultative est signalée séparément pour la saisie du bœuf mariné.'} Cochez les produits au fur et à mesure.</p>
+      <p>Quantités issues de la <a href={recipeHref}>recette {recipe.title}</a>{', adaptées au rendement que vous choisissez.'}{guide.sourceRecipeSlug==='lok-lak' && ' Une petite quantité d’huile neutre facultative est signalée séparément pour la saisie du bœuf mariné.'} Cochez les produits au fur et à mesure.</p>
       {flexibleServings && (
-        <div class="fca-servings" aria-label="Choisir le nombre de convives">
-          <span class="fca-servings-prompt">Je cuisine pour</span>
-          <strong data-workshop-servings-summary aria-live="polite">{recipe.baseServings} personnes</strong>
+        <div class="fca-servings" aria-label={presentation.portionKind==='pot'?'Choisir le nombre de petits pots':'Choisir le nombre de convives'}>
+          <span class="fca-servings-prompt">{presentation.portionKind==='pot'?'Je prépare':'Je cuisine pour'}</span>
+          <strong data-workshop-servings-summary aria-live="polite">{recipe.baseServings} {presentation.portionKind==='pot'?'petit pot':'personne'+(recipe.baseServings>1?'s':'')}</strong>
           <div class="fca-servings-presets">
-            {[2, 4, 6, 8].map((n) => <button type="button" data-workshop-serving-preset={n} aria-pressed={n===recipe.baseServings?'true':'false'}>{n} pers.</button>)}
+            {[2, 4, 6, 8].map((n) => <button type="button" data-workshop-serving-preset={n} aria-pressed={n===recipe.baseServings?'true':'false'}>{n} {presentation.portionKind==='pot'?'pots':'pers.'}</button>)}
           </div>
           <button class="fca-custom-toggle" type="button" data-workshop-custom-toggle aria-controls="fca-custom-servings" aria-expanded="false">Autre nombre</button>
           <div id="fca-custom-servings" class="fca-custom-servings" data-workshop-custom-count hidden>
-            <label for="fca-servings-input">Nombre de personnes (1 à 12)</label>
+            <label for="fca-servings-input">{presentation.portionKind==='pot'?'Nombre de petits pots (1 à 12)':'Nombre de personnes (1 à 12)'}</label>
             <input id="fca-servings-input" data-workshop-servings-input type="number" inputmode="numeric" min="1" max="12" step="1" value={recipe.baseServings} />
           </div>
           <p>Seules les quantités de la liste changent. Les gestes et les repères de cuisson restent les mêmes, mais le nombre de fournées et le temps de cuisson peuvent évoluer.</p>
@@ -168,7 +170,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
           )}
           <section>
             <h3>Sécurité et allergènes</h3>
-            <p><strong>Allergènes à vérifier :</strong> {guide.allergens.items.join(' · ')}</p>
+            <p><strong>Allergènes à vérifier :</strong> {guide.allergens.items.length ? guide.allergens.items.join(' · ') : 'Aucun allergène identifié dans cette fiche ; contrôlez tout de même les ingrédients utilisés.'}</p>
             <ul>{guide.safety.map((item) => <li>{item}</li>)}</ul>
 
           </section>
@@ -215,10 +217,10 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
     </section>
     <section class="fca-finish" id="degustation" aria-labelledby="fca-finish-heading">
       <p class="fca-eyebrow">03 · Terminer et déguster</p>
-      <h2 id="fca-finish-heading">Votre préparation est prête.</h2>
-      <p>{guide.finalPreparation}</p>
+      <h2 id="fca-finish-heading">{presentation.finishTitle ?? 'Votre préparation est prête.'}</h2>
+      <p>{presentation.finishText ?? guide.finalPreparation}</p>
       <p>À retenir : {guide.phases.at(-1)?.learning} Recommencez cette recette plus tard en vous servant des critères de réussite, pas seulement des durées indiquées.</p>
-      <a class="fca-primary" href={recipeHref}>Retrouver la recette complète <span aria-hidden="true">→</span></a>
+      <a class="fca-primary" href={presentation.finishLink ?? recipeHref}>{presentation.finishLabel ?? 'Retrouver la recette complète'} <span aria-hidden="true">→</span></a>
     </section>
     <footer class="fca-outro">
       <a href="/apprendre/">← Revenir aux ateliers</a>
