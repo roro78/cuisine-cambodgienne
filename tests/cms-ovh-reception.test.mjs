@@ -80,6 +80,15 @@ test('remote verification fetches only public pages and checks library denial',a
  assert.deepEqual(result,{social:1,canonical:1,guided:1,login:'protected',library:'blocked'});
  assert.equal(requested.length,6);
  assert.ok(requested.includes('/gestion-contenus/publication-gap-audit.php'));
+ const exposed=async url=>{
+  const pathname=new URL(url).pathname;
+  if(pathname==='/gestion-contenus/publication-gap-audit.php')
+   return new Response('Internal PHP',{status:200});
+  return fetcher(url);
+ };
+ await assert.rejects(cmsReception({
+  url:'https://www.cuisine-du-cambodge.com/',fetcher:exposed}),
+  /CMS_PRIVATE_MODULE_EXPOSED_publication-gap-audit.php/);
  const unavailable=async()=>new Response('',{status:404});
  await assert.rejects(cmsReception({url:'https://www.cuisine-du-cambodge.com/',fetcher:unavailable}),
   /HTTP_social-feed.json_404/);
@@ -107,5 +116,10 @@ test('release package includes exactly seven scoped public files and private rol
   const manifest=JSON.parse(await readFile(join(out,'CMS-OVH-MANIFEST.json'),'utf8'));
   assert.equal(manifest.contract,'cdc-ovh-cms-bundle-v1');
   assert.match(await readFile(join(out,'README.txt'),'utf8'),/BACK UP/);
+  assert.ok(packageInfo.files.some(file=>file.path==='gestion-contenus/publication-gap-audit.php'
+    &&/^[0-9a-f]{64}$/.test(file.sha256)));
+  // The seven-file package must not be accepted after an incomplete transfer.
+  await rm(join(out,'gestion-contenus','publication-gap-audit.php'));
+  await assert.rejects(cmsReception({dir:out}),/ENOENT|CMS_PHP_FILE_MISSING/);
  }finally{await rm(root,{recursive:true,force:true})}
 });
