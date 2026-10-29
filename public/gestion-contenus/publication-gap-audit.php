@@ -663,7 +663,8 @@ function cmsAtelierCulinaryJournal(string $dir,string $id): array {
             ||$row['base_servings']<1||$row['base_servings']>100
             ||!is_int($row['ingredient_count']??null)
             ||$row['ingredient_count']<1||$row['ingredient_count']>100
-            ||($row['checks']??null)!==cmsAtelierCulinaryChecks()
+            ||($row['checks']??null)!==(
+                $row['action']==='approve'?cmsAtelierCulinaryChecks():[])
             ||!is_string($row['note']??null)
             ||mbLen($row['note'])<20||mbLen($row['note'])>900
             ||($row['reviewer']??null)!=='authenticated-cms-owner'
@@ -709,8 +710,11 @@ function cmsAtelierCulinaryAction(string $private,string $id,int $expected,
     if(!cmsCreationId($id)||$expected<1||$expected>9998
         ||!in_array($action,['approve','revoke'],true))
         throw new InvalidArgumentException('ATELIER_CULINARY_INPUT');
-    if(!is_array($checks)||array_keys($checks)!==cmsAtelierCulinaryChecks()
-        ||array_values($checks)!==['1','1','1','1'])
+    if($action==='approve' && (!is_array($checks)
+        ||array_keys($checks)!==cmsAtelierCulinaryChecks()
+        ||array_values($checks)!==['1','1','1','1']))
+        throw new InvalidArgumentException('ATELIER_CULINARY_CHECKS');
+    if($action==='revoke' && $checks!==[])
         throw new InvalidArgumentException('ATELIER_CULINARY_CHECKS');
     $note=cmsCreationText($note,900);
     if(mbLen($note)<20)throw new InvalidArgumentException('ATELIER_CULINARY_NOTE');
@@ -743,7 +747,8 @@ function cmsAtelierCulinaryAction(string $private,string $id,int $expected,
             'script_binding_sha256'=>$context['script_binding_sha256'],
             'base_servings'=>$context['base_servings'],
             'ingredient_count'=>$context['ingredient_count'],
-            'checks'=>cmsAtelierCulinaryChecks(),'note'=>$note,
+            'checks'=>$action==='approve'?cmsAtelierCulinaryChecks():[],
+            'note'=>$note,
             'reviewer'=>'authenticated-cms-owner',
             'reviewed_at'=>gmdate('Y-m-d\TH:i:s\Z'),
             'previous_event_sha256'=>$journal['last_hash']
