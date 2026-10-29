@@ -86,8 +86,8 @@ function cmsAstroPublicationGapReport(array $record): array {
     $coreReady=false;
     if(is_array($record['fields']??null) && is_string($record['summary']??null)){
         try{
-            $clean=cmsCreationCleanFields($kind,$record['fields']);
-            $coreReady=cmsCreationReady($kind,$clean,$record['summary']);
+            // Saved records already contain normalized arrays, not POST textarea strings.
+            $coreReady=cmsCreationReady($kind,$record['fields'],$record['summary']);
         }catch(Throwable $ignored){$coreReady=false;}
     }
     $model=$coverage[$kind];
