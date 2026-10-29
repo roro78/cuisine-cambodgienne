@@ -229,6 +229,8 @@ if($auth){
                         $createForm['recipe_astro']=$pendingContent['before_form']['recipe_astro']??null;
                     if($createKind==='recette')
                         $createForm['recipe_astro_details']=$pendingContent['before_form']['recipe_astro_details']??null;
+                    if($createKind==='culture')
+                        $createForm['culture_evidence']=$pendingContent['before_form']['culture_evidence']??null;
                     // Keep an explicit human planning date; the model cannot set one.
                     $createForm['target_date']=$pendingContent['before_form']['target_date']??'';
                 }
@@ -347,7 +349,8 @@ if($auth){
                         'state'=>$_POST['state']??null,
                         'fields'=>$_POST['fields']??null,
                         'recipe_astro'=>$_POST['recipe_astro']??null,
-                        'recipe_astro_details'=>$_POST['recipe_astro_details']??null
+                        'recipe_astro_details'=>$_POST['recipe_astro_details']??null,
+                        'culture_evidence'=>$_POST['culture_evidence']??null
                     ];
                     if($candidateToken!==''){
                         $pending=cmsAiContentPending($_SESSION,$candidateToken);
@@ -845,6 +848,9 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?= cmsRecipeAstroDetailsHtml($createForm['recipe_astro_details']??null,
     is_array($createForm['fields']??null)?$createForm['fields']:[]) ?>
 <?php endif; ?>
+<?php if($createKind==='culture'): ?>
+<?= cmsCultureEvidenceHtml($createForm['culture_evidence']??null) ?>
+<?php endif; ?>
 <label>Notes de recherche privées (jamais publiées)
 <textarea name="research_note" rows="3" maxlength="3000"><?= cmsEsc((string)($createForm['research_note']??'')) ?></textarea></label>
 <label>Date cible du calendrier éditorial (facultative)
@@ -879,6 +885,23 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <p><?= cmsEsc($creation['summary']) ?></p>
 <p><strong>Angle :</strong> <?= cmsEsc($creation['angle']) ?></p>
 <?= cmsGuidedPreviewHtml('fiche',$creation['fields']) ?>
+<?php if($creation['kind']==='culture'): ?>
+<?php $carnetProjection=null;
+try{$carnetProjection=cmsCultureAstroDraftProjection($creation);}
+catch(Throwable $ignored){$carnetProjection=null;}
+$carnetDossier=cmsCultureEvidenceClean($creation['culture_evidence']??null);
+$carnetCount=count($carnetDossier['items']??[]); ?>
+<details class="guided-group" data-culture-private-review>
+<summary>Carnet : dossier documentaire privé (<?= (int)$carnetCount ?> vérification(s))</summary>
+<p class="small muted">Ce dossier est exclusivement interne au Studio :
+aucune référence documentaire n'est incluse dans la projection de page
+publique. Les mentions « vérifié » ne sont pas une autorisation de publier.</p>
+<p class="small muted">Projection culturelle :
+<?= $carnetProjection!==null
+  ?'structure de lecture préparée ; médias, droits et validation à compléter'
+  :'champs de lecture incomplets ; poursuivez la rédaction' ?>.</p>
+</details>
+<?php endif; ?>
 <?php if($creation['kind']==='recette'): ?>
 <?php $recipeProjection=null;
 try{$recipeProjection=cmsRecipeAstroDraftProjection($creation);}
