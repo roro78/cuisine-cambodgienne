@@ -50,7 +50,7 @@ jobs:
           sha256sum cms-ovh-scoped-release.tar.gz | tee cms-ovh-scoped-release.sha256
           cp /tmp/cuisine-ovh-cms-scoped/CMS-OVH-MANIFEST.json .
           echo '### CMS code package: ready, NO deployment performed' >> "$GITHUB_STEP_SUMMARY"
-          echo 'Contains only three static indexes and three PHP/Apache files.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Contains only three static indexes and four PHP/Apache files, including publication-gap-audit.php.' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload scoped CMS bundle (download only)
         uses: actions/upload-artifact@v4
