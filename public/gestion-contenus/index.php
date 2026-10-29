@@ -1014,6 +1014,62 @@ les six phases complètes et les sept textes avant de viser ce chapitre.</p>
 <?php endforeach; ?>
 <?php endif; ?>
 </details>
+<?php $recipeAudit=null;$recipeAuditUnavailable=false;
+if(isset($_GET['recipe_audit'])){
+    try{
+        if($canonicalById===[])throw new RuntimeException('CANONICAL_NOT_READY');
+        $guidedPayload=cmsGetGuidedFields();
+        if(!is_array($guidedPayload))throw new RuntimeException('GUIDED_NOT_READY');
+        $guidedForAudit=cmsGuidedSourceList($guidedPayload,$canonicalById);
+        cmsAssertGuidedCoverage($guidedForAudit,$canonicalById);
+        $recipeAudit=cmsAtelierCanonicalRecipeAudit(
+            $creation,$catalog,$canonicalById,$guidedForAudit);
+    }catch(Throwable $ignored){$recipeAuditUnavailable=true;}
+} ?>
+<details class="guided-group" id="canonical-review" data-atelier-recipe-audit
+ <?= isset($_GET['recipe_audit'])?'open':'' ?>>
+<summary>Comparer l’atelier à la recette canonique publiée — lecture seule</summary>
+<p class="small muted">Cette comparaison récupère seulement à votre demande
+les index publics déjà validés. Elle ne modifie ni l’atelier ni la recette,
+et n'accorde aucun visa culinaire ou audio.</p>
+<a href="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;recipe_audit=1#canonical-review">
+Afficher les ingrédients et portions de la recette de référence</a>
+<?php if($recipeAuditUnavailable): ?>
+<p class="notice" role="alert">Index source indisponible ou incohérent.
+Aucun rapprochement n’est validé. Contrôlez les index publics et réessayez.</p>
+<?php elseif($recipeAudit!==null): ?>
+<p class="small muted">Source : <?= cmsEsc($recipeAudit['recipe_id']) ?>.
+Empreinte SHA256 complète :
+<code class="coral-script-text"><?= cmsEsc($recipeAudit['canonical_sha256']) ?></code>.</p>
+<?php if($recipeAudit['model_supported_for_quantity_review']): ?>
+<p class="small muted">Nombre de portions canonique :
+<strong><?= (int)$recipeAudit['canonical_servings'] ?></strong>.
+Les quantités ci-dessous correspondent à cette base, pas aux portions
+personnalisées d’un participant.</p>
+<ul>
+<?php foreach($recipeAudit['canonical_ingredients'] as $item): ?>
+<li><?= cmsEsc($item['name']) ?> —
+<?= cmsEsc($item['quantity']===null?'quantité non précisée':(string)$item['quantity']) ?>
+<?= cmsEsc($item['unit']) ?></li>
+<?php endforeach; ?>
+</ul>
+<?php else: ?>
+<p class="small muted">Modèle de recette historique : contrôle chiffré
+non disponible dans cet adaptateur. Vérification humaine indispensable.</p>
+<?php endif; ?>
+<p class="small muted"><?= (int)$recipeAudit['phase_ingredient_mentions'] ?>
+nom(s) d’ingrédients mentionné(s) dans les phases.
+Correspondances uniquement <strong>textuelles et exactes</strong> ;
+les synonymes et dénominations culinaires doivent être contrôlés.</p>
+<?php if($recipeAudit['phase_ingredient_not_exact']!==[]): ?>
+<p class="small muted">Noms à rapprocher manuellement de la recette :
+<?= cmsEsc(implode(' · ',$recipeAudit['phase_ingredient_not_exact'])) ?>.</p>
+<?php endif; ?>
+<p class="small muted">Contrôle des quantités, allergènes et gestes :
+<strong>non validé</strong>. Autorisation audio et publication :
+<strong>non</strong>.</p>
+<?php endif; ?>
+</details>
 <?php endif; ?>
 <?php if($creation['kind']==='ingredient' || $creation['kind']==='technique'): ?>
 <?php $nativeProjection=null;
