@@ -2,6 +2,7 @@
 declare(strict_types=1);
 /** Private editorial CMS P0: preview and immutable drafts only, no publishing. */
 require_once __DIR__.'/lib.php';
+require_once __DIR__.'/publication-gap-audit.php';
 ini_set('display_errors','0');
 header('Content-Type: text/html; charset=UTF-8');
 header('Cache-Control: no-store, private, max-age=0');
@@ -879,6 +880,23 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?php foreach(cmsCreationVersions($creationDir,$creation['id']) as $v): ?>
 <a href="?new=1&amp;cid=<?= cmsEsc($creation['id']) ?>&amp;revision=<?= (int)$v ?>">Version <?= (int)$v ?></a>
 <?php endforeach; ?></nav>
+<?php $astroGap=cmsAstroPublicationGapReport($creation); ?>
+<details class="guided-group" data-astro-publication-gap>
+<summary>Écarts avec le modèle Astro — publication bloquée</summary>
+<p class="small muted">Modèle cible : <?= cmsEsc($astroGap['native_model']) ?>.
+Le formulaire actuel <?= $astroGap['form_core_complete']
+    ?'couvre ses champs de travail':'contient encore des champs de travail incomplets' ?>,
+mais <strong>ce brouillon ne constitue pas une page Astro prête à publier</strong>.</p>
+<h3>Compléments non couverts par le formulaire</h3>
+<ul><?php foreach($astroGap['not_covered'] as $gap): ?>
+<li><?= cmsEsc($gap) ?></li>
+<?php endforeach; ?></ul>
+<h3>Contrôles et autorisations restants</h3>
+<ul><?php foreach($astroGap['pending_gates'] as $gate): ?>
+<li><?= cmsEsc($gate) ?></li>
+<?php endforeach; ?></ul>
+<p class="small muted">Ce diagnostic est indicatif et n’accorde aucun droit de publication.</p>
+</details>
 <p class="small muted">Ce brouillon ne crée pas encore de page publique.
 La génération Astro et la publication feront l'objet d'un circuit séparé,
 avec validation humaine et tests.</p>

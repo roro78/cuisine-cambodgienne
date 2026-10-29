@@ -24,6 +24,9 @@ try{
         copy($dist.'/'.$name,$base.'/'.$name);
     copy(__DIR__.'/fixtures/editorial-ai-content.php',$base.'/fixture.php');
     copy(__DIR__.'/../../public/gestion-contenus/index.php',$public.'/index.php');
+    // The controller also requires this shared read-only Astro gap helper.
+    copy(__DIR__.'/../../public/gestion-contenus/publication-gap-audit.php',
+        $public.'/publication-gap-audit.php');
     $lib=file_get_contents(__DIR__.'/../../public/gestion-contenus/lib.php');
     foreach(['cmsGetFeed','cmsGetEditorialIndex','cmsGetGuidedFields'] as $fn)
         $lib=str_replace('function '.$fn.'(','function fixtureOriginal'.$fn.'(',$lib);
@@ -130,6 +133,12 @@ PHP;
     [$status]=$request('/gestion-contenus/?new=1',$save);httpCheck($status===303,'EXPLICIT_SAVE');
     $files=glob($private.'/editorial-drafts/new-content/c-*.json');httpCheck(count($files)===1,'ONE_SAVED_VERSION');
     $record=json_decode(file_get_contents($files[0]),true);$hash=hash_file('sha256',$files[0]);
+    [$previewStatus,$previewHtml]=$request('/gestion-contenus/?new=1&cid='.$record['id']);
+    httpCheck($previewStatus===200
+        && str_contains($previewHtml,'data-astro-publication-gap')
+        && str_contains($previewHtml,'publication bloquée')
+        && str_contains($previewHtml,'Contrôles et autorisations restants'),
+        'SAVED_ASTRO_GAP_PRIVATE_PREVIEW');
     httpCheck($record['origin']==='ai'&&$record['reviewed']===false&&$record['state']==='draft'
         &&$record['target_date']==='2099-12-20'
         &&in_array('fields.intro',$record['ai_content_edits'],true),'PROVENANCE_HUMAN_EDITS');
