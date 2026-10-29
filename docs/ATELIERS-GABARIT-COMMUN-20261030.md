@@ -7,10 +7,10 @@ Les six ateliers-recettes actuellement publiables partagent désormais
 
 - Les blueprints culinaires restent dans
   `src/data/atelier-recette-guides/*.json`. Ils ne sont pas modifiés.
-- Le registre `src/data/cookingWorkshopGuides.ts` découvre ces JSON à la
-  construction. **Seuls les blueprints `release_ready`** génèrent
-  des pages publiques. Ajouter un JSON privé/non approuvé ne doit pas
-  produire de page publique.
+- Le registre `src/data/cookingWorkshopGuides.ts` référence explicitement ces
+  blueprints (un import et une entrée, sans nouveau fichier Astro).
+  **Seuls les blueprints `release_ready`** génèrent des pages publiques.
+  Un nouveau JSON privé ou non approuvé ne doit pas produire de page publique.
 - Le contrat de sortie conserve une recette canonique, six phases, un
   lecteur audio facultatif qui ne charge **que le MP3 de l'asset vérifié**,
   un sélecteur de portions et des protections SEO `noindex` pour les
