@@ -143,3 +143,27 @@ ainsi que l'absence d'appels fournisseur. PHP 8.3/8.4 est requis.
 **Limite au 29 octobre 2026 :** aucun benchmark de modèle réel n'a été exécuté
 par cette livraison. Le transport Ollama/n8n demeure non accessible ; le socle
 S1 ne démontre jamais la conformité Astro complète S2 ou Coral V2.
+
+## C3B — Essai structuré local Ollama (préparé, non exécuté)
+
+Un exécuteur manuel supplémentaire (scripts/benchmark-ollama-structured.mjs)
+utilise le JSON synthétique produit par le pont PHP C2 et le transmet, uniquement
+sur réseau interne, à un modèle Ollama déjà installé. Il vérifie le modèle par
+/api/tags avant l'appel. Aucun appel sans --run, aucune installation ou
+publication, aucun changement aux workflows n8n 01/02/03.
+
+Procédure reproductible depuis un environnement ayant accès à Ollama :
+
+```bash
+npm run build
+mkdir -p artifacts/benchmark && chmod 700 artifacts/benchmark
+php scripts/editorial-ai-structured-benchmark.php request culture dist > artifacts/benchmark/culture-s1-request.json
+node scripts/benchmark-ollama-structured.mjs --run --model llama3.2:latest --request artifacts/benchmark/culture-s1-request.json --out artifacts/benchmark/culture-s1-result.json
+php scripts/editorial-ai-structured-benchmark.php validate culture artifacts/benchmark/culture-s1-result.json
+```
+
+Le résultat brut est écrit une seule fois en local dans le dossier privé
+artifacts/benchmark/ (désormais exclu de Git), sans être affiché en clair.
+La validation de schéma reste celle du CMS PHP et la revue éditoriale humaine
+reste impérative. Aucune connexion n8n OVH, durée réelle, modèle disponible,
+qualité, coût ou résultat mesuré ne peut être attesté depuis cette conversation.

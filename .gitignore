@@ -11,3 +11,6 @@ public/social-assets/
 /public/images/cuisine/v17-kroeung-final-[0-9]*.webp
 /public/images/cuisine/v17-chili-450-[0-9]*.webp
 /public/images/cuisine/v17-tablee-khmere-generee-[0-9]*.webp
+
+# Private generated benchmark outputs, never commit
+/artifacts/benchmark/
