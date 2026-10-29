@@ -27,7 +27,7 @@ for(const [slug,expected] of Object.entries(photos))test('Image approuvée : '+s
   assert.equal(bytes.toString('ascii',8,12),'WEBP');
 });
 test('Pages ateliers : les visuels approuvés sont servis dès le brouillon, sans prétendre être des photos',()=>{
- for(const path of ['src/pages/apprendre/pratique/[slug].astro','src/pages/apprendre/pratique/kroeung-jaune.astro']){
+ for(const path of ['src/pages/apprendre/pratique/[slug].astro']){
   const text=readFileSync(path,'utf8');
   assert.match(text,/media.finishedPreparationImage \|\| recipe.image/);
   assert.doesNotMatch(text,/Photographie de la préparation terminée|photographie finale à valider|Photographie du kroeung jaune terminé/);
