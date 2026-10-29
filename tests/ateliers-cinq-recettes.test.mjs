@@ -80,8 +80,8 @@ test('Gabarit Astro commun pour les six ateliers et futur JSON enregistré autom
   const registry=fs('src/data/cookingWorkshopGuides.ts','utf8');
   const presentation=fs('src/data/workshopPresentation.ts','utf8');
   const shared=fs('src/pages/apprendre/pratique/[slug].astro','utf8');
-  assert.match(registry,/import[.]meta[.]glob/,'automatic discovery of approved blueprints');
-  assert.match(registry,/knownOrder[.]every/,'new draft cannot undo the six released workshop cutover');
+  assert.match(registry,/export const cookingWorkshopGuides=/,'explicit approved blueprint registry');
+  assert.match(registry,/baselineSourceSlugs[.]every/,'new draft cannot undo the six released workshop cutover');
   assert.match(shared,/releasedCookingWorkshopGuides[.]map/,'all released workshops use one route');
   assert.match(shared,/getWorkshopPresentation[(]guide[)]/,'presentation is data driven');
   assert.match(presentation,/publicSlug:'kroeung-jaune'/,'Kroeung historical URL retained');
