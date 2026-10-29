@@ -339,7 +339,8 @@ if($auth){
                         'research_note'=>$_POST['research_note']??null,
                         'target_date'=>$_POST['target_date']??null,
                         'state'=>$_POST['state']??null,
-                        'fields'=>$_POST['fields']??null
+                        'fields'=>$_POST['fields']??null,
+                        'recipe_astro'=>$_POST['recipe_astro']??null
                     ];
                     if($candidateToken!==''){
                         $pending=cmsAiContentPending($_SESSION,$candidateToken);
@@ -832,6 +833,9 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <h3>Contenu de la fiche — <?= cmsEsc(cmsCreationKinds()[$createKind]) ?></h3>
 <?= cmsCreationFormHtml($createKind,
     is_array($createForm['fields']??null)?$createForm['fields']:[]) ?>
+<?php if($createKind==='recette'): ?>
+<?= cmsRecipeAstroProfileHtml($createForm['recipe_astro']??null) ?>
+<?php endif; ?>
 <label>Notes de recherche privées (jamais publiées)
 <textarea name="research_note" rows="3" maxlength="3000"><?= cmsEsc((string)($createForm['research_note']??'')) ?></textarea></label>
 <label>Date cible du calendrier éditorial (facultative)
@@ -866,6 +870,14 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <p><?= cmsEsc($creation['summary']) ?></p>
 <p><strong>Angle :</strong> <?= cmsEsc($creation['angle']) ?></p>
 <?= cmsGuidedPreviewHtml('fiche',$creation['fields']) ?>
+<?php if($creation['kind']==='recette'): ?>
+<?php $recipeProfile=$creation['recipe_astro']??null; ?>
+<p class="small muted">Profil Astro complémentaire : <strong><?=
+ cmsRecipeAstroProfileComplete($recipeProfile)
+    ?'difficulté, catégorie et mots-clés renseignés'
+    :'difficulté, catégorie ou mots-clés encore à compléter' ?></strong>.
+Cela ne vaut pas validation d’une recette publiable.</p>
+<?php endif; ?>
 <?php if($creation['similar_titles']): ?>
 <div class="note"><strong>Sujets proches à examiner :</strong>
 <?php foreach($creation['similar_titles'] as $match): ?>
