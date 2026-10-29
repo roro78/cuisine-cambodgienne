@@ -1757,6 +1757,30 @@ function cmsStudioVisualLinkedFields(array $original,array $stored): array {
     return $proposal;
 }
 
+/** One reusable, authenticated and sandboxed preview panel for both CMS stores. */
+function cmsStudioVisualPreviewHtml(?array $data,string $explanation=''): string {
+    if($data===null)
+        return '<p class="note" data-visual-unavailable>'.
+            cmsEsc($explanation!==''?$explanation:
+                'Aperçu sur le gabarit public indisponible pour ce brouillon. L’aperçu des champs enregistrés reste disponible.').
+            '</p>';
+    $json=json_encode($data['changes'],JSON_UNESCAPED_UNICODE
+        |JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+    $payload=base64_encode($json);
+    return '<div class="visual-preview" data-visual-preview data-changes="'.cmsEsc($payload).'">'
+        .'<div class="visual-preview__head"><strong>Vue sur la mise en page publique</strong>'
+        .'<p class="small">Comparaison privée, basée sur la page déjà publiée et sur la version enregistrée. '
+        .'Les images restent celles de la page publique. Aucun contenu ni média n’est publié.</p></div>'
+        .'<p class="note" data-visual-status role="status" aria-live="polite">'
+        .'Vérification des correspondances avec la page publiée…</p>'
+        .'<iframe title="Comparaison visuelle du brouillon dans la page publique"'
+        .' loading="lazy" sandbox="allow-same-origin" referrerpolicy="no-referrer"'
+        .' src="'.cmsEsc($data['route']).'"></iframe>'
+        .'<p class="small muted">Aperçu statique : lecteur audio, animations et interactions désactivés.'
+        .' Si une correspondance échoue, la page affichée reste la version publiée, '
+        .'et non un faux aperçu du brouillon.</p></div>';
+}
+
 /** Read-only status projection for the library; never convert stored versions. */
 function cmsStudioCatalogDrafts(array $historical,array $creations,array $catalog,array $canonical): array {
     foreach($catalog as $id=>$source){
