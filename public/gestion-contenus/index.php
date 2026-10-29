@@ -1817,7 +1817,7 @@ document.querySelectorAll('[data-visual-preview]').forEach(panel=>{
       const main=doc?.querySelector('main');
       if(!main||!Array.isArray(changes))throw Error('PREVIEW_DOCUMENT');
       // Do not enable page scripts: the iframe is same-origin, but sandboxed.
-      const norm=text=>text.replace(/\\s+/gu,' ').trim();
+      const norm=text=>text.replace(/\s+/gu,' ').trim();
       const texts=[];
       const walker=doc.createTreeWalker(main,NodeFilter.SHOW_TEXT);
       for(let node;node=walker.nextNode();){
