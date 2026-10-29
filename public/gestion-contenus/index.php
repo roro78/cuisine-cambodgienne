@@ -692,6 +692,23 @@ nav.versions{display:flex;flex-wrap:wrap;gap:9px}
 nav.versions a{padding:6px 9px;background:#edf4ea;border-radius:6px}
 .summary{max-width:72ch}.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .note{border-left:3px solid #d8a038;padding:9px 12px;background:#fff9e8}
+.work-resume{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px;
+ background:linear-gradient(115deg,#f0f7ec,#fffefa);border:1px solid #b9d2bc;
+ border-left:5px solid #247448;border-radius:14px;padding:18px 20px;margin:16px 0 20px;
+ box-shadow:0 5px 18px rgba(21,54,33,.06);scroll-margin-top:16px}
+.work-resume h2{font-size:1.16rem;margin:4px 0 8px}.work-resume p{margin:4px 0;line-height:1.5;overflow-wrap:anywhere}
+.work-resume__eyebrow{font-size:.78rem;font-weight:750;letter-spacing:.035em;color:#286347;text-transform:uppercase}
+.work-resume__actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.work-resume__actions .btn,.work-resume__form button{min-height:44px;text-align:center;font-weight:650}
+.work-resume__actions a:not(.btn){padding:10px 0}
+.work-resume__form{display:grid;gap:10px;max-width:400px}
+.work-resume__form label{font-size:.87rem;font-weight:500;line-height:1.5}
+.work-resume__form input[type=checkbox]{margin-top:0}
+.work-resume--warning{background:#fff9ed;border-color:#e6ce94;border-left-color:#ad7a18}
+.work-resume--warning .work-resume__eyebrow{color:#765219}
+@media(max-width:650px){.work-resume{grid-template-columns:1fr;padding:16px;gap:12px}
+ .work-resume__actions,.work-resume__form{width:100%;max-width:none}
+ .work-resume__actions .btn,.work-resume__form button{width:100%}}
 .guided-group{border:1px solid #d9ddd5;border-radius:10px;padding:12px;margin:10px 0;background:#fcfcf9}
 .guided-group summary{font-weight:700;cursor:pointer;padding:5px 0;color:#17663b}.guided-group[open] summary{margin-bottom:12px}
 .guided-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -846,6 +863,23 @@ L'IA, les créneaux Facebook/Instagram et les statistiques viendront dans des é
 </section>
 <?php elseif($newMode): ?>
 <p><a href="?<?= cmsEsc($filtersUrl) ?>">Retour à la bibliothèque (filtres conservés)</a></p>
+<?php if($creation): ?>
+<section id="cms-work-resume" class="work-resume<?= !$studioSourceCurrent?' work-resume--warning':'' ?>" data-work-resume>
+<div>
+<p class="work-resume__eyebrow"><?= !$studioSourceCurrent?'Source à vérifier':'Travail enregistré' ?> · version <?= (int)$creation['version'] ?></p>
+<h2><?= !$studioSourceCurrent?'Brouillon conservé — modification suspendue':'Modifications en cours' ?></h2>
+<p><strong><?= cmsEsc($creation['title']) ?></strong> · <?= $creation['state']==='review'?'À relire':'Brouillon de travail' ?>.
+<?= !$studioSourceCurrent?'La fiche publiée a changé : la sauvegarde reste bloquée jusqu’à vérification.':'Reprenez votre travail là où vous l’avez enregistré, sans modifier le site publié.' ?></p>
+</div>
+<div class="work-resume__actions">
+<?php if($studioSourceCurrent): ?>
+<a class="btn" data-work-resume-action href="#cms-new-content">Reprendre les modifications</a>
+<?php else: ?>
+<a class="btn" data-work-resume-action href="#cms-preview">Consulter le brouillon conservé</a>
+<?php endif; ?>
+<a href="#cms-history">Voir l’historique</a>
+</div></section>
+<?php endif; ?>
 <section>
 <span class="badge"><?= isset($creation['source_binding'])?'Révision privée d’une fiche publiée':'Création privée' ?> · aucune publication</span>
 <h2 id="cms-general"><?= isset($creation['source_binding'])?'Modifier la fiche publiée':($creation?'Modifier le brouillon de nouvelle page':'Créer un nouveau contenu') ?></h2>
@@ -1415,6 +1449,48 @@ avec validation humaine et tests.</p>
 <?php elseif($selected): ?>
 <p><a href="?<?= cmsEsc($filtersUrl) ?>">Retour à la bibliothèque (filtres conservés)</a> · <a href="<?= cmsEsc($selected['url']) ?>" target="_blank"
  rel="noopener noreferrer">Consulter la page actuellement publiée</a></p>
+<section id="cms-work-resume" class="work-resume<?= $staleDraft?' work-resume--warning':'' ?>" data-work-resume>
+<div>
+<p class="work-resume__eyebrow"><?= $staleDraft?'Version source à vérifier':($studioLinked!==null||$latest?'Travail déjà enregistré':'Commencer la modification') ?></p>
+<h2><?= $staleDraft?'Modifications conservées — relecture nécessaire':($studioLinked!==null||$latest?'Modifications en cours':'Modifier ce contenu') ?></h2>
+<p><strong><?= cmsEsc($selected['title']) ?></strong>.
+<?php if($staleDraft): ?>
+La source a changé : comparez les versions avant de poursuivre, sans écraser le brouillon.
+<?php elseif($studioLinked!==null): ?>
+Un brouillon de travail existe déjà pour cet atelier. Retrouvez vos modifications et son guide audio facultatif.
+<?php elseif($selected['kind']==='atelier'): ?>
+Préparez le brouillon de travail de cet atelier ; vos anciennes versions restent accessibles.
+<?php elseif($latest): ?>
+Votre proposition privée v<?= (int)$latest['version'] ?> est disponible. Elle n’a pas modifié le site publié.
+<?php else: ?>
+Modifiez la fiche et enregistrez une première version privée, sans modifier la page publiée.
+<?php endif; ?></p>
+</div>
+<?php if($studioLinked!==null): ?>
+<div class="work-resume__actions">
+<a class="btn" data-work-resume-action href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>#cms-new-content">Reprendre le brouillon de travail</a>
+<a href="#cms-history">Historique</a>
+</div>
+<?php elseif($selected['kind']==='atelier' && !$staleDraft): ?>
+<?php if($selectedCanonical && $guidedSelected && $guidedSelected['model']==='cookingWorkshopGuides'): ?>
+<form method="post" class="work-resume__form" data-studio-transition>
+<input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
+<input type="hidden" name="source_id" value="<?= cmsEsc($selected['id']) ?>">
+<input type="hidden" name="source_fingerprint" value="<?= cmsEsc($selected['fingerprint']) ?>">
+<input type="hidden" name="canonical_fingerprint" value="<?= cmsEsc($selectedCanonical['fingerprint']) ?>">
+<input type="hidden" name="expected_version" value="<?= (int)($latest['version']??0) ?>">
+<label><input type="checkbox" name="transition_confirm" value="1" required>
+Je confirme la reprise de cette fiche dans un brouillon lié, en conservant l’historique.</label>
+<button name="studio_transition" value="1">Ouvrir le brouillon de travail</button>
+</form>
+<?php else: ?><p class="note" role="status">Brouillon lié indisponible : la source ou le modèle doit être vérifié.</p><?php endif; ?>
+<?php elseif($staleDraft): ?>
+<div class="work-resume__actions"><a class="btn" data-work-resume-action href="#cms-history">Comparer les versions</a></div>
+<?php else: ?>
+<div class="work-resume__actions"><a class="btn" data-work-resume-action href="#cms-content"><?= $latest?'Reprendre mes modifications':'Modifier ce contenu' ?></a>
+<a href="#cms-preview">Consulter l’aperçu</a></div>
+<?php endif; ?>
+</section>
 <section id="cms-general"><span class="badge"><?= cmsEsc($kindLabels[$selected['kind']]??'Contenu') ?></span>
 <h2><?= cmsEsc($selected['title']) ?></h2>
 <details class="guided-group"><summary>Informations techniques de la fiche</summary><p class="small muted">Identifiant stable : <?= cmsEsc($selected['id']) ?> · Empreinte de la source :
@@ -1587,18 +1663,8 @@ Télécharger la demande de modification (JSON)</button>
 <ol><li>Recette canonique et empreinte SHA256</li><li>Six phases détaillées</li><li>Sept narrations complètes</li><li>Sept visas humains de texte</li><li>Validation culinaire humaine</li><li>Droits médias et voix</li><li>Écoute des sept MP3</li><li>Mesures des durées réelles</li><li>Navigation et synchronisation mobiles</li></ol>
 <p>Textes attendus : <?= cmsEsc(implode(', ',cmsAtelierScriptIds())) ?>. Aucun visa ni état audio n’est repris automatiquement.</p>
 </details></div>
-<?php if($selectedCanonical && $guidedSelected && $guidedSelected['model']==='cookingWorkshopGuides' && !$staleDraft): ?>
-<form method="post" class="stack" data-studio-transition>
-<input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
-<input type="hidden" name="source_id" value="<?= cmsEsc($selected['id']) ?>">
-<input type="hidden" name="source_fingerprint" value="<?= cmsEsc($selected['fingerprint']) ?>">
-<input type="hidden" name="canonical_fingerprint" value="<?= cmsEsc($selectedCanonical['fingerprint']) ?>">
-<input type="hidden" name="expected_version" value="<?= (int)($latest['version']??0) ?>">
-<p class="small muted">Enregistrez d’abord vos modifications. Le brouillon de travail reprendra les champs compatibles de votre dernière version. Les anciennes notes et versions resteront consultables dans l’historique. Vous pourrez ensuite choisir la recette associée.</p>
-<label><input type="checkbox" name="transition_confirm" value="1" required> Je souhaite ouvrir le brouillon de travail de cette fiche, en conservant son historique.</label>
-<button name="studio_transition" value="1">Ouvrir le brouillon de travail</button>
-</form>
-<?php else: ?><p class="note">Transition indisponible : modèle ou source à vérifier. Les versions existantes restent conservées ; aucune adaptation approximative n’est effectuée.</p><?php endif; ?>
+<p class="small muted">La reprise du brouillon de travail se fait désormais en haut de cette fiche, sans créer plusieurs versions concurrentes.</p>
+<a href="#cms-work-resume">Revenir aux modifications en cours</a>
 <?php endif; ?>
 <?php else: ?>
 <ul><?php foreach(cmsAstroPublicationCoverage()[$selected['kind']]['gates'] as $gate): ?><li><?= cmsEsc($gate) ?></li><?php endforeach; ?></ul>
@@ -1625,7 +1691,8 @@ Cette liste n'est ni un calendrier ni une file de validation sociale.</p>
 <p class="small note">Source actualisée depuis le brouillon : relecture nécessaire.</p>
 <?php endif; ?>
 <?php endif; ?>
-<a href="?id=<?= rawurlencode($src['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>"><?= $prev?'Voir et modifier le brouillon':'Préparer un brouillon' ?></a>
+<?php $workLinked=$src['kind']==='atelier'?cmsStudioLinkedDraft($creations,$src['id']):null; ?>
+<a class="btn" data-library-resume href="<?= $workLinked?'?new=1&amp;cid='.cmsEsc($workLinked['id']).'&amp;'.cmsEsc($filtersUrl):'?id='.rawurlencode($src['id']).'&amp;'.cmsEsc($filtersUrl) ?>"><?= $workLinked?'Reprendre le brouillon':($prev?'Voir mes modifications':'Modifier ce contenu') ?></a>
 </div></article>
 <?php endforeach; ?>
 </div>
