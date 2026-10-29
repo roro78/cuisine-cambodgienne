@@ -101,7 +101,7 @@ $filtersUrl=http_build_query($filters,'','&',PHP_QUERY_RFC3986);
 $newMode=isset($_GET['new']) || ($method==='POST'
     && (isset($_POST['create_save']) || isset($_POST['ai_brief_generate'])
         || isset($_POST['ai_content_generate']) || isset($_POST['ai_content_discard'])
-        || isset($_POST['review_action'])));
+        || isset($_POST['review_action']) || isset($_POST['culinary_action'])));
 $createKind=is_string($_POST['kind']??null)?$_POST['kind']:
     (is_string($_GET['kind']??null)?$_GET['kind']:'recette');
 if(!isset(cmsCreationKinds()[$createKind]))$createKind='recette';
@@ -248,11 +248,47 @@ if($auth){
                 $error='Proposition temporaire indisponible ou expirée. Le brouillon enregistré reste conservé.';
             }
         }
+        if($method==='POST' && isset($_POST['culinary_action'])){
+            try{
+                if($creation===null || $createKind!=='atelier'
+                    || count(array_intersect(['culinary_action','review_action',
+                        'create_save','ai_brief_generate','ai_content_generate',
+                        'ai_content_discard'],array_keys($_POST)))!==1)
+                    throw new InvalidArgumentException('ATELIER_CULINARY_INPUT');
+                $expected=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
+                    ['options'=>['min_range'=>1,'max_range'=>9998]]);
+                if($expected===false || $canonicalById===[])
+                    throw new InvalidArgumentException('ATELIER_CULINARY_INPUT');
+                $guidedPayload=cmsGetGuidedFields();
+                if(!is_array($guidedPayload))
+                    throw new RuntimeException('ATELIER_CULINARY_UNAVAILABLE');
+                $guidedCulinary=cmsGuidedSourceList($guidedPayload,$canonicalById);
+                cmsAssertGuidedCoverage($guidedCulinary,$canonicalById);
+                $action=is_string($_POST['culinary_action']??null)
+                    ?$_POST['culinary_action']:'';
+                cmsAtelierCulinaryAction($private,$creation['id'],$expected,
+                    $action,$_POST['culinary_checks']??[],
+                    $_POST['culinary_note']??null,
+                    ($_POST['culinary_confirm']??null)==='1',
+                    $auth,$catalog,$canonicalById,$guidedCulinary);
+                header('Location: ?new=1&cid='.rawurlencode($creation['id'])
+                    .'&recipe_audit=1&culinary_saved=1#canonical-review',true,303);
+                exit;
+            }catch(Throwable $e){
+                $conflict=in_array($e->getMessage(),[
+                    'ATELIER_CULINARY_CONFLICT','ATELIER_CULINARY_ALREADY_SET'],true);
+                http_response_code($conflict?409:422);
+                $error=$conflict
+                    ?'La recette ou la version du brouillon a changé : rechargez la comparaison.'
+                    :'Décision culinaire non enregistrée. Vérifiez la recette complète, les quatre confirmations et votre note.';
+            }
+        }
         if($method==='POST' && isset($_POST['review_action'])){
             try{
                 if($creation===null||$createKind!=='atelier'
                     ||count(array_intersect(['review_action','create_save',
-                        'ai_brief_generate','ai_content_generate','ai_content_discard'],
+                        'ai_brief_generate','ai_content_generate','ai_content_discard',
+                        'culinary_action'],
                         array_keys($_POST)))!==1)
                     throw new InvalidArgumentException('ATELIER_VISA_INPUT');
                 $expected=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
@@ -275,6 +311,7 @@ if($auth){
             }
         }
         if($method==='POST' && !isset($_POST['review_action'])
+            && !isset($_POST['culinary_action'])
             && (isset($_POST['ai_content_generate'])||isset($_POST['ai_content_discard']))){
             $contentPosted=cmsCreationPosted($_POST);
             $createForm=$contentPosted;
@@ -337,7 +374,7 @@ if($auth){
             }
         }
         if($method==='POST' && isset($_POST['ai_brief_generate'])
-            && !isset($_POST['review_action'])){
+            && !isset($_POST['review_action']) && !isset($_POST['culinary_action'])){
             $aiPosted=[];
             foreach(['kind','title','angle','objective','context','reference_id','semantic_review'] as $field)
                 $aiPosted[$field]=$_POST[$field]??'';
@@ -370,7 +407,7 @@ if($auth){
         }
         if($method==='POST' && isset($_POST['create_save']) && !isset($_POST['ai_brief_generate'])
             && !isset($_POST['ai_content_generate']) && !isset($_POST['ai_content_discard'])
-            && !isset($_POST['review_action'])){
+            && !isset($_POST['review_action']) && !isset($_POST['culinary_action'])){
             $expected=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
                 ['options'=>['min_range'=>0,'max_range'=>9998]]);
             if($expected===false){http_response_code(422);$error='Version invalide.';}
@@ -1014,7 +1051,8 @@ les six phases complètes et les sept textes avant de viser ce chapitre.</p>
 <?php endforeach; ?>
 <?php endif; ?>
 </details>
-<?php $recipeAudit=null;$recipeAuditUnavailable=false;
+<?php $recipeAudit=null;$recipeAuditUnavailable=false;$culinaryStatus=null;
+$culinaryStatusUnavailable=false;
 if(isset($_GET['recipe_audit'])){
     try{
         if($canonicalById===[])throw new RuntimeException('CANONICAL_NOT_READY');
@@ -1024,6 +1062,11 @@ if(isset($_GET['recipe_audit'])){
         cmsAssertGuidedCoverage($guidedForAudit,$canonicalById);
         $recipeAudit=cmsAtelierCanonicalRecipeAudit(
             $creation,$catalog,$canonicalById,$guidedForAudit);
+        if($recipeAudit['model_supported_for_quantity_review']){
+            try{$culinaryStatus=cmsAtelierCulinaryStatus(
+                $creationDir,$creation,$catalog,$canonicalById,$guidedForAudit);}
+            catch(Throwable $ignored){$culinaryStatusUnavailable=true;}
+        }
     }catch(Throwable $ignored){$recipeAuditUnavailable=true;}
 } ?>
 <details class="guided-group" id="canonical-review" data-atelier-recipe-audit
@@ -1065,9 +1108,59 @@ les synonymes et dénominations culinaires doivent être contrôlés.</p>
 <p class="small muted">Noms à rapprocher manuellement de la recette :
 <?= cmsEsc(implode(' · ',$recipeAudit['phase_ingredient_not_exact'])) ?>.</p>
 <?php endif; ?>
-<p class="small muted">Contrôle des quantités, allergènes et gestes :
-<strong>non validé</strong>. Autorisation audio et publication :
-<strong>non</strong>.</p>
+<p class="small muted">Le rapprochement ci-dessus n’est jamais une validation
+automatique de la cuisine. Seul un contrôle humain explicite peut documenter
+la revue des quantités, allergènes et gestes.</p>
+<?php if($culinaryStatusUnavailable): ?>
+<p class="notice" role="alert">Visa culinaire indisponible ou données
+pédagogiques incomplètes. Aucune validation ne peut être considérée active.</p>
+<?php elseif($culinaryStatus!==null): ?>
+<?php $culinaryReviewed=$culinaryStatus['human_culinary_review_recorded']; ?>
+<p class="small muted">Relecture culinaire humaine pour cette version :
+<strong><?= $culinaryReviewed?'consignée':'absente ou périmée' ?></strong>.
+Nombre de décisions conservées :
+<?= (int)$culinaryStatus['review_event_count'] ?>.
+Autorisation audio et publication : <strong>non</strong>.</p>
+<?php if(isset($_GET['culinary_saved'])): ?>
+<p class="notice" role="status">Décision culinaire enregistrée dans
+le journal privé. Aucun traitement audio n’a été déclenché.</p>
+<?php endif; ?>
+<form method="post" action="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;recipe_audit=1#canonical-review"
+ class="stack" data-culinary-human-visa>
+<input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
+<input type="hidden" name="creation_id" value="<?= cmsEsc($creation['id']) ?>">
+<input type="hidden" name="expected_version" value="<?= (int)$creation['version'] ?>">
+<?php if(!$culinaryReviewed): ?>
+<p class="small muted">Cochez chaque point uniquement après
+vérification réelle dans la recette publiée ET dans les six phases de
+l’atelier. Les allergènes et températures ne sont pas certifiés par logiciel.</p>
+<label><input type="checkbox" name="culinary_checks[servings]" value="1" required>
+J’ai vérifié les portions et le rendement de la recette source.</label>
+<label><input type="checkbox" name="culinary_checks[quantities]" value="1" required>
+J’ai comparé ingrédients, quantités, unités et substitutions.</label>
+<label><input type="checkbox" name="culinary_checks[allergens]" value="1" required>
+J’ai contrôlé les allergènes et contaminations croisées possibles.</label>
+<label><input type="checkbox" name="culinary_checks[gestures]" value="1" required>
+J’ai relu les six phases, les gestes, les cuissons et la sécurité alimentaire.</label>
+<?php endif; ?>
+<label><?= $culinaryReviewed?'Motif de révocation':'Note de vérification (minimum 20 caractères)' ?>
+<textarea name="culinary_note" rows="3" maxlength="900" minlength="20" required
+ placeholder="Observations, contrôles effectués, points corrigés…"></textarea></label>
+<label><input type="checkbox" name="culinary_confirm" value="1" required>
+Je confirme personnellement cette décision, limitée à la version et
+à l’empreinte de recette affichées ; elle ne déclenche aucun MP3.</label>
+<button type="submit" name="culinary_action"
+ value="<?= $culinaryReviewed?'revoke':'approve' ?>">
+<?= $culinaryReviewed?'Révoquer la validation culinaire':'Consigner la revue culinaire' ?></button>
+</form>
+<?php else: ?>
+<p class="small muted">La recette historique ne possède pas encore
+l’adaptateur chiffré nécessaire à cette validation ; aucune
+attestation culinaire ne peut être enregistrée automatiquement.</p>
+<?php endif; ?>
+<p class="small muted">Même avec les sept narrations visées et
+la revue culinaire consignée, le TTS Coral, les MP3 et la publication
+restent désactivés.</p>
 <?php endif; ?>
 </details>
 <?php endif; ?>
