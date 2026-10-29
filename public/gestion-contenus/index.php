@@ -1831,6 +1831,11 @@ document.querySelectorAll('[data-visual-preview]').forEach(panel=>{
         if(!item||typeof item.from!=='string'||typeof item.to!=='string'
           ||typeof item.path!=='string')throw Error('PREVIEW_PATCH');
         if(item.from===item.to)continue;
+        // Short labels and bare numbers have no safe semantic anchor in the
+        // published DOM. Refuse a guessed replacement rather than patching
+        // the wrong element even when its text happens to be unique.
+        if(item.path!=='title' && (item.from.trim().length<12
+          || /^\\d+(?:[.,]\\d+)?$/.test(item.from.trim()))){missing++;continue;}
         let found;
         if(item.path==='title'){
           const heading=main.querySelector('h1');
