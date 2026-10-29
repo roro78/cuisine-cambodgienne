@@ -595,6 +595,175 @@ function cmsAtelierCanonicalRecipeAudit(array $record,array $catalog,
     ];
 }
 
+
+/**
+ * C4C3F: independent HUMAN culinary attestation. It is an append-only
+ * documentation of a review, not a determination that food is safe.
+ * A changing recipe SHA256, phase digest or creation version invalidates it.
+ * It can NEVER authorize TTS, existing MP3 replacement or publication.
+ */
+function cmsAtelierCulinaryChecks(): array {
+    return ['servings','quantities','allergens','gestures'];
+}
+function cmsAtelierCulinaryContext(array $record,array $catalog,
+    array $canonical,array $guided): array {
+    $audit=cmsAtelierCanonicalRecipeAudit($record,$catalog,$canonical,$guided);
+    if(($audit['model_supported_for_quantity_review']??false)!==true
+        ||($audit['canonical_servings']??0)<1
+        ||count($audit['canonical_ingredients']??[])<1)
+        throw new InvalidArgumentException('ATELIER_CULINARY_UNSUPPORTED');
+    $gate=cmsAtelierBlueprintPreflight($record,$catalog);
+    if(($gate['ready_for_audio_review']??false)!==true)
+        throw new InvalidArgumentException('ATELIER_CULINARY_NOT_READY');
+    $binding=$record['atelier_scripts']['bindingDigest']??null;
+    if(!is_string($binding)||!preg_match('/^[a-f0-9]{64}$/D',$binding))
+        throw new InvalidArgumentException('ATELIER_CULINARY_NOT_READY');
+    return [
+        'recipe_id'=>$audit['recipe_id'],
+        'recipe_sha256'=>$audit['canonical_sha256'],
+        'script_binding_sha256'=>$binding,
+        'base_servings'=>$audit['canonical_servings'],
+        'ingredient_count'=>count($audit['canonical_ingredients'])
+    ];
+}
+function cmsAtelierCulinaryJournal(string $dir,string $id): array {
+    if(!cmsCreationId($id))throw new InvalidArgumentException('ATELIER_CULINARY_ID');
+    $files=glob($dir.'/culinary-visa-'.$id.'.*.json');
+    if(!is_array($files)||count($files)>9998)
+        throw new RuntimeException('ATELIER_CULINARY_STORE');
+    $events=[];$previous='';
+    foreach($files as $file){
+        if(is_link($file)||!is_file($file)||filesize($file)>4000
+            ||!preg_match('/^culinary-visa-'.preg_quote($id,'/').'\\.([0-9]{4})\\.json$/D',
+                basename($file),$match))
+            throw new RuntimeException('ATELIER_CULINARY_STORE');
+        $raw=file_get_contents($file);
+        if(!is_string($raw))throw new RuntimeException('ATELIER_CULINARY_STORE');
+        $row=json_decode($raw,true,16,JSON_THROW_ON_ERROR);
+        $allowed=['contract','creation_id','event','creation_version','action',
+            'recipe_id','recipe_sha256','script_binding_sha256','base_servings',
+            'ingredient_count','checks','note','reviewer','reviewed_at',
+            'previous_event_sha256'];
+        if(!is_array($row)||count($row)!==count($allowed)
+            ||array_diff(array_keys($row),$allowed)
+            ||($row['contract']??null)!=='cdc-coral-human-culinary-visa-v1'
+            ||($row['creation_id']??null)!==$id
+            ||($row['event']??null)!==count($events)+1
+            ||(int)$match[1]!==$row['event']
+            ||!is_int($row['creation_version']??null)
+            ||$row['creation_version']<1||$row['creation_version']>9999
+            ||!in_array($row['action']??null,['approve','revoke'],true)
+            ||!is_string($row['recipe_id']??null)
+            ||!preg_match('/^recette:[a-z0-9]+(?:-[a-z0-9]+)*$/D',$row['recipe_id'])
+            ||!is_string($row['recipe_sha256']??null)
+            ||!preg_match('/^[0-9a-f]{64}$/D',$row['recipe_sha256'])
+            ||!is_string($row['script_binding_sha256']??null)
+            ||!preg_match('/^[0-9a-f]{64}$/D',$row['script_binding_sha256'])
+            ||!is_int($row['base_servings']??null)
+            ||$row['base_servings']<1||$row['base_servings']>100
+            ||!is_int($row['ingredient_count']??null)
+            ||$row['ingredient_count']<1||$row['ingredient_count']>100
+            ||($row['checks']??null)!==cmsAtelierCulinaryChecks()
+            ||!is_string($row['note']??null)
+            ||mbLen($row['note'])<20||mbLen($row['note'])>900
+            ||($row['reviewer']??null)!=='authenticated-cms-owner'
+            ||!is_string($row['reviewed_at']??null)
+            ||!preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/D',
+                $row['reviewed_at'])
+            ||($row['previous_event_sha256']??null)!==$previous)
+            throw new RuntimeException('ATELIER_CULINARY_CORRUPT');
+        $events[]=$row;$previous=hash('sha256',$raw);
+    }
+    return ['events'=>$events,'last_hash'=>$previous];
+}
+function cmsAtelierCulinaryStatus(string $dir,array $record,array $catalog,
+    array $canonical,array $guided): array {
+    if(!cmsCreationId($record['id']??null))
+        throw new InvalidArgumentException('ATELIER_CULINARY_ID');
+    $journal=cmsAtelierCulinaryJournal($dir,$record['id']);
+    $last=$journal['events']?end($journal['events']):null;
+    // Current source is mandatory even for STATUS. Unavailable source =>
+    // fail-closed to the UI; never assume a past review remains valid.
+    $context=cmsAtelierCulinaryContext($record,$catalog,$canonical,$guided);
+    $approved=is_array($last)&&($last['action']??null)==='approve'
+        &&($last['creation_version']??null)===($record['version']??null)
+        &&($last['recipe_id']??null)===$context['recipe_id']
+        &&hash_equals($context['recipe_sha256'],$last['recipe_sha256'])
+        &&hash_equals($context['script_binding_sha256'],$last['script_binding_sha256'])
+        &&$last['base_servings']===$context['base_servings']
+        &&$last['ingredient_count']===$context['ingredient_count'];
+    return [
+        'contract'=>'cdc-coral-human-culinary-visa-status-v1',
+        'human_culinary_review_recorded'=>$approved,
+        'review_event_count'=>count($journal['events']),
+        'canonical_sha256'=>$context['recipe_sha256'],
+        'source_version'=>$record['version'],
+        'authorizes_tts'=>false,'audio_approved'=>false,'publication_ready'=>false
+    ];
+}
+function cmsAtelierCulinaryAction(string $private,string $id,int $expected,
+    string $action,mixed $checks,mixed $note,bool $confirmed,bool $authenticated,
+    array $catalog,array $canonical,array $guided): array {
+    if(!$authenticated)throw new RuntimeException('ATELIER_CULINARY_AUTH');
+    if(!$confirmed)throw new InvalidArgumentException('ATELIER_CULINARY_CONFIRM');
+    if(!cmsCreationId($id)||$expected<1||$expected>9998
+        ||!in_array($action,['approve','revoke'],true))
+        throw new InvalidArgumentException('ATELIER_CULINARY_INPUT');
+    if(!is_array($checks)||array_keys($checks)!==cmsAtelierCulinaryChecks()
+        ||array_values($checks)!==['1','1','1','1'])
+        throw new InvalidArgumentException('ATELIER_CULINARY_CHECKS');
+    $note=cmsCreationText($note,900);
+    if(mbLen($note)<20)throw new InvalidArgumentException('ATELIER_CULINARY_NOTE');
+    $dir=cmsCreationDir($private);
+    $lockPath=$dir.'/catalog.lock';
+    if(is_link($lockPath))throw new RuntimeException('ATELIER_CULINARY_LOCK');
+    $handle=fopen($lockPath,'c');
+    if(!$handle||!flock($handle,LOCK_EX))
+        throw new RuntimeException('ATELIER_CULINARY_LOCK');
+    try{
+        if(!@chmod($lockPath,0600))
+            throw new RuntimeException('ATELIER_CULINARY_LOCK');
+        $record=cmsCreationRead($dir,$id);
+        if(!$record||($record['kind']??null)!=='atelier'
+            ||$record['version']!==$expected)
+            throw new RuntimeException('ATELIER_CULINARY_CONFLICT');
+        $status=cmsAtelierCulinaryStatus($dir,$record,$catalog,$canonical,$guided);
+        if($status['human_culinary_review_recorded']===($action==='approve'))
+            throw new InvalidArgumentException('ATELIER_CULINARY_ALREADY_SET');
+        $context=cmsAtelierCulinaryContext($record,$catalog,$canonical,$guided);
+        $journal=cmsAtelierCulinaryJournal($dir,$id);
+        $num=count($journal['events'])+1;
+        if($num>9998)throw new RuntimeException('ATELIER_CULINARY_CAPACITY');
+        $row=[
+            'contract'=>'cdc-coral-human-culinary-visa-v1',
+            'creation_id'=>$id,'event'=>$num,
+            'creation_version'=>$record['version'],
+            'action'=>$action,'recipe_id'=>$context['recipe_id'],
+            'recipe_sha256'=>$context['recipe_sha256'],
+            'script_binding_sha256'=>$context['script_binding_sha256'],
+            'base_servings'=>$context['base_servings'],
+            'ingredient_count'=>$context['ingredient_count'],
+            'checks'=>cmsAtelierCulinaryChecks(),'note'=>$note,
+            'reviewer'=>'authenticated-cms-owner',
+            'reviewed_at'=>gmdate('Y-m-d\TH:i:s\Z'),
+            'previous_event_sha256'=>$journal['last_hash']
+        ];
+        $json=json_encode($row,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
+        $target=$dir.'/culinary-visa-'.$id.'.'.sprintf('%04d',$num).'.json';
+        if(file_exists($target)||is_link($target))
+            throw new RuntimeException('ATELIER_CULINARY_CONFLICT');
+        $temp=tempnam($dir,'culinary-');
+        if($temp===false)throw new RuntimeException('ATELIER_CULINARY_STORE');
+        try{
+            if(is_link($temp)||!@chmod($temp,0600)
+                ||file_put_contents($temp,$json,LOCK_EX)!==strlen($json)
+                ||!rename($temp,$target))
+                throw new RuntimeException('ATELIER_CULINARY_STORE');
+        }finally{if(is_file($temp))@unlink($temp);}
+        return $row;
+    }finally{flock($handle,LOCK_UN);fclose($handle);}
+}
+
 function cmsAstroPublicationGapReport(array $record): array {
     $kind=$record['kind']??null;
     $coverage=cmsAstroPublicationCoverage();
