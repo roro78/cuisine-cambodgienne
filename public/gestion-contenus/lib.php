@@ -1681,6 +1681,82 @@ function cmsStudioLinkedDraft(array $creations,string $sourceId): ?array {
     }
     return $found;
 }
+/**
+ * Read-only V4 visual comparison of a saved, exact-shape guided proposal.
+ * Text-only replacements are resolved against the REAL published DOM in the
+ * sandboxed browser; failure to map any changed field leaves it unchanged.
+ * This is deliberately NOT an Astro renderer or a publication gate.
+ */
+function cmsStudioVisualChanges(array $original,array $proposed): array {
+    if(array_key_exists('schema_version',$proposed)){
+        if($proposed['schema_version']!==1)throw new RuntimeException('VISUAL_SCHEMA');
+        unset($proposed['schema_version']);
+    }
+    $changes=[];
+    $walk=function(mixed $before,mixed $after,string $path,int $depth)
+        use (&$walk,&$changes):void {
+        if($depth>12 || count($changes)>120)throw new RuntimeException('VISUAL_LIMIT');
+        if(is_array($before)){
+            if(!is_array($after) || array_is_list($before)!==array_is_list($after)
+                || count($before)!==count($after)
+                || array_diff_key($before,$after) || array_diff_key($after,$before))
+                throw new RuntimeException('VISUAL_SHAPE');
+            foreach($before as $key=>$value)
+                $walk($value,$after[$key],$path.'.'.$key,$depth+1);
+            return;
+        }
+        if(gettype($before)!==gettype($after))
+            throw new RuntimeException('VISUAL_TYPE');
+        if(($path!=='' && (str_ends_with($path,'.id')||str_ends_with($path,'.scalable')))
+           && $before!==$after)throw new RuntimeException('VISUAL_IMMUTABLE');
+        if($before===$after)return;
+        if(!is_string($before) && !is_int($before) && !is_float($before))
+            throw new RuntimeException('VISUAL_UNSUPPORTED');
+        $from=(string)$before;$to=(string)$after;
+        if(strlen($from)>9000 || strlen($to)>9000)
+            throw new RuntimeException('VISUAL_SIZE');
+        $changes[]=['path'=>$path,'from'=>$from,'to'=>$to];
+    };
+    $walk($original,$proposed,'fields',0);
+    if(count($changes)>120)throw new RuntimeException('VISUAL_LIMIT');
+    return $changes;
+}
+
+/** The preview is confined to known canonical public routes, not arbitrary URLs. */
+function cmsStudioVisualRoute(array $source): ?string {
+    $url=$source['url']??null;
+    if(!is_string($url))return null;
+    $parts=parse_url($url);
+    if(!is_array($parts)||($parts['scheme']??null)!=='https'
+        ||($parts['host']??null)!=='www.cuisine-du-cambodge.com'
+        ||isset($parts['port'])||isset($parts['user'])||isset($parts['query'])
+        ||isset($parts['fragment']))return null;
+    $route=$parts['path']??'';
+    if(!is_string($route) || !preg_match(
+        '~^/(?:recettes|culture|ingredients|techniques|apprendre)/(?:pratique/)?[a-z0-9-]+/$~D',$route))
+        return null;
+    return $route;
+}
+
+/** Existing published workshop -> saved private linked draft (subset of public fields). */
+function cmsStudioVisualLinkedFields(array $original,array $stored): array {
+    $proposal=$original;
+    foreach(['finalPreparation','learningGoal','portionLabel','beforeStarting','equipment'] as $key)
+        if(array_key_exists($key,$original)&&array_key_exists($key,$stored))
+            $proposal[$key]=$stored[$key];
+    if(isset($original['phases'],$stored['phases'])
+        && is_array($stored['phases'])&&array_is_list($stored['phases'])
+        && count($original['phases'])===count($stored['phases'])){
+        foreach($stored['phases'] as $i=>$phase){
+            if(!is_array($phase))throw new RuntimeException('VISUAL_PHASE');
+            foreach(['title','learning'] as $field)
+                if(isset($phase[$field])&&array_key_exists($field,$original['phases'][$i]))
+                    $proposal['phases'][$i][$field]=$phase[$field];
+        }
+    }
+    return $proposal;
+}
+
 /** Read-only status projection for the library; never convert stored versions. */
 function cmsStudioCatalogDrafts(array $historical,array $creations,array $catalog,array $canonical): array {
     foreach($catalog as $id=>$source){
