@@ -70,6 +70,14 @@ try{
   assert.equal(await page.locator('[data-atelier-seven-scripts] textarea[name$="[text]"]').count(),7);
   assert.equal(await page.locator('#cms-quality [data-coral-prereception]').count(),1);
   assert.equal(await page.locator('[data-coral-human-visas]').count(),1);
+  assert.equal(await page.locator('[data-studio-advanced]').getAttribute('open'),null,'advanced controls collapsed');
+  assert.equal(await page.locator('#cms-audio').getAttribute('open'),null,'audio optional and collapsed');
+  const phases=page.locator('[data-create-rows="phases"] > details');
+  assert.equal(await phases.count(),6,'six real pedagogical steps');
+  assert.ok((await phases.first().locator('summary').innerText()).trim().length>8,'descriptive step title');
+  await phases.first().locator('summary').click();
+  const step=page.locator('[name="fields[phases][0][learning]"]');
+  const stepChanged=(await step.inputValue())+' — consigne de test locale';await step.fill(stepChanged);
   const input=page.locator('[name="fields[learningGoal]"]');
   const changed=(await input.inputValue())+' — modification synthétique locale';await input.fill(changed);
   await page.locator('.editor-shortcuts a[href="#cms-quality"]').click();
@@ -83,6 +91,8 @@ try{
   const record=JSON.parse(await readFile(path.join(privateDir,cid+'.0002.json'),'utf8'));
   assert.equal(record.source_binding.source_id,fixture.id);
   assert.equal(record.version,2);
+  assert.equal(record.fields.phases[0].learning,stepChanged,'step saved without audio');
+  assert.ok(!record.atelier_scripts || record.atelier_scripts.chapters.every(c=>!c.text),'no invented narration');
   assert.equal(await hash(fixture.legacy),original);
   await page.goto(origin+'/gestion-contenus/?kind=atelier&status=draft');
   const card=page.locator('.card').filter({has:page.locator(`a[href*="${encodeURIComponent(fixture.id)}"]`)});
@@ -93,6 +103,11 @@ try{
   assert.equal(await page.locator('#cms-fields').count(),0,'historical editor is read-only');
   assert.ok((await page.locator('#cms-preview').innerText()).includes('PRIVATE_HISTORY_ONLY'));
   await page.goto(linkedUrl);
+  await page.locator('.editor-shortcuts a[href="#cms-audio"]').click();
+  assert.equal(await page.locator('#cms-audio').evaluate(el=>el.open),true);
+  assert.equal(await page.locator('#cms-audio > details').count(),7,'seven chapters available');
+  assert.match(await page.locator('#cms-audio > details').first().innerText(),/À rédiger/);
+  await page.locator('[data-studio-advanced] > summary').click();
   await page.locator('[data-coral-human-visas] > summary').click();
   assert.equal(await page.locator('button[name=review_action]').count(),0,'no premature human visas');
   await page.locator('.editor-shortcuts a[href="#cms-quality"]').click();
@@ -100,6 +115,7 @@ try{
   await mkdir('artifacts/cms-unified-review',{recursive:true});
   await page.screenshot({path:'artifacts/cms-unified-review/mobile-390.png'});
   await page.setViewportSize({width:360,height:800});await noOverflow('linked workshop 360');
+  await page.setViewportSize({width:768,height:1024});await noOverflow('tablet');
   await page.setViewportSize({width:1440,height:1000});await noOverflow('desktop');
   await page.screenshot({path:'artifacts/cms-unified-review/desktop.png'});
   await page.goto(origin+'/gestion-contenus/?calendar=1');
@@ -111,11 +127,31 @@ try{
   assert.equal(response.status(),409,'replay does not create another linked draft');
   const firstVersions=(await readdir(privateDir)).filter(n=>n.endsWith('.0001.json')&&n.startsWith('c-'));
   assert.equal(firstVersions.length,2,'only calendar fixture and one linked draft');
+  for(const kind of ['recette','atelier','culture','ingredient','technique']){
+    await page.goto(origin+'/gestion-contenus/?new=1&kind='+kind);
+    assert.equal(await page.locator('#cms-new-editor').count(),1,'new '+kind);
+    await noOverflow('new '+kind);
+  }
+  await page.goto(origin+'/gestion-contenus/?new=1&kind=atelier');
+  await page.locator('[name=title]').fill('Atelier synthétique pour recette navigateur');
+  await page.locator('[name=angle]').fill('Vérification locale du brouillon sans narration');
+  const recipeChoice=page.locator('select[name="atelier_reference[recipeSlug]"]');
+  assert.ok(await recipeChoice.locator('option').count()>1,'published recipe titles offered');
+  await page.locator('button[name=create_save]').click();
+  await page.waitForURL(/saved_new=1/);
+  assert.match(await page.locator('#cms-preview').innerText(),/Atelier synthétique/);
+  assert.equal(await page.locator('#cms-audio').evaluate(el=>el.open),false);
+  await page.goto(linkedUrl);
+  await page.locator('.editor-shortcuts a[href="#cms-steps"]').click();
+  await page.screenshot({path:'artifacts/cms-unified-review/steps-desktop.png'});
+  await page.setViewportSize({width:390,height:844});
+  await page.locator('.editor-shortcuts a[href="#cms-steps"]').click();
+  await page.screenshot({path:'artifacts/cms-unified-review/steps-mobile.png'});
   const canonicalPath=path.join(root,'editorial-source-index.json');
   const canonical=JSON.parse(await readFile(canonicalPath,'utf8'));
   canonical.items.find(item=>item.id===fixture.id).fingerprint='f'.repeat(64);
   const {writeFile}=await import('node:fs/promises');await writeFile(canonicalPath,JSON.stringify(canonical));
-  await page.goto(linkedUrl);
+  await page.goto(linkedUrl);await page.reload();
   assert.equal(await page.locator('button[name=create_save]').isDisabled(),true,'changed full canonical source blocks saving');
   assert.equal(await page.locator('[data-coral-human-visas]').count(),0,'changed source cannot display active visas');
   const staleForm=await page.locator('#cms-new-editor').evaluate(form=>Object.fromEntries(new FormData(form)));
@@ -129,8 +165,8 @@ try{
   }),'no provider/audio/publication request: '+JSON.stringify(external));
   assert.deepEqual(errors,[],'browser JavaScript');
   assert.doesNotMatch(logs,/PHP (?:Fatal|Warning|Parse|Deprecated)/);
-  console.log('UNIFIED_STUDIO_BROWSER_PASS mobile 360/390, desktop, real login/CSRF, transition, save, history, five categories and calendar');
-}finally{
+  console.log('UNIFIED_STUDIO_BROWSER_PASS mobile 360/390, tablet 768, desktop, real login/CSRF, transition, save, history, five categories and calendar');
+}catch(error){ console.error(logs); throw error; }finally{
   if(browser)await browser.close();
   if(server){server.kill();await new Promise(r=>server.exitCode!==null?r():server.once('exit',r));}
   await rm(root,{recursive:true,force:true});

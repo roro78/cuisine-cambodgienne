@@ -754,8 +754,8 @@ function cmsCreationSchema(): array {
         'intro'=>['Présentation','long'],'learningGoal'=>['Objectif pédagogique','long'],
         'finalPreparation'=>['Résultat final','long'],'portionLabel'=>['Portions ou participants','short'],
         'beforeStarting'=>['Préparation initiale','list'],'equipment'=>['Matériel','list'],
-        'phases'=>['Chapitres pédagogiques','rows',
-          ['title'=>'Titre du chapitre','learning'=>'Apprentissage visé']]
+        'phases'=>['Étapes de l’atelier','rows',
+          ['title'=>'Titre de l’étape','learning'=>'Consigne et apprentissage visé']]
       ],
       'ingredient'=>[
         'intro'=>['Introduction','long'],'seoDescription'=>['Description SEO','long'],
@@ -1149,19 +1149,26 @@ function cmsAtelierReferenceClean(mixed $raw,array $catalog): ?array {
         throw new InvalidArgumentException('ATELIER_REFERENCE_CHANGED');
     return ['version'=>1,'recipeSlug'=>$slug,'catalogFingerprint'=>$fingerprint];
 }
-function cmsAtelierReferenceHtml(mixed $raw=null): string {
+function cmsAtelierReferenceHtml(mixed $raw=null,array $catalog=[]): string {
     $slug=is_array($raw)&&is_string($raw['recipeSlug']??null)
         ?$raw['recipeSlug']:'';
+    $options='<option value="">Choisir une recette publiée</option>';
+    $found=false;
+    foreach($catalog as $source){
+        if(($source['kind']??'')!=='recette')continue;
+        $value=explode(':',$source['id'],2)[1];$selected=$value===$slug;$found=$found||$selected;
+        $options.='<option value="'.cmsEsc($value).'"'.($selected?' selected':'').'>'
+            .cmsEsc($source['title']).'</option>';
+    }
+    if($slug!==''&&!$found)$options.='<option selected value="'.cmsEsc($slug).'">'
+        .cmsEsc($slug).' — à vérifier</option>';
     return '<details class="guided-group" data-atelier-canonical-source>'
-        .'<summary>Recette canonique — validation humaine</summary>'
-        .'<p class="small muted">Choisissez uniquement une recette déjà publiée. '
-        .'Ce lien est vérifié sur le catalogue lors de la sauvegarde. '
-        .'La correspondance des ingrédients, portions, six phases et sept scripts '
-        .'reste à contrôler : aucun MP3 n’est produit ni approuvé.</p>'
+        .'<summary>Recette associée</summary>'
+        .'<p class="small muted">Choisissez la recette suivie pendant cet atelier. '
+        .'Vérifiez ses ingrédients et ses portions avant de détailler les étapes.</p>'
         .'<input type="hidden" name="atelier_reference[version]" value="1">'
-        .'<label>Slug de la recette publiée (ex. bai-sach-chrouk)'
-        .'<input name="atelier_reference[recipeSlug]" maxlength="100"'
-        .' value="'.cmsEsc($slug).'"></label></details>';
+        .'<label>Recette publiée<select name="atelier_reference[recipeSlug]">'
+        .$options.'</select></label></details>';
 }
 
 
@@ -1275,11 +1282,11 @@ function cmsAtelierPhaseDetailsHtml(mixed $raw,array $fields,mixed $reference): 
         $existing[(int)$entry['index']]=$entry;
     }
     $html='<details class="guided-group" data-atelier-phase-details>'
-        .'<summary>Six phases Coral V2 — gestes, contrôles et sécurité</summary>'
+        .'<summary>Détailler les gestes, les contrôles et la sécurité des six étapes</summary>'
         .'<p class="small muted">Préparez puis enregistrez d’abord la recette '
-        .'canonique et les six chapitres de base. Les enrichissements sont '
-        .'humains, liés aux titres et à l’empreinte de recette actuels. '
-        .'Aucune narration ni publication automatique.</p>'
+        .'associée et les six étapes ci-dessus. Complétez ensuite les gestes, '
+        .'les points de contrôle et les conseils de sécurité. '
+        .'Ces détails restent liés à la version enregistrée.</p>'
         .'<input type="hidden" name="atelier_phase_details[version]" value="1">'
         .'<input type="hidden" name="atelier_phase_details[recipeSlug]" value="'.cmsEsc($boundSlug).'">'
         .'<input type="hidden" name="atelier_phase_details[catalogFingerprint]" value="'.cmsEsc($boundHash).'">';
@@ -1297,7 +1304,7 @@ function cmsAtelierPhaseDetailsHtml(mixed $raw,array $fields,mixed $reference): 
             ||$boundSlug!==$slug||$boundHash!==$hash;
         $base='atelier_phase_details[phases]['.$i.']';
         $html.='<details class="guided-group"><summary>'
-            .($i+1).'. '.cmsEsc($title).' ('.cmsEsc(cmsAtelierPhaseIds()[$i]).')</summary>'
+            .($i+1).'. '.cmsEsc($title).'</summary>'
             .'<input type="hidden" name="'.$base.'[index]" value="'.$i.'">'
             .'<input type="hidden" name="'.$base.'[id]" value="'.cmsAtelierPhaseIds()[$i].'">'
             .'<input type="hidden" name="'.$base.'[sourceTitle]" value="'.cmsEsc($stored['sourceTitle']??$title).'">'
@@ -1409,11 +1416,12 @@ function cmsAtelierScriptsHtml(mixed $raw,array $fields,
     // Preserve stale original digest instead of retargeting written scripts.
     $claimed=is_string($raw['bindingDigest']??null)?$raw['bindingDigest']:$digest;
     $stale=$claimed!==''&&$claimed!==$digest;
-    $html='<details class="guided-group" data-atelier-seven-scripts>'
-        .'<summary>Sept narrations privées — introduction et six chapitres</summary>'
+    $html='<details id="cms-audio" class="guided-group" data-atelier-seven-scripts>'
+        .'<summary>Préparer le guide audio — facultatif · sept chapitres</summary>'
         .'<p class="small muted">Écrivez et relisez chaque narration après '
         .'avoir enregistré les six phases complètes. Aucun script n’est '
-        .'approuvé automatiquement, aucun MP3 Coral n’est produit.</p>';
+        .'approuvé automatiquement. Vous pouvez enregistrer le contenu sans '
+        .'renseigner le guide audio. Aucun MP3 n’est produit.</p>';
     if($digest==='')$html.='<p class="small muted">Source pédagogique '
         .'incomplète : sauvegardez d’abord les six phases détaillées.</p>';
     if($stale)$html.='<p class="small muted" role="alert">'
@@ -1438,7 +1446,7 @@ function cmsAtelierScriptsHtml(mixed $raw,array $fields,
         $txt=is_string($row['text']??null)?$row['text']:'';
         $note=is_string($row['editorNote']??null)?$row['editorNote']:'';
         $html.='<details class="guided-group"><summary>'
-            .cmsEsc($labels).'</summary>'
+            .cmsEsc($labels).' — '.($txt===''?'À rédiger':($stale?'À reprendre':'Rédigé · à relire')).'</summary>'
             .'<input type="hidden" name="'.$base.'[index]" value="'.$i.'">'
             .'<input type="hidden" name="'.$base.'[id]" value="'.$id.'">'
             .'<label>Texte exact de narration (brouillon)'
@@ -1751,10 +1759,11 @@ function cmsStudioTransition(string $private,array $source,array $catalog,array 
     }finally{flock($lock,LOCK_UN);fclose($lock);}
 }
 /** Same five-section navigation for every category and both storage contracts. */
-function cmsStudioNavigationHtml(bool $creation=false): string {
+function cmsStudioNavigationHtml(bool $creation=false,bool $atelier=false): string {
     $anchors=['cms-general'=>'Informations générales',
-        $creation?'cms-new-content':'cms-content'=>'Contenu',
-        'cms-preview'=>'Aperçu','cms-quality'=>'Contrôles qualité',
+        $creation?'cms-new-content':'cms-content'=>'Modifier le contenu',
+        ...($atelier?['cms-steps'=>'Étapes de l’atelier','cms-audio'=>'Guide audio (facultatif)']:[]),
+        'cms-preview'=>'Aperçu','cms-quality'=>'Ce qu’il reste à faire',
         'cms-history'=>'Historique et publication',
         $creation?'cms-new-save':'cms-save'=>'Enregistrer'];
     $html='<nav class="editor-shortcuts" aria-label="Sections du Studio">';
@@ -2442,11 +2451,13 @@ function cmsCreationFormHtml(string $kind,array $values=[]): string {
         $value=$values[$field]??null;
         if($type==='rows'){
             $rows=is_array($value)&&$value?array_values($value):[[]];
-            $html.='<fieldset class="create-collection"><legend>'.$label.'</legend>'
+            $html.='<fieldset class="create-collection"'.($kind==='atelier'&&$field==='phases'?' id="cms-steps"':'').'><legend>'.$label.'</legend>'
                 .'<div class="create-rows" data-create-rows="'.$name.'">';
             foreach($rows as $i=>$row){
-                $html.='<div class="create-row" data-create-row><strong>Élément '
-                    .((int)$i+1).'</strong>';
+                $rowTitle=is_string($row['title']??null)&&trim($row['title'])!==''
+                    ?$row['title']:('Élément '.((int)$i+1));
+                $html.='<details class="create-row" data-create-row'.(count($rows)===1?' open':'').'><summary><strong>'
+                    .cmsEsc($rowTitle).'</strong></summary>';
                 foreach($spec[2] as $key=>$lbl){
                     $text=$row[$key]??'';
                     if(is_array($text))$text=implode("\n\n",$text);
@@ -2455,7 +2466,7 @@ function cmsCreationFormHtml(string $kind,array $values=[]): string {
                         .cmsEsc((string)$text).'</textarea></label>';
                 }
                 $html.='<button type="button" class="secondary" data-create-remove>'
-                    .'Retirer cet élément</button></div>';
+                    .'Retirer cet élément</button></details>';
             }
             $html.='</div><button type="button" class="secondary" data-create-add="'
                 .$name.'">Ajouter un élément</button></fieldset>';

@@ -1,5 +1,10 @@
 # Cuisine du Cambodge — ARCHITECTURE VERROUILLÉE du Studio éditorial
 
+**Studio UX V3 — 29 octobre :** [audit, parcours et livraison ciblée](CMS-STUDIO-UX-V3-20261029.md).
+Le contenu est prioritaire ; le guide audio est facultatif ; les contrôles complets
+restent en mode avancé. Contrats, historiques et autorisations inchangés.
+
+
 **Statut : référence permanente, applicable aux contenus présents et futurs.**  
 Décision du 28 octobre 2026, à la suite de la réception Android du Studio V2.  
 **Le cas Bai Sach Chrouk a servi de test ; ce n'est pas un modèle réservé à cet atelier.**

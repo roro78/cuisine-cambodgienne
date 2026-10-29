@@ -701,7 +701,7 @@ nav.versions a{padding:6px 9px;background:#edf4ea;border-radius:6px}
 .preview-text{white-space:pre-wrap;overflow-wrap:anywhere}.guided-collection{padding:8px 0}.guided-row-fields{padding:6px}.guided-collection .guided-collection{padding-left:10px;border-left:2px solid #e3e8dc}
 .guided-nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .coral-script-text{white-space:pre-wrap;overflow-wrap:anywhere;max-height:320px;overflow:auto;padding:12px;border:1px solid #e3e8dc;border-radius:8px}
-.studio-quality{scroll-margin-top:18px}.studio-save{position:sticky;bottom:0;background:#fcfcf9;padding:12px 0;border-top:1px solid #d9ddd5;z-index:2}
+.studio-quality{scroll-margin-top:18px} .create-row summary{cursor:pointer;padding:12px 0;overflow-wrap:anywhere} .create-row[open] summary{margin-bottom:12px} #cms-preview{max-width:850px;line-height:1.7} #cms-preview h3,#cms-preview h4{margin-top:1.5em} details input,details textarea,details select{max-width:100%;box-sizing:border-box} .editor-shortcuts{flex-wrap:wrap}.studio-save{position:sticky;bottom:0;background:#fcfcf9;padding:12px 0;border-top:1px solid #d9ddd5;z-index:2}
 section,fieldset,.stack,.grid>*{min-width:0}code,pre{overflow-wrap:anywhere;white-space:pre-wrap}.editor-shortcuts a{min-height:44px;display:inline-flex;align-items:center}
 @media(max-width:650px){.guided-row{grid-template-columns:1fr}.guided-wide{grid-column:1}}
 
@@ -849,7 +849,7 @@ L'IA, les créneaux Facebook/Instagram et les statistiques viendront dans des é
 <section>
 <span class="badge"><?= isset($creation['source_binding'])?'Révision privée d’une fiche publiée':'Création privée' ?> · aucune publication</span>
 <h2 id="cms-general"><?= isset($creation['source_binding'])?'Modifier la fiche publiée':($creation?'Modifier le brouillon de nouvelle page':'Créer un nouveau contenu') ?></h2>
-<?= cmsStudioNavigationHtml(true) ?>
+<?= cmsStudioNavigationHtml(true,$createKind==='atelier') ?>
 <?php if(isset($creation['source_binding'])): ?>
 <p class="note">Ce brouillon reste lié à <strong><?= cmsEsc($studioBoundSource['title']??$creation['source_binding']['source_id']) ?></strong>.
 Il prépare une révision de la même fiche ; aucune nouvelle page publique n’est créée.</p>
@@ -971,7 +971,7 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <p class="small muted">La génération structurée est indisponible. Vous pouvez rédiger et enregistrer manuellement.</p>
 <?php endif; ?></details>
 <?php endif; ?>
-<h3 id="cms-new-content">Contenu de la fiche — <?= cmsEsc(cmsCreationKinds()[$createKind]) ?></h3>
+<h3 id="cms-new-content">Modifier le contenu — <?= cmsEsc(cmsCreationKinds()[$createKind]) ?></h3>
 <?= cmsCreationFormHtml($createKind,
     is_array($createForm['fields']??null)?$createForm['fields']:[]) ?>
 <?php if($createKind==='recette'): ?>
@@ -986,7 +986,7 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?= cmsTechniqueLinksHtml($createForm['technique_links']??null) ?>
 <?php endif; ?>
 <?php if($createKind==='atelier'): ?>
-<?= cmsAtelierReferenceHtml($createForm['atelier_reference']??null) ?>
+<?= cmsAtelierReferenceHtml($createForm['atelier_reference']??null,$catalog) ?>
 <?= cmsAtelierPhaseDetailsHtml($createForm['atelier_phase_details']??null,
     is_array($createForm['fields']??null)?$createForm['fields']:[],
     $createForm['atelier_reference']??null) ?>
@@ -995,10 +995,12 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
     $createForm['atelier_reference']??null,
     $createForm['atelier_phase_details']??null) ?>
 <?php endif; ?>
+<details class="guided-group"><summary>Notes et calendrier — facultatifs</summary>
 <label>Notes de recherche privées (jamais publiées)
 <textarea name="research_note" rows="3" maxlength="3000"><?= cmsEsc((string)($createForm['research_note']??'')) ?></textarea></label>
 <label>Date cible du calendrier éditorial (facultative)
 <input type="date" name="target_date" value="<?= cmsEsc((string)($createForm['target_date']??'')) ?>"></label>
+</details>
 <label>Statut<select name="state">
 <option value="draft"<?= ($createForm['state']??'draft')==='draft'?' selected':'' ?>>Brouillon de travail</option>
 <?php if($pendingContent===null): ?>
@@ -1031,7 +1033,19 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <p><strong>Angle :</strong> <?= cmsEsc($creation['angle']) ?></p>
 <?= cmsGuidedPreviewHtml('fiche',$creation['fields']) ?>
 </section><section id="cms-quality" class="studio-quality">
-<h2>Contrôles qualité — <?= cmsEsc(cmsCreationKinds()[$creation['kind']]) ?></h2>
+<h2>Ce qu’il reste à faire</h2>
+<p>Relisez le contenu et enregistrez vos changements. Retrouvez ensuite cette version dans la bibliothèque.</p>
+<?php if($creation['kind']==='atelier'): ?>
+<p>Le guide audio est facultatif. Ces préparatifs audio ne bloquent pas l’enregistrement d’un brouillon sans narration.</p>
+<ul data-studio-next-actions>
+<li><?= ($creation['atelier_reference']['recipeSlug']??'')!==''?'Recette associée choisie : vérifiez les ingrédients et les portions.':'Choisissez la recette associée si vous souhaitez détailler les gestes ou préparer le guide.' ?></li>
+<li><?= count($creation['fields']['phases']??[]) ?> étape(s) enregistrée(s). <a href="#cms-steps">Relire les consignes</a>.</li>
+<li><?= cmsAtelierPhaseDetailsComplete($creation['atelier_phase_details']??null)?'Les gestes et points de contrôle sont renseignés ; ils restent à relire.':'Avant de rédiger le guide, complétez les gestes et points de contrôle des six étapes.' ?></li>
+<li><a href="#cms-audio">Ouvrir les sept chapitres audio</a> pour voir les textes à rédiger ou à relire. Leur présence ne vaut pas approbation.</li>
+</ul>
+<?php endif; ?>
+<?php if($creation['similar_titles']): ?><p class="note">Des sujets proches existent : examinez-les dans les contrôles ci-dessous avant de poursuivre.</p><?php endif; ?>
+<details class="guided-group" data-studio-advanced><summary>Contrôles avancés — vérifications et validations complètes</summary>
 <p class="small muted">Les contrôles concernent la version enregistrée. Enregistrez vos modifications avant de les évaluer.</p>
 <?php if(!$studioSourceCurrent): ?>
 <p class="note" role="alert">Contrôles et visas indisponibles : la source publiée ne correspond plus à ce brouillon.</p>
@@ -1349,6 +1363,7 @@ les champs ou la structure de la recette avant une future prévisualisation.</p>
 <?php foreach($creation['similar_titles'] as $match): ?>
 <p><?= cmsEsc($match['title']) ?></p><?php endforeach; ?></div>
 <?php endif; ?>
+</details>
 </section><section id="cms-history">
 <h2>Historique et publication</h2>
 <?php if($createVersion): ?>
@@ -1402,42 +1417,11 @@ avec validation humaine et tests.</p>
  rel="noopener noreferrer">Consulter la page actuellement publiée</a></p>
 <section id="cms-general"><span class="badge"><?= cmsEsc($kindLabels[$selected['kind']]??'Contenu') ?></span>
 <h2><?= cmsEsc($selected['title']) ?></h2>
-<p class="small muted">Identifiant stable : <?= cmsEsc($selected['id']) ?> · Empreinte de la source :
-<code><?= cmsEsc($selected['fingerprint']) ?></code></p>
+<details class="guided-group"><summary>Informations techniques de la fiche</summary><p class="small muted">Identifiant stable : <?= cmsEsc($selected['id']) ?> · Empreinte de la source :
+<code><?= cmsEsc($selected['fingerprint']) ?></code></p></details>
 <p class="summary"><strong>Présentation actuellement utilisée par le catalogue social :</strong>
 <?= cmsEsc($selected['summary']) ?></p></section>
 <?= cmsStudioNavigationHtml() ?>
-<section id="cms-quality" class="studio-quality">
-<h2>Contrôles qualité — <?= cmsEsc($kindLabels[$selected['kind']]) ?></h2>
-<?php if($selected['kind']==='atelier'): ?>
-<?php if($studioLinked!==null): ?>
-<p class="note">L’édition et les contrôles Coral V2 sont réunis dans le brouillon lié. Cet écran conserve les versions antérieures en lecture seule.</p>
-<a class="btn" href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>#cms-quality">Modifier et contrôler l’atelier</a>
-<?php else: ?>
-<div data-coral-prereception>
-<p class="note">Cet atelier publié n’a pas encore de brouillon privé Coral V2 lié. Ses MP3 historiques restent indépendants de cette préparation.</p>
-<p>À compléter ou vérifier : recette de référence et son empreinte canonique, détails des six phases, sept narrations et décisions humaines.</p>
-<details class="guided-group"><summary>Neuf vérifications Coral V2 — non évaluées pour cette révision</summary>
-<ol><li>Recette canonique et empreinte SHA256</li><li>Six phases détaillées</li><li>Sept narrations complètes</li><li>Sept visas humains de texte</li><li>Validation culinaire humaine</li><li>Droits médias et voix</li><li>Écoute des sept MP3</li><li>Mesures des durées réelles</li><li>Navigation et synchronisation mobiles</li></ol>
-<p>Textes attendus : <?= cmsEsc(implode(', ',cmsAtelierScriptIds())) ?>. Aucun visa ni état audio n’est repris automatiquement.</p>
-</details></div>
-<?php if($selectedCanonical && $guidedSelected && $guidedSelected['model']==='cookingWorkshopGuides' && !$staleDraft): ?>
-<form method="post" class="stack" data-studio-transition>
-<input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
-<input type="hidden" name="source_id" value="<?= cmsEsc($selected['id']) ?>">
-<input type="hidden" name="source_fingerprint" value="<?= cmsEsc($selected['fingerprint']) ?>">
-<input type="hidden" name="canonical_fingerprint" value="<?= cmsEsc($selectedCanonical['fingerprint']) ?>">
-<input type="hidden" name="expected_version" value="<?= (int)($latest['version']??0) ?>">
-<p class="small muted">Enregistrer d’abord les modifications ci-dessous. La transition reprend uniquement les champs compatibles de la dernière version enregistrée et de la projection publique. Les notes et versions historiques restent consultables séparément. La recette de référence reste à choisir et vérifier.</p>
-<label><input type="checkbox" name="transition_confirm" value="1" required> Je souhaite préparer une révision Coral V2 privée de cette même fiche, en conservant son historique.</label>
-<button name="studio_transition" value="1">Préparer le brouillon Coral V2 lié</button>
-</form>
-<?php else: ?><p class="note">Transition indisponible : modèle ou source à vérifier. Les versions existantes restent conservées ; aucune adaptation approximative n’est effectuée.</p><?php endif; ?>
-<?php endif; ?>
-<?php else: ?>
-<ul><?php foreach(cmsAstroPublicationCoverage()[$selected['kind']]['gates'] as $gate): ?><li><?= cmsEsc($gate) ?></li><?php endforeach; ?></ul>
-<p class="small muted">Comparer le brouillon enregistré à la fiche publiée et relire les modifications. Le statut « prêt pour relecture » ne constitue pas une validation humaine ni une autorisation de publication.</p>
-<?php endif; ?></section>
 <div class="grid">
 <section>
 <?php if($studioLinked===null): ?>
@@ -1449,10 +1433,10 @@ un brouillon privé : il ne modifie pas la page publiée, les médias ni les MP3
 Vous pouvez préparer le texte d'une proposition, mais les changements structurés restent
 bloqués jusqu'à la mise en place et la vérification de cet index.</p>
 <?php else: ?>
-<p class="small muted">Version complète Astro protégée :
+<details class="guided-group"><summary>Protection de la version publiée</summary><p class="small muted">Version complète Astro protégée :
 <code><?= cmsEsc(substr($selectedCanonical['fingerprint'],0,16)) ?></code>
 (<?= cmsEsc($selectedCanonical['model']) ?>).
-Toute modification de la fiche d'origine exige une nouvelle revue.</p>
+Toute modification de la fiche d'origine exige une nouvelle revue.</p></details>
 <?php endif; ?>
 <?php if($guidedContractError): ?>
 <p class="note" role="alert">Les champs guidés de cette fiche sont momentanément
@@ -1589,6 +1573,38 @@ Télécharger la demande de modification (JSON)</button>
 </div>
 </section>
 </div>
+<section id="cms-quality" class="studio-quality">
+<h2>Ce qu’il reste à faire — <?= cmsEsc($kindLabels[$selected['kind']]) ?></h2>
+<?php if($selected['kind']==='atelier'): ?>
+<?php if($studioLinked!==null): ?>
+<p class="note">Les modifications et le guide audio facultatif sont réunis dans le brouillon lié. Cet écran conserve les versions antérieures en lecture seule.</p>
+<a class="btn" href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>#cms-quality">Modifier et contrôler l’atelier</a>
+<?php else: ?>
+<div data-coral-prereception>
+<p class="note">Vous pouvez modifier le contenu de la fiche et enregistrer un brouillon privé. Pour détailler les étapes ou préparer un guide audio facultatif, ouvrez le brouillon de travail lié à cette fiche.</p>
+<p>Les enregistrements audio déjà publiés sont conservés. Préparer un guide audio n’est pas nécessaire pour enregistrer vos modifications.</p>
+<details class="guided-group"><summary>Contrôles avancés du guide audio — neuf vérifications</summary>
+<ol><li>Recette canonique et empreinte SHA256</li><li>Six phases détaillées</li><li>Sept narrations complètes</li><li>Sept visas humains de texte</li><li>Validation culinaire humaine</li><li>Droits médias et voix</li><li>Écoute des sept MP3</li><li>Mesures des durées réelles</li><li>Navigation et synchronisation mobiles</li></ol>
+<p>Textes attendus : <?= cmsEsc(implode(', ',cmsAtelierScriptIds())) ?>. Aucun visa ni état audio n’est repris automatiquement.</p>
+</details></div>
+<?php if($selectedCanonical && $guidedSelected && $guidedSelected['model']==='cookingWorkshopGuides' && !$staleDraft): ?>
+<form method="post" class="stack" data-studio-transition>
+<input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
+<input type="hidden" name="source_id" value="<?= cmsEsc($selected['id']) ?>">
+<input type="hidden" name="source_fingerprint" value="<?= cmsEsc($selected['fingerprint']) ?>">
+<input type="hidden" name="canonical_fingerprint" value="<?= cmsEsc($selectedCanonical['fingerprint']) ?>">
+<input type="hidden" name="expected_version" value="<?= (int)($latest['version']??0) ?>">
+<p class="small muted">Enregistrez d’abord vos modifications. Le brouillon de travail reprendra les champs compatibles de votre dernière version. Les anciennes notes et versions resteront consultables dans l’historique. Vous pourrez ensuite choisir la recette associée.</p>
+<label><input type="checkbox" name="transition_confirm" value="1" required> Je souhaite ouvrir le brouillon de travail de cette fiche, en conservant son historique.</label>
+<button name="studio_transition" value="1">Ouvrir le brouillon de travail</button>
+</form>
+<?php else: ?><p class="note">Transition indisponible : modèle ou source à vérifier. Les versions existantes restent conservées ; aucune adaptation approximative n’est effectuée.</p><?php endif; ?>
+<?php endif; ?>
+<?php else: ?>
+<ul><?php foreach(cmsAstroPublicationCoverage()[$selected['kind']]['gates'] as $gate): ?><li><?= cmsEsc($gate) ?></li><?php endforeach; ?></ul>
+<p class="small muted">Comparer le brouillon enregistré à la fiche publiée et relire les modifications. Le statut « prêt pour relecture » ne constitue pas une validation humaine ni une autorisation de publication.</p>
+<?php endif; ?></section>
+
 <?php else: ?>
 <section><h2>Contenus disponibles à la préparation</h2>
 <p class="small muted"><?= count($catalog) ?> contenus reconnus dans le catalogue public actuel.
@@ -1620,6 +1636,17 @@ Cette liste n'est ni un calendrier ni une file de validation sociale.</p>
 <script nonce="<?= cmsEsc($nonce) ?>">
 // Anchors keep all fields in the current document. Warn before a real page
 // change (quality calculations/history) when an edit has not been saved.
+document.querySelectorAll('.editor-shortcuts a, [data-studio-next-actions] a').forEach(link=>link.addEventListener('click',()=>{
+  const target=document.querySelector(link.getAttribute('href'));
+  if(target?.matches('details'))target.open=true;
+  for(let parent=target?.parentElement;parent;parent=parent.parentElement){
+    if(parent.matches('details'))parent.open=true;
+  }
+}));
+document.addEventListener('input',event=>{
+  if(!event.target.matches('[data-create-row] textarea[name$="[title]"]'))return;
+  event.target.closest('[data-create-row]').querySelector('summary strong').textContent=event.target.value.trim()||'Sans titre';
+});
 let studioDirty=false;
 document.querySelectorAll('[data-studio-edit]').forEach(form=>{
   form.addEventListener('input',()=>{studioDirty=true;});
@@ -1656,7 +1683,8 @@ document.querySelectorAll('[data-create-add]').forEach(button=>{
       el.name=el.name.replace(/\[\d+\]\[/,'['+next+'][');
       el.value='';
     });
-    clone.querySelector('strong').textContent='Élément '+(next+1);
+    clone.querySelector('strong').textContent='Nouvel élément';
+    clone.open=true;studioDirty=true;
     container.append(clone);
   });
 });
@@ -1666,6 +1694,7 @@ document.addEventListener('click',event=>{
   const row=button.closest('[data-create-row]');
   const group=row?.parentElement;
   if(!row||!group)return;
+  studioDirty=true;
   if(group.querySelectorAll('[data-create-row]').length>1)row.remove();
   else row.querySelectorAll('textarea').forEach(el=>{el.value='';});
 });
