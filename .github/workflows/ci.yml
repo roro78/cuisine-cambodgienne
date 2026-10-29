@@ -49,6 +49,9 @@ jobs:
           php tests/php/editorial-cms-drafts-smoke.php
           php tests/php/editorial-all-guided-smoke.php dist
           php tests/php/editorial-create-manual-smoke.php dist
+          php -l public/gestion-contenus/publication-gap-audit.php
+          php -l tests/php/editorial-astro-publication-gap-smoke.php
+          php tests/php/editorial-astro-publication-gap-smoke.php
           php -l tests/php/editorial-ai-brief-smoke.php
           php tests/php/editorial-ai-brief-smoke.php dist
           php -l tests/php/editorial-ai-content-contract-smoke.php
