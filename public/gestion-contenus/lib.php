@@ -1263,8 +1263,13 @@ function cmsAtelierPhaseDetailsHtml(mixed $raw,array $fields,mixed $reference): 
     $boundSlug=is_string($raw['recipeSlug']??null)?$raw['recipeSlug']:$slug;
     $boundHash=is_string($raw['catalogFingerprint']??null)?$raw['catalogFingerprint']:$hash;
     $existing=[];
-    foreach(($raw['phases']??[]) as $entry)
-        if(is_array($entry)&&is_int($entry['index']??null))$existing[$entry['index']]=$entry;
+    foreach(($raw['phases']??[]) as $entry){
+        // HTML POST and temporary AI form snapshots carry numeric indices as
+        // strings, unlike the saved normalized JSON. Preserve both forms.
+        if(!is_array($entry)||!is_scalar($entry['index']??null)
+            ||!preg_match('/^[0-5]$/D',(string)$entry['index']))continue;
+        $existing[(int)$entry['index']]=$entry;
+    }
     $html='<details class="guided-group" data-atelier-phase-details>'
         .'<summary>Six phases Coral V2 — gestes, contrôles et sécurité</summary>'
         .'<p class="small muted">Préparez puis enregistrez d’abord la recette '
