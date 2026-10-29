@@ -1324,6 +1324,129 @@ function cmsAtelierPhaseDetailsHtml(mixed $raw,array $fields,mixed $reference): 
     return $html.'</details>';
 }
 
+
+/** C4C3C: source-bound HUMAN narrative drafts, never TTS or media approval. */
+function cmsAtelierScriptIds(): array {
+    return array_merge(['intro'],cmsAtelierPhaseIds());
+}
+function cmsAtelierScriptSourceDigest(array $fields,?array $reference,?array $details): string {
+    if(!cmsAtelierPhaseDetailsComplete($details)
+       ||!is_array($reference)||($reference['recipeSlug']??'')===''
+       ||!is_string($reference['catalogFingerprint']??null)
+       ||!preg_match('/^[a-f0-9]{16}$/D',$reference['catalogFingerprint']))
+        return '';
+    $base=[];
+    foreach(['intro','learningGoal','finalPreparation','portionLabel'] as $key){
+        if(!is_string($fields[$key]??null)||trim($fields[$key])==='')
+            return '';
+        $base[$key]=$fields[$key];
+    }
+    return hash('sha256',json_encode([
+        'contract'=>'cdc-workshop-narration-binding-v1',
+        'recipeSlug'=>$reference['recipeSlug'],
+        'recipeCatalogFingerprint'=>$reference['catalogFingerprint'],
+        'core'=>$base,'phases'=>$details['phases']
+    ],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR));
+}
+function cmsAtelierScriptsClean(mixed $raw,array $fields,
+    ?array $reference,?array $phaseDetails): ?array {
+    if($raw===null)return null;
+    if(!is_array($raw)||array_diff(array_keys($raw),
+        ['version','bindingDigest','chapters'])
+        ||!in_array($raw['version']??null,[1,'1'],true))
+        throw new InvalidArgumentException('ATELIER_SCRIPTS_SCHEMA');
+    $rows=$raw['chapters']??[];
+    if(!is_array($rows)||!array_is_list($rows)||count($rows)>7)
+        throw new InvalidArgumentException('ATELIER_SCRIPTS_SCHEMA');
+    $expected=cmsAtelierScriptSourceDigest($fields,$reference,$phaseDetails);
+    $claimed=cmsCreationText($raw['bindingDigest']??'',64);
+    if($claimed!==''&&!preg_match('/^[a-f0-9]{64}$/D',$claimed))
+        throw new InvalidArgumentException('ATELIER_SCRIPTS_BINDING');
+    $seen=[];$chapters=[];$ids=cmsAtelierScriptIds();
+    foreach($rows as $row){
+        if(!is_array($row)||array_diff(array_keys($row),
+                ['index','id','text','editorNote'])
+            ||!is_scalar($row['index']??null)
+            ||!preg_match('/^[0-6]$/D',(string)$row['index']))
+            throw new InvalidArgumentException('ATELIER_SCRIPTS_SCHEMA');
+        $i=(int)$row['index'];
+        if(isset($seen[$i]))throw new InvalidArgumentException('ATELIER_SCRIPTS_DUPLICATE');
+        $seen[$i]=true;
+        if(($row['id']??null)!==$ids[$i])
+            throw new InvalidArgumentException('ATELIER_SCRIPTS_ID');
+        $script=cmsCreationText($row['text']??'',7000);
+        $note=cmsCreationText($row['editorNote']??'',900);
+        if($script===''&&$note==='')continue;
+        if($expected===''||$claimed!==$expected)
+            throw new InvalidArgumentException('ATELIER_SCRIPTS_SOURCE_CHANGED');
+        $chapters[]=['index'=>$i,'id'=>$ids[$i],
+            'text'=>$script,'editorNote'=>$note];
+    }
+    return ['version'=>1,'bindingDigest'=>$expected,'chapters'=>$chapters];
+}
+function cmsAtelierScriptsDraftComplete(mixed $value): bool {
+    if(!is_array($value)||count($value['chapters']??[])!==7)return false;
+    foreach($value['chapters'] as $i=>$chapter){
+        if(($chapter['index']??null)!==$i
+            ||($chapter['id']??null)!==cmsAtelierScriptIds()[$i]
+            ||!is_string($chapter['text']??null)
+            ||mbLen($chapter['text'])<120)return false;
+    }
+    return true;
+}
+function cmsAtelierScriptsHtml(mixed $raw,array $fields,
+    mixed $reference,mixed $phaseDetails): string {
+    $raw=is_array($raw)?$raw:[];
+    $ref=is_array($reference)?$reference:null;
+    $detail=null;
+    try{$detail=cmsAtelierPhaseDetailsClean($phaseDetails,$fields,$ref);}
+    catch(Throwable $ignored){$detail=null;}
+    $digest=cmsAtelierScriptSourceDigest($fields,$ref,$detail);
+    // Preserve stale original digest instead of retargeting written scripts.
+    $claimed=is_string($raw['bindingDigest']??null)?$raw['bindingDigest']:$digest;
+    $stale=$claimed!==''&&$claimed!==$digest;
+    $html='<details class="guided-group" data-atelier-seven-scripts>'
+        .'<summary>Sept narrations privées — introduction et six chapitres</summary>'
+        .'<p class="small muted">Écrivez et relisez chaque narration après '
+        .'avoir enregistré les six phases complètes. Aucun script n’est '
+        .'approuvé automatiquement, aucun MP3 Coral n’est produit.</p>';
+    if($digest==='')$html.='<p class="small muted">Source pédagogique '
+        .'incomplète : sauvegardez d’abord les six phases détaillées.</p>';
+    if($stale)$html.='<p class="small muted" role="alert">'
+        .'La recette ou une phase a changé. Les narrations existantes restent '
+        .'attachées à leur ancienne source : effacez-les explicitement avant '
+        .'de créer une nouvelle version.</p>';
+    $html.='<input type="hidden" name="atelier_scripts[version]" value="1">'
+        .'<input type="hidden" name="atelier_scripts[bindingDigest]" value="'
+        .cmsEsc($claimed).'">';
+    $saved=[];
+    foreach(($raw['chapters']??[]) as $chapter){
+        if(!is_array($chapter)||!is_scalar($chapter['index']??null)
+            ||!preg_match('/^[0-6]$/D',(string)$chapter['index']))continue;
+        $saved[(int)$chapter['index']]=$chapter;
+    }
+    foreach(cmsAtelierScriptIds() as $i=>$id){
+        $labels=$i===0?'Introduction audio':
+            'Phase '.$i.' — '.(is_string($fields['phases'][$i-1]['title']??null)
+                ?$fields['phases'][$i-1]['title']:$id);
+        $row=$saved[$i]??[];
+        $base='atelier_scripts[chapters]['.$i.']';
+        $txt=is_string($row['text']??null)?$row['text']:'';
+        $note=is_string($row['editorNote']??null)?$row['editorNote']:'';
+        $html.='<details class="guided-group"><summary>'
+            .cmsEsc($labels).'</summary>'
+            .'<input type="hidden" name="'.$base.'[index]" value="'.$i.'">'
+            .'<input type="hidden" name="'.$base.'[id]" value="'.$id.'">'
+            .'<label>Texte exact de narration (brouillon)'
+            .'<textarea name="'.$base.'[text]" rows="6" maxlength="7000">'
+            .cmsEsc($txt).'</textarea></label>'
+            .'<label>Notes de relecture internes'
+            .'<textarea name="'.$base.'[editorNote]" rows="2" maxlength="900">'
+            .cmsEsc($note).'</textarea></label></details>';
+    }
+    return $html.'</details>';
+}
+
 function cmsCreationKinds(): array {
     return ['recette'=>'Recette','atelier'=>'Atelier','culture'=>'Carnet culturel',
         'ingredient'=>'Fiche ingrédient','technique'=>'Fiche technique'];
@@ -1581,6 +1704,13 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
                 $posted['atelier_phase_details']??($previous['atelier_phase_details']??null),
                 $fields,$atelierRef)
             :null;
+        if($kind!=='atelier' && isset($posted['atelier_scripts']))
+            throw new InvalidArgumentException('ATELIER_SCRIPTS_SCHEMA');
+        $atelierScripts=$kind==='atelier'
+            ?cmsAtelierScriptsClean(
+                $posted['atelier_scripts']??($previous['atelier_scripts']??null),
+                $fields,$atelierRef,$atelierPhaseDetails)
+            :null;
         if($id!==null && !$previous)throw new RuntimeException('CREATION_NOT_FOUND');
         if($id===null && $expected!==0)throw new RuntimeException('CREATION_CONFLICT');
         if($previous && ($previous['version']!==$expected
@@ -1628,6 +1758,7 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
         if($techniqueLinks!==null)$record['technique_links']=$techniqueLinks;
         if($atelierRef!==null)$record['atelier_reference']=$atelierRef;
         if($atelierPhaseDetails!==null)$record['atelier_phase_details']=$atelierPhaseDetails;
+        if($atelierScripts!==null)$record['atelier_scripts']=$atelierScripts;
         if($origin==='ai' && $provenance!==null)$record['ai_brief']=$provenance;
         if($origin==='ai' && $contentProvenance!==null){
             $record['ai_content']=$contentProvenance;
@@ -1973,6 +2104,7 @@ function cmsCreationPosted(array $raw): array {
     $posted['technique_links']=$raw['technique_links']??null;
     $posted['atelier_reference']=$raw['atelier_reference']??null;
     $posted['atelier_phase_details']=$raw['atelier_phase_details']??null;
+    $posted['atelier_scripts']=$raw['atelier_scripts']??null;
     return $posted;
 }
 function cmsAiContentSettings(array $cfg): ?array {
