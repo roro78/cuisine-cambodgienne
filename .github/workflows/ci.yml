@@ -123,6 +123,7 @@ jobs:
           node --test tests/editorial-content-pipeline.test.mjs
           node --test tests/editorial-ai-brief-contract.test.mjs
           node --test tests/editorial-ollama-benchmark.test.mjs tests/n8n-ollama-benchmark.test.mjs
+          node --test tests/editorial-ollama-structured-benchmark.test.mjs
 
       - name: Motion regression contract
         run: npm run test:motion
