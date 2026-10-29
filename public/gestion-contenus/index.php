@@ -620,6 +620,10 @@ if($auth){
 }
 $kindLabels=['recette'=>'Recette','culture'=>'Carnet','atelier'=>'Atelier',
     'ingredient'=>'Ingrédient','technique'=>'Technique'];
+if($auth){
+    try{$latestById=cmsStudioCatalogDrafts($latestById,$creations,$catalog,$canonicalById);}
+    catch(Throwable $e){cmsUnavailable();}
+}
 $shown=$auth?cmsFilterCatalog($catalog,$latestById,$kind,$q,$status):[];
 ?>
 <!doctype html><html lang="fr"><head><meta charset="utf-8">
@@ -1601,7 +1605,7 @@ Cette liste n'est ni un calendrier ni une file de validation sociale.</p>
 <?php if($prev): ?>
 <p class="small"><span class="badge"><?= $prev['state']==='review'?'Prêt pour relecture':'Brouillon' ?>
 · v<?= (int)$prev['version'] ?></span></p>
-<?php if(!hash_equals($prev['source_fingerprint'],$src['fingerprint'])): ?>
+<?php if(!hash_equals($prev['source_fingerprint'],$src['fingerprint'])||($prev['studio_source_stale']??false)): ?>
 <p class="small note">Source actualisée depuis le brouillon : relecture nécessaire.</p>
 <?php endif; ?>
 <?php endif; ?>

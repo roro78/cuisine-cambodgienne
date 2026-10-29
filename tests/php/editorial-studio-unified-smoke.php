@@ -60,6 +60,10 @@ try{
         studioReject(fn()=>cmsCreationSave($root,$forged,$catalog,2,$linked['id'],null,null,null,$canonical),'STUDIO_BINDING_SERVER_ONLY');
         $changed=$canonical;$changed[$id]['fingerprint']=str_repeat('f',64);
         studioAssert(!cmsStudioBindingCurrent($v2['source_binding'],$catalog,$changed),'FULL_SOURCE_CHANGE');
+        $status=cmsStudioCatalogDrafts([],[$v2['id']=>$v2],$catalog,$canonical);
+        studioAssert($status[$id]['version']===2,'LIBRARY_LATEST_BOUND_VERSION');
+        $staleStatus=cmsStudioCatalogDrafts([],[$v2['id']=>$v2],$catalog,$changed);
+        studioAssert(count(cmsFilterCatalog($catalog,$staleStatus,'atelier','','stale'))===1,'LIBRARY_STALE_CANONICAL_FILTER');
         studioReject(fn()=>cmsCreationSave($root,$post,$catalog,2,$linked['id'],null,null,null,$changed),'STUDIO_SOURCE_STALE');
         studioAssert(cmsStudioLinkedDraft(cmsCreationList(cmsCreationDir($root)),$id)['id']===$linked['id'],'REOPEN');
         $check=cmsAtelierBlueprintPreflight($v2,$catalog);

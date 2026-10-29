@@ -386,7 +386,8 @@ function cmsFilterCatalog(array $catalog,array $latestById,string $kind,string $
         if($kind!=='all' && $src['kind']!==$kind)continue;
         $draft=$latestById[$src['id']]??null;
         $stale=is_array($draft) && is_string($draft['source_fingerprint']??null)
-            && !hash_equals($src['fingerprint'],$draft['source_fingerprint']);
+            && (!hash_equals($src['fingerprint'],$draft['source_fingerprint'])
+                ||($draft['studio_source_stale']??false)===true);
         if($status==='without' && $draft!==null)continue;
         if($status==='draft' && ($draft['state']??null)!=='draft')continue;
         if($status==='review' && ($draft['state']??null)!=='review')continue;
@@ -1671,6 +1672,17 @@ function cmsStudioLinkedDraft(array $creations,string $sourceId): ?array {
         $found=$record;
     }
     return $found;
+}
+/** Read-only status projection for the library; never convert stored versions. */
+function cmsStudioCatalogDrafts(array $historical,array $creations,array $catalog,array $canonical): array {
+    foreach($catalog as $id=>$source){
+        $linked=cmsStudioLinkedDraft($creations,$id);
+        if($linked===null)continue;
+        $historical[$id]=['state'=>$linked['state'],'version'=>$linked['version'],
+            'source_fingerprint'=>$linked['source_binding']['source_fingerprint'],
+            'studio_source_stale'=>!cmsStudioBindingCurrent($linked['source_binding'],$catalog,$canonical)];
+    }
+    return $historical;
 }
 /** Normalize a saved guided shape to its HTML inputs without changing metadata. */
 function cmsStudioGuidedInput(mixed $original,mixed $value): mixed {

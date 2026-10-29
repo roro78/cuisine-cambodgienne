@@ -83,6 +83,9 @@ try{
   assert.equal(record.source_binding.source_id,fixture.id);
   assert.equal(record.version,2);
   assert.equal(await hash(fixture.legacy),original);
+  await page.goto(origin+'/gestion-contenus/?kind=atelier&status=draft');
+  const card=page.locator('.card').filter({has:page.locator(`a[href*="${encodeURIComponent(fixture.id)}"]`)});
+  assert.match(await card.innerText(),/v2/,'library displays current bound version');
   await page.goto(origin+'/gestion-contenus/?id='+encodeURIComponent(fixture.id));
   assert.equal(new URL(page.url()).searchParams.get('cid'),cid,'published entry reopens bound draft');
   await page.locator('a[href*="history=1"]').first().click();

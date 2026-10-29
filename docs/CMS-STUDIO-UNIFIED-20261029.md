@@ -48,6 +48,11 @@ historique partielle d’une autre famille.
    lecture seule ; le formulaire historique ne peut plus créer de révision
    concurrente, même par POST direct.
 
+La bibliothèque projette le statut et le numéro de la dernière version liée ;
+ses filtres « brouillon / à relire / source modifiée » utilisent cette projection,
+y compris en cas de changement de l’empreinte canonique complète. Cette vue ne
+réécrit et ne fusionne aucun fichier des deux historiques.
+
 `source_binding` est une métadonnée **serveur**, non un champ éditable ni une
 sortie IA. Elle conserve l’ID publié, ses deux empreintes et la version/hash
 du snapshot historique de départ. Le slug du brouillon reste privé ; son
@@ -91,7 +96,7 @@ MP3, source documentaire privée, visa ou droit média n’est importé.
 
 - `npm run check` : 0 erreur, 0 warning (24 hints préexistants).
 - `npm run build` : PASS, 48 pages ; les trois index conservent leurs identités.
-- Contrats Node CMS/guidé/paquet : 17/17 PASS avant intégration des tests nouveaux.
+- Contrats Node CMS/index/guidé/planification/paquet : 23/23 PASS.
 - `tests/php/editorial-studio-unified-smoke.php dist` : six ateliers réels,
   relation immuable, historique conservé, anti-doublon, rejeu, source périmée,
   aucune validation inventée, sept champs et calendrier.
