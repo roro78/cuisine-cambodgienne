@@ -821,9 +821,10 @@ function cmsAtelierCoralPrereception(string $private,array $record,array $catalo
         if($index>0){
             $phase=$phases[$index-1]??null;
             if(is_array($phase)&&($phase['id']??null)===$scriptId
-                &&is_int($phase['minutes']??null)
-                &&$phase['minutes']>0){
-                $plannedMinutes=$phase['minutes'];
+                &&is_scalar($phase['minutes']??null)
+                &&preg_match('/^(?:[1-9][0-9]{0,2})$/D',(string)$phase['minutes'])
+                &&(int)$phase['minutes']<=240){
+                $plannedMinutes=(int)$phase['minutes'];
                 $phaseMinutes+=$plannedMinutes;
             }
         }
