@@ -68,6 +68,8 @@ jobs:
           php tests/php/editorial-atelier-phase-details-smoke.php dist
           php -l tests/php/editorial-atelier-seven-scripts-smoke.php
           php tests/php/editorial-atelier-seven-scripts-smoke.php dist
+          php -l tests/php/editorial-coral-human-visa-smoke.php
+          php tests/php/editorial-coral-human-visa-smoke.php dist
           php -l tests/php/editorial-ai-brief-smoke.php
           php tests/php/editorial-ai-brief-smoke.php dist
           php -l tests/php/editorial-ai-content-contract-smoke.php
