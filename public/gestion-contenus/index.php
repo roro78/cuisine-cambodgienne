@@ -11,7 +11,7 @@ header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('Referrer-Policy: no-referrer');
 $nonce=base64_encode(random_bytes(18));
-header("Content-Security-Policy: default-src 'none'; style-src 'nonce-{$nonce}'; script-src 'nonce-{$nonce}'; img-src https://www.cuisine-du-cambodge.com; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
+header("Content-Security-Policy: default-src 'none'; style-src 'nonce-{$nonce}'; script-src 'nonce-{$nonce}'; img-src https://www.cuisine-du-cambodge.com; frame-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
 function cmsUnavailable(): never { http_response_code(503);exit('Espace CMS privé indisponible.'); }
 $https=(!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS'])!=='off')
     || (string)($_SERVER['SERVER_PORT']??'')==='443';
@@ -625,6 +625,47 @@ if($auth){
     catch(Throwable $e){cmsUnavailable();}
 }
 $shown=$auth?cmsFilterCatalog($catalog,$latestById,$kind,$q,$status):[];
+// Build a read-only preview ONLY from a saved draft and verified public model.
+// A missing schema, stale source, or unsupported identity never degrades to a fake page.
+$visualPreview=null;$visualReason='';
+if($auth && $newMode && $creation!==null){
+    $visualReason='Cette nouvelle page n’a pas encore de gabarit public. Son aperçu de contenu reste disponible ci-dessous ; une conversion Astro vérifiée est nécessaire.';
+    if(isset($creation['source_binding'])){
+        $visualReason='Aperçu dans le gabarit public indisponible : identité, empreinte ou modèle à vérifier.';
+        if($studioSourceCurrent && $studioBoundSource){
+            try{
+                $allGuided=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);
+                $reference=$allGuided[$studioBoundSource['id']]??null;
+                $route=cmsStudioVisualRoute($studioBoundSource);
+                if(!$reference || $reference['model']!=='cookingWorkshopGuides'
+                    || $route===null)throw new RuntimeException('VISUAL_LINK');
+                $patch=cmsStudioVisualLinkedFields($reference['fields'],$creation['fields']??[]);
+                $changes=cmsStudioVisualChanges($reference['fields'],$patch);
+                if($creation['title']!==$studioBoundSource['title'])
+                    $changes[]=['path'=>'title','from'=>$studioBoundSource['title'],'to'=>$creation['title']];
+                $visualPreview=['route'=>$route,'changes'=>$changes];
+                $visualReason='';
+            }catch(Throwable $e){$visualReason='Aperçu fidèle indisponible : des champs ne correspondent pas au modèle public. Aucun changement n’est appliqué à la page.';}
+        }
+    }
+}elseif($auth && $selected!==null && $display!==null){
+    $visualReason='Aperçu public indisponible : aucune structure enregistrée et vérifiable pour cette version.';
+    if(!$staleDraft && $guidedSelected && $selectedCanonical && is_array($display['structure']??null)){
+        try{
+            if(($display['source_fingerprint']??null)!==$selected['fingerprint']
+                ||($display['canonical_fingerprint']??null)!==$selectedCanonical['fingerprint']
+                ||($guidedSelected['fingerprint']??null)!==$selectedCanonical['fingerprint'])
+                throw new RuntimeException('VISUAL_SOURCE');
+            $route=cmsStudioVisualRoute($selected);
+            if($route===null)throw new RuntimeException('VISUAL_ROUTE');
+            $changes=cmsStudioVisualChanges($guidedSelected['fields'],$display['structure']);
+            if($display['title']!==$selected['title'])
+                $changes[]=['path'=>'title','from'=>$selected['title'],'to'=>$display['title']];
+            $visualPreview=['route'=>$route,'changes'=>$changes];
+            $visualReason='';
+        }catch(Throwable $e){$visualReason='Aperçu fidèle indisponible : les champs du brouillon ne correspondent pas exactement à la source. Utilisez l’aperçu simplifié.';}
+    }elseif($staleDraft)$visualReason='La version source a changé : l’aperçu sur la page publique est suspendu. Le brouillon historique reste consultable.';
+}
 ?>
 <!doctype html><html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -706,6 +747,12 @@ nav.versions a{padding:6px 9px;background:#edf4ea;border-radius:6px}
 .work-resume__form input[type=checkbox]{margin-top:0}
 .work-resume--warning{background:#fff9ed;border-color:#e6ce94;border-left-color:#ad7a18}
 .work-resume--warning .work-resume__eyebrow{color:#765219}
+.visual-preview{margin:14px 0;border:1px solid #d4dfd3;border-radius:12px;padding:12px;background:#fafcf8}
+.visual-preview__head{padding:4px 3px 8px}.visual-preview__head p{margin:6px 0}
+.visual-preview iframe{display:block;width:100%;height:min(760px,75vh);min-height:420px;border:1px solid #dae0d7;border-radius:10px;background:#fff}
+.visual-preview [data-visual-status]{margin:6px 0 12px;line-height:1.5}
+.visual-preview__head strong{font-size:1.04rem}
+.studio-preview-layout{grid-template-columns:minmax(0,1fr)}
 @media(max-width:650px){.work-resume{grid-template-columns:1fr;padding:16px;gap:12px}
  .work-resume__actions,.work-resume__form{width:100%;max-width:none}
  .work-resume__actions .btn,.work-resume__form button{width:100%}}
@@ -1049,7 +1096,9 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?php if($creation): ?>
 <section id="cms-preview">
 <h2>Aperçu du brouillon enregistré</h2>
-<p class="small muted">Lecture simplifiée des champs enregistrés, sans reproduction du gabarit public, des images ni du lecteur audio.</p>
+<?= cmsStudioVisualPreviewHtml($visualPreview,$visualReason) ?>
+<h3>Champs enregistrés — lecture détaillée</h3>
+<p class="small muted">Cette lecture expose les données privées du brouillon et ne vaut pas publication.</p>
 <?php if(isset($_GET['saved_new'])): ?>
 <p role="status" class="notice">Nouvelle version privée enregistrée.</p>
 <?php endif; ?>
@@ -1498,7 +1547,7 @@ Je confirme la reprise de cette fiche dans un brouillon lié, en conservant l’
 <p class="summary"><strong>Présentation actuellement utilisée par le catalogue social :</strong>
 <?= cmsEsc($selected['summary']) ?></p></section>
 <?= cmsStudioNavigationHtml() ?>
-<div class="grid">
+<div class="grid studio-preview-layout">
 <section>
 <?php if($studioLinked===null): ?>
 <h2><?= $latest?'Modifier la proposition (version '.(int)$latest['version'].')':'Créer une proposition' ?></h2>
@@ -1598,8 +1647,9 @@ une relecture des modèles réels et une PR restent nécessaires.</p>
 <p id="cms-save"><a href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>">Ouvrir le formulaire et enregistrer une nouvelle version</a></p><?php endif; ?>
 </section>
 <section id="cms-preview"><h2>Aperçu du brouillon enregistré</h2>
-<p class="small muted">Lecture simplifiée de la proposition sauvegardée, et non
-prévisualisation exacte de la page publiée.</p>
+<?= cmsStudioVisualPreviewHtml($visualPreview,$visualReason) ?>
+<h3>Champs enregistrés — lecture détaillée</h3>
+<p class="small muted">Cette vue détaillée constitue une lecture privée et non une autorisation de publication.</p>
 <?php if(isset($_GET['saved'])): ?><p class="notice" role="status">Nouvelle version privée enregistrée.</p><?php endif; ?>
 <?php if(!$display): ?><p class="muted">Aucune version enregistrée. Complète puis sauvegarde le formulaire.</p>
 <?php else: ?>
@@ -1753,6 +1803,63 @@ document.querySelectorAll('[data-create-add]').forEach(button=>{
     clone.querySelector('strong').textContent='Nouvel élément';
     clone.open=true;studioDirty=true;
     container.append(clone);
+  });
+});
+// Visual preview reads only a SAVED version. It never sends draft data to the public URL.
+document.querySelectorAll('[data-visual-preview]').forEach(panel=>{
+  const frame=panel.querySelector('iframe');
+  const status=panel.querySelector('[data-visual-status]');
+  const say=message=>{status.textContent=message;};
+  frame.addEventListener('load',()=>{
+    try{
+      const raw=Uint8Array.from(atob(panel.dataset.changes),c=>c.charCodeAt(0));
+      const changes=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(raw));
+      const doc=frame.contentDocument;
+      const main=doc?.querySelector('main');
+      if(!main||!Array.isArray(changes))throw Error('PREVIEW_DOCUMENT');
+      // Do not enable page scripts: the iframe is same-origin, but sandboxed.
+      const norm=text=>text.replace(/\s+/gu,' ').trim();
+      const texts=[];
+      const walker=doc.createTreeWalker(main,NodeFilter.SHOW_TEXT);
+      for(let node;node=walker.nextNode();){
+        if(node.parentElement?.closest('script,style,noscript,template,svg'))continue;
+        if(norm(node.nodeValue||''))texts.push(node);
+      }
+      const patches=[];
+      const locked=new Set();
+      let missing=0;
+      for(const item of changes){
+        if(!item||typeof item.from!=='string'||typeof item.to!=='string'
+          ||typeof item.path!=='string')throw Error('PREVIEW_PATCH');
+        if(item.from===item.to)continue;
+        // Short labels and bare numbers have no safe semantic anchor in the
+        // published DOM. Refuse a guessed replacement rather than patching
+        // the wrong element even when its text happens to be unique.
+        if(item.path!=='title' && (item.from.trim().length<12
+          || /^\d+(?:[.,]\d+)?$/.test(item.from.trim()))){missing++;continue;}
+        let found;
+        if(item.path==='title'){
+          const heading=main.querySelector('h1');
+          if(heading&&norm(heading.textContent)===norm(item.from)&&heading.childNodes.length===1
+            &&heading.firstChild.nodeType===Node.TEXT_NODE)found=heading.firstChild;
+        }else{
+          const candidates=texts.filter(node=>norm(node.nodeValue||'')===norm(item.from));
+          if(candidates.length===1)found=candidates[0];
+        }
+        if(!found||locked.has(found)){missing++;continue;}
+        locked.add(found);patches.push([found,item.to]);
+      }
+      if(missing){
+        say('Aperçu incomplet : '+missing+' modification(s) ne correspondent pas exactement à la page publiée. Le rendu affiché reste la version publiée ; consultez les champs enregistrés ci-dessous.');
+        return;
+      }
+      for(const [node,value] of patches)node.nodeValue=value;
+      say(patches.length
+        ? 'Aperçu comparatif : '+patches.length+' modification(s) textuelle(s) reportée(s) dans le vrai gabarit publié. Vérifiez la mise en page, puis relisez les champs ci-dessous.'
+        : 'Aucune modification textuelle visible dans cette version. Le gabarit affiché correspond à la page publiée.');
+    }catch(e){
+      say('Impossible de vérifier la correspondance avec la page publique. Le brouillon privé n’a pas été affiché dans ce gabarit : utilisez les champs enregistrés ci-dessous.');
+    }
   });
 });
 document.addEventListener('click',event=>{
