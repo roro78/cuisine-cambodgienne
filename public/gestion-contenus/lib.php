@@ -849,6 +849,113 @@ function cmsRecipeAstroProfileHtml(mixed $raw=null): string {
     return $html;
 }
 
+
+/**
+ * C4B3 - optional human-only ingredient/step supplements for existing Recipe
+ * drafts. Each sparse entry is pinned to its original row index AND exact
+ * ingredient name/step title. Stale metadata is rejected, never silently
+ * reattached to another generated ingredient or instruction.
+ */
+function cmsRecipeAstroDetailsClean(mixed $raw,array $fields): ?array {
+    if($raw===null)return null;
+    if(!is_array($raw)||array_diff(array_keys($raw),['version','ingredients','steps'])
+        || !in_array($raw['version']??null,[1,'1'],true))
+        throw new InvalidArgumentException('RECIPE_DETAILS_SCHEMA');
+    $result=['version'=>1,'ingredients'=>[],'steps'=>[]];
+    foreach(['ingredients','steps'] as $group){
+        $items=$raw[$group]??[];
+        $reference=$fields[$group]??[];
+        if(!is_array($items)||!array_is_list($items)||count($items)>25
+            || !is_array($reference)||count($reference)>25)
+            throw new InvalidArgumentException('RECIPE_DETAILS_SCHEMA');
+        $sourceKey=$group==='ingredients'?'source_name':'source_title';
+        $originalKey=$group==='ingredients'?'name':'title';
+        $allowed=$group==='ingredients'
+            ?['index','source_name','note','group','scalable']
+            :['index','source_title','duration','cue','mistake'];
+        $seen=[];
+        foreach($items as $item){
+            if(!is_array($item)||array_diff(array_keys($item),$allowed)
+                || !array_key_exists('index',$item)
+                || !array_key_exists($sourceKey,$item)
+                || !is_scalar($item['index'])
+                || !preg_match('/^(0|[1-9][0-9]?)$/D',(string)$item['index']))
+                throw new InvalidArgumentException('RECIPE_DETAILS_SCHEMA');
+            $idx=(int)$item['index'];
+            if(isset($seen[$idx]))throw new InvalidArgumentException('RECIPE_DETAILS_DUPLICATE');
+            $seen[$idx]=true;
+            $source=cmsCreationText($item[$sourceKey],5000);
+            $values=[];
+            foreach($allowed as $key){
+                if($key==='index'||$key===$sourceKey)continue;
+                $values[$key]=cmsCreationText($item[$key]??'',500);
+            }
+            if($group==='ingredients' && !in_array($values['scalable'],['','yes','no'],true))
+                throw new InvalidArgumentException('RECIPE_DETAILS_SCALABLE');
+            $filled=count(array_filter($values,static fn(string $v):bool=>$v!==''))>0;
+            // Empty form rows can safely disappear after an ingredient is removed.
+            // Non-empty metadata must match EXACTLY its anchored source.
+            if(!$filled)continue;
+            if(!isset($reference[$idx])||($reference[$idx][$originalKey]??null)!==$source)
+                throw new InvalidArgumentException('RECIPE_DETAILS_SOURCE_CHANGED');
+            $result[$group][]=array_merge(['index'=>$idx,$sourceKey=>$source],$values);
+        }
+    }
+    return $result;
+}
+function cmsRecipeAstroDetailsHtml(mixed $raw,array $fields): string {
+    $raw=is_array($raw)?$raw:[];
+    $html='<details class="guided-group" data-recipe-astro-details>'
+        .'<summary>Détails culinaires — ingrédients et étapes (facultatifs)</summary>'
+        .'<p class="small muted">Compléments humains reliés aux lignes existantes. '
+        .'En cas de changement du nom d’un ingrédient ou du titre d’une étape, '
+        .'revalidez ces détails avant la sauvegarde. Aucun contenu IA n’est '
+        .'approuvé automatiquement.</p>'
+        .'<input type="hidden" name="recipe_astro_details[version]" value="1">';
+    foreach(['ingredients','steps'] as $group){
+        $sourceKey=$group==='ingredients'?'source_name':'source_title';
+        $originalKey=$group==='ingredients'?'name':'title';
+        $existing=[];
+        foreach(($raw[$group]??[]) as $row)
+            if(is_array($row)&&isset($row['index'])&&is_numeric($row['index']))
+                $existing[(int)$row['index']]=$row;
+        $rows=is_array($fields[$group]??null)?array_values($fields[$group]):[];
+        $html.='<fieldset><legend>'.($group==='ingredients'?'Ingrédients':'Étapes').'</legend>';
+        if(!$rows)$html.='<p class="small muted">Renseignez et enregistrez d’abord les lignes de recette.</p>';
+        foreach(array_slice($rows,0,25) as $i=>$row){
+            if(!is_array($row))continue;
+            $source=is_string($row[$originalKey]??null)?$row[$originalKey]:'';
+            if(trim($source)==='')continue;
+            $saved=$existing[$i]??[];
+            // Do not move details to a changed source in a generated candidate.
+            if(($saved[$sourceKey]??$source)!==$source)$saved=[];
+            $base='recipe_astro_details['.$group.']['.$i.']';
+            $html.='<div class="create-row"><strong>'.cmsEsc($source).'</strong>'
+                .'<input type="hidden" name="'.$base.'[index]" value="'.$i.'">'
+                .'<input type="hidden" name="'.$base.'['.$sourceKey.']" value="'.cmsEsc($source).'">';
+            $options=$group==='ingredients'
+                ?['note'=>'Précision de l’ingrédient','group'=>'Sous-préparation ou groupe']
+                :['duration'=>'Durée du geste','cue'=>'Repère observable','mistake'=>'Erreur à éviter'];
+            foreach($options as $key=>$label){
+                $value=is_string($saved[$key]??null)?$saved[$key]:'';
+                $html.='<label>'.cmsEsc($label).'<textarea rows="2" maxlength="500"'
+                    .' name="'.$base.'['.$key.']">'.cmsEsc($value).'</textarea></label>';
+            }
+            if($group==='ingredients'){
+                $selected=is_string($saved['scalable']??null)?$saved['scalable']:'';
+                $html.='<label>Ajuster avec les portions ? <select name="'.$base.'[scalable]">';
+                foreach([''=>'À vérifier','yes'=>'Oui','no'=>'Non'] as $value=>$label)
+                    $html.='<option value="'.$value.'"'
+                        .($selected===$value?' selected':'').'>'.$label.'</option>';
+                $html.='</select></label>';
+            }
+            $html.='</div>';
+        }
+        $html.='</fieldset>';
+    }
+    return $html.'</details>';
+}
+
 function cmsCreationKinds(): array {
     return ['recette'=>'Recette','atelier'=>'Atelier','culture'=>'Carnet culturel',
         'ingredient'=>'Fiche ingrédient','technique'=>'Fiche technique'];
@@ -1072,6 +1179,14 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
         $recipeAstro=$kind==='recette'
             ?cmsRecipeAstroProfileClean($posted['recipe_astro']??($previous['recipe_astro']??null))
             :null;
+        if($kind!=='recette' && isset($posted['recipe_astro_details']))
+            throw new InvalidArgumentException('RECIPE_DETAILS_SCHEMA');
+        // Null or absent fields from legacy clients inherit the previous
+        // append-only revision; incompatible sources always fail closed.
+        $recipeDetails=$kind==='recette'
+            ?cmsRecipeAstroDetailsClean(
+                $posted['recipe_astro_details']??($previous['recipe_astro_details']??null),$fields)
+            :null;
         if($id!==null && !$previous)throw new RuntimeException('CREATION_NOT_FOUND');
         if($id===null && $expected!==0)throw new RuntimeException('CREATION_CONFLICT');
         if($previous && ($previous['version']!==$expected
@@ -1114,6 +1229,7 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
             'recorded_at'=>gmdate('Y-m-d\TH:i:s\Z')
         ];
         if($recipeAstro!==null)$record['recipe_astro']=$recipeAstro;
+        if($recipeDetails!==null)$record['recipe_astro_details']=$recipeDetails;
         if($origin==='ai' && $provenance!==null)$record['ai_brief']=$provenance;
         if($origin==='ai' && $contentProvenance!==null){
             $record['ai_content']=$contentProvenance;
@@ -1454,6 +1570,7 @@ function cmsCreationPosted(array $raw): array {
         $posted[$key]=$raw[$key]??'';
     $posted['fields']=$raw['fields']??[];
     $posted['recipe_astro']=$raw['recipe_astro']??null;
+    $posted['recipe_astro_details']=$raw['recipe_astro_details']??null;
     return $posted;
 }
 function cmsAiContentSettings(array $cfg): ?array {
