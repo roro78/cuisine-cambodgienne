@@ -1160,6 +1160,170 @@ function cmsAtelierReferenceHtml(mixed $raw=null): string {
         .' value="'.cmsEsc($slug).'"></label></details>';
 }
 
+
+/** C4C3B - six fixed Coral V2 phase IDs, strictly human-supplied additions.
+ * Each nonempty entry is anchored to the recipe fingerprint, phase index,
+ * original title AND original learning goal. Editing the source fails closed.
+ */
+function cmsAtelierPhaseIds(): array {
+    return ['installer','preparer','assembler','maitriser','rectifier','terminer'];
+}
+function cmsAtelierPhaseDetailsList(mixed $raw,int $max,string $error): array {
+    if(is_string($raw)){
+        $raw=cmsCreationText($raw,4000);
+        $raw=$raw===''?[]:preg_split('/\n+/u',$raw,-1,PREG_SPLIT_NO_EMPTY);
+    }
+    if(!is_array($raw)||!array_is_list($raw)||count($raw)>$max)
+        throw new InvalidArgumentException($error);
+    $out=[];
+    foreach($raw as $v){
+        $s=cmsCreationText($v,500);
+        if($s===''||in_array($s,$out,true))
+            throw new InvalidArgumentException($error);
+        $out[]=$s;
+    }
+    return $out;
+}
+function cmsAtelierPhaseDetailsClean(mixed $raw,array $fields,?array $reference): ?array {
+    if($raw===null)return null;
+    if(!is_array($raw)||array_diff(array_keys($raw),
+        ['version','recipeSlug','catalogFingerprint','phases'])
+        ||!in_array($raw['version']??null,[1,'1'],true))
+        throw new InvalidArgumentException('ATELIER_PHASE_SCHEMA');
+    $phases=$raw['phases']??[];
+    if(!is_array($phases)||!array_is_list($phases)||count($phases)>6)
+        throw new InvalidArgumentException('ATELIER_PHASE_SCHEMA');
+    $catalogSlug=$reference['recipeSlug']??'';
+    $catalogHash=$reference['catalogFingerprint']??'';
+    $claimedSlug=cmsCreationText($raw['recipeSlug']??'',100);
+    $claimedHash=cmsCreationText($raw['catalogFingerprint']??'',64);
+    $source=$fields['phases']??[];
+    $ids=cmsAtelierPhaseIds();$seen=[];$items=[];
+    foreach($phases as $row){
+        $allowed=['index','id','sourceTitle','sourceLearning','minutes',
+            'ingredientNames','actions','observe','check','mistake',
+            'recovery','safety','pausePrompt'];
+        if(!is_array($row)||array_diff(array_keys($row),$allowed)
+            ||!is_scalar($row['index']??null)
+            ||!preg_match('/^[0-5]$/D',(string)$row['index']))
+            throw new InvalidArgumentException('ATELIER_PHASE_SCHEMA');
+        $i=(int)$row['index'];
+        if(isset($seen[$i]))throw new InvalidArgumentException('ATELIER_PHASE_DUPLICATE');
+        $seen[$i]=true;
+        if(($row['id']??null)!==$ids[$i])
+            throw new InvalidArgumentException('ATELIER_PHASE_ID');
+        $originalTitle=cmsCreationText($row['sourceTitle']??'',500);
+        $originalLearning=cmsCreationText($row['sourceLearning']??'',500);
+        $minutes=is_int($row['minutes']??null)?(string)$row['minutes']
+            :cmsCreationText($row['minutes']??'',3);
+        if($minutes!=='' && (!preg_match('/^(?:[1-9]|[1-9][0-9]|1[0-9]{2}|2[0-3][0-9]|240)$/D',$minutes)))
+            throw new InvalidArgumentException('ATELIER_PHASE_MINUTES');
+        $actions=cmsAtelierPhaseDetailsList($row['actions']??[],8,'ATELIER_PHASE_ACTIONS');
+        $names=cmsAtelierPhaseDetailsList($row['ingredientNames']??[],20,'ATELIER_PHASE_INGREDIENTS');
+        $text=[];
+        foreach(['observe','check','mistake','recovery','safety','pausePrompt'] as $k)
+            $text[$k]=cmsCreationText($row[$k]??'',900);
+        $filled=$minutes!==''||$actions!==[]||$names!==[]
+            ||count(array_filter($text,static fn(string $v):bool=>$v!==''))>0;
+        if(!$filled)continue;
+        if($catalogSlug===''||$catalogHash===''||$claimedSlug!==$catalogSlug
+            ||$claimedHash!==$catalogHash)
+            throw new InvalidArgumentException('ATELIER_PHASE_SOURCE_CHANGED');
+        if(!isset($source[$i])
+            ||($source[$i]['title']??null)!==$originalTitle
+            ||($source[$i]['learning']??null)!==$originalLearning)
+            throw new InvalidArgumentException('ATELIER_PHASE_SOURCE_CHANGED');
+        $items[]=array_merge(['index'=>$i,'id'=>$ids[$i],
+            'sourceTitle'=>$originalTitle,'sourceLearning'=>$originalLearning,
+            'minutes'=>$minutes,'ingredientNames'=>$names,'actions'=>$actions],$text);
+    }
+    return ['version'=>1,'recipeSlug'=>$catalogSlug,
+        'catalogFingerprint'=>$catalogHash,'phases'=>$items];
+}
+function cmsAtelierPhaseDetailsComplete(mixed $details): bool {
+    if(!is_array($details)||count($details['phases']??[])!==6)return false;
+    $ids=cmsAtelierPhaseIds();$sum=0;
+    foreach($details['phases'] as $i=>$phase){
+        if(($phase['index']??null)!==$i||($phase['id']??null)!==$ids[$i]
+            ||($phase['minutes']??'')===''||($phase['actions']??[])===[]
+            ||!is_array($phase['actions']??null))return false;
+        foreach(['observe','check','mistake','recovery','safety','pausePrompt'] as $key)
+            if(!is_string($phase[$key]??null)||$phase[$key]==='')return false;
+        $sum+=(int)$phase['minutes'];
+    }
+    return $sum>0&&$sum<=600;
+}
+function cmsAtelierPhaseDetailsHtml(mixed $raw,array $fields,mixed $reference): string {
+    $raw=is_array($raw)?$raw:[];
+    $reference=is_array($reference)?$reference:[];
+    $slug=is_string($reference['recipeSlug']??null)?$reference['recipeSlug']:'';
+    $hash=is_string($reference['catalogFingerprint']??null)?$reference['catalogFingerprint']:'';
+    // Keep the ORIGINAL source anchors if edits made the saved detail stale.
+    // A failed save is safer than silently dropping human safety guidance.
+    $boundSlug=is_string($raw['recipeSlug']??null)?$raw['recipeSlug']:$slug;
+    $boundHash=is_string($raw['catalogFingerprint']??null)?$raw['catalogFingerprint']:$hash;
+    $existing=[];
+    foreach(($raw['phases']??[]) as $entry){
+        // HTML POST and temporary AI form snapshots carry numeric indices as
+        // strings, unlike the saved normalized JSON. Preserve both forms.
+        if(!is_array($entry)||!is_scalar($entry['index']??null)
+            ||!preg_match('/^[0-5]$/D',(string)$entry['index']))continue;
+        $existing[(int)$entry['index']]=$entry;
+    }
+    $html='<details class="guided-group" data-atelier-phase-details>'
+        .'<summary>Six phases Coral V2 — gestes, contrôles et sécurité</summary>'
+        .'<p class="small muted">Préparez puis enregistrez d’abord la recette '
+        .'canonique et les six chapitres de base. Les enrichissements sont '
+        .'humains, liés aux titres et à l’empreinte de recette actuels. '
+        .'Aucune narration ni publication automatique.</p>'
+        .'<input type="hidden" name="atelier_phase_details[version]" value="1">'
+        .'<input type="hidden" name="atelier_phase_details[recipeSlug]" value="'.cmsEsc($boundSlug).'">'
+        .'<input type="hidden" name="atelier_phase_details[catalogFingerprint]" value="'.cmsEsc($boundHash).'">';
+    $core=is_array($fields['phases']??null)?array_values($fields['phases']):[];
+    if(count($core)!==6)
+        $html.='<p class="small muted">Il faut exactement six chapitres enregistrés pour préparer toutes les phases.</p>';
+    foreach(array_slice($core,0,6) as $i=>$phase){
+        if(!is_array($phase))continue;
+        $title=is_string($phase['title']??null)?$phase['title']:'';
+        $learning=is_string($phase['learning']??null)?$phase['learning']:'';
+        if($title===''||$learning==='')continue;
+        $stored=$existing[$i]??[];
+        $stale=($stored['sourceTitle']??$title)!==$title
+            ||($stored['sourceLearning']??$learning)!==$learning
+            ||$boundSlug!==$slug||$boundHash!==$hash;
+        $base='atelier_phase_details[phases]['.$i.']';
+        $html.='<details class="guided-group"><summary>'
+            .($i+1).'. '.cmsEsc($title).' ('.cmsEsc(cmsAtelierPhaseIds()[$i]).')</summary>'
+            .'<input type="hidden" name="'.$base.'[index]" value="'.$i.'">'
+            .'<input type="hidden" name="'.$base.'[id]" value="'.cmsAtelierPhaseIds()[$i].'">'
+            .'<input type="hidden" name="'.$base.'[sourceTitle]" value="'.cmsEsc($stored['sourceTitle']??$title).'">'
+            .'<input type="hidden" name="'.$base.'[sourceLearning]" value="'.cmsEsc($stored['sourceLearning']??$learning).'">';
+        if($stale && $stored!==[])
+            $html.='<p class="small muted" role="alert">La recette ou le chapitre source a changé. '
+                .'Ces consignes sont périmées : effacez tous les détails de cette '
+                .'phase avant de les réécrire et de les enregistrer.</p>';
+        $entryFields=['minutes'=>'Durée pratique (minutes, entier 1 à 240)',
+            'ingredientNames'=>'Ingrédients concernés (un par ligne ; à vérifier face à la recette)',
+            'actions'=>'Gestes précis (un par ligne)',
+            'observe'=>'Ce que la personne observe',
+            'check'=>'Comment contrôler la réussite',
+            'mistake'=>'Erreur typique',
+            'recovery'=>'Comment corriger',
+            'safety'=>'Précautions de sécurité et allergènes',
+            'pausePrompt'=>'Consigne de pause et reprise du guide'];
+        foreach($entryFields as $key=>$label){
+            $value=$stored[$key]??'';
+            if(is_array($value))$value=implode("\n",$value);
+            if(!is_string($value))$value='';
+            $html.='<label>'.cmsEsc($label).'<textarea name="'.$base.'['.$key.']"'
+                .' rows="'.($key==='actions'?'4':'2').'" maxlength="4000">'
+                .cmsEsc($value).'</textarea></label>';
+        }
+        $html.='</details>';
+    }
+    return $html.'</details>';
+}
+
 function cmsCreationKinds(): array {
     return ['recette'=>'Recette','atelier'=>'Atelier','culture'=>'Carnet culturel',
         'ingredient'=>'Fiche ingrédient','technique'=>'Fiche technique'];
@@ -1410,6 +1574,13 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
             ?cmsAtelierReferenceClean(
                 $posted['atelier_reference']??($previous['atelier_reference']??null),$catalog)
             :null;
+        if($kind!=='atelier' && isset($posted['atelier_phase_details']))
+            throw new InvalidArgumentException('ATELIER_PHASE_SCHEMA');
+        $atelierPhaseDetails=$kind==='atelier'
+            ?cmsAtelierPhaseDetailsClean(
+                $posted['atelier_phase_details']??($previous['atelier_phase_details']??null),
+                $fields,$atelierRef)
+            :null;
         if($id!==null && !$previous)throw new RuntimeException('CREATION_NOT_FOUND');
         if($id===null && $expected!==0)throw new RuntimeException('CREATION_CONFLICT');
         if($previous && ($previous['version']!==$expected
@@ -1456,6 +1627,7 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
         if($cultureEvidence!==null)$record['culture_evidence']=$cultureEvidence;
         if($techniqueLinks!==null)$record['technique_links']=$techniqueLinks;
         if($atelierRef!==null)$record['atelier_reference']=$atelierRef;
+        if($atelierPhaseDetails!==null)$record['atelier_phase_details']=$atelierPhaseDetails;
         if($origin==='ai' && $provenance!==null)$record['ai_brief']=$provenance;
         if($origin==='ai' && $contentProvenance!==null){
             $record['ai_content']=$contentProvenance;
@@ -1800,6 +1972,7 @@ function cmsCreationPosted(array $raw): array {
     $posted['culture_evidence']=$raw['culture_evidence']??null;
     $posted['technique_links']=$raw['technique_links']??null;
     $posted['atelier_reference']=$raw['atelier_reference']??null;
+    $posted['atelier_phase_details']=$raw['atelier_phase_details']??null;
     return $posted;
 }
 function cmsAiContentSettings(array $cfg): ?array {

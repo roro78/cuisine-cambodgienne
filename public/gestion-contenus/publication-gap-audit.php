@@ -335,6 +335,9 @@ function cmsAtelierBlueprintPreflight(array $record,array $catalog): array {
         ||!is_string($meta['reference_id']??null)
         ||$meta['reference_id']===''
         ||($ref&&$meta['reference_id']==='recette:'.$source['recipeSlug']);
+    $details=cmsAtelierPhaseDetailsClean(
+        $record['atelier_phase_details']??null,is_array($fields)?$fields:[],$source);
+    $detailsReady=cmsAtelierPhaseDetailsComplete($details);
     return [
         'contract'=>'cdc-editorial-workshop-blueprint-preflight-v1',
         'source_version'=>$record['version']??null,
@@ -343,6 +346,10 @@ function cmsAtelierBlueprintPreflight(array $record,array $catalog): array {
         'canonical_reference_checked'=>$ref,
         'ai_recipe_reference_consistent'=>$aiReferenceConsistent,
         'ready_for_blueprint_enrichment'=>$core&&$six&&$ref&&$aiReferenceConsistent,
+        'phase_details_complete'=>$detailsReady,
+        'ready_for_scripts_drafting'=>$core&&$six&&$ref&&$aiReferenceConsistent&&$detailsReady,
+        // C4C3B stores the six stable phase IDs and human additions,
+        // but NEVER validates actual recipe quantities or scripts.
         // C2 core holds a learning goal per chapter, NOT stable IDs,
         // validated recipeIngredients or audio-script approvals.
         'stable_phase_ids_ready'=>false,'seven_audio_scripts_approved'=>false,
