@@ -69,7 +69,7 @@ test('remote verification fetches only public pages and checks library denial',a
  const fetcher=async url=>{
   const pathname=new URL(url).pathname;
   requested.push(pathname);
-  if(pathname==='/gestion-contenus/lib.php')return new Response('Denied',{status:403});
+  if(['/gestion-contenus/lib.php','/gestion-contenus/publication-gap-audit.php'].includes(pathname))return new Response('Denied',{status:403});
   if(pathname==='/gestion-contenus/')return new Response(login,{status:200,headers:safeHeaders});
   const document=feeds[pathname.slice(1)];
   if(document)return new Response(JSON.stringify(document),{status:200,
@@ -78,13 +78,14 @@ test('remote verification fetches only public pages and checks library denial',a
  };
  const result=await cmsReception({url:'https://www.cuisine-du-cambodge.com/',fetcher});
  assert.deepEqual(result,{social:1,canonical:1,guided:1,login:'protected',library:'blocked'});
- assert.equal(requested.length,5);
+ assert.equal(requested.length,6);
+ assert.ok(requested.includes('/gestion-contenus/publication-gap-audit.php'));
  const unavailable=async()=>new Response('',{status:404});
  await assert.rejects(cmsReception({url:'https://www.cuisine-du-cambodge.com/',fetcher:unavailable}),
   /HTTP_social-feed.json_404/);
  await assert.rejects(cmsReception({url:'http://example.com/',fetcher}),/HTTPS_HOST_REQUIRED/);
 });
-test('release package includes exactly six public files and private rollback manifest',async()=>{
+test('release package includes exactly seven scoped public files and private rollback manifest',async()=>{
  const root=await mkdtemp(join(tmpdir(),'cdc-ovh-'));
  try{
   const dist=join(root,'dist'),out=join(root,'package');
@@ -94,10 +95,13 @@ test('release package includes exactly six public files and private rollback man
    await writeFile(join(dist,name),JSON.stringify(value));
   await writeFile(join(dist,'gestion-contenus','index.php'),'<?php echo "private";');
   await writeFile(join(dist,'gestion-contenus','lib.php'),'<?php function example(){}');
+  await writeFile(join(dist,'gestion-contenus','publication-gap-audit.php'),'<?php function prereception(){}');
   await writeFile(join(dist,'gestion-contenus','.htaccess'),
-   '<Files "lib.php">\nRequire all denied\n</Files>\n');
+   '<Files "lib.php">\nRequire all denied\n</Files>\n'+
+   '<Files "publication-gap-audit.php">\nRequire all denied\n</Files>\n');
   const packageInfo=await packageCmsRelease({dist,out});
-  assert.equal(packageInfo.files.length,6);
+  assert.equal(packageInfo.files.length,7);
+  assert.ok(packageInfo.files.some(item=>item.path==='gestion-contenus/publication-gap-audit.php'));
   assert.equal(packageInfo.requires.manualUpload,true);
   assert.equal((await cmsReception({dir:out})).social,1);
   const manifest=JSON.parse(await readFile(join(out,'CMS-OVH-MANIFEST.json'),'utf8'));
