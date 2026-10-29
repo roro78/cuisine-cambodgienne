@@ -131,7 +131,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
           <span class="fca-servings-prompt">{presentation.portionKind==='pot'?'Je prépare':'Je cuisine pour'}</span>
           <strong data-workshop-servings-summary aria-live="polite">{recipe.baseServings} {presentation.portionKind==='pot'?'petit pot':'personne'+(recipe.baseServings>1?'s':'')}</strong>
           <div class="fca-servings-presets">
-            {[2, 4, 6, 8].map((n) => <button type="button" data-workshop-serving-preset={n} aria-pressed={n===recipe.baseServings?'true':'false'}>{n} {presentation.portionKind==='pot'?'pots':'pers.'}</button>)}
+            {(presentation.portionKind==='pot' ? [1, 2, 4, 6] : [2, 4, 6, 8]).map((n) => <button type="button" data-workshop-serving-preset={n} aria-pressed={n===recipe.baseServings?'true':'false'}>{n} {presentation.portionKind==='pot'?'pots':'pers.'}</button>)}
           </div>
           <button class="fca-custom-toggle" type="button" data-workshop-custom-toggle aria-controls="fca-custom-servings" aria-expanded="false">Autre nombre</button>
           <div id="fca-custom-servings" class="fca-custom-servings" data-workshop-custom-count hidden>
