@@ -97,7 +97,8 @@ for (const name of names){
 const required=[
   'src/data/recipes.ts',
   'src/pages/apprendre/pratique/[slug].astro',
-  'src/pages/apprendre/pratique/kroeung-jaune.astro',
+  'src/data/workshopPresentation.ts',
+  'src/data/cookingWorkshopGuides.ts',
   'src/components/CookingWorkshopAudio.astro',
   'src/scripts/cookingWorkshopServings.ts',
   'scripts/bridge-cooking-workshops-coral.mjs',

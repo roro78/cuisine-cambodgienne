@@ -9,7 +9,7 @@ const publicFiles = [
   'src/pages/culture/[slug].astro',
   'src/components/RestoredRecipe.astro',
   'src/pages/apprendre/pratique/[slug].astro',
-  'src/pages/apprendre/pratique/kroeung-jaune.astro',
+  'src/data/workshopPresentation.ts',
   'src/pages/a-propos.astro',
   'src/pages/recettes/index.astro',
 ];

@@ -34,9 +34,14 @@ try {
       const res=await page.goto(base+'/apprendre/pratique/kroeung-jaune/',{waitUntil:'networkidle'});
       assert.equal(res?.status(),200);
       assert.match(await page.locator('h1').innerText(),/kroeung jaune/i);
-      assert.equal(await page.locator('.atelier-checklist li').count(),6);
-      assert.equal(await page.locator('.atelier-phase').count(),6);
-      assert.equal(await page.locator('.atelier-step-nav a').count(),6);
+      assert.equal(await page.locator('.fca-checks li').count(),6);
+      assert.equal(await page.locator('[data-workshop-servings-root]').getAttribute('data-workshop-portion-kind'),'pot','Kroeung retains pot yield');
+      await page.locator('[data-workshop-serving-preset="2"]').click();
+      assert.match(await page.locator('[data-workshop-servings-summary]').innerText(),/2 petits pots/,'Kroeung yields pots, not persons');
+      assert.match(await page.locator('[data-workshop-servings-hero]').innerText(),/2 petits pots/);
+      await page.locator('[data-workshop-serving-preset="1"]').click();
+      assert.equal(await page.locator('.fca-step').count(),6);
+      assert.equal(await page.locator('.fca-steps-nav a').count(),6);
       assert.equal(await page.locator('meta[name="robots"]').getAttribute('content').then(s=>s?.includes('noindex')),workshop.status!=='release_ready');
       const audioCount=await page.locator('[data-cooking-audio]').count();
       assert.ok(audioCount===0||audioCount===1);
@@ -79,17 +84,17 @@ try {
       await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
       const topGap=await page.evaluate(()=>{
         const header=document.querySelector('[data-site-header]');
-        const breadcrumb=document.querySelector('.atelier-breadcrumb');
+        const breadcrumb=document.querySelector('.fca-breadcrumb');
         return breadcrumb.getBoundingClientRect().top - header.getBoundingClientRect().bottom;
       });
       assert.ok(topGap>=-1, 'Breadcrumb obscured by fixed SiteHeader at '+width+'px: '+topGap);
-      assert.equal(await page.locator('.atelier-hero-photo img').evaluate(el=>el instanceof HTMLImageElement&&el.complete&&el.naturalWidth>0),true,'Original recipe image loads');
+      assert.equal(await page.locator('.fca-hero-photo img').evaluate(el=>el instanceof HTMLImageElement&&el.complete&&el.naturalWidth>0),true,'Original recipe image loads');
       const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
       assert.ok(overflow<=3,'Horizontal overflow at '+width+'px: '+overflow+'px');
-      await page.locator('.atelier-checklist input').first().check();
-      assert.equal(await page.locator('.atelier-checklist input').first().isChecked(),true);
-      await page.locator('.atelier-observe details summary').first().click();
-      assert.equal(await page.locator('.atelier-observe details[open]').count(),1,'Rattrapage accessible');
+      await page.locator('.fca-checks input').first().check();
+      assert.equal(await page.locator('.fca-checks input').first().isChecked(),true);
+      await page.locator('.fca-observe details summary').first().click();
+      assert.equal(await page.locator('.fca-observe details[open]').count(),1,'Rattrapage accessible');
       assert.deepEqual(errors,[]);
       console.log('KROEUNG_REAL_WORKSHOP_PASS '+width);
     }finally{await page.close();}
