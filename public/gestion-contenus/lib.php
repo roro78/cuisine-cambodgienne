@@ -1012,8 +1012,9 @@ function cmsCultureEvidenceClean(mixed $raw): ?array {
             throw new InvalidArgumentException('CULTURE_EVIDENCE_NOT_CHECKED');
         if($entry['status']==='disputed'&&$entry['note']==='')
             throw new InvalidArgumentException('CULTURE_EVIDENCE_DISPUTE_NOTE');
-        $key=hash('sha256',mb_strtolower($entry['claim'],'UTF-8')
-            ."\n".$entry['source_url']);
+        $fold=function_exists('mb_strtolower')
+            ?mb_strtolower($entry['claim'],'UTF-8'):strtolower($entry['claim']);
+        $key=hash('sha256',$fold."\n".$entry['source_url']);
         if(isset($seen[$key]))throw new InvalidArgumentException('CULTURE_EVIDENCE_DUPLICATE');
         $seen[$key]=true;$out[]=$entry;
     }
