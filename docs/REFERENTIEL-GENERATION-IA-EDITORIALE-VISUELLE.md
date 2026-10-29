@@ -15,11 +15,14 @@
 | P1C-C4B3 | [PR #157](https://github.com/roro78/cuisine-cambodgienne/pull/157) fusionnée sur `b833029` | Détails humains des ingrédients et gestes, liés à leurs lignes d’origine ; aucun déplacement silencieux |
 | P1C-C3B | [PR #158](https://github.com/roro78/cuisine-cambodgienne/pull/158) fusionnée sur `dfa91dc` | Pont d’essai local Ollama S1 manuel ; **aucun modèle ni résultat réel évalué** |
 | P1C-C4C1 | [PR #159](https://github.com/roro78/cuisine-cambodgienne/pull/159) fusionnée sur `d1f69cf` | Dossier documentaire Carnets versionné et privé, non exporté vers les pages publiques |
+| P1C-C4C2 | [PR #162](https://github.com/roro78/cuisine-cambodgienne/pull/162) fusionnée sur `8647ab9` | Projections privées IngredientGuide et RecipeTechniqueGuide ; seuls les liens canoniques humains vers des pages publiées sont acceptés |
+| P1C-C4C3A | [PR #163](https://github.com/roro78/cuisine-cambodgienne/pull/163) fusionnée sur `47be2cc` | Lien recette source avec empreinte de catalogue et précontrôle des six phases d'atelier, sans scripts ni MP3 approuvés |
 
-Les CI des PR ci-dessus ont été vérifiées SUCCESS sous Astro/Node et PHP
-8.3/8.4. La dernière PR fonctionnelle #159 est fusionnée sur `d1f69cf` ;
-la CI **après fusion de #159** doit être réceptionnée séparément.
-Ne jamais assimiler une CI de branche au déploiement ni à une recette OVH.
+Les CI des PR fonctionnelles jusqu'à #163 ont été vérifiées SUCCESS sous
+Astro/Node et PHP 8.3/8.4. La CI **après fusion de #162** est SUCCESS
+([run #40840680399](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40840680399)).
+La CI **après fusion de #163** doit être réceptionnée séparément ; une CI
+GitHub ne prouve ni un transfert sur OVH, ni une recette en production.
 
 **Aucun fournisseur IA réel n'est activé, aucun modèle n'a été évalué en
 conditions réelles, aucune passerelle n8n n'est réceptionnée, aucune génération
@@ -27,20 +30,25 @@ d'image/audio n'est lancée et aucun déploiement OVH n'a eu lieu.** Le contrat
 `creation-form-core-v1` demeure volontairement indépendant du profil humain
 C4B1 ; il ne produit pas encore une recette complète validée.
 
-**Priorités à poursuivre sans réinventer (mise à jour C4C1) :**
+**Priorités à poursuivre sans réinventer (mise à jour C4C3A) :**
 
 1. **Qualifier le fournisseur** : vérifier plus tard sur ordinateur l’accès
    authentifié au n8n OVH et au réseau Docker d’Ollama ; ne demander aucun
    identifiant dans le chat. Lancer ensuite un essai contrôlé des briefs et S1
    structuré, par modèle et famille, puis relever la latence, la qualité et
    les coûts réels. Aucun résultat réel n’est aujourd’hui attesté.
-2. **C4B3 recettes** : enrichir ingrédients/étapes, repères, liens et médias
-   sans rendre les vieux brouillons incompatibles ni laisser une IA décider
-   de l'approbation ou de la publication.
-3. **C4C2 et suivants** : compléter les modèles ingrédients et techniques,
-   puis les vrais blueprints ateliers Coral V2 avec recette canonique,
-   six phases et sept scripts à approuver. Le dossier documentaire des Carnets
-   C4C1 est intégré, **mais** médias, droits et rendu fidèle restent à traiter.
+2. **C4B4/P2 recettes** : C4B3 (ingrédients et gestes) est fusionné ; préparer
+   liens, FAQ, médias et droits vérifiés avant un aperçu Astro fidèle.
+   Ne pas transformer une projection privée en autorisation de publier.
+3. **C4C3B/C ateliers** : C4C3A vérifie uniquement le rattachement humain à une
+   recette déjà publiée et les six titres de phases distincts. Ajouter les
+   six phases **complètes** (IDs stables, gestes, temps, contrôle, erreurs,
+   correction, sécurité, recette et portions canoniques vérifiées), puis les
+   **sept scripts distincts** avec revue humaine et chaîne Coral V2. Aucune
+   génération MP3 ni écrasement des assets déjà validés.
+   Les modèles ingrédients et techniques C4C2 sont fusionnés ; il manque
+   encore les médias et droits. Carnets C4C1 reste privé sans bibliographie
+   publique et sans visuel documentaire présumé authentique.
 4. **P2/P3** : vrai aperçu Astro privé fidèle, conversion typée complète,
    validations et PR de publication **distinctes** uniquement sur autorisation.
 5. **Exploitation** : conserver le calendrier et les workflows n8n 01/02/03
