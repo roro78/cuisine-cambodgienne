@@ -12,10 +12,14 @@
 | P1C-C4A | [PR #153](https://github.com/roro78/cuisine-cambodgienne/pull/153) fusionnée sur `7c46a3b` | Diagnostics des écarts Astro, publication systématiquement bloquée |
 | P1C-C4B1 | [PR #154](https://github.com/roro78/cuisine-cambodgienne/pull/154) fusionnée sur `dafea2d` | Profil **humain** recette (difficulté/catégorie/tags), versionné et séparé du contrat IA |
 | P1C-C4B2 | [PR #155](https://github.com/roro78/cuisine-cambodgienne/pull/155) fusionnée sur `5fcc50e` | Projection **privée** des champs de base Recipe avec quantités numériques strictement validées |
+| P1C-C4B3 | [PR #157](https://github.com/roro78/cuisine-cambodgienne/pull/157) fusionnée sur `b833029` | Détails humains des ingrédients et gestes, liés à leurs lignes d’origine ; aucun déplacement silencieux |
+| P1C-C3B | [PR #158](https://github.com/roro78/cuisine-cambodgienne/pull/158) fusionnée sur `dfa91dc` | Pont d’essai local Ollama S1 manuel ; **aucun modèle ni résultat réel évalué** |
+| P1C-C4C1 | [PR #159](https://github.com/roro78/cuisine-cambodgienne/pull/159) fusionnée sur `d1f69cf` | Dossier documentaire Carnets versionné et privé, non exporté vers les pages publiques |
 
 Les CI des PR ci-dessus ont été vérifiées SUCCESS sous Astro/Node et PHP
-8.3/8.4. La CI **après** fusion de #155 doit être contrôlée séparément ; ne
-jamais assimiler une CI de branche au déploiement ni à une recette OVH.
+8.3/8.4. La dernière PR fonctionnelle #159 est fusionnée sur `d1f69cf` ;
+la CI **après fusion de #159** doit être réceptionnée séparément.
+Ne jamais assimiler une CI de branche au déploiement ni à une recette OVH.
 
 **Aucun fournisseur IA réel n'est activé, aucun modèle n'a été évalué en
 conditions réelles, aucune passerelle n8n n'est réceptionnée, aucune génération
@@ -23,17 +27,20 @@ d'image/audio n'est lancée et aucun déploiement OVH n'a eu lieu.** Le contrat
 `creation-form-core-v1` demeure volontairement indépendant du profil humain
 C4B1 ; il ne produit pas encore une recette complète validée.
 
-**Priorités à poursuivre sans réinventer :**
+**Priorités à poursuivre sans réinventer (mise à jour C4C1) :**
 
-1. **Qualifier le fournisseur** : benchmark réel des briefs puis S1 structuré,
-   par modèle et famille, avec mesures de latence, qualité et coûts, et visa
-   humain. La session privée n8n n'est pas pilotable par les outils GitHub.
+1. **Qualifier le fournisseur** : vérifier plus tard sur ordinateur l’accès
+   authentifié au n8n OVH et au réseau Docker d’Ollama ; ne demander aucun
+   identifiant dans le chat. Lancer ensuite un essai contrôlé des briefs et S1
+   structuré, par modèle et famille, puis relever la latence, la qualité et
+   les coûts réels. Aucun résultat réel n’est aujourd’hui attesté.
 2. **C4B3 recettes** : enrichir ingrédients/étapes, repères, liens et médias
    sans rendre les vieux brouillons incompatibles ni laisser une IA décider
    de l'approbation ou de la publication.
-3. **C4C autres familles** : compléter les contrats des Carnets, ingrédients,
-   techniques et surtout les blueprints ateliers Coral V2 avec recette
-   canonique, six phases et sept scripts à approuver.
+3. **C4C2 et suivants** : compléter les modèles ingrédients et techniques,
+   puis les vrais blueprints ateliers Coral V2 avec recette canonique,
+   six phases et sept scripts à approuver. Le dossier documentaire des Carnets
+   C4C1 est intégré, **mais** médias, droits et rendu fidèle restent à traiter.
 4. **P2/P3** : vrai aperçu Astro privé fidèle, conversion typée complète,
    validations et PR de publication **distinctes** uniquement sur autorisation.
 5. **Exploitation** : conserver le calendrier et les workflows n8n 01/02/03
