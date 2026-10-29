@@ -278,7 +278,7 @@ if($auth){
                     ($_POST['culinary_confirm']??null)==='1',
                     $auth,$catalog,$canonicalById,$guidedCulinary);
                 header('Location: ?new=1&cid='.rawurlencode($creation['id'])
-                    .'&recipe_audit=1&culinary_saved=1#canonical-review',true,303);
+                    .'&'.$filtersUrl.'&recipe_audit=1&culinary_saved=1#canonical-review',true,303);
                 exit;
             }catch(Throwable $e){
                 $conflict=in_array($e->getMessage(),[
@@ -306,7 +306,7 @@ if($auth){
                     is_string($_POST['review_action']??null)?$_POST['review_action']:'',
                     ($_POST['review_confirm']??null)==='1',$auth,$catalog);
                 header('Location: ?new=1&cid='.rawurlencode($creation['id'])
-                    .'&visa_saved=1',true,303);
+                    .'&'.$filtersUrl.'&visa_saved=1',true,303);
                 exit;
             }catch(Throwable $e){
                 $conflict=in_array($e->getMessage(),
@@ -446,7 +446,7 @@ if($auth){
                     }else $saved=cmsCreationSave($private,$posted,$catalog,$expected,$cid,
                         null,null,null,$canonicalById);
                     header('Location: ?new=1&cid='.rawurlencode($saved['id'])
-                        .'&saved_new=1',true,303);
+                        .'&'.$filtersUrl.'&saved_new=1',true,303);
                     exit;
                 }catch(InvalidArgumentException $e){
                     http_response_code(422);
@@ -845,7 +845,7 @@ L'IA, les créneaux Facebook/Instagram et les statistiques viendront dans des é
 <?php endif; ?>
 </section>
 <?php elseif($newMode): ?>
-<p><a href="?">Retour à la bibliothèque</a></p>
+<p><a href="?<?= cmsEsc($filtersUrl) ?>">Retour à la bibliothèque (filtres conservés)</a></p>
 <section>
 <span class="badge"><?= isset($creation['source_binding'])?'Révision privée d’une fiche publiée':'Création privée' ?> · aucune publication</span>
 <h2 id="cms-general"><?= isset($creation['source_binding'])?'Modifier la fiche publiée':($creation?'Modifier le brouillon de nouvelle page':'Créer un nouveau contenu') ?></h2>
@@ -1088,7 +1088,7 @@ $approved=($visaStatus['by_chapter'][$chapterId]??false)===true; ?>
  — <?= $approved?'texte visé':'visa absent ou périmé' ?></summary>
 <div class="coral-script-text"><?= cmsEsc($text!==''?$text:'Texte non rédigé.') ?></div>
 <?php if($ready && $text!==''): ?>
-<form method="post" action="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>">
+<form method="post" action="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>">
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <input type="hidden" name="creation_id" value="<?= cmsEsc($creation['id']) ?>">
 <input type="hidden" name="expected_version" value="<?= (int)$creation['version'] ?>">
@@ -1141,7 +1141,7 @@ if(isset($_GET['recipe_audit'])||isset($_GET['coral_preflight'])){
 <p class="small muted">Cette comparaison récupère seulement à votre demande
 les index publics déjà validés. Elle ne modifie ni l’atelier ni la recette,
 et n'accorde aucun visa culinaire ou audio.</p>
-<a href="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;recipe_audit=1#canonical-review">
+<a href="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>&amp;recipe_audit=1#canonical-review">
 Afficher les ingrédients et portions de la recette de référence</a>
 <?php if($recipeAuditUnavailable): ?>
 <p class="notice" role="alert">Index source indisponible ou incohérent.
@@ -1191,7 +1191,7 @@ Autorisation audio et publication : <strong>non</strong>.</p>
 <p class="notice" role="status">Décision culinaire enregistrée dans
 le journal privé. Aucun traitement audio n’a été déclenché.</p>
 <?php endif; ?>
-<form method="post" action="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;recipe_audit=1#canonical-review"
+<form method="post" action="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>&amp;recipe_audit=1#canonical-review"
  class="stack" data-culinary-human-visa>
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <input type="hidden" name="creation_id" value="<?= cmsEsc($creation['id']) ?>">
@@ -1236,7 +1236,7 @@ restent désactivés.</p>
 visas des sept textes, la relecture culinaire et les exigences média/audio.
 Il ne lance aucun service, ne traite aucun fichier MP3 et ne délivre aucune
 autorisation de génération.</p>
-<a href="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;coral_preflight=1#coral-preflight">
+<a href="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>&amp;coral_preflight=1#coral-preflight">
 Calculer le tableau de pré-réception sur les données actuelles</a>
 <?php if($coralPreflightUnavailable): ?>
 <p class="notice" role="alert">Diagnostic indisponible : index public,
@@ -1364,7 +1364,7 @@ les champs ou la structure de la recette avant une future prévisualisation.</p>
 <?php endif; ?>
 <h3>Historique privé</h3><nav class="versions">
 <?php foreach(cmsCreationVersions($creationDir,$creation['id']) as $v): ?>
-<a href="?new=1&amp;cid=<?= cmsEsc($creation['id']) ?>&amp;revision=<?= (int)$v ?>">Version <?= (int)$v ?></a>
+<a href="?new=1&amp;cid=<?= cmsEsc($creation['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>&amp;revision=<?= (int)$v ?>#cms-history">Version <?= (int)$v ?></a>
 <?php endforeach; ?></nav>
 <?php $astroGap=cmsAstroPublicationGapReport($creation); ?>
 <details class="guided-group" data-astro-publication-gap>

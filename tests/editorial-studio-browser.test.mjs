@@ -77,6 +77,7 @@ try{
   assert.equal(await input.inputValue(),changed,'anchor navigation retains input');
   await page.locator('button[name=create_save]').click();
   await page.waitForURL(/saved_new=1/);
+  assert.equal(new URL(page.url()).searchParams.get('kind'),'atelier','library filter survives save');
   assert.equal(await input.inputValue(),changed,'saved bound edit');
   const privateDir=path.join(root,'.cuisine-asset-portal','editorial-drafts','new-content');
   const record=JSON.parse(await readFile(path.join(privateDir,cid+'.0002.json'),'utf8'));
