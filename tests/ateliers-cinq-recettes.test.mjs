@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { validateBlueprintFile, PHASE_IDS } from '../scripts/check-workshop-blueprints.mjs';
 import { buildCookingAudioStoryboard } from '../scripts/export-cooking-workshop-audio.mjs';
 
@@ -72,4 +72,23 @@ test('Lok Lak V2 : sept chapitres cuisinables, MP3 V2 conserve sans piste V1', a
   assert.doesNotMatch(plan.chapters.map(c => c.text).join(' '), /quatre assiettes|600 grammes|300 grammes/i, 'Narration must not freeze portions');
   assert.ok(recipes.find(r => r.slug === 'lok-lak').ingredients.length === 8, 'Canonical recipe unchanged');
   assert.match(page, /guide[.]audio[.]status === 'script_only'/, 'Do not render superseded audio');
+});
+
+
+test('Gabarit Astro commun pour les six ateliers et futur JSON enregistré automatiquement',()=>{
+  const fs=readFileSync;
+  const registry=fs('src/data/cookingWorkshopGuides.ts','utf8');
+  const presentation=fs('src/data/workshopPresentation.ts','utf8');
+  const shared=fs('src/pages/apprendre/pratique/[slug].astro','utf8');
+  assert.match(registry,/import[.]meta[.]glob/,'automatic discovery of approved blueprints');
+  assert.match(registry,/knownOrder[.]every/,'new draft cannot undo the six released workshop cutover');
+  assert.match(shared,/releasedCookingWorkshopGuides[.]map/,'all released workshops use one route');
+  assert.match(shared,/getWorkshopPresentation[(]guide[)]/,'presentation is data driven');
+  assert.match(presentation,/publicSlug:'kroeung-jaune'/,'Kroeung historical URL retained');
+  assert.match(presentation,/portionKind:'pot'/,'Kroeung small-pot portions retained');
+  assert.match(shared,/data-workshop-portion-kind=\{presentation[.]portionKind\}/);
+  assert.match(shared,/guideAudio \? <CookingWorkshopAudio/,'same optional validated audio');
+  assert.match(shared,/guide[.]phases[.]map/,'all six phases remain');
+  assert.doesNotMatch(registry,/cookingWorkshopGuides[.]length===6/);
+  assert.equal(existsSync('src/pages/apprendre/pratique/kroeung-jaune.astro'),false,'no per-workshop Astro page');
 });
