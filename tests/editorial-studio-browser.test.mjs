@@ -26,8 +26,25 @@ try{
   browser=await chromium.launch({executablePath:process.env.CHROME_BIN||undefined,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
   const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   const external=[];const errors=[];
-  await context.route('**/*',route=>{
-    if(new URL(route.request().url()).origin===origin)return route.continue();
+  const dist=path.resolve('dist');
+  await context.route('**/*',async route=>{
+    const uri=new URL(route.request().url());
+    if(uri.origin===origin){
+      if(uri.pathname.startsWith('/gestion-contenus/'))return route.continue();
+      // Real built Astro static pages and assets, never a synthetic lookalike.
+      const relative=decodeURIComponent(uri.pathname).replace(/^\//,'');
+      const file=path.resolve(dist,relative,uri.pathname.endsWith('/')?'index.html':'');
+      if(file.startsWith(dist+path.sep)){
+        try{
+          const body=await readFile(file);
+          const ext=path.extname(file).toLowerCase();
+          const types={'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript',
+            '.svg':'image/svg+xml','.webp':'image/webp','.jpg':'image/jpeg','.jpeg':'image/jpeg','.png':'image/png'};
+          return route.fulfill({status:200,body,contentType:types[ext]||'application/octet-stream'});
+        }catch{}
+      }
+      return route.continue();
+    }
     external.push(route.request().url());return route.abort();
   });
   const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
@@ -49,6 +66,24 @@ try{
     assert.equal(await page.locator('#cms-work-resume').count(),1,'resume card for '+id);
     assert.equal(await page.locator('#cms-work-resume [data-work-resume-action], #cms-work-resume [data-studio-transition] button[name=studio_transition]').count(),1,'primary action for '+id);
   }
+  // P1 real-template proof: save one editorial sentence, then verify that the
+  // sandbox displays the true built Astro recipe with ONLY that text replaced.
+  const manifest=JSON.parse(await readFile(path.join(dist,'editorial-guided-fields.json'),'utf8'));
+  const recipe=manifest.items.find(item=>item.model==='recipes');
+  assert.ok(recipe,'recipe guided source present');
+  await page.goto(origin+'/gestion-contenus/?id='+encodeURIComponent(recipe.id));
+  const intro=page.locator('textarea[name="guided[intro]"]');
+  const updatedIntro=(await intro.inputValue())+' — vérification visuelle privée';
+  await intro.fill(updatedIntro);
+  await page.locator('button[name=save]').click();
+  await page.waitForURL(/saved=1/);
+  assert.equal(await page.locator('[data-visual-preview]').count(),1,'saved proposal has real-template preview');
+  await page.locator('[data-visual-preview] iframe').scrollIntoViewIfNeeded();
+  await page.waitForFunction(()=>document.querySelector('[data-visual-status]')?.textContent?.includes('Aperçu comparatif'),null,{timeout:15000});
+  const recipeFrame=page.frameLocator('[data-visual-preview] iframe');
+  assert.equal(await recipeFrame.locator('main .recipe-intro').innerText(),updatedIntro,'draft text in actual Astro layout');
+  assert.equal(await recipeFrame.locator('.recipe-v15-hero').count(),1,'real recipe template retained');
+  assert.ok(!(await page.locator('#cms-preview').innerText()).includes('publication autorisée'));
   await page.goto(origin+'/gestion-contenus/?kind=atelier');
   const link=page.locator(`a[href*="${encodeURIComponent(fixture.id)}"]`).first();
   assert.equal(await link.count(),1,'library workshop entry');await link.click();
