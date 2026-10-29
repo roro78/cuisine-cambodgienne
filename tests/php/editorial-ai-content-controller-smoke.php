@@ -112,6 +112,10 @@ PHP;
     [$status,$html]=$request('/gestion-contenus/'.$location);
     httpCheck($status===200&&str_contains($html,'Proposition générée')&&substr_count($html,'id="cms-new-editor"')===1,'COMMON_EDITOR_CANDIDATE');
     httpCheck(httpHidden($html,'target_date')==='2099-12-20','EXPLICIT_HUMAN_DATE_PRESERVED');
+    httpCheck(str_contains($html,'name="recipe_astro[tags]"')
+        && str_contains($html,'<option value="Intermédiaire" selected>')
+        && str_contains($html,'poisson'),
+        'HUMAN_RECIPE_PROFILE_PRESERVED_IN_CANDIDATE_GET');
     $candidateToken=httpHidden($html,'candidate_token');
     [$status]=$request('/gestion-contenus/?new=1',$post);
     httpCheck($status===503&&(int)file_get_contents($base.'/calls.txt')===1,'REPLAY_NO_PROVIDER_CALL');
