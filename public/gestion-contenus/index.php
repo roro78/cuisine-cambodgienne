@@ -368,9 +368,9 @@ if($auth){
                     :'Le brief IA n’a pas été enregistré. Vérifiez les projets avant toute nouvelle tentative ; la création manuelle reste disponible.';
             }
         }
-        if($method==='POST' && isset($_POST['create_save']) && !isset($_POST['review_action'])
-            && !isset($_POST['ai_brief_generate'])
-            && !isset($_POST['ai_content_generate']) && !isset($_POST['ai_content_discard'])){
+        if($method==='POST' && isset($_POST['create_save']) && !isset($_POST['ai_brief_generate'])
+            && !isset($_POST['ai_content_generate']) && !isset($_POST['ai_content_discard'])
+            && !isset($_POST['review_action'])){
             $expected=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
                 ['options'=>['min_range'=>0,'max_range'=>9998]]);
             if($expected===false){http_response_code(422);$error='Version invalide.';}
