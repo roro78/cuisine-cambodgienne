@@ -386,7 +386,8 @@ function cmsFilterCatalog(array $catalog,array $latestById,string $kind,string $
         if($kind!=='all' && $src['kind']!==$kind)continue;
         $draft=$latestById[$src['id']]??null;
         $stale=is_array($draft) && is_string($draft['source_fingerprint']??null)
-            && !hash_equals($src['fingerprint'],$draft['source_fingerprint']);
+            && (!hash_equals($src['fingerprint'],$draft['source_fingerprint'])
+                ||($draft['studio_source_stale']??false)===true);
         if($status==='without' && $draft!==null)continue;
         if($status==='draft' && ($draft['state']??null)!=='draft')continue;
         if($status==='review' && ($draft['state']??null)!=='review')continue;
@@ -687,6 +688,9 @@ function cmsSave(string $private,array $source,array $fields,int $expected,strin
         $versions=cmsVersions($dir,$id);
         $head=$versions[0]??0;
         if ($head!==$expected)throw new RuntimeException('CONFLICT');
+        if(($source['kind']??null)==='atelier'
+            &&cmsStudioLinkedDraft(cmsCreationList(cmsCreationDir($private)),$id)!==null)
+            throw new RuntimeException('STUDIO_LINK_EXISTS');
         $prev=$head ? cmsReadVersion($dir,$id,$head):null;
         if ($prev && !hash_equals($prev['source_fingerprint'],$source['fingerprint']))
             throw new RuntimeException('SOURCE_CHANGED');
@@ -1631,8 +1635,135 @@ function cmsCreationDuplicateCheck(string $kind,string $slug,
     }
     return $similar;
 }
+/** Explicit private adaptation, never a migration of historical edit versions. */
+function cmsStudioSourceBinding(array $source,array $canonical,int $version,?array $legacy): array {
+    if(($source['kind']??null)!=='atelier' || !cmsId($source['id']??null)
+        ||($canonical['id']??null)!==$source['id']
+        ||($canonical['kind']??null)!=='atelier'
+        ||!preg_match('/^[a-f0-9]{16}$/D',$source['fingerprint']??'')
+        ||!preg_match('/^[a-f0-9]{64}$/D',$canonical['fingerprint']??'')
+        ||$version<0 || ($version===0)!==($legacy===null))
+        throw new RuntimeException('STUDIO_SOURCE_INVALID');
+    if($legacy!==null && (($legacy['source_id']??null)!==$source['id']
+        ||($legacy['version']??null)!==$version
+        ||($legacy['source_fingerprint']??null)!==$source['fingerprint']
+        ||(isset($legacy['structure'])
+          &&($legacy['canonical_fingerprint']??null)!==$canonical['fingerprint'])))
+        throw new RuntimeException('STUDIO_SOURCE_STALE');
+    return ['contract'=>'cdc-studio-published-workshop-v1',
+        'source_id'=>$source['id'],'source_fingerprint'=>$source['fingerprint'],
+        'canonical_fingerprint'=>$canonical['fingerprint'],
+        'legacy_version'=>$version,'legacy_sha256'=>$legacy===null?null:
+            hash('sha256',json_encode($legacy,JSON_THROW_ON_ERROR))];
+}
+function cmsStudioBindingCurrent(array $binding,array $catalog,array $canonical): bool {
+    $id=$binding['source_id']??'';
+    return is_string($id) && ($binding['contract']??null)==='cdc-studio-published-workshop-v1'
+        && ($catalog[$id]['kind']??null)==='atelier'
+        && ($catalog[$id]['fingerprint']??null)===($binding['source_fingerprint']??null)
+        && isset($canonical[$id]['fingerprint'])
+        && $canonical[$id]['fingerprint']===($binding['canonical_fingerprint']??null);
+}
+function cmsStudioLinkedDraft(array $creations,string $sourceId): ?array {
+    $found=null;
+    foreach($creations as $record){
+        if(($record['source_binding']['source_id']??null)!==$sourceId)continue;
+        if($found!==null)throw new RuntimeException('STUDIO_LINK_DUPLICATE');
+        $found=$record;
+    }
+    return $found;
+}
+/** Read-only status projection for the library; never convert stored versions. */
+function cmsStudioCatalogDrafts(array $historical,array $creations,array $catalog,array $canonical): array {
+    foreach($catalog as $id=>$source){
+        $linked=cmsStudioLinkedDraft($creations,$id);
+        if($linked===null)continue;
+        $historical[$id]=['state'=>$linked['state'],'version'=>$linked['version'],
+            'source_fingerprint'=>$linked['source_binding']['source_fingerprint'],
+            'studio_source_stale'=>!cmsStudioBindingCurrent($linked['source_binding'],$catalog,$canonical)];
+    }
+    return $historical;
+}
+/** Normalize a saved guided shape to its HTML inputs without changing metadata. */
+function cmsStudioGuidedInput(mixed $original,mixed $value): mixed {
+    if(!is_array($original))return is_scalar($value)?(string)$value:$value;
+    if(!is_array($value)||count($original)!==count($value)
+        ||array_diff(array_keys($original),array_keys($value))
+        ||array_diff(array_keys($value),array_keys($original)))
+        throw new RuntimeException('STUDIO_LEGACY_SHAPE');
+    $out=[];
+    foreach($original as $key=>$item){
+        if(in_array($key,['id','scalable'],true)){
+            if($value[$key]!==$item)throw new RuntimeException('STUDIO_LEGACY_METADATA');
+            continue;
+        }
+        $out[$key]=cmsStudioGuidedInput($item,$value[$key]);
+    }
+    return $out;
+}
+function cmsStudioWorkshopCandidate(array $source,array $canonical,array $guided,?array $legacy): array {
+    $binding=cmsStudioSourceBinding($source,$canonical,(int)($legacy['version']??0),$legacy);
+    if(($guided['id']??null)!==$source['id']
+        ||($guided['fingerprint']??null)!==$canonical['fingerprint']
+        ||($guided['model']??null)!=='cookingWorkshopGuides')
+        throw new RuntimeException('STUDIO_MODEL_UNSUPPORTED');
+    $fields=$guided['fields'];
+    if(is_array($legacy['structure']??null)){
+        $patch=$legacy['structure'];unset($patch['schema_version']);
+        // Validate the complete current shape, including protected IDs and row counts.
+        // Unknown/partial incompatible legacy structures require manual review.
+        $json=cmsBuildGuidedPatch($guided,cmsStudioGuidedInput($fields,array_replace($fields,$patch)));
+        $fields=json_decode($json,true,24,JSON_THROW_ON_ERROR);unset($fields['schema_version']);
+    }
+    $posted=[];
+    foreach(cmsCreationSchema()['atelier'] as $key=>$spec){
+        if(!array_key_exists($key,$fields))continue;
+        $value=$fields[$key];
+        if($spec[1]==='list')$value=implode("\n",$value);
+        if($key==='phases'){
+            if(array_column($value,'id')!==cmsAtelierPhaseIds())
+                throw new RuntimeException('STUDIO_PHASE_ORDER');
+            $value=array_map(static fn(array $row):array=>
+                ['title'=>$row['title'],'learning'=>$row['learning']],$value);
+        }
+        $posted[$key]=$value;
+    }
+    return ['kind'=>'atelier','title'=>$legacy['title']??$source['title'],
+        'summary'=>$legacy['summary']??$source['summary'],
+        'angle'=>'Révision privée de la fiche publiée ; compléments Coral V2 à relire.',
+        'fields'=>$posted,'state'=>'draft','source_binding'=>$binding];
+}
+function cmsStudioTransition(string $private,array $source,array $catalog,array $canonical,
+    array $guided,int $expected): array {
+    $dir=cmsDraftDir($private);$path=$dir.'/'.cmsKey($source['id']).'.lock';
+    if(is_link($path))throw new RuntimeException('LOCK_UNSAFE');
+    $lock=fopen($path,'c');
+    if(!$lock||!flock($lock,LOCK_EX))throw new RuntimeException('LOCK_FAILED');
+    try{
+        if(!chmod($path,0600))throw new RuntimeException('LOCK_FAILED');
+        $head=cmsVersions($dir,$source['id'])[0]??0;
+        if($head!==$expected)throw new RuntimeException('CONFLICT');
+        $legacy=$head?cmsReadVersion($dir,$source['id'],$head):null;
+        $candidate=cmsStudioWorkshopCandidate($source,$canonical[$source['id']]??[],$guided,$legacy);
+        $binding=$candidate['source_binding'];unset($candidate['source_binding']);
+        return cmsCreationSave($private,$candidate,$catalog,0,
+            null,null,null,$binding,$canonical);
+    }finally{flock($lock,LOCK_UN);fclose($lock);}
+}
+/** Same five-section navigation for every category and both storage contracts. */
+function cmsStudioNavigationHtml(bool $creation=false): string {
+    $anchors=['cms-general'=>'Informations générales',
+        $creation?'cms-new-content':'cms-content'=>'Contenu',
+        'cms-preview'=>'Aperçu','cms-quality'=>'Contrôles qualité',
+        'cms-history'=>'Historique et publication',
+        $creation?'cms-new-save':'cms-save'=>'Enregistrer'];
+    $html='<nav class="editor-shortcuts" aria-label="Sections du Studio">';
+    foreach($anchors as $id=>$label)$html.='<a href="#'.$id.'">'.$label.'</a>';
+    return $html.'</nav>';
+}
 function cmsCreationSave(string $private,array $posted,array $catalog,
-    int $expected,?string $id=null,?array $aiBrief=null,?array $aiContent=null): array {
+    int $expected,?string $id=null,?array $aiBrief=null,?array $aiContent=null,
+    ?array $sourceBinding=null,array $canonical=[]): array {
     // Provenance is a SERVER argument, never a browser field or model decision.
     if($aiBrief!==null)$aiBrief=cmsAiBriefMetadata($aiBrief);
     if($aiContent!==null)$aiContent=cmsAiContentMetadata($aiContent);
@@ -1663,6 +1794,20 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
         if(!@chmod($lockPath,0600))throw new RuntimeException('CREATION_LOCK');
         $all=cmsCreationList($dir);
         $previous=$id===null?null:($all[$id]??null);
+        // Relationship is trusted server metadata. It cannot be introduced,
+        // changed or removed through POST or AI fields.
+        if(array_key_exists('source_binding',$posted))
+            throw new InvalidArgumentException('STUDIO_BINDING_SERVER_ONLY');
+        $binding=$previous['source_binding']??$sourceBinding;
+        if($binding!==null){
+            if($kind!=='atelier'||$aiBrief!==null||$aiContent!==null
+                ||!cmsStudioBindingCurrent($binding,$catalog,$canonical)
+                ||($sourceBinding!==null && $sourceBinding!==$binding))
+                throw new RuntimeException('STUDIO_SOURCE_STALE');
+            $linked=cmsStudioLinkedDraft($all,$binding['source_id']);
+            if($linked!==null && $linked['id']!==$id)
+                throw new RuntimeException('STUDIO_LINK_EXISTS');
+        }
         // Supplement is private, versioned together with this record.
         // Missing POST data retains the previous version for compatibility.
         if($kind!=='recette' && isset($posted['recipe_astro']))
@@ -1732,12 +1877,16 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
                 throw new RuntimeException('CREATION_PROVENANCE');
         }
         $similarByTitle=[];
+        $duplicateCatalog=$catalog;
+        // The single bound published identity is an edit, not a new public page.
+        // All other published and unpublished duplicates remain forbidden.
+        if($binding!==null)unset($duplicateCatalog[$binding['source_id']]);
         foreach([$provenance,$contentProvenance] as $inputProvenance){
             if($origin!=='ai' || $inputProvenance===null)continue;
             foreach(cmsCreationDuplicateCheck($kind,cmsCreationSlug($inputProvenance['input_title']),
-                $catalog,$all,$id) as $match)$similarByTitle[$match['title']]=$match;
+                $duplicateCatalog,$all,$id) as $match)$similarByTitle[$match['title']]=$match;
         }
-        foreach(cmsCreationDuplicateCheck($kind,$slug,$catalog,$all,$id) as $match)
+        foreach(cmsCreationDuplicateCheck($kind,$slug,$duplicateCatalog,$all,$id) as $match)
             $similarByTitle[$match['title']]=$match;
         $similar=array_values($similarByTitle);
         $id=$id??'c-'.bin2hex(random_bytes(12));
@@ -1759,6 +1908,7 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
         if($atelierRef!==null)$record['atelier_reference']=$atelierRef;
         if($atelierPhaseDetails!==null)$record['atelier_phase_details']=$atelierPhaseDetails;
         if($atelierScripts!==null)$record['atelier_scripts']=$atelierScripts;
+        if($binding!==null)$record['source_binding']=$binding;
         if($origin==='ai' && $provenance!==null)$record['ai_brief']=$provenance;
         if($origin==='ai' && $contentProvenance!==null){
             $record['ai_content']=$contentProvenance;

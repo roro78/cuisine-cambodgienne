@@ -4,6 +4,14 @@
 Décision du 28 octobre 2026, à la suite de la réception Android du Studio V2.  
 **Le cas Bai Sach Chrouk a servi de test ; ce n'est pas un modèle réservé à cet atelier.**
 
+**29 octobre — parcours d’édition unifié :** [décision et contrat de transition](CMS-STUDIO-UNIFIED-20261029.md).
+Les deux stockages append-only ne sont pas fusionnés : un atelier publié peut
+ouvrir, sur confirmation explicite, un brouillon Coral V2 dans le formulaire
+commun, lié à l’ID public et à ses empreintes par métadonnée serveur. L’ancien
+éditeur devient alors un historique en lecture seule ; bibliothèque et
+calendrier retrouvent le même brouillon. Les cinq familles partagent les cinq
+sections du Studio ; aucun visa, MP3 ou droit de publication n’est importé.
+
 ## 1. Principe non négociable
 
 **Un seul Studio, un seul rendu d'édition, une seule logique de brouillon et d'aperçu pour l'ensemble du catalogue éditorial.** Chaque page éditoriale (recette, Carnet, atelier, ingrédient, technique), présente ou créée dans le futur, hérite du même **parcours**. Aucun écran « spécial Bai Sach Chrouk », aucun formulaire codé séparément pour une recette, aucun retour automatique au JSON brut pour une nouvelle page.

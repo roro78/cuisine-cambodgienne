@@ -106,6 +106,7 @@ $createKind=is_string($_POST['kind']??null)?$_POST['kind']:
     (is_string($_GET['kind']??null)?$_GET['kind']:'recette');
 if(!isset(cmsCreationKinds()[$createKind]))$createKind='recette';
 $createForm=[];$creation=null;$creations=[];$createVersion=null;
+$studioLinked=null;$studioSourceCurrent=true;$studioBoundSource=null;
 $aiSettings=null;$aiInputForm=[];
 $aiContentSettings=null;$aiContentInputForm=[];$pendingContent=null;
 $calendarMode=!$newMode && isset($_GET['calendar']);
@@ -208,6 +209,10 @@ if($auth){
             if(!isset($creations[$cid])){http_response_code(404);$error='Brouillon de création introuvable.';}
             else{$creation=$creations[$cid];$createKind=$creation['kind'];}
         }
+        if(isset($creation['source_binding'])){
+            $studioSourceCurrent=cmsStudioBindingCurrent($creation['source_binding'],$catalog,$canonicalById);
+            $studioBoundSource=$catalog[$creation['source_binding']['source_id']]??null;
+        }
         $createForm=$creation??[];
         $createExpected=(int)($creation['version']??0);
         try{$aiSettings=cmsAiBriefSettings($cfg);}catch(Throwable $e){$aiSettings=null;}
@@ -250,6 +255,7 @@ if($auth){
         }
         if($method==='POST' && isset($_POST['culinary_action'])){
             try{
+                if(!$studioSourceCurrent)throw new RuntimeException('STUDIO_SOURCE_STALE');
                 if($creation===null || $createKind!=='atelier'
                     || count(array_intersect(['culinary_action','review_action',
                         'create_save','ai_brief_generate','ai_content_generate',
@@ -272,11 +278,11 @@ if($auth){
                     ($_POST['culinary_confirm']??null)==='1',
                     $auth,$catalog,$canonicalById,$guidedCulinary);
                 header('Location: ?new=1&cid='.rawurlencode($creation['id'])
-                    .'&recipe_audit=1&culinary_saved=1#canonical-review',true,303);
+                    .'&'.$filtersUrl.'&recipe_audit=1&culinary_saved=1#canonical-review',true,303);
                 exit;
             }catch(Throwable $e){
                 $conflict=in_array($e->getMessage(),[
-                    'ATELIER_CULINARY_CONFLICT','ATELIER_CULINARY_ALREADY_SET'],true);
+                    'ATELIER_CULINARY_CONFLICT','ATELIER_CULINARY_ALREADY_SET','STUDIO_SOURCE_STALE'],true);
                 http_response_code($conflict?409:422);
                 $error=$conflict
                     ?'La recette ou la version du brouillon a changé : rechargez la comparaison.'
@@ -285,6 +291,7 @@ if($auth){
         }
         if($method==='POST' && isset($_POST['review_action'])){
             try{
+                if(!$studioSourceCurrent)throw new RuntimeException('STUDIO_SOURCE_STALE');
                 if($creation===null||$createKind!=='atelier'
                     ||count(array_intersect(['review_action','create_save',
                         'ai_brief_generate','ai_content_generate','ai_content_discard',
@@ -299,11 +306,11 @@ if($auth){
                     is_string($_POST['review_action']??null)?$_POST['review_action']:'',
                     ($_POST['review_confirm']??null)==='1',$auth,$catalog);
                 header('Location: ?new=1&cid='.rawurlencode($creation['id'])
-                    .'&visa_saved=1',true,303);
+                    .'&'.$filtersUrl.'&visa_saved=1',true,303);
                 exit;
             }catch(Throwable $e){
                 $conflict=in_array($e->getMessage(),
-                    ['ATELIER_VISA_CONFLICT','ATELIER_VISA_ALREADY_SET'],true);
+                    ['ATELIER_VISA_CONFLICT','ATELIER_VISA_ALREADY_SET','STUDIO_SOURCE_STALE'],true);
                 http_response_code($conflict?409:422);
                 $error=$conflict
                     ?'La version ou le visa a changé. Rechargez la fiche pour vérifier l’état actuel.'
@@ -320,6 +327,7 @@ if($auth){
                     && strlen($_POST[$field])<=8000?$_POST[$field]:'';
             try{
                 $actions=array_intersect(['ai_content_generate','ai_content_discard','ai_brief_generate','create_save'],array_keys($_POST));
+                if(isset($creation['source_binding']))throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
                 if(count($actions)!==1)throw new InvalidArgumentException('AI_CONTENT_INPUT');
                 if(isset($_POST['ai_content_discard'])){
                     $pending=cmsAiContentPending($_SESSION,$candidateToken);
@@ -435,9 +443,10 @@ if($auth){
                         $pending=cmsAiContentPending($_SESSION,$candidateToken);
                         $saved=cmsAiContentSave($private,$posted,$catalog,$expected,$cid,$pending,$canonicalById);
                         unset($_SESSION['ai_content_pending'][$pending['token']]);
-                    }else $saved=cmsCreationSave($private,$posted,$catalog,$expected,$cid);
+                    }else $saved=cmsCreationSave($private,$posted,$catalog,$expected,$cid,
+                        null,null,null,$canonicalById);
                     header('Location: ?new=1&cid='.rawurlencode($saved['id'])
-                        .'&saved_new=1',true,303);
+                        .'&'.$filtersUrl.'&saved_new=1',true,303);
                     exit;
                 }catch(InvalidArgumentException $e){
                     http_response_code(422);
@@ -473,6 +482,14 @@ if($auth){
     $id=cmsId($_POST['source_id']??($_GET['id']??null));
     if($id!==null && isset($catalog[$id]))$selected=$catalog[$id];
     if($selected)$selectedCanonical=$canonicalById[$selected['id']]??null;
+    if($selected && $selected['kind']==='atelier'){
+        try{$studioLinked=cmsStudioLinkedDraft($creations,$selected['id']);}
+        catch(Throwable $e){cmsUnavailable();}
+        if($studioLinked!==null && !$newMode && $method==='GET'
+            && !isset($_GET['history'])){
+            header('Location: ?new=1&cid='.rawurlencode($studioLinked['id']).'&'.$filtersUrl,true,303);exit;
+        }
+    }
     if($selected && $selectedCanonical){
         try{
             $feed=cmsGetGuidedFields();
@@ -501,6 +518,22 @@ if($auth){
         }
     }
     $editorMode=$guidedEditable && ($_GET['mode']??'')!=='json'?'guided':'json';
+    if($method==='POST' && isset($_POST['studio_transition'])){
+        try{
+            $expected=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
+                ['options'=>['min_range'=>0,'max_range'=>9998]]);
+            if(!$selected||!$selectedCanonical||!$guidedSelected||$expected===false
+                ||$studioLinked!==null||($_POST['transition_confirm']??null)!=='1'
+                ||($_POST['source_fingerprint']??null)!==$selected['fingerprint']
+                ||($_POST['canonical_fingerprint']??null)!==$selectedCanonical['fingerprint'])
+                throw new RuntimeException('STUDIO_TRANSITION_BLOCKED');
+            $saved=cmsStudioTransition($private,$selected,$catalog,$canonicalById,$guidedSelected,$expected);
+            header('Location: ?new=1&cid='.rawurlencode($saved['id']).'&'.$filtersUrl.'&saved_new=1',true,303);exit;
+        }catch(Throwable $e){
+            http_response_code(409);
+            $error='Transition non enregistrée : vérifiez la confirmation, la version et les sources actuelles. Les versions historiques sont conservées.';
+        }
+    }
     // Protected export of an already reviewed, immutable draft. No mutation.
     if($method==='POST' && isset($_POST['export_review'])){
         try {
@@ -575,6 +608,9 @@ if($auth){
             $latest=$versions ? cmsReadVersion($dir,$selected['id'],$versions[0]):null;
             $staleDraft=$latest && !hash_equals(
                 $latest['source_fingerprint'],$selected['fingerprint']);
+            if($latest && is_array($latest['structure']??null)
+                && ($latest['canonical_fingerprint']??null)!==($selectedCanonical['fingerprint']??null))
+                $staleDraft=true;
             $requested=filter_var($_GET['revision']??null,FILTER_VALIDATE_INT,
                 ['options'=>['min_range'=>1,'max_range'=>9999]]);
             $display=($requested!==false && in_array($requested,$versions,true))
@@ -584,6 +620,10 @@ if($auth){
 }
 $kindLabels=['recette'=>'Recette','culture'=>'Carnet','atelier'=>'Atelier',
     'ingredient'=>'Ingrédient','technique'=>'Technique'];
+if($auth){
+    try{$latestById=cmsStudioCatalogDrafts($latestById,$creations,$catalog,$canonicalById);}
+    catch(Throwable $e){cmsUnavailable();}
+}
 $shown=$auth?cmsFilterCatalog($catalog,$latestById,$kind,$q,$status):[];
 ?>
 <!doctype html><html lang="fr"><head><meta charset="utf-8">
@@ -661,6 +701,8 @@ nav.versions a{padding:6px 9px;background:#edf4ea;border-radius:6px}
 .preview-text{white-space:pre-wrap;overflow-wrap:anywhere}.guided-collection{padding:8px 0}.guided-row-fields{padding:6px}.guided-collection .guided-collection{padding-left:10px;border-left:2px solid #e3e8dc}
 .guided-nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .coral-script-text{white-space:pre-wrap;overflow-wrap:anywhere;max-height:320px;overflow:auto;padding:12px;border:1px solid #e3e8dc;border-radius:8px}
+.studio-quality{scroll-margin-top:18px}.studio-save{position:sticky;bottom:0;background:#fcfcf9;padding:12px 0;border-top:1px solid #d9ddd5;z-index:2}
+section,fieldset,.stack,.grid>*{min-width:0}code,pre{overflow-wrap:anywhere;white-space:pre-wrap}.editor-shortcuts a{min-height:44px;display:inline-flex;align-items:center}
 @media(max-width:650px){.guided-row{grid-template-columns:1fr}.guided-wide{grid-column:1}}
 
 @media(max-width:650px){.cards,.grid{grid-template-columns:1fr}.card img{width:72px;height:72px}}
@@ -803,10 +845,19 @@ L'IA, les créneaux Facebook/Instagram et les statistiques viendront dans des é
 <?php endif; ?>
 </section>
 <?php elseif($newMode): ?>
-<p><a href="?">Retour à la bibliothèque</a></p>
+<p><a href="?<?= cmsEsc($filtersUrl) ?>">Retour à la bibliothèque (filtres conservés)</a></p>
 <section>
-<span class="badge">Création privée · aucune publication</span>
-<h2><?= $creation?'Modifier le brouillon de nouvelle page':'Créer un nouveau contenu' ?></h2>
+<span class="badge"><?= isset($creation['source_binding'])?'Révision privée d’une fiche publiée':'Création privée' ?> · aucune publication</span>
+<h2 id="cms-general"><?= isset($creation['source_binding'])?'Modifier la fiche publiée':($creation?'Modifier le brouillon de nouvelle page':'Créer un nouveau contenu') ?></h2>
+<?= cmsStudioNavigationHtml(true) ?>
+<?php if(isset($creation['source_binding'])): ?>
+<p class="note">Ce brouillon reste lié à <strong><?= cmsEsc($studioBoundSource['title']??$creation['source_binding']['source_id']) ?></strong>.
+Il prépare une révision de la même fiche ; aucune nouvelle page publique n’est créée.</p>
+<p><a href="?id=<?= rawurlencode($creation['source_binding']['source_id']) ?>&amp;history=1&amp;<?= cmsEsc($filtersUrl) ?>#cms-history">Consulter les versions historiques de la fiche</a>
+<?php if($studioBoundSource): ?> · <a href="<?= cmsEsc($studioBoundSource['url']) ?>" target="_blank" rel="noopener noreferrer">Consulter la page publiée</a><?php endif; ?></p>
+<?php if(!$studioSourceCurrent): ?><p class="note" role="alert">La source publiée a changé ou son empreinte n’est plus vérifiable.
+Sauvegardes et visas bloqués ; comparer les versions avant une nouvelle décision de reprise. Le brouillon privé reste conservé.</p><?php endif; ?>
+<?php endif; ?>
 <p class="small muted">Même Studio pour les cinq familles, sans JSON. Choisissez les champs
 propres à la rubrique et sauvegardez : rien ne sera publié sur le site ni sur les réseaux.
 Un brief IA prépare le sujet ; une proposition structurée remplit les champs de travail,
@@ -875,7 +926,7 @@ Vous pouvez créer le contenu manuellement ci-dessous.</p>
 <?php endif; ?>
 </details>
 <?php endif; ?>
-<form method="post" class="stack" id="cms-new-editor">
+<form method="post" class="stack" id="cms-new-editor" data-studio-edit>
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <input type="hidden" name="creation_id" value="<?= cmsEsc($creation['id']??'') ?>">
 <input type="hidden" name="expected_version" value="<?= (int)($pendingContent['expected_version']??$createExpected) ?>">
@@ -886,14 +937,14 @@ Vous pouvez créer le contenu manuellement ci-dessous.</p>
 <input type="hidden" name="candidate_token" value="<?= cmsEsc(is_string($candidateToken)?$candidateToken:'invalid') ?>">
 <?php endif; ?>
 <label>Catégorie<input value="<?= cmsEsc(cmsCreationKinds()[$createKind]) ?>" disabled></label>
-<label>Titre de la nouvelle page<textarea name="title" rows="2" maxlength="180" required><?= cmsEsc((string)($createForm['title']??'')) ?></textarea></label>
+<label>Titre proposé<textarea name="title" rows="2" maxlength="180" required><?= cmsEsc((string)($createForm['title']??'')) ?></textarea></label>
 <label>Angle éditorial — en quoi ce contenu est-il différent ?
 <textarea name="angle" rows="3" maxlength="700" required><?= cmsEsc((string)($createForm['angle']??'')) ?></textarea></label>
 <label>Résumé<textarea name="summary" rows="3" maxlength="2000"><?= cmsEsc((string)($createForm['summary']??'')) ?></textarea></label>
 <div class="create-meta small">Les sujets identiques aux pages ou brouillons existants
 de la même catégorie sont refusés. Les sujets proches sont signalés pour relecture.
 Un Carnet culturel peut traiter l'histoire d'un plat sans répéter sa recette.</div>
-<?php if($pendingContent===null && $candidateToken===''): ?>
+<?php if($pendingContent===null && $candidateToken==='' && !isset($creation['source_binding'])): ?>
 <details class="guided-group"<?= $aiContentInputForm?' open':'' ?>>
 <summary>Générer une proposition structurée avec l’IA</summary>
 <?php if($aiContentSettings!==null): ?>
@@ -920,7 +971,7 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <p class="small muted">La génération structurée est indisponible. Vous pouvez rédiger et enregistrer manuellement.</p>
 <?php endif; ?></details>
 <?php endif; ?>
-<h3>Contenu de la fiche — <?= cmsEsc(cmsCreationKinds()[$createKind]) ?></h3>
+<h3 id="cms-new-content">Contenu de la fiche — <?= cmsEsc(cmsCreationKinds()[$createKind]) ?></h3>
 <?= cmsCreationFormHtml($createKind,
     is_array($createForm['fields']??null)?$createForm['fields']:[]) ?>
 <?php if($createKind==='recette'): ?>
@@ -954,14 +1005,15 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <option value="review"<?= ($createForm['state']??'draft')==='review'?' selected':'' ?>>Soumettre à relecture (non publié)</option>
 <?php endif; ?>
 </select></label>
-<button name="create_save" value="1">Enregistrer une nouvelle version privée</button>
+<div class="studio-save" id="cms-new-save"><button name="create_save" value="1"<?= !$studioSourceCurrent?' disabled':'' ?>>Enregistrer une nouvelle version privée</button></div>
 <?php if($pendingContent!==null): ?>
 <button name="ai_content_discard" value="1" class="secondary" formnovalidate>Écarter la proposition et restaurer ma saisie</button>
 <?php endif; ?>
 </form></section>
 <?php if($creation): ?>
 <section id="cms-preview">
-<h2>Aperçu de la création</h2>
+<h2>Aperçu du brouillon enregistré</h2>
+<p class="small muted">Lecture simplifiée des champs enregistrés, sans reproduction du gabarit public, des images ni du lecteur audio.</p>
 <?php if(isset($_GET['saved_new'])): ?>
 <p role="status" class="notice">Nouvelle version privée enregistrée.</p>
 <?php endif; ?>
@@ -978,7 +1030,12 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <p><?= cmsEsc($creation['summary']) ?></p>
 <p><strong>Angle :</strong> <?= cmsEsc($creation['angle']) ?></p>
 <?= cmsGuidedPreviewHtml('fiche',$creation['fields']) ?>
-<?php if($creation['kind']==='atelier'): ?>
+</section><section id="cms-quality" class="studio-quality">
+<h2>Contrôles qualité — <?= cmsEsc(cmsCreationKinds()[$creation['kind']]) ?></h2>
+<p class="small muted">Les contrôles concernent la version enregistrée. Enregistrez vos modifications avant de les évaluer.</p>
+<?php if(!$studioSourceCurrent): ?>
+<p class="note" role="alert">Contrôles et visas indisponibles : la source publiée ne correspond plus à ce brouillon.</p>
+<?php elseif($creation['kind']==='atelier'): ?>
 <?php $workshopCheck=null;
 try{$workshopCheck=cmsAtelierBlueprintPreflight($creation,$catalog);}
 catch(Throwable $ignored){$workshopCheck=null;} ?>
@@ -1031,7 +1088,7 @@ $approved=($visaStatus['by_chapter'][$chapterId]??false)===true; ?>
  — <?= $approved?'texte visé':'visa absent ou périmé' ?></summary>
 <div class="coral-script-text"><?= cmsEsc($text!==''?$text:'Texte non rédigé.') ?></div>
 <?php if($ready && $text!==''): ?>
-<form method="post" action="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>">
+<form method="post" action="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>">
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <input type="hidden" name="creation_id" value="<?= cmsEsc($creation['id']) ?>">
 <input type="hidden" name="expected_version" value="<?= (int)$creation['version'] ?>">
@@ -1084,7 +1141,7 @@ if(isset($_GET['recipe_audit'])||isset($_GET['coral_preflight'])){
 <p class="small muted">Cette comparaison récupère seulement à votre demande
 les index publics déjà validés. Elle ne modifie ni l’atelier ni la recette,
 et n'accorde aucun visa culinaire ou audio.</p>
-<a href="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;recipe_audit=1#canonical-review">
+<a href="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>&amp;recipe_audit=1#canonical-review">
 Afficher les ingrédients et portions de la recette de référence</a>
 <?php if($recipeAuditUnavailable): ?>
 <p class="notice" role="alert">Index source indisponible ou incohérent.
@@ -1134,7 +1191,7 @@ Autorisation audio et publication : <strong>non</strong>.</p>
 <p class="notice" role="status">Décision culinaire enregistrée dans
 le journal privé. Aucun traitement audio n’a été déclenché.</p>
 <?php endif; ?>
-<form method="post" action="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;recipe_audit=1#canonical-review"
+<form method="post" action="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>&amp;recipe_audit=1#canonical-review"
  class="stack" data-culinary-human-visa>
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <input type="hidden" name="creation_id" value="<?= cmsEsc($creation['id']) ?>">
@@ -1179,7 +1236,7 @@ restent désactivés.</p>
 visas des sept textes, la relecture culinaire et les exigences média/audio.
 Il ne lance aucun service, ne traite aucun fichier MP3 et ne délivre aucune
 autorisation de génération.</p>
-<a href="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;coral_preflight=1#coral-preflight">
+<a href="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>&amp;coral_preflight=1#coral-preflight">
 Calculer le tableau de pré-réception sur les données actuelles</a>
 <?php if($coralPreflightUnavailable): ?>
 <p class="notice" role="alert">Diagnostic indisponible : index public,
@@ -1292,14 +1349,22 @@ les champs ou la structure de la recette avant une future prévisualisation.</p>
 <?php foreach($creation['similar_titles'] as $match): ?>
 <p><?= cmsEsc($match['title']) ?></p><?php endforeach; ?></div>
 <?php endif; ?>
+</section><section id="cms-history">
+<h2>Historique et publication</h2>
 <?php if($createVersion): ?>
 <h3>Version historique <?= (int)$createVersion['version'] ?></h3>
 <p><?= cmsEsc($createVersion['title']) ?> — <?= cmsEsc($createVersion['recorded_at']) ?></p>
 <?= cmsGuidedPreviewHtml('fiche',$createVersion['fields']) ?>
+<?php if($createVersion['kind']==='atelier'): ?>
+<details class="guided-group"><summary>Narrations de cette version historique — lecture seule</summary>
+<?php foreach(($createVersion['atelier_scripts']['chapters']??[]) as $chapter): ?>
+<h4><?= cmsEsc($chapter['id']) ?></h4><p class="preview-text"><?= cmsEsc($chapter['text']) ?></p>
+<?php endforeach; ?></details>
+<?php endif; ?>
 <?php endif; ?>
 <h3>Historique privé</h3><nav class="versions">
 <?php foreach(cmsCreationVersions($creationDir,$creation['id']) as $v): ?>
-<a href="?new=1&amp;cid=<?= cmsEsc($creation['id']) ?>&amp;revision=<?= (int)$v ?>">Version <?= (int)$v ?></a>
+<a href="?new=1&amp;cid=<?= cmsEsc($creation['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>&amp;revision=<?= (int)$v ?>#cms-history">Version <?= (int)$v ?></a>
 <?php endforeach; ?></nav>
 <?php $astroGap=cmsAstroPublicationGapReport($creation); ?>
 <details class="guided-group" data-astro-publication-gap>
@@ -1335,19 +1400,47 @@ avec validation humaine et tests.</p>
 <?php elseif($selected): ?>
 <p><a href="?<?= cmsEsc($filtersUrl) ?>">Retour à la bibliothèque (filtres conservés)</a> · <a href="<?= cmsEsc($selected['url']) ?>" target="_blank"
  rel="noopener noreferrer">Consulter la page actuellement publiée</a></p>
-<section><span class="badge"><?= cmsEsc($kindLabels[$selected['kind']]??'Contenu') ?></span>
+<section id="cms-general"><span class="badge"><?= cmsEsc($kindLabels[$selected['kind']]??'Contenu') ?></span>
 <h2><?= cmsEsc($selected['title']) ?></h2>
 <p class="small muted">Identifiant stable : <?= cmsEsc($selected['id']) ?> · Empreinte de la source :
 <code><?= cmsEsc($selected['fingerprint']) ?></code></p>
 <p class="summary"><strong>Présentation actuellement utilisée par le catalogue social :</strong>
 <?= cmsEsc($selected['summary']) ?></p></section>
-<nav class="editor-shortcuts" aria-label="Accès rapide à l'édition">
-<a href="#cms-fields">Champs de la fiche</a>
-<a href="#cms-save">Enregistrer</a>
-<a href="#cms-preview">Dernier brouillon</a>
-</nav>
+<?= cmsStudioNavigationHtml() ?>
+<section id="cms-quality" class="studio-quality">
+<h2>Contrôles qualité — <?= cmsEsc($kindLabels[$selected['kind']]) ?></h2>
+<?php if($selected['kind']==='atelier'): ?>
+<?php if($studioLinked!==null): ?>
+<p class="note">L’édition et les contrôles Coral V2 sont réunis dans le brouillon lié. Cet écran conserve les versions antérieures en lecture seule.</p>
+<a class="btn" href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>#cms-quality">Modifier et contrôler l’atelier</a>
+<?php else: ?>
+<div data-coral-prereception>
+<p class="note">Cet atelier publié n’a pas encore de brouillon privé Coral V2 lié. Ses MP3 historiques restent indépendants de cette préparation.</p>
+<p>À compléter ou vérifier : recette de référence et son empreinte canonique, détails des six phases, sept narrations et décisions humaines.</p>
+<details class="guided-group"><summary>Neuf vérifications Coral V2 — non évaluées pour cette révision</summary>
+<ol><li>Recette canonique et empreinte SHA256</li><li>Six phases détaillées</li><li>Sept narrations complètes</li><li>Sept visas humains de texte</li><li>Validation culinaire humaine</li><li>Droits médias et voix</li><li>Écoute des sept MP3</li><li>Mesures des durées réelles</li><li>Navigation et synchronisation mobiles</li></ol>
+<p>Textes attendus : <?= cmsEsc(implode(', ',cmsAtelierScriptIds())) ?>. Aucun visa ni état audio n’est repris automatiquement.</p>
+</details></div>
+<?php if($selectedCanonical && $guidedSelected && $guidedSelected['model']==='cookingWorkshopGuides' && !$staleDraft): ?>
+<form method="post" class="stack" data-studio-transition>
+<input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
+<input type="hidden" name="source_id" value="<?= cmsEsc($selected['id']) ?>">
+<input type="hidden" name="source_fingerprint" value="<?= cmsEsc($selected['fingerprint']) ?>">
+<input type="hidden" name="canonical_fingerprint" value="<?= cmsEsc($selectedCanonical['fingerprint']) ?>">
+<input type="hidden" name="expected_version" value="<?= (int)($latest['version']??0) ?>">
+<p class="small muted">Enregistrer d’abord les modifications ci-dessous. La transition reprend uniquement les champs compatibles de la dernière version enregistrée et de la projection publique. Les notes et versions historiques restent consultables séparément. La recette de référence reste à choisir et vérifier.</p>
+<label><input type="checkbox" name="transition_confirm" value="1" required> Je souhaite préparer une révision Coral V2 privée de cette même fiche, en conservant son historique.</label>
+<button name="studio_transition" value="1">Préparer le brouillon Coral V2 lié</button>
+</form>
+<?php else: ?><p class="note">Transition indisponible : modèle ou source à vérifier. Les versions existantes restent conservées ; aucune adaptation approximative n’est effectuée.</p><?php endif; ?>
+<?php endif; ?>
+<?php else: ?>
+<ul><?php foreach(cmsAstroPublicationCoverage()[$selected['kind']]['gates'] as $gate): ?><li><?= cmsEsc($gate) ?></li><?php endforeach; ?></ul>
+<p class="small muted">Comparer le brouillon enregistré à la fiche publiée et relire les modifications. Le statut « prêt pour relecture » ne constitue pas une validation humaine ni une autorisation de publication.</p>
+<?php endif; ?></section>
 <div class="grid">
 <section>
+<?php if($studioLinked===null): ?>
 <h2><?= $latest?'Modifier la proposition (version '.(int)$latest['version'].')':'Créer une proposition' ?></h2>
 <p class="small muted">Modifiez les champs de cette fiche ci-dessous. Chaque enregistrement crée
 un brouillon privé : il ne modifie pas la page publiée, les médias ni les MP3.</p>
@@ -1371,7 +1464,8 @@ Les brouillons déjà enregistrés restent conservés.</p>
 La page d'origine a changé depuis cette proposition. Nouvelle sauvegarde bloquée pour éviter
 d'écraser une version récente. Comparer la source et reprendre le travail après relecture.
 </p><?php endif; ?>
-<form method="post" class="stack" id="cms-fields">
+<form method="post" class="stack" id="cms-fields" data-studio-edit>
+<h3 id="cms-content">Contenu de la fiche</h3>
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <input type="hidden" name="source_id" value="<?= cmsEsc($selected['id']) ?>">
 <input type="hidden" name="source_fingerprint" value="<?= cmsEsc($selected['fingerprint']) ?>">
@@ -1438,8 +1532,10 @@ une relecture des modèles réels et une PR restent nécessaires.</p>
 <option value="draft"<?= ($latest['state']??'draft')==='draft'?' selected':'' ?>>Brouillon de travail</option>
 <option value="review"<?= ($latest['state']??'draft')==='review'?' selected':'' ?>>Prêt pour relecture (non publié)</option>
 </select></label>
-<div id="cms-save" class="actions"><button name="save" value="1"<?= $staleDraft?' disabled':'' ?>>Enregistrer une nouvelle version</button></div>
+<div id="cms-save" class="actions studio-save"><button name="save" value="1"<?= $staleDraft?' disabled':'' ?>>Enregistrer une nouvelle version</button></div>
 </form>
+<?php else: ?><h2 id="cms-content">Édition poursuivie dans le brouillon lié</h2>
+<p id="cms-save"><a href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>">Ouvrir le formulaire et enregistrer une nouvelle version</a></p><?php endif; ?>
 </section>
 <section id="cms-preview"><h2>Aperçu du brouillon enregistré</h2>
 <p class="small muted">Lecture simplifiée de la proposition sauvegardée, et non
@@ -1484,11 +1580,13 @@ diff lisible et validation humaine. Un changement de fiche bloque l'export.</p>
 Télécharger la demande de modification (JSON)</button>
 </form>
 <?php endif; ?>
+<div id="cms-history"><h3>Historique et publication</h3>
 <?php if($versions): ?><h3>Historique immuable</h3><nav class="versions" aria-label="Versions du brouillon">
 <?php foreach($versions as $v): ?>
-<a href="?id=<?= rawurlencode($selected['id']) ?>&amp;revision=<?= (int)$v ?>">Version <?= (int)$v ?></a>
+<a href="?id=<?= rawurlencode($selected['id']) ?>&amp;history=1&amp;<?= cmsEsc($filtersUrl) ?>&amp;revision=<?= (int)$v ?>#cms-history">Version <?= (int)$v ?></a>
 <?php endforeach; ?></nav>
 <p class="small muted">Les anciennes versions restent consultables ; seule une nouvelle sauvegarde crée une version.</p><?php endif; ?>
+</div>
 </section>
 </div>
 <?php else: ?>
@@ -1507,7 +1605,7 @@ Cette liste n'est ni un calendrier ni une file de validation sociale.</p>
 <?php if($prev): ?>
 <p class="small"><span class="badge"><?= $prev['state']==='review'?'Prêt pour relecture':'Brouillon' ?>
 · v<?= (int)$prev['version'] ?></span></p>
-<?php if(!hash_equals($prev['source_fingerprint'],$src['fingerprint'])): ?>
+<?php if(!hash_equals($prev['source_fingerprint'],$src['fingerprint'])||($prev['studio_source_stale']??false)): ?>
 <p class="small note">Source actualisée depuis le brouillon : relecture nécessaire.</p>
 <?php endif; ?>
 <?php endif; ?>
@@ -1520,6 +1618,20 @@ Cette liste n'est ni un calendrier ni une file de validation sociale.</p>
 <?php endif; ?>
 <?php endif; ?>
 <script nonce="<?= cmsEsc($nonce) ?>">
+// Anchors keep all fields in the current document. Warn before a real page
+// change (quality calculations/history) when an edit has not been saved.
+let studioDirty=false;
+document.querySelectorAll('[data-studio-edit]').forEach(form=>{
+  form.addEventListener('input',()=>{studioDirty=true;});
+  form.addEventListener('change',()=>{studioDirty=true;});
+  form.addEventListener('submit',()=>{studioDirty=false;});
+});
+window.addEventListener('beforeunload',event=>{
+  if(studioDirty){event.preventDefault();event.returnValue='';}
+});
+document.querySelector('[data-studio-transition]')?.addEventListener('submit',event=>{
+  if(studioDirty){event.preventDefault();window.alert('Enregistrez les modifications de la fiche avant de préparer le brouillon lié.');}
+});
 document.querySelector('#cms-new-editor')?.addEventListener('submit',event=>{
   if(event.submitter?.name!=='ai_content_generate')return;
   if(event.currentTarget.dataset.generating==='1'){event.preventDefault();return;}
