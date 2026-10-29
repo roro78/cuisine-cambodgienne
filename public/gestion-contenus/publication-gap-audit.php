@@ -18,7 +18,7 @@ function cmsAstroPublicationCoverage(): array {
         'recette'=>[
             'model'=>'src/data/recipes.ts · Recipe',
             'not_covered'=>[
-                'difficulty / category / tags (champs du modèle Recipe)',
+                'profil recette Astro C4B1 à compléter ou vérifier : difficulty / category / tags',
                 'ingredients.quantity typé en nombre, note, group, scalable',
                 'steps.duration, cue, mistake et cohérence ingrédients/gestes',
                 'keyPoints, substitutions, FAQ et liens utiles selon le sujet',
@@ -91,13 +91,21 @@ function cmsAstroPublicationGapReport(array $record): array {
         }catch(Throwable $ignored){$coreReady=false;}
     }
     $model=$coverage[$kind];
+    $profileComplete=$kind==='recette'
+        ?cmsRecipeAstroProfileComplete($record['recipe_astro']??null):null;
+    $remaining=$model['not_covered'];
+    if($profileComplete===true){
+        $remaining=array_values(array_filter($remaining,
+            static fn(string $gap):bool=>!str_starts_with($gap,'profil recette Astro C4B1')));
+    }
     return [
         'contract'=>'cdc-editorial-astro-gap-v1',
         'scope'=>'creation-form-core-v1',
         'kind'=>$kind,
         'native_model'=>$model['model'],
         'form_core_complete'=>$coreReady,
-        'not_covered'=>$model['not_covered'],
+        'recipe_astro_profile_complete'=>$profileComplete,
+        'not_covered'=>$remaining,
         'pending_gates'=>array_merge($model['gates'],[
             'Validation éditoriale humaine distincte du statut draft/review',
             'Conversion typée Astro, CI et aperçu fidèle mobile/ordinateur',
