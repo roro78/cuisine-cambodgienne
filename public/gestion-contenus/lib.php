@@ -1059,6 +1059,60 @@ function cmsCultureEvidenceHtml(mixed $raw=null): string {
     return $html.'</details>';
 }
 
+
+/** C4C2: strictly human-selected links to already published canonical pages.
+ * No model can create a canonical link, and no unpublished draft is a target.
+ */
+function cmsTechniqueLinksClean(mixed $raw,?array $catalog=null): ?array {
+    if($raw===null)return null;
+    if(!is_array($raw)||array_diff(array_keys($raw),['version','recipeSlugs','workshopSlug'])
+       ||!in_array($raw['version']??null,[1,'1'],true))
+        throw new InvalidArgumentException('TECHNIQUE_LINKS_SCHEMA');
+    $rows=$raw['recipeSlugs']??[];
+    if(is_string($rows)){
+        $value=cmsCreationText($rows,1500);
+        $rows=$value===''?[]:preg_split('/\n+/u',$value,-1,PREG_SPLIT_NO_EMPTY);
+    }
+    if(!is_array($rows)||!array_is_list($rows)||count($rows)>12)
+        throw new InvalidArgumentException('TECHNIQUE_LINKS_SCHEMA');
+    $slugs=[];
+    foreach($rows as $row){
+        $slug=cmsCreationText($row,100);
+        if(!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/D',$slug)
+            ||in_array($slug,$slugs,true))
+            throw new InvalidArgumentException('TECHNIQUE_LINKS_RECIPE');
+        if($catalog!==null && ($catalog['recette:'.$slug]['kind']??null)!=='recette')
+            throw new InvalidArgumentException('TECHNIQUE_LINKS_NOT_PUBLISHED');
+        $slugs[]=$slug;
+    }
+    $workshop=cmsCreationText($raw['workshopSlug']??'',100);
+    if($workshop!==''&&!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/D',$workshop))
+        throw new InvalidArgumentException('TECHNIQUE_LINKS_WORKSHOP');
+    if($workshop!==''&&$catalog!==null
+        &&($catalog['atelier:'.$workshop]['kind']??null)!=='atelier')
+        throw new InvalidArgumentException('TECHNIQUE_LINKS_NOT_PUBLISHED');
+    return ['version'=>1,'recipeSlugs'=>$slugs,'workshopSlug'=>$workshop];
+}
+function cmsTechniqueLinksHtml(mixed $raw=null): string {
+    $raw=is_array($raw)?$raw:[];
+    $links=$raw['recipeSlugs']??[];
+    $value=is_array($links)?implode("\n",array_filter($links,'is_string')):
+        (is_string($links)?$links:'');
+    $workshop=is_string($raw['workshopSlug']??null)?$raw['workshopSlug']:'';
+    return '<details class="guided-group" data-technique-links>'
+        .'<summary>Liens canoniques — contrôle humain privé</summary>'
+        .'<p class="small muted">Référencez uniquement les slugs des recettes et '
+        .'ateliers déjà publiés dans le catalogue du site. Les liens manquants '
+        .'sont refusés lors de la sauvegarde. Aucun lien n’est publié ici.</p>'
+        .'<input type="hidden" name="technique_links[version]" value="1">'
+        .'<label>Slugs des recettes publiées (un par ligne, maximum 12)'
+        .'<textarea name="technique_links[recipeSlugs]" rows="4" maxlength="1500">'
+        .cmsEsc($value).'</textarea></label>'
+        .'<label>Slug d’atelier publié (facultatif)'
+        .'<textarea name="technique_links[workshopSlug]" rows="2" maxlength="100">'
+        .cmsEsc($workshop).'</textarea></label></details>';
+}
+
 function cmsCreationKinds(): array {
     return ['recette'=>'Recette','atelier'=>'Atelier','culture'=>'Carnet culturel',
         'ingredient'=>'Fiche ingrédient','technique'=>'Fiche technique'];
@@ -1297,6 +1351,12 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
             ?cmsCultureEvidenceClean(
                 $posted['culture_evidence']??($previous['culture_evidence']??null))
             :null;
+        if($kind!=='technique' && isset($posted['technique_links']))
+            throw new InvalidArgumentException('TECHNIQUE_LINKS_SCHEMA');
+        $techniqueLinks=$kind==='technique'
+            ?cmsTechniqueLinksClean(
+                $posted['technique_links']??($previous['technique_links']??null),$catalog)
+            :null;
         if($id!==null && !$previous)throw new RuntimeException('CREATION_NOT_FOUND');
         if($id===null && $expected!==0)throw new RuntimeException('CREATION_CONFLICT');
         if($previous && ($previous['version']!==$expected
@@ -1341,6 +1401,7 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
         if($recipeAstro!==null)$record['recipe_astro']=$recipeAstro;
         if($recipeDetails!==null)$record['recipe_astro_details']=$recipeDetails;
         if($cultureEvidence!==null)$record['culture_evidence']=$cultureEvidence;
+        if($techniqueLinks!==null)$record['technique_links']=$techniqueLinks;
         if($origin==='ai' && $provenance!==null)$record['ai_brief']=$provenance;
         if($origin==='ai' && $contentProvenance!==null){
             $record['ai_content']=$contentProvenance;
@@ -1683,6 +1744,7 @@ function cmsCreationPosted(array $raw): array {
     $posted['recipe_astro']=$raw['recipe_astro']??null;
     $posted['recipe_astro_details']=$raw['recipe_astro_details']??null;
     $posted['culture_evidence']=$raw['culture_evidence']??null;
+    $posted['technique_links']=$raw['technique_links']??null;
     return $posted;
 }
 function cmsAiContentSettings(array $cfg): ?array {
