@@ -793,9 +793,9 @@ function cmsRecipeAstroProfileClean(mixed $raw): ?array {
     $tagsRaw=$raw['tags']??null;
     if(is_string($tagsRaw)){
         $tagsRaw=cmsCreationText($tagsRaw,1200);
-        $tagsRaw=preg_split('/\n+/u',$tagsRaw);
+        $tagsRaw=$tagsRaw===''?[]:preg_split('/\n+/u',$tagsRaw,-1,PREG_SPLIT_NO_EMPTY);
     }
-    if(!is_array($tagsRaw)||count($tagsRaw)>12)
+    if(!is_array($tagsRaw)||!array_is_list($tagsRaw)||count($tagsRaw)>12)
         throw new InvalidArgumentException('RECIPE_ASTRO_TAGS');
     $tags=[];$seen=[];
     foreach($tagsRaw as $tag){
