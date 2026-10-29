@@ -752,6 +752,7 @@ nav.versions a{padding:6px 9px;background:#edf4ea;border-radius:6px}
 .visual-preview iframe{display:block;width:100%;height:min(760px,75vh);min-height:420px;border:1px solid #dae0d7;border-radius:10px;background:#fff}
 .visual-preview [data-visual-status]{margin:6px 0 12px;line-height:1.5}
 .visual-preview__head strong{font-size:1.04rem}
+.studio-preview-layout{grid-template-columns:minmax(0,1fr)}
 @media(max-width:650px){.work-resume{grid-template-columns:1fr;padding:16px;gap:12px}
  .work-resume__actions,.work-resume__form{width:100%;max-width:none}
  .work-resume__actions .btn,.work-resume__form button{width:100%}}
@@ -1546,7 +1547,7 @@ Je confirme la reprise de cette fiche dans un brouillon lié, en conservant l’
 <p class="summary"><strong>Présentation actuellement utilisée par le catalogue social :</strong>
 <?= cmsEsc($selected['summary']) ?></p></section>
 <?= cmsStudioNavigationHtml() ?>
-<div class="grid">
+<div class="grid studio-preview-layout">
 <section>
 <?php if($studioLinked===null): ?>
 <h2><?= $latest?'Modifier la proposition (version '.(int)$latest['version'].')':'Créer une proposition' ?></h2>
