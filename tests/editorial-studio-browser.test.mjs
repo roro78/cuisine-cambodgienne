@@ -47,7 +47,7 @@ try{
     assert.equal(await page.locator('#cms-fields').count(),1,id);
     await sections();await noOverflow(id);
     assert.equal(await page.locator('#cms-work-resume').count(),1,'resume card for '+id);
-    assert.equal(await page.locator('#cms-work-resume [data-work-resume-action]').count(),1,'primary action for '+id);
+    assert.equal(await page.locator('#cms-work-resume [data-work-resume-action], #cms-work-resume [data-studio-transition] button[name=studio_transition]').count(),1,'primary action for '+id);
   }
   await page.goto(origin+'/gestion-contenus/?kind=atelier');
   const link=page.locator(`a[href*="${encodeURIComponent(fixture.id)}"]`).first();
