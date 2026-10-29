@@ -100,7 +100,8 @@ $filtersUrl=http_build_query($filters,'','&',PHP_QUERY_RFC3986);
 // Both paths still use the SAME authenticated Studio and shared field renderer.
 $newMode=isset($_GET['new']) || ($method==='POST'
     && (isset($_POST['create_save']) || isset($_POST['ai_brief_generate'])
-        || isset($_POST['ai_content_generate']) || isset($_POST['ai_content_discard'])));
+        || isset($_POST['ai_content_generate']) || isset($_POST['ai_content_discard'])
+        || isset($_POST['review_action'])));
 $createKind=is_string($_POST['kind']??null)?$_POST['kind']:
     (is_string($_GET['kind']??null)?$_GET['kind']:'recette');
 if(!isset(cmsCreationKinds()[$createKind]))$createKind='recette';
@@ -245,6 +246,32 @@ if($auth){
             }catch(Throwable $e){
                 $pendingContent=null;http_response_code(409);
                 $error='Proposition temporaire indisponible ou expirée. Le brouillon enregistré reste conservé.';
+            }
+        }
+        if($method==='POST' && isset($_POST['review_action'])){
+            try{
+                if($creation===null||$createKind!=='atelier'
+                    ||count(array_intersect(['review_action','create_save',
+                        'ai_brief_generate','ai_content_generate','ai_content_discard'],
+                        array_keys($_POST)))!==1)
+                    throw new InvalidArgumentException('ATELIER_VISA_INPUT');
+                $expected=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
+                    ['options'=>['min_range'=>1,'max_range'=>9998]]);
+                if($expected===false)throw new InvalidArgumentException('ATELIER_VISA_INPUT');
+                cmsAtelierVisaAction($private,$creation['id'],$expected,
+                    is_string($_POST['review_chapter']??null)?$_POST['review_chapter']:'',
+                    is_string($_POST['review_action']??null)?$_POST['review_action']:'',
+                    ($_POST['review_confirm']??null)==='1',$auth,$catalog);
+                header('Location: ?new=1&cid='.rawurlencode($creation['id'])
+                    .'&visa_saved=1',true,303);
+                exit;
+            }catch(Throwable $e){
+                $conflict=in_array($e->getMessage(),
+                    ['ATELIER_VISA_CONFLICT','ATELIER_VISA_ALREADY_SET'],true);
+                http_response_code($conflict?409:422);
+                $error=$conflict
+                    ?'La version ou le visa a changé. Rechargez la fiche pour vérifier l’état actuel.'
+                    :'Visa non enregistré. Vérifiez la confirmation et la complétude des sept scripts enregistrés.';
             }
         }
         if($method==='POST' && (isset($_POST['ai_content_generate'])||isset($_POST['ai_content_discard']))){
@@ -593,6 +620,7 @@ nav.versions a{padding:6px 9px;background:#edf4ea;border-radius:6px}
 .editorial-note{margin:0}.editorial-note summary{font-size:.93rem}
 .preview-text{white-space:pre-wrap;overflow-wrap:anywhere}.guided-collection{padding:8px 0}.guided-row-fields{padding:6px}.guided-collection .guided-collection{padding-left:10px;border-left:2px solid #e3e8dc}
 .guided-nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.coral-script-text{white-space:pre-wrap;overflow-wrap:anywhere;max-height:320px;overflow:auto;padding:12px;border:1px solid #e3e8dc;border-radius:8px}
 @media(max-width:650px){.guided-row{grid-template-columns:1fr}.guided-wide{grid-column:1}}
 
 @media(max-width:650px){.cards,.grid{grid-template-columns:1fr}.card img{width:72px;height:72px}}
@@ -932,6 +960,56 @@ corriger le brouillon avant de préparer un blueprint.</p>
 <?php endif; ?>
 <p class="small muted">Aucun MP3, voix Coral, visuel ou droit
 de publication n’est déduit de ce contrôle.</p>
+</details>
+<?php $visaStatus=null;
+try{$visaStatus=cmsAtelierVisaStatus($creationDir,$creation,$catalog);}
+catch(Throwable $ignored){$visaStatus=null;} ?>
+<details class="guided-group" data-coral-human-visas>
+<summary>Visa humain des sept textes — privé, sans génération audio</summary>
+<p class="small muted">Validation explicite par chapitre et par version enregistrée.
+Chaque visa est révocable. Toute nouvelle version de la fiche invalide les
+visas précédents, même si les textes sont identiques. Un visa n’autorise
+jamais à générer ou diffuser un MP3.</p>
+<?php if(isset($_GET['visa_saved'])): ?>
+<p class="notice" role="status">Décision humaine enregistrée dans le journal privé.</p>
+<?php endif; ?>
+<?php if($visaStatus===null): ?>
+<p role="alert" class="small muted">Journal des visas indisponible.
+Aucun visa ne peut être considéré comme valide.</p>
+<?php else: ?>
+<p class="small muted">Textes visés pour cette version :
+<strong><?= (int)$visaStatus['approved_text_count'] ?>/7</strong>.
+Autorisation audio : <strong>non</strong>. Publication : <strong>non</strong>.</p>
+<?php $ready=$workshopCheck!==null
+    &&($workshopCheck['ready_for_audio_review']??false)===true;
+foreach(cmsAtelierScriptIds() as $i=>$chapterId):
+$chapter=$creation['atelier_scripts']['chapters'][$i]??null;
+$text=is_array($chapter)&&is_string($chapter['text']??null)?$chapter['text']:'';
+$approved=($visaStatus['by_chapter'][$chapterId]??false)===true; ?>
+<details class="guided-group">
+<summary><?= cmsEsc($i===0?'Introduction':('Phase '.$i.' · '.$chapterId)) ?>
+ — <?= $approved?'texte visé':'visa absent ou périmé' ?></summary>
+<div class="coral-script-text"><?= cmsEsc($text!==''?$text:'Texte non rédigé.') ?></div>
+<?php if($ready && $text!==''): ?>
+<form method="post" action="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>">
+<input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
+<input type="hidden" name="creation_id" value="<?= cmsEsc($creation['id']) ?>">
+<input type="hidden" name="expected_version" value="<?= (int)$creation['version'] ?>">
+<input type="hidden" name="review_chapter" value="<?= cmsEsc($chapterId) ?>">
+<label><input type="checkbox" name="review_confirm" value="1" required>
+Je confirme avoir personnellement relu le texte affiché pour cette version
+et compris que ce visa ne valide ni les doses, ni le MP3, ni la publication.</label>
+<button type="submit" name="review_action"
+ value="<?= $approved?'revoke':'approve' ?>">
+<?= $approved?'Révoquer ce visa':'Valider ce texte uniquement' ?></button>
+</form>
+<?php else: ?>
+<p class="small muted">Brouillon non prêt pour revue : enregistrer
+les six phases complètes et les sept textes avant de viser ce chapitre.</p>
+<?php endif; ?>
+</details>
+<?php endforeach; ?>
+<?php endif; ?>
 </details>
 <?php endif; ?>
 <?php if($creation['kind']==='ingredient' || $creation['kind']==='technique'): ?>
