@@ -19,16 +19,17 @@
 | P1C-C4C3A | [PR #163](https://github.com/roro78/cuisine-cambodgienne/pull/163) fusionnée sur `47be2cc` | Lien recette source avec empreinte de catalogue et précontrôle des six phases d'atelier, sans scripts ni MP3 approuvés |
 | P1C-C4C3B | [PR #165](https://github.com/roro78/cuisine-cambodgienne/pull/165) fusionnée sur `c64cb78` | Six phases humaines détaillées (gestes, durée, contrôles, erreurs, sécurité), ancrées à la recette et à leurs titres ; pas de validation culinaire réelle |
 | P1C-C4C3C | [PR #166](https://github.com/roro78/cuisine-cambodgienne/pull/166) fusionnée sur `60946ff` | Sept narrations humaines privées liées au SHA256 pédagogique ; **brouillons prêts à relire, jamais approbations audio** |
+| P1C-C4C3D | [PR #168](https://github.com/roro78/cuisine-cambodgienne/pull/168) fusionnée sur `ddaaf84` | Visas humains séparés des 7 textes, versionnés, révocables et audités ; **n'autorisent aucun MP3** |
+| P1C-C4C3E | [PR #169](https://github.com/roro78/cuisine-cambodgienne/pull/169) fusionnée sur `e2ec8ae` | Audit privé à la demande de la recette Astro : SHA256 complet, ingrédients, portions ; **sans validation culinaire automatique** |
 
-Les CI des PR fonctionnelles jusqu'à **#166** sont SUCCESS sous Astro/Node
-et PHP 8.3/8.4, avec tests de non-régression mobile et des MP3 existants.
-Les CI **après fusion** de #163
-([run #40841508535](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40841508535))
-et #165
-([run #40850252854](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40850252854))
-sont SUCCESS. La CI après fusion de #166 doit être réceptionnée à part :
-[run #40850988200](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40850988200).
-Une CI GitHub ne prouve ni un transfert OVH ni la recette en production.
+Les CI de branche des PR fonctionnelles jusqu'à **#169** sont SUCCESS
+sous Astro/Node et PHP 8.3/8.4, avec non-régressions mobile et audio existant.
+Les CI **après fusion** de #166
+([run #40850988200](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40850988200))
+et de #168
+([run #40859525074](https://github.com/roro78/cuisine-cambodgienne/actions/runs/40859525074))
+sont SUCCESS. La CI après fusion de #169 est à réceptionner séparément.
+Une CI GitHub ne prouve ni un transfert OVH ni une recette en production.
 
 **Aucun fournisseur IA réel n'est activé, aucun modèle n'a été évalué en
 conditions réelles, aucune passerelle n8n n'est réceptionnée, aucune génération
@@ -36,7 +37,7 @@ d'image/audio n'est lancée et aucun déploiement OVH n'a eu lieu.** Le contrat
 `creation-form-core-v1` demeure volontairement indépendant du profil humain
 C4B1 ; il ne produit pas encore une recette complète validée.
 
-**Priorités à poursuivre sans réinventer (mise à jour C4C3C) :**
+**Priorités à poursuivre sans réinventer (mise à jour C4C3E) :**
 
 1. **Qualifier le fournisseur** : vérifier plus tard sur ordinateur l’accès
    authentifié au n8n OVH et au réseau Docker d’Ollama ; ne demander aucun
@@ -46,19 +47,22 @@ C4B1 ; il ne produit pas encore une recette complète validée.
 2. **C4B4/P2 recettes** : C4B3 (ingrédients et gestes) est fusionné ; préparer
    liens, FAQ, médias et droits vérifiés avant un aperçu Astro fidèle.
    Ne pas transformer une projection privée en autorisation de publier.
-3. **C4C3D — Réception et visa humain des ateliers** : les six phases
-   structurées C4C3B et les sept brouillons narratifs C4C3C existent désormais
-   dans le Studio privé. Ils **ne sont pas encore validés** contre les
-   quantités, portions, allergènes et gestes de la recette Astro source.
-   Concevoir une approbation humaine **explicite et révocable**, par texte
-   et par empreinte, distincte de « prêt pour relecture » ; ne pas autoriser
-   de MP3 tant que les contrôles ne sont pas réceptionnés. Lors d'une future
-   production Coral V2, figer les sept scripts, contrôler écoute, durée des
-   chapitres et scroll mobile avant toute autorisation de diffusion.
-   Ne jamais écraser les MP3 déjà validés.
-   Les modèles ingrédients/techniques C4C2 sont intégrés ; les médias,
-   droits et fidélité des visuels restent à traiter. Les Carnets C4C1
-   doivent garder leurs sources documentaires **privées**.
+3. **C4C3F — visa culinaire distinct et réception Coral** :
+   C4C3D permet désormais de viser et révoquer chacun des **sept textes**
+   par version ; les journaux sont séparés des réponses IA et rendent
+   automatiquement caducs les visas d'une ancienne version. C4C3E ajoute
+   une comparaison **sur demande, en lecture seule** avec le SHA256 intégral,
+   les ingrédients et portions de la recette Astro publiée. Les synonymes
+   sont seulement signalés et les anciens modèles ne reçoivent aucune dose
+   inventée. **Ni les visas de texte ni le rapport de concordance ne
+   valident encore les quantités, allergies, cuissons ou gestes.**
+   Ajouter un contrôle humain explicitement lié au SHA256 intégral de la
+   recette, puis séparer approbation de textes, autorisation TTS et écoute
+   du MP3 réel. Contrôler les sept chapitres, durées et scroll mobile
+   avant toute diffusion ; ne jamais écraser les MP3 validés.
+   Les fiches ingrédients/techniques C4C2 restent à compléter côté
+   médias et droits. Les sources documentaires des Carnets C4C1 restent
+   strictement **privées**.
 4. **P2/P3** : vrai aperçu Astro privé fidèle, conversion typée complète,
    validations et PR de publication **distinctes** uniquement sur autorisation.
 5. **Exploitation** : conserver le calendrier et les workflows n8n 01/02/03
@@ -87,7 +91,7 @@ En cas de divergence, le **référentiel spécifique à la catégorie** prévaut
 - Les réponses IA doivent être validées côté serveur contre une **projection publique explicitement autorisée** du modèle Astro ; ne jamais générer du PHP ou du TypeScript libre susceptible de changer l'architecture.
 - Le formulaire \`public/gestion-contenus/index.php\` et les composants de \`lib.php\` restent les seuls gabarits d'administration. Les champs métiers varient, l'UX et le cycle de vie ne varient pas.
 
-Le module de planification \`scripts/editorial-content-pipeline.mjs\` et ses états existent. Les lots P1C-B, C1, C2, C3, C4A, C4B1/B2/B3 et C4C1/C2/C3A/B/C sont intégrés dans GitHub, avec les protections de version, provenance et validation humaine décrites ci-dessus. **Le fournisseur IA réel, la rédaction complète de tous les champs métier, les blueprints Coral V2 générés, la conversion/pagination Astro prête à publier, les visuels en self-service et le calendrier média multicanal ne sont pas encore opérationnels.**
+Le module de planification \`scripts/editorial-content-pipeline.mjs\` et ses états existent. Les lots P1C-B, C1, C2, C3, C4A, C4B1/B2/B3 et C4C1/C2/C3A/B/C/D/E sont intégrés dans GitHub, avec les protections de version, provenance et validation humaine décrites ci-dessus. **Le fournisseur IA réel, la rédaction complète de tous les champs métier, les blueprints Coral V2 générés, la conversion/pagination Astro prête à publier, les visuels en self-service et le calendrier média multicanal ne sont pas encore opérationnels.**
 
 ## 2. Brief commun obligatoire avant toute génération
 
