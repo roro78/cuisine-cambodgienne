@@ -87,7 +87,7 @@ try{
         &&$withoutHistory['source_binding']['legacy_sha256']===null,'NO_HISTORICAL_DRAFT_REQUIRED');
     foreach(cmsCreationKinds() as $kind=>$label){
         studioAssert(cmsCreationFormHtml($kind)!=='','ALL_FIVE_FORMS');
-        studioAssert(str_contains(cmsStudioNavigationHtml(),'Contrôles qualité'),'COMMON_NAVIGATION');
+        studioAssert(str_contains(cmsStudioNavigationHtml(),'Ce qu’il reste à faire'),'COMMON_NAVIGATION');
     }
     echo 'UNIFIED_STUDIO_PASS '.$count." real workshops, immutable history, guarded transition and calendar\n";
 }finally{studioRemove($root);}

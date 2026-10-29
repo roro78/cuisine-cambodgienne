@@ -1,5 +1,10 @@
 # Cuisine du Cambodge — Référentiel permanent de génération IA éditoriale et visuelle
 
+**Studio UX V3 — 29 octobre :** [audit, parcours et livraison ciblée](CMS-STUDIO-UX-V3-20261029.md).
+Le contenu est prioritaire ; le guide audio est facultatif ; les contrôles complets
+restent en mode avancé. Contrats, historiques et autorisations inchangés.
+
+
 **Version 1.0 — 28 octobre 2026.** Contrat **cible** de production, non annonce d'une IA déjà raccordée au Studio. À appliquer à toute nouvelle recette, tout atelier, Carnet, ingrédient ou technique, sans recréer de gabarit ni réécrire le contenu existant. L'IA reste un assistant sous validation humaine.
 
 **Reprise Studio unifié — 29 octobre 2026 :**
