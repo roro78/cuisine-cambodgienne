@@ -7,6 +7,7 @@ on:
       - "feat/**"
       - "fix/**"
       - "perf/**"
+      - "refactor/**"
 
 permissions:
   contents: read
