@@ -506,6 +506,95 @@ function cmsAtelierVisaAction(string $private,string $id,int $version,
     }finally{flock($handle,LOCK_UN);fclose($handle);}
 }
 
+
+/**
+ * C4C3E - On-demand READ-ONLY comparison with the real canonical recipe SHA256
+ * and the public guided projection. No human approval is inferred from it.
+ * Only the current already-published source can be used as a reference.
+ */
+function cmsAtelierCanonicalRecipeAudit(array $record,array $catalog,
+    array $canonical,array $guided): array {
+    if(($record['kind']??null)!=='atelier')
+        throw new InvalidArgumentException('ATELIER_RECIPE_AUDIT_KIND');
+    $reference=cmsAtelierReferenceClean($record['atelier_reference']??null,$catalog);
+    if($reference===null||$reference['recipeSlug']==='')
+        throw new InvalidArgumentException('ATELIER_RECIPE_AUDIT_REFERENCE');
+    $id='recette:'.$reference['recipeSlug'];
+    $source=$canonical[$id]??null;
+    $entry=$guided[$id]??null;
+    if(!is_array($source)||!is_array($entry)
+        ||($source['id']??null)!==$id
+        ||($source['kind']??null)!=='recette'
+        ||!is_string($source['fingerprint']??null)
+        ||!preg_match('/^[a-f0-9]{64}$/D',$source['fingerprint'])
+        ||($entry['id']??null)!==$id
+        ||($entry['fingerprint']??null)!==$source['fingerprint']
+        ||($entry['model']??null)!==($source['model']??null))
+        throw new InvalidArgumentException('ATELIER_RECIPE_AUDIT_SOURCE');
+    $model=$source['model'];
+    $fields=$entry['fields']??[];
+    $supported=$model==='recipes'
+        &&is_array($fields)
+        &&is_int($fields['baseServings']??null)
+        &&$fields['baseServings']>0
+        &&is_array($fields['ingredients']??null)
+        &&array_is_list($fields['ingredients'])
+        &&count($fields['ingredients'])>0;
+    $rows=[];
+    if($supported){
+        foreach($fields['ingredients'] as $ingredient){
+            if(!is_array($ingredient)
+                ||!is_string($ingredient['name']??null)
+                ||trim($ingredient['name'])===''
+                ||isset($ingredient['quantity'])
+                    &&!is_numeric($ingredient['quantity']))
+                throw new InvalidArgumentException('ATELIER_RECIPE_AUDIT_INGREDIENT');
+            $rows[]=[
+                'name'=>$ingredient['name'],
+                'quantity'=>$ingredient['quantity']??null,
+                'unit'=>is_string($ingredient['unit']??null)
+                    ?$ingredient['unit']:''
+            ];
+        }
+    }
+    $names=[];
+    foreach($rows as $row){
+        $normal=preg_replace('/\s+/u',' ',trim($row['name']));
+        if(!is_string($normal))throw new InvalidArgumentException('ATELIER_RECIPE_AUDIT_INGREDIENT');
+        $names[function_exists('mb_strtolower')
+            ?mb_strtolower($normal,'UTF-8'):strtolower($normal)]=true;
+    }
+    $mentioned=[];$notExact=[];
+    foreach($record['atelier_phase_details']['phases']??[] as $phase){
+        foreach($phase['ingredientNames']??[] as $name){
+            if(!is_string($name)||trim($name)==='')
+                throw new InvalidArgumentException('ATELIER_RECIPE_AUDIT_PHASE');
+            $normalized=preg_replace('/\s+/u',' ',trim($name));
+            if(!is_string($normalized))throw new InvalidArgumentException('ATELIER_RECIPE_AUDIT_PHASE');
+            $key=function_exists('mb_strtolower')
+                ?mb_strtolower($normalized,'UTF-8'):strtolower($normalized);
+            if(isset($mentioned[$key]))continue;
+            $mentioned[$key]=true;
+            if(!isset($names[$key]))$notExact[]=$name;
+        }
+    }
+    // Legacy restoredRecipes need an explicit adapter: no invented servings.
+    return [
+        'contract'=>'cdc-editorial-atelier-recipe-audit-v1',
+        'recipe_id'=>$id,'recipe_model'=>$model,
+        'canonical_sha256'=>$source['fingerprint'],
+        'canonical_servings'=>$supported?$fields['baseServings']:null,
+        'canonical_ingredients'=>$rows,
+        'phase_ingredient_mentions'=>count($mentioned),
+        'phase_ingredient_not_exact'=>$notExact,
+        'model_supported_for_quantity_review'=>$supported,
+        'ingredient_names_exact_match_only'=>true,
+        'requires_human_recipe_review'=>true,
+        'canonical_recipe_details_revalidated'=>false,
+        'audio_approved'=>false,'publication_ready'=>false
+    ];
+}
+
 function cmsAstroPublicationGapReport(array $record): array {
     $kind=$record['kind']??null;
     $coverage=cmsAstroPublicationCoverage();
