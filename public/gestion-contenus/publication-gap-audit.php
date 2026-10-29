@@ -96,6 +96,11 @@ function cmsRecipeAstroDraftProjection(array $record): array {
         || !is_string($record['title']??null)
         || cmsCreationSlug($record['title'])!==$record['slug'])
         throw new InvalidArgumentException('RECIPE_PROJECTION_IDENTITY');
+    // Optional human-only detail rows, source-bound and revalidated here.
+    $details=cmsRecipeAstroDetailsClean($record['recipe_astro_details']??null,$fields);
+    $ingredientMeta=[];$stepMeta=[];
+    foreach(($details['ingredients']??[]) as $item)$ingredientMeta[$item['index']]=$item;
+    foreach(($details['steps']??[]) as $item)$stepMeta[$item['index']]=$item;
     $ingredients=[];$review=[];
     foreach($fields['ingredients'] as $index=>$row){
         if(!is_array($row))throw new InvalidArgumentException('RECIPE_PROJECTION_INGREDIENT');
@@ -115,15 +120,26 @@ function cmsRecipeAstroDraftProjection(array $record): array {
             $entry['quantity']=floor($number)===$number?(int)$number:$number;
         }
         if($unit!=='')$entry['unit']=$unit;
+        if(isset($ingredientMeta[$index])){
+            $meta=$ingredientMeta[$index];
+            foreach(['note','group'] as $key)
+                if($meta[$key]!=='')$entry[$key]=$meta[$key];
+            if($meta['scalable']!=='')$entry['scalable']=$meta['scalable']==='yes';
+        }
         $ingredients[]=$entry;
     }
     $steps=[];
-    foreach($fields['steps'] as $step){
+    foreach($fields['steps'] as $index=>$step){
         if(!is_array($step)||!is_string($step['title']??null)
             || !is_string($step['text']??null)
             || trim($step['title'])===''||trim($step['text'])==='')
             throw new InvalidArgumentException('RECIPE_PROJECTION_STEP');
-        $steps[]=['title'=>$step['title'],'text'=>$step['text']];
+        $entry=['title'=>$step['title'],'text'=>$step['text']];
+        if(isset($stepMeta[$index])){
+            foreach(['duration','cue','mistake'] as $key)
+                if($stepMeta[$index][$key]!=='')$entry[$key]=$stepMeta[$index][$key];
+        }
+        $steps[]=$entry;
     }
     if(!is_array($fields['equipment']??null))
         throw new InvalidArgumentException('RECIPE_PROJECTION_EQUIPMENT');

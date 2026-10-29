@@ -227,6 +227,8 @@ if($auth){
                     // never to the model response; preserve it across PRG.
                     if($createKind==='recette')
                         $createForm['recipe_astro']=$pendingContent['before_form']['recipe_astro']??null;
+                    if($createKind==='recette')
+                        $createForm['recipe_astro_details']=$pendingContent['before_form']['recipe_astro_details']??null;
                     // Keep an explicit human planning date; the model cannot set one.
                     $createForm['target_date']=$pendingContent['before_form']['target_date']??'';
                 }
@@ -344,7 +346,8 @@ if($auth){
                         'target_date'=>$_POST['target_date']??null,
                         'state'=>$_POST['state']??null,
                         'fields'=>$_POST['fields']??null,
-                        'recipe_astro'=>$_POST['recipe_astro']??null
+                        'recipe_astro'=>$_POST['recipe_astro']??null,
+                        'recipe_astro_details'=>$_POST['recipe_astro_details']??null
                     ];
                     if($candidateToken!==''){
                         $pending=cmsAiContentPending($_SESSION,$candidateToken);
@@ -839,6 +842,8 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
     is_array($createForm['fields']??null)?$createForm['fields']:[]) ?>
 <?php if($createKind==='recette'): ?>
 <?= cmsRecipeAstroProfileHtml($createForm['recipe_astro']??null) ?>
+<?= cmsRecipeAstroDetailsHtml($createForm['recipe_astro_details']??null,
+    is_array($createForm['fields']??null)?$createForm['fields']:[]) ?>
 <?php endif; ?>
 <label>Notes de recherche privées (jamais publiées)
 <textarea name="research_note" rows="3" maxlength="3000"><?= cmsEsc((string)($createForm['research_note']??'')) ?></textarea></label>
