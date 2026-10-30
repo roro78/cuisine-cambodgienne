@@ -146,7 +146,7 @@ async function main(){
   const evidence=s1Evidence(result,request);
   await writeFile(output,result.raw,{encoding:'utf8',flag:'wx',mode:0o600});
   try{
-    await writeFile(evidenceFile,JSON.stringify(evidence,null,2)+'\\n',
+    await writeFile(evidenceFile,JSON.stringify(evidence,null,2)+'\n',
       {encoding:'utf8',flag:'wx',mode:0o600});
   }catch(error){
     await unlink(output).catch(()=>{});
