@@ -1,10 +1,12 @@
 /** Manual structured S1 test for an INTERNAL Ollama. No network on import. */
-import {readFile,writeFile,mkdir,lstat} from 'node:fs/promises';
+import {readFile,writeFile,mkdir,lstat,unlink} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 import {resolve,dirname,sep} from 'node:path';
 import {performance} from 'node:perf_hooks';
 import {pathToFileURL} from 'node:url';
 import {assertBenchUrl} from './benchmark-ollama-editorial.mjs';
 export const S1_TRIAL='cdc-ollama-structured-s1-trial-v1';
+export const S1_EVIDENCE='cdc-ollama-structured-s1-evidence-v1';
 const privateDir=resolve('artifacts/benchmark');
 export function s1PrivateFile(file){
   if(typeof file!=='string'||!file.endsWith('.json'))throw Error('S1_OUTPUT_JSON');
@@ -32,6 +34,26 @@ export function s1Request(raw){
       ||!raw.reference.recipe_fields?.ingredients))
     throw Error('S1_CANONICAL_RECIPE_REQUIRED');
   return raw;
+}
+/** Provenance and measured provider values, without declaring editorial validity. */
+export function s1Evidence(result,request){
+  if(result?.contract!==S1_TRIAL || result.publication_ready!==false
+      || result.requires_human_review!==true
+      || typeof result.raw!=='string' || !Number.isInteger(result.elapsed_ms)
+      || result.elapsed_ms<0 || typeof result.model!=='string'
+      || result.kind!==request?.brief?.kind)
+    throw Error('S1_EVIDENCE_INVALID');
+  const sha=(value)=>createHash('sha256').update(value,'utf8').digest('hex');
+  return {
+    contract:S1_EVIDENCE,scope:'S1',created_at:new Date().toISOString(),
+    kind:result.kind,model:result.model,elapsed_ms:result.elapsed_ms,
+    request_sha256:sha(JSON.stringify(request)),response_sha256:sha(result.raw),
+    response_bytes:Buffer.byteLength(result.raw,'utf8'),
+    metrics:result.metrics,
+    schema_validation:'NOT_RUN',editorial_review:'NOT_RUN',
+    publication_ready:false,requires_human_review:true,
+    note:'S1 synthetic trial only; check the exact candidate with PHP then review manually.'
+  };
 }
 function checkModel(model){
   if(typeof model!=='string'
@@ -77,7 +99,14 @@ export async function s1Trial({request,model,url='http://127.0.0.1:11434',fetche
   if(Buffer.byteLength(raw,'utf8')>30000)throw Error('S1_RAW_OUTPUT_TOO_LARGE');
   return {contract:S1_TRIAL,kind:r.brief.kind,model,
     elapsed_ms:Math.round(performance.now()-start),raw,
-    metrics:{eval_count:Number.isInteger(answer.eval_count)?answer.eval_count:null},
+    metrics:{
+      eval_count:Number.isInteger(answer.eval_count)?answer.eval_count:null,
+      prompt_eval_count:Number.isInteger(answer.prompt_eval_count)?answer.prompt_eval_count:null,
+      total_duration_ns:Number.isInteger(answer.total_duration)?answer.total_duration:null,
+      load_duration_ns:Number.isInteger(answer.load_duration)?answer.load_duration:null,
+      prompt_eval_duration_ns:Number.isInteger(answer.prompt_eval_duration)?answer.prompt_eval_duration:null,
+      eval_duration_ns:Number.isInteger(answer.eval_duration)?answer.eval_duration:null
+    },
     publication_ready:false,requires_human_review:true};
 }
 async function main(){
@@ -98,6 +127,13 @@ async function main(){
   }
   if(!options.request||!options.model||!options.out)throw Error('S1_ARGS_REQUIRED');
   const input=s1PrivateFile(options.request),output=s1PrivateFile(options.out);
+  const evidenceFile=s1PrivateFile(output.replace(/\.json$/u,'.evidence.json'));
+  if(input===output||input===evidenceFile||output===evidenceFile)
+    throw Error('S1_PATH_COLLISION');
+  for(const target of [output,evidenceFile]){
+    try{await lstat(target);throw Error('S1_OUTPUT_ALREADY_EXISTS');}
+    catch(error){if(error?.code!=='ENOENT')throw error;}
+  }
   const bytes=await readFile(input);
   if(bytes.length>90000)throw Error('S1_INPUT_TOO_LARGE');
   const request=s1Request(JSON.parse(bytes.toString('utf8')));
@@ -107,9 +143,18 @@ async function main(){
   await mkdir(privateDir,{recursive:true,mode:0o700});
   const dir=await lstat(privateDir);
   if(!dir.isDirectory()||(dir.mode&0o077)!==0)throw Error('S1_DIR_NOT_PRIVATE');
+  const evidence=s1Evidence(result,request);
   await writeFile(output,result.raw,{encoding:'utf8',flag:'wx',mode:0o600});
+  try{
+    await writeFile(evidenceFile,JSON.stringify(evidence,null,2)+'\n',
+      {encoding:'utf8',flag:'wx',mode:0o600});
+  }catch(error){
+    await unlink(output).catch(()=>{});
+    throw error;
+  }
   console.log('S1_TRIAL_EXECUTED',result.kind,result.model,
     'MILLISECONDS',result.elapsed_ms,'OUTPUT',output,
+    'EVIDENCE',evidenceFile,
     'PHP_VALIDATION_AND_HUMAN_REVIEW_REQUIRED');
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href)

@@ -1,5 +1,15 @@
 # Cuisine du Cambodge — plan durable du CMS éditorial
 
+> **30 octobre — Lot P1C qualification S1 (PR de travail)** :
+> [preuves d'essai Ollama S1 et conditions d'activation](CMS-P1C-S1-QUALIFICATION-20261030.md).
+> La génération structurée simulée était déjà intégrée ; la présente évolution
+> conserve dorénavant séparément les mesures et empreintes d'un essai réel **s'il est exécuté**.
+> Le propriétaire autorise le principe d'activation d'Ollama, mais cette PR
+> **n'active aucun fournisseur** : sans preuve réseau/qualité/quotas ni configuration
+> privée OVH, l'activation réelle et la réception restent ouvertes.
+> Rien n'est fusionné, transféré ou publié par ce lot.
+
+
 > **29 octobre :** #150 fusionnée après revue et accord explicite, `main` `c0ab780`,
 > CI post-fusion SUCCESS. [P1C-C2 / PR #151](CMS-STRUCTURED-GENERATION-P1C-C2.md) :
 > génération structurée vers candidat temporaire du formulaire partagé, sauvegarde

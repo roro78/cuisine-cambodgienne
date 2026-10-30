@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {S1_TRIAL,s1Request,s1Trial,s1PrivateFile} from '../scripts/benchmark-ollama-structured.mjs';
+import {S1_TRIAL,S1_EVIDENCE,s1Request,s1Trial,s1PrivateFile,s1Evidence} from '../scripts/benchmark-ollama-structured.mjs';
 const request={
   contract:'cdc-editorial-ai-content-request-v1',scope:'creation-form-core-v1',
   brief:{kind:'culture',title:'Test synthétique',context:'TEST SYNTHÉTIQUE UNIQUEMENT. Corpus public.'},
@@ -30,6 +30,20 @@ test('fake Ollama sends the structured CMS schema and no publication calls',asyn
   const result=await s1Trial({request,model:'llama3.2:latest',fetcher});
   assert.equal(result.contract,S1_TRIAL);
   assert.equal(result.raw,raw);
+  const evidence=s1Evidence(result,request);
+  assert.equal(evidence.contract,S1_EVIDENCE);
+  assert.equal(evidence.scope,'S1');
+  assert.equal(evidence.model,'llama3.2:latest');
+  assert.equal(evidence.kind,'culture');
+  assert.match(evidence.request_sha256,/^[0-9a-f]{64}$/);
+  assert.match(evidence.response_sha256,/^[0-9a-f]{64}$/);
+  assert.equal(evidence.response_bytes,Buffer.byteLength(raw,'utf8'));
+  assert.equal(evidence.metrics.eval_count,12);
+  assert.equal(evidence.schema_validation,'NOT_RUN');
+  assert.equal(evidence.editorial_review,'NOT_RUN');
+  assert.equal(evidence.publication_ready,false);
+  assert.equal(evidence.requires_human_review,true);
+  assert.throws(()=>s1Evidence({...result,publication_ready:true},request),/S1_EVIDENCE_INVALID/);
   assert.equal(result.publication_ready,false);
   assert.equal(result.requires_human_review,true);
   assert.equal(calls.length,2);
