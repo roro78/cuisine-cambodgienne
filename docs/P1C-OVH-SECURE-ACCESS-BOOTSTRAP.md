@@ -4,8 +4,8 @@ Statut : **préparé, non connecté, non déployé**. Aucun accès SSH, clé pri
 
 ## Contexte confirmé
 
-- Le propriétaire accède au VPS via l'espace client OVHcloud, depuis Android.
-- Les transferts du site Astro ont été effectués par FTP ; cet accès ne constitue pas un accès d'exécution au VPS Docker Orvekio.
+- Le propriétaire dispose de l'espace client OVHcloud, mais a précisé que son accès opérationnel aux fichiers est uniquement FileZilla, en FTP ou SFTP. Aucun accès terminal VPS n'est confirmé.
+- Les transferts du site Astro ont été effectués par FTP/FileZilla. Le protocole exact (FTP, FTPS ou SFTP) et la machine cible (hébergement web ou VPS) restent à vérifier. Même SFTP ne prouve pas le droit d'exécuter des commandes sur le VPS Docker Orvekio.
 - L'instance n8n authentifiée présente des workflows MiHecho/AhoraGO appelant `http://ollama:11434/v1/chat/completions`, mais la santé et les modèles Ollama ne sont pas qualifiés.
 - Les cinq familles P1C doivent passer par le banc existant, avec validation PHP et revue éditoriale, avant toute activation.
 
@@ -17,7 +17,7 @@ La console/KVM de secours éventuellement disponible dans l'espace client OVHclo
 
 ## Ordre de réalisation
 
-1. Vérifier dans l'espace client OVHcloud le VPS concerné et la présence d'une console/KVM ; ne pas réinitialiser le serveur, ne pas modifier le pare-feu ni réinstaller l'OS.
+1. Vérifier dans l'espace client OVHcloud le produit concerné (hébergement web distinct du VPS), le VPS concerné et la présence d'une console/KVM ; ne pas réinitialiser le serveur, ne pas modifier le pare-feu ni réinstaller l'OS.
 2. Depuis une session d'administration déjà autorisée, sauvegarder la configuration SSH et créer un utilisateur de service sans privilèges root. Préférer une commande forcée `authorized_keys command=...`, restrictions de forwarding et de pseudo-terminal, et permissions minimales sur les volumes. Si le banc requiert Docker, éviter l'appartenance au groupe `docker` (équivalent à des privilèges élevés) : utiliser une commande de test isolée et précisément autorisée.
 3. Mettre en place une clé dédiée, son empreinte hôte vérifiée et les secrets d'un environnement GitHub protégé, soumis à approbation humaine. Ne pas permettre aux PR non fiables d'accéder aux secrets. Fixer un délai d'expiration et une procédure de révocation.
 4. Tester d'abord un simple diagnostic non sensible (identité de la commande autorisée, disponibilité réseau interne et inventaire du modèle via Ollama), sans sortie de secret et sans mutation.
