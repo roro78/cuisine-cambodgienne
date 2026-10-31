@@ -5,8 +5,10 @@
 > activation ni transfert OVH. Trois jobs CI réussis sur `3c62ee7`, puis nouveau
 > complément de qualification à tester sur sa propre tête. Les tests de fichiers
 > privés vérifient désormais permissions, liens symboliques, collisions, empreintes
-> exactes et refus d'écrasement avant tout appel modèle. n8n demande une connexion
-> dans le navigateur disponible ; pas d'accès serveur Orvekio configuré ici.
+> exactes et refus d'écrasement avant tout appel modèle. Connexion n8n obtenue
+> temporairement, puis échec 401 de l'éditeur et retour à la connexion après
+> rechargement ; aucun nœud exécuté ni enregistrement de workflow attesté.
+> Pas d'accès SSH/API Orvekio configuré ici.
 > **Cinq familles réelles, service authentifié et parcours Android : non réceptionnés.**
 > Les projections Astro et l'aperçu #178 déjà intégrés sont préservés ; aucune
 > nouvelle qualification sociale, modification de workflows 01/02/03 ou de MP3.

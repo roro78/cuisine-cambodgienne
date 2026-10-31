@@ -97,10 +97,13 @@ validateur PHP restent utilisés ; aucun moteur éditorial ajouté.
 | ingredient | NON_EXÉCUTÉ | NON_EXÉCUTÉ | NON_EXÉCUTÉ |
 | technique | NON_EXÉCUTÉ | NON_EXÉCUTÉ | NON_EXÉCUTÉ |
 
-Le navigateur de cette session arrive sur la page de connexion n8n ; aucune
-session authentifiée ni accès SSH/API Orvekio n'est disponible ici. Aucun modèle
-ni ressource distante inspecté, aucune requête de génération envoyée au serveur.
-Cela ne démontre pas une panne n8n ou Ollama. Ne jamais transmettre un mot de
+La connexion sécurisée n8n a réussi jusqu'à la liste des workflows ; l'ouverture
+de l'éditeur a ensuite affiché une erreur d'initialisation 401. Après un
+rechargement, le navigateur est revenu à la connexion : session non durable.
+Une route de nouveau workflow a été ouverte, sans enregistrement attesté,
+sans nœud ajouté ni exécuté. Aucun accès SSH/API Orvekio configuré ici.
+Aucun modèle ni ressource distante inspecté, aucune requête de génération
+envoyée au serveur. Cela ne démontre pas une panne Ollama. Ne jamais transmettre un mot de
 passe ou un jeton dans une PR, un commentaire ou les rapports.
 
 **Réception restant nécessaire :** cinq essais réels séquentiels, sans retry
@@ -109,3 +112,13 @@ latences et revue éditoriale ; service HTTPS authentifié compatible avec
 `cmsAiContentGatewayAdapter` ; puis recette mobile du Studio et repli manuel.
 Aucun déploiement de production sans validation. La PR reste en brouillon tant
 que la recette réelle attendue dans sa description n'est pas satisfaite.
+
+
+**Contrôles locaux du complément :** 13 tests Node ciblés PASS ; `npm run check`
+termine avec zéro erreur et 23 indications non bloquantes ; `npm run build`
+termine avec succès (48 pages). Le pont PHP S1 existant a ensuite été exécuté
+avec un runtime PHP 8.3.6 local isolé (extensions mbstring, iconv et ctype) :
+`CMS_S1_BENCHMARK_BRIDGE_PASS`, cinq familles, zéro appel fournisseur, zéro
+sauvegarde privée et `astro_s2_validated: false`. Il utilise des fixtures,
+pas des sorties réelles d'Ollama. Les jobs PHP 8.3/8.4 de la nouvelle CI restent
+des preuves distinctes. Aucun de ces contrôles ne constitue un essai distant.

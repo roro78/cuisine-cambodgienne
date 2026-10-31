@@ -19,10 +19,13 @@
 | Studio et aperçu P2 | #175–#179 fusionnées | UX commune et aperçu contrôlé d'une page **déjà publiée** ; vrai build privé d'une nouvelle page encore à développer |
 | Calendrier et réseaux | Calendrier déjà réceptionné selon historique ; workflows 01/02/03 conservés | Pas de nouvel essai connecté dans cette session ; état des accès Meta non revérifié ; aucune réouverture des validations sociales ni modification des visuels |
 
-**Blocage d'accès observé le 31 octobre :** le navigateur disponible affiche la
-connexion n8n, sans session authentifiée. Aucun accès SSH/API Orvekio configuré
-dans le processus ; aucun appel à Ollama distant exécuté. L'absence d'accès ici
-ne démontre ni panne distante ni absence de modèle installé.
+**Blocage d'accès observé le 31 octobre :** la connexion sécurisée n8n a affiché
+la liste des workflows, mais l'ouverture de l'éditeur a ensuite échoué avec
+`Request failed with status code 401` ; un rechargement a ramené à la connexion.
+L'accès n'est donc pas durable dans ce navigateur. L'ouverture d'une route de
+nouveau workflow a été tentée ; aucun enregistrement n'est attesté et aucun
+nœud ni essai Ollama n'a été exécuté. Aucun accès SSH/API Orvekio configuré
+dans le processus. Cet échec ne démontre ni panne Ollama ni absence de modèle.
 
 **Ordre de poursuite :** obtenir l'accès privé autorisé, inventorier les modèles,
 exécuter S1 sur les cinq familles avec le pont PHP et l'exécuteur existants,
