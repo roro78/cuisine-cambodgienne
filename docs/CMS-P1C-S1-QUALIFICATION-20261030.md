@@ -62,3 +62,50 @@ port Ollama sur Internet ni modifier les workflows sociaux 01/02/03.
 Pas de modèle réel évalué depuis GitHub, pas de connexion n8n/OVH,
 pas d'activation, pas de génération MP3/image, pas de publication de page
 ni de déclinaison Meta. Aucun résultat S1 ne constitue un PASS Astro S2.
+
+
+## Reprise du 31 octobre — preuves et limites
+
+La PR #180 est ouverte en brouillon sur `main` `fb4beda`, sans review ni thread
+bloquant soumis au moment de la vérification. La tête initiale `3c62ee7` a les
+jobs Astro/Node, PHP 8.3 et PHP 8.4 en SUCCESS
+([CI](https://github.com/roro78/cuisine-cambodgienne/actions/runs/41141845821)) ;
+Supabase Preview est SKIPPED, ce qui n'est pas un test de génération.
+Ces résultats ne valent pas CI du complément ultérieur ni qualification réelle.
+
+Le contrôle du dossier privé se faisait après l'appel modèle. Il se fait
+maintenant **avant lecture de la demande et avant tout appel réseau**. La demande
+doit aussi être un fichier privé ordinaire, sans lien symbolique. Le dossier doit
+préexister avec permissions 0700 (procédure ci-dessus, `umask 077`). Le script ne
+corrige pas silencieusement les permissions d'un dossier existant.
+
+Les tests isolés utilisent de vrais fichiers temporaires et un transport simulé :
+dossier trop ouvert, lien symbolique du dossier ou de la demande, demande trop
+ouverte, collision de chemins, réponse/preuve préexistante, permissions 0600,
+empreintes exactes et compétition d'écriture. Un refus de précontrôle effectue
+**zéro appel fournisseur**. Une preuve créée concurremment est conservée et la
+réponse créée par cet essai incomplet est retirée. Le même exécuteur S1 et le même
+validateur PHP restent utilisés ; aucun moteur éditorial ajouté.
+
+### Mesures réelles : non exécutées
+
+| Famille | Ollama réel | Validation PHP de sortie réelle | Revue humaine |
+|---|---|---|---|
+| recette | NON_EXÉCUTÉ | NON_EXÉCUTÉ | NON_EXÉCUTÉ |
+| atelier | NON_EXÉCUTÉ | NON_EXÉCUTÉ | NON_EXÉCUTÉ |
+| culture | NON_EXÉCUTÉ | NON_EXÉCUTÉ | NON_EXÉCUTÉ |
+| ingredient | NON_EXÉCUTÉ | NON_EXÉCUTÉ | NON_EXÉCUTÉ |
+| technique | NON_EXÉCUTÉ | NON_EXÉCUTÉ | NON_EXÉCUTÉ |
+
+Le navigateur de cette session arrive sur la page de connexion n8n ; aucune
+session authentifiée ni accès SSH/API Orvekio n'est disponible ici. Aucun modèle
+ni ressource distante inspecté, aucune requête de génération envoyée au serveur.
+Cela ne démontre pas une panne n8n ou Ollama. Ne jamais transmettre un mot de
+passe ou un jeton dans une PR, un commentaire ou les rapports.
+
+**Réception restant nécessaire :** cinq essais réels séquentiels, sans retry
+silencieux, sur modèles effectivement installés, avec validation PHP brute,
+latences et revue éditoriale ; service HTTPS authentifié compatible avec
+`cmsAiContentGatewayAdapter` ; puis recette mobile du Studio et repli manuel.
+Aucun déploiement de production sans validation. La PR reste en brouillon tant
+que la recette réelle attendue dans sa description n'est pas satisfaite.

@@ -1,5 +1,5 @@
 /** Manual structured S1 test for an INTERNAL Ollama. No network on import. */
-import {readFile,writeFile,mkdir,lstat,unlink} from 'node:fs/promises';
+import {readFile,writeFile,lstat,unlink} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {resolve,dirname,sep} from 'node:path';
 import {performance} from 'node:perf_hooks';
@@ -109,6 +109,37 @@ export async function s1Trial({request,model,url='http://127.0.0.1:11434',fetche
     },
     publication_ready:false,requires_human_review:true};
 }
+/** Same S1 trial with private, append-only evidence. Injectable transport for tests only. */
+export async function s1Run({request:requestFile,model,url='http://127.0.0.1:11434',out,fetcher=fetch}){
+  const input=s1PrivateFile(requestFile),output=s1PrivateFile(out);
+  const evidenceFile=s1PrivateFile(output.replace(/\.json$/u,'.evidence.json'));
+  if(input===output||input===evidenceFile||output===evidenceFile)
+    throw Error('S1_PATH_COLLISION');
+  // Refuse unsafe storage BEFORE reading the request or contacting the model.
+  const dir=await lstat(privateDir);
+  if(!dir.isDirectory()||(dir.mode&0o077)!==0)throw Error('S1_DIR_NOT_PRIVATE');
+  for(const target of [output,evidenceFile]){
+    try{await lstat(target);throw Error('S1_OUTPUT_ALREADY_EXISTS');}
+    catch(error){if(error?.code!=='ENOENT')throw error;}
+  }
+  const info=await lstat(input);
+  if(!info.isFile()||(info.mode&0o077)!==0)throw Error('S1_INPUT_NOT_PRIVATE');
+  if(info.size>90000)throw Error('S1_INPUT_TOO_LARGE');
+  const bytes=await readFile(input);
+  if(bytes.length>90000)throw Error('S1_INPUT_TOO_LARGE');
+  const request=s1Request(JSON.parse(bytes.toString('utf8')));
+  const result=await s1Trial({request,model,url,fetcher});
+  const evidence=s1Evidence(result,request);
+  await writeFile(output,result.raw,{encoding:'utf8',flag:'wx',mode:0o600});
+  try{
+    await writeFile(evidenceFile,JSON.stringify(evidence,null,2)+'\n',
+      {encoding:'utf8',flag:'wx',mode:0o600});
+  }catch(error){
+    await unlink(output).catch(()=>{});
+    throw error;
+  }
+  return {result,output,evidenceFile};
+}
 async function main(){
   const args=process.argv.slice(2);
   if(!args.includes('--run')){
@@ -126,32 +157,7 @@ async function main(){
     options[flag.slice(2)]=args[++i];
   }
   if(!options.request||!options.model||!options.out)throw Error('S1_ARGS_REQUIRED');
-  const input=s1PrivateFile(options.request),output=s1PrivateFile(options.out);
-  const evidenceFile=s1PrivateFile(output.replace(/\.json$/u,'.evidence.json'));
-  if(input===output||input===evidenceFile||output===evidenceFile)
-    throw Error('S1_PATH_COLLISION');
-  for(const target of [output,evidenceFile]){
-    try{await lstat(target);throw Error('S1_OUTPUT_ALREADY_EXISTS');}
-    catch(error){if(error?.code!=='ENOENT')throw error;}
-  }
-  const bytes=await readFile(input);
-  if(bytes.length>90000)throw Error('S1_INPUT_TOO_LARGE');
-  const request=s1Request(JSON.parse(bytes.toString('utf8')));
-  const result=await s1Trial({
-    request,model:options.model,url:options.url??'http://127.0.0.1:11434'
-  });
-  await mkdir(privateDir,{recursive:true,mode:0o700});
-  const dir=await lstat(privateDir);
-  if(!dir.isDirectory()||(dir.mode&0o077)!==0)throw Error('S1_DIR_NOT_PRIVATE');
-  const evidence=s1Evidence(result,request);
-  await writeFile(output,result.raw,{encoding:'utf8',flag:'wx',mode:0o600});
-  try{
-    await writeFile(evidenceFile,JSON.stringify(evidence,null,2)+'\n',
-      {encoding:'utf8',flag:'wx',mode:0o600});
-  }catch(error){
-    await unlink(output).catch(()=>{});
-    throw error;
-  }
+  const {result,output,evidenceFile}=await s1Run(options);
   console.log('S1_TRIAL_EXECUTED',result.kind,result.model,
     'MILLISECONDS',result.elapsed_ms,'OUTPUT',output,
     'EVIDENCE',evidenceFile,

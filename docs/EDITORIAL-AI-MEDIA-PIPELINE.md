@@ -1,5 +1,39 @@
 # Cuisine du Cambodge — Pipeline éditorial IA, manuel et calendrier média
 
+> **État de reprise vérifié le 31 octobre 2026 — prioritaire sur les instantanés ci-dessous.**
+> `main` : `fb4beda50554799f6c4c60724ee9382e7f76d094` (#179).
+> [Qualification S1 / PR #180](CMS-P1C-S1-QUALIFICATION-20261030.md) ouverte en brouillon,
+> **non fusionnée et non déployée**. L'ancienne tête `3c62ee7` avait trois jobs CI
+> SUCCESS ; tout complément doit repasser la CI sur sa nouvelle tête.
+> Aucun résultat réel Ollama ni réception mobile connectée n'est attesté par cette reprise.
+
+### État consolidé au 31 octobre — ne pas reconstruire les acquis
+
+| Périmètre | État GitHub vérifié | Preuve et limite opérationnelle |
+|---|---|---|
+| P1C, formulaire et sauvegarde | #150/#151 fusionnées | Contrat C2, candidat de session, sauvegarde privée explicite, quotas et anti-doublons existants ; fournisseur réel non réceptionné |
+| Qualification S1 | #152/#158 fusionnées ; #180 en brouillon | Pont PHP et appel Ollama interne existants ; preuves et tests de fichiers complétés dans #180 ; **cinq familles réelles NON EXÉCUTÉES** |
+| Raccordement n8n | Adaptateur `content-gateway-adapter.php` intégré | Contrat HTTPS authentifié existant ; aucun service distant créé ou testé ici ; configuration serveur et secrets privés requis |
+| Conversion Astro | #153–#157, #159, #162 fusionnées | Audit et projections privées recette/ingrédient/technique, dossier Carnet ; export universel en source Astro et publication contrôlée encore à réaliser |
+| Ateliers / Coral | #163, #165/#166/#168/#169/#171/#173 fusionnées | Précontrôles, six phases, sept narrations et visas existants ; aucun nouveau MP3 ni autorisation audio implicite |
+| Studio et aperçu P2 | #175–#179 fusionnées | UX commune et aperçu contrôlé d'une page **déjà publiée** ; vrai build privé d'une nouvelle page encore à développer |
+| Calendrier et réseaux | Calendrier déjà réceptionné selon historique ; workflows 01/02/03 conservés | Pas de nouvel essai connecté dans cette session ; état des accès Meta non revérifié ; aucune réouverture des validations sociales ni modification des visuels |
+
+**Blocage d'accès observé le 31 octobre :** le navigateur disponible affiche la
+connexion n8n, sans session authentifiée. Aucun accès SSH/API Orvekio configuré
+dans le processus ; aucun appel à Ollama distant exécuté. L'absence d'accès ici
+ne démontre ni panne distante ni absence de modèle installé.
+
+**Ordre de poursuite :** obtenir l'accès privé autorisé, inventorier les modèles,
+exécuter S1 sur les cinq familles avec le pont PHP et l'exécuteur existants,
+valider chaque JSON avec PHP puis le contenu humainement. Ensuite seulement,
+raccorder et tester le service authentifié compatible avec l'adaptateur existant.
+La recette Studio mobile couvre demande → proposition → modification → doublons
+→ sauvegarde/version → calendrier, avec repli manuel et désactivation immédiate.
+Ne pas activer en production tant que ces preuves et la validation de déploiement
+ne sont pas réunies. P2/P3 puis les déclinaisons sociales suivent cet ordre,
+en réutilisant les projections et workflows acquis.
+
 > **État prioritaire au 29 octobre :** C1 (#150) revu et fusionné sur autorisation
 > explicite, `main` synchronisé sur `c0ab780`, CI après fusion SUCCESS.
 > [C2 / PR #151](CMS-STRUCTURED-GENERATION-P1C-C2.md) raccorde le formulaire commun
@@ -138,11 +172,11 @@ Le planning peut proposer des dates, mais aucune date par défaut n'est une auto
 | P0 — Architecture universelle | Gabarit Studio commun, 35 fiches du catalogue éditables en proposition, contrôle des futurs IDs | **Acquis** (PR #137), déploiement OVH des dernières corrections à confirmer |
 | **P1A — Contrat de création** | Identité des cinq familles, provenance IA/manuelle, anti-doublons, états, calendrier et preuves de validation ; tests sur vrai catalogue | **Intégré**, contrats CI ; pas d'autorisation de publication implicite |
 | **P1B — Créer manuellement** | Bouton « Nouveau contenu » dans le Studio, formulaires par famille, blocs de texte ajoutables, stockage privé versionné, projets et anti-doublons publiés + projets | **Intégré**, smokes cinq familles ; réception connectée exhaustive distincte de celle du calendrier |
-| **P1C — Générer avec IA** | Même formulaire prérempli par IA après brief, retour en brouillon, contrôles factuels, citations de travail internes et validation humaine ; aucun jeton dans navigateur | **Partiel** : briefs #147 et adaptateur facultatif #148 intégrés, non activés ; benchmark #149 sans mesure réelle ; contrat structuré C1 préparé en branche |
-| P2 — Aperçu éditorial fidèle | Prévisualisation réelle Astro au format du type choisi, médias à valider et comparaison source/brouillon | **À développer** |
+| **P1C — Générer avec IA** | Même formulaire prérempli par IA après brief, retour en brouillon, contrôles factuels, citations de travail internes et validation humaine ; aucun jeton dans navigateur | **Partiel** : C1/C2 #150/#151 intégrés, candidat/sauvegarde privés ; ponts S1 #152/#158 intégrés, #180 en brouillon ; qualification et activation réelles non réceptionnées |
+| P2 — Aperçu éditorial fidèle | Prévisualisation réelle Astro au format du type choisi, médias à valider et comparaison source/brouillon | **Partiel** : #178 pour pages déjà publiées ; nouvelles pages encore à réaliser |
 | P3 — Conversion et mise en ligne du site | Génération de données Astro sur branche, PR, CI et déploiement **après approbation**, contrôle de non-régression sur SEO/audio/médias | **À développer** |
 | P4 — Calendrier média | Planning glissant, génération de variantes sociales contrôlées et validations | **Vue mensuelle privée réceptionnée** ; planning multicanal, IA et réseaux encore à réaliser |
-| P5 — n8n / Meta | Rebrancher workflows existants **uniquement** après restauration des accès Meta et preuves de publication/non-doublon ; suivi performances | **Bloqué accès Meta**, indépendant du développement P1 |
+| P5 — n8n / Meta | Rebrancher workflows existants **uniquement** après restauration des accès Meta et preuves de publication/non-doublon ; suivi performances | **Dernier blocage historique : accès Meta** ; non revérifié ici, validations sociales conservées |
 
 ### Critères de réception du premier véritable module Studio (P1B)
 

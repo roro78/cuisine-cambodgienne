@@ -1,5 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {mkdtemp,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
 import {S1_TRIAL,S1_EVIDENCE,s1Request,s1Trial,s1PrivateFile,s1Evidence} from '../scripts/benchmark-ollama-structured.mjs';
 const request={
   contract:'cdc-editorial-ai-content-request-v1',scope:'creation-form-core-v1',
@@ -10,6 +15,76 @@ const request={
   max_output_tokens:6000,response_max_bytes:30000,timeout_seconds:20
 };
 const fake=x=>({ok:true,text:async()=>JSON.stringify(x)});
+test('private files, collisions and evidence are enforced before any provider call',async()=>{
+  const cwd=await mkdtemp(join(tmpdir(),'cdc-s1-files-'));
+  try{
+    // A fresh process makes privateDir resolve inside this disposable test root.
+    await promisify(execFile)(process.execPath,['--input-type=module','-e',`
+      import assert from 'node:assert/strict';
+      import {mkdir,writeFile,readFile,chmod,lstat,unlink,symlink,rename} from 'node:fs/promises';
+      import {createHash} from 'node:crypto';
+      const {s1Run}=await import(process.argv[1]);
+      const request=JSON.parse(process.argv[2]);
+      const dir='artifacts/benchmark',input=dir+'/request.json',out=dir+'/result.json';
+      const evidence=dir+'/result.evidence.json';
+      await mkdir(dir,{recursive:true,mode:0o700});
+      await writeFile(input,JSON.stringify(request),{mode:0o600});
+      let calls=0;
+      const raw='{"title":"Test","fields":{"intro":"Texte"}}';
+      const fetcher=async url=>{
+        calls++;
+        return {ok:true,text:async()=>JSON.stringify(url.endsWith('/api/tags')
+          ?{models:[{name:'llama3.2:latest'}]}
+          :{done:true,message:{content:raw},eval_count:12})};
+      };
+      const run=()=>s1Run({request:input,out,model:'llama3.2:latest',fetcher});
+      await chmod(dir,0o755);
+      await assert.rejects(run(),/S1_DIR_NOT_PRIVATE/);
+      await chmod(dir,0o700);
+      await chmod(input,0o644);
+      await assert.rejects(run(),/S1_INPUT_NOT_PRIVATE/);
+      await chmod(input,0o600);
+      await rename(input,dir+'/original.json');
+      await symlink('original.json',input);
+      await assert.rejects(run(),/S1_INPUT_NOT_PRIVATE/);
+      await unlink(input);
+      await rename(dir+'/original.json',input);
+      await rename(dir,'artifacts/actual');
+      await symlink('actual',dir);
+      await assert.rejects(run(),/S1_DIR_NOT_PRIVATE/);
+      await unlink(dir);
+      await rename('artifacts/actual',dir);
+      await assert.rejects(s1Run({request:input,out:input,model:'llama3.2:latest',fetcher}),/S1_PATH_COLLISION/);
+      for(const path of [out,evidence]){
+        await writeFile(path,'existing',{mode:0o600});
+        await assert.rejects(run(),/S1_OUTPUT_ALREADY_EXISTS/);
+        assert.equal(await readFile(path,'utf8'),'existing');
+        await unlink(path);
+      }
+      assert.equal(calls,0);
+      await run();
+      assert.equal(calls,2);
+      assert.equal(await readFile(out,'utf8'),raw);
+      const proof=JSON.parse(await readFile(evidence,'utf8'));
+      assert.equal(proof.response_sha256,createHash('sha256').update(raw).digest('hex'));
+      assert.equal(proof.request_sha256,createHash('sha256').update(JSON.stringify(request)).digest('hex'));
+      assert.equal(proof.schema_validation,'NOT_RUN');
+      assert.equal(proof.editorial_review,'NOT_RUN');
+      for(const path of [out,evidence])assert.equal((await lstat(path)).mode&0o777,0o600);
+      await assert.rejects(run(),/S1_OUTPUT_ALREADY_EXISTS/);
+      assert.equal(calls,2);
+      await unlink(out);await unlink(evidence);
+      // Competing writer after preflight: preserve its evidence, remove only our response.
+      const racingFetcher=async(url,options)=>{
+        if(url.endsWith('/api/chat'))await writeFile(evidence,'competing proof',{mode:0o600});
+        return fetcher(url,options);
+      };
+      await assert.rejects(s1Run({request:input,out,model:'llama3.2:latest',fetcher:racingFetcher}),{code:'EEXIST'});
+      assert.equal(await readFile(evidence,'utf8'),'competing proof');
+      await assert.rejects(lstat(out),{code:'ENOENT'});
+    `,new URL('../scripts/benchmark-ollama-structured.mjs',import.meta.url).href,JSON.stringify(request)],{cwd});
+  }finally{await rm(cwd,{recursive:true,force:true});}
+});
 test('manual-only S1 input requires synthetic exact C2 contract and private files',()=>{
   assert.equal(s1Request(request),request);
   assert.throws(()=>s1Request({...request,scope:'astro-full'}),/S1_SYNTHETIC/);

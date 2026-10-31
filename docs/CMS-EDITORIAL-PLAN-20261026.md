@@ -1,5 +1,16 @@
 # Cuisine du Cambodge — plan durable du CMS éditorial
 
+> **31 octobre — reprise P1C vérifiée :** voir l'[état consolidé du pipeline](EDITORIAL-AI-MEDIA-PIPELINE.md).
+> `main` `fb4beda` contient #151–#179 ; #180 reste en brouillon, sans fusion,
+> activation ni transfert OVH. Trois jobs CI réussis sur `3c62ee7`, puis nouveau
+> complément de qualification à tester sur sa propre tête. Les tests de fichiers
+> privés vérifient désormais permissions, liens symboliques, collisions, empreintes
+> exactes et refus d'écrasement avant tout appel modèle. n8n demande une connexion
+> dans le navigateur disponible ; pas d'accès serveur Orvekio configuré ici.
+> **Cinq familles réelles, service authentifié et parcours Android : non réceptionnés.**
+> Les projections Astro et l'aperçu #178 déjà intégrés sont préservés ; aucune
+> nouvelle qualification sociale, modification de workflows 01/02/03 ou de MP3.
+
 > **30 octobre — Lot P1C qualification S1 (PR de travail)** :
 > [preuves d'essai Ollama S1 et conditions d'activation](CMS-P1C-S1-QUALIFICATION-20261030.md).
 > La génération structurée simulée était déjà intégrée ; la présente évolution
