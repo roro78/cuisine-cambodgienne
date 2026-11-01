@@ -56,7 +56,7 @@ export function s1Evidence(result,request){
   };
 }
 export function s1ProviderTimeoutMs(value=20000){
-  if(!Number.isInteger(value)||value<20000||value>120000)
+  if(!Number.isInteger(value)||value<20000||value>180000)
     throw Error('S1_PROVIDER_TIMEOUT_INVALID');
   return value;
 }
