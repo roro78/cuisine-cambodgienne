@@ -204,8 +204,8 @@ export function s1CultureEditorialTriage(raw){
   };
   walk(c.fields);
   const publicText=[c.title,c.angle,c.summary,...values].join(' ');
-  // Titles and angles may name both markets while the actual article covers only one.
-  const bodyText=[c.summary,...values].join(' ');
+  // Titles, angles and summaries may name both markets while the article covers only one.
+  const bodyText=values.join(' ');
   const flags=[];
   if(!/phsar thmei|marché central/i.test(bodyText))flags.push('POSSIBLE_MISSING_PHSAR_THMEI');
   if(!/phsar chas|vieux marché/i.test(bodyText))flags.push('POSSIBLE_MISSING_PHSAR_CHAS');
