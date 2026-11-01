@@ -197,3 +197,14 @@ Sources obligatoires : `docs/ateliers/REFERENTIEL-ATELIER-CUISINE-ET-MP3.md`, `d
 5. **UX-4 — liaison éditoriale :** continuité contenu → proposition de publication → calendrier → réseaux, sans nouvelle automatisation concurrente ; recette mobile et desktop, retour arrière documenté.
 
 **Garde-fous :** aucune modification des modèles Astro, données, MP3, identités, secrets, règles CSRF, quotas, workflow n8n ou pipeline IA S1 par ce cadrage. Les PR S1 restent indépendantes ; ne pas fusionner ou déployer implicitement. Aucune publication automatique.
+
+### UX-0 — inventaire technique vérifié sur le dépôt (1 novembre 2026)
+
+- `public/gestion-contenus/index.php` : route privée HTTPS, session `CDC_EDITORIAL_CMS`, CSRF et formulaire commun ; `?new=1` pour créer, `?` pour bibliothèque, `?calendar=1` pour calendrier. L'atelier publié dispose déjà d'une transition explicite `studio_transition` vers un brouillon lié ; l'historique n'est pas migré.
+- `public/gestion-social/index.php` : **autre espace privé** avec session `CDC_SOCIAL_REVIEW` ; ses actions de validation sociale restent soumises aux contrôles existants. Un raccourci dashboard vers cette route ne constitue pas un SSO ni un nouveau pouvoir de publication.
+- `docs/CMS-STUDIO-UX-V3-20261029.md` : sections de contenu, guide facultatif, qualité et historique déjà réorganisées. Ne pas redévelopper cette structure.
+- `docs/CMS-STUDIO-UNIFIED-20261029.md` : deux espaces de stockage historique/création, relation d'atelier liée et empreintes immuables. Le bouton de préparation MP3 ne doit pas fabriquer silencieusement une nouvelle identité.
+- `docs/CMS-CORAL-HUMAN-VISAS-C4C3D.md` : sept visas humains, révocables et invalidés à chaque version ; **`authorizes_tts=false` invariant**. La passerelle TTS et les gates de production doivent être audités séparément avant UX-3.
+- `docs/ateliers/REFERENTIEL-ATELIER-CUISINE-ET-MP3.md` : ordre recette contrôlée → fiche → sept textes → visas → synthèse → écoute mobile ; aucun MP3 publié écrasé.
+
+**Décision UX-1 :** proposer quatre raccourcis sans toucher aux identités, routes métier ou sessions. La PR de code associée est distincte de ce plan. **UX-2/UX-3 non réceptionnés** : un bouton cosmétique ne doit pas prétendre générer le texte ni l'audio avant vérification de la chaîne réelle.
