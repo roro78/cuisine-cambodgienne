@@ -170,7 +170,7 @@ test('culture S1 fixture is sourced, limited and does not modify other families'
   const culture=fixtures.find(x=>x.kind==='culture');
   assert.equal(culture.verified_facts.length,6);
   for(let i=0;i<culture.verified_facts.length;i++){
-    assert.match(culture.verified_facts[i],new RegExp('^\\\\[F'+(i+1)+' \\| Tourism Cambodia \\| https://www\\.tourismcambodia\\.com/'));
+    assert.ok(culture.verified_facts[i].startsWith('[F'+(i+1)+' | Tourism Cambodia | https://www.tourismcambodia.com/'));
   }
   assert.ok(culture.checks.some(x=>x.includes('research_note')));
   assert.ok(culture.checks.some(x=>x.includes('ne pas ajouter')));
