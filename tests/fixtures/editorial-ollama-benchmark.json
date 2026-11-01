@@ -32,18 +32,23 @@
   {
     "id": "culture-no-tutorial",
     "kind": "culture",
-    "title": "Les marchés comme lieux de vie au Cambodge",
-    "angle": "Une approche culturelle, pas une liste de courses ni une recette",
-    "objective": "Rédiger un court texte documentaire destiné au lecteur à partir d'un corpus volontairement limité, sans transformer les contrôles en contenu",
+    "title": "Deux marchés de Phnom Penh : commerces et vie quotidienne",
+    "angle": "Comparer les produits et les usages documentés de Phsar Thmei et Phsar Chas, sans extrapoler à tout le Cambodge",
+    "objective": "Rédiger un article court fondé exclusivement sur des observations attribuées aux sources listées dans les faits autorisés",
     "verified_facts": [
-      "Un marché est un lieu d'échanges entre vendeurs et acheteurs.",
-      "Les échanges au marché comprennent la présentation des produits, le choix et l'achat.",
-      "Le sujet de l'article est la place des marchés dans la vie quotidienne au Cambodge ; aucun marché particulier n'est documenté par ce test."
+      "[F1 | Tourism Cambodia | https://www.tourismcambodia.com/travelguides/provinces/phnom-penh/what-to-see/25_central.htm] Le marché central de Phnom Penh est également appelé Phsar Thmei (Nouveau Marché).",
+      "[F2 | Tourism Cambodia | https://www.tourismcambodia.com/travelguides/provinces/phnom-penh/what-to-see/25_central.htm] Le bâtiment de Phsar Thmei est de style Art déco ; il possède un dôme central et quatre ailes.",
+      "[F3 | Tourism Cambodia | https://www.tourismcambodia.com/travelguides/provinces/phnom-penh/what-to-see/25_central.htm] À Phsar Thmei, les étals proposent notamment des bijoux, des vêtements et des produits alimentaires ; des stands de restauration se trouvent du côté ouest.",
+      "[F4 | Tourism Cambodia | https://www.tourismcambodia.com/travelguides/provinces/phnom-penh/what-to-see/328_old-market--phsar-chas.htm] Le Vieux Marché (Phsar Chas) de Phnom Penh vend notamment des fruits, des légumes, des vêtements d'occasion et des pièces de moto.",
+      "[F5 | Tourism Cambodia | https://www.tourismcambodia.com/travelguides/provinces/phnom-penh/what-to-see/328_old-market--phsar-chas.htm] La source décrit l'installation de vendeurs de nourriture et de fruits le long de la rue 13 en fin d'après-midi.",
+      "[F6 | Tourism Cambodia | https://www.tourismcambodia.com/travelguides/provinces/phnom-penh/what-to-see/328_old-market--phsar-chas.htm] La source situe Phsar Chas près du fleuve, dans la partie ancienne de Phnom Penh."
     ],
     "checks": [
-      "Ne citer aucun marché précis, chiffre, date, tradition locale ou témoignage non fourni.",
-      "Produire un chapô et des sections rédigées pour le lecteur ; réserver les limites documentaires et recherches à research_note.",
-      "Ne pas transformer ces contrôles en titres de sections ni en plan de recherche."
+      "Les faits F1 à F6 sont les seules affirmations factuelles autorisées ; ne pas ajouter d'histoire, de chiffres, d'habitudes nationales, de témoignages, de communautés ou de traditions non documentés.",
+      "Attribuer les descriptions à leurs marchés respectifs et ne pas confondre Phsar Thmei avec Phsar Chas.",
+      "Rédiger un titre, un chapô et des sections utiles pour le lecteur ; ne pas afficher les codes F1-F6 ni les URLs dans le corps de l'article.",
+      "Reporter les références, limites et points de contrôle dans research_note uniquement ; ne pas transformer les consignes en article.",
+      "La provenance indique des pages touristiques descriptives : elle ne constitue pas une enquête de terrain ni une corroboration indépendante."
     ]
   },
   {
