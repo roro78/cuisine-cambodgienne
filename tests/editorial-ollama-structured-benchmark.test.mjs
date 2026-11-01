@@ -6,7 +6,7 @@ import {join} from 'node:path';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {loadBenchFixtures,validateBenchFixtures} from '../scripts/benchmark-ollama-editorial.mjs';
-import {S1_TRIAL,S1_EVIDENCE,s1Request,s1Trial,s1PrivateFile,s1Evidence,s1ProviderTimeoutMs} from '../scripts/benchmark-ollama-structured.mjs';
+import {S1_TRIAL,S1_EVIDENCE,s1Request,s1Trial,s1PrivateFile,s1Evidence,s1ProviderTimeoutMs,s1CultureEditorialTriage} from '../scripts/benchmark-ollama-structured.mjs';
 const request={
   contract:'cdc-editorial-ai-content-request-v1',scope:'creation-form-core-v1',
   brief:{kind:'culture',title:'Test synthétique',context:'TEST SYNTHÉTIQUE UNIQUEMENT. Corpus public.'},
@@ -196,4 +196,25 @@ test('culture S1 context stays within the existing PHP brief limit',()=>{
     +'Faits autorisés : '+culture.verified_facts.join(' ; ')+'\n'
     +'Points à vérifier : '+culture.checks.join(' ; ');
   assert.ok([...context].length<=2000,'CMS context max 2000 characters');
+});
+
+test('S1 culture offline triage never approves facts or publication',()=>{
+  const candidate={title:'Deux marchés',angle:'Comparaison',
+    summary:'Phsar Thmei et Phsar Chas',research_note:'Consignes sans sources',
+    fields:{intro:'Phsar Thmei et Phsar Chas',sections:[{title:'Phsar Thmei',paragraphs:['Présentation']}]}
+  };
+  const result=s1CultureEditorialTriage(JSON.stringify(candidate));
+  assert.equal(result.publication_ready,false);
+  assert.equal(result.fact_review,'REVIEW_REQUIRED');
+  assert.equal(result.unsupported_claim_review,'REVIEW_REQUIRED');
+  assert.equal(result.comparison_review,'REVIEW_REQUIRED');
+  assert.ok(result.flags.includes('PRIVATE_NOTE_SOURCE_MISSING'));
+  const sourced=s1CultureEditorialTriage(JSON.stringify({...candidate,
+    research_note:'https://www.tourismcambodia.com/'}));
+  assert.ok(!sourced.flags.includes('PRIVATE_NOTE_SOURCE_MISSING'));
+  assert.equal(sourced.fact_review,'REVIEW_REQUIRED');
+  const leaked=s1CultureEditorialTriage(JSON.stringify({...candidate,
+    summary:'https://example.org source interne'}));
+  assert.ok(leaked.flags.includes('POSSIBLE_RESEARCH_LEAK'));
+  assert.throws(()=>s1CultureEditorialTriage('invalid'),/S1_EDITORIAL_INPUT_INVALID/);
 });
