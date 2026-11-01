@@ -204,9 +204,11 @@ export function s1CultureEditorialTriage(raw){
   };
   walk(c.fields);
   const publicText=[c.title,c.angle,c.summary,...values].join(' ');
+  // Titles and angles may name both markets while the actual article covers only one.
+  const bodyText=[c.summary,...values].join(' ');
   const flags=[];
-  if(!/phsar thmei|marché central/i.test(publicText))flags.push('POSSIBLE_MISSING_PHSAR_THMEI');
-  if(!/phsar chas|vieux marché/i.test(publicText))flags.push('POSSIBLE_MISSING_PHSAR_CHAS');
+  if(!/phsar thmei|marché central/i.test(bodyText))flags.push('POSSIBLE_MISSING_PHSAR_THMEI');
+  if(!/phsar chas|vieux marché/i.test(bodyText))flags.push('POSSIBLE_MISSING_PHSAR_CHAS');
   if(!c.research_note.includes('tourismcambodia.com'))flags.push('PRIVATE_NOTE_SOURCE_MISSING');
   if(publicText.includes('research_note')||publicText.includes('https://'))
     flags.push('POSSIBLE_RESEARCH_LEAK');
