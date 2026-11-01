@@ -12,6 +12,9 @@ test('UX navigation uses the four existing destinations and stays behind authent
   for(const title of ['Créer','Mes contenus','Publications','Calendrier'])
     assert.ok(nav.includes('<strong>'+title+'</strong>'),title);
   assert.ok(php.includes('Aucun déclenchement n8n, Facebook, Instagram'));
+  assert.ok(php.includes('Les publications sociales disposent d\'une connexion privée distincte.'));
+  assert.ok(php.includes('.ux-tile:focus-visible'));
+  assert.ok(php.includes('@media(max-width:650px){.ux-home'));
 });
 test('UX workshop audio entry reuses the linked draft and never claims TTS is enabled',()=>{
   assert.ok(php.includes('id="atelier-audio-draft"'));
