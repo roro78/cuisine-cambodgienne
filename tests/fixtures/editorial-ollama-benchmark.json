@@ -34,14 +34,16 @@
     "kind": "culture",
     "title": "Les marchés comme lieux de vie au Cambodge",
     "angle": "Une approche culturelle, pas une liste de courses ni une recette",
-    "objective": "Vérifier le style documentaire, l'absence d'anecdotes fictives et de tutoriels",
+    "objective": "Rédiger un court texte documentaire destiné au lecteur à partir d'un corpus volontairement limité, sans transformer les contrôles en contenu",
     "verified_facts": [
-      "Aucune enquête de terrain ni source historique datée n'a été fournie.",
-      "Les informations historiques, géographiques et sociales demandent une recherche et une validation préalables."
+      "Un marché est un lieu d'échanges entre vendeurs et acheteurs.",
+      "Les échanges au marché comprennent la présentation des produits, le choix et l'achat.",
+      "Le sujet de l'article est la place des marchés dans la vie quotidienne au Cambodge ; aucun marché particulier n'est documenté par ce test."
     ],
     "checks": [
-      "Ne pas raconter de visite personnelle ou inventer un témoignage.",
-      "Éviter étapes culinaires, tutoriel et fausses preuves documentaires."
+      "Ne citer aucun marché précis, chiffre, date, tradition locale ou témoignage non fourni.",
+      "Produire un chapô et des sections rédigées pour le lecteur ; réserver les limites documentaires et recherches à research_note.",
+      "Ne pas transformer ces contrôles en titres de sections ni en plan de recherche."
     ]
   },
   {
