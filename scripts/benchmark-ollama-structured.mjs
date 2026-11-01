@@ -183,3 +183,34 @@ async function main(){
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href)
   main().catch(e=>{console.error('S1_TRIAL_ABORT',e.message);process.exitCode=1;});
+
+/** Offline triage, never factual verification or publication authorization. */
+export function s1CultureEditorialTriage(raw){
+  if(typeof raw!=='string'||Buffer.byteLength(raw,'utf8')>30000)
+    throw Error('S1_EDITORIAL_INPUT_INVALID');
+  let c;
+  try{c=JSON.parse(raw);}catch{throw Error('S1_EDITORIAL_INPUT_INVALID');}
+  if(!c||typeof c!=='object'||Array.isArray(c)
+    ||typeof c.title!=='string'||typeof c.angle!=='string'
+    ||typeof c.summary!=='string'||typeof c.research_note!=='string'
+    ||!c.fields||typeof c.fields!=='object'||Array.isArray(c.fields))
+    throw Error('S1_EDITORIAL_INPUT_INVALID');
+  const values=[];
+  const walk=(v,depth=0)=>{
+    if(depth>8)throw Error('S1_EDITORIAL_INPUT_INVALID');
+    if(typeof v==='string')values.push(v);
+    else if(Array.isArray(v))v.forEach(x=>walk(x,depth+1));
+    else if(v&&typeof v==='object')Object.values(v).forEach(x=>walk(x,depth+1));
+  };
+  walk(c.fields);
+  const publicText=[c.title,c.angle,c.summary,...values].join(' ');
+  const flags=[];
+  if(!/phsar thmei|marché central/i.test(publicText))flags.push('POSSIBLE_MISSING_PHSAR_THMEI');
+  if(!/phsar chas|vieux marché/i.test(publicText))flags.push('POSSIBLE_MISSING_PHSAR_CHAS');
+  if(!c.research_note.includes('tourismcambodia.com'))flags.push('PRIVATE_NOTE_SOURCE_MISSING');
+  if(publicText.includes('research_note')||publicText.includes('https://'))
+    flags.push('POSSIBLE_RESEARCH_LEAK');
+  return {contract:'cdc-s1-culture-editorial-triage-v1',flags,
+    fact_review:'REVIEW_REQUIRED',unsupported_claim_review:'REVIEW_REQUIRED',
+    comparison_review:'REVIEW_REQUIRED',publication_ready:false};
+}
