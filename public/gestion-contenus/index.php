@@ -1075,6 +1075,11 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?= cmsTechniqueLinksHtml($createForm['technique_links']??null) ?>
 <?php endif; ?>
 <?php if($createKind==='atelier'): ?>
+<section id="atelier-audio-draft" aria-label="Préparer les textes audio de l'atelier">
+<h3>Préparer le MP3</h3>
+<p class="small muted">Préparez ou corrigez les sept textes ci-dessous à partir de la recette et des phases de l'atelier. Enregistrez le brouillon avant de demander les visas humains. Aucun audio n'est généré depuis cet écran.</p>
+<p class="small muted">La synthèse Coral reste bloquée tant que les contrôles de recette, de textes, de droits et d'audio ne sont pas satisfaits. Les MP3 publiés sont conservés.</p>
+</section>
 <?= cmsAtelierReferenceHtml($createForm['atelier_reference']??null,$catalog) ?>
 <?= cmsAtelierPhaseDetailsHtml($createForm['atelier_phase_details']??null,
     is_array($createForm['fields']??null)?$createForm['fields']:[],
@@ -1712,7 +1717,8 @@ Télécharger la demande de modification (JSON)</button>
 <?php if($selected['kind']==='atelier'): ?>
 <?php if($studioLinked!==null): ?>
 <p class="note">Les modifications et le guide audio facultatif sont réunis dans le brouillon lié. Cet écran conserve les versions antérieures en lecture seule.</p>
-<a class="btn" href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>#cms-quality">Modifier et contrôler l’atelier</a>
+<a class="btn" href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>#atelier-audio-draft">Préparer le MP3 — textes à relire</a>
+<a href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>#cms-quality">Contrôler l’atelier</a>
 <?php else: ?>
 <div data-coral-prereception>
 <p class="note">Vous pouvez modifier le contenu de la fiche et enregistrer un brouillon privé. Pour détailler les étapes ou préparer un guide audio facultatif, ouvrez le brouillon de travail lié à cette fiche.</p>
