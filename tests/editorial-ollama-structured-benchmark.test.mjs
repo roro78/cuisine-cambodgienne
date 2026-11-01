@@ -5,6 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
+import {loadBenchFixtures,validateBenchFixtures} from '../scripts/benchmark-ollama-editorial.mjs';
 import {S1_TRIAL,S1_EVIDENCE,s1Request,s1Trial,s1PrivateFile,s1Evidence,s1ProviderTimeoutMs} from '../scripts/benchmark-ollama-structured.mjs';
 const request={
   contract:'cdc-editorial-ai-content-request-v1',scope:'creation-form-core-v1',
@@ -174,4 +175,16 @@ test('culture S1 fixture is sourced, limited and does not modify other families'
   }
   assert.ok(culture.checks.some(x=>x.includes('research_note')));
   assert.ok(culture.checks.some(x=>x.includes('ne pas ajouter')));
+});
+
+test('legacy benchmark loader accepts six culture facts but rejects excess and other-family expansion',()=>{
+  const items=loadBenchFixtures();
+  assert.equal(items.find(x=>x.kind==='culture').verified_facts.length,6);
+  assert.equal(validateBenchFixtures(items),items);
+  const altered=structuredClone(items);
+  altered.find(x=>x.kind==='culture').verified_facts.push('F7 unsupported');
+  assert.throws(()=>validateBenchFixtures(altered),/BENCH_FIXTURE_INVALID/);
+  const other=structuredClone(items);
+  other.find(x=>x.kind==='recette').verified_facts=Array(6).fill('test fact');
+  assert.throws(()=>validateBenchFixtures(other),/BENCH_FIXTURE_INVALID/);
 });
