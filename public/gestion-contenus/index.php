@@ -770,6 +770,12 @@ section,fieldset,.stack,.grid>*{min-width:0}code,pre{overflow-wrap:anywhere;whit
 @media(max-width:650px){.guided-row{grid-template-columns:1fr}.guided-wide{grid-column:1}}
 
 @media(max-width:650px){.cards,.grid{grid-template-columns:1fr}.card img{width:72px;height:72px}}
+.ux-home{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:20px 0}
+.ux-tile{display:flex;flex-direction:column;justify-content:center;gap:8px;min-height:122px;padding:20px;border:2px solid #d4dfd3;border-radius:15px;background:#fff;color:#203228;text-decoration:none}
+.ux-tile strong{font-size:1.3rem}.ux-tile span{line-height:1.45;color:#43584a}
+.ux-tile:hover,.ux-tile:focus-visible{border-color:#17663b;background:#f0f8f0}
+.ux-tile:focus-visible{outline:3px solid #17663b;outline-offset:3px}
+@media(max-width:650px){.ux-home{grid-template-columns:1fr;gap:10px}.ux-tile{min-height:92px;padding:15px}}
 </style></head><body><main>
 <header><div><strong>Cuisine du Cambodge</strong> · Studio éditorial privé</div>
 <?php if($auth): ?><form method="post"><input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
@@ -788,11 +794,13 @@ Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
 <button name="login" value="1">Accéder au studio</button>
 </form></section>
 <?php else: ?>
-<nav class="new-actions" aria-label="Actions éditoriales">
-<a class="btn" href="?new=1">+ Nouveau contenu</a>
-<a href="?calendar=1">Calendrier éditorial</a>
-<a href="?">Bibliothèque des pages publiées</a>
+<nav class="ux-home" aria-label="Navigation principale du studio">
+<a class="ux-tile" href="?new=1"><strong>Créer</strong><span>Recette, atelier, carnet et autres contenus</span></a>
+<a class="ux-tile" href="?"><strong>Mes contenus</strong><span>Bibliothèque, brouillons et modifications</span></a>
+<a class="ux-tile" href="../gestion-social/"><strong>Publications</strong><span>Suivi social et validations existantes</span></a>
+<a class="ux-tile" href="?calendar=1"><strong>Calendrier</strong><span>Planning éditorial et média</span></a>
 </nav>
+<p class="small muted">Les publications sociales disposent d'une connexion privée distincte. Ce raccourci ne publie rien.</p>
 <section aria-label="Filtres de la bibliothèque"<?= ($newMode||$calendarMode)?' hidden':'' ?>>
 <form method="get" action="" class="toolbar">
 <label>Catégorie<select name="kind">
@@ -1067,6 +1075,11 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?= cmsTechniqueLinksHtml($createForm['technique_links']??null) ?>
 <?php endif; ?>
 <?php if($createKind==='atelier'): ?>
+<section id="atelier-audio-draft" aria-label="Préparer les textes audio de l'atelier">
+<h3>Préparer le MP3</h3>
+<p class="small muted">Préparez ou corrigez les sept textes ci-dessous à partir de la recette et des phases de l'atelier. Enregistrez le brouillon avant de demander les visas humains. Aucun audio n'est généré depuis cet écran.</p>
+<p class="small muted">La synthèse Coral reste bloquée tant que les contrôles de recette, de textes, de droits et d'audio ne sont pas satisfaits. Les MP3 publiés sont conservés.</p>
+</section>
 <?= cmsAtelierReferenceHtml($createForm['atelier_reference']??null,$catalog) ?>
 <?= cmsAtelierPhaseDetailsHtml($createForm['atelier_phase_details']??null,
     is_array($createForm['fields']??null)?$createForm['fields']:[],
@@ -1704,7 +1717,8 @@ Télécharger la demande de modification (JSON)</button>
 <?php if($selected['kind']==='atelier'): ?>
 <?php if($studioLinked!==null): ?>
 <p class="note">Les modifications et le guide audio facultatif sont réunis dans le brouillon lié. Cet écran conserve les versions antérieures en lecture seule.</p>
-<a class="btn" href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>#cms-quality">Modifier et contrôler l’atelier</a>
+<a class="btn" href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>#atelier-audio-draft">Préparer le MP3 — textes à relire</a>
+<a href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>#cms-quality">Contrôler l’atelier</a>
 <?php else: ?>
 <div data-coral-prereception>
 <p class="note">Vous pouvez modifier le contenu de la fiche et enregistrer un brouillon privé. Pour détailler les étapes ou préparer un guide audio facultatif, ouvrez le brouillon de travail lié à cette fiche.</p>
