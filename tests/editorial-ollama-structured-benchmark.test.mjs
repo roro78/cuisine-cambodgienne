@@ -146,7 +146,8 @@ test('missing model refuses all generation, oversized output fails closed',async
 test('S1 provider timeout is bounded and independent of the CMS request contract',async()=>{
   assert.equal(s1ProviderTimeoutMs(),20000);
   assert.equal(s1ProviderTimeoutMs(120000),120000);
-  for(const value of [0,19999,120001,20000.5,NaN,Infinity,'120000',null])
+  assert.equal(s1ProviderTimeoutMs(180000),180000);
+  for(const value of [0,19999,180001,20000.5,NaN,Infinity,'180000',null])
     assert.throws(()=>s1ProviderTimeoutMs(value),/S1_PROVIDER_TIMEOUT_INVALID/);
   const signals=[];
   const fetcher=async(url,opts)=>{
@@ -155,12 +156,12 @@ test('S1 provider timeout is bounded and independent of the CMS request contract
       ?{models:[{name:'llama3.2:latest'}]}
       :{done:true,message:{content:'{"fields":{"intro":"OK"}}'}});
   };
-  await s1Trial({request,model:'llama3.2:latest',fetcher,providerTimeoutMs:120000});
+  await s1Trial({request,model:'llama3.2:latest',fetcher,providerTimeoutMs:180000});
   assert.equal(signals.length,2);
   assert.equal(signals[0].signal.aborted,false);
   assert.equal(signals[1].signal.aborted,false);
   assert.equal(request.timeout_seconds,20);
-  await assert.rejects(s1Trial({request,model:'llama3.2:latest',fetcher,providerTimeoutMs:120001}),/S1_PROVIDER_TIMEOUT_INVALID/);
+  await assert.rejects(s1Trial({request,model:'llama3.2:latest',fetcher,providerTimeoutMs:180001}),/S1_PROVIDER_TIMEOUT_INVALID/);
   assert.equal(signals.length,2);
 });
 
