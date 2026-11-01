@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
-import {S1_TRIAL,S1_EVIDENCE,s1Request,s1Trial,s1PrivateFile,s1Evidence} from '../scripts/benchmark-ollama-structured.mjs';
+import {S1_TRIAL,S1_EVIDENCE,s1Request,s1Trial,s1PrivateFile,s1Evidence,s1ProviderTimeoutMs} from '../scripts/benchmark-ollama-structured.mjs';
 const request={
   contract:'cdc-editorial-ai-content-request-v1',scope:'creation-form-core-v1',
   brief:{kind:'culture',title:'Test synthétique',context:'TEST SYNTHÉTIQUE UNIQUEMENT. Corpus public.'},
@@ -137,4 +137,25 @@ test('missing model refuses all generation, oversized output fails closed',async
     :{done:true,message:{content:'X'.repeat(30001)}});
   await assert.rejects(s1Trial({request,model:'llama3.2:latest',fetcher}),
     /S1_RAW_OUTPUT_TOO_LARGE/);
+});
+
+test('S1 provider timeout is bounded and independent of the CMS request contract',async()=>{
+  assert.equal(s1ProviderTimeoutMs(),20000);
+  assert.equal(s1ProviderTimeoutMs(120000),120000);
+  for(const value of [0,19999,120001,20000.5,NaN,Infinity,'120000',null])
+    assert.throws(()=>s1ProviderTimeoutMs(value),/S1_PROVIDER_TIMEOUT_INVALID/);
+  const signals=[];
+  const fetcher=async(url,opts)=>{
+    signals.push({url,signal:opts.signal});
+    return fake(url.endsWith('/api/tags')
+      ?{models:[{name:'llama3.2:latest'}]}
+      :{done:true,message:{content:'{"fields":{"intro":"OK"}}'}});
+  };
+  await s1Trial({request,model:'llama3.2:latest',fetcher,providerTimeoutMs:120000});
+  assert.equal(signals.length,2);
+  assert.equal(signals[0].signal.aborted,false);
+  assert.equal(signals[1].signal.aborted,false);
+  assert.equal(request.timeout_seconds,20);
+  await assert.rejects(s1Trial({request,model:'llama3.2:latest',fetcher,providerTimeoutMs:120001}),/S1_PROVIDER_TIMEOUT_INVALID/);
+  assert.equal(signals.length,2);
 });
