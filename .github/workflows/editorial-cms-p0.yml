@@ -95,5 +95,6 @@ jobs:
         run: |
           node --test tests/editorial-cms-contract.test.mjs
           if test -f tests/editorial-dashboard-ux-navigation.test.mjs; then node --test tests/editorial-dashboard-ux-navigation.test.mjs; fi
+          if test -f tests/editorial-ollama-structured-benchmark.test.mjs; then node --test tests/editorial-ollama-structured-benchmark.test.mjs; fi
       - name: No production deployment
         run: echo 'CI only; no OVH, n8n, Ollama, Meta or TTS calls'
