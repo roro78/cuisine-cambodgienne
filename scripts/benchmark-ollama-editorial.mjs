@@ -36,7 +36,7 @@ export function validateBenchFixtures(items){
       || ids.has(item.id)
       || ![item.title,item.angle,item.objective].every(hasSafeText)
       || !Array.isArray(item.verified_facts)||item.verified_facts.length<1
-      || item.verified_facts.length>5
+      || item.verified_facts.length>(item.kind==='culture'?6:5)
       || !Array.isArray(item.checks)||item.checks.length<1
       || item.checks.length>5
       || ![...item.verified_facts,...item.checks].every(hasSafeText))
