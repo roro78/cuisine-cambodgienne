@@ -124,6 +124,9 @@ test('fake Ollama sends the structured CMS schema and no publication calls',asyn
   assert.equal(calls.length,2);
   const post=JSON.parse(calls[1].opts.body);
   assert.deepEqual(post.format,request.response_schema);
+  assert.match(post.messages[0].content,/research_note/);
+  assert.match(post.messages[0].content,/contenu final destiné au lecteur/);
+  assert.match(post.messages[0].content,/Ne pas transformer les points à vérifier/);
   assert.equal(post.options.temperature,0);
   assert.ok(!('tools' in post));
 });
