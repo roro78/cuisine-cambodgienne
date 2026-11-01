@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp,rm} from 'node:fs/promises';
+import {mkdtemp,rm,readFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {execFile} from 'node:child_process';
@@ -161,4 +161,17 @@ test('S1 provider timeout is bounded and independent of the CMS request contract
   assert.equal(request.timeout_seconds,20);
   await assert.rejects(s1Trial({request,model:'llama3.2:latest',fetcher,providerTimeoutMs:120001}),/S1_PROVIDER_TIMEOUT_INVALID/);
   assert.equal(signals.length,2);
+});
+
+test('culture S1 fixture is sourced, limited and does not modify other families',async()=>{
+  const fixtures=JSON.parse(await readFile(new URL('./fixtures/editorial-ollama-benchmark.json',import.meta.url),'utf8'));
+  assert.equal(fixtures.length,5);
+  assert.deepEqual(fixtures.map(x=>x.kind),['recette','atelier','culture','ingredient','technique']);
+  const culture=fixtures.find(x=>x.kind==='culture');
+  assert.equal(culture.verified_facts.length,6);
+  for(let i=0;i<culture.verified_facts.length;i++){
+    assert.match(culture.verified_facts[i],new RegExp('^\\\\[F'+(i+1)+' \\| Tourism Cambodia \\| https://www\\.tourismcambodia\\.com/'));
+  }
+  assert.ok(culture.checks.some(x=>x.includes('research_note')));
+  assert.ok(culture.checks.some(x=>x.includes('ne pas ajouter')));
 });
