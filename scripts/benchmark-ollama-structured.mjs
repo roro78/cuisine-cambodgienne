@@ -55,6 +55,11 @@ export function s1Evidence(result,request){
     note:'S1 synthetic trial only; check the exact candidate with PHP then review manually.'
   };
 }
+export function s1ProviderTimeoutMs(value=20000){
+  if(!Number.isInteger(value)||value<20000||value>120000)
+    throw Error('S1_PROVIDER_TIMEOUT_INVALID');
+  return value;
+}
 function checkModel(model){
   if(typeof model!=='string'
     ||!/^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,79}$/.test(model))
@@ -66,7 +71,8 @@ async function limitedJson(response,limit){
   if(Buffer.byteLength(text)>limit)throw Error('S1_ENVELOPE_OVERSIZE');
   try{return JSON.parse(text);}catch{throw Error('S1_ENVELOPE_INVALID');}
 }
-export async function s1Trial({request,model,url='http://127.0.0.1:11434',fetcher=fetch}){
+export async function s1Trial({request,model,url='http://127.0.0.1:11434',fetcher=fetch,providerTimeoutMs=20000}){
+  const timeout=s1ProviderTimeoutMs(providerTimeoutMs);
   const r=s1Request(request);checkModel(model);
   const host=assertBenchUrl(url);
   const models=await limitedJson(await fetcher(host+'/api/tags',{
@@ -91,7 +97,7 @@ export async function s1Trial({request,model,url='http://127.0.0.1:11434',fetche
   const start=performance.now();
   const answer=await limitedJson(await fetcher(host+'/api/chat',{
     method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify(payload),signal:AbortSignal.timeout(20000)
+    body:JSON.stringify(payload),signal:AbortSignal.timeout(timeout)
   }),95000);
   if(answer.done!==true||typeof answer.message?.content!=='string')
     throw Error('S1_PROVIDER_ENVELOPE');
@@ -110,7 +116,8 @@ export async function s1Trial({request,model,url='http://127.0.0.1:11434',fetche
     publication_ready:false,requires_human_review:true};
 }
 /** Same S1 trial with private, append-only evidence. Injectable transport for tests only. */
-export async function s1Run({request:requestFile,model,url='http://127.0.0.1:11434',out,fetcher=fetch}){
+export async function s1Run({request:requestFile,model,url='http://127.0.0.1:11434',out,fetcher=fetch,providerTimeoutMs=20000}){
+  s1ProviderTimeoutMs(providerTimeoutMs);
   const input=s1PrivateFile(requestFile),output=s1PrivateFile(out);
   const evidenceFile=s1PrivateFile(output.replace(/\.json$/u,'.evidence.json'));
   if(input===output||input===evidenceFile||output===evidenceFile)
@@ -128,7 +135,7 @@ export async function s1Run({request:requestFile,model,url='http://127.0.0.1:114
   const bytes=await readFile(input);
   if(bytes.length>90000)throw Error('S1_INPUT_TOO_LARGE');
   const request=s1Request(JSON.parse(bytes.toString('utf8')));
-  const result=await s1Trial({request,model,url,fetcher});
+  const result=await s1Trial({request,model,url,fetcher,providerTimeoutMs});
   const evidence=s1Evidence(result,request);
   await writeFile(output,result.raw,{encoding:'utf8',flag:'wx',mode:0o600});
   try{
@@ -146,7 +153,7 @@ async function main(){
     console.log('S1 not run. Use --run --request artifacts/benchmark/culture-s1-request.json --model llama3.2:latest --out artifacts/benchmark/culture-s1-result.json');
     return;
   }
-  const flags=new Set(['--run','--request','--model','--url','--out']);
+  const flags=new Set(['--run','--request','--model','--url','--out','--provider-timeout-ms']);
   const seen=new Set(),options={};
   for(let i=0;i<args.length;i++){
     const flag=args[i];
@@ -157,6 +164,12 @@ async function main(){
     options[flag.slice(2)]=args[++i];
   }
   if(!options.request||!options.model||!options.out)throw Error('S1_ARGS_REQUIRED');
+  if(options['provider-timeout-ms']!==undefined){
+    const raw=options['provider-timeout-ms'];
+    if(!/^[0-9]+$/.test(raw))throw Error('S1_PROVIDER_TIMEOUT_INVALID');
+    options.providerTimeoutMs=s1ProviderTimeoutMs(Number(raw));
+    delete options['provider-timeout-ms'];
+  }
   const {result,output,evidenceFile}=await s1Run(options);
   console.log('S1_TRIAL_EXECUTED',result.kind,result.model,
     'MILLISECONDS',result.elapsed_ms,'OUTPUT',output,
