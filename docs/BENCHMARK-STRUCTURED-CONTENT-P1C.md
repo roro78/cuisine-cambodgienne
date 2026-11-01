@@ -167,3 +167,43 @@ artifacts/benchmark/ (désormais exclu de Git), sans être affiché en clair.
 La validation de schéma reste celle du CMS PHP et la revue éditoriale humaine
 reste impérative. Aucune connexion n8n OVH, durée réelle, modèle disponible,
 qualité, coût ou résultat mesuré ne peut être attesté depuis cette conversation.
+
+
+## Audit post-pilote #187 — porte éditoriale S1 (1 novembre 2026)
+
+**Portée et nomenclature.** Le pilote culture de #187 sur `96a34fbc33e32d7cd9efd508792a05117244ba01` a reçu un JSON complet en 65,118 s (65,950 s de bout en bout), validé par PHP. La qualité éditoriale a échoué. La porte décrite ici reste une **qualification éditoriale S1**, et non une nouvelle implémentation « S2 » : dans ce document, S2 désigne déjà le **contenu Astro complet**. Aucun résultat S1 ne constitue un visa S2.
+
+### Composants existants à réutiliser, sans moteur parallèle
+
+| Élément | Contrôle réellement couvert | Ce qu'il ne prouve pas |
+|---|---|---|
+| `cmsAiContentSchema` et `cmsAiContentCandidate` dans `public/gestion-contenus/lib.php` | Schéma fermé, champs et types, limites, transformation vers le formulaire, complétude de travail | Exactitude des faits, attribution des sources, couverture F1–F6, qualité du récit |
+| `scripts/editorial-ai-structured-benchmark.php validate` | Passage du JSON brut par le validateur PHP existant, `schema_valid`, revue humaine et publication interdite | Qualité éditoriale ou aptitude à publier |
+| `scripts/benchmark-ollama-structured.mjs` | Appel Ollama interne, délai fournisseur séparé, conservation des empreintes et métriques | Contrôle factuel ou lecture des sources par le modèle |
+| `scripts/editorial-content-pipeline.mjs` | Contrat d'intake, étapes, approbation humaine et détection indicative de doublons | Détection des affirmations inventées |
+| Référentiel éditorial et Carnets | Règles métier et exigences de vérification humaine | Vérification automatique du sens d'une phrase |
+
+### Cas de régression observés dans le texte du pilote #187
+
+- **F1–F4 :** couverts dans le texte reçu ; ne pas assimiler cette couverture partielle à un PASS.
+- **F5 :** vendeurs de la rue 13 en fin d'après-midi omis.
+- **F6 :** proximité du fleuve et partie ancienne omises.
+- **Affirmations hors corpus :** « dans le cœur de Phnom Penh », les marchés qui « se côtoient », « habitudes de consommation » ; chacune nécessite une preuve distincte ou sa suppression.
+- **Structure :** une comparaison de deux marchés est annoncée, mais une seule section développe Phsar Thmei.
+- **Traçabilité :** `research_note` recopie des consignes sans restituer les références ; la provenance du corpus doit rester privée et vérifiable.
+- **Style :** français globalement correct mais répétitions.
+
+### Protocole minimal proposé, hors ligne et sans nouvel appel fournisseur
+
+1. **Figer les preuves.** Lire la réponse privée #187 et la demande F1–F6 depuis le dossier de preuves existant, sans déplacer les données dans le dépôt. Ne jamais ajouter le texte brut ni les URL privées à un artefact public.
+2. **Garder le validateur PHP comme porte technique.** `schema_valid:true` n'est pas un verdict éditorial. La sortie reste non publiable et soumise à revue humaine.
+3. **Établir une grille de revue explicite :** pour chacun de F1–F6, noter `présent / absent / déformé`, avec extrait et emplacement ; pour chaque affirmation nouvelle, noter `source vérifiée / non étayée / à examiner`. Relever séparément sections manquantes, références absentes et répétitions.
+4. **Automatiser uniquement ce qui est déterministe :** présence des sections attendues et champs de provenance, séparation des notes privées et publiques, absence de marqueurs de travail dans le rendu. Un contrôle lexical peut **signaler** une absence probable, jamais certifier l'exactitude ou l'exhaustivité des faits.
+5. **Tests hors ligne :** un cas de référence entièrement couvert, puis les régressions #187 (F5/F6 absents, trois affirmations non étayées, comparaison unilatérale, note sans références). Toute assertion de détection sémantique automatique doit être justifiée par un test fiable ; sinon, conserver `REVIEW_REQUIRED`.
+6. **Gates :** `TECHNICAL_PASS` et `EDITORIAL_PASS` sont indépendants. Sans revue documentaire humaine positive, verdict `EDITORIAL_FAIL` ou `REVIEW_REQUIRED`, jamais `publication_ready:true`. Pas d'activation Studio.
+
+### Limites et prochaine décision
+
+Le corpus F1–F6 provient de pages d'un même éditeur touristique : il permet un contrôle de fidélité **au corpus**, pas une corroboration indépendante. La comparaison ne peut être réputée documentée si les deux marchés ne sont pas effectivement traités. La performance #187 est presque entièrement assistée par le cache (1 074/1 075 jetons) : elle ne garantit pas une latence acceptable à froid.
+
+**Étape suivante avant code de contrôle :** extraire une grille de revue expurgée des preuves privées #187, la faire réceptionner, puis ajouter uniquement des assertions déterministes au banc S1 existant. Ne pas créer de second validateur PHP, de service éditorial autonome, de pipeline concurrent ou de déclenchement Studio.
