@@ -191,8 +191,8 @@ test('legacy benchmark loader accepts six culture facts but rejects excess and o
 
 test('culture S1 context stays within the existing PHP brief limit',()=>{
   const culture=loadBenchFixtures().find(x=>x.kind==='culture');
-  const context='TEST SYNTHÉTIQUE UNIQUEMENT. Aucun fait supplémentaire établi.\\n'
-    +'Faits autorisés : '+culture.verified_facts.join(' ; ')+'\\n'
+  const context='TEST SYNTHÉTIQUE UNIQUEMENT. Aucun fait supplémentaire établi.\n'
+    +'Faits autorisés : '+culture.verified_facts.join(' ; ')+'\n'
     +'Points à vérifier : '+culture.checks.join(' ; ');
   assert.ok([...context].length<=2000,'CMS context max 2000 characters');
 });
