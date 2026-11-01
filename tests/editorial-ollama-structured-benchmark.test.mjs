@@ -209,6 +209,10 @@ test('S1 culture offline triage never approves facts or publication',()=>{
   assert.equal(result.unsupported_claim_review,'REVIEW_REQUIRED');
   assert.equal(result.comparison_review,'REVIEW_REQUIRED');
   assert.ok(result.flags.includes('PRIVATE_NOTE_SOURCE_MISSING'));
+  const oneSided=s1CultureEditorialTriage(JSON.stringify({...candidate,
+    fields:{intro:'Phsar Thmei',sections:[{title:'Marché central',paragraphs:['Art déco']}]}}));
+  assert.ok(oneSided.flags.includes('POSSIBLE_MISSING_PHSAR_CHAS'));
+  assert.equal(oneSided.comparison_review,'REVIEW_REQUIRED');
   const sourced=s1CultureEditorialTriage(JSON.stringify({...candidate,
     research_note:'https://www.tourismcambodia.com/'}));
   assert.ok(!sourced.flags.includes('PRIVATE_NOTE_SOURCE_MISSING'));
