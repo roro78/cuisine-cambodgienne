@@ -22,7 +22,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: cms-p0-isolated-check
+  group: cms-p0-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -73,14 +73,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           extensions: mbstring, json
           coverage: none
       - name: Install site dependencies
-        run: npm ci --no-audit --no-fund
+        run: npm install --no-audit --no-fund
       - name: PHP syntax and existing private CMS tests
         run: |
           php -l public/gestion-contenus/index.php
