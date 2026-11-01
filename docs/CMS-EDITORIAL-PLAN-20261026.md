@@ -164,3 +164,36 @@ Corrections : distinguer les rôles des deux résumés sans en modifier les vale
 
 Contrat inchangé : le V2 `approved-public-form-fields-v2` et les trois index restent identiques ; stockage append-only, empreintes, CSRF, journaux de versions, scripts et MP3 Coral protégés, aucune publication automatique. Les modifications sont une évolution d'interface **à déployer séparément après CI et sauvegarde**, pas une modification du site actuellement en ligne.
 
+
+## Volet UX dashboard et MP3 ateliers — cadrage de réalisation (1 novembre 2026)
+
+**Décision : chantier actif de préparation, indépendant de S1 Ollama.** Ne pas remplacer les travaux Studio V3 ni les contrats Coral. La navigation cible doit être validée avant toute refonte générale. Cette section décrit la cible ; elle ne prétend pas que les boutons sont déployés.
+
+### Accueil : quatre portes d'entrée, fonctions inchangées
+
+| Porte d'entrée | Destination fonctionnelle | Règle |
+|---|---|---|
+| **Créer** | Choix des cinq familles du formulaire commun | Aucune nouvelle filière éditoriale |
+| **Mes contenus** | Bibliothèque, filtres, versions, brouillons et modifications | Garder les identités et liens de contenus |
+| **Publications** | Préparation, contrôle et suivi site/social | Réutiliser les circuits Meta/n8n existants ; ne pas confondre planification et publication |
+| **Calendrier** | Planning éditorial et média existant | Pas de second calendrier |
+
+**Accueil mobile d'abord :** quatre cartes tactiles de grande taille, libellés explicites, une action principale par écran, fonctions avancées repliées. Conserver des accès secondaires aux diagnostics, qualité et configuration, sans les supprimer. Vérifier navigation clavier, focus, contraste, 360/390/768/1440 px, sauvegarde et retour arrière.
+
+### Atelier : préparation audio guidée, sans nouveau moteur
+
+Depuis la fiche d'un atelier existant : **Préparer le MP3** ouvre la préparation du guide à partir de la recette et du blueprint Coral V2 **déjà liés et vérifiés**. Si la recette canonique ou les détails pédagogiques sont absents/périmés, afficher l'action de correction correspondante plutôt que générer un texte inventé. Reprendre les **sept textes** (introduction et six phases), les rendre éditables et versionnés, puis soumettre chacun aux visas humains existants.
+
+L'action **Valider et générer le MP3** est une intention explicite distincte : elle ne doit jamais appeler le TTS si l'un des contrôles audio préexistants reste bloquant. Les sept visas ne suffisent pas à eux seuls : le document `docs/CMS-CORAL-HUMAN-VISAS-C4C3D.md` précise `authorizes_tts=false` même après validation. Il faut d'abord auditer le chemin TTS réellement disponible et les gates manquantes ; **ne pas afficher le second bouton comme opérationnel avant cette preuve**. Aucun MP3 existant écrasé ; empreintes script/audio, révisions et validations conservées.
+
+Sources obligatoires : `docs/ateliers/REFERENTIEL-ATELIER-CUISINE-ET-MP3.md`, `docs/ateliers/REFERENTIEL-NARRATION-IMMERSIVE-V2.md`, contrats C4C3A–G et code réel. Le référentiel V2 prime sur les détails de narration divergents. Coral Studio devient un accès avancé facultatif, non une étape du parcours courant.
+
+### Lots de développement et portes de réception
+
+1. **UX-0 — inventaire vérifié :** routes, boutons, permissions, bibliothèques, calendrier, Studio V3, transitions atelier et disponibilité réelle du TTS ; tableau `existant / à adapter / absent`. Aucune écriture en production.
+2. **UX-1 — navigation :** prototype HTML/PHP réutilisant les routes et contrôles actuels ; validation visuelle mobile/ordinateur des quatre entrées avant changement général. Tester chaque destination, retour, session et autorisation.
+3. **UX-2 — atelier, texte uniquement :** bouton de préparation vers le flux Coral existant, préremplissage sûr, sept narrations éditables, sauvegarde/version et visas ; aucun appel TTS. Tester absence de recette, source périmée, double clic, modification après visa, brouillon sans audio et conservation des MP3 publiés.
+4. **UX-3 — génération audio contrôlée :** seulement après preuve du transport TTS, des gates exactes, des coûts/quotas, de l'autorisation humaine et du non-écrasement ; essai isolé explicite, écoute et contrôle mobile. Ne pas assimiler ce lot à une autorisation d'automatisation complète.
+5. **UX-4 — liaison éditoriale :** continuité contenu → proposition de publication → calendrier → réseaux, sans nouvelle automatisation concurrente ; recette mobile et desktop, retour arrière documenté.
+
+**Garde-fous :** aucune modification des modèles Astro, données, MP3, identités, secrets, règles CSRF, quotas, workflow n8n ou pipeline IA S1 par ce cadrage. Les PR S1 restent indépendantes ; ne pas fusionner ou déployer implicitement. Aucune publication automatique.
