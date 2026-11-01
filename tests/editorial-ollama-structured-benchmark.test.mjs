@@ -174,7 +174,7 @@ test('culture S1 fixture is sourced, limited and does not modify other families'
     assert.ok(culture.verified_facts[i].startsWith('[F'+(i+1)+' | Tourism Cambodia | https://www.tourismcambodia.com/'));
   }
   assert.ok(culture.checks.some(x=>x.includes('research_note')));
-  assert.ok(culture.checks.some(x=>x.includes('ne pas ajouter')));
+  assert.ok(culture.checks.some(x=>x.includes('aucun autre')));
 });
 
 test('legacy benchmark loader accepts six culture facts but rejects excess and other-family expansion',()=>{
@@ -187,4 +187,12 @@ test('legacy benchmark loader accepts six culture facts but rejects excess and o
   const other=structuredClone(items);
   other.find(x=>x.kind==='recette').verified_facts=Array(6).fill('test fact');
   assert.throws(()=>validateBenchFixtures(other),/BENCH_FIXTURE_INVALID/);
+});
+
+test('culture S1 context stays within the existing PHP brief limit',()=>{
+  const culture=loadBenchFixtures().find(x=>x.kind==='culture');
+  const context='TEST SYNTHÉTIQUE UNIQUEMENT. Aucun fait supplémentaire établi.\\n'
+    +'Faits autorisés : '+culture.verified_facts.join(' ; ')+'\\n'
+    +'Points à vérifier : '+culture.checks.join(' ; ');
+  assert.ok([...context].length<=2000,'CMS context max 2000 characters');
 });
