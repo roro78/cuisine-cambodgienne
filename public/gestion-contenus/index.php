@@ -770,6 +770,12 @@ section,fieldset,.stack,.grid>*{min-width:0}code,pre{overflow-wrap:anywhere;whit
 @media(max-width:650px){.guided-row{grid-template-columns:1fr}.guided-wide{grid-column:1}}
 
 @media(max-width:650px){.cards,.grid{grid-template-columns:1fr}.card img{width:72px;height:72px}}
+.ux-home{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:20px 0}
+.ux-tile{display:flex;flex-direction:column;justify-content:center;gap:8px;min-height:122px;padding:20px;border:2px solid #d4dfd3;border-radius:15px;background:#fff;color:#203228;text-decoration:none}
+.ux-tile strong{font-size:1.3rem}.ux-tile span{line-height:1.45;color:#43584a}
+.ux-tile:hover,.ux-tile:focus-visible{border-color:#17663b;background:#f0f8f0}
+.ux-tile:focus-visible{outline:3px solid #17663b;outline-offset:3px}
+@media(max-width:650px){.ux-home{grid-template-columns:1fr;gap:10px}.ux-tile{min-height:92px;padding:15px}}
 </style></head><body><main>
 <header><div><strong>Cuisine du Cambodge</strong> · Studio éditorial privé</div>
 <?php if($auth): ?><form method="post"><input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
@@ -788,11 +794,13 @@ Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
 <button name="login" value="1">Accéder au studio</button>
 </form></section>
 <?php else: ?>
-<nav class="new-actions" aria-label="Actions éditoriales">
-<a class="btn" href="?new=1">+ Nouveau contenu</a>
-<a href="?calendar=1">Calendrier éditorial</a>
-<a href="?">Bibliothèque des pages publiées</a>
+<nav class="ux-home" aria-label="Navigation principale du studio">
+<a class="ux-tile" href="?new=1"><strong>Créer</strong><span>Recette, atelier, carnet et autres contenus</span></a>
+<a class="ux-tile" href="?"><strong>Mes contenus</strong><span>Bibliothèque, brouillons et modifications</span></a>
+<a class="ux-tile" href="../gestion-social/"><strong>Publications</strong><span>Suivi social et validations existantes</span></a>
+<a class="ux-tile" href="?calendar=1"><strong>Calendrier</strong><span>Planning éditorial et média</span></a>
 </nav>
+<p class="small muted">Les publications sociales disposent d'une connexion privée distincte. Ce raccourci ne publie rien.</p>
 <section aria-label="Filtres de la bibliothèque"<?= ($newMode||$calendarMode)?' hidden':'' ?>>
 <form method="get" action="" class="toolbar">
 <label>Catégorie<select name="kind">
