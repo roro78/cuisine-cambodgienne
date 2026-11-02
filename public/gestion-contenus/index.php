@@ -11,7 +11,7 @@ header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('Referrer-Policy: no-referrer');
 $nonce=base64_encode(random_bytes(18));
-header("Content-Security-Policy: default-src 'none'; style-src 'nonce-{$nonce}'; script-src 'nonce-{$nonce}'; img-src https://www.cuisine-du-cambodge.com; frame-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
+header("Content-Security-Policy: default-src 'none'; style-src 'nonce-{$nonce}'; script-src 'nonce-{$nonce}'; img-src 'self' https://www.cuisine-du-cambodge.com; frame-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
 function cmsUnavailable(): never { http_response_code(503);exit('Espace CMS privé indisponible.'); }
 $https=(!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS'])!=='off')
     || (string)($_SERVER['SERVER_PORT']??'')==='443';
@@ -68,7 +68,22 @@ function cmsLoginAttempt(string $dir,string $ip,bool $failed=false): bool {
     } finally{flock($f,LOCK_UN);fclose($f);}
 }
 $method=(string)($_SERVER['REQUEST_METHOD']??'GET');
+// Authenticated binary reads must not rerun editor/AI intent initialization.
+if($method==='GET'&&$auth&&isset($_GET['visual_file'])){
+    try{
+        $assetId=cmsCreationId($_GET['cid']??null);
+        $assetVersion=filter_var($_GET['visual_version']??null,FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>9999]]);
+        if($assetId===null||$assetVersion===false||!is_string($_GET['visual_file'])
+            ||!is_file($private.'/editorial-drafts/new-content/'.$assetId.'.0001.json')
+            ||!is_dir($private.'/editorial-visuals/'.$assetId))throw new RuntimeException('VISUAL_ASSET');
+        if(cmsCreationRead(cmsCreationDir($private),$assetId)===null)throw new RuntimeException('VISUAL_ASSET');
+        $asset=cmsVisualAsset(cmsVisualDirectory($private,$assetId),$assetId,$assetVersion,$_GET['visual_file']);
+        header('Content-Type: '.$asset['mime']);echo $asset['bytes'];exit;
+    }catch(Throwable $e){http_response_code(404);exit('Visuel privé indisponible.');}
+}
+
 if($method==='POST'){
+    if(isset($_POST['visual_action']) && count(array_intersect(['visual_action','create_save','ai_brief_generate','ai_content_generate','ai_content_discard','review_action','culinary_action','save','studio_transition','export_review','login','logout'],array_keys($_POST)))!==1){http_response_code(422);exit('Action invalide.');}
     if(!is_string($_POST['csrf']??null)
         || !hash_equals((string)$_SESSION['csrf'],$_POST['csrf'])){
         http_response_code(403);exit('Session expirée. Rechargez.');
@@ -103,7 +118,7 @@ $filtersUrl=http_build_query($filters,'','&',PHP_QUERY_RFC3986);
 // A new editorial idea is deliberately distinct from a published source ID.
 // Both paths still use the SAME authenticated Studio and shared field renderer.
 $newMode=isset($_GET['new']) || ($method==='POST'
-    && (isset($_POST['create_save']) || isset($_POST['ai_brief_generate'])
+    && (isset($_POST['visual_action']) || isset($_POST['create_save']) || isset($_POST['ai_brief_generate'])
         || isset($_POST['ai_content_generate']) || isset($_POST['ai_content_discard'])
         || isset($_POST['review_action']) || isset($_POST['culinary_action'])));
 $createKind=is_string($_POST['kind']??null)?$_POST['kind']:
@@ -632,6 +647,60 @@ if($auth){
     try{$latestById=cmsStudioCatalogDrafts($latestById,$creations,$catalog,$canonicalById);}
     catch(Throwable $e){cmsUnavailable();}
 }
+$visualSettings=null;$visualLatest=null;$visualDisplay=null;$visualApproved=false;$visualInput=[];$visualSelected=null;
+if($auth&&$newMode){
+    try{$visualSettings=cmsVisualSettings($cfg);}catch(Throwable $e){$visualSettings=null;}
+    $visualInput=['description'=>is_string($_POST['visual_description']??null)?$_POST['visual_description']:'',
+        'rights'=>is_string($_POST['visual_rights']??null)?$_POST['visual_rights']:'',
+        'medium'=>is_string($_POST['visual_medium']??null)?$_POST['visual_medium']:'ai_illustration'];
+    if($method!=='POST')$visualInput=[];
+    if($creation!==null){
+        try{
+            $visualDir=$private.'/editorial-visuals/'.$creation['id'];
+            if(is_dir($visualDir)){
+                $visualDir=cmsVisualDirectory($private,$creation['id']);
+                $visualLatest=cmsVisualLatest($visualDir,$creation['id']);$visualDisplay=$visualLatest;
+                if($visualDisplay!==null)$visualApproved=cmsVisualApproved($visualDir,$visualDisplay,$creation);
+            }
+            if($method==='POST'&&isset($_POST['visual_action'])){
+                if(!$studioSourceCurrent||(string)($_POST['expected_version']??'')!==(string)$creation['version'])throw new RuntimeException('VISUAL_DRAFT_STALE');
+                $version=filter_var($_POST['visual_expected']??null,FILTER_VALIDATE_INT,['options'=>['min_range'=>0,'max_range'=>9999]]);
+                if($version===false)throw new InvalidArgumentException('VISUAL_ID');
+                if($_POST['visual_action']==='generate'){
+                    if($visualSettings===null)throw new RuntimeException('VISUAL_UNAVAILABLE');
+                    cmsVisualIntent($_SESSION,$_POST['visual_request_token']??null);
+                    cmsVisualGenerate($private,$creation,['description'=>$visualInput['description'],'rights'=>$visualInput['rights'],
+                        'medium'=>$visualInput['medium'],'transmit_confirm'=>$_POST['visual_transmit_confirm']??null],$visualSettings,$version);
+                }elseif($_POST['visual_action']==='approve'){
+                    $chosen=filter_var($_POST['visual_version']??$version,FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>9999]]);
+                    if($chosen===false)throw new InvalidArgumentException('VISUAL_ID');
+                    cmsVisualApprove($private,$creation,$chosen,$visualInput['rights'],($_POST['visual_review_confirm']??null)==='1',$version);
+                }elseif($_POST['visual_action']==='select'){
+                    $chosen=filter_var($_POST['visual_version']??null,FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>9999]]);
+                    if($chosen===false)throw new InvalidArgumentException('VISUAL_ID');
+                    cmsVisualSelect($private,$creation,$chosen,$version);
+                }else throw new InvalidArgumentException('VISUAL_ACTION');
+                header('Location: ?new=1&cid='.rawurlencode($creation['id']).'&'.$filtersUrl.'&visual_saved=1#cms-media',true,303);exit;
+            }
+            if(is_dir($visualDir)){
+                $visualDir=cmsVisualDirectory($private,$creation['id']);
+                $visualLatest=cmsVisualLatest($visualDir,$creation['id']);$visualDisplay=$visualLatest;
+                if(isset($_GET['visual_version'])){
+                    $version=filter_var($_GET['visual_version'],FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>9999]]);
+                    if($version===false)throw new InvalidArgumentException('VISUAL_ID');
+                    $visualDisplay=cmsVisualRead($visualDir,$creation['id'],$version);
+                }
+                if($visualDisplay!==null)$visualApproved=cmsVisualApproved($visualDir,$visualDisplay,$creation);
+                $visualSelected=cmsVisualSelected($visualDir,$creation);
+            }
+        }catch(Throwable $e){
+            if(isset($_GET['visual_file'])){http_response_code(404);exit('Visuel privé indisponible.');}
+            http_response_code($method==='POST'?422:503);
+            $error='Visuel non enregistré : vérifiez le fournisseur, le quota, la demande et la version du brouillon. Aucune relance automatique.';
+        }
+    }elseif($method==='POST'&&isset($_POST['visual_action'])){http_response_code(422);$error='Enregistrez d’abord le contenu avant de préparer son visuel.';}
+}
+if($auth&&$newMode&&!isset($_SESSION['visual_intent']))$_SESSION['visual_intent']=bin2hex(random_bytes(24));
 $shown=$auth?cmsFilterCatalog($catalog,$latestById,$kind,$q,$status):[];
 // Build a read-only preview ONLY from a saved draft and verified public model.
 // A missing schema, stale source, or unsupported identity never degrades to a fake page.
@@ -784,6 +853,7 @@ section,fieldset,.stack,.grid>*{min-width:0}code,pre{overflow-wrap:anywhere;whit
 .ux-tile:hover,.ux-tile:focus-visible{border-color:#17663b;background:#f0f8f0}
 .ux-tile:focus-visible{outline:3px solid #17663b;outline-offset:3px}
 @media(max-width:650px){.ux-home{grid-template-columns:1fr;gap:10px}.ux-tile{min-height:92px;padding:15px}}
+.private-visual-preview{display:block;width:min(100%,540px);height:auto;border-radius:10px}.private-visual-preview--social{width:min(100%,300px)}
 </style></head><body><main>
 <header><div><strong>Cuisine du Cambodge</strong> · Studio éditorial privé</div>
 <?php if($auth): ?><form method="post"><input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
@@ -1125,6 +1195,8 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <button name="ai_content_discard" value="1" class="secondary" formnovalidate>Écarter la proposition et restaurer ma saisie</button>
 <?php endif; ?>
 </form></section>
+<?= cmsVisualPanel($creation,$visualLatest,$visualDisplay,$visualInput,$visualSettings!==null,
+    (string)$_SESSION['csrf'],$filtersUrl,(string)($_SESSION['visual_intent']??''),$visualApproved,$studioSourceCurrent,$visualSelected) ?>
 <?php if($creation): ?>
 <section id="cms-preview">
 <h2>Aperçu du brouillon enregistré</h2>

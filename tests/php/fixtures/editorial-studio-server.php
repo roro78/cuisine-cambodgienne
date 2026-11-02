@@ -37,9 +37,21 @@ cmsSave($private,$workshop,['title'=>$workshop['title'],'summary'=>$workshop['su
     0,$workshop['fingerprint'],$canonical[$id],$canonical[$id]['fingerprint']);
 cmsCreationSave($private,['kind'=>'recette','title'=>'Projet synthétique de calendrier pour tests',
     'angle'=>'Test de calendrier privé','summary'=>'Essai local','fields'=>[],'state'=>'draft'],$catalog,0);
-file_put_contents($private.'/config.php','<?php return '.var_export([
-    'admin_user'=>'fixture-admin','password_hash'=>password_hash('synthetic-login-only',PASSWORD_DEFAULT)
-],true).';');chmod($private.'/config.php',0600);
+$fixtureConfig=['admin_user'=>'fixture-admin','password_hash'=>password_hash('synthetic-login-only',PASSWORD_DEFAULT)];
+$configSource='<?php $cfg='.var_export($fixtureConfig,true).';';
+if(($argv[3]??'')==='visuals'){
+    $configSource.= <<<'VISUALCFG'
+$cfg['editorial_visuals']=['enabled'=>true,'qualified'=>true,'max_attempts_per_day'=>2,
+'reserve_usd_cents_per_attempt'=>50,'max_reserved_usd_cents_per_month'=>200,
+'provider_label'=>'synthetic-provider','model_label'=>'synthetic-model','adapter'=>static function(array $r):string{
+    if(($r['contract']??null)!=='cdc-private-visual-request-v1')throw new RuntimeException('FIXTURE_CONTRACT');
+    $im=imagecreatetruecolor(1536,1024);imagefill($im,0,0,imagecolorallocate($im,90,140,90));
+    ob_start();imagepng($im);$png=ob_get_clean();imagedestroy($im);return $png;
+}];
+VISUALCFG;
+}
+$configSource.='return $cfg;';
+file_put_contents($private.'/config.php',$configSource);chmod($private.'/config.php',0600);
 $router= <<<'PHP'
 <?php
 $_SERVER['HTTPS']='on';

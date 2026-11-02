@@ -2670,3 +2670,345 @@ function cmsCalendarPlan(array $creations,string $month,
        'total'=>$count,'month_count'=>array_sum(array_map('count',$days)),
        'undated_count'=>count($undated)];
 }
+
+/** Private visual proposals: no publication, no writes to the public asset tree. */
+function cmsVisualSettings(array $cfg): ?array {
+    $v=$cfg['editorial_visuals']??null;
+    if(!is_array($v)||($v['enabled']??false)!==true||($v['qualified']??false)!==true)return null;
+    if(!is_callable($v['adapter']??null)||!function_exists('imagecreatefromstring')
+        ||!function_exists('imagewebp')||!function_exists('imagejpeg'))throw new RuntimeException('VISUAL_UNAVAILABLE');
+    foreach(['provider_label','model_label'] as $key)
+        if(!is_string($v[$key]??null)||!preg_match('/^[a-zA-Z0-9][a-zA-Z0-9._: -]{0,79}$/D',$v[$key]))
+            throw new RuntimeException('VISUAL_UNAVAILABLE');
+    $limit=$v['max_attempts_per_day']??1;
+    if(!is_int($limit)||$limit<1||$limit>2)throw new RuntimeException('VISUAL_UNAVAILABLE');
+    $reserve=$v['reserve_usd_cents_per_attempt']??null;$budget=$v['max_reserved_usd_cents_per_month']??null;
+    if(!is_int($reserve)||$reserve<1||$reserve>10000||!is_int($budget)||$budget<$reserve||$budget>100000)
+        throw new RuntimeException('VISUAL_UNAVAILABLE');
+    return ['adapter'=>$v['adapter'],'provider_label'=>$v['provider_label'],'model_label'=>$v['model_label'],
+        'reserve_usd_cents_per_attempt'=>$reserve,'max_reserved_usd_cents_per_month'=>$budget,
+        'limit'=>min($limit,cmsAiDailyLimit($cfg,5))];
+}
+/** Global monthly allowance, reserved BEFORE a call; failures are not refunded.
+ * This is an operator-approved conservative estimate, not a provider invoice cap.
+ */
+function cmsVisualBudgetReserve(string $private,array $settings): void {
+    $dir=cmsDraftDir($private);$lock=cmsVisualLock($dir);
+    try{
+        $path=$dir.'/visual-budget.json';$records=[];
+        if(is_link($path))throw new RuntimeException('VISUAL_STORE');
+        if(is_file($path)){
+            if(filesize($path)>2000000||(fileperms($path)&0077)!==0)throw new RuntimeException('VISUAL_STORE');
+            $records=json_decode((string)file_get_contents($path),true,16,JSON_THROW_ON_ERROR);
+            if(!is_array($records)||!array_is_list($records))throw new RuntimeException('VISUAL_STORE');
+        }
+        $month=gmdate('Y-m');$spent=0;
+        foreach($records as $r){
+            if(!is_array($r)||!is_string($r['month']??null)||!is_int($r['reserved_usd_cents']??null)
+                ||$r['reserved_usd_cents']<1)throw new RuntimeException('VISUAL_STORE');
+            if($r['month']===$month)$spent+=$r['reserved_usd_cents'];
+        }
+        $reserve=$settings['reserve_usd_cents_per_attempt']??null;$limit=$settings['max_reserved_usd_cents_per_month']??null;
+        if(!is_int($reserve)||$reserve<1||!is_int($limit)||$spent+$reserve>$limit)throw new RuntimeException('VISUAL_BUDGET');
+        $records[]=['month'=>$month,'reserved_at'=>gmdate('c'),'reserved_usd_cents'=>$reserve];
+        $tmp=$dir.'/.visual-budget-'.bin2hex(random_bytes(10));
+        try{
+            cmsVisualWrite($tmp,json_encode($records,JSON_THROW_ON_ERROR));
+            if(!rename($tmp,$path))throw new RuntimeException('VISUAL_STORE');
+        }finally{if(is_file($tmp)&&!is_link($tmp))@unlink($tmp);}
+    }finally{flock($lock,LOCK_UN);fclose($lock);}
+}
+/** A failed or repeated submission never silently repeats a paid request. */
+function cmsVisualIntent(array &$session,mixed $token): void {
+    $expected=$session['visual_intent']??null;
+    if(!is_string($token)||!is_string($expected)||!preg_match('/^[0-9a-f]{48}$/D',$token)
+        ||!hash_equals($expected,$token))throw new RuntimeException('VISUAL_INTENT');
+    unset($session['visual_intent']);
+}
+function cmsVisualDirectory(string $private,string $id): string {
+    if(!cmsCreationId($id)||is_link($private)||!is_dir($private))throw new RuntimeException('VISUAL_STORE');
+    $root=$private.'/editorial-visuals';
+    foreach([$root,$root.'/'.$id] as $dir){
+        if(!is_dir($dir)&&!@mkdir($dir,0700))throw new RuntimeException('VISUAL_STORE');
+        if(is_link($dir)||!is_dir($dir)||(fileperms($dir)&0077)!==0)throw new RuntimeException('VISUAL_STORE');
+    }
+    return $root.'/'.$id;
+}
+function cmsVisualDigest(array $draft): string {
+    return hash('sha256',json_encode($draft,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR));
+}
+function cmsVisualLatest(string $dir,string $id): ?array {
+    $paths=glob($dir.'/v-*',GLOB_ONLYDIR);
+    if(!is_array($paths)||count($paths)>9999)throw new RuntimeException('VISUAL_STORE');
+    if(!$paths)return null;
+    sort($paths,SORT_STRING);$last=null;
+    foreach($paths as $i=>$path){
+        if(is_link($path)||basename($path)!=='v-'.sprintf('%04d',$i+1))throw new RuntimeException('VISUAL_STORE');
+        $last=cmsVisualRead($dir,$id,$i+1);
+    }
+    return $last;
+}
+function cmsVisualRead(string $dir,string $id,int $version): array {
+    if(!cmsCreationId($id)||$version<1||$version>9999)throw new RuntimeException('VISUAL_ID');
+    $folder=$dir.'/v-'.sprintf('%04d',$version);$path=$folder.'/meta.json';
+    if(is_link($folder)||is_link($path)||!is_file($path)||filesize($path)>30000
+        ||(fileperms($path)&0077)!==0)throw new RuntimeException('VISUAL_STORE');
+    $value=json_decode((string)file_get_contents($path),true,24,JSON_THROW_ON_ERROR);
+    if(!is_array($value)||($value['draft_id']??null)!==$id||($value['version']??null)!==$version
+        ||($value['contract']??null)!=='cdc-private-visual-v1')throw new RuntimeException('VISUAL_STORE');
+    return $value;
+}
+function cmsVisualWrite(string $path,string $bytes): void {
+    $f=@fopen($path,'xb');if(!$f)throw new RuntimeException('VISUAL_STORE');
+    try{
+        if(!@chmod($path,0600)||fwrite($f,$bytes)!==strlen($bytes)||!fflush($f))throw new RuntimeException('VISUAL_STORE');
+    }finally{fclose($f);}
+}
+function cmsVisualLock(string $dir){
+    $path=$dir.'/.lock';if(is_link($path))throw new RuntimeException('VISUAL_STORE');
+    $f=@fopen($path,'c+');if(!$f)throw new RuntimeException('VISUAL_STORE');
+    if(!@chmod($path,0600)||!flock($f,LOCK_EX)){fclose($f);throw new RuntimeException('VISUAL_STORE');}
+    return $f;
+}
+function cmsVisualImages(string $png): array {
+    if(strlen($png)>8000000)throw new RuntimeException('VISUAL_IMAGE');
+    $info=@getimagesizefromstring($png);
+    if(!is_array($info)||($info[2]??null)!==IMAGETYPE_PNG||$info[0]!==1536||$info[1]!==1024)
+        throw new RuntimeException('VISUAL_IMAGE');
+    $source=@imagecreatefromstring($png);if($source===false)throw new RuntimeException('VISUAL_IMAGE');
+    $result=['original'=>['name'=>'original.png','mime'=>'image/png','bytes'=>$png,'width'=>1536,'height'=>1024]];
+    try{
+        foreach([480,800,1200] as $width){
+            $height=(int)round($width*2/3);$image=imagecreatetruecolor($width,$height);
+            imagefill($image,0,0,imagecolorallocate($image,255,255,255));
+            imagecopyresampled($image,$source,0,0,0,0,$width,$height,1536,1024);
+            ob_start();$ok=imagewebp($image,null,85);$bytes=ob_get_clean();imagedestroy($image);
+            if(!$ok||!is_string($bytes)||$bytes==='')throw new RuntimeException('VISUAL_IMAGE');
+            $result['site'.$width]=['name'=>'site'.$width.'.webp','mime'=>'image/webp','bytes'=>$bytes,'width'=>$width,'height'=>$height];
+        }
+        // Preserve the full subject on a square canvas without duplicating objects in the margins.
+        $image=imagecreatetruecolor(1080,1080);
+        $red=0;$green=0;$blue=0;
+        foreach([[0,0],[1535,0],[0,1023],[1535,1023]] as [$x,$y]){
+            $color=imagecolorat($source,$x,$y);$red+=($color>>16)&255;$green+=($color>>8)&255;$blue+=$color&255;
+        }
+        imagefill($image,0,0,imagecolorallocate($image,(int)round($red/4),(int)round($green/4),(int)round($blue/4)));
+        imagecopyresampled($image,$source,0,180,0,0,1080,720,1536,1024);
+        ob_start();$ok=imagejpeg($image,null,88);$bytes=ob_get_clean();imagedestroy($image);
+        if(!$ok||!is_string($bytes)||$bytes==='')throw new RuntimeException('VISUAL_IMAGE');
+        $result['social']=['name'=>'social.jpg','mime'=>'image/jpeg','bytes'=>$bytes,'width'=>1080,'height'=>1080];
+    }finally{imagedestroy($source);}
+    return $result;
+}
+/** Reuse the creation validator after converting stored lists to its form representation. */
+function cmsVisualPublicFields(array $draft): array {
+    $form=$draft['fields']??null;$schema=cmsCreationSchema()[$draft['kind']]??null;
+    if(!is_array($form)||!is_array($schema)||array_diff_key($form,$schema))throw new InvalidArgumentException('VISUAL_FIELDS');
+    foreach($schema as $key=>$spec){
+        if($spec[1]==='list'&&isset($form[$key])){
+            if(!is_array($form[$key])||count(array_filter($form[$key],'is_string'))!==count($form[$key]))throw new InvalidArgumentException('VISUAL_FIELDS');
+            $form[$key]=implode("\n",$form[$key]);
+        }elseif($spec[1]==='rows'&&isset($spec[2]['paragraphs'],$form[$key])){
+            if(!is_array($form[$key]))throw new InvalidArgumentException('VISUAL_FIELDS');
+            foreach($form[$key] as &$row){
+                if(!is_array($row)||!is_array($row['paragraphs']??null)||count(array_filter($row['paragraphs'],'is_string'))!==count($row['paragraphs']))throw new InvalidArgumentException('VISUAL_FIELDS');
+                $row['paragraphs']=implode("\n\n",$row['paragraphs']);
+            }unset($row);
+        }
+    }
+    return cmsCreationCleanFields($draft['kind'],$form);
+}
+function cmsVisualGenerate(string $private,array $draft,array $posted,array $settings,int $expected): array {
+    $id=$draft['id']??null;if(!is_string($id)||!cmsCreationId($id))throw new RuntimeException('VISUAL_DRAFT');
+    if(($posted['transmit_confirm']??null)!=='1')throw new InvalidArgumentException('VISUAL_CONSENT');
+    $brief=cmsVisualBriefDraft($draft['kind'],[
+        'subject'=>$draft['title'],'description'=>$posted['description']??'',
+        'fidelity'=>'Concept illustre, jamais preuve documentaire ou plat realise',
+        'format'=>'1536x1024 PNG; WebP 480/800/1200; JPEG social 1080x1080',
+        'provenance'=>'generation IA privee','rights'=>$posted['rights']??'',
+        'medium'=>$posted['medium']??'ai_illustration']);
+    if(!in_array($brief['medium'],['ai_illustration','educational_visual'],true)
+        ||mbLen($brief['description'])<20||mbLen($brief['rights'])<10)throw new InvalidArgumentException('VISUAL_BRIEF');
+    $fields=cmsVisualPublicFields($draft);
+    $excerpt=json_encode($fields,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
+    if(strlen($excerpt)>12000)throw new InvalidArgumentException('VISUAL_BRIEF_SIZE');
+    $request=['contract'=>'cdc-private-visual-request-v1','size'=>'1536x1024','output_format'=>'png',
+        'prompt'=>'Illustration editoriale IA provisoire, non documentaire. Aucun faux evenement, personne identifiee ou preuve de recette executee. '
+            .$brief['description']."\nTitre: ".$draft['title']."\nChamps culinaires autorises: ".$excerpt];
+    if(strlen($request['prompt'])>18000)throw new InvalidArgumentException('VISUAL_BRIEF_SIZE');
+    $dir=cmsVisualDirectory($private,$id);$lock=cmsVisualLock($dir);$tmp=null;
+    try{
+        $latest=cmsVisualLatest($dir,$id);$version=$latest['version']??0;
+        if($version!==$expected||$version>=9999)throw new RuntimeException('VISUAL_CONFLICT');
+        $current=cmsCreationRead(cmsCreationDir($private),$id);
+        if($current===null||!hash_equals(cmsVisualDigest($draft),cmsVisualDigest($current)))throw new RuntimeException('VISUAL_DRAFT_STALE');
+        cmsAiBriefReserve($private,$settings['limit']); // same locked quota ledger; failures remain consumed.
+        cmsVisualBudgetReserve($private,$settings);
+        $started=microtime(true);
+        try{$png=($settings['adapter'])($request);}catch(Throwable $e){throw new RuntimeException('VISUAL_PROVIDER_FAILED');}
+        if(microtime(true)-$started>120||!is_string($png))throw new RuntimeException('VISUAL_PROVIDER_FAILED');
+        $images=cmsVisualImages($png);
+        $current=cmsCreationRead(cmsCreationDir($private),$id);
+        if($current===null||!hash_equals(cmsVisualDigest($draft),cmsVisualDigest($current)))throw new RuntimeException('VISUAL_DRAFT_STALE');
+        $version++;$tmp=$dir.'/.tmp-'.bin2hex(random_bytes(10));
+        if(!mkdir($tmp,0700))throw new RuntimeException('VISUAL_STORE');
+        $assets=[];
+        foreach($images as $key=>$asset){
+            cmsVisualWrite($tmp.'/'.$asset['name'],$asset['bytes']);
+            $assets[$key]=array_diff_key($asset,['bytes'=>true]);$assets[$key]['sha256']=hash('sha256',$asset['bytes']);
+        }
+        $meta=['contract'=>'cdc-private-visual-v1','draft_id'=>$id,'draft_version'=>$draft['version'],
+            'draft_sha256'=>cmsVisualDigest($draft),'version'=>$version,'created_at'=>gmdate('c'),
+            'provider'=>$settings['provider_label'],'model'=>$settings['model_label'],'brief'=>$brief,
+            'status'=>'candidate','publication_authorized'=>false,'assets'=>$assets];
+        cmsVisualWrite($tmp.'/meta.json',json_encode($meta,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR));
+        if(!rename($tmp,$dir.'/v-'.sprintf('%04d',$version)))throw new RuntimeException('VISUAL_STORE');
+        $tmp=null;return $meta;
+    }finally{
+        if($tmp!==null&&dirname($tmp)===$dir&&str_starts_with(basename($tmp),'.tmp-')){
+            foreach(['original.png','site480.webp','site800.webp','site1200.webp','social.jpg','meta.json'] as $name)
+                if(is_file($tmp.'/'.$name)&&!is_link($tmp.'/'.$name))@unlink($tmp.'/'.$name);
+            @rmdir($tmp);
+        }
+        flock($lock,LOCK_UN);fclose($lock);
+    }
+}
+function cmsVisualApprove(string $private,array $draft,int $version,string $rights,bool $confirmed,?int $expectedLatest=null): void {
+    $rights=cmsCreationText($rights,700);
+    if(!$confirmed||mbLen($rights)<10)throw new InvalidArgumentException('VISUAL_RIGHTS');
+    $dir=cmsVisualDirectory($private,$draft['id']);$lock=cmsVisualLock($dir);
+    try{
+        $latest=cmsVisualLatest($dir,$draft['id']);
+        $chosen=cmsVisualRead($dir,$draft['id'],$version);
+        $current=cmsCreationRead(cmsCreationDir($private),$draft['id']);
+        if($latest===null||$latest['version']!==($expectedLatest??$version)||$current===null
+            ||!hash_equals($chosen['draft_sha256'],cmsVisualDigest($current))
+            ||!hash_equals(cmsVisualDigest($draft),cmsVisualDigest($current)))throw new RuntimeException('VISUAL_DRAFT_STALE');
+        foreach(['original','site480','site800','site1200','social'] as $variant)cmsVisualAsset($dir,$draft['id'],$version,$variant);
+        $record=['contract'=>'cdc-private-visual-review-v1','draft_id'=>$draft['id'],'visual_version'=>$version,
+            'draft_sha256'=>$chosen['draft_sha256'],'reviewed_at'=>gmdate('c'),'rights_note'=>$rights,
+            'status'=>'approved_private_only','publication_authorized'=>false];
+        $folder=$dir.'/v-'.sprintf('%04d',$version);$target=$folder.'/approval.json';
+        if(file_exists($target)||is_link($target))throw new RuntimeException('VISUAL_ALREADY_REVIEWED');
+        $temporary=$folder.'/.approval-'.bin2hex(random_bytes(10));
+        try{
+            cmsVisualWrite($temporary,json_encode($record,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR));
+            if(!rename($temporary,$target))throw new RuntimeException('VISUAL_STORE');
+        }finally{if(is_file($temporary)&&!is_link($temporary))@unlink($temporary);}
+    }finally{flock($lock,LOCK_UN);fclose($lock);}
+}
+/** Explicit selection of an approved version; append-only history, separate from generation. */
+function cmsVisualSelect(string $private,array $draft,int $version,int $expectedLatest): void {
+    $dir=cmsVisualDirectory($private,$draft['id']);$lock=cmsVisualLock($dir);
+    try{
+        $current=cmsCreationRead(cmsCreationDir($private),$draft['id']);$latest=cmsVisualLatest($dir,$draft['id']);
+        $chosen=cmsVisualRead($dir,$draft['id'],$version);
+        if($current===null||($latest['version']??null)!==$expectedLatest
+            ||!hash_equals(cmsVisualDigest($draft),cmsVisualDigest($current))
+            ||!cmsVisualApproved($dir,$chosen,$current))throw new RuntimeException('VISUAL_DRAFT_STALE');
+        $events=glob($dir.'/selection-*.json');if(!is_array($events)||count($events)>=9999)throw new RuntimeException('VISUAL_STORE');
+        $record=['contract'=>'cdc-private-visual-selection-v1','draft_id'=>$draft['id'],
+            'draft_sha256'=>cmsVisualDigest($draft),'visual_version'=>$version,'selected_at'=>gmdate('c'),'publication_authorized'=>false];
+        cmsVisualWrite($dir.'/selection-'.sprintf('%04d',count($events)+1).'.json',json_encode($record,JSON_THROW_ON_ERROR));
+    }finally{flock($lock,LOCK_UN);fclose($lock);}
+}
+function cmsVisualSelected(string $dir,array $draft): ?int {
+    $events=glob($dir.'/selection-*.json');if(!is_array($events)||count($events)>9999)throw new RuntimeException('VISUAL_STORE');
+    if(!$events)return null;sort($events,SORT_STRING);$path=$events[count($events)-1];
+    if(is_link($path)||!is_file($path)||filesize($path)>30000||(fileperms($path)&0077)!==0)throw new RuntimeException('VISUAL_STORE');
+    $r=json_decode((string)file_get_contents($path),true,16,JSON_THROW_ON_ERROR);
+    if(($r['contract']??null)!=='cdc-private-visual-selection-v1'||($r['draft_id']??null)!==$draft['id']
+        ||!is_int($r['visual_version']??null))throw new RuntimeException('VISUAL_STORE');
+    if(!hash_equals($r['draft_sha256']??'',cmsVisualDigest($draft)))return null;
+    $media=cmsVisualRead($dir,$draft['id'],$r['visual_version']);
+    return cmsVisualApproved($dir,$media,$draft)?$r['visual_version']:null;
+}
+function cmsVisualAsset(string $dir,string $id,int $version,string $variant): array {
+    $names=['original'=>'original.png','site480'=>'site480.webp','site800'=>'site800.webp','site1200'=>'site1200.webp','social'=>'social.jpg'];
+    if(!isset($names[$variant]))throw new RuntimeException('VISUAL_ASSET');
+    $meta=cmsVisualRead($dir,$id,$version);$file=$dir.'/v-'.sprintf('%04d',$version).'/'.$names[$variant];
+    if(is_link($file)||!is_file($file)||filesize($file)>8000000||(fileperms($file)&0077)!==0)
+        throw new RuntimeException('VISUAL_ASSET');
+    $bytes=file_get_contents($file);
+    if(!is_string($bytes)||!hash_equals($meta['assets'][$variant]['sha256']??'',hash('sha256',$bytes)))throw new RuntimeException('VISUAL_ASSET');
+    $mime=$variant==='original'?'image/png':($variant==='social'?'image/jpeg':'image/webp');
+    if(($meta['assets'][$variant]['mime']??null)!==$mime)throw new RuntimeException('VISUAL_ASSET');
+    return ['bytes'=>$bytes,'mime'=>$mime];
+}
+function cmsVisualApproved(string $dir,array $media,array $draft): bool {
+    $path=$dir.'/v-'.sprintf('%04d',$media['version']).'/approval.json';
+    if(!is_file($path))return false;
+    if(is_link($path)||filesize($path)>30000||(fileperms($path)&0077)!==0)throw new RuntimeException('VISUAL_STORE');
+    $review=json_decode((string)file_get_contents($path),true,16,JSON_THROW_ON_ERROR);
+    $matches=is_array($review)&&($review['status']??null)==='approved_private_only'
+        &&($review['visual_version']??null)===$media['version']
+        &&($review['draft_id']??null)===$draft['id']
+        &&hash_equals($media['draft_sha256'],cmsVisualDigest($draft))
+        &&hash_equals($review['draft_sha256']??'',$media['draft_sha256']);
+    if(!$matches)return false;
+    try{foreach(['original','site480','site800','site1200','social'] as $variant)cmsVisualAsset($dir,$draft['id'],$media['version'],$variant);}
+    catch(Throwable $e){return false;}
+    return true;
+}
+function cmsVisualPanel(?array $draft,?array $latest,?array $display,array $input,bool $available,
+    string $csrf,string $filtersUrl,string $intent,bool $approved=false,bool $sourceCurrent=true,?int $selected=null): string {
+    $html='<section id="cms-media"><h2>Créer un visuel avec l’IA</h2>'
+        .'<p>Illustration IA ou visuel pédagogique provisoire. Aucune photo documentaire, preuve de recette réalisée ni publication automatique.</p>';
+    if($draft===null)return $html.'<p>Enregistrez d’abord une version privée du contenu pour lui associer un visuel.</p></section>';
+    $base='?new=1&cid='.rawurlencode($draft['id']).'&'.$filtersUrl;
+    if(!$available)$html.='<p class="note">Génération indisponible : fournisseur d’images et accès privé à qualifier. La rédaction manuelle reste disponible.</p>';
+    $html.='<p class="small">La demande utilise uniquement le titre et les champs de la dernière version enregistrée. Enregistrez vos corrections avant de générer.</p>';
+    $html.='<form method="post" action="'.cmsEsc($base).'" class="stack">'
+        .'<input type="hidden" name="csrf" value="'.cmsEsc($csrf).'">'
+        .'<input type="hidden" name="creation_id" value="'.cmsEsc($draft['id']).'">'
+        .'<input type="hidden" name="expected_version" value="'.(int)$draft['version'].'">'
+        .'<input type="hidden" name="visual_expected" value="'.(int)($latest['version']??0).'">'
+        .'<input type="hidden" name="visual_request_token" value="'.cmsEsc($intent).'">'
+        .'<label>Demande visuelle à corriger<textarea name="visual_description" rows="4" minlength="20" maxlength="2000" required>'
+        .cmsEsc((string)($input['description']??$latest['brief']['description']??('Illustration éditoriale de '.$draft['title'].', fidèle aux ingrédients et gestes décrits.'))).'</textarea></label>'
+        .'<label>Type<select name="visual_medium">';
+    foreach(['ai_illustration'=>'Illustration IA — concept provisoire','educational_visual'=>'Visuel pédagogique illustré'] as $key=>$label)
+        $html.='<option value="'.$key.'"'.(($input['medium']??$latest['brief']['medium']??'ai_illustration')===$key?' selected':'').'>'.$label.'</option>';
+    $html.='</select></label><label>Provenance et droits à vérifier<textarea name="visual_rights" minlength="10" maxlength="700" required>'
+        .cmsEsc((string)($input['rights']??$latest['brief']['rights']??'')).'</textarea></label>'
+        .'<label><input type="checkbox" name="visual_transmit_confirm" value="1" required> J’autorise la transmission de cette demande, du titre et des champs culinaires au fournisseur d’images. Notes privées et scripts audio exclus.</label>'
+        .'<button name="visual_action" value="generate"'.(!$available||!$sourceCurrent?' disabled':'').'>'
+        .($latest?'Générer un remplacement privé':'Générer un visuel privé').'</button></form>';
+    if($display!==null){
+        if($selected!==null)$html.='<p>Visuel sélectionné pour ce brouillon : version '.(int)$selected.'.</p>';
+        $html.='<h3>Proposition visuelle — version '.(int)$display['version'].'</h3>'
+            .'<p class="small">'.cmsEsc($display['provider']).' · '.cmsEsc($display['model']).' · '.cmsEsc($display['created_at']).'</p>';
+        foreach(['site800'=>'Aperçu du site','social'=>'Aperçu social — JPEG 1080 × 1080'] as $variant=>$label){
+            $url=$base.'&visual_version='.(int)$display['version'].'&visual_file='.$variant;
+            $html.='<h4>'.$label.'</h4><img class="private-visual-preview'.($variant==='social'?' private-visual-preview--social':'').'" src="'.cmsEsc($url).'" alt="Proposition illustrée privée à relire">';
+        }
+        $html.='<p>'.($approved?'Validée pour la revue privée ; aucune autorisation de publication.':'À relire et valider par une personne ; aucun actif public remplacé.').'</p>';
+        if($latest!==null){
+            $html.='<nav aria-label="Versions des visuels privés">';
+            for($i=1;$i<=$latest['version'];$i++)$html.='<a href="'.cmsEsc($base.'&visual_version='.$i.'#cms-media').'">Version '.$i.'</a> ';
+            $html.='</nav>';
+        }
+        if(!$approved&&$latest!==null
+            &&hash_equals($display['draft_sha256'],cmsVisualDigest($draft))&&$sourceCurrent){
+            $html.='<form method="post" action="'.cmsEsc($base).'" class="stack">'
+                .'<input type="hidden" name="csrf" value="'.cmsEsc($csrf).'">'
+                .'<input type="hidden" name="creation_id" value="'.cmsEsc($draft['id']).'">'
+                .'<input type="hidden" name="expected_version" value="'.(int)$draft['version'].'">'
+                .'<input type="hidden" name="visual_expected" value="'.(int)$latest['version'].'">'
+                .'<input type="hidden" name="visual_version" value="'.(int)$display['version'].'">'
+                .'<label>Note humaine sur les droits et la fidélité<textarea name="visual_rights" minlength="10" maxlength="700" required></textarea></label>'
+                .'<label><input type="checkbox" name="visual_review_confirm" value="1" required> J’ai contrôlé fidélité, cadrages et droits ; ce visuel reste privé.</label>'
+                .'<button name="visual_action" value="approve">Valider ce visuel en privé</button></form>';
+        }
+        if($approved&&$sourceCurrent&&$latest!==null&&$selected!==$display['version']){
+            $html.='<form method="post" action="'.cmsEsc($base).'">'
+                .'<input type="hidden" name="csrf" value="'.cmsEsc($csrf).'">'
+                .'<input type="hidden" name="creation_id" value="'.cmsEsc($draft['id']).'">'
+                .'<input type="hidden" name="expected_version" value="'.(int)$draft['version'].'">'
+                .'<input type="hidden" name="visual_expected" value="'.(int)$latest['version'].'">'
+                .'<input type="hidden" name="visual_version" value="'.(int)$display['version'].'">'
+                .'<button name="visual_action" value="select">Sélectionner cette version privée</button></form>';
+        }
+    }
+    return $html.'</section>';
+}

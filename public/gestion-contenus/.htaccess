@@ -9,3 +9,7 @@ DirectoryIndex index.php
 <Files "publication-gap-audit.php">
   Require all denied
 </Files>
+
+<Files "visual-provider-adapter.php">
+  Require all denied
+</Files>
