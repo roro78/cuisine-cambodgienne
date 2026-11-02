@@ -42,6 +42,7 @@ $configSource='<?php $cfg='.var_export($fixtureConfig,true).';';
 if(($argv[3]??'')==='visuals'){
     $configSource.= <<<'VISUALCFG'
 $cfg['editorial_visuals']=['enabled'=>true,'qualified'=>true,'max_attempts_per_day'=>2,
+'reserve_usd_cents_per_attempt'=>50,'max_reserved_usd_cents_per_month'=>200,
 'provider_label'=>'synthetic-provider','model_label'=>'synthetic-model','adapter'=>static function(array $r):string{
     if(($r['contract']??null)!=='cdc-private-visual-request-v1')throw new RuntimeException('FIXTURE_CONTRACT');
     $im=imagecreatetruecolor(1536,1024);imagefill($im,0,0,imagecolorallocate($im,90,140,90));

@@ -205,6 +205,9 @@ try{
     await page.waitForFunction(()=>document.querySelector('#cms-media')?.textContent?.includes('Validée pour la revue privée'));
     const review=JSON.parse(await readFile(path.join(mediaPath,'approval.json'),'utf8'));
     assert.equal(review.status,'approved_private_only');assert.equal(review.publication_authorized,false);
+    await panel.locator('button[value=select]').click();
+    await page.waitForFunction(()=>document.querySelector('#cms-media')?.textContent?.includes('Visuel sélectionné pour ce brouillon : version 1'));
+    assert.equal((await readdir(path.dirname(mediaPath))).filter(n=>n.startsWith('selection-')).length,1,'private selection persisted');
     await noOverflow('private visual preview');
     await page.screenshot({path:path.join(evidence,'private-visual-preview.png')});
   }

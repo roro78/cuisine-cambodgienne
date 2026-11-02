@@ -2682,8 +2682,41 @@ function cmsVisualSettings(array $cfg): ?array {
             throw new RuntimeException('VISUAL_UNAVAILABLE');
     $limit=$v['max_attempts_per_day']??1;
     if(!is_int($limit)||$limit<1||$limit>2)throw new RuntimeException('VISUAL_UNAVAILABLE');
+    $reserve=$v['reserve_usd_cents_per_attempt']??null;$budget=$v['max_reserved_usd_cents_per_month']??null;
+    if(!is_int($reserve)||$reserve<1||$reserve>10000||!is_int($budget)||$budget<$reserve||$budget>100000)
+        throw new RuntimeException('VISUAL_UNAVAILABLE');
     return ['adapter'=>$v['adapter'],'provider_label'=>$v['provider_label'],'model_label'=>$v['model_label'],
+        'reserve_usd_cents_per_attempt'=>$reserve,'max_reserved_usd_cents_per_month'=>$budget,
         'limit'=>min($limit,cmsAiDailyLimit($cfg,5))];
+}
+/** Global monthly allowance, reserved BEFORE a call; failures are not refunded.
+ * This is an operator-approved conservative estimate, not a provider invoice cap.
+ */
+function cmsVisualBudgetReserve(string $private,array $settings): void {
+    $dir=cmsDraftDir($private);$lock=cmsVisualLock($dir);
+    try{
+        $path=$dir.'/visual-budget.json';$records=[];
+        if(is_link($path))throw new RuntimeException('VISUAL_STORE');
+        if(is_file($path)){
+            if(filesize($path)>2000000||(fileperms($path)&0077)!==0)throw new RuntimeException('VISUAL_STORE');
+            $records=json_decode((string)file_get_contents($path),true,16,JSON_THROW_ON_ERROR);
+            if(!is_array($records)||!array_is_list($records))throw new RuntimeException('VISUAL_STORE');
+        }
+        $month=gmdate('Y-m');$spent=0;
+        foreach($records as $r){
+            if(!is_array($r)||!is_string($r['month']??null)||!is_int($r['reserved_usd_cents']??null)
+                ||$r['reserved_usd_cents']<1)throw new RuntimeException('VISUAL_STORE');
+            if($r['month']===$month)$spent+=$r['reserved_usd_cents'];
+        }
+        $reserve=$settings['reserve_usd_cents_per_attempt']??null;$limit=$settings['max_reserved_usd_cents_per_month']??null;
+        if(!is_int($reserve)||$reserve<1||!is_int($limit)||$spent+$reserve>$limit)throw new RuntimeException('VISUAL_BUDGET');
+        $records[]=['month'=>$month,'reserved_at'=>gmdate('c'),'reserved_usd_cents'=>$reserve];
+        $tmp=$dir.'/.visual-budget-'.bin2hex(random_bytes(10));
+        try{
+            cmsVisualWrite($tmp,json_encode($records,JSON_THROW_ON_ERROR));
+            if(!rename($tmp,$path))throw new RuntimeException('VISUAL_STORE');
+        }finally{if(is_file($tmp)&&!is_link($tmp))@unlink($tmp);}
+    }finally{flock($lock,LOCK_UN);fclose($lock);}
 }
 /** A failed or repeated submission never silently repeats a paid request. */
 function cmsVisualIntent(array &$session,mixed $token): void {
@@ -2807,6 +2840,7 @@ function cmsVisualGenerate(string $private,array $draft,array $posted,array $set
         $current=cmsCreationRead(cmsCreationDir($private),$id);
         if($current===null||!hash_equals(cmsVisualDigest($draft),cmsVisualDigest($current)))throw new RuntimeException('VISUAL_DRAFT_STALE');
         cmsAiBriefReserve($private,$settings['limit']); // same locked quota ledger; failures remain consumed.
+        cmsVisualBudgetReserve($private,$settings);
         $started=microtime(true);
         try{$png=($settings['adapter'])($request);}catch(Throwable $e){throw new RuntimeException('VISUAL_PROVIDER_FAILED');}
         if(microtime(true)-$started>120||!is_string($png))throw new RuntimeException('VISUAL_PROVIDER_FAILED');
@@ -2836,19 +2870,20 @@ function cmsVisualGenerate(string $private,array $draft,array $posted,array $set
         flock($lock,LOCK_UN);fclose($lock);
     }
 }
-function cmsVisualApprove(string $private,array $draft,int $version,string $rights,bool $confirmed): void {
+function cmsVisualApprove(string $private,array $draft,int $version,string $rights,bool $confirmed,?int $expectedLatest=null): void {
     $rights=cmsCreationText($rights,700);
     if(!$confirmed||mbLen($rights)<10)throw new InvalidArgumentException('VISUAL_RIGHTS');
     $dir=cmsVisualDirectory($private,$draft['id']);$lock=cmsVisualLock($dir);
     try{
         $latest=cmsVisualLatest($dir,$draft['id']);
+        $chosen=cmsVisualRead($dir,$draft['id'],$version);
         $current=cmsCreationRead(cmsCreationDir($private),$draft['id']);
-        if($latest===null||$latest['version']!==$version||$current===null
-            ||!hash_equals($latest['draft_sha256'],cmsVisualDigest($current))
+        if($latest===null||$latest['version']!==($expectedLatest??$version)||$current===null
+            ||!hash_equals($chosen['draft_sha256'],cmsVisualDigest($current))
             ||!hash_equals(cmsVisualDigest($draft),cmsVisualDigest($current)))throw new RuntimeException('VISUAL_DRAFT_STALE');
         foreach(['original','site480','site800','site1200','social'] as $variant)cmsVisualAsset($dir,$draft['id'],$version,$variant);
         $record=['contract'=>'cdc-private-visual-review-v1','draft_id'=>$draft['id'],'visual_version'=>$version,
-            'draft_sha256'=>$latest['draft_sha256'],'reviewed_at'=>gmdate('c'),'rights_note'=>$rights,
+            'draft_sha256'=>$chosen['draft_sha256'],'reviewed_at'=>gmdate('c'),'rights_note'=>$rights,
             'status'=>'approved_private_only','publication_authorized'=>false];
         $folder=$dir.'/v-'.sprintf('%04d',$version);$target=$folder.'/approval.json';
         if(file_exists($target)||is_link($target))throw new RuntimeException('VISUAL_ALREADY_REVIEWED');
@@ -2858,6 +2893,32 @@ function cmsVisualApprove(string $private,array $draft,int $version,string $righ
             if(!rename($temporary,$target))throw new RuntimeException('VISUAL_STORE');
         }finally{if(is_file($temporary)&&!is_link($temporary))@unlink($temporary);}
     }finally{flock($lock,LOCK_UN);fclose($lock);}
+}
+/** Explicit selection of an approved version; append-only history, separate from generation. */
+function cmsVisualSelect(string $private,array $draft,int $version,int $expectedLatest): void {
+    $dir=cmsVisualDirectory($private,$draft['id']);$lock=cmsVisualLock($dir);
+    try{
+        $current=cmsCreationRead(cmsCreationDir($private),$draft['id']);$latest=cmsVisualLatest($dir,$draft['id']);
+        $chosen=cmsVisualRead($dir,$draft['id'],$version);
+        if($current===null||($latest['version']??null)!==$expectedLatest
+            ||!hash_equals(cmsVisualDigest($draft),cmsVisualDigest($current))
+            ||!cmsVisualApproved($dir,$chosen,$current))throw new RuntimeException('VISUAL_DRAFT_STALE');
+        $events=glob($dir.'/selection-*.json');if(!is_array($events)||count($events)>=9999)throw new RuntimeException('VISUAL_STORE');
+        $record=['contract'=>'cdc-private-visual-selection-v1','draft_id'=>$draft['id'],
+            'draft_sha256'=>cmsVisualDigest($draft),'visual_version'=>$version,'selected_at'=>gmdate('c'),'publication_authorized'=>false];
+        cmsVisualWrite($dir.'/selection-'.sprintf('%04d',count($events)+1).'.json',json_encode($record,JSON_THROW_ON_ERROR));
+    }finally{flock($lock,LOCK_UN);fclose($lock);}
+}
+function cmsVisualSelected(string $dir,array $draft): ?int {
+    $events=glob($dir.'/selection-*.json');if(!is_array($events)||count($events)>9999)throw new RuntimeException('VISUAL_STORE');
+    if(!$events)return null;sort($events,SORT_STRING);$path=$events[count($events)-1];
+    if(is_link($path)||!is_file($path)||filesize($path)>30000||(fileperms($path)&0077)!==0)throw new RuntimeException('VISUAL_STORE');
+    $r=json_decode((string)file_get_contents($path),true,16,JSON_THROW_ON_ERROR);
+    if(($r['contract']??null)!=='cdc-private-visual-selection-v1'||($r['draft_id']??null)!==$draft['id']
+        ||!is_int($r['visual_version']??null))throw new RuntimeException('VISUAL_STORE');
+    if(!hash_equals($r['draft_sha256']??'',cmsVisualDigest($draft)))return null;
+    $media=cmsVisualRead($dir,$draft['id'],$r['visual_version']);
+    return cmsVisualApproved($dir,$media,$draft)?$r['visual_version']:null;
 }
 function cmsVisualAsset(string $dir,string $id,int $version,string $variant): array {
     $names=['original'=>'original.png','site480'=>'site480.webp','site800'=>'site800.webp','site1200'=>'site1200.webp','social'=>'social.jpg'];
@@ -2887,8 +2948,8 @@ function cmsVisualApproved(string $dir,array $media,array $draft): bool {
     return true;
 }
 function cmsVisualPanel(?array $draft,?array $latest,?array $display,array $input,bool $available,
-    string $csrf,string $filtersUrl,string $intent,bool $approved=false,bool $sourceCurrent=true): string {
-    $html='<section id="cms-media"><h2>Préparer un visuel</h2>'
+    string $csrf,string $filtersUrl,string $intent,bool $approved=false,bool $sourceCurrent=true,?int $selected=null): string {
+    $html='<section id="cms-media"><h2>Créer un visuel avec l’IA</h2>'
         .'<p>Illustration IA ou visuel pédagogique provisoire. Aucune photo documentaire, preuve de recette réalisée ni publication automatique.</p>';
     if($draft===null)return $html.'<p>Enregistrez d’abord une version privée du contenu pour lui associer un visuel.</p></section>';
     $base='?new=1&cid='.rawurlencode($draft['id']).'&'.$filtersUrl;
@@ -2911,6 +2972,7 @@ function cmsVisualPanel(?array $draft,?array $latest,?array $display,array $inpu
         .'<button name="visual_action" value="generate"'.(!$available||!$sourceCurrent?' disabled':'').'>'
         .($latest?'Générer un remplacement privé':'Générer un visuel privé').'</button></form>';
     if($display!==null){
+        if($selected!==null)$html.='<p>Visuel sélectionné pour ce brouillon : version '.(int)$selected.'.</p>';
         $html.='<h3>Proposition visuelle — version '.(int)$display['version'].'</h3>'
             .'<p class="small">'.cmsEsc($display['provider']).' · '.cmsEsc($display['model']).' · '.cmsEsc($display['created_at']).'</p>';
         foreach(['site800'=>'Aperçu du site','social'=>'Aperçu social — JPEG 1080 × 1080'] as $variant=>$label){
@@ -2923,16 +2985,26 @@ function cmsVisualPanel(?array $draft,?array $latest,?array $display,array $inpu
             for($i=1;$i<=$latest['version'];$i++)$html.='<a href="'.cmsEsc($base.'&visual_version='.$i.'#cms-media').'">Version '.$i.'</a> ';
             $html.='</nav>';
         }
-        if(!$approved&&$latest!==null&&$display['version']===$latest['version']
+        if(!$approved&&$latest!==null
             &&hash_equals($display['draft_sha256'],cmsVisualDigest($draft))&&$sourceCurrent){
             $html.='<form method="post" action="'.cmsEsc($base).'" class="stack">'
                 .'<input type="hidden" name="csrf" value="'.cmsEsc($csrf).'">'
                 .'<input type="hidden" name="creation_id" value="'.cmsEsc($draft['id']).'">'
                 .'<input type="hidden" name="expected_version" value="'.(int)$draft['version'].'">'
                 .'<input type="hidden" name="visual_expected" value="'.(int)$latest['version'].'">'
+                .'<input type="hidden" name="visual_version" value="'.(int)$display['version'].'">'
                 .'<label>Note humaine sur les droits et la fidélité<textarea name="visual_rights" minlength="10" maxlength="700" required></textarea></label>'
                 .'<label><input type="checkbox" name="visual_review_confirm" value="1" required> J’ai contrôlé fidélité, cadrages et droits ; ce visuel reste privé.</label>'
                 .'<button name="visual_action" value="approve">Valider ce visuel en privé</button></form>';
+        }
+        if($approved&&$sourceCurrent&&$latest!==null&&$selected!==$display['version']){
+            $html.='<form method="post" action="'.cmsEsc($base).'">'
+                .'<input type="hidden" name="csrf" value="'.cmsEsc($csrf).'">'
+                .'<input type="hidden" name="creation_id" value="'.cmsEsc($draft['id']).'">'
+                .'<input type="hidden" name="expected_version" value="'.(int)$draft['version'].'">'
+                .'<input type="hidden" name="visual_expected" value="'.(int)$latest['version'].'">'
+                .'<input type="hidden" name="visual_version" value="'.(int)$display['version'].'">'
+                .'<button name="visual_action" value="select">Sélectionner cette version privée</button></form>';
         }
     }
     return $html.'</section>';

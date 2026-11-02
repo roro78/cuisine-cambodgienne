@@ -28,7 +28,8 @@ try{
     visualEnsure(cmsVisualSettings([])===null,'DISABLED_DEFAULT');
     visualEnsure(cmsVisualSettings(['editorial_visuals'=>['enabled'=>true,'qualified'=>false]])===null,'QUALIFICATION_GATE');
     $settings=cmsVisualSettings(['editorial_visuals'=>['enabled'=>true,'qualified'=>true,'adapter'=>$adapter,
-        'provider_label'=>'synthetic-provider','model_label'=>'synthetic-model','max_attempts_per_day'=>2]]);
+        'provider_label'=>'synthetic-provider','model_label'=>'synthetic-model','max_attempts_per_day'=>2,
+        'reserve_usd_cents_per_attempt'=>50,'max_reserved_usd_cents_per_month'=>300]]);
     $posted=['kind'=>'recette','title'=>'Projet visuel synthétique privé','summary'=>'Fixture locale uniquement',
         'angle'=>'Test du stockage de visuels','fields'=>[],'state'=>'draft','research_note'=>'PRIVATE_RESEARCH'];
     $draft=cmsCreationSave($base,$posted,$catalog,0);
@@ -53,8 +54,11 @@ try{
     visualReject(fn()=>cmsVisualAsset($dir,$draft['id'],1,'../../config.php'),'VISUAL_ASSET');
     cmsVisualApprove($base,$draft,1,'Revue humaine synthétique des droits et cadrages.',true);
     visualEnsure(cmsVisualApproved($dir,$one,$draft),'PRIVATE_APPROVAL');
+    cmsVisualSelect($base,$draft,1,1);
+    visualEnsure(cmsVisualSelected($dir,$draft)===1,'EXPLICIT_SELECTION');
     $posted['summary']='Version corrigée synthétique';$next=cmsCreationSave($base,$posted,$catalog,1,$draft['id']);
     visualEnsure(!cmsVisualApproved($dir,$one,$next),'DRAFT_CHANGE_INVALIDATES');
+    visualEnsure(cmsVisualSelected($dir,$next)===null,'DRAFT_CHANGE_INVALIDATES_SELECTION');
     visualReject(fn()=>cmsVisualApprove($base,$next,1,'Revue humaine synthétique.',true),'VISUAL_DRAFT_STALE');
     visualReject(fn()=>cmsVisualGenerate($base,$draft,$input,$settings,1),'VISUAL_DRAFT_STALE');
     visualEnsure($calls===1,'STALE_BEFORE_PROVIDER');
@@ -63,12 +67,19 @@ try{
     visualEnsure($two['version']===2&&$calls===2,'REPLACEMENT_NEW_VERSION');
     visualEnsure(hash_file('sha256',$dir.'/v-0001/meta.json')===$originalHash,'OLD_VERSION_IMMUTABLE');
     visualEnsure(!cmsVisualApproved($dir,$two,$next),'REPLACEMENT_NOT_AUTO_APPROVED');
+    visualReject(fn()=>cmsVisualSelect($base,$next,2,2),'VISUAL_DRAFT_STALE');
     visualReject(fn()=>cmsVisualGenerate($base,$next,$input,$settings,2),'AI_BRIEF_LIMIT');
     visualEnsure($calls===2,'QUOTA_BEFORE_PROVIDER');
     file_put_contents(cmsDraftDir($base).'/ai-brief-attempts.json','[]');
     $failing=$settings;$failing['adapter']=static function(array $request):string{throw new RuntimeException('SYNTHETIC_PROVIDER_FAILURE');};
     visualReject(fn()=>cmsVisualGenerate($base,$next,$input,$failing,2),'VISUAL_PROVIDER_FAILED');
     visualEnsure(count(json_decode((string)file_get_contents(cmsDraftDir($base).'/ai-brief-attempts.json'),true))===1,'FAILURE_CONSUMED');
+    $reservations=json_decode((string)file_get_contents(cmsDraftDir($base).'/visual-budget.json'),true);
+    visualEnsure(count($reservations)===3,'FAILED_CALL_KEEPS_BUDGET_RESERVATION');
+    $blocked=$settings;$blocked['max_reserved_usd_cents_per_month']=150;
+    file_put_contents(cmsDraftDir($base).'/ai-brief-attempts.json','[]');
+    visualReject(fn()=>cmsVisualGenerate($base,$next,$input,$blocked,2),'VISUAL_BUDGET');
+    visualEnsure($calls===2,'MONTHLY_ALLOWANCE_BEFORE_PROVIDER');
     visualEnsure(cmsVisualLatest($dir,$draft['id'])['version']===2,'FAILED_REPLACEMENT_PRESERVES_IMAGE');
     file_put_contents(cmsDraftDir($base).'/ai-brief-attempts.json','[]');
     $concurrent=$settings;$concurrent['adapter']=static function(array $request)use($base,$posted,$catalog,$next,$png):string{
@@ -85,5 +96,16 @@ try{
         $fields=cmsCreationCleanFields($kind,[]);
         visualEnsure(cmsVisualPublicFields(['kind'=>$kind,'fields'=>$fields])===$fields,'FIVE_FAMILY_PUBLIC_PROJECTION');
     }
+    mkdir($base.'/selection-case',0700);$choiceBase=$base.'/selection-case';
+    $choice=cmsCreationSave($choiceBase,$posted,$catalog,0);
+    $v1=cmsVisualGenerate($choiceBase,$choice,$input,$settings,0);
+    file_put_contents(cmsDraftDir($choiceBase).'/ai-brief-attempts.json',json_encode([time()-61]));
+    $v2=cmsVisualGenerate($choiceBase,$choice,$input,$settings,1);
+    cmsVisualApprove($choiceBase,$choice,1,'Revue explicite de la première version conservée.',true,2);
+    cmsVisualSelect($choiceBase,$choice,1,2);
+    $choiceDir=cmsVisualDirectory($choiceBase,$choice['id']);
+    visualEnsure(cmsVisualSelected($choiceDir,$choice)===1,'OLDER_VERSION_SELECTABLE');
+    visualReject(fn()=>cmsVisualSelect($choiceBase,$choice,1,1),'VISUAL_DRAFT_STALE');
+    visualEnsure(!cmsVisualApproved($choiceDir,$v2,$choice),'OTHER_VERSION_NOT_APPROVED');
     echo "CMS_PRIVATE_VISUALS_PASS synthetic provider only; consent, five family brief, real GD formats, private versions, stale guards, human review, quota, tamper rejection; realProviderCalls=0\n";
 }finally{$cleanup($base);}

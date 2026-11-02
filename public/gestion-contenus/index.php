@@ -647,7 +647,7 @@ if($auth){
     try{$latestById=cmsStudioCatalogDrafts($latestById,$creations,$catalog,$canonicalById);}
     catch(Throwable $e){cmsUnavailable();}
 }
-$visualSettings=null;$visualLatest=null;$visualDisplay=null;$visualApproved=false;$visualInput=[];
+$visualSettings=null;$visualLatest=null;$visualDisplay=null;$visualApproved=false;$visualInput=[];$visualSelected=null;
 if($auth&&$newMode){
     try{$visualSettings=cmsVisualSettings($cfg);}catch(Throwable $e){$visualSettings=null;}
     $visualInput=['description'=>is_string($_POST['visual_description']??null)?$_POST['visual_description']:'',
@@ -672,7 +672,13 @@ if($auth&&$newMode){
                     cmsVisualGenerate($private,$creation,['description'=>$visualInput['description'],'rights'=>$visualInput['rights'],
                         'medium'=>$visualInput['medium'],'transmit_confirm'=>$_POST['visual_transmit_confirm']??null],$visualSettings,$version);
                 }elseif($_POST['visual_action']==='approve'){
-                    cmsVisualApprove($private,$creation,$version,$visualInput['rights'],($_POST['visual_review_confirm']??null)==='1');
+                    $chosen=filter_var($_POST['visual_version']??$version,FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>9999]]);
+                    if($chosen===false)throw new InvalidArgumentException('VISUAL_ID');
+                    cmsVisualApprove($private,$creation,$chosen,$visualInput['rights'],($_POST['visual_review_confirm']??null)==='1',$version);
+                }elseif($_POST['visual_action']==='select'){
+                    $chosen=filter_var($_POST['visual_version']??null,FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>9999]]);
+                    if($chosen===false)throw new InvalidArgumentException('VISUAL_ID');
+                    cmsVisualSelect($private,$creation,$chosen,$version);
                 }else throw new InvalidArgumentException('VISUAL_ACTION');
                 header('Location: ?new=1&cid='.rawurlencode($creation['id']).'&'.$filtersUrl.'&visual_saved=1#cms-media',true,303);exit;
             }
@@ -685,6 +691,7 @@ if($auth&&$newMode){
                     $visualDisplay=cmsVisualRead($visualDir,$creation['id'],$version);
                 }
                 if($visualDisplay!==null)$visualApproved=cmsVisualApproved($visualDir,$visualDisplay,$creation);
+                $visualSelected=cmsVisualSelected($visualDir,$creation);
             }
         }catch(Throwable $e){
             if(isset($_GET['visual_file'])){http_response_code(404);exit('Visuel privé indisponible.');}
@@ -1189,7 +1196,7 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?php endif; ?>
 </form></section>
 <?= cmsVisualPanel($creation,$visualLatest,$visualDisplay,$visualInput,$visualSettings!==null,
-    (string)$_SESSION['csrf'],$filtersUrl,(string)($_SESSION['visual_intent']??''),$visualApproved,$studioSourceCurrent) ?>
+    (string)$_SESSION['csrf'],$filtersUrl,(string)($_SESSION['visual_intent']??''),$visualApproved,$studioSourceCurrent,$visualSelected) ?>
 <?php if($creation): ?>
 <section id="cms-preview">
 <h2>Aperçu du brouillon enregistré</h2>
