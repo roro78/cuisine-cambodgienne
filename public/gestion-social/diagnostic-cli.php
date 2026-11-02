@@ -38,7 +38,7 @@ if (!is_string($config['admin_user'] ?? null) || ($config['admin_user'] ?? '')==
         || str_starts_with($config['password_hash'], '$argon')))
     readinessFail('ADMIN_LOGIN_CONFIG');
 readinessOk('ADMIN_LOGIN_CONFIG');
-if (($config['social_readonly_user'] ?? null) !== 'cuisine_social_viewer'
+if (!is_string($config['social_readonly_user'] ?? null) || $config['social_readonly_user'] === ''
     || !is_string($config['social_readonly_password'] ?? null)
     || $config['social_readonly_password'] === ''
     || !is_string($config['social_readonly_dsn'] ?? null))
