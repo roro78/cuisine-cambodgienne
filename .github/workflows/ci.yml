@@ -33,6 +33,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
+          extensions: gd
           coverage: none
           tools: none
       - name: Download actual public indexes from the validated build
@@ -51,6 +52,8 @@ jobs:
           php tests/php/editorial-all-guided-smoke.php dist
           php -l tests/php/editorial-studio-unified-smoke.php
           php tests/php/editorial-studio-unified-smoke.php dist
+          php -l public/gestion-contenus/visual-provider-adapter.php
+          php tests/php/editorial-private-visuals-smoke.php dist
           php tests/php/editorial-create-manual-smoke.php dist
           php -l public/gestion-contenus/publication-gap-audit.php
           php -l tests/php/editorial-astro-publication-gap-smoke.php
@@ -306,8 +309,15 @@ jobs:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
         run: npm run test:browser-experiences
 
+      - name: PHP for synthetic private visual browser checks
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: gd, mbstring
+          coverage: none
       - name: Private Studio unified editing on mobile and desktop (synthetic loopback only)
         env:
+          STUDIO_TEST_VISUALS: "1"
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
         run: node tests/editorial-studio-browser.test.mjs
 

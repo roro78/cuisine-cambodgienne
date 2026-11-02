@@ -9,11 +9,12 @@ import {chromium} from 'playwright-core';
 
 const php=process.env.PHP_BIN||'php';
 const evidence=process.env.STUDIO_EVIDENCE_DIR||'artifacts/cms-unified-review';
+const visualTests=process.env.STUDIO_TEST_VISUALS==='1';
 const root=await mkdtemp(path.join(tmpdir(),'cdc-studio-browser-'));
 let server,browser,logs='';
 const hash=async p=>createHash('sha256').update(await readFile(p)).digest('hex');
 try{
-  const fixture=JSON.parse(execFileSync(php,['tests/php/fixtures/editorial-studio-server.php',root,path.resolve('dist')],{encoding:'utf8'}));
+  const fixture=JSON.parse(execFileSync(php,['tests/php/fixtures/editorial-studio-server.php',root,path.resolve('dist'),visualTests?'visuals':''],{encoding:'utf8'}));
   const original=await hash(fixture.legacy);
   const socket=createServer();await new Promise(resolve=>socket.listen(0,'127.0.0.1',resolve));
   const port=socket.address().port;await new Promise(resolve=>socket.close(resolve));
@@ -167,6 +168,34 @@ try{
   assert.equal(record.fields.phases[0].learning,stepChanged,'step saved without audio');
   assert.ok(!record.atelier_scripts || record.atelier_scripts.chapters.every(c=>!c.text),'no invented narration');
   assert.equal(await hash(fixture.legacy),original);
+  if(visualTests){
+    const panel=page.locator('#cms-media');
+    assert.equal(await panel.count(),1,'shared private media panel');
+    await panel.locator('[name=visual_description]').fill('Illustration pédagogique synthétique pour le test du stockage privé.');
+    await panel.locator('[name=visual_rights]').fill('Droits synthétiques de test, non publiables.');
+    await panel.locator('[name=visual_transmit_confirm]').check();
+    await panel.locator('button[value=generate]').click();
+    await page.waitForURL(/visual_saved=1/);
+    await page.waitForFunction(()=>{
+      const images=[...document.querySelectorAll('#cms-media img')];
+      return images.length===2&&images.every(img=>img.complete&&img.naturalWidth>0);
+    });
+    assert.equal(await panel.locator('img').first().evaluate(img=>img.naturalWidth),800);
+    assert.equal(await panel.locator('img').last().evaluate(img=>img.naturalWidth),1080);
+    const mediaPath=path.join(root,'.cuisine-asset-portal','editorial-visuals',cid,'v-0001');
+    const media=JSON.parse(await readFile(path.join(mediaPath,'meta.json'),'utf8'));
+    assert.equal(media.provider,'synthetic-provider');assert.equal(media.publication_authorized,false);
+    assert.equal(media.draft_version,2,'visual bound to exact saved draft');
+    const approval=page.locator('#cms-media form:has(button[value=approve])');
+    await approval.locator('[name=visual_rights]').fill('Revue humaine synthétique, aucun droit de publication.');
+    await approval.locator('[name=visual_review_confirm]').check();
+    await approval.locator('button[value=approve]').click();
+    await page.waitForFunction(()=>document.querySelector('#cms-media')?.textContent?.includes('Validée pour la revue privée'));
+    const review=JSON.parse(await readFile(path.join(mediaPath,'approval.json'),'utf8'));
+    assert.equal(review.status,'approved_private_only');assert.equal(review.publication_authorized,false);
+    await noOverflow('private visual preview');
+    await page.screenshot({path:path.join(evidence,'private-visual-preview.png')});
+  }
   await page.goto(origin+'/gestion-contenus/?kind=atelier&status=draft');
   const card=page.locator('.card').filter({has:page.locator(`a[data-library-resume][href*="cid=${cid}"]`)});
   assert.equal(await card.count(),1,'library has one direct link to existing linked draft');
