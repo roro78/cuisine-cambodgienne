@@ -793,13 +793,36 @@ textarea{resize:vertical;min-height:110px}
 .new-actions{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
 .create-meta{border-left:3px solid #d8a038;padding:10px 12px;background:#fff9e8}
 .create-card{border:1px solid #d9ddd5;border-radius:10px;padding:12px;margin-bottom:10px}
-.calendar-days{display:grid;gap:12px;margin:18px 0}
-.calendar-day{border:1px solid #d9ddd5;border-radius:10px;padding:12px;min-width:0}
-.calendar-day h3{margin:0 0 10px;font-size:1rem}
-.calendar-items{display:grid;gap:9px}
-.calendar-item{padding:10px;border-radius:8px;background:#f5f7ef;overflow-wrap:anywhere}
-.calendar-item a{font-weight:700}
-.calendar-item p{margin:5px 0 0}
+/* A full seven-column month is shown even when no draft has a target date. */
+.calendar-month{margin:18px 0 20px;min-width:0}
+.calendar-weekdays,.calendar-month-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.calendar-weekdays{margin-bottom:5px;text-align:center;font-size:.85rem;font-weight:700;color:#31503c}
+.calendar-weekdays span{padding:7px 0}
+.calendar-month-cell{min-width:0;min-height:112px;padding:7px;border:1px solid #d9ddd5;border-radius:8px;background:#fff;overflow-wrap:anywhere}
+.calendar-month-cell time{display:inline-flex;align-items:center;justify-content:center;min-width:29px;height:29px;font-weight:700;font-size:.88rem}
+.calendar-month-cell--outside{background:#f6f7f3;color:#8e988e}
+.calendar-month-cell--today{border-color:#17663b;box-shadow:inset 0 0 0 1px #17663b}
+.calendar-month-cell--today time{border-radius:50%;background:#17663b;color:#fff}
+.calendar-count{margin-left:3px;font-size:.78rem;font-weight:700;color:#17663b}
+.calendar-month-events{display:grid;gap:4px;margin-top:6px}
+.calendar-event{display:block;min-width:0;border-radius:5px;padding:5px 6px;background:#e7f2e5;color:#175632;font-size:.78rem;line-height:1.25;font-weight:600;text-decoration:none}
+.calendar-event:hover,.calendar-event:focus-visible{outline:2px solid #17663b;outline-offset:1px}
+.calendar-event-title{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.calendar-event-dot{display:none}
+.calendar-agenda{margin:12px 0 20px}
+.calendar-agenda p{margin:8px 0;overflow-wrap:anywhere}
+@media(max-width:650px){
+.calendar-weekdays,.calendar-month-grid{gap:3px}
+.calendar-weekdays{font-size:.72rem}
+.calendar-weekdays span{padding:5px 0}
+.calendar-month-cell{min-height:65px;padding:3px;border-radius:5px}
+.calendar-month-cell time{height:25px;min-width:25px;font-size:.76rem}
+.calendar-count{font-size:.7rem;margin-left:1px}
+.calendar-month-events{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
+.calendar-event{display:inline-flex;align-items:center;justify-content:center;width:12px;height:12px;padding:0;border-radius:50%}
+.calendar-event-title{display:none}
+.calendar-event-dot{display:block;width:6px;height:6px;border-radius:50%;background:#17663b}
+}
 .calendar-undated{border-left:3px solid #d8a038;padding:8px 12px}
 .calendar-pagination{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .calendar-summary{display:flex;flex-wrap:wrap;gap:14px;padding:12px 0}
@@ -983,29 +1006,64 @@ Elles ne prouvent pas que le cache PHP a été renouvelé.</p>
 <span><?= (int)$calendarPlan['undated_count'] ?> sans date</span>
 <span><?= (int)count($calendarPlan['other']) ?> hors du mois affiché</span>
 </div>
-<div class="calendar-days">
-<?php foreach($calendarPlan['days'] as $date=>$items): ?>
-<div class="calendar-day">
-<h3><time datetime="<?= cmsEsc($date) ?>"><?= cmsEsc($date) ?></time>
- · <?= count($items) ?> projet(s)</h3>
-<div class="calendar-items">
-<?php foreach($items as $item): ?>
-<div class="calendar-item">
-<a href="?new=1&amp;cid=<?= cmsEsc($item['id']) ?>"><?= cmsEsc($item['title']) ?></a>
-<span class="badge"><?= cmsEsc(cmsCreationKinds()[$item['kind']]) ?></span>
-<p class="small"><?= $item['state']==='review'?'À relire':'En rédaction' ?>
- · v<?= (int)$item['version'] ?> · <?= cmsEsc($item['origin']) ?></p>
+<?php
+// Month layout is derived only from the existing filtered, read-only calendar plan.
+// Monday-first; include the adjacent days needed to complete the last week.
+$monthFirst=new DateTimeImmutable($calendarMonth.'-01',new DateTimeZone('UTC'));
+$monthOffset=(int)$monthFirst->format('N')-1;
+$monthGridStart=$monthFirst->modify('-'.$monthOffset.' days');
+$monthCellCount=(int)(ceil(($monthOffset+(int)$monthFirst->format('t'))/7)*7);
+$monthToday=(new DateTimeImmutable('now',new DateTimeZone('Europe/Paris')))->format('Y-m-d');
+?>
+<div class="calendar-month" aria-label="Grille mensuelle <?= cmsEsc($calendarMonth) ?>">
+<div class="calendar-weekdays">
+<?php foreach(['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'] as $weekday): ?>
+<span><?= cmsEsc($weekday) ?></span>
+<?php endforeach; ?>
 </div>
+<div class="calendar-month-grid">
+<?php for($slot=0;$slot<$monthCellCount;$slot++):
+$cellDate=$monthGridStart->modify('+'.$slot.' days');
+$date=$cellDate->format('Y-m-d');
+$inMonth=substr($date,0,7)===$calendarMonth;
+$items=$inMonth?($calendarPlan['days'][$date]??[]):[];
+?>
+<div class="calendar-month-cell<?= !$inMonth?' calendar-month-cell--outside':'' ?><?= $date===$monthToday?' calendar-month-cell--today':'' ?>"
+ data-calendar-date="<?= cmsEsc($date) ?>">
+<time datetime="<?= cmsEsc($date) ?>" title="<?= cmsEsc($date) ?>"<?= $date===$monthToday?' aria-current="date"':'' ?>><?= (int)$cellDate->format('j') ?></time>
+<?php if($items): ?>
+<span class="calendar-count" aria-label="<?= count($items) ?> projet(s)"><?= count($items) ?></span>
+<div class="calendar-month-events">
+<?php foreach($items as $item): ?>
+<a class="calendar-event" href="?new=1&amp;cid=<?= cmsEsc($item['id']) ?>"
+ title="<?= cmsEsc($item['title']) ?>" aria-label="Ouvrir le projet <?= cmsEsc($item['title']) ?> — <?= cmsEsc($date) ?>">
+<span class="calendar-event-title"><?= cmsEsc($item['title']) ?></span><span class="calendar-event-dot" aria-hidden="true"></span>
+</a>
 <?php endforeach; ?>
-</div></div>
-<?php endforeach; ?>
-<?php if(!$calendarPlan['days']): ?>
-<p class="muted">Aucun projet daté pour le mois sélectionné.</p>
+</div>
 <?php endif; ?>
 </div>
+<?php endfor; ?>
+</div>
+</div>
+<?php if(!$calendarPlan['days']): ?>
+<p class="small muted">Aucun projet daté ce mois. Le calendrier reste visible ; affectez une date cible depuis la fiche d’un brouillon ci-dessous.</p>
+<?php else: ?>
+<details class="calendar-agenda"><summary>Liste détaillée des projets datés ce mois (<?= (int)$calendarPlan['month_count'] ?>)</summary>
+<?php foreach($calendarPlan['days'] as $date=>$items): ?>
+<?php foreach($items as $item): ?>
+<p><time datetime="<?= cmsEsc($date) ?>"><?= cmsEsc($date) ?></time> —
+<a href="?new=1&amp;cid=<?= cmsEsc($item['id']) ?>"><?= cmsEsc($item['title']) ?></a>
+ · <?= cmsEsc(cmsCreationKinds()[$item['kind']]) ?>
+ · <?= $item['state']==='review'?'À relire':'En rédaction' ?></p>
+<?php endforeach; ?>
+<?php endforeach; ?>
+</details>
+<?php endif; ?>
 <?php if($calendarPlan['undated']): ?>
 <div class="calendar-undated">
 <h3>À planifier — sans date cible</h3>
+<p class="small muted">Ouvrez un brouillon, renseignez « Notes et calendrier » puis enregistrez une date cible pour l’afficher dans la grille mensuelle.</p>
 <?php foreach($calendarPlan['undated'] as $item): ?>
 <p><a href="?new=1&amp;cid=<?= cmsEsc($item['id']) ?>"><?= cmsEsc($item['title']) ?></a>
  · <?= cmsEsc(cmsCreationKinds()[$item['kind']]) ?>
