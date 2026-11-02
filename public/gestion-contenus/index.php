@@ -37,6 +37,10 @@ if(!is_string($_SESSION['csrf']??null))$_SESSION['csrf']=bin2hex(random_bytes(24
 if(isset($_SESSION['authenticated_at']) && time()-(int)$_SESSION['authenticated_at']>1800)
     unset($_SESSION['authenticated_at']);
 $auth=isset($_SESSION['authenticated_at']);
+// Opening a public PHP directory is not proof of private acceptance.
+$publicationsReady=($cfg['social_dashboard_received']??false)===true;
+foreach(['index.php','catalog-readonly.php','n8n-wait-readonly.php','diagnostic-cli.php','.htaccess'] as $socialFile)
+    if(!is_file(dirname(__DIR__).'/gestion-social/'.$socialFile))$publicationsReady=false;
 $error='';
 $notice='';
 // Strict fail-closed login limiter outside the web root, no log of input secrets.
@@ -109,9 +113,10 @@ $createForm=[];$creation=null;$creations=[];$createVersion=null;
 $studioLinked=null;$studioSourceCurrent=true;$studioBoundSource=null;
 $aiSettings=null;$aiInputForm=[];
 $aiContentSettings=null;$aiContentInputForm=[];$pendingContent=null;
-$calendarMode=!$newMode && isset($_GET['calendar']);
+$publicationsMode=!$newMode && isset($_GET['publications']);
+$calendarMode=!$newMode && !$publicationsMode && isset($_GET['calendar']);
 // Keep old filtered library URLs valid; the bare home route only shows navigation.
-$libraryMode=!$newMode && !$calendarMode && (isset($_GET['library'])
+$libraryMode=!$newMode && !$calendarMode && !$publicationsMode && (isset($_GET['library'])
     || isset($_GET['kind']) || isset($_GET['q']) || isset($_GET['status']));
 $calendarMonth=gmdate('Y-m');$calendarKind='all';$calendarStatus='all';
 $calendarPlan=null;$calendarPrev='';$calendarNext='';$calendarError='';
@@ -800,7 +805,7 @@ Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
 <nav class="ux-home" aria-label="Navigation principale du studio">
 <a class="ux-tile" href="?new=1"><strong>Créer</strong><span>Recette, atelier, carnet et autres contenus</span></a>
 <a class="ux-tile" href="?library=1"><strong>Mes contenus</strong><span>Bibliothèque, brouillons et modifications</span></a>
-<a class="ux-tile" href="../gestion-social/"><strong>Publications</strong><span>Suivi social et validations existantes</span></a>
+<a class="ux-tile" href="<?= $publicationsReady?'../gestion-social/':'?publications=1' ?>"><strong>Publications</strong><span>Suivi social et validations existantes</span></a>
 <a class="ux-tile" href="?calendar=1"><strong>Calendrier</strong><span>Planning éditorial et média</span></a>
 </nav>
 <p class="small muted">Les publications sociales disposent d'une connexion privée distincte. Ce raccourci ne publie rien.</p>
@@ -826,7 +831,15 @@ Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
  · Recherche et filtres côté serveur, sans JavaScript.</p>
 </section>
 <?php endif; ?>
-<?php if($calendarMode): ?>
+<?php if($publicationsMode): ?>
+<section id="cms-publications-status" aria-labelledby="publications-heading">
+<h2 id="publications-heading">Publications indisponibles</h2>
+<p>L’espace privé des publications doit encore être installé et vérifié.
+La création de contenus et le calendrier restent disponibles.</p>
+<p>Aucune publication ni validation sociale n’est déclenchée depuis cette page.</p>
+<a href="?">Revenir à l’accueil du Studio</a>
+</section>
+<?php elseif($calendarMode): ?>
 <section id="editorial-calendar" aria-label="Calendrier éditorial privé">
 <span class="badge">Planification privée · aucune publication automatique</span>
 <h2>Calendrier éditorial — <?= cmsEsc($calendarMonth) ?></h2>
