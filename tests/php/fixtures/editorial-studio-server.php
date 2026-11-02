@@ -37,11 +37,62 @@ cmsSave($private,$workshop,['title'=>$workshop['title'],'summary'=>$workshop['su
     0,$workshop['fingerprint'],$canonical[$id],$canonical[$id]['fingerprint']);
 cmsCreationSave($private,['kind'=>'recette','title'=>'Projet synthétique de calendrier pour tests',
     'angle'=>'Test de calendrier privé','summary'=>'Essai local','fields'=>[],'state'=>'draft'],$catalog,0);
-file_put_contents($private.'/config.php','<?php return '.var_export([
-    'admin_user'=>'fixture-admin','password_hash'=>password_hash('synthetic-login-only',PASSWORD_DEFAULT)
-],true).';');chmod($private.'/config.php',0600);
+$fixtureConfig=['admin_user'=>'fixture-admin','password_hash'=>password_hash('synthetic-login-only',PASSWORD_DEFAULT)];
+$configSource='<?php $cfg='.var_export($fixtureConfig,true).';';
+if(in_array($argv[3]??'',['visuals','combined'],true)){
+    $configSource.= <<<'VISUALCFG'
+$cfg['editorial_visuals']=['enabled'=>true,'qualified'=>true,'max_attempts_per_day'=>2,
+'reserve_usd_cents_per_attempt'=>50,'max_reserved_usd_cents_per_month'=>200,
+'provider_label'=>'synthetic-provider','model_label'=>'synthetic-model','adapter'=>static function(array $r):string{
+    if(($r['contract']??null)!=='cdc-private-visual-request-v1')throw new RuntimeException('FIXTURE_CONTRACT');
+    $im=imagecreatetruecolor(1536,1024);imagefill($im,0,0,imagecolorallocate($im,90,140,90));
+    $count=$GLOBALS['fixtureRoot'].'/visual-calls.txt';file_put_contents($count,(string)((int)@file_get_contents($count)+1));
+    ob_start();imagepng($im);$png=ob_get_clean();imagedestroy($im);return $png;
+}];
+VISUALCFG;
+}
+if(($argv[3]??'')==='async'){
+    copy(__DIR__.'/editorial-ai-content.php',$base.'/ai-fixture.php');file_put_contents($base.'/calls.txt','0');
+    $configSource.= <<<'ASYNC'
+require_once $GLOBALS['fixtureRoot'].'/ai-fixture.php';
+$cfg['editorial_ai_content']=['enabled'=>true,'qualified'=>true,'mode'=>'async','provider_label'=>'synthetic-browser','model_label'=>'synthetic-model','max_attempts_per_day'=>2,
+'submit'=>static function(array $r,string $id):array{
+    $base=$GLOBALS['fixtureRoot'];file_put_contents($base.'/calls.txt',(string)((int)file_get_contents($base.'/calls.txt')+1));
+    file_put_contents($base.'/job-'.$id.'.json',json_encode(['kind'=>$r['brief']['kind'],'polls'=>0]));return ['id'=>$id,'status'=>'queued'];
+},'poll'=>static function(string $id):array{
+    $file=$GLOBALS['fixtureRoot'].'/job-'.$id.'.json';$j=json_decode(file_get_contents($file),true);
+    $first=$j['polls']++===0;file_put_contents($file,json_encode($j));
+    return $first?['id'=>$id,'status'=>'running']:['id'=>$id,'status'=>'succeeded','result'=>json_encode(contentFixture($j['kind']),JSON_THROW_ON_ERROR)];
+}];
+ASYNC;
+}
+if(($argv[3]??'')==='combined'){
+    $port=filter_var($argv[4]??'',FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>65535]]);
+    if($port===false)throw new RuntimeException('FIXTURE_GATEWAY_PORT');
+    require_once __DIR__.'/editorial-ai-content.php';
+    file_put_contents($base.'/candidate.json',json_encode(contentFixture('recette'),JSON_THROW_ON_ERROR));
+    copy($repo.'/public/gestion-contenus/content-gateway-adapter.php',$public.'/content-gateway-adapter.php');
+    $configSource.='$fixturePort='.(int)$port.';';
+    $configSource.= <<<'COMBINED'
+require_once $GLOBALS['fixtureRoot'].'/site/public/gestion-contenus/content-gateway-adapter.php';
+$fixtureToken=str_repeat('synthetic-local-job-token-',2);
+$fixtureTransport=static function(string $url,?string $body,string $token)use($fixturePort):string{
+    $id=basename($url);if(!preg_match('/^[a-f0-9]{48}$/D',$id))throw new RuntimeException('FIXTURE_JOB_ID');
+    $options=['method'=>$body===null?'GET':'PUT','header'=>'Content-Type: application/json'."\r\n".'Authorization: Bearer '.$token,
+        'timeout'=>5,'follow_location'=>0];if($body!==null)$options['content']=$body;
+    $raw=file_get_contents('http://127.0.0.1:'.$fixturePort.'/editorial-ai/v1/jobs/'.$id,false,stream_context_create(['http'=>$options]));
+    if(!is_string($raw))throw new RuntimeException('FIXTURE_JOB_HTTP');return $raw;
+};
+$fixtureBase='https://n8n.orvekio.com/editorial-ai/v1/jobs';
+$cfg['editorial_ai_content']=['enabled'=>true,'qualified'=>true,'mode'=>'async','provider_label'=>'synthetic-local-worker','model_label'=>'synthetic-model','max_attempts_per_day'=>2,
+ 'submit'=>static fn(array $r,string $id):array=>cmsAiContentJobTransport($fixtureBase,$fixtureToken,$id,$r,$fixtureTransport),
+ 'poll'=>static fn(string $id):array=>cmsAiContentJobTransport($fixtureBase,$fixtureToken,$id,null,$fixtureTransport)];
+COMBINED;
+}
+file_put_contents($private.'/config.php',$configSource.'return $cfg;');chmod($private.'/config.php',0600);
 $router= <<<'PHP'
 <?php
+$GLOBALS['fixtureRoot']=__DIR__;
 $_SERVER['HTTPS']='on';
 session_save_path(__DIR__.'/sessions');
 function cmsGetFeed():?array{return json_decode(file_get_contents(__DIR__.'/social-feed.json'),true);}

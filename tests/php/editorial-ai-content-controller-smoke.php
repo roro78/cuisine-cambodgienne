@@ -15,6 +15,7 @@ function httpHidden(string $html,string $name):string {
     return html_entity_decode($m[1],ENT_QUOTES,'UTF-8');
 }
 $dist=realpath($argv[1]??'');httpCheck(is_string($dist),'DIST');
+$async=($argv[2]??'')==='--async';
 $base=sys_get_temp_dir().'/cdc-content-http-'.bin2hex(random_bytes(8));
 httpCheck(mkdir($base,0700),'TEMP');$server=null;$pipes=[];
 try{
@@ -47,6 +48,23 @@ return ['admin_user'=>'fixture-admin','password_hash'=>__HASH__,
         }]];
 PHP;
     $cfg=str_replace('__HASH__',var_export(password_hash('synthetic-login-only',PASSWORD_DEFAULT),true),$cfg);
+    if($async){
+        $cfg=str_replace('return [','$config=[',$cfg);
+        $cfg.= <<<'PHP'
+$sync=$config['editorial_ai_content']['adapter'];
+$config['editorial_ai_content']['mode']='async';$config['editorial_ai_content']['qualified']=true;
+$config['editorial_ai_content']['submit']=static function(array $r,string $id)use($sync):array{
+    $result=$sync($r);file_put_contents($GLOBALS['fixtureRoot'].'/job-'.$id.'.json',json_encode(['result'=>$result,'polls'=>0]));
+    return ['id'=>$id,'status'=>'queued'];
+};
+$config['editorial_ai_content']['poll']=static function(string $id):array{
+    $file=$GLOBALS['fixtureRoot'].'/job-'.$id.'.json';$j=json_decode(file_get_contents($file),true);
+    $first=$j['polls']++===0;file_put_contents($file,json_encode($j));
+    return $first?['id'=>$id,'status'=>'running']:['id'=>$id,'status'=>'succeeded','result'=>$j['result']];
+};
+return $config;
+PHP;
+    }
     file_put_contents($private.'/config.php',$cfg);chmod($private.'/config.php',0600);
     file_put_contents($base.'/calls.txt','0');
     $router= <<<'PHP'
@@ -112,6 +130,29 @@ PHP;
     // The rejected combined action rendered a fresh intent; acquire that form.
     [, $html]=$request('/gestion-contenus/?new=1');$post['ai_content_request_token']=httpHidden($html,'ai_content_request_token');
     [$status,,$location]=$request('/gestion-contenus/?new=1',$post);
+    if($async){
+        httpCheck($status===303&&str_contains($location,'ai_job='),'ASYNC_SUBMISSION_PRG');
+        $jobLocation=$location;
+        [$status,$html]=$request('/gestion-contenus/'.$jobLocation);
+        httpCheck($status===200&&str_contains($html,'data-ai-job-status="running"')&&str_contains($html,'PREVIOUS_INPUT_MUST_SURVIVE'),'ASYNC_PROGRESS_INPUT_PRESERVED');
+        [$status,,$location]=$request('/gestion-contenus/'.$jobLocation);
+        httpCheck($status===303&&str_contains($location,'candidate='),'ASYNC_COMPLETION_PRG');
+        [$status,$html]=$request('/gestion-contenus/'.$location);
+        httpCheck($status===200&&str_contains($html,'Proposition générée')&&(int)file_get_contents($base.'/calls.txt')===1,'ASYNC_COMMON_EDITOR_ONE_CALL');
+        httpCheck((glob($private.'/editorial-drafts/new-content/c-*.json')?:[])===[],'ASYNC_NO_AUTOSAVE');
+        $save=$post;unset($save['ai_content_generate'],$save['ai_content_request_token']);
+        $save['candidate_token']=httpHidden($html,'candidate_token');$save['create_save']='1';$save['title']=$fixture['title'];
+        $save['fields']=$fixture['form_fields'];$save['fields']['intro']='Correction humaine asynchrone.';
+        [$status]=$request('/gestion-contenus/?new=1',$post);
+        httpCheck($status===503&&(int)file_get_contents($base.'/calls.txt')===1,'ASYNC_REPLAY_NO_SUBMIT');
+        [$status,,$location]=$request('/gestion-contenus/?new=1',$save);
+        httpCheck($status===303&&str_contains($location,'saved_new=1'),'ASYNC_EXPLICIT_SAVE');
+        $paths=glob($private.'/editorial-drafts/new-content/c-*.json')?:[];httpCheck(count($paths)===1,'ASYNC_ONE_DRAFT');
+        $saved=json_decode((string)file_get_contents($paths[0]),true);
+        httpCheck($saved['origin']==='ai'&&$saved['fields']['intro']==='Correction humaine asynchrone.'&&$saved['target_date']==='2099-12-20','ASYNC_PROVENANCE_DATE_EDIT');
+        echo "CMS_AI_CONTENT_ASYNC_HTTP_PASS session, CSRF, PRG, progress, one submit, shared editor, human correction and explicit save; realProviderCalls=0\n";
+        return;
+    }
     httpCheck($status===303&&str_contains($location,'candidate='),'GENERATION_PRG');
     httpCheck((glob($private.'/editorial-drafts/new-content/c-*.json')?:[])===[],'NO_AUTOMATIC_DRAFT');
     [$status,$html]=$request('/gestion-contenus/'.$location);
