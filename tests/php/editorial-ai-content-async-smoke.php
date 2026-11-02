@@ -25,6 +25,9 @@ try{
         $input=['kind'=>$kind,'title'=>'Sujet asynchrone témoin '.$kind,'angle'=>'Angle à vérifier','objective'=>'Objectif témoin','context'=>'Contexte explicite seulement',
             'reference_id'=>$kind==='atelier'?$recipe:'','semantic_review'=>'1','transmission_review'=>'1'];
         $job=cmsAiContentAsyncStart($private,$input,$catalog,$cfg,$canonical,$guided);
+        $expired=$job;$expired['expires_at']=time()-1;$pollsBefore=$polls;
+        asyncReject(function()use($private,&$expired,$catalog,$cfg,$canonical){cmsAiContentAsyncPoll($private,$expired,$catalog,$cfg,$canonical);},'AI_CONTENT_SESSION');
+        asyncCheck($polls===$pollsBefore,'EXPIRED_JOB_NO_PROVIDER_ACCESS');
         asyncCheck($job['status']==='queued'&&$sent['timeout_seconds']===20,'QUEUED_UNCHANGED_CONTRACT');
         asyncCheck(cmsCreationList(cmsCreationDir($private))===[],'NO_AUTOSAVE');
         asyncCheck(cmsAiContentAsyncPoll($private,$job,$catalog,$cfg,$canonical)===null,'RUNNING');
@@ -49,6 +52,10 @@ try{
     asyncReject(function()use($private,&$job,$catalog,$cfg,$canonical){cmsAiContentAsyncPoll($private,$job,$catalog,$cfg,$canonical);},'AI_CONTENT_PROVIDER');
     asyncCheck($job['status']==='failed','TERMINAL_FAILURE');
     asyncReject(function()use($private,&$job,$catalog,$cfg,$canonical){cmsAiContentAsyncPoll($private,$job,$catalog,$cfg,$canonical);},'AI_CONTENT_SESSION');
+    $invalid=$job;$invalid['status']='running';
+    $cfg['editorial_ai_content']['poll']=static fn(string $id):array=>['id'=>$id,'status'=>'succeeded','result'=>'broken json'];
+    asyncReject(function()use($private,&$invalid,$catalog,$cfg,$canonical){cmsAiContentAsyncPoll($private,$invalid,$catalog,$cfg,$canonical);},'AI_CONTENT_RESPONSE');
+    asyncCheck($invalid['status']==='failed'&&cmsCreationList(cmsCreationDir($private))===[],'INVALID_RESULT_NEVER_SAVED');
     $url='https://n8n.orvekio.com/editorial-ai/v1/jobs';$token=str_repeat('s',48);$id=str_repeat('e',48);
     $a=cmsAiContentJobTransport($url,$token,$id,null,static fn()=>json_encode(['id'=>$id,'status'=>'running']));asyncCheck($a['status']==='running','TRANSPORT');
     asyncReject(fn()=>cmsAiContentJobTransport('http://ollama:11434',$token,$id),'AI_CONTENT_GATEWAY_CONFIG');

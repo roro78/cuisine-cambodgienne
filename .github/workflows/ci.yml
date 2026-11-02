@@ -329,12 +329,20 @@ jobs:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
         run: node tests/editorial-ai-async-browser.test.mjs
 
+      - name: Integrated text job worker and private visual lifecycle (synthetic)
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/editorial-studio-generation-integration.test.mjs
+
       - name: Upload private Studio synthetic browser evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cms-unified-studio-browser
-          path: artifacts/cms-unified-review/*.png
+          path: |
+            artifacts/cms-unified-review/*.png
+            artifacts/ai-async-browser/*.png
+            artifacts/studio-integrated-browser/*.png
           retention-days: 7
           if-no-files-found: ignore
 

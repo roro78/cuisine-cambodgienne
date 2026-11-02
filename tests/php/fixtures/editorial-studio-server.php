@@ -66,6 +66,29 @@ $cfg['editorial_ai_content']=['enabled'=>true,'qualified'=>true,'mode'=>'async',
 }];
 ASYNC;
 }
+if(($argv[3]??'')==='combined'){
+    $port=filter_var($argv[4]??'',FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>65535]]);
+    if($port===false)throw new RuntimeException('FIXTURE_GATEWAY_PORT');
+    require_once __DIR__.'/editorial-ai-content.php';
+    file_put_contents($base.'/candidate.json',json_encode(contentFixture('recette'),JSON_THROW_ON_ERROR));
+    copy($repo.'/public/gestion-contenus/content-gateway-adapter.php',$public.'/content-gateway-adapter.php');
+    $configSource.='$fixturePort='.(int)$port.';';
+    $configSource.= <<<'COMBINED'
+require_once $GLOBALS['fixtureRoot'].'/site/public/gestion-contenus/content-gateway-adapter.php';
+$fixtureToken=str_repeat('synthetic-local-job-token-',2);
+$fixtureTransport=static function(string $url,?string $body,string $token)use($fixturePort):string{
+    $id=basename($url);if(!preg_match('/^[a-f0-9]{48}$/D',$id))throw new RuntimeException('FIXTURE_JOB_ID');
+    $options=['method'=>$body===null?'GET':'PUT','header'=>'Content-Type: application/json'."\r\n".'Authorization: Bearer '.$token,
+        'timeout'=>5,'follow_location'=>0];if($body!==null)$options['content']=$body;
+    $raw=file_get_contents('http://127.0.0.1:'.$fixturePort.'/editorial-ai/v1/jobs/'.$id,false,stream_context_create(['http'=>$options]));
+    if(!is_string($raw))throw new RuntimeException('FIXTURE_JOB_HTTP');return $raw;
+};
+$fixtureBase='https://n8n.orvekio.com/editorial-ai/v1/jobs';
+$cfg['editorial_ai_content']=['enabled'=>true,'qualified'=>true,'mode'=>'async','provider_label'=>'synthetic-local-worker','model_label'=>'synthetic-model','max_attempts_per_day'=>2,
+ 'submit'=>static fn(array $r,string $id):array=>cmsAiContentJobTransport($fixtureBase,$fixtureToken,$id,$r,$fixtureTransport),
+ 'poll'=>static fn(string $id):array=>cmsAiContentJobTransport($fixtureBase,$fixtureToken,$id,null,$fixtureTransport)];
+COMBINED;
+}
 file_put_contents($private.'/config.php',$configSource.'return $cfg;');chmod($private.'/config.php',0600);
 $router= <<<'PHP'
 <?php

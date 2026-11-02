@@ -4,6 +4,9 @@ import {mkdtemp,rm,writeFile,mkdir,symlink} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createJobGateway,ollamaJobProvider} from '../scripts/editorial-ai-job-gateway.mjs';
+import {spawn} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+import {readFile} from 'node:fs/promises';
 const token='synthetic-test-token-'.repeat(3),id='a'.repeat(48);
 const request={contract:'cdc-editorial-ai-content-request-v1',scope:'creation-form-core-v1',brief:{kind:'culture',title:'Essai privé'},
   response_schema:{type:'object',additionalProperties:false,properties:{fields:{type:'object'}}},timeout_seconds:20,max_output_tokens:6000,response_max_bytes:30000};
@@ -29,10 +32,38 @@ test('provider failure and interrupted jobs are consumed without retry',async t=
   await writeFile(join(root,abandoned,'started.json'),'{}',{mode:0o600});
   assert.equal((await gateway.state(abandoned)).status,'failed');await gateway.workOnce();assert.equal(calls,1);
 });
+test('queued tasks survive restart and expired tasks never start',async t=>{
+  let calls=0;const {root,gateway}=await fixture(t,async()=>{calls++;return '{}';});
+  await gateway.submit(id,request);
+  const restarted=await createJobGateway({root,token,provider:async()=>{calls++;return '{}';}});
+  assert.equal((await restarted.state(id)).status,'queued');await restarted.workOnce();assert.equal(calls,1);
+  const expired='d'.repeat(48);await restarted.submit(expired,request);
+  const file=join(root,expired,'request.json');const saved=JSON.parse(await readFile(file,'utf8'));
+  saved.created_at=Date.now()-1800001;await writeFile(file,JSON.stringify(saved),{mode:0o600});
+  assert.equal((await restarted.state(expired)).status,'failed');await restarted.workOnce();assert.equal(calls,1);
+});
 test('two workers on one queue claim a task once',async t=>{
   let calls=0;const {root,gateway}=await fixture(t,async()=>{calls++;await new Promise(r=>setTimeout(r,20));return '{}';});
   const second=await createJobGateway({root,token,provider:async()=>{calls++;return '{}';}});
   await gateway.submit(id,request);await Promise.all([gateway.workOnce(),second.workOnce()]);assert.equal(calls,1);
+});
+test('killed provider process restarts as failed without another model call',{timeout:30000},async t=>{
+  const root=await mkdtemp(join(tmpdir(),'cdc-job-restart-'));t.after(()=>rm(root,{recursive:true,force:true}));
+  await writeFile(join(root,'request.json'),JSON.stringify(request),{mode:0o600});
+  const script=fileURLToPath(new URL('./fixtures/editorial-ai-job-process.mjs',import.meta.url));
+  const first=spawn(process.execPath,[script,'interrupt',root],{stdio:['ignore','pipe','pipe']});
+  t.after(()=>first.kill());let output='';
+  const exited=new Promise(r=>first.once('exit',r));
+  await new Promise((resolve,reject)=>{
+    first.once('error',reject);first.once('exit',()=>reject(Error('FIXTURE_EXITED_BEFORE_CALL')));
+    first.stdout.on('data',b=>{output+=b;if(output.includes('MODEL_STARTED'))resolve();});
+  });
+  first.kill();await exited;
+  const second=spawn(process.execPath,[script,'restart',root],{stdio:['ignore','pipe','pipe']});let result='';
+  second.stdout.on('data',b=>{result+=b;});
+  await new Promise((resolve,reject)=>{second.once('error',reject);second.once('exit',code=>code===0?resolve():reject(Error('RESTART_FAILED')));});
+  assert.deepEqual(JSON.parse(result),{id:'c'.repeat(48),status:'failed'});
+  assert.equal(await readFile(join(root,'calls.txt'),'utf8'),'x');
 });
 test('a substituted job directory is rejected before reading its files',{skip:process.platform==='win32'},async t=>{
   const {root,gateway}=await fixture(t,async()=>{throw Error('UNEXPECTED_PROVIDER');});
