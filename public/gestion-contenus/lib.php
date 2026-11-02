@@ -2786,10 +2786,13 @@ function cmsVisualImages(string $png): array {
             if(!$ok||!is_string($bytes)||$bytes==='')throw new RuntimeException('VISUAL_IMAGE');
             $result['site'.$width]=['name'=>'site'.$width.'.webp','mime'=>'image/webp','bytes'=>$bytes,'width'=>$width,'height'=>$height];
         }
-        // Same social canvas contract: 1080 square, landscape foreground over a soft extension.
+        // Preserve the full subject on a square canvas without duplicating objects in the margins.
         $image=imagecreatetruecolor(1080,1080);
-        imagecopyresampled($image,$source,0,0,256,0,1080,1080,1024,1024);
-        for($i=0;$i<8;$i++)imagefilter($image,IMG_FILTER_GAUSSIAN_BLUR);
+        $red=0;$green=0;$blue=0;
+        foreach([[0,0],[1535,0],[0,1023],[1535,1023]] as [$x,$y]){
+            $color=imagecolorat($source,$x,$y);$red+=($color>>16)&255;$green+=($color>>8)&255;$blue+=$color&255;
+        }
+        imagefill($image,0,0,imagecolorallocate($image,(int)round($red/4),(int)round($green/4),(int)round($blue/4)));
         imagecopyresampled($image,$source,0,180,0,0,1080,720,1536,1024);
         ob_start();$ok=imagejpeg($image,null,88);$bytes=ob_get_clean();imagedestroy($image);
         if(!$ok||!is_string($bytes)||$bytes==='')throw new RuntimeException('VISUAL_IMAGE');

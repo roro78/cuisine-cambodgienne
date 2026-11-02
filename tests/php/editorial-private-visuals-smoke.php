@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__.'/../../public/gestion-contenus/lib.php';
+require_once __DIR__.'/../../public/gestion-contenus/visual-provider-adapter.php';
 function visualEnsure(bool $ok,string $code):void{if(!$ok)throw new RuntimeException('VISUAL_TEST_'.$code);}
 function visualReject(callable $fn,string $code):void{
     try{$fn();throw new RuntimeException('VISUAL_TEST_ACCEPTED_'.$code);}
@@ -18,6 +19,7 @@ $cleanup=function(string $dir)use(&$cleanup,$base):void{
 };
 try{
     $image=imagecreatetruecolor(1536,1024);imagefill($image,0,0,imagecolorallocate($image,90,140,90));
+    imagefilledrectangle($image,700,20,835,90,imagecolorallocate($image,230,30,30));
     ob_start();imagepng($image);$png=ob_get_clean();imagedestroy($image);visualEnsure(is_string($png),'PNG');
     $calls=0;$adapter=static function(array $request)use(&$calls,$png):string{
         $calls++;visualEnsure($request['contract']==='cdc-private-visual-request-v1','CONTRACT');
@@ -26,6 +28,8 @@ try{
     $intent=['visual_intent'=>str_repeat('a',48)];cmsVisualIntent($intent,str_repeat('a',48));
     visualReject(function()use(&$intent){cmsVisualIntent($intent,str_repeat('a',48));},'VISUAL_INTENT');
     visualEnsure(cmsVisualSettings([])===null,'DISABLED_DEFAULT');
+    visualEnsure(cmsVisualOpenAiAdapter(str_repeat('x',32),'gpt-image-1-mini') instanceof Closure,'EXPLICIT_LOW_COST_IMAGE_MODEL');
+    visualReject(fn()=>cmsVisualOpenAiAdapter(str_repeat('x',32),'llama3.2:latest'),'VISUAL_PROVIDER_CONFIG');
     visualEnsure(cmsVisualSettings(['editorial_visuals'=>['enabled'=>true,'qualified'=>false]])===null,'QUALIFICATION_GATE');
     $settings=cmsVisualSettings(['editorial_visuals'=>['enabled'=>true,'qualified'=>true,'adapter'=>$adapter,
         'provider_label'=>'synthetic-provider','model_label'=>'synthetic-model','max_attempts_per_day'=>2,
@@ -49,6 +53,10 @@ try{
     foreach(['original'=>[1536,1024],'site480'=>[480,320],'site800'=>[800,533],'site1200'=>[1200,800],'social'=>[1080,1080]] as $variant=>$size){
         $asset=cmsVisualAsset($dir,$draft['id'],1,$variant);$info=getimagesizefromstring($asset['bytes']);
         visualEnsure([$info[0],$info[1]]===$size,'FORMAT_'.$variant);
+        if($variant==='social'){
+            $preview=imagecreatefromstring($asset['bytes']);$margin=imagecolorat($preview,540,50);imagedestroy($preview);
+            visualEnsure((($margin>>16)&255)<120&&(($margin>>8)&255)>100,'NO_DUPLICATED_SUBJECT_IN_MARGIN');
+        }
         visualEnsure((fileperms($dir.'/v-0001/'.$one['assets'][$variant]['name'])&0077)===0,'PRIVATE_MODE');
     }
     visualReject(fn()=>cmsVisualAsset($dir,$draft['id'],1,'../../config.php'),'VISUAL_ASSET');
