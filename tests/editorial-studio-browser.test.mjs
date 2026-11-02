@@ -8,6 +8,7 @@ import {createHash} from 'node:crypto';
 import {chromium} from 'playwright-core';
 
 const php=process.env.PHP_BIN||'php';
+const evidence=process.env.STUDIO_EVIDENCE_DIR||'artifacts/cms-unified-review';
 const root=await mkdtemp(path.join(tmpdir(),'cdc-studio-browser-'));
 let server,browser,logs='';
 const hash=async p=>createHash('sha256').update(await readFile(p)).digest('hex');
@@ -59,6 +60,28 @@ try{
     for(const id of ['cms-general','cms-content','cms-preview','cms-quality','cms-history'])
       assert.equal(await page.locator('#'+id).count(),1,id);
   };
+  assert.equal(await page.locator('.ux-home .ux-tile').count(),4,'four home entries');
+  assert.equal(await page.locator('[aria-label="Filtres de la bibliothèque"]').count(),0,'no library filters on home');
+  assert.equal(await page.locator('.cards, .create-card').count(),0,'no content or draft list below dashboard');
+  for(const width of [360,390,1440]){
+    await page.setViewportSize({width,height:1000});
+    await noOverflow('dashboard '+width);
+    for(const tile of await page.locator('.ux-tile').all()){
+      const box=await tile.boundingBox();assert.ok(box.width>200&&box.height>=80,'readable navigation');
+    }
+  }
+  await page.setViewportSize({width:390,height:844});
+  await page.locator('.ux-home a[href="?library=1"]').click();
+  assert.equal(new URL(page.url()).searchParams.get('library'),'1');
+  assert.equal(await page.locator('[aria-label="Filtres de la bibliothèque"]').count(),1);
+  assert.ok(await page.locator('.create-card').count()>0,'existing private projects available in library');
+  await page.locator('[name="kind"]').selectOption('atelier');
+  await page.getByRole('button',{name:'Appliquer les filtres'}).click();
+  assert.equal(new URL(page.url()).searchParams.get('library'),'1','filter submit retains library route');
+  await page.locator('a[data-library-resume]').first().click();
+  await page.getByRole('link',{name:'Retour à la bibliothèque (filtres conservés)'}).click();
+  assert.equal(new URL(page.url()).searchParams.get('library'),'1','editor return retains library');
+  assert.equal(new URL(page.url()).searchParams.get('kind'),'atelier','editor return retains filters');
   for(const id of fixture.categories){
     await page.goto(origin+'/gestion-contenus/?id='+encodeURIComponent(id));
     assert.equal(await page.locator('#cms-fields').count(),1,id);
@@ -162,12 +185,12 @@ try{
   assert.equal(await page.locator('button[name=review_action]').count(),0,'no premature human visas');
   await page.locator('.editor-shortcuts a[href="#cms-quality"]').click();
   await noOverflow('linked workshop 390');
-  await mkdir('artifacts/cms-unified-review',{recursive:true});
-  await page.screenshot({path:'artifacts/cms-unified-review/mobile-390.png'});
+  await mkdir(evidence,{recursive:true});
+  await page.screenshot({path:path.join(evidence,'mobile-390.png')});
   await page.setViewportSize({width:360,height:800});await noOverflow('linked workshop 360');
   await page.setViewportSize({width:768,height:1024});await noOverflow('tablet');
   await page.setViewportSize({width:1440,height:1000});await noOverflow('desktop');
-  await page.screenshot({path:'artifacts/cms-unified-review/desktop.png'});
+  await page.screenshot({path:path.join(evidence,'desktop.png')});
   await page.goto(origin+'/gestion-contenus/?calendar=1');
   assert.equal(await page.locator('#editorial-calendar').count(),1);
   assert.equal(await page.locator(`a[href*="cid=${cid}"]`).count(),1,'calendar retains linked project');
@@ -193,10 +216,10 @@ try{
   assert.equal(await page.locator('#cms-audio').evaluate(el=>el.open),false);
   await page.goto(linkedUrl);
   await page.locator('.editor-shortcuts a[href="#cms-steps"]').click();
-  await page.screenshot({path:'artifacts/cms-unified-review/steps-desktop.png'});
+  await page.screenshot({path:path.join(evidence,'steps-desktop.png')});
   await page.setViewportSize({width:390,height:844});
   await page.locator('.editor-shortcuts a[href="#cms-steps"]').click();
-  await page.screenshot({path:'artifacts/cms-unified-review/steps-mobile.png'});
+  await page.screenshot({path:path.join(evidence,'steps-mobile.png')});
   const canonicalPath=path.join(root,'editorial-source-index.json');
   const canonical=JSON.parse(await readFile(canonicalPath,'utf8'));
   canonical.items.find(item=>item.id===fixture.id).fingerprint='f'.repeat(64);
