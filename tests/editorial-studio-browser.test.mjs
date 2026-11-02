@@ -238,8 +238,21 @@ try{
   await page.setViewportSize({width:768,height:1024});await noOverflow('tablet');
   await page.setViewportSize({width:1440,height:1000});await noOverflow('desktop');
   await page.screenshot({path:path.join(evidence,'desktop.png')});
-  await page.goto(origin+'/gestion-contenus/?calendar=1');
+  await page.goto(origin+'/gestion-contenus/?calendar=1&month=2026-11');
   assert.equal(await page.locator('#editorial-calendar').count(),1);
+  assert.deepEqual(await page.locator('.calendar-weekdays > span').allTextContents(),
+    ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'],'calendar has Monday-first weekday headings');
+  assert.equal(await page.locator('.calendar-month-cell').count(),42,'November 2026 fills six real weeks');
+  assert.equal(await page.locator('.calendar-month-cell').first().getAttribute('data-calendar-date'),'2026-10-26');
+  assert.equal(await page.locator('.calendar-month-cell').last().getAttribute('data-calendar-date'),'2026-12-06');
+  for(const width of [360,390,1440]){
+    await page.setViewportSize({width,height:900});
+    await noOverflow('monthly calendar '+width);
+  }
+  await page.goto(origin+'/gestion-contenus/?calendar=1&month=2028-02');
+  assert.equal(await page.locator('.calendar-month-cell').count(),35,'February 2028 includes leap day');
+  assert.equal(await page.locator('[data-calendar-date="2028-02-29"]').count(),1,'leap day is visible');
+  await page.goto(origin+'/gestion-contenus/?calendar=1&month=2026-11');
   assert.equal(await page.locator(`a[href*="cid=${cid}"]`).count(),1,'calendar retains linked project');
   await page.locator(`a[href*="cid=${cid}"]`).click();
   assert.equal(new URL(page.url()).searchParams.get('cid'),cid);
