@@ -2876,11 +2876,15 @@ function cmsVisualApproved(string $dir,array $media,array $draft): bool {
     if(!is_file($path))return false;
     if(is_link($path)||filesize($path)>30000||(fileperms($path)&0077)!==0)throw new RuntimeException('VISUAL_STORE');
     $review=json_decode((string)file_get_contents($path),true,16,JSON_THROW_ON_ERROR);
-    return is_array($review)&&($review['status']??null)==='approved_private_only'
+    $matches=is_array($review)&&($review['status']??null)==='approved_private_only'
         &&($review['visual_version']??null)===$media['version']
         &&($review['draft_id']??null)===$draft['id']
         &&hash_equals($media['draft_sha256'],cmsVisualDigest($draft))
         &&hash_equals($review['draft_sha256']??'',$media['draft_sha256']);
+    if(!$matches)return false;
+    try{foreach(['original','site480','site800','site1200','social'] as $variant)cmsVisualAsset($dir,$draft['id'],$media['version'],$variant);}
+    catch(Throwable $e){return false;}
+    return true;
 }
 function cmsVisualPanel(?array $draft,?array $latest,?array $display,array $input,bool $available,
     string $csrf,string $filtersUrl,string $intent,bool $approved=false,bool $sourceCurrent=true): string {

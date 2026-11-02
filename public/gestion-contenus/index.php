@@ -68,6 +68,20 @@ function cmsLoginAttempt(string $dir,string $ip,bool $failed=false): bool {
     } finally{flock($f,LOCK_UN);fclose($f);}
 }
 $method=(string)($_SERVER['REQUEST_METHOD']??'GET');
+// Authenticated binary reads must not rerun editor/AI intent initialization.
+if($method==='GET'&&$auth&&isset($_GET['visual_file'])){
+    try{
+        $assetId=cmsCreationId($_GET['cid']??null);
+        $assetVersion=filter_var($_GET['visual_version']??null,FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>9999]]);
+        if($assetId===null||$assetVersion===false||!is_string($_GET['visual_file'])
+            ||!is_file($private.'/editorial-drafts/new-content/'.$assetId.'.0001.json')
+            ||!is_dir($private.'/editorial-visuals/'.$assetId))throw new RuntimeException('VISUAL_ASSET');
+        if(cmsCreationRead(cmsCreationDir($private),$assetId)===null)throw new RuntimeException('VISUAL_ASSET');
+        $asset=cmsVisualAsset(cmsVisualDirectory($private,$assetId),$assetId,$assetVersion,$_GET['visual_file']);
+        header('Content-Type: '.$asset['mime']);echo $asset['bytes'];exit;
+    }catch(Throwable $e){http_response_code(404);exit('Visuel privé indisponible.');}
+}
+
 if($method==='POST'){
     if(isset($_POST['visual_action']) && count(array_intersect(['visual_action','create_save','ai_brief_generate','ai_content_generate','ai_content_discard','review_action','culinary_action','save','studio_transition','export_review','login','logout'],array_keys($_POST)))!==1){http_response_code(422);exit('Action invalide.');}
     if(!is_string($_POST['csrf']??null)
@@ -647,12 +661,6 @@ if($auth&&$newMode){
                 $visualDir=cmsVisualDirectory($private,$creation['id']);
                 $visualLatest=cmsVisualLatest($visualDir,$creation['id']);$visualDisplay=$visualLatest;
                 if($visualDisplay!==null)$visualApproved=cmsVisualApproved($visualDir,$visualDisplay,$creation);
-            }
-            if($method==='GET'&&isset($_GET['visual_file'])){
-                $version=filter_var($_GET['visual_version']??null,FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>9999]]);
-                if($version===false||!is_string($_GET['visual_file'])||!is_dir($visualDir))throw new RuntimeException('VISUAL_ASSET');
-                $asset=cmsVisualAsset(cmsVisualDirectory($private,$creation['id']),$creation['id'],$version,$_GET['visual_file']);
-                header('Content-Type: '.$asset['mime']);echo $asset['bytes'];exit;
             }
             if($method==='POST'&&isset($_POST['visual_action'])){
                 if(!$studioSourceCurrent||(string)($_POST['expected_version']??'')!==(string)$creation['version'])throw new RuntimeException('VISUAL_DRAFT_STALE');

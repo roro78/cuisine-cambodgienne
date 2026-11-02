@@ -186,6 +186,18 @@ try{
     const media=JSON.parse(await readFile(path.join(mediaPath,'meta.json'),'utf8'));
     assert.equal(media.provider,'synthetic-provider');assert.equal(media.publication_authorized,false);
     assert.equal(media.draft_version,2,'visual bound to exact saved draft');
+    // A private image must not rotate the text-generation intent of another form.
+    await context.request.get(linkedUrl);
+    const intentSnapshot=async()=>{
+      const names=await readdir(path.join(root,'sessions'));
+      const values=await Promise.all(names.map(name=>readFile(path.join(root,'sessions',name),'utf8')));
+      return values.filter(raw=>raw.includes('authenticated_at|')).map(raw=>raw.match(/ai_content_intent\|s:48:"([0-9a-f]+)"/)?.[1]).filter(Boolean).sort();
+    };
+    const intentsBefore=await intentSnapshot();assert.ok(intentsBefore.length>0);
+    const privateImage=await context.request.get(origin+'/gestion-contenus/?new=1&cid='+cid+'&visual_file=site800&visual_version=1');
+    assert.equal(privateImage.status(),200);
+    assert.match(privateImage.headers()['content-type'],/image\/webp/);
+    assert.deepEqual(await intentSnapshot(),intentsBefore,'image GET leaves text AI intent intact');
     const approval=page.locator('#cms-media form:has(button[value=approve])');
     await approval.locator('[name=visual_rights]').fill('Revue humaine synthétique, aucun droit de publication.');
     await approval.locator('[name=visual_review_confirm]').check();
