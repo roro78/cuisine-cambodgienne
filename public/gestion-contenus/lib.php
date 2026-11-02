@@ -2373,10 +2373,16 @@ function cmsAiContentSettings(array $cfg): ?array {
         if(!is_string($options[$key]??null)
             || !preg_match('/^[a-zA-Z0-9][a-zA-Z0-9._:\/ -]{0,79}$/D',$options[$key]))
             throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
-    if(!is_callable($options['adapter']??null))throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
+    $async=($options['mode']??'sync')==='async';
+    if(!in_array($options['mode']??'sync',['sync','async'],true))throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
+    if($async){
+        if(($options['qualified']??false)!==true||!is_callable($options['submit']??null)
+            ||!is_callable($options['poll']??null))throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
+    }elseif(!is_callable($options['adapter']??null))throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
     try{$limit=cmsAiDailyLimit($cfg,5);}
     catch(Throwable $e){throw new RuntimeException('AI_CONTENT_UNAVAILABLE');}
-    return ['adapter'=>$options['adapter'],'provider_label'=>$options['provider_label'],
+    return ['mode'=>$async?'async':'sync','adapter'=>$options['adapter']??null,
+        'submit'=>$options['submit']??null,'poll'=>$options['poll']??null,'provider_label'=>$options['provider_label'],
         'model_label'=>$options['model_label'],'max_attempts_per_day'=>$limit];
 }
 /** One explicit generation intent can be submitted once, including on failure. */
@@ -2450,7 +2456,7 @@ function cmsAiContentEdits(array $proposal,array $record): array {
     return $paths;
 }
 /** Generate once, validate, and return a session candidate. NO draft is saved. */
-function cmsAiContentGenerate(string $private,array $raw,array $catalog,array $cfg,
+function cmsAiContentPrepare(string $private,array $raw,array $catalog,array $cfg,
     array $canonical,array $guided,?string $id=null,int $expected=0): array {
     $settings=cmsAiContentSettings($cfg);
     if($settings===null)throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
@@ -2464,10 +2470,22 @@ function cmsAiContentGenerate(string $private,array $raw,array $catalog,array $c
     cmsAiBriefReserve($private,$settings['max_attempts_per_day']);
     $request['timeout_seconds']=20;$request['max_output_tokens']=6000;
     $request['response_max_bytes']=30000;
+    return ['request'=>$request,'settings'=>$settings,'creation_id'=>$id,'expected_version'=>$expected];
+}
+function cmsAiContentGenerate(string $private,array $raw,array $catalog,array $cfg,
+    array $canonical,array $guided,?string $id=null,int $expected=0): array {
+    $prepared=cmsAiContentPrepare($private,$raw,$catalog,$cfg,$canonical,$guided,$id,$expected);
+    $settings=$prepared['settings'];$request=$prepared['request'];
+    if($settings['mode']!=='sync')throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
     $start=microtime(true);
     try{$response=($settings['adapter'])($request);}
     catch(Throwable $e){throw new RuntimeException('AI_CONTENT_PROVIDER');}
     if(microtime(true)-$start>20)throw new RuntimeException('AI_CONTENT_TIMEOUT');
+    return cmsAiContentComplete($private,$request,$settings,$response,$catalog,$id,$expected);
+}
+/** Same C2 validation/provenance for synchronous and asynchronous results. */
+function cmsAiContentComplete(string $private,array $request,array $settings,mixed $response,array $catalog,?string $id,int $expected): array {
+    $input=$request['brief'];
     if(!is_string($response)||strlen($response)>30000)throw new RuntimeException('AI_CONTENT_RESPONSE');
     $candidate=cmsAiContentCandidate($input['kind'],$response);
     $similar=cmsAiContentPreflight($private,$input['kind'],$input['title'],$catalog,$id,$expected);
@@ -2489,6 +2507,37 @@ function cmsAiContentGenerate(string $private,array $raw,array $catalog,array $c
         'creation_id'=>$id,'expected_version'=>$expected,'candidate'=>$candidate,
         'metadata'=>$metadata,'similar_titles'=>$similar];
 }
+/** The job ID is also the gateway idempotency key. No automatic resubmission. */
+function cmsAiContentAsyncStart(string $private,array $raw,array $catalog,array $cfg,
+    array $canonical,array $guided,?string $id=null,int $expected=0): array {
+    $p=cmsAiContentPrepare($private,$raw,$catalog,$cfg,$canonical,$guided,$id,$expected);$s=$p['settings'];
+    if($s['mode']!=='async')throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
+    $token=bin2hex(random_bytes(24));
+    $job=['token'=>$token,'expires_at'=>time()+1800,'creation_id'=>$id,'expected_version'=>$expected,
+        'request'=>$p['request'],'provider_label'=>$s['provider_label'],'model_label'=>$s['model_label'],'status'=>'submission_unknown'];
+    try{$answer=($s['submit'])($p['request'],$token);}
+    catch(Throwable $e){return $job;}
+    if(!is_array($answer)||($answer['id']??null)!==$token||!in_array($answer['status']??null,['queued','running','succeeded'],true))
+        throw new RuntimeException('AI_CONTENT_PROVIDER');
+    $job['status']='queued';return $job;
+}
+/** Polling is read-only on the provider. It cannot reserve quota or generate. */
+function cmsAiContentAsyncPoll(string $private,array &$job,array $catalog,array $cfg,array $canonical): ?array {
+    if(!is_int($job['expires_at']??null)||$job['expires_at']<time()||($job['status']??null)==='failed')throw new RuntimeException('AI_CONTENT_SESSION');
+    $s=cmsAiContentSettings($cfg);
+    if($s===null||$s['mode']!=='async'||$s['provider_label']!==$job['provider_label']||$s['model_label']!==$job['model_label'])
+        throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
+    $r=$job['request'];$id=$job['creation_id'];$expected=$job['expected_version'];
+    cmsAiContentPreflight($private,$r['brief']['kind'],$r['brief']['title'],$catalog,$id,$expected);
+    if($r['brief']['kind']==='atelier'&&($canonical[$r['brief']['reference_id']]['fingerprint']??null)!==($r['reference']['fingerprint']??null))
+        throw new RuntimeException('AI_CONTENT_REFERENCE_CHANGED');
+    try{$a=($s['poll'])($job['token']);}catch(Throwable $e){throw new RuntimeException('AI_CONTENT_PROVIDER');}
+    if(!is_array($a)||($a['id']??null)!==$job['token'])throw new RuntimeException('AI_CONTENT_PROVIDER');
+    if(in_array($a['status']??null,['queued','running'],true)){$job['status']=$a['status'];return null;}
+    if(($a['status']??null)!=='succeeded'){$job['status']='failed';throw new RuntimeException('AI_CONTENT_PROVIDER');}
+    try{return cmsAiContentComplete($private,$r,$s,$a['result']??null,$catalog,$id,$expected);}
+    catch(Throwable $e){$job['status']='failed';throw $e;}
+}
 /** Session-only holding area: bounded, no raw provider response or secret. */
 function cmsAiContentSessionRoom(array &$session): void {
     if(!isset($session['ai_content_pending']))$session['ai_content_pending']=[];
@@ -2496,7 +2545,9 @@ function cmsAiContentSessionRoom(array &$session): void {
     foreach($session['ai_content_pending'] as $token=>$pending)
         if(is_array($pending)&&is_int($pending['expires_at']??null)&&$pending['expires_at']<time())
             unset($session['ai_content_pending'][$token]);
-    if(count($session['ai_content_pending'])>=3)throw new RuntimeException('AI_CONTENT_SESSION_FULL');
+    foreach(($session['ai_content_jobs']??[]) as $token=>$job)
+        if(($job['expires_at']??0)<time())unset($session['ai_content_jobs'][$token]);
+    if(count($session['ai_content_pending'])+count($session['ai_content_jobs']??[])>=3)throw new RuntimeException('AI_CONTENT_SESSION_FULL');
 }
 function cmsAiContentPending(array $session,mixed $token): array {
     if(!is_string($token)||!preg_match('/^[0-9a-f]{48}$/D',$token))

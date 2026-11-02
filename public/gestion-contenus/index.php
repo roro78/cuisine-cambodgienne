@@ -112,7 +112,7 @@ if(!isset(cmsCreationKinds()[$createKind]))$createKind='recette';
 $createForm=[];$creation=null;$creations=[];$createVersion=null;
 $studioLinked=null;$studioSourceCurrent=true;$studioBoundSource=null;
 $aiSettings=null;$aiInputForm=[];
-$aiContentSettings=null;$aiContentInputForm=[];$pendingContent=null;
+$aiContentSettings=null;$aiContentInputForm=[];$pendingContent=null;$aiJob=null;$aiJobToken='';
 $publicationsMode=!$newMode && isset($_GET['publications']);
 $calendarMode=!$newMode && !$publicationsMode && isset($_GET['calendar']);
 // Keep old filtered library URLs valid; the bare home route only shows navigation.
@@ -225,6 +225,24 @@ if($auth){
         $createExpected=(int)($creation['version']??0);
         try{$aiSettings=cmsAiBriefSettings($cfg);}catch(Throwable $e){$aiSettings=null;}
         try{$aiContentSettings=cmsAiContentSettings($cfg);}catch(Throwable $e){$aiContentSettings=null;}
+        if($method==='GET'&&isset($_GET['ai_job'])){
+            try{
+                $aiJobToken=is_string($_GET['ai_job'])?$_GET['ai_job']:'';
+                if(!preg_match('/^[0-9a-f]{48}$/D',$aiJobToken)||!isset($_SESSION['ai_content_jobs'][$aiJobToken]))throw new RuntimeException('AI_CONTENT_SESSION');
+                $aiJob=&$_SESSION['ai_content_jobs'][$aiJobToken];
+                if($aiJob['creation_id']!==$cid||$aiJob['request']['brief']['kind']!==$createKind)throw new RuntimeException('AI_CONTENT_SESSION');
+                $createForm=$aiJob['before_form'];
+                $done=cmsAiContentAsyncPoll($private,$aiJob,$catalog,$cfg,$canonicalById);
+                if($done!==null){
+                    $done['before_form']=$aiJob['before_form'];
+                    $_SESSION['ai_content_pending'][$done['token']]=$done;
+                    unset($_SESSION['ai_content_jobs'][$aiJobToken]);unset($aiJob);
+                    header('Location: ?new=1&kind='.rawurlencode($createKind).($cid!==null?'&cid='.rawurlencode($cid):'').'&candidate='.$done['token'],true,303);exit;
+                }
+            }catch(Throwable $e){
+                http_response_code(503);$error='Génération indisponible ou proposition périmée. Aucune nouvelle génération automatique ; votre brouillon reste conservé.';
+            }
+        }
         $candidateToken=$_POST['candidate_token']??($_GET['candidate']??'');
         if($candidateToken!==''){
             try{
@@ -365,6 +383,11 @@ if($auth){
                     $raw=[];
                     foreach(['kind','title','angle','objective','context','reference_id','semantic_review','transmission_review'] as $field)
                         $raw[$field]=$_POST[$field]??'';
+                    if(($aiContentSettings['mode']??'sync')==='async'){
+                        $job=cmsAiContentAsyncStart($private,$raw,$catalog,$cfg,$canonicalById,$contentGuides,$cid,$expected);
+                        $job['before_form']=$contentPosted;$_SESSION['ai_content_jobs'][$job['token']]=$job;
+                        header('Location: ?new=1&kind='.rawurlencode($createKind).($cid!==null?'&cid='.rawurlencode($cid):'').'&ai_job='.$job['token'],true,303);exit;
+                    }
                     $pending=cmsAiContentGenerate($private,$raw,$catalog,$cfg,
                         $canonicalById,$contentGuides,$cid,$expected);
                     $pending['before_form']=$contentPosted;
@@ -975,6 +998,17 @@ qui restent à vérifier avant tout enregistrement.</p>
 <p class="small">Proposition temporaire :
 <a href="?new=1&amp;kind=<?= cmsEsc($waiting['candidate']['kind']) ?>&amp;candidate=<?= cmsEsc($waiting['token']) ?><?= $waiting['creation_id']!==null?'&amp;cid='.cmsEsc($waiting['creation_id']):'' ?>"><?= cmsEsc($waiting['candidate']['title']) ?></a></p>
 <?php endforeach; ?>
+<?php foreach(($_SESSION['ai_content_jobs']??[]) as $waiting): ?>
+<?php if(($waiting['expires_at']??0)<time())continue; ?>
+<p class="small">Génération en cours de suivi : <a href="?new=1&amp;kind=<?= cmsEsc($waiting['request']['brief']['kind']) ?>&amp;ai_job=<?= cmsEsc($waiting['token']) ?><?= $waiting['creation_id']!==null?'&amp;cid='.cmsEsc($waiting['creation_id']):'' ?>">Reprendre <?= cmsEsc($waiting['request']['brief']['title']) ?></a></p>
+<?php endforeach; ?>
+<?php if(is_array($aiJob)): ?>
+<div class="note" role="status" data-ai-job-status="<?= cmsEsc($aiJob['status']) ?>">
+<strong><?= ($aiJob['status']??'')==='failed'?'Génération arrêtée':'Préparation de la proposition' ?></strong>
+<p><?= ($aiJob['status']??'')==='running'?'Rédaction en cours.':(($aiJob['status']??'')==='failed'?'La proposition n’a pas abouti. Aucun nouvel essai automatique.':'Demande transmise ; attente de son état confirmé.') ?></p>
+<p><a class="btn secondary" href="?new=1&amp;kind=<?= cmsEsc($createKind) ?>&amp;ai_job=<?= cmsEsc($aiJobToken) ?><?= $cid!==null?'&amp;cid='.cmsEsc($cid):'' ?>">Actualiser le suivi</a></p>
+<p class="small">Actualiser consulte uniquement la tâche existante. Votre saisie est conservée ; aucun brouillon n’est enregistré automatiquement.</p></div>
+<?php endif; ?>
 <?php if($pendingContent!==null): ?>
 <div class="note" role="status"><strong>Proposition générée — non enregistrée.</strong>
 <p>Relisez et corrigez les champs ci-dessous, puis enregistrez explicitement un brouillon.

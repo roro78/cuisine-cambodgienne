@@ -37,11 +37,28 @@ cmsSave($private,$workshop,['title'=>$workshop['title'],'summary'=>$workshop['su
     0,$workshop['fingerprint'],$canonical[$id],$canonical[$id]['fingerprint']);
 cmsCreationSave($private,['kind'=>'recette','title'=>'Projet synthétique de calendrier pour tests',
     'angle'=>'Test de calendrier privé','summary'=>'Essai local','fields'=>[],'state'=>'draft'],$catalog,0);
-file_put_contents($private.'/config.php','<?php return '.var_export([
+$configSource='<?php $cfg='.var_export([
     'admin_user'=>'fixture-admin','password_hash'=>password_hash('synthetic-login-only',PASSWORD_DEFAULT)
-],true).';');chmod($private.'/config.php',0600);
+],true).';';
+if(($argv[3]??'')==='async'){
+    copy(__DIR__.'/editorial-ai-content.php',$base.'/ai-fixture.php');file_put_contents($base.'/calls.txt','0');
+    $configSource.= <<<'ASYNC'
+require_once $GLOBALS['fixtureRoot'].'/ai-fixture.php';
+$cfg['editorial_ai_content']=['enabled'=>true,'qualified'=>true,'mode'=>'async','provider_label'=>'synthetic-browser','model_label'=>'synthetic-model','max_attempts_per_day'=>2,
+'submit'=>static function(array $r,string $id):array{
+    $base=$GLOBALS['fixtureRoot'];file_put_contents($base.'/calls.txt',(string)((int)file_get_contents($base.'/calls.txt')+1));
+    file_put_contents($base.'/job-'.$id.'.json',json_encode(['kind'=>$r['brief']['kind'],'polls'=>0]));return ['id'=>$id,'status'=>'queued'];
+},'poll'=>static function(string $id):array{
+    $file=$GLOBALS['fixtureRoot'].'/job-'.$id.'.json';$j=json_decode(file_get_contents($file),true);
+    $first=$j['polls']++===0;file_put_contents($file,json_encode($j));
+    return $first?['id'=>$id,'status'=>'running']:['id'=>$id,'status'=>'succeeded','result'=>json_encode(contentFixture($j['kind']),JSON_THROW_ON_ERROR)];
+}];
+ASYNC;
+}
+file_put_contents($private.'/config.php',$configSource.'return $cfg;');chmod($private.'/config.php',0600);
 $router= <<<'PHP'
 <?php
+$GLOBALS['fixtureRoot']=__DIR__;
 $_SERVER['HTTPS']='on';
 session_save_path(__DIR__.'/sessions');
 function cmsGetFeed():?array{return json_decode(file_get_contents(__DIR__.'/social-feed.json'),true);}

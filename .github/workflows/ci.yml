@@ -87,8 +87,10 @@ jobs:
           php -l public/gestion-contenus/content-gateway-adapter.php
           php -l tests/php/editorial-ai-content-generation-smoke.php
           php tests/php/editorial-ai-content-generation-smoke.php dist
+          php tests/php/editorial-ai-content-async-smoke.php dist
           php -l tests/php/editorial-ai-content-controller-smoke.php
           php tests/php/editorial-ai-content-controller-smoke.php dist
+          php tests/php/editorial-ai-content-controller-smoke.php dist --async
           php -l public/gestion-contenus/openai-brief-adapter.php
           php -l tests/php/editorial-openai-brief-smoke.php
           php tests/php/editorial-openai-brief-smoke.php
@@ -149,6 +151,7 @@ jobs:
           node --test tests/editorial-ai-brief-contract.test.mjs
           node --test tests/editorial-ollama-benchmark.test.mjs tests/n8n-ollama-benchmark.test.mjs
           node --test tests/editorial-ollama-structured-benchmark.test.mjs
+          node --test tests/editorial-ai-job-gateway.test.mjs
 
       - name: Motion regression contract
         run: npm run test:motion
@@ -310,6 +313,11 @@ jobs:
         env:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
         run: node tests/editorial-studio-browser.test.mjs
+
+      - name: Private asynchronous text progress and explicit save (synthetic)
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/editorial-ai-async-browser.test.mjs
 
       - name: Upload private Studio synthetic browser evidence
         if: always()
