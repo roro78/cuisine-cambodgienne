@@ -94,7 +94,7 @@ if(!in_array($kind,['all','recette','culture','atelier','ingredient','technique'
 $q=is_string($_GET['q']??null)?trim($_GET['q']):'';
 $status=(string)($_GET['status']??'all');
 if(!in_array($status,['all','without','draft','review','stale'],true))$status='all';
-$filters=['kind'=>$kind,'q'=>$q,'status'=>$status];
+$filters=['library'=>'1','kind'=>$kind,'q'=>$q,'status'=>$status];
 $filtersUrl=http_build_query($filters,'','&',PHP_QUERY_RFC3986);
 // A new editorial idea is deliberately distinct from a published source ID.
 // Both paths still use the SAME authenticated Studio and shared field renderer.
@@ -110,6 +110,9 @@ $studioLinked=null;$studioSourceCurrent=true;$studioBoundSource=null;
 $aiSettings=null;$aiInputForm=[];
 $aiContentSettings=null;$aiContentInputForm=[];$pendingContent=null;
 $calendarMode=!$newMode && isset($_GET['calendar']);
+// Keep old filtered library URLs valid; the bare home route only shows navigation.
+$libraryMode=!$newMode && !$calendarMode && (isset($_GET['library'])
+    || isset($_GET['kind']) || isset($_GET['q']) || isset($_GET['status']));
 $calendarMonth=gmdate('Y-m');$calendarKind='all';$calendarStatus='all';
 $calendarPlan=null;$calendarPrev='';$calendarNext='';$calendarError='';
 $calendarRuntimeInfo='';$calendarFileHashes=[];
@@ -780,7 +783,7 @@ section,fieldset,.stack,.grid>*{min-width:0}code,pre{overflow-wrap:anywhere;whit
 <header><div><strong>Cuisine du Cambodge</strong> · Studio éditorial privé</div>
 <?php if($auth): ?><form method="post"><input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <button class="secondary" name="logout" value="1">Déconnexion</button></form><?php endif; ?></header>
-<h1>Bibliothèque et brouillons éditoriaux</h1>
+<h1>Studio éditorial</h1>
 <p class="note">Version de préparation : <strong>les brouillons ne modifient pas le site publié</strong>.
 Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
 <?php if($error!==''): ?><p class="notice" role="alert"><?= cmsEsc($error) ?></p><?php endif; ?>
@@ -796,13 +799,15 @@ Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
 <?php else: ?>
 <nav class="ux-home" aria-label="Navigation principale du studio">
 <a class="ux-tile" href="?new=1"><strong>Créer</strong><span>Recette, atelier, carnet et autres contenus</span></a>
-<a class="ux-tile" href="?"><strong>Mes contenus</strong><span>Bibliothèque, brouillons et modifications</span></a>
+<a class="ux-tile" href="?library=1"><strong>Mes contenus</strong><span>Bibliothèque, brouillons et modifications</span></a>
 <a class="ux-tile" href="../gestion-social/"><strong>Publications</strong><span>Suivi social et validations existantes</span></a>
 <a class="ux-tile" href="?calendar=1"><strong>Calendrier</strong><span>Planning éditorial et média</span></a>
 </nav>
 <p class="small muted">Les publications sociales disposent d'une connexion privée distincte. Ce raccourci ne publie rien.</p>
-<section aria-label="Filtres de la bibliothèque"<?= ($newMode||$calendarMode)?' hidden':'' ?>>
+<?php if($libraryMode): ?>
+<section aria-label="Filtres de la bibliothèque">
 <form method="get" action="" class="toolbar">
+<input type="hidden" name="library" value="1">
 <label>Catégorie<select name="kind">
 <?php foreach(['all'=>'Toutes les catégories','recette'=>'Recettes','culture'=>'Carnets',
 'atelier'=>'Ateliers','ingredient'=>'Ingrédients','technique'=>'Techniques'] as $value=>$label): ?>
@@ -816,10 +821,11 @@ Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
 <option value="<?= cmsEsc($value) ?>"<?= $status===$value?' selected':'' ?>><?= cmsEsc($label) ?></option>
 <?php endforeach; ?></select></label>
 <button type="submit">Appliquer les filtres</button>
-<a href="?">Tout afficher</a></form>
+<a href="?library=1">Tout afficher</a></form>
 <p class="small muted" role="status"><?= count($shown) ?> résultat(s) sur <?= count($catalog) ?> contenus
  · Recherche et filtres côté serveur, sans JavaScript.</p>
 </section>
+<?php endif; ?>
 <?php if($calendarMode): ?>
 <section id="editorial-calendar" aria-label="Calendrier éditorial privé">
 <span class="badge">Planification privée · aucune publication automatique</span>
@@ -829,7 +835,7 @@ Elles ne déclenchent aucune publication sur le site, Facebook ou Instagram.</p>
 <?php if($calendarError!==''): ?>
 <p class="notice" role="alert">Impossible de charger ce calendrier :
 <strong><?= cmsEsc($calendarError) ?></strong>. Les projets privés et leurs versions
-restent conservés. Revenez à la <a href="?">bibliothèque</a> ; vérifiez
+restent conservés. Revenez à la <a href="?library=1">bibliothèque</a> ; vérifiez
 que les fichiers <code>index.php</code> et <code>lib.php</code> proviennent
 de la même livraison. Le journal d'erreurs PHP conserve uniquement le code
 de diagnostic, sans contenu privé.</p>
@@ -1499,15 +1505,6 @@ La génération Astro et la publication feront l'objet d'un circuit séparé,
 avec validation humaine et tests.</p>
 </section>
 <?php endif; ?>
-<section><h2>Autres créations privées</h2>
-<?php if(!$creations): ?><p>Aucun projet pour le moment.</p><?php endif; ?>
-<?php foreach($creations as $item): ?>
-<div class="create-card"><span class="badge"><?= cmsEsc(cmsCreationKinds()[$item['kind']]) ?></span>
-<strong><?= cmsEsc($item['title']) ?></strong> · v<?= (int)$item['version'] ?>
-· <?= $item['state']==='review'?'À relire':'Brouillon' ?>
-<p><a href="?new=1&amp;cid=<?= cmsEsc($item['id']) ?>">Ouvrir ce projet</a></p></div>
-<?php endforeach; ?>
-</section>
 <?php elseif($selected): ?>
 <p><a href="?<?= cmsEsc($filtersUrl) ?>">Retour à la bibliothèque (filtres conservés)</a> · <a href="<?= cmsEsc($selected['url']) ?>" target="_blank"
  rel="noopener noreferrer">Consulter la page actuellement publiée</a></p>
@@ -1735,7 +1732,16 @@ Télécharger la demande de modification (JSON)</button>
 <p class="small muted">Comparer le brouillon enregistré à la fiche publiée et relire les modifications. Le statut « prêt pour relecture » ne constitue pas une validation humaine ni une autorisation de publication.</p>
 <?php endif; ?></section>
 
-<?php else: ?>
+<?php elseif($libraryMode): ?>
+<section><h2>Autres créations privées</h2>
+<?php if(!$creations): ?><p>Aucun projet pour le moment.</p><?php endif; ?>
+<?php foreach($creations as $item): ?>
+<div class="create-card"><span class="badge"><?= cmsEsc(cmsCreationKinds()[$item['kind']]) ?></span>
+<strong><?= cmsEsc($item['title']) ?></strong> · v<?= (int)$item['version'] ?>
+· <?= $item['state']==='review'?'À relire':'Brouillon' ?>
+<p><a href="?new=1&amp;cid=<?= cmsEsc($item['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>">Ouvrir ce projet</a></p></div>
+<?php endforeach; ?>
+</section>
 <section><h2>Contenus disponibles à la préparation</h2>
 <p class="small muted"><?= count($catalog) ?> contenus reconnus dans le catalogue public actuel.
 Cette liste n'est ni un calendrier ni une file de validation sociale.</p>

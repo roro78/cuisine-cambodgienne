@@ -7,7 +7,7 @@ test('UX navigation uses the four existing destinations and stays behind authent
   const start=php.indexOf('<nav class="ux-home"');
   assert.ok(start>php.indexOf('<?php else: ?>'),'navigation must follow login gate');
   const nav=php.slice(start,php.indexOf('</nav>',start));
-  for(const href of ['?new=1','?','../gestion-social/','?calendar=1'])
+  for(const href of ['?new=1','?library=1','../gestion-social/','?calendar=1'])
     assert.ok(nav.includes('href="'+href+'"'),href);
   for(const title of ['Créer','Mes contenus','Publications','Calendrier'])
     assert.ok(nav.includes('<strong>'+title+'</strong>'),title);
