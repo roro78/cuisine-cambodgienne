@@ -9,6 +9,7 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const names=['social-feed.json','editorial-source-index.json','editorial-guided-fields.json'];
+const privateModules=['lib.php','publication-gap-audit.php','visual-provider-adapter.php','content-gateway-adapter.php','openai-brief-adapter.php'];
 const sensitiveKeys=new Set(['audioScript','sources','sourceReferences','culinaryReferences',
   'github_token','password_hash','secret','private_config','service_role','access_token']);
 function plain(x){return x!==null&&typeof x==='object'&&!Array.isArray(x);}
@@ -135,7 +136,7 @@ async function getRemote(origin,{fetcher=fetch}={}){
   if(html.length>262144)fail('CMS_LOGIN_TOO_LARGE');
   verifyCmsLogin({status:response.status,headers:response.headers,body:html});
   // Private PHP implementation must never be served or accessible directly.
-  for(const privateModule of ['lib.php','publication-gap-audit.php']){
+  for(const privateModule of privateModules){
     const result=await fetcher(new URL('gestion-contenus/'+privateModule,base),{
       method:'GET',redirect:'error',signal:AbortSignal.timeout(12000)});
     const body=await result.text();
@@ -158,7 +159,7 @@ async function getDist(dir){
     if(!(await stat(path)).isFile())fail('CMS_PHP_FILE_MISSING_'+name);
   }
   const ht=await readFile(join(dir,'gestion-contenus','.htaccess'),'utf8');
-  for(const module of ['lib.php','publication-gap-audit.php']){
+  for(const module of privateModules){
     const tag='<Files "'+module+'">';
     const begin=ht.indexOf(tag);
     const end=ht.indexOf('</Files>',begin);
