@@ -89,6 +89,21 @@ try{
         &&str_contains($prefillHtml,'data-audio-note="6"')
         &&str_contains($prefillHtml,'Vérifier les risques'),
         'PREFILL_EXPLICIT_BUTTON_WITH_SOURCE');
+    // Completing the six phases after an empty draft must not leave a blank
+    // source digest in the form. A WRITTEN old text must never be retargeted.
+    $emptyAudio=['version'=>1,'bindingDigest'=>'','chapters'=>[]];
+    $emptyHtml=cmsAtelierScriptsHtml($emptyAudio,$v2['fields'],
+        $v2['atelier_reference'],$v2['atelier_phase_details'],true);
+    scriptCheck(str_contains($emptyHtml,'data-atelier-prefill>')
+        &&str_contains($emptyHtml,'value="'.$digest.'"'),
+        'EMPTY_DRAFT_BINDS_TO_COMPLETED_PHASES');
+    $oldAudio=['version'=>1,'bindingDigest'=>'','chapters'=>[
+        ['index'=>0,'id'=>'intro','text'=>'Un texte antérieur à conserver','editorNote'=>'']]];
+    $oldHtml=cmsAtelierScriptsHtml($oldAudio,$v2['fields'],
+        $v2['atelier_reference'],$v2['atelier_phase_details'],true);
+    scriptCheck(!str_contains($oldHtml,'data-atelier-prefill>')
+        &&str_contains($oldHtml,'Un texte antérieur à conserver'),
+        'PREFILL_NEVER_RETARGETS_WRITTEN_TEXT');
     $notSavedHtml=cmsAtelierScriptsHtml(null,$v2['fields'],
         $v2['atelier_reference'],$v2['atelier_phase_details']);
     scriptCheck(!str_contains($notSavedHtml,'data-atelier-prefill>'),
