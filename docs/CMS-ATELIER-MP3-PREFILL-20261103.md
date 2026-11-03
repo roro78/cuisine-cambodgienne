@@ -10,7 +10,7 @@ Cette première étape ne génère **aucun MP3**, n'appelle **aucune IA, aucune 
 
 Seules les **données déjà enregistrées** du même brouillon sont utilisées :
 
-- Introduction : objectif pédagogique, préparation finale, portion et préparatifs.
+- Introduction : présentation, objectif pédagogique, préparation finale et portions, tous couverts par l'empreinte de source existante.
 - Chaque phase : titre, objectif, durée prévue, gestes, observation, contrôle, sécurité, erreur, correction et consigne de pause.
 
 Le texte reprend explicitement les libellés source, **sans prétendre les réécrire en narration définitive**. Les formulations génériques de liaison ne sont ni des quantités culinaires inventées ni un résultat de vérification d'allergènes. Les champs doivent rester sous revue humaine. Ce premier pré-brouillon est déterministe et local (PHP lors de l'affichage de la page, puis insertion en JavaScript dans le formulaire déjà authentifié).
