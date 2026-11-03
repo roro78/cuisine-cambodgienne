@@ -1,4 +1,0 @@
-Cuisine du Cambodge
-Test GitHub -> OVH : OK
-Identifiant : CDC-OVH-20261103-7f4a92c1
-Fichier temoin statique, sans modification des pages ni des donnees.
