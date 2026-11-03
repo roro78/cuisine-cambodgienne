@@ -1,5 +1,16 @@
 # Publications HTTPS — candidat intégré, non déployé
 
+## Alerte administrative du 3 novembre 2026 — mot de passe lecteur absent
+
+Contrôle direct en lecture seule via l'API administrative Supabase, sur `pg_authid` sans consulter de hash : `cuisine_social_viewer` existe, LOGIN est actif, le compte n'est pas expiré, **mais `rolpassword IS NOT NULL = false`**. Les contrôles distincts de rôle, USAGE, SELECT-only, RLS et memberships sont PASS.
+
+**Conséquence : NO-GO pour toute connexion PostgreSQL authentifiée**, y compris via une Edge Function. Le rôle lecteur n'a actuellement aucun mot de passe à utiliser. Ce fait n'a pas été démontré par la CI, qui emploie des fixtures.
+
+Pour poursuivre : **attribuer pour la première fois** au rôle existant un mot de passe aléatoire fort avec un mécanisme privé permettant sa saisie et sa remise sécurisée au gestionnaire de secrets Edge. Il ne faut ni réinitialiser le mot de passe `postgres`, ni donner au lecteur des droits supplémentaires, ni écrire un mot de passe dans Git, des commandes enregistrées, les journaux ou cette conversation. N'effectuer aucune modification administrative avant la disponibilité et l'approbation du circuit sûr de conservation / transfert. Après cela, vérifier LOGIN, SELECT-only et RLS à nouveau, puis tester la connexion réelle.
+
+Ce contrôle ne signifie pas que le serveur PostgreSQL a un problème : un rôle sans mot de passe est simplement inapte à l'authentification par mot de passe nécessaire à ce parcours.
+
+
 Le module utilise son authentification privée existante, ses sessions, son CSRF,
 ses filtres et les formulaires Wait n8n existants. Le client HTTPS est raccordé
 dans `gestion-social/index.php` sous le drapeau privé strictement booléen
