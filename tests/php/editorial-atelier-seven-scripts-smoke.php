@@ -86,6 +86,7 @@ try{
     scriptCheck(str_contains($prefillHtml,'data-atelier-prefill')
         &&str_contains($prefillHtml,'data-atelier-prefill-template')
         &&str_contains($prefillHtml,'data-audio-chapter="6"')
+        &&str_contains($prefillHtml,'data-audio-note="6"')
         &&str_contains($prefillHtml,'Vérifier les risques'),
         'PREFILL_EXPLICIT_BUTTON_WITH_SOURCE');
     $notSavedHtml=cmsAtelierScriptsHtml(null,$v2['fields'],
