@@ -1463,8 +1463,15 @@ function cmsAtelierScriptsHtml(mixed $raw,array $fields,
     try{$detail=cmsAtelierPhaseDetailsClean($phaseDetails,$fields,$ref);}
     catch(Throwable $ignored){$detail=null;}
     $digest=cmsAtelierScriptSourceDigest($fields,$ref,$detail);
-    // Preserve stale original digest instead of retargeting written scripts.
+    // Never retarget an existing script. An entirely EMPTY audio draft,
+    // however, can be bound to the newly completed source after saving phases.
+    $occupied=false;
+    foreach(($raw['chapters']??[]) as $entry){
+        if(is_array($entry) && (trim((string)($entry['text']??''))!==''
+            ||trim((string)($entry['editorNote']??''))!==''))$occupied=true;
+    }
     $claimed=is_string($raw['bindingDigest']??null)?$raw['bindingDigest']:$digest;
+    if(!$occupied && $claimed==='')$claimed=$digest;
     $stale=$claimed!==''&&$claimed!==$digest;
     $html='<details id="cms-audio" class="guided-group" data-atelier-seven-scripts>'
         .'<summary>Préparer le guide audio — facultatif · sept chapitres</summary>'
@@ -1480,12 +1487,7 @@ function cmsAtelierScriptsHtml(mixed $raw,array $fields,
         .'de créer une nouvelle version.</p>';
     // An explicit choice only; existing scripts and older visas are immutable.
     // The HTML template is rendered inside the already authenticated Studio.
-    $occupied=false;
-    foreach(($raw['chapters']??[]) as $entry){
-        if(is_array($entry) && (trim((string)($entry['text']??''))!==''
-            ||trim((string)($entry['editorNote']??''))!==''))$occupied=true;
-    }
-    if($canPrepare && $digest!=='' && !$stale && !$occupied){
+    if($canPrepare && $digest!=='' && !$stale && !$occupied && $claimed===$digest){
         try{
             $proposal=cmsAtelierAudioTextSuggestions($fields,$ref,$detail);
             $html.='<button type="button" class="secondary" data-atelier-prefill>'
