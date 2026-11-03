@@ -106,7 +106,13 @@ jobs:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
         run: npm run test:browser-experiences
 
-      # The output of Astro includes privately deployed PHP routes and CMS indexes.\n      # Failing closed here prevents an approved STATIC site release from silently\n      # introducing or replacing the private Studio on the live OVH webroot.\n      - name: Refuse accidental CMS or secret files in full-site publication\n        run: node scripts/check-ovh-publish-scope.mjs dist\n\n      - name: Publish dist to ovh-production
+      # The output of Astro includes privately deployed PHP routes and CMS indexes.
+      # Failing closed here prevents an approved STATIC site release from silently
+      # introducing or replacing the private Studio on the live OVH webroot.
+      - name: Refuse accidental CMS or secret files in full-site publication
+        run: node scripts/check-ovh-publish-scope.mjs dist
+
+      - name: Publish dist to ovh-production
         shell: bash
         run: |
           set -euo pipefail
