@@ -69,7 +69,9 @@ test('remote verification fetches only public pages and checks library denial',a
  const fetcher=async url=>{
   const pathname=new URL(url).pathname;
   requested.push(pathname);
-  if(['/gestion-contenus/lib.php','/gestion-contenus/publication-gap-audit.php'].includes(pathname))return new Response('Denied',{status:403});
+  if(['/gestion-contenus/lib.php','/gestion-contenus/publication-gap-audit.php',
+   '/gestion-contenus/visual-provider-adapter.php','/gestion-contenus/content-gateway-adapter.php',
+   '/gestion-contenus/openai-brief-adapter.php'].includes(pathname))return new Response('Denied',{status:403});
   if(pathname==='/gestion-contenus/')return new Response(login,{status:200,headers:safeHeaders});
   const document=feeds[pathname.slice(1)];
   if(document)return new Response(JSON.stringify(document),{status:200,
@@ -78,8 +80,11 @@ test('remote verification fetches only public pages and checks library denial',a
  };
  const result=await cmsReception({url:'https://www.cuisine-du-cambodge.com/',fetcher});
  assert.deepEqual(result,{social:1,canonical:1,guided:1,login:'protected',library:'blocked'});
- assert.equal(requested.length,6);
+ assert.equal(requested.length,9);
  assert.ok(requested.includes('/gestion-contenus/publication-gap-audit.php'));
+ assert.ok(requested.includes('/gestion-contenus/content-gateway-adapter.php'));
+ assert.ok(requested.includes('/gestion-contenus/openai-brief-adapter.php'));
+ assert.ok(requested.includes('/gestion-contenus/visual-provider-adapter.php'));
  const exposed=async url=>{
   const pathname=new URL(url).pathname;
   if(pathname==='/gestion-contenus/publication-gap-audit.php')
@@ -107,7 +112,10 @@ test('release package includes exactly seven scoped public files and private rol
   await writeFile(join(dist,'gestion-contenus','publication-gap-audit.php'),'<?php function prereception(){}');
   await writeFile(join(dist,'gestion-contenus','.htaccess'),
    '<Files "lib.php">\nRequire all denied\n</Files>\n'+
-   '<Files "publication-gap-audit.php">\nRequire all denied\n</Files>\n');
+   '<Files "publication-gap-audit.php">\nRequire all denied\n</Files>\n'+
+   '<Files "visual-provider-adapter.php">\nRequire all denied\n</Files>\n'+
+   '<Files "content-gateway-adapter.php">\nRequire all denied\n</Files>\n'+
+   '<Files "openai-brief-adapter.php">\nRequire all denied\n</Files>\n');
   const packageInfo=await packageCmsRelease({dist,out});
   assert.equal(packageInfo.files.length,7);
   assert.ok(packageInfo.files.some(item=>item.path==='gestion-contenus/publication-gap-audit.php'));
