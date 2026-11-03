@@ -1269,7 +1269,8 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
     is_array($createForm['fields']??null)?$createForm['fields']:[],
     $createForm['atelier_reference']??null,
     $createForm['atelier_phase_details']??null,
-    $creation!==null && $studioSourceCurrent) ?>
+    $creation!==null && $studioSourceCurrent && $method==='GET'
+    && $pendingContent===null && $candidateToken==='' && $aiJobToken==='') ?>
 <?php endif; ?>
 <details class="guided-group"><summary>Notes et calendrier — facultatifs</summary>
 <label>Notes de recherche privées (jamais publiées)
