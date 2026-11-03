@@ -1,3 +1,5 @@
+> **Point de reprise vérifié — 3 novembre 2026 :** la publication d'un fichier témoin depuis ChatGPT sur `ovh-production` a été constatée sur le domaine public. Ce test prouve le circuit GitHub → OVH **pour un fichier statique**, pas la livraison des PHP privés. `main` contient le dashboard #191 et le calendrier mensuel #199 ; les lots IA texte #197, visuels #196 et Publications/Supabase #200 restent distincts et non qualifiés en production. Le déploiement du Studio exige la réconciliation des fichiers OVH préexistants, une sauvegarde et un paquet strictement limité aux sept fichiers CMS. La reprise, les contrôles et les critères NO-GO sont détaillés dans [CMS-OVH-GIT-REPRISE-20261103.md](CMS-OVH-GIT-REPRISE-20261103.md). **Aucune activation automatique d'Ollama, des médias ou de Meta.**
+
 # Cuisine du Cambodge — Pipeline éditorial IA, manuel et calendrier média
 
 > **État prioritaire au 29 octobre :** C1 (#150) revu et fusionné sur autorisation
