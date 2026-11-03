@@ -7,14 +7,14 @@ const DB_HOST = "aws-1-eu-west-3.pooler.supabase.com";
 const DB_USER = "cuisine_social_viewer.kljbnfjxwloiodwlbrrz";
 const FIELDS = "id::text AS id,source_id,source_fingerprint,source_snapshot,scheduled_date::text AS scheduled_date,facebook_caption,instagram_caption,image_url,status,fb_state,ig_state,human_decision,human_note,decided_at::text AS decided_at,approved_at::text AS approved_at,published_at::text AS published_at,facebook_post_id,instagram_post_id,instagram_container_id";
 
-function reply(code, data) {
+function reply(code: number, data: unknown) {
   return new Response(JSON.stringify(data), {status:code, headers:{
     "content-type":"application/json; charset=utf-8",
     "cache-control":"private, no-store, max-age=0",
     "x-content-type-options":"nosniff"
   }});
 }
-async function authorized(provided, secret) {
+async function authorized(provided: string | null, secret: string | undefined): Promise<boolean> {
   if (typeof provided!=="string" || typeof secret!=="string" ||
       !/^[A-Za-z0-9_-]{32,256}$/.test(secret) ||
       !/^[A-Za-z0-9_-]{32,256}$/.test(provided)) return false;
@@ -28,7 +28,8 @@ async function authorized(provided, secret) {
   for(let i=0;i<a.length;i++) diff|=a[i]^b[i];
   return diff===0;
 }
-function databaseUrl(value) {
+function databaseUrl(value: string | undefined): string | null {
+  if (!value) return null;
   try {
     const u=new URL(value);
     if (!["postgres:","postgresql:"].includes(u.protocol) ||
@@ -38,7 +39,7 @@ function databaseUrl(value) {
     return value;
   } catch {return null;}
 }
-function parameters(req) {
+function parameters(req: Request): { status: string; offset: number; draftId: string | null } | null {
   const url=new URL(req.url);
   const keys=[...url.searchParams.keys()];
   if(new Set(keys).size!==keys.length ||
@@ -53,7 +54,7 @@ function parameters(req) {
       (draftId.length===19 && draftId>"9223372036854775807"))))return null;
   return {status,offset:(page-1)*50,draftId};
 }
-Deno.serve(async(req)=>{
+Deno.serve(async(req: Request)=>{
   if(req.method!=="GET")return reply(405,{error:"method_not_allowed"});
   if(!await authorized(req.headers.get("x-cdc-social-read-token"),
                        Deno.env.get("CDC_SOCIAL_REVIEW_TOKEN")))
