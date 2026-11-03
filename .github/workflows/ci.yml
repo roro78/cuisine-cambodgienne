@@ -148,6 +148,9 @@ jobs:
           node --test tests/cms-studio-architecture.test.mjs
           node --test tests/social-dashboard-release.test.mjs tests/social-private-dashboard-contract.test.mjs tests/social-private-dashboard-history.test.mjs tests/social-viewer-ovh-cli-smoke.test.mjs
           php -l public/gestion-social/diagnostic-cli.php
+          php -l public/gestion-social/https-readonly.php
+          php -l tests/php/social-https-readonly-smoke.php
+          php tests/php/social-https-readonly-smoke.php
           php tests/php/social-catalog-readonly-smoke.php
           php tests/php/social-n8n-wait-readonly-smoke.php
           node --test tests/editorial-content-pipeline.test.mjs
