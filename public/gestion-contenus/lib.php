@@ -1405,8 +1405,60 @@ function cmsAtelierScriptsDraftComplete(mixed $value): bool {
     }
     return true;
 }
+/**
+ * Draft ONLY: create seven editable text suggestions from the saved,
+ * source-bound workshop fields. No model, TTS, media write or human visa.
+ * Never call this implicitly from a save, draft migration or audio approval.
+ */
+function cmsAtelierAudioTextSuggestions(array $fields,
+    ?array $reference,?array $phaseDetails): array {
+    $digest=cmsAtelierScriptSourceDigest($fields,$reference,$phaseDetails);
+    if($digest==='' || !is_array($phaseDetails)
+        ||!cmsAtelierPhaseDetailsComplete($phaseDetails))
+        throw new RuntimeException('ATELIER_AUDIO_PREFILL_SOURCE');
+    $intro=[
+        'Bienvenue dans cet atelier de cuisine.',
+        'Notre objectif est : '.$fields['learningGoal'].'.',
+        'La préparation finale recherchée est : '.$fields['finalPreparation'].'.',
+        'Repère pour les portions : '.$fields['portionLabel'].'.',
+        'Avant de commencer, relisez la recette publiée associée, notamment les quantités et les allergènes.',
+        'Nous allons parcourir les six phases enregistrées, dans leur ordre prévu.'
+    ];
+    if(is_string($fields['beforeStarting']??null)
+        &&trim($fields['beforeStarting'])!=='')
+        $intro[]='Préparatifs indiqués dans la fiche : '.$fields['beforeStarting'].'.';
+    $chapters=[];
+    $list=[implode("\n",$intro)];
+    foreach($phaseDetails['phases'] as $i=>$phase){
+        if(!is_array($phase)||($phase['index']??null)!==$i
+            ||($phase['id']??null)!==cmsAtelierPhaseIds()[$i])
+            throw new RuntimeException('ATELIER_AUDIO_PREFILL_PHASE');
+        $lines=[
+            'Étape '.($i+1).' : '.$phase['sourceTitle'].'.',
+            'Objectif pédagogique : '.$phase['sourceLearning'].'.',
+            'Durée pratique prévue : '.$phase['minutes'].' minutes.',
+            'Gestes enregistrés, dans leur ordre : '.implode(' ; ',$phase['actions']).'.',
+            'Ce qu’il faut observer : '.$phase['observe'].'.',
+            'Point de contrôle : '.$phase['check'].'.',
+            'Précautions prévues : '.$phase['safety'].'.',
+            'Erreur à éviter : '.$phase['mistake'].'.',
+            'En cas de difficulté : '.$phase['recovery'].'.',
+            'Pour la pause et la reprise : '.$phase['pausePrompt'].'.'
+        ];
+        $list[]=implode("\n",$lines);
+    }
+    if(count($list)!==7)throw new RuntimeException('ATELIER_AUDIO_PREFILL_PHASE');
+    foreach(cmsAtelierScriptIds() as $i=>$id){
+        $text=$list[$i];
+        if(mbLen($text)>6900||mbLen($text)<120)
+            throw new RuntimeException('ATELIER_AUDIO_PREFILL_LENGTH');
+        $chapters[]=['index'=>$i,'id'=>$id,'text'=>$text,
+            'editorNote'=>'Pré-brouillon automatique issu des champs de la fiche. À corriger et relire : aucun visa ou accord audio.'];
+    }
+    return ['version'=>1,'bindingDigest'=>$digest,'chapters'=>$chapters];
+}
 function cmsAtelierScriptsHtml(mixed $raw,array $fields,
-    mixed $reference,mixed $phaseDetails): string {
+    mixed $reference,mixed $phaseDetails,bool $canPrepare=false): string {
     $raw=is_array($raw)?$raw:[];
     $ref=is_array($reference)?$reference:null;
     $detail=null;
@@ -1428,6 +1480,31 @@ function cmsAtelierScriptsHtml(mixed $raw,array $fields,
         .'La recette ou une phase a changé. Les narrations existantes restent '
         .'attachées à leur ancienne source : effacez-les explicitement avant '
         .'de créer une nouvelle version.</p>';
+    // An explicit choice only; existing scripts and older visas are immutable.
+    // The HTML template is rendered inside the already authenticated Studio.
+    $occupied=false;
+    foreach(($raw['chapters']??[]) as $entry){
+        if(is_array($entry) && (trim((string)($entry['text']??''))!==''
+            ||trim((string)($entry['editorNote']??''))!==''))$occupied=true;
+    }
+    if($canPrepare && $digest!=='' && !$stale && !$occupied){
+        try{
+            $proposal=cmsAtelierAudioTextSuggestions($fields,$ref,$detail);
+            $html.='<button type="button" class="secondary" data-atelier-prefill>'
+                .'Préparer les sept textes à relire</button>'
+                .'<p class="small" data-atelier-prefill-status role="status" aria-live="polite">'
+                .'Proposition issue des champs déjà enregistrés : aucun texte, visa ou MP3 '
+                .'n’est modifié avant votre enregistrement.</p>'
+                .'<template data-atelier-prefill-template>';
+            foreach($proposal['chapters'] as $chapter)
+                $html.='<span data-audio-chapter="'.(int)$chapter['index'].'">'
+                    .cmsEsc($chapter['text']).'</span>';
+            $html.='</template>';
+        }catch(Throwable $ignored){
+            $html.='<p class="small muted">Préparation automatique indisponible : '
+                .'vérifiez les détails des six phases puis enregistrez-les.</p>';
+        }
+    }
     $html.='<input type="hidden" name="atelier_scripts[version]" value="1">'
         .'<input type="hidden" name="atelier_scripts[bindingDigest]" value="'
         .cmsEsc($claimed).'">';
