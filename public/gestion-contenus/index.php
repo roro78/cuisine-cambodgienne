@@ -1268,7 +1268,8 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?= cmsAtelierScriptsHtml($createForm['atelier_scripts']??null,
     is_array($createForm['fields']??null)?$createForm['fields']:[],
     $createForm['atelier_reference']??null,
-    $createForm['atelier_phase_details']??null) ?>
+    $createForm['atelier_phase_details']??null,
+    $creation!==null && $studioSourceCurrent) ?>
 <?php endif; ?>
 <details class="guided-group"><summary>Notes et calendrier — facultatifs</summary>
 <label>Notes de recherche privées (jamais publiées)
@@ -1969,6 +1970,44 @@ document.querySelectorAll('[data-studio-edit]').forEach(form=>{
 });
 window.addEventListener('beforeunload',event=>{
   if(studioDirty){event.preventDefault();event.returnValue='';}
+});
+// Create a local, editable proposal only after the source-bound workshop has
+// been saved. No API, TTS or writes occur here; the regular save owns versioning.
+document.querySelector('[data-atelier-prefill]')?.addEventListener('click',event=>{
+  const button=event.currentTarget;
+  const section=button.closest('#cms-audio');
+  const form=button.closest('form');
+  const status=section?.querySelector('[data-atelier-prefill-status]');
+  const say=message=>{if(status)status.textContent=message;};
+  if(!section||!form||studioDirty){
+    say('Enregistrez d’abord les modifications en cours, puis préparez les textes.');
+    return;
+  }
+  const template=section.querySelector('template[data-atelier-prefill-template]');
+  const rows=[...((template?.content.querySelectorAll('[data-audio-chapter]'))||[])];
+  if(rows.length!==7){
+    say('Préparation indisponible : les sept chapitres ne sont pas complets.');
+    return;
+  }
+  const inputs=rows.map((row,i)=>{
+    if(Number(row.dataset.audioChapter)!==i)return null;
+    return form.elements.namedItem('atelier_scripts[chapters]['+i+'][text]');
+  });
+  const notes=rows.map((_,i)=>form.elements.namedItem('atelier_scripts[chapters]['+i+'][editorNote]'));
+  if(inputs.some(el=>!(el instanceof HTMLTextAreaElement))
+     ||notes.some(el=>!(el instanceof HTMLTextAreaElement))
+     ||inputs.some(el=>el.value.trim()!=='')
+     ||notes.some(el=>el.value.trim()!=='')){
+    say('Des textes ou des notes existent déjà : rien n’a été remplacé.');
+    return;
+  }
+  rows.forEach((row,i)=>{
+    inputs[i].value=row.textContent||'';
+    inputs[i].dispatchEvent(new Event('input',{bubbles:true}));
+  });
+  section.open=true;
+  button.disabled=true;
+  say('Sept pré-brouillons remplis, sans validation ni audio. Relisez-les puis cliquez sur « Enregistrer une nouvelle version privée ».');
 });
 document.querySelector('[data-studio-transition]')?.addEventListener('submit',event=>{
   if(studioDirty){event.preventDefault();window.alert('Enregistrez les modifications de la fiche avant de préparer le brouillon lié.');}
