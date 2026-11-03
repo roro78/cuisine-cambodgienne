@@ -105,7 +105,7 @@ Deno.serve(async(req: Request)=>{
       const counter=await tx`SELECT status,count(*)::int AS total
                              FROM cuisine_social.posts GROUP BY status`;
       const counts=Object.fromEntries(counter.map(x=>[x.status,x.total]));
-      let rows=[];
+      let rows: Record<string, unknown>[]=[];
       if(args.status!=="sources"){
         const base="SELECT "+FIELDS+" FROM cuisine_social.posts";
         // SQL fragments below are static, all request values are bound parameters.
@@ -125,7 +125,7 @@ Deno.serve(async(req: Request)=>{
           WHERE id::text=${args.draftId} AND status='draft' AND human_decision IS NULL LIMIT 1`;
         target=found[0]??null;
       }
-      let history=[],history_overflow=false;
+      let history: Record<string, unknown>[]=[],history_overflow=false;
       if(args.status==="sources"){
         history=await tx`SELECT DISTINCT ON(source_id) source_id,source_fingerprint,status
           FROM cuisine_social.posts ORDER BY source_id,scheduled_date DESC,id DESC LIMIT 1001`;
