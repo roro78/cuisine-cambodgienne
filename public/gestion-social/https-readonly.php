@@ -63,10 +63,11 @@ function socialHttpsReadOnly(array $cfg, string $status, int $page, ?string $dra
     } catch (JsonException $e) {
         throw new RuntimeException('Private HTTPS reader response invalid');
     }
-    if (!is_array($result) || !array_is_list($result['rows'] ?? null)
+    if (!is_array($result) || !is_array($result['rows'] ?? null)
+        || !array_is_list($result['rows'])
         || !is_array($result['counts'] ?? null)
-        || array_is_list($result['counts'])
-        || !array_is_list($result['history'] ?? null)
+        || !is_array($result['history'] ?? null)
+        || !array_is_list($result['history'])
         || !is_bool($result['history_overflow'] ?? null)
         || !array_key_exists('target', $result)
         || ($result['target'] !== null && !is_array($result['target']))) {
