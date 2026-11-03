@@ -165,7 +165,7 @@ jobs:
           deno-version: v2.x
 
       - name: Typecheck read-only Supabase Edge function
-        run: deno check automation/supabase/functions/cuisine-social-readonly/index.ts
+        run: deno check --config automation/supabase/functions/cuisine-social-readonly/deno.json automation/supabase/functions/cuisine-social-readonly/index.ts
 
       - name: Motion regression contract
         run: npm run test:motion
