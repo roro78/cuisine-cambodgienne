@@ -97,6 +97,13 @@ try{
     scriptCheck(str_contains($emptyHtml,'data-atelier-prefill>')
         &&str_contains($emptyHtml,'value="'.$digest.'"'),
         'EMPTY_DRAFT_BINDS_TO_COMPLETED_PHASES');
+    $outdatedEmpty=['version'=>1,'bindingDigest'=>str_repeat('f',64),
+        'chapters'=>[]];
+    $outdatedHtml=cmsAtelierScriptsHtml($outdatedEmpty,$v2['fields'],
+        $v2['atelier_reference'],$v2['atelier_phase_details'],true);
+    scriptCheck(str_contains($outdatedHtml,'data-atelier-prefill>')
+        &&str_contains($outdatedHtml,'value="'.$digest.'"'),
+        'OLD_EMPTY_DRAFT_CAN_REBIND_WITHOUT_NARRATION');
     $oldAudio=['version'=>1,'bindingDigest'=>'','chapters'=>[
         ['index'=>0,'id'=>'intro','text'=>'Un texte antérieur à conserver','editorNote'=>'']]];
     $oldHtml=cmsAtelierScriptsHtml($oldAudio,$v2['fields'],
