@@ -1471,7 +1471,9 @@ function cmsAtelierScriptsHtml(mixed $raw,array $fields,
             ||trim((string)($entry['editorNote']??''))!==''))$occupied=true;
     }
     $claimed=is_string($raw['bindingDigest']??null)?$raw['bindingDigest']:$digest;
-    if(!$occupied && $claimed==='')$claimed=$digest;
+    // No human narration to preserve: rebind EMPTY drafts to the current
+    // saved pedagogical source, even if their old digest is now outdated.
+    if(!$occupied)$claimed=$digest;
     $stale=($occupied && $claimed==='') || ($claimed!==''&&$claimed!==$digest);
     $html='<details id="cms-audio" class="guided-group" data-atelier-seven-scripts>'
         .'<summary>Préparer le guide audio — facultatif · sept chapitres</summary>'
