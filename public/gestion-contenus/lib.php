@@ -1418,15 +1418,13 @@ function cmsAtelierAudioTextSuggestions(array $fields,
         throw new RuntimeException('ATELIER_AUDIO_PREFILL_SOURCE');
     $intro=[
         'Bienvenue dans cet atelier de cuisine.',
+        'Présentation enregistrée dans la fiche : '.$fields['intro'].'.',
         'Notre objectif est : '.$fields['learningGoal'].'.',
         'La préparation finale recherchée est : '.$fields['finalPreparation'].'.',
         'Repère pour les portions : '.$fields['portionLabel'].'.',
         'Avant de commencer, relisez la recette publiée associée, notamment les quantités et les allergènes.',
         'Nous allons parcourir les six phases enregistrées, dans leur ordre prévu.'
     ];
-    if(is_string($fields['beforeStarting']??null)
-        &&trim($fields['beforeStarting'])!=='')
-        $intro[]='Préparatifs indiqués dans la fiche : '.$fields['beforeStarting'].'.';
     $chapters=[];
     $list=[implode("\n",$intro)];
     foreach($phaseDetails['phases'] as $i=>$phase){
@@ -1496,9 +1494,12 @@ function cmsAtelierScriptsHtml(mixed $raw,array $fields,
                 .'Proposition issue des champs déjà enregistrés : aucun texte, visa ou MP3 '
                 .'n’est modifié avant votre enregistrement.</p>'
                 .'<template data-atelier-prefill-template>';
-            foreach($proposal['chapters'] as $chapter)
+            foreach($proposal['chapters'] as $chapter){
                 $html.='<span data-audio-chapter="'.(int)$chapter['index'].'">'
                     .cmsEsc($chapter['text']).'</span>';
+                $html.='<span data-audio-note="'.(int)$chapter['index'].'">'
+                    .cmsEsc($chapter['editorNote']).'</span>';
+            }
             $html.='</template>';
         }catch(Throwable $ignored){
             $html.='<p class="small muted">Préparation automatique indisponible : '
