@@ -1,0 +1,7 @@
+Cuisine du Cambodge — test GitHub vers OVH
+Statut attendu : DEPLOIEMENT_OK
+Branche : ovh-production
+Fichier temoin cree depuis ChatGPT le 2026-11-03.
+Identifiant : CDC-TEST-CHATGPT-20261103-B9E427
+Ce fichier est volontairement conserve apres verification.
+Aucune donnee privee ni configuration ne sont incluses.
