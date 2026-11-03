@@ -5,7 +5,7 @@ import postgres from "npm:postgres@3.4.5";
 const ALLOWED = new Set(["all","draft","approved","revision_requested","rejected","publishing","published","manual_review","sources"]);
 const DB_HOST = "aws-1-eu-west-3.pooler.supabase.com";
 const DB_USER = "cuisine_social_viewer.kljbnfjxwloiodwlbrrz";
-const FIELDS = "id::text AS id,source_id,source_fingerprint,source_snapshot,scheduled_date::text AS scheduled_date,facebook_caption,instagram_caption,image_url,status,fb_state,ig_state,human_decision,human_note,decided_at::text AS decided_at,approved_at::text AS approved_at,published_at::text AS published_at,facebook_post_id,instagram_post_id,instagram_container_id";
+const FIELDS = "id::text AS id,source_id,source_fingerprint,source_snapshot::text AS source_snapshot,scheduled_date::text AS scheduled_date,facebook_caption,instagram_caption,image_url,status,fb_state,ig_state,human_decision,human_note,decided_at::text AS decided_at,approved_at::text AS approved_at,published_at::text AS published_at,facebook_post_id,instagram_post_id,instagram_container_id";
 
 function reply(code: number, data: unknown) {
   return new Response(JSON.stringify(data), {status:code, headers:{
@@ -54,18 +54,27 @@ function parameters(req: Request): { status: string; offset: number; draftId: st
       (draftId.length===19 && draftId>"9223372036854775807"))))return null;
   return {status,offset:(page-1)*50,draftId};
 }
-Deno.serve(async(req: Request)=>{
+export function createSocialReader(
+  env: (name: string) => string | undefined = (name) => Deno.env.get(name),
+  connect: typeof postgres = postgres,
+) { return async(req: Request)=>{
   if(req.method!=="GET")return reply(405,{error:"method_not_allowed"});
   if(!await authorized(req.headers.get("x-cdc-social-read-token"),
-                       Deno.env.get("CDC_SOCIAL_REVIEW_TOKEN")))
+                       env("CDC_SOCIAL_REVIEW_TOKEN")))
     return reply(401,{error:"unauthorized"});
+  if(env("CDC_SOCIAL_READONLY_ENABLED")!=="true")return reply(503,{error:"unavailable"});
   const args=parameters(req);
   if(!args)return reply(400,{error:"invalid_parameters"});
-  const connection=databaseUrl(Deno.env.get("CDC_SOCIAL_READONLY_PG_URL"));
-  if(!connection)return reply(503,{error:"unavailable"});
-  const db=postgres(connection,{max:1,prepare:false,connect_timeout:5,idle_timeout:1,
-    ssl:{rejectUnauthorized:true}});
+  const connection=databaseUrl(env("CDC_SOCIAL_READONLY_PG_URL"));
+  const ca=env("CDC_SOCIAL_READONLY_PG_CA");
+  if(!connection || !ca || ca.length>20000 ||
+     !/^-----BEGIN CERTIFICATE-----\r?\n[A-Za-z0-9+/=\r\n]+-----END CERTIFICATE-----\s*$/.test(ca))
+    return reply(503,{error:"unavailable"});
+  let db: ReturnType<typeof postgres> | undefined;
   try{
+    db=connect(connection,{max:1,prepare:false,connect_timeout:5,idle_timeout:1,
+      ssl:{ca,rejectUnauthorized:true,servername:DB_HOST},
+      connection:{statement_timeout:5000,lock_timeout:1000,default_transaction_read_only:true}});
     const result=await db.begin(async(tx)=>{
       await tx`SET TRANSACTION READ ONLY`;
       const role=await tx`
@@ -93,6 +102,8 @@ Deno.serve(async(req: Request)=>{
                  AND tablename='posts' AND policyname='cuisine_social_viewer_read_posts'
                  AND cmd='SELECT' AND qual='true' AND with_check IS NULL
                  AND roles=ARRAY['cuisine_social_viewer']::name[]) AS viewer_policy,
+               COALESCE((SELECT ssl FROM pg_stat_ssl WHERE pid=pg_backend_pid()),false) AS postgres_tls,
+               current_setting('transaction_read_only')='on' AS readonly_transaction,
                NOT EXISTS(SELECT 1 FROM pg_auth_members m
                  LEFT JOIN pg_roles member_role ON member_role.oid=m.member
                  WHERE m.member=r.oid OR (m.roleid=r.oid AND NOT
@@ -132,14 +143,16 @@ Deno.serve(async(req: Request)=>{
         history_overflow=history.length>1000;
         if(history_overflow)history=[];
       }
-      return {rows,counts,target,history,history_overflow};
+      return {contract:"cdc-social-readonly-v1",readonly:true,rows,counts,target,history,history_overflow};
     });
-    if(JSON.stringify(result).length>1500000)return reply(503,{error:"oversized_result"});
+    if(new TextEncoder().encode(JSON.stringify(result)).byteLength>1500000)return reply(503,{error:"oversized_result"});
     return reply(200,result);
   }catch(_error){
     // Do not leak role, SQL, connection details, or private rows.
     return reply(503,{error:"unavailable"});
   }finally{
-    await db.end({timeout:1}).catch(()=>{});
+    await db?.end({timeout:1}).catch(()=>{});
   }
-});
+}; }
+
+if(import.meta.main) Deno.serve(createSocialReader());

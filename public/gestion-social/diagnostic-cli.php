@@ -22,8 +22,6 @@ function isTrue(mixed $v): bool {
 }
 if (PHP_VERSION_ID < 80100) readinessFail('PHP_VERSION');
 readinessOk('PHP_VERSION');
-if (!extension_loaded('pdo_pgsql')) readinessFail('PHP_PDO_PGSQL');
-readinessOk('PHP_PDO_PGSQL');
 if (!extension_loaded('curl')) readinessFail('PHP_CURL');
 readinessOk('PHP_CURL');
 
@@ -38,6 +36,19 @@ if (!is_string($config['admin_user'] ?? null) || ($config['admin_user'] ?? '')==
         || str_starts_with($config['password_hash'], '$argon')))
     readinessFail('ADMIN_LOGIN_CONFIG');
 readinessOk('ADMIN_LOGIN_CONFIG');
+if (($config['social_readonly_https_enabled'] ?? false) === true) {
+    try {
+        require_once __DIR__.'/https-readonly.php';
+        socialHttpsReadOnly($config, 'all', 1);
+        readinessOk('HTTPS_READER_READONLY_CONTRACT');
+        readinessOk('POSTS_QUERY');
+        readinessOk('READY_FOR_PRIVATE_ANDROID_TEST');
+        exit;
+    } catch (Throwable $e) { readinessFail('HTTPS_READER_UNAVAILABLE'); }
+}
+if (!extension_loaded('pdo_pgsql')) readinessFail('PHP_PDO_PGSQL');
+readinessOk('PHP_PDO_PGSQL');
+
 if (!is_string($config['social_readonly_user'] ?? null) || $config['social_readonly_user'] === ''
     || !is_string($config['social_readonly_password'] ?? null)
     || $config['social_readonly_password'] === ''

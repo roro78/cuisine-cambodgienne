@@ -1,0 +1,4 @@
+# The handler verifies a dedicated server-only token before any database access.
+# No anon/publishable/service-role key grants access to private posts.
+[functions.cuisine-social-readonly]
+verify_jwt = false

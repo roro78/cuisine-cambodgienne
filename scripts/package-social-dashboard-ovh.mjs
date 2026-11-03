@@ -3,7 +3,7 @@ import {execFileSync} from 'node:child_process';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {resolve,join} from 'node:path';
 import {pathToFileURL} from 'node:url';
-export const socialDashboardFiles=Object.freeze(['index.php','catalog-readonly.php','n8n-wait-readonly.php','diagnostic-cli.php','.htaccess']);
+export const socialDashboardFiles=Object.freeze(['index.php','catalog-readonly.php','n8n-wait-readonly.php','https-readonly.php','diagnostic-cli.php','.htaccess']);
 export async function packageSocialDashboard({commit,output}){
  if(!/^[a-f0-9]{40}$/.test(commit))throw Error('SOURCE_COMMIT_REQUIRED');
  const blobs=socialDashboardFiles.map(name=>({name,bytes:execFileSync('git',['show',commit+':public/gestion-social/'+name])}));

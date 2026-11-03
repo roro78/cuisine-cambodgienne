@@ -175,6 +175,8 @@ $platformStateLabels = ['pending' => 'En attente', 'submitting' => 'Transmission
     'creating' => 'Préparation du média', 'checking' => 'Vérification Meta',
     'container_created' => 'Média préparé', 'published' => 'Publiée', 'manual_review' => 'Vérification manuelle'];
 if ($authenticated) {
+    $useHttps = ($cfg['social_readonly_https_enabled'] ?? false) === true;
+    if (!$useHttps) {
     // Use a separate SELECT-only role, never the n8n writer or Supabase service role.
     foreach (['social_readonly_dsn', 'social_readonly_user', 'social_readonly_password'] as $key)
         if (!isset($cfg[$key]) || !is_string($cfg[$key]) || $cfg[$key] === '') failClosed();
@@ -208,7 +210,9 @@ if ($authenticated) {
     $expectedPgUser = $directPgHost ? 'cuisine_social_viewer'
         : 'cuisine_social_viewer.kljbnfjxwloiodwlbrrz';
     if ($cfg['social_readonly_user'] !== $expectedPgUser) failClosed();
+    }
     try {
+        if (!$useHttps) {
         $pdo = new PDO(
             $cfg['social_readonly_dsn'], $cfg['social_readonly_user'], $cfg['social_readonly_password'],
             [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -269,21 +273,29 @@ if ($authenticated) {
                   'can_read_dispatch','can_insert_dispatch','can_update_dispatch','can_delete_dispatch'] as $danger)
             if ($truthy($rights[$danger] ?? false)) failClosed();
         $pdo->exec('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY');
+        }
         $status = (string)($_GET['status'] ?? 'draft');
         $allowed = ['all', 'draft', 'approved', 'revision_requested', 'rejected', 'publishing', 'published', 'manual_review', 'sources'];
         if (!in_array($status, $allowed, true)) $status = 'draft';
-        $sql = 'SELECT id::text AS id,source_id,source_fingerprint,source_snapshot,scheduled_date::text AS scheduled_date,facebook_caption,instagram_caption,image_url,status,fb_state,ig_state,human_decision,human_note,decided_at::text AS decided_at,approved_at::text AS approved_at,published_at::text AS published_at,facebook_post_id,instagram_post_id,instagram_container_id FROM cuisine_social.posts';
-        if ($status !== 'all' && $status !== 'sources') $sql .= ' WHERE status = :status';
         $candidate = filter_var($_GET['page'] ?? 1, FILTER_VALIDATE_INT,
             ['options' => ['min_range' => 1, 'max_range' => 100000]]);
         $page = $candidate === false ? 1 : $candidate;
+        if ($useHttps) {
+            require_once __DIR__ . '/https-readonly.php';
+            $review = socialHttpsReadOnly($cfg, $status, $page, $requestedWaitPost ?? null);
+            $rows = $review['rows'];
+        } else {
+        $sql = 'SELECT id::text AS id,source_id,source_fingerprint,source_snapshot,scheduled_date::text AS scheduled_date,facebook_caption,instagram_caption,image_url,status,fb_state,ig_state,human_decision,human_note,decided_at::text AS decided_at,approved_at::text AS approved_at,published_at::text AS published_at,facebook_post_id,instagram_post_id,instagram_container_id FROM cuisine_social.posts';
+        if ($status !== 'all' && $status !== 'sources') $sql .= ' WHERE status = :status';
         $sql .= ' ORDER BY scheduled_date DESC,id DESC LIMIT 50 OFFSET :offset';
         $stmt = $pdo->prepare($sql);
         if ($status !== 'all' && $status !== 'sources') $stmt->bindValue(':status', $status, PDO::PARAM_STR);
         $stmt->bindValue(':offset', ($page - 1) * 50, PDO::PARAM_INT);
         $stmt->execute();
         $rows = $status === 'sources' ? [] : $stmt->fetchAll();
+        }
         if (isset($requestedWaitPost)) {
+            if ($useHttps) { $target = $review['target']; } else {
             $query = $pdo->prepare('SELECT id::text AS id,source_id,source_fingerprint,
                 scheduled_date::text AS scheduled_date,facebook_caption,instagram_caption,
                 image_url,status,fb_state,ig_state,human_decision,decided_at,
@@ -293,6 +305,7 @@ if ($authenticated) {
             $query->bindValue(':id',$requestedWaitPost,PDO::PARAM_STR);
             $query->execute();
             $target=$query->fetch();
+            }
             if (!$target) {
                 http_response_code(409);
                 exit('Cette publication n’est plus en attente de décision.');
@@ -311,16 +324,16 @@ if ($authenticated) {
             if (!$existingWaitLinks) $existingWaitStatus =
                 'Lien direct non disponible : le formulaire reçu par e-mail reste utilisable.';
         }
-        $counts = $pdo->query('SELECT status,count(*)::int AS total FROM cuisine_social.posts GROUP BY status')->fetchAll(PDO::FETCH_KEY_PAIR);
+        $counts = $useHttps ? $review['counts'] : $pdo->query('SELECT status,count(*)::int AS total FROM cuisine_social.posts GROUP BY status')->fetchAll(PDO::FETCH_KEY_PAIR);
         if ($status === 'sources') {
             // Independent views: public static catalogue = editorial candidates;
             // PostgreSQL drafts = n8n-selected review tasks. Never queue a source here.
-            $historyRows = $pdo->query(
+            $historyRows = $useHttps ? $review['history'] : $pdo->query(
                 'SELECT DISTINCT ON (source_id) source_id,source_fingerprint,status
                  FROM cuisine_social.posts
                  ORDER BY source_id,scheduled_date DESC,id DESC LIMIT 1001'
             )->fetchAll();
-            if (count($historyRows) > 1000) {
+            if (count($historyRows) > 1000 || ($useHttps && $review['history_overflow'])) {
                 $catalogStatus = 'Historique trop volumineux pour comparer les sources.';
             } else {
                 $history = [];

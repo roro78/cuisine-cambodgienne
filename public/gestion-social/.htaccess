@@ -1,4 +1,4 @@
 Options -Indexes
-<FilesMatch "^(catalog-readonly|n8n-wait-readonly|diagnostic-cli)\.php$">
+<FilesMatch "^(catalog-readonly|n8n-wait-readonly|https-readonly|diagnostic-cli)\.php$">
   Require all denied
 </FilesMatch>

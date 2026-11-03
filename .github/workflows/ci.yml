@@ -44,6 +44,13 @@ jobs:
       - name: Lint and exercise the shared Studio on actual content
         run: |
           php --version
+          php -l public/gestion-social/index.php
+          php -l public/gestion-social/https-readonly.php
+          php -l public/gestion-social/diagnostic-cli.php
+          php tests/php/social-https-readonly-smoke.php
+          php tests/php/social-catalog-readonly-smoke.php
+          php tests/php/social-n8n-wait-readonly-smoke.php
+          node --test tests/social-https-dashboard-http.test.mjs
           php -l public/gestion-contenus/index.php
           php -l public/gestion-contenus/lib.php
           php -l tests/php/editorial-calendar-smoke.php
@@ -151,6 +158,7 @@ jobs:
           php -l public/gestion-social/https-readonly.php
           php -l tests/php/social-https-readonly-smoke.php
           php tests/php/social-https-readonly-smoke.php
+          node --test tests/social-https-dashboard-http.test.mjs
           php tests/php/social-catalog-readonly-smoke.php
           php tests/php/social-n8n-wait-readonly-smoke.php
           node --test tests/editorial-content-pipeline.test.mjs
@@ -166,6 +174,9 @@ jobs:
 
       - name: Typecheck read-only Supabase Edge function
         run: deno check --config automation/supabase/functions/cuisine-social-readonly/deno.json automation/supabase/functions/cuisine-social-readonly/index.ts
+
+      - name: Exercise private Edge authentication, read-only guards and network failures (offline)
+        run: deno test --config automation/supabase/functions/cuisine-social-readonly/deno.json automation/supabase/functions/cuisine-social-readonly/index.test.ts
 
       - name: Motion regression contract
         run: npm run test:motion
