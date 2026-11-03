@@ -66,6 +66,41 @@ try{
     scriptCheck((bool)preg_match('/^[a-f0-9]{64}$/D',$digest),'SOURCE_DIGEST');
     scriptCheck(cmsAtelierBlueprintPreflight($v2,$catalog)['seven_scripts_drafted']===false,
         'SCRIPT_DRAFTS_NOT_INVENTED');
+
+    // The proposal is generated only on an explicit click in the existing Studio.
+    // It uses saved source-bound data and is never written until manual save.
+    $prefill=cmsAtelierAudioTextSuggestions($v2['fields'],
+        $v2['atelier_reference'],$v2['atelier_phase_details']);
+    scriptCheck(count($prefill['chapters'])===7
+        &&$prefill['bindingDigest']===$digest
+        &&$prefill['chapters'][0]['id']==='intro'
+        &&str_contains($prefill['chapters'][1]['text'],'Installer')
+        &&str_contains($prefill['chapters'][1]['text'],'Vérifier les risques')
+        &&!array_key_exists('approved',$prefill['chapters'][0])
+        &&cmsAtelierScriptsDraftComplete($prefill),'PREFILL_SEVEN_UNAPPROVED_TEXTS');
+    scriptCheck(cmsAtelierBlueprintPreflight($v2,$catalog)['seven_scripts_drafted']===false
+        &&count(cmsCreationVersions(cmsCreationDir($root),$v1['id']))===2,
+        'PREFILL_DID_NOT_SAVE_OR_APPROVE');
+    $prefillHtml=cmsAtelierScriptsHtml(null,$v2['fields'],
+        $v2['atelier_reference'],$v2['atelier_phase_details'],true);
+    scriptCheck(str_contains($prefillHtml,'data-atelier-prefill')
+        &&str_contains($prefillHtml,'data-atelier-prefill-template')
+        &&str_contains($prefillHtml,'data-audio-chapter="6"')
+        &&str_contains($prefillHtml,'Vérifier les risques'),
+        'PREFILL_EXPLICIT_BUTTON_WITH_SOURCE');
+    $notSavedHtml=cmsAtelierScriptsHtml(null,$v2['fields'],
+        $v2['atelier_reference'],$v2['atelier_phase_details']);
+    scriptCheck(!str_contains($notSavedHtml,'data-atelier-prefill>'),
+        'NO_PREFILL_ON_UNSAVED_CREATION');
+    try{
+        cmsAtelierAudioTextSuggestions($v1['fields'],
+            $v1['atelier_reference'],null);
+        throw new RuntimeException('ACCEPTED_INCOMPLETE_PREFILL');
+    }catch(RuntimeException $e){
+        scriptCheck($e->getMessage()==='ATELIER_AUDIO_PREFILL_SOURCE',
+            'INCOMPLETE_PREFILL_REJECTED');
+    }
+
     $scripts=['version'=>'1','bindingDigest'=>$digest,'chapters'=>[]];
     foreach(cmsAtelierScriptIds() as $i=>$id){
         $scripts['chapters'][]=['index'=>(string)$i,'id'=>$id,
@@ -154,6 +189,10 @@ try{
         &&!str_contains($html,'<script>')
         &&str_contains($html,'name="atelier_scripts[chapters][0][text]"'),
         'HTML_ESCAPED');
+    $filledHtml=cmsAtelierScriptsHtml($v4['atelier_scripts'],
+        $v4['fields'],$v4['atelier_reference'],$v4['atelier_phase_details'],true);
+    scriptCheck(!str_contains($filledHtml,'data-atelier-prefill>'),
+        'NEVER_OVERWRITE_EXISTING_SCRIPTS');
     $stale=cmsAtelierScriptsHtml($v4['atelier_scripts'],
         array_merge($v4['fields'],['intro'=>'Autre introduction']),
         $v4['atelier_reference'],$v4['atelier_phase_details']);
@@ -166,6 +205,10 @@ try{
             cmsAiContentSchema('atelier')['properties']),
         'C2_AI_SNAPSHOT_ISOLATED');
     $ui=file_get_contents(__DIR__.'/../../public/gestion-contenus/index.php');
+    scriptCheck(str_contains($ui,'data-atelier-prefill')
+        &&str_contains($ui,"inputs.some(el=>el.value.trim()!=='')")
+        &&str_contains($ui,'studioDirty'),
+        'PREFILL_BROWSER_DOES_NOT_OVERWRITE_UNSAVED_INPUT');
     scriptCheck(str_contains($ui,'cmsAtelierScriptsHtml')
         &&str_contains($ui,'seven_scripts_drafted'),
         'SAME_STUDIO');
