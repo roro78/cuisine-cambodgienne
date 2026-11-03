@@ -146,7 +146,8 @@ jobs:
           php tests/php/editorial-cms-drafts-smoke.php
           node --test tests/editorial-cms-contract.test.mjs tests/editorial-canonical-index.test.mjs tests/editorial-guided-fields.test.mjs tests/editorial-recipe-patch.test.mjs
           node --test tests/cms-studio-architecture.test.mjs
-          node --test tests/ovh-publish-scope.test.mjs\n          node --test tests/social-dashboard-release.test.mjs tests/social-private-dashboard-contract.test.mjs tests/social-private-dashboard-history.test.mjs tests/social-viewer-ovh-cli-smoke.test.mjs
+          node --test tests/ovh-publish-scope.test.mjs
+          node --test tests/social-dashboard-release.test.mjs tests/social-private-dashboard-contract.test.mjs tests/social-private-dashboard-history.test.mjs tests/social-viewer-ovh-cli-smoke.test.mjs
           php -l public/gestion-social/diagnostic-cli.php
           php tests/php/social-catalog-readonly-smoke.php
           php tests/php/social-n8n-wait-readonly-smoke.php
