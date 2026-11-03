@@ -159,6 +159,14 @@ jobs:
           node --test tests/editorial-ollama-structured-benchmark.test.mjs
           node --test tests/editorial-ai-job-gateway.test.mjs
 
+      - name: Setup Deno for Supabase Edge function verification
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Typecheck read-only Supabase Edge function
+        run: deno check automation/supabase/functions/cuisine-social-readonly/index.ts
+
       - name: Motion regression contract
         run: npm run test:motion
 
