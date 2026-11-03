@@ -1472,7 +1472,7 @@ function cmsAtelierScriptsHtml(mixed $raw,array $fields,
     }
     $claimed=is_string($raw['bindingDigest']??null)?$raw['bindingDigest']:$digest;
     if(!$occupied && $claimed==='')$claimed=$digest;
-    $stale=$claimed!==''&&$claimed!==$digest;
+    $stale=($occupied && $claimed==='') || ($claimed!==''&&$claimed!==$digest);
     $html='<details id="cms-audio" class="guided-group" data-atelier-seven-scripts>'
         .'<summary>Préparer le guide audio — facultatif · sept chapitres</summary>'
         .'<p class="small muted">Écrivez et relisez chaque narration après '
