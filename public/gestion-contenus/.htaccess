@@ -13,3 +13,10 @@ DirectoryIndex index.php
 <Files "visual-provider-adapter.php">
   Require all denied
 </Files>
+
+<Files "content-gateway-adapter.php">
+  Require all denied
+</Files>
+<Files "openai-brief-adapter.php">
+  Require all denied
+</Files>
