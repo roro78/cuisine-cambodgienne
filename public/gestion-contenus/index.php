@@ -1985,7 +1985,9 @@ document.querySelector('[data-atelier-prefill]')?.addEventListener('click',event
   }
   const template=section.querySelector('template[data-atelier-prefill-template]');
   const rows=[...((template?.content.querySelectorAll('[data-audio-chapter]'))||[])];
-  if(rows.length!==7){
+  const noteRows=[...((template?.content.querySelectorAll('[data-audio-note]'))||[])];
+  if(rows.length!==7||noteRows.length!==7
+     ||noteRows.some((row,i)=>Number(row.dataset.audioNote)!==i)){
     say('Préparation indisponible : les sept chapitres ne sont pas complets.');
     return;
   }
@@ -2003,7 +2005,9 @@ document.querySelector('[data-atelier-prefill]')?.addEventListener('click',event
   }
   rows.forEach((row,i)=>{
     inputs[i].value=row.textContent||'';
+    notes[i].value=noteRows[i].textContent||'';
     inputs[i].dispatchEvent(new Event('input',{bubbles:true}));
+    notes[i].dispatchEvent(new Event('input',{bubbles:true}));
   });
   section.open=true;
   button.disabled=true;
