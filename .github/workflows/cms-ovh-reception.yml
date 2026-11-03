@@ -4,6 +4,14 @@ on:
   push:
     branches:
       - feat/cms-ovh-reception-20261027
+  pull_request:
+    branches: [main]
+    paths:
+      - 'public/gestion-contenus/**'
+      - 'scripts/check-cms-ovh-readiness.mjs'
+      - 'scripts/package-cms-ovh-release.mjs'
+      - 'tests/cms-ovh-reception.test.mjs'
+      - '.github/workflows/cms-ovh-reception.yml'
   workflow_dispatch:
 
 permissions:
