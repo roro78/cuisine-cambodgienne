@@ -24,6 +24,7 @@ test('exact Coral V2 request reuses existing job gateway but never general C2 sc
     {...request,scope:'free-form-prompt'},
     {...request,atelier:{...request.atelier,phases:[]}},
     {...request,referentials:null},
+    {...request,referentials:{...request.referentials,structure:{...request.referentials.structure,text:'Contrat lexical bloquant MODIFIÉ'}}},
     {...request,response_max_bytes:90000},
     {...request,canonical_fingerprint:'invalid'}
   ]) assert.throws(()=>validateJobRequest(wrong),/JOB_CORAL_V2_REQUEST/);
