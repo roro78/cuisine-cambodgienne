@@ -30,3 +30,7 @@ DirectoryIndex index.php
 <Files "coral-v2-contract.json">
   Require all denied
 </Files>
+
+<Files "coral-v2-ai.php">
+  Require all denied
+</Files>
