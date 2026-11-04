@@ -361,6 +361,10 @@ if($auth){
                   ||!hash_equals($_SESSION['coral_intent'],$intent))
                     throw new RuntimeException('CORAL_INTENT');
                 unset($_SESSION['coral_intent']); // consumed even on model failure
+                foreach(($_SESSION['coral_jobs']??[]) as $jobToken=>$pastJob)
+                    if(!is_array($pastJob)||($pastJob['expires_at']??0)<time()
+                        ||($pastJob['status']??'')==='failed')
+                        unset($_SESSION['coral_jobs'][$jobToken]);
                 if(count($_SESSION['coral_jobs']??[])>=2)
                     throw new RuntimeException('CORAL_BUSY');
                 $feed=cmsGetGuidedFields();
@@ -575,6 +579,7 @@ if($auth){
                         unset($_SESSION['ai_content_pending'][$pending['token']]);
                     }else $saved=cmsCreationSave($private,$posted,$catalog,$expected,$cid,
                         null,null,null,$canonicalById);
+                    unset($_SESSION['coral_pending']); // the reviewed proposal was saved, or another draft superseded it
                     header('Location: ?new=1&cid='.rawurlencode($saved['id'])
                         .'&'.$filtersUrl.'&saved_new=1',true,303);
                     exit;
