@@ -1455,6 +1455,73 @@ function cmsAtelierAudioTextSuggestions(array $fields,
     }
     return ['version'=>1,'bindingDigest'=>$digest,'chapters'=>$chapters];
 }
+/**
+ * Fetch the exact immutable source texts of an already published workshop.
+ * Only the authenticated Studio calls this function. The source snapshot is
+ * generated from approved Astro blueprints and denied by Apache to HTTP.
+ * It must never be treated as a new private review or a TTS authorization.
+ */
+function cmsStudioExistingCoralNarrations(?array $binding,array $canonical): ?array {
+    if(!is_array($binding)
+        ||($binding['contract']??null)!=='cdc-studio-published-workshop-v1')
+        return null;
+    $id=$binding['source_id']??null;
+    $expected=$binding['canonical_fingerprint']??null;
+    if(!is_string($id)||!preg_match('/^atelier:[a-z0-9-]+$/D',$id)
+        ||!is_string($expected)||!preg_match('/^[a-f0-9]{64}$/D',$expected)
+        ||($canonical[$id]['fingerprint']??null)!==$expected)
+        return null;
+    $path=__DIR__.'/atelier-narrations.json';
+    if(is_link($path)||!is_file($path)
+        ||(filesize($path)?:0)>524288)return null;
+    $bytes=@file_get_contents($path);
+    if(!is_string($bytes)||strlen($bytes)>524288)return null;
+    try{$catalog=json_decode($bytes,true,32,JSON_THROW_ON_ERROR);}
+    catch(Throwable $ignored){return null;}
+    if(!is_array($catalog)
+        ||($catalog['contract']??null)!=='cdc-workshop-existing-coral-narrations-v1'
+        ||($catalog['schemaVersion']??null)!==1
+        ||!is_array($catalog['items']??null))return null;
+    $items=$catalog['items'];
+    if(count($items)>12)return null;
+    foreach($items as $item){
+        if(!is_array($item)||($item['id']??null)!==$id)continue;
+        if(($item['canonicalFingerprint']??null)!==$expected
+            ||!is_array($item['chapters']??null)
+            ||count($item['chapters'])!==7)return null;
+        foreach(cmsAtelierScriptIds() as $i=>$chapterId){
+            $chapter=$item['chapters'][$i]??null;
+            if(!is_array($chapter)||($chapter['id']??null)!==$chapterId
+                ||!is_string($chapter['text']??null)
+                ||mbLen($chapter['text'])<120||mbLen($chapter['text'])>7000
+                ||!is_string($chapter['title']??null))return null;
+        }
+        $url=$item['audio']['url']??null;
+        if(!is_string($url)
+            ||!preg_match('~^/audio/workshops/[a-z0-9-]+/atelier-coral-v[23]\.mp3$~D',$url)
+            ||!preg_match('/^[a-f0-9]{64}$/D',$item['audio']['sha256']??'')
+            ||!preg_match('/^[a-f0-9]{64}$/D',$item['scriptSha256']??''))
+            return null;
+        return $item;
+    }
+    return null;
+}
+function cmsStudioExistingCoralNarrationsHtml(?array $item): string {
+    if($item===null)return '';
+    $html='<section id="cms-existing-coral" class="guided-group" data-existing-coral>'
+        .'<h3>Textes et MP3 déjà réalisés</h3>'
+        .'<p class="small">Ces sept narrations proviennent de l’atelier publié. '
+        .'Elles restent en lecture seule, avec leur enregistrement existant. '
+        .'Elles ne constituent pas un nouveau brouillon validé ni une autorisation Coral.</p>'
+        .'<p><a href="'.cmsEsc($item['audio']['url']).'" target="_blank" '
+        .'rel="noopener noreferrer">Écouter le MP3 existant</a></p>';
+    foreach($item['chapters'] as $i=>$chapter){
+        $html.='<details class="guided-group" data-existing-coral-chapter="'.(int)$i.'">'
+            .'<summary>'.cmsEsc($chapter['title']).' — texte déjà écrit</summary>'
+            .'<div style="white-space:pre-wrap">'.cmsEsc($chapter['text']).'</div></details>';
+    }
+    return $html.'</section>';
+}
 function cmsAtelierScriptsHtml(mixed $raw,array $fields,
     mixed $reference,mixed $phaseDetails,bool $canPrepare=false): string {
     $raw=is_array($raw)?$raw:[];
