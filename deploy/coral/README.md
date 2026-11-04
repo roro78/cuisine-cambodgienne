@@ -169,3 +169,21 @@ autorisation d'exécution sur la production.
 
 Références : [secrets Compose](https://docs.docker.com/compose/how-tos/use-secrets/),
 [réseaux Compose](https://docs.docker.com/reference/compose-file/services/#networks).
+
+## Protection de la route Traefik optionnelle (complément après PR #215)
+
+Le fichier `compose.traefik.yaml` refuse désormais la normalisation Compose
+tant que `CDC_CORAL_ALLOWED_SOURCE_CIDRS` n'est pas fourni. **Ce paramètre
+n'est pas une IP à deviner à partir du DNS du site** : relever et confirmer
+l'IP de sortie réellement vue pour les appels du client PHP mutualisé.
+Ne jamais utiliser `0.0.0.0/0` ou `::/0` ; la validation exige un CIDR
+étroit (/24 à /32 IPv4, /64 à /128 IPv6). Vérifier le chemin proxy réel
+et les sources avant tout déploiement.
+
+Ordre des middlewares : IPAllowList, RateLimit (120 requêtes/minute,
+rafale 12), InFlightReq (4 simultanées). Les valeurs sont des bornes
+initiales, à tester contre le polling du vrai client PHP. La route garde
+le contrôle Bearer côté worker. Le validateur `validateCoralTraefikRoute`
+doit recevoir la sortie normalisée de Compose avant tout raccordement.
+Ceci ne teste pas encore le provider Docker/ACME réel ni l'IP publique
+de sortie. Aucune activation automatique.
