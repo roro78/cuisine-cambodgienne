@@ -341,6 +341,43 @@ if($auth){
                 $error='Proposition temporaire indisponible ou expirée. Le brouillon enregistré reste conservé.';
             }
         }
+        if($method==='POST' && isset($_POST['coral_prepare'])){
+            try{
+                // Only the sole explicitly submitted action is allowed to call the
+                // model. The browser's unsaved fields are NEVER transmitted.
+                $competing=['coral_prepare','create_save','review_action','culinary_action',
+                    'ai_brief_generate','ai_content_generate','ai_content_discard',
+                    'visual_action','studio_transition','save'];
+                if(count(array_intersect($competing,array_keys($_POST)))!==1
+                   ||$creation===null||$createKind!=='atelier'
+                   ||!$studioSourceCurrent||$coralSettings===null)
+                    throw new RuntimeException('CORAL_DISABLED');
+                $expected=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
+                    ['options'=>['min_range'=>1,'max_range'=>9998]]);
+                if($expected===false||$expected!==$creation['version'])
+                    throw new RuntimeException('CORAL_STALE');
+                $intent=$_POST['coral_intent']??null;
+                if(!is_string($intent)||!is_string($_SESSION['coral_intent']??null)
+                  ||!hash_equals($_SESSION['coral_intent'],$intent))
+                    throw new RuntimeException('CORAL_INTENT');
+                unset($_SESSION['coral_intent']); // consumed even on model failure
+                if(count($_SESSION['coral_jobs']??[])>=2)
+                    throw new RuntimeException('CORAL_BUSY');
+                $feed=cmsGetGuidedFields();
+                if(!is_array($feed))throw new RuntimeException('CORAL_REFERENCE');
+                $guides=cmsGuidedSourceList($feed,$canonicalById);
+                cmsAssertGuidedCoverage($guides,$canonicalById);
+                $job=cmsCoralStart($creation,$catalog,$canonicalById,$guides,
+                    $private,$coralSettings);
+                $_SESSION['coral_jobs'][$job['token']]=$job;
+                header('Location: ?new=1&cid='.rawurlencode($creation['id'])
+                    .'&coral_job='.$job['token'].'#cms-audio',true,303);exit;
+            }catch(Throwable $e){
+                http_response_code(in_array($e->getMessage(),
+                    ['CORAL_STALE','CORAL_SCRIPT_EXISTS','CORAL_INTENT'],true)?409:503);
+                $error='Préparation Coral non lancée : enregistrez votre atelier et ses six phases, vérifiez la recette et la disponibilité du moteur. Aucun MP3 ni texte existant n’a été modifié.';
+            }
+        }
         if($method==='POST' && isset($_POST['culinary_action'])){
             try{
                 if(!$studioSourceCurrent)throw new RuntimeException('STUDIO_SOURCE_STALE');
@@ -557,6 +594,7 @@ if($auth){
             }
         }
         $_SESSION['ai_content_intent']=bin2hex(random_bytes(24));
+        $_SESSION['coral_intent']=bin2hex(random_bytes(24));
         if($creation){
             $requested=filter_var($_GET['revision']??null,FILTER_VALIDATE_INT,
                 ['options'=>['min_range'=>1,'max_range'=>9999]]);
