@@ -40,7 +40,7 @@ jobs:
 
       - name: Test CMS reception invariants
         run: |
-          node --test tests/cms-ovh-reception.test.mjs
+          node --test tests/cms-ovh-reception.test.mjs tests/editorial-existing-coral-narrations.test.mjs
           php -l public/gestion-contenus/lib.php
           php -l public/gestion-contenus/index.php
           php tests/php/editorial-cms-drafts-smoke.php
@@ -49,7 +49,9 @@ jobs:
         run: npm run build
 
       - name: Validate the generated CMS files
-        run: node scripts/check-cms-ovh-readiness.mjs --dir dist
+        run: |
+          node scripts/check-cms-ovh-readiness.mjs --dir dist
+          php tests/php/editorial-existing-coral-narrations-smoke.php dist
 
       - name: Prepare isolated OVH upload package
         run: |
