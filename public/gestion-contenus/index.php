@@ -270,7 +270,7 @@ if($auth){
                 if($creation===null||$coralSettings===null||!is_array($coralJob)
                    ||!preg_match('/^[0-9a-f]{48}$/D',$coralJobToken))
                     throw new RuntimeException('CORAL_JOB_MISSING');
-                $proposal=cmsCoralPoll($coralJob,$creation,$coralSettings);
+                $proposal=cmsCoralPoll($coralJob,$creation,$coralSettings,$canonicalById);
                 $_SESSION['coral_jobs'][$coralJobToken]=$coralJob;
                 if($proposal!==null){
                     $token=bin2hex(random_bytes(24));
