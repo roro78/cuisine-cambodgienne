@@ -8,7 +8,7 @@ Copie isolée `/tmp/cdc-api205`, base `ce6ffbed013df864ba963b4d61afcbf05d173f81`
 
 `node scripts/qualify-coral-external-text.mjs --dry-run` : PASS, 38 740 octets pour Luna et 38 743 pour Terra, sortie maximale 1 800 tokens, réservation totale 0,052517 USD (0,004774 + 0,047743). Le plafond utilisateur de 1 EUR reste un plafond, pas une cible.
 
-La première exécution `--run` a refusé localement le format de la variable secrète : aucune requête à ce stade. Après diagnostic non divulgateur d'une inversion de casse à l'entrée KVM et correction temporaire, l'exécution réelle a retourné **NO_GO, QUAL_API_HTTP_401**, une seule tentative Luna, durée observée 1,3 s. Aucun candidat ni second appel modèle. L'authentification API reste refusée ; aucune qualité éditoriale, latence de génération ou facture n'est démontrée.
+La première exécution `--run` a refusé localement le format de la variable secrète : aucune requête à ce stade. Après diagnostic non divulgateur d'une inversion de casse à l'entrée KVM et correction temporaire, l'exécution réelle a retourné **NO_GO, QUAL_API_HTTP_401**, une seule tentative Luna, durée observée 0,4 s. Aucun candidat ni second appel modèle. L'authentification API reste refusée ; aucune qualité éditoriale, latence de génération ou facture n'est démontrée.
 
 Le registre et `comparison-report.json` sont conservés sous le dossier privé de qualification prévu par le script, hors webroot. Ne pas supprimer ni réinitialiser les marqueurs pour réessayer. La réservation de la tentative reste consommée conservatoirement. Une nouvelle authentification et une décision explicite sur la reprise du protocole sont nécessaires avant toute nouvelle émission. Aucune valeur de secret n'est consignée.
 
