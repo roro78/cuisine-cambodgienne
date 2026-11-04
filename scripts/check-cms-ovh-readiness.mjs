@@ -5,6 +5,7 @@
  * This never logs HTML bodies, accepts credentials, POSTs or triggers publication.
  */
 import { readFile, stat } from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -178,7 +179,8 @@ async function getDist(dir){
     fail('CORAL_V2_POLICY_INVALID');
   for(const key of ['structure','narration']){
     if(typeof policy[key]?.text!=='string'||!policy[key].text.includes('Contrat lexical bloquant')
-      ||typeof policy[key]?.sha256!=='string')
+      ||typeof policy[key]?.sha256!=='string'
+      ||policy[key].sha256!==createHash('sha256').update(policy[key].text).digest('hex'))
       fail('CORAL_V2_POLICY_INVALID');
   }
   const ht=await readFile(join(dir,'gestion-contenus','.htaccess'),'utf8');
