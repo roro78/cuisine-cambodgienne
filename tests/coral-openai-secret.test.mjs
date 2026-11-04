@@ -30,6 +30,8 @@ test('missing, invalid, whitespace and unsafe secrets fail closed with generic e
   await symlink(f,link);
   assert.throws(()=>readCoralOpenAISecret(link),/CORAL_OPENAI_SECRET_UNAVAILABLE/);
   if(process.platform!=='win32'){
+    await chmod(f,0o644);
+    assert.throws(()=>readCoralOpenAISecret(f),/CORAL_OPENAI_SECRET_UNAVAILABLE/);
     await chmod(f,0o666);
     assert.throws(()=>readCoralOpenAISecret(f),/CORAL_OPENAI_SECRET_UNAVAILABLE/);
   }

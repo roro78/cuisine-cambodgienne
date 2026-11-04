@@ -1,0 +1,7 @@
+{
+  "platform": "linux/amd64",
+  "node": "node:22-bookworm-slim@sha256:9f0dde62d10e7ff7a310ecaebd66225f6b46c17e6cb778449a77b05d3541bea2",
+  "traefikTest": "traefik@sha256:5ab7593ef9bbd1e8964bca81792104130f2d9b814ae12d594cc24b90a09c25cc",
+  "resolvedOn": "2026-11-04",
+  "traefikVersion": "v3.7.10"
+}

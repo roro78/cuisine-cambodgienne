@@ -1,0 +1,13 @@
+# Merge with the real n8n project only AFTER explicit production approval.
+# No database service receives a Coral network, mount or secret.
+services:
+  traefik:
+    networks: [default, coral-ingress]
+  ollama-cpu:
+    networks:
+      default: {}
+      coral-provider:
+        aliases: [ollama]
+networks:
+  coral-ingress: {external: true, name: cdc-coral-ingress}
+  coral-provider: {external: true, name: cdc-coral-provider}

@@ -1,0 +1,53 @@
+name: cdc-coral
+services:
+  coral-job-worker:
+    profiles: [runtime]
+    image: ${CDC_CORAL_WORKER_IMAGE:?immutable approved worker image ID required}
+    platform: linux/amd64
+    user: "1000:1000"
+    read_only: true
+    init: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 64
+    mem_limit: 256m
+    cpus: 0.5
+    restart: "no"
+    stop_grace_period: 15s
+    environment:
+      CDC_EDITORIAL_JOB_SERVICE_ENABLED: ${CDC_CORAL_START_APPROVED:-false}
+      CDC_EDITORIAL_JOB_BIND_HOST: 0.0.0.0
+      CDC_EDITORIAL_JOB_DIR: /var/lib/cdc/jobs
+      CDC_EDITORIAL_JOB_TOKEN_FILE: /run/secrets/cdc_editorial_job_token
+      CDC_EDITORIAL_JOB_PROVIDER: openai-coral
+      CDC_EDITORIAL_JOB_MODEL: llama3.2:latest
+      CDC_CORAL_EXTERNAL_QUALIFIED: ${CDC_CORAL_MODEL_QUALIFIED:-false}
+      CDC_CORAL_EXTERNAL_ENABLED: ${CDC_CORAL_ACTIVATION_APPROVED:-false}
+      CDC_CORAL_EXTERNAL_MODEL: ${CDC_CORAL_MODEL:?qualified model required}
+      CDC_CORAL_EXTERNAL_BUDGET_DIR: /var/lib/cdc/budget
+      CDC_CORAL_EXTERNAL_DAILY_USD: ${CDC_CORAL_DAILY_USD:?explicit daily cap required}
+    secrets:
+      - cdc_coral_openai_key
+      - cdc_editorial_job_token
+    volumes:
+      - type: bind
+        source: ${CDC_CORAL_STATE_DIR:?private state directory required}/jobs
+        target: /var/lib/cdc/jobs
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${CDC_CORAL_STATE_DIR:?private state directory required}/budget
+        target: /var/lib/cdc/budget
+        bind: {create_host_path: false}
+    tmpfs: [/tmp:rw,noexec,nosuid,size=16m,uid=1000,gid=1000,mode=0700]
+    networks: [ingress, provider, egress]
+    labels:
+      traefik.enable: "false"
+secrets:
+  cdc_coral_openai_key:
+    file: ${CDC_CORAL_OPENAI_SECRET_FILE:?private OpenAI file required}
+  cdc_editorial_job_token:
+    file: ${CDC_CORAL_JOB_TOKEN_FILE:?distinct private job token file required}
+networks:
+  ingress: {name: cdc-coral-ingress, internal: true}
+  provider: {name: cdc-coral-provider, internal: true}
+  egress: {name: cdc-coral-egress}
