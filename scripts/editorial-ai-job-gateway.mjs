@@ -28,7 +28,7 @@ export function validateJobRequest(r){
       ||r.response_schema?.properties?.chapters?.maxItems!==7
       ||r.response_schema?.additionalProperties!==false
       ||r.timeout_seconds!==20||r.max_output_tokens!==6000
-      ||r.response_max_bytes!==60000||JSON.stringify(r).length>90000)
+      ||r.response_max_bytes!==30000||JSON.stringify(r).length>90000)
       throw Error('JOB_CORAL_V2_REQUEST');
     return r;
   }
@@ -63,7 +63,7 @@ export function ollamaJobProvider({url='http://ollama:11434',model='llama3.2:lat
     for await(const chunk of response.body){size+=chunk.length;if(size>95000)throw Error('JOB_RESPONSE_SIZE');chunks.push(chunk);}
     const answer=JSON.parse(Buffer.concat(chunks).toString('utf8'));
     if(answer.done!==true||answer.done_reason==='length'||typeof answer.message?.content!=='string'
-      ||Buffer.byteLength(answer.message.content)>(coral?60000:30000))throw Error('JOB_RESPONSE');
+      ||Buffer.byteLength(answer.message.content)>30000)throw Error('JOB_RESPONSE');
     return answer.message.content;
   };
 }
@@ -117,7 +117,7 @@ export async function createJobGateway({root,token,provider}){
         try{
           const saved=JSON.parse(await safeRead(join(folder,'request.json')));
           const result=await provider(validateJobRequest(saved.request));
-          if(typeof result!=='string'||Buffer.byteLength(result)>(saved.request.contract==='cdc-coral-v2-script-request-v1'?60000:30000))throw Error('JOB_RESPONSE');
+          if(typeof result!=='string'||Buffer.byteLength(result)>30000)throw Error('JOB_RESPONSE');
           terminal={status:'succeeded',result};
         }catch{terminal={status:'failed'};}
         try{
