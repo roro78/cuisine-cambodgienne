@@ -155,7 +155,7 @@ jobs:
           node --test tests/editorial-ai-brief-contract.test.mjs
           node --test tests/editorial-ollama-benchmark.test.mjs tests/n8n-ollama-benchmark.test.mjs
           node --test tests/editorial-ollama-structured-benchmark.test.mjs
-          node --test tests/editorial-ai-job-gateway.test.mjs tests/coral-direct-ollama-qualification.test.mjs tests/coral-external-text-qualification.test.mjs tests/coral-ollama-performance-diagnostic.test.mjs
+          node --test tests/editorial-ai-job-gateway.test.mjs tests/coral-direct-ollama-qualification.test.mjs tests/coral-external-text-qualification.test.mjs tests/coral-external-job-provider.test.mjs tests/coral-ollama-performance-diagnostic.test.mjs
 
       - name: Motion regression contract
         run: npm run test:motion
