@@ -71,7 +71,7 @@ test('remote verification fetches only public pages and checks library denial',a
   requested.push(pathname);
   if(['/gestion-contenus/lib.php','/gestion-contenus/publication-gap-audit.php',
    '/gestion-contenus/visual-provider-adapter.php','/gestion-contenus/content-gateway-adapter.php',
-   '/gestion-contenus/openai-brief-adapter.php'].includes(pathname))return new Response('Denied',{status:403});
+   '/gestion-contenus/openai-brief-adapter.php','/gestion-contenus/atelier-narrations.json'].includes(pathname))return new Response('Denied',{status:403});
   if(pathname==='/gestion-contenus/')return new Response(login,{status:200,headers:safeHeaders});
   const document=feeds[pathname.slice(1)];
   if(document)return new Response(JSON.stringify(document),{status:200,
@@ -80,11 +80,12 @@ test('remote verification fetches only public pages and checks library denial',a
  };
  const result=await cmsReception({url:'https://www.cuisine-du-cambodge.com/',fetcher});
  assert.deepEqual(result,{social:1,canonical:1,guided:1,login:'protected',library:'blocked'});
- assert.equal(requested.length,9);
+ assert.equal(requested.length,10);
  assert.ok(requested.includes('/gestion-contenus/publication-gap-audit.php'));
  assert.ok(requested.includes('/gestion-contenus/content-gateway-adapter.php'));
  assert.ok(requested.includes('/gestion-contenus/openai-brief-adapter.php'));
  assert.ok(requested.includes('/gestion-contenus/visual-provider-adapter.php'));
+ assert.ok(requested.includes('/gestion-contenus/atelier-narrations.json'));
  const exposed=async url=>{
   const pathname=new URL(url).pathname;
   if(pathname==='/gestion-contenus/publication-gap-audit.php')
@@ -99,7 +100,7 @@ test('remote verification fetches only public pages and checks library denial',a
   /HTTP_social-feed.json_404/);
  await assert.rejects(cmsReception({url:'http://example.com/',fetcher}),/HTTPS_HOST_REQUIRED/);
 });
-test('release package includes exactly seven scoped public files and private rollback manifest',async()=>{
+test('release package includes exactly eight scoped files and private rollback manifest',async()=>{
  const root=await mkdtemp(join(tmpdir(),'cdc-ovh-'));
  try{
   const dist=join(root,'dist'),out=join(root,'package');
@@ -110,14 +111,16 @@ test('release package includes exactly seven scoped public files and private rol
   await writeFile(join(dist,'gestion-contenus','index.php'),'<?php echo "private";');
   await writeFile(join(dist,'gestion-contenus','lib.php'),'<?php function example(){}');
   await writeFile(join(dist,'gestion-contenus','publication-gap-audit.php'),'<?php function prereception(){}');
+  await writeFile(join(dist,'gestion-contenus','atelier-narrations.json'),JSON.stringify({contract:'cdc-workshop-existing-coral-narrations-v1',schemaVersion:1,items:[]}));
   await writeFile(join(dist,'gestion-contenus','.htaccess'),
    '<Files "lib.php">\nRequire all denied\n</Files>\n'+
    '<Files "publication-gap-audit.php">\nRequire all denied\n</Files>\n'+
    '<Files "visual-provider-adapter.php">\nRequire all denied\n</Files>\n'+
    '<Files "content-gateway-adapter.php">\nRequire all denied\n</Files>\n'+
-   '<Files "openai-brief-adapter.php">\nRequire all denied\n</Files>\n');
+   '<Files "openai-brief-adapter.php">\nRequire all denied\n</Files>\n'+
+   '<Files "atelier-narrations.json">\nRequire all denied\n</Files>\n');
   const packageInfo=await packageCmsRelease({dist,out});
-  assert.equal(packageInfo.files.length,7);
+  assert.equal(packageInfo.files.length,8);
   assert.ok(packageInfo.files.some(item=>item.path==='gestion-contenus/publication-gap-audit.php'));
   assert.equal(packageInfo.requires.manualUpload,true);
   assert.equal((await cmsReception({dir:out})).social,1);
@@ -126,7 +129,7 @@ test('release package includes exactly seven scoped public files and private rol
   assert.match(await readFile(join(out,'README.txt'),'utf8'),/BACK UP/);
   assert.ok(packageInfo.files.some(file=>file.path==='gestion-contenus/publication-gap-audit.php'
     &&/^[0-9a-f]{64}$/.test(file.sha256)));
-  // The seven-file package must not be accepted after an incomplete transfer.
+  // The eight-file package must not be accepted after an incomplete transfer.
   await rm(join(out,'gestion-contenus','publication-gap-audit.php'));
   await assert.rejects(cmsReception({dir:out}),/ENOENT|CMS_PHP_FILE_MISSING/);
  }finally{await rm(root,{recursive:true,force:true})}
