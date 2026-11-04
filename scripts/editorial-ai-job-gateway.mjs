@@ -1,11 +1,13 @@
 import {coralChapterVoiceProblems} from './coral-chapter-voice-checks.mjs';
 import {createExternalCoralJobProvider} from './coral-external-job-provider.mjs';
 import {readCoralOpenAISecret} from './coral-openai-secret.mjs';
+import {readEditorialJobToken} from './private-runtime-secret.mjs';
+import {existsSync,lstatSync,accessSync,constants} from 'node:fs';
 /** Private orchestration for the existing C2 contract. No network or worker on import. */
 import {createServer} from 'node:http';
 import {createHash,randomBytes,timingSafeEqual} from 'node:crypto';
 import {mkdir,lstat,readFile,writeFile,readdir,rename} from 'node:fs/promises';
-import {resolve,join} from 'node:path';
+import {resolve,join,isAbsolute} from 'node:path';
 import {pathToFileURL} from 'node:url';
 const digest=x=>createHash('sha256').update(x).digest('hex');
 const idPattern=/^[a-f0-9]{48}$/;
@@ -195,30 +197,67 @@ export async function createJobGateway({root,token,provider}){
     timer=setInterval(()=>workOnce().catch(()=>{}),1000);timer.unref();
   },stopWorker(){clearInterval(timer);timer=null;}};
 }
-if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
-  if(process.env.CDC_EDITORIAL_JOB_SERVICE_ENABLED!=='true')throw Error('JOB_SERVICE_DISABLED');
+export function editorialJobRuntimeConfig(env=process.env){
+  if(env.CDC_EDITORIAL_JOB_SERVICE_ENABLED!=='true')throw Error('JOB_SERVICE_DISABLED');
+  const bindHost=env.CDC_EDITORIAL_JOB_BIND_HOST||'127.0.0.1';
+  if(!['127.0.0.1','0.0.0.0'].includes(bindHost))throw Error('JOB_BIND_HOST');
+  const root=env.CDC_EDITORIAL_JOB_DIR;
+  if(typeof root!=='string'||!isAbsolute(root))throw Error('JOB_STORE_CONFIG');
+  if(existsSync(root)){
+    const s=lstatSync(root);
+    if(!s.isDirectory()||s.isSymbolicLink()||(process.platform!=='win32'
+      &&((s.mode&0o077)!==0||s.uid!==process.geteuid())))throw Error('JOB_STORE');
+    accessSync(root,constants.R_OK|constants.W_OK|constants.X_OK);
+  }
+  if(existsSync(join(root,'.restore-review-required')))throw Error('JOB_RESTORE_REVIEW_REQUIRED');
+  const providerKind=env.CDC_EDITORIAL_JOB_PROVIDER||'ollama';
+  if(!['ollama','openai-coral'].includes(providerKind))throw Error('JOB_PROVIDER_KIND');
+  if(providerKind==='openai-coral'&&(env.CDC_CORAL_EXTERNAL_QUALIFIED!=='true'
+    ||env.CDC_CORAL_EXTERNAL_ENABLED!=='true'))throw Error('CORAL_EXTERNAL_NOT_APPROVED');
+  if(providerKind==='openai-coral'){
+    const budget=env.CDC_CORAL_EXTERNAL_BUDGET_DIR;
+    if(typeof budget!=='string'||!isAbsolute(budget)||resolve(budget)===resolve(root))
+      throw Error('CORAL_BUDGET_STORE');
+    const s=lstatSync(budget);
+    if(!s.isDirectory()||s.isSymbolicLink()||(process.platform!=='win32'
+      &&((s.mode&0o077)!==0||s.uid!==process.geteuid())))throw Error('CORAL_BUDGET_STORE');
+    accessSync(budget,constants.R_OK|constants.W_OK|constants.X_OK);
+  }
+  const token=readEditorialJobToken(env,bindHost);
+  return {bindHost,root,providerKind,token};
+}
+
+export async function startEditorialJobRuntime(env=process.env){
+  const config=editorialJobRuntimeConfig(env);
   // Never switch to paid text generation implicitly: qualification + explicit
   // operator go-live gate + authenticated secret + private spending ledger.
-  const providerKind=process.env.CDC_EDITORIAL_JOB_PROVIDER||'ollama';
-  if(!['ollama','openai-coral'].includes(providerKind))throw Error('JOB_PROVIDER_KIND');
-  const editorialProvider=ollamaJobProvider({model:process.env.CDC_EDITORIAL_JOB_MODEL||'llama3.2:latest'});
+  const editorialProvider=ollamaJobProvider({model:env.CDC_EDITORIAL_JOB_MODEL||'llama3.2:latest'});
   let provider=editorialProvider;
-  if(providerKind==='openai-coral'){
-    if(process.env.CDC_CORAL_EXTERNAL_QUALIFIED!=='true'
-      ||process.env.CDC_CORAL_EXTERNAL_ENABLED!=='true')
-      throw Error('CORAL_EXTERNAL_NOT_APPROVED');
+  if(config.providerKind==='openai-coral'){
     const coralProvider=createExternalCoralJobProvider({
       apiKey:readCoralOpenAISecret(),
-      model:process.env.CDC_CORAL_EXTERNAL_MODEL,
-      budgetDir:process.env.CDC_CORAL_EXTERNAL_BUDGET_DIR,
-      maxDailyUsd:Number(process.env.CDC_CORAL_EXTERNAL_DAILY_USD||0)
+      model:env.CDC_CORAL_EXTERNAL_MODEL,
+      budgetDir:env.CDC_CORAL_EXTERNAL_BUDGET_DIR,
+      maxDailyUsd:Number(env.CDC_CORAL_EXTERNAL_DAILY_USD||0)
     });
     provider=routeEditorialJobProviders({editorialProvider,coralProvider});
   }
   const gateway=await createJobGateway({
-    root:process.env.CDC_EDITORIAL_JOB_DIR,token:process.env.CDC_EDITORIAL_JOB_TOKEN,
+    root:config.root,token:config.token,
     provider
   });
-  gateway.server.listen(18678,'127.0.0.1',()=>gateway.startWorker());
+  await new Promise((accept,reject)=>{
+    gateway.server.once('error',reject);
+    gateway.server.listen(18678,config.bindHost,()=>{gateway.startWorker();accept();});
+  });
+  const stop=()=>{gateway.stopWorker();gateway.server.close(()=>process.exit(0));};
+  process.once('SIGTERM',stop);process.once('SIGINT',stop);
+  return gateway;
+}
+if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
+  startEditorialJobRuntime().catch(()=>{
+    // IO, environment values and provider credentials never enter startup logs.
+    process.stderr.write('JOB_STARTUP_REFUSED\n');process.exitCode=1;
+  });
 }
 

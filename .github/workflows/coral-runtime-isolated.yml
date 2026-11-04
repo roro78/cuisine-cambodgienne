@@ -1,0 +1,31 @@
+name: Coral isolated runtime
+on:
+  pull_request:
+    paths:
+      - scripts/**
+      - tests/**
+      - deploy/coral/**
+      - .github/workflows/coral-runtime-isolated.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private file, bootstrap, queue and encrypted recovery tests
+        run: node --test tests/editorial-job-runtime.test.mjs tests/coral-state-backup.test.mjs tests/coral-compose.test.mjs tests/coral-openai-secret.test.mjs tests/editorial-ai-job-gateway.test.mjs tests/coral-external-job-provider.test.mjs
+      - name: Isolated Docker and TLS with synthetic credentials only
+        run: sudo --preserve-env=PATH,GITHUB_SHA node scripts/test-coral-runtime-docker.mjs
+      - name: Upload expunged runtime receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coral-runtime-isolated
+          path: artifacts/coral-runtime-docker.json
+          if-no-files-found: warn

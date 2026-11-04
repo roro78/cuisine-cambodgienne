@@ -1,0 +1,12 @@
+# Optional route. Applying this file requires a separate installation approval.
+services:
+  coral-job-worker:
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: cdc-coral-ingress
+      traefik.http.routers.cdc-coral.rule: Host(`n8n.orvekio.com`) && PathPrefix(`/editorial-ai/v1/jobs/`)
+      traefik.http.routers.cdc-coral.entrypoints: websecure
+      traefik.http.routers.cdc-coral.tls: "true"
+      traefik.http.routers.cdc-coral.tls.certresolver: mytlschallenge
+      traefik.http.routers.cdc-coral.service: cdc-coral
+      traefik.http.services.cdc-coral.loadbalancer.server.port: "18678"

@@ -1,0 +1,45 @@
+name: cdc-coral-maintenance
+x-maintenance: &maintenance
+  profiles: [maintenance]
+  image: ${CDC_CORAL_WORKER_IMAGE:?immutable approved image required}
+  platform: linux/amd64
+  user: "1000:1000"
+  read_only: true
+  network_mode: none
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  mem_limit: 512m
+  cpus: 0.5
+  pids_limit: 32
+  secrets: [cdc_coral_backup_key]
+  entrypoint: [node, scripts/coral-state-backup.mjs]
+services:
+  coral-backup:
+    <<: *maintenance
+    command: [backup, --offline, --state-dir, /state, --archive, /archives/coral.enc, --key-file, /run/secrets/cdc_coral_backup_key]
+    volumes:
+      - type: bind
+        source: ${CDC_CORAL_STATE_DIR:?private state directory required}
+        target: /state
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${CDC_CORAL_ARCHIVE_DIR:?new private Coral archive directory required}
+        target: /archives
+        bind: {create_host_path: false}
+  coral-restore:
+    <<: *maintenance
+    command: [restore, --offline, --state-dir, /restore/new-state, --archive, /archives/coral.enc, --key-file, /run/secrets/cdc_coral_backup_key]
+    volumes:
+      - type: bind
+        source: ${CDC_CORAL_ARCHIVE_DIR:?private Coral archive directory required}
+        target: /archives
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${CDC_CORAL_RECOVERY_DIR:?empty separate recovery parent required}
+        target: /restore
+        bind: {create_host_path: false}
+secrets:
+  cdc_coral_backup_key:
+    file: ${CDC_CORAL_BACKUP_KEY_FILE:?offline backup encryption key file required}
