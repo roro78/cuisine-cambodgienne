@@ -11,7 +11,7 @@ import {mkdir,lstat,readFile,writeFile,rename,rmdir} from 'node:fs/promises';
 import {randomBytes} from 'node:crypto';
 import {resolve,join} from 'node:path';
 import {coralExternalRequestBody,coralExternalResult,coralExternalEstimatedUsd,
-  CORAL_EXTERNAL_MODELS} from './qualify-coral-external-text.mjs';
+  CORAL_EXTERNAL_MODELS} from './coral-text-api-contract.mjs';
 
 const ids=['intro','installer','preparer','assembler','maitriser','rectifier','terminer'];
 const MAX_OUTPUT_TOKENS=1800;
