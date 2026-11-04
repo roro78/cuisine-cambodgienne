@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
 import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
@@ -115,7 +116,7 @@ test('release package includes exactly ten scoped files and private rollback man
   await writeFile(join(dist,'gestion-contenus','publication-gap-audit.php'),'<?php function prereception(){}');
   await writeFile(join(dist,'gestion-contenus','atelier-narrations.json'),JSON.stringify({contract:'cdc-workshop-existing-coral-narrations-v1',schemaVersion:1,items:[]}));
   await writeFile(join(dist,'gestion-contenus','coral-v2-ai.php'),'<?php // guarded private provider');
-  await writeFile(join(dist,'gestion-contenus','coral-v2-contract.json'),JSON.stringify({contract:'cdc-coral-v2-complete-policy-v1',schemaVersion:1,structure:{text:'Contrat lexical bloquant',sha256:'a'.repeat(64)},narration:{text:'Contrat lexical bloquant',sha256:'b'.repeat(64)}}));
+  await writeFile(join(dist,'gestion-contenus','coral-v2-contract.json'),JSON.stringify({contract:'cdc-coral-v2-complete-policy-v1',schemaVersion:1,structure:{text:'Contrat lexical bloquant',sha256:createHash('sha256').update('Contrat lexical bloquant').digest('hex')},narration:{text:'Contrat lexical bloquant',sha256:createHash('sha256').update('Contrat lexical bloquant').digest('hex')}}));
   await writeFile(join(dist,'gestion-contenus','.htaccess'),
    '<Files "lib.php">\nRequire all denied\n</Files>\n'+
    '<Files "publication-gap-audit.php">\nRequire all denied\n</Files>\n'+
