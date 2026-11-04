@@ -16,7 +16,7 @@ const request={
   referentials:{structure:{text:'Contrat lexical bloquant : faire cuire sans inventer',sha256:createHash('sha256').update('Contrat lexical bloquant : faire cuire sans inventer').digest('hex')},
     narration:{text:'Contrat lexical bloquant : narration immersive',sha256:createHash('sha256').update('Contrat lexical bloquant : narration immersive').digest('hex')}},
   response_schema:{type:'object',additionalProperties:false,properties:{chapters:{type:'array',minItems:7,maxItems:7}}},
-  timeout_seconds:20,response_max_bytes:60000,max_output_tokens:6000
+  timeout_seconds:20,response_max_bytes:30000,max_output_tokens:6000
 };
 test('exact Coral V2 request reuses existing job gateway but never general C2 schema',()=>{
   assert.equal(validateJobRequest(request),request);
