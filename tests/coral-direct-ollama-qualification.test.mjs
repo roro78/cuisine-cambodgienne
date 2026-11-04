@@ -6,7 +6,7 @@ import {join} from 'node:path';
 import {qualify} from '../scripts/qualify-coral-ollama-direct.mjs';
 const ids=['intro','installer','preparer','assembler','maitriser','rectifier','terminer'];
 const text='Bonjour, nous allons préparer tranquillement le plat. Observez les ingrédients, puis prenez votre temps pour reconnaître la texture et ajuster votre geste. Vous devez garder une cuisson régulière et prendre les précautions nécessaires à chaque étape. Cuisinez avec méthode, observez le résultat et corrigez une erreur avant de poursuivre. '.repeat(2);
-async function fixture(t,{wrong=false,failAt=null}={}){
+async function fixture(t,{wrong=false,failAt=null,suffix=''}={}){
   const output=await mkdtemp(join(tmpdir(),'cdc-qualify-synthetic-'));
   t.after(()=>rm(output,{recursive:true,force:true}));
   const seen=[];
@@ -21,10 +21,17 @@ async function fixture(t,{wrong=false,failAt=null}={}){
     assert.equal(p.messages[1].content.includes('Contrat lexical bloquant'),true);
     assert.ok(p.messages[1].content.includes('lok-lak'));
     assert.ok(!p.messages[1].content.includes('"audioScript"'));
+    const source=JSON.parse(p.messages[1].content).source;
+    assert.equal(source.reference.id,'recette:lok-lak');
+    for(const name of ['sucre','ail','tomate','concombre','salade'])
+      assert.ok(source.reference.recipe_fields.ingredients.some(x=>x.name.toLowerCase().includes(name)),name);
+    assert.ok(source.reference.recipe_fields.steps.length>0);
+    assert.match(source.workshopAdaptation,/marin[ée]/u);
+    assert.ok(!p.messages[1].content.includes('Commençons par installer votre petit coin'));
     if(failAt===posts)throw Error('synthetic interrupted provider');
     const chapter=JSON.parse(p.messages[1].content).requestedChapter;
     return new Response(JSON.stringify({done:true,done_reason:'stop',eval_count:455,eval_duration:65000000000,
-      message:{content:JSON.stringify({chapter:{id:wrong?'not-a-chapter':chapter,text}})}}));
+      message:{content:JSON.stringify({chapter:{id:wrong?'not-a-chapter':chapter,text:text+suffix}})}}));
   };
   return {output,seen,fetcher,get calls(){return posts}};
 }
@@ -67,4 +74,14 @@ test('private Ollama only and no TTS even on interrupted request',async t=>{
   assert.equal(report.mechanicalPass,false);
   assert.equal(f.calls,1);
   assert.equal(report.audioCalls,0);
+});
+
+test('probe and full qualification stop at the first server-blocking voice defect',async t=>{
+  for(const suffix of [' Ajoutez 200 g de sucre.',' Prenez 2 oeufs.','\n- Mélangez doucement.',' Je vous vois cuisiner.',' Montez les bols.']) {
+    const f=await fixture(t,{suffix});
+    const {report}=await qualify({fetcher:f.fetcher,full:true,approval:true,output:f.output});
+    assert.equal(f.calls,1,suffix);
+    assert.equal(report.mechanicalPass,false,suffix);
+    assert.equal(report.audioCalls,0);
+  }
 });

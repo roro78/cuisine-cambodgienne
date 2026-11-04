@@ -11,8 +11,8 @@ import { transformSync } from 'esbuild';
 
 export const PHASE_IDS = ['installer', 'preparer', 'assembler', 'maitriser', 'rectifier', 'terminer'];
 
-export async function loadCanonicalRecipes() {
-  const source = readFileSync(new URL('../src/data/recipes.ts', import.meta.url), 'utf8');
+export async function loadCanonicalRecipes(sourcePath = new URL('../src/data/recipes.ts', import.meta.url)) {
+  const source = readFileSync(sourcePath, 'utf8');
   const code = transformSync(source, { loader: 'ts', format: 'esm', target: 'es2022' }).code;
   const data = await import('data:text/javascript;base64,' + Buffer.from(code).toString('base64'));
   return data.recipes;

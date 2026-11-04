@@ -77,3 +77,16 @@ test('one visible user intent produces at most one async job, with durable faile
   assert.equal((await gateway.state(id)).status,'succeeded');
   await assert.rejects(gateway.submit(id,{...request,creation_version:3}),/JOB_CONFLICT/);
 });
+
+test('each server-blocking voice defect stops the worker before a second inference',async()=>{
+  const valid='Nous préparons le plat avec méthode. Observez la texture et ajustez le geste, sans précipitation. '.repeat(6);
+  for(const bad of [' Ajoutez 200 g de sucre.',' Prenez 2 oeufs.','\n- Mélangez doucement.',' Je vous entends.',' Je sais que vous avez fini.',' Assemblez les bols.',' Nettoyez le poste.']) {
+    let calls=0;
+    const provider=ollamaJobProvider({fetcher:async()=>{
+      calls++;
+      return new Response(JSON.stringify({done:true,done_reason:'stop',message:{content:JSON.stringify({id:'intro',text:valid+bad})}}));
+    }});
+    await assert.rejects(provider(request),/JOB_CORAL_INVALID_CHAPTER/,bad);
+    assert.equal(calls,1,bad);
+  }
+});
