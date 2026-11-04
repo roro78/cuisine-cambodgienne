@@ -1,5 +1,6 @@
 import {coralChapterVoiceProblems} from './coral-chapter-voice-checks.mjs';
 import {createExternalCoralJobProvider} from './coral-external-job-provider.mjs';
+import {readCoralOpenAISecret} from './coral-openai-secret.mjs';
 /** Private orchestration for the existing C2 contract. No network or worker on import. */
 import {createServer} from 'node:http';
 import {createHash,randomBytes,timingSafeEqual} from 'node:crypto';
@@ -207,7 +208,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
       ||process.env.CDC_CORAL_EXTERNAL_ENABLED!=='true')
       throw Error('CORAL_EXTERNAL_NOT_APPROVED');
     const coralProvider=createExternalCoralJobProvider({
-      apiKey:process.env.OPENAI_API_KEY,
+      apiKey:readCoralOpenAISecret(),
       model:process.env.CDC_CORAL_EXTERNAL_MODEL,
       budgetDir:process.env.CDC_CORAL_EXTERNAL_BUDGET_DIR,
       maxDailyUsd:Number(process.env.CDC_CORAL_EXTERNAL_DAILY_USD||0)
