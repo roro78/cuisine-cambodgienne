@@ -86,7 +86,7 @@ function cmsAiContentJobTransport(string $base,string $token,string $id,?array $
     try{$a=json_decode($raw,true,12,JSON_THROW_ON_ERROR);}catch(Throwable $e){throw new RuntimeException('AI_CONTENT_GATEWAY_RESPONSE');}
     if(!is_array($a)||($a['id']??null)!==$id||!in_array($a['status']??null,['queued','running','succeeded','failed'],true)
         ||array_diff(array_keys($a),['id','status','result'])
-        ||(($a['status']??null)==='succeeded'&&(!is_string($a['result']??null)||strlen($a['result'])>60000)))throw new RuntimeException('AI_CONTENT_GATEWAY_RESPONSE');
+        ||(($a['status']??null)==='succeeded'&&(!is_string($a['result']??null)||strlen($a['result'])>30000)))throw new RuntimeException('AI_CONTENT_GATEWAY_RESPONSE');
     return $a;
 }
 function cmsAiContentJobAdapters(string $base,string $token): array {
