@@ -68,7 +68,7 @@ function cmsCoralRequest(array $draft,array $catalog,array $canonical,array $gui
     'reference'=>['id'=>$id,'recipe_fields'=>$g['fields']],
     'referentials'=>['structure'=>$p['structure'],'narration'=>$p['narration']],
     'response_schema'=>cmsCoralSchema(),
-    'timeout_seconds'=>20,'response_max_bytes'=>60000,'max_output_tokens'=>6000];
+    'timeout_seconds'=>20,'response_max_bytes'=>30000,'max_output_tokens'=>6000];
   if(strlen(json_encode($r,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR))>90000)
     throw new RuntimeException('CORAL_REQUEST_OVERSIZE');
   return $r;
