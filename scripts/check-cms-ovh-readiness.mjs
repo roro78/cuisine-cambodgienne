@@ -129,21 +129,6 @@ async function getRemote(origin,{fetcher=fetch}={}){
     catch{fail('INVALID_JSON_'+name);}
   }
   const counts=verifyCmsIndexes(out);
-  // Unlike the three public editorial indexes, this snapshot must never be HTTP-readable.
-  const snapshotPath=join(dir,'gestion-contenus','atelier-narrations.json');
-  const snapshotInfo=await stat(snapshotPath);
-  if(!snapshotInfo.isFile()||snapshotInfo.size>524288)fail('CORAL_PRIVATE_SNAPSHOT_SIZE');
-  const snapshot=JSON.parse(await readFile(snapshotPath,'utf8'));
-  if(snapshot.contract!=='cdc-workshop-existing-coral-narrations-v1'
-    ||snapshot.schemaVersion!==1||!Array.isArray(snapshot.items)
-    ||snapshot.items.length!==out['editorial-source-index.json'].items.filter(x=>x.model==='cookingWorkshopGuides').length)fail('CORAL_PRIVATE_SNAPSHOT_INVALID');
-  const sourceIndex=new Map(out['editorial-source-index.json'].items.map(x=>[x.id,x]));
-  for(const item of snapshot.items){
-    if(typeof item.id!=='string'||!item.id.startsWith('atelier:')
-      ||item.canonicalFingerprint!==sourceIndex.get(item.id)?.fingerprint
-      ||!Array.isArray(item.chapters)||item.chapters.length!==7)
-      fail('CORAL_PRIVATE_SNAPSHOT_STALE');
-  }
   const response=await fetcher(new URL('gestion-contenus/',base),{
     method:'GET',redirect:'error',signal:AbortSignal.timeout(12000),
     headers:{Accept:'text/html','Cache-Control':'no-cache'}});
@@ -169,6 +154,21 @@ async function getDist(dir){
     out[name]=JSON.parse(await readFile(path,'utf8'));
   }
   const counts=verifyCmsIndexes(out);
+  // Unlike the three public editorial indexes, this snapshot must never be HTTP-readable.
+  const snapshotPath=join(dir,'gestion-contenus','atelier-narrations.json');
+  const snapshotInfo=await stat(snapshotPath);
+  if(!snapshotInfo.isFile()||snapshotInfo.size>524288)fail('CORAL_PRIVATE_SNAPSHOT_SIZE');
+  const snapshot=JSON.parse(await readFile(snapshotPath,'utf8'));
+  if(snapshot.contract!=='cdc-workshop-existing-coral-narrations-v1'
+    ||snapshot.schemaVersion!==1||!Array.isArray(snapshot.items)
+    ||snapshot.items.length!==out['editorial-source-index.json'].items.filter(x=>x.model==='cookingWorkshopGuides').length)fail('CORAL_PRIVATE_SNAPSHOT_INVALID');
+  const sourceIndex=new Map(out['editorial-source-index.json'].items.map(x=>[x.id,x]));
+  for(const item of snapshot.items){
+    if(typeof item.id!=='string'||!item.id.startsWith('atelier:')
+      ||item.canonicalFingerprint!==sourceIndex.get(item.id)?.fingerprint
+      ||!Array.isArray(item.chapters)||item.chapters.length!==7)
+      fail('CORAL_PRIVATE_SNAPSHOT_STALE');
+  }
   for(const name of ['index.php','lib.php','publication-gap-audit.php','.htaccess']){
     const path=join(dir,'gestion-contenus',name);
     if(!(await stat(path)).isFile())fail('CMS_PHP_FILE_MISSING_'+name);
