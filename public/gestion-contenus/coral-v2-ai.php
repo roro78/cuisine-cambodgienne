@@ -73,3 +73,75 @@ function cmsCoralRequest(array $draft,array $catalog,array $canonical,array $gui
     throw new RuntimeException('CORAL_REQUEST_OVERSIZE');
   return $r;
 }
+
+/** Strict server acceptance of the model candidate; this is NOT a visa. */
+function cmsCoralCandidate(array $request,mixed $wire): array {
+  if(!is_string($wire)||strlen($wire)>60000)
+    throw new InvalidArgumentException('CORAL_RESPONSE');
+  try{$out=json_decode($wire,true,12,JSON_THROW_ON_ERROR);}
+  catch(Throwable $e){throw new InvalidArgumentException('CORAL_RESPONSE');}
+  if(!is_array($out)||array_keys($out)!==['chapters']
+    ||!is_array($out['chapters'])||count($out['chapters'])!==7)
+    throw new InvalidArgumentException('CORAL_CHAPTERS');
+  $chapters=[];
+  foreach(cmsAtelierScriptIds() as $i=>$id){
+    $row=$out['chapters'][$i]??null;
+    if(!is_array($row)||count($row)!==2
+       ||array_diff(array_keys($row),['id','text'])
+       ||($row['id']??null)!==$id)
+      throw new InvalidArgumentException('CORAL_CHAPTERS');
+    $text=cmsCreationText($row['text']??null,7000);
+    if(mbLen($text)<($i===0?300:400)
+      ||preg_match('/(?<!\p{L})(?:fabriqu\p{L}*|fabrication\p{L}*|constru\p{L}*|chantier\p{L}*|maçonnerie|bétonnage|poste)(?!\p{L})/iu',$text)
+      ||preg_match('/\b(?:monter|montez|montage|assembler|assemblez)\s+(?:les|des|du|d.un)\s+bols?\b/iu',$text)
+      ||preg_match('/(?<![\p{L}\p{N}])\d+(?:[.,]\d+)?\s*(?:kg|g|grammes?|ml|cl|litres?|tomates?|oignons?|oeufs?|œufs?|portions?)\b/iu',$text)
+      ||preg_match('/(?:^|\n)\s*(?:[-*]|\d+[.)])\s/u',$text)
+      ||preg_match('/(?:je vous vois|je vous entends|je sais que vous avez fini)/iu',$text))
+      throw new InvalidArgumentException('CORAL_LEXICON_OR_VOICE');
+    $chapters[]=['index'=>$i,'id'=>$id,'text'=>$text,
+      'editorNote'=>'Texte proposé par le moteur éditorial sous contrat Coral V2. Vérifier chaque geste, ingrédient, précaution et source. Aucun visa ni MP3.'];
+  }
+  return ['version'=>1,'bindingDigest'=>$request['binding_digest'],'chapters'=>$chapters];
+}
+/** Existing C2 asynchronous submit/poll endpoint, same quota and token,
+ * separate typed contract. No second model service; never auto-retry. */
+function cmsCoralStart(array $draft,array $catalog,array $canonical,array $guided,
+  string $private,array $settings): array {
+  if(($settings['mode']??null)!=='async'||!is_callable($settings['submit']??null))
+    throw new RuntimeException('CORAL_DISABLED');
+  $request=cmsCoralRequest($draft,$catalog,$canonical,$guided);
+  cmsAiBriefReserve($private,$settings['max_attempts_per_day']);
+  $token=bin2hex(random_bytes(24));
+  $job=['token'=>$token,'expires_at'=>time()+1800,'status'=>'submission_unknown',
+    'creation_id'=>$draft['id'],'creation_version'=>$draft['version'],
+    'binding_digest'=>$request['binding_digest'],'request'=>$request];
+  try{$ack=($settings['submit'])($request,$token);}
+  catch(Throwable $e){return $job;}
+  if(!is_array($ack)||($ack['id']??null)!==$token
+     ||!in_array($ack['status']??null,['queued','running','succeeded'],true))
+     throw new RuntimeException('CORAL_PROVIDER');
+  $job['status']=$ack['status']==='succeeded'?'queued':$ack['status'];
+  return $job;
+}
+function cmsCoralPoll(array &$job,array $draft,array $settings): ?array {
+  if(($job['creation_id']??null)!==($draft['id']??null)
+    ||($job['creation_version']??null)!==($draft['version']??null)
+    ||($job['expires_at']??0)<time()||($job['status']??null)==='failed'
+    ||($job['binding_digest']??null)!==cmsAtelierScriptSourceDigest(
+      $draft['fields'],$draft['atelier_reference'],$draft['atelier_phase_details']))
+    throw new RuntimeException('CORAL_STALE');
+  if(($settings['mode']??null)!=='async'||!is_callable($settings['poll']??null))
+    throw new RuntimeException('CORAL_DISABLED');
+  try{$answer=($settings['poll'])($job['token']);}
+  catch(Throwable $e){throw new RuntimeException('CORAL_PROVIDER');}
+  if(!is_array($answer)||($answer['id']??null)!==$job['token'])
+    throw new RuntimeException('CORAL_PROVIDER');
+  if(in_array($answer['status']??null,['queued','running'],true)){
+    $job['status']=$answer['status'];return null;
+  }
+  if(($answer['status']??null)!=='succeeded'){
+    $job['status']='failed';throw new RuntimeException('CORAL_PROVIDER');
+  }
+  try{return cmsCoralCandidate($job['request'],$answer['result']??null);}
+  catch(Throwable $e){$job['status']='failed';throw $e;}
+}
