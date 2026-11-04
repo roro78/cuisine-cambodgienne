@@ -1265,12 +1265,19 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?= cmsAtelierPhaseDetailsHtml($createForm['atelier_phase_details']??null,
     is_array($createForm['fields']??null)?$createForm['fields']:[],
     $createForm['atelier_reference']??null) ?>
+<?php if($creation!==null && $studioSourceCurrent && isset($creation['source_binding'])): ?>
+<?= cmsStudioExistingCoralNarrationsHtml(
+    cmsStudioExistingCoralNarrations($creation['source_binding'],$canonicalById)) ?>
+<?php endif; ?>
+<p class="small muted">Les textes historiques sont affichés ci-dessus lorsqu’ils existent.
+Les sept zones ci-dessous sont des brouillons privés distincts : ne recopiez
+pas manuellement les enregistrements déjà publiés. La génération automatique
+d’une nouvelle narration conforme au référentiel Coral V2 reste à raccorder.</p>
 <?= cmsAtelierScriptsHtml($createForm['atelier_scripts']??null,
     is_array($createForm['fields']??null)?$createForm['fields']:[],
     $createForm['atelier_reference']??null,
     $createForm['atelier_phase_details']??null,
-    $creation!==null && $studioSourceCurrent && $method==='GET'
-    && $pendingContent===null && $candidateToken==='' && $aiJobToken==='') ?>
+    false) ?>
 <?php endif; ?>
 <details class="guided-group"><summary>Notes et calendrier — facultatifs</summary>
 <label>Notes de recherche privées (jamais publiées)
