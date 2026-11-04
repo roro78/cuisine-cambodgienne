@@ -19,6 +19,10 @@ export function validateJobRequest(r){
       ||!Array.isArray(r.reference?.recipe_fields?.steps)
       ||!docs?.structure?.text?.includes('Contrat lexical bloquant')
       ||!docs?.narration?.text?.includes('Contrat lexical bloquant')
+      ||!['structure','narration'].every(k=>
+        typeof docs?.[k]?.sha256==='string'
+        &&/^[a-f0-9]{64}$/.test(docs[k].sha256)
+        &&digest(docs[k].text)===docs[k].sha256)
       ||r.response_schema?.type!=='object'
       ||r.response_schema?.properties?.chapters?.minItems!==7
       ||r.response_schema?.properties?.chapters?.maxItems!==7
