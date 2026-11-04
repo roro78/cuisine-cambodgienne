@@ -1,3 +1,4 @@
+import {coralChapterVoiceProblems} from './coral-chapter-voice-checks.mjs';
 /** Private orchestration for the existing C2 contract. No network or worker on import. */
 import {createServer} from 'node:http';
 import {createHash,randomBytes,timingSafeEqual} from 'node:crypto';
@@ -73,7 +74,6 @@ export function ollamaJobProvider({url='http://ollama:11434',model='llama3.2:lat
       });
     }
     const ids=['intro','installer','preparer','assembler','maitriser','rectifier','terminer'];
-    const forbidden=/(?<!\p{L})(?:fabriqu\p{L}*|fabrication\p{L}*|constru\p{L}*|chantier\p{L}*|maçonnerie|bétonnage|poste)(?!\p{L})/iu;
     const chapters=[];
     // One HTTP job ID. Reuse the existing exclusive started.json marker. If a
     // worker dies after any Ollama call, the task becomes FAILED on restart:
@@ -94,8 +94,7 @@ export function ollamaJobProvider({url='http://ollama:11434',model='llama3.2:lat
       });
       let value;try{value=JSON.parse(raw);}catch{throw Error('JOB_CORAL_INVALID_JSON');}
       if(!value||Object.keys(value).length!==2||value.id!==id
-        ||typeof value.text!=='string'||value.text.length<(i===0?300:400)
-        ||value.text.length>7000||forbidden.test(value.text))
+        ||coralChapterVoiceProblems(value.text,i===0?300:400).length)
         throw Error('JOB_CORAL_INVALID_CHAPTER');
       chapters.push({id,text:value.text});
       if(Buffer.byteLength(JSON.stringify({chapters}))>30000)throw Error('JOB_CORAL_RESULT_SIZE');

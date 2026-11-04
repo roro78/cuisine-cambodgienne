@@ -16,7 +16,7 @@ Le script `scripts/qualify-coral-ollama-direct.mjs` est un **outil de qualificat
 
 ## Exécution après accès authentifié au VPS
 
-Sur une machine qui possède déjà ce dépôt et qui peut accéder à Ollama en local :
+Sur une machine qui possède déjà ce dépôt, ses dépendances (`npm install`, notamment `esbuild` utilisé par le chargeur canonique existant) et qui peut accéder à Ollama en local :
 
 ```bash
 node scripts/qualify-coral-ollama-direct.mjs --probe
@@ -44,3 +44,11 @@ Le résultat est écrit dans un dossier temporaire privé (permissions 0600). La
 La qualification **réelle sur Orvekio** n'a pas été exécutée depuis cette conversation : ni terminal VPS authentifié ni service de tâches connecté n'étaient disponibles. Les tests GitHub couvrent uniquement un fournisseur synthétique direct, sans n8n, sans audio. Le résultat de ces tests ne permet donc pas l'activation de l'IA Coral ni le déploiement OVH.
 
 **Référentiels immuables** : `docs/ateliers/REFERENTIEL-ATELIER-CUISINE-ET-MP3.md` et `docs/ateliers/REFERENTIEL-NARRATION-IMMERSIVE-V2.md`. Exemples réels conservés sous `src/data/atelier-recette-guides/`.
+
+## Correctifs de fidélité et d’arrêt anticipé (4 novembre)
+
+La sonde résout maintenant `src/data/recipes.ts` avec `loadCanonicalRecipes`, le chargeur déjà utilisé par les contrôles d’ateliers. Chaque chapitre reçoit les ingrédients et étapes canoniques, ainsi que `sources.pedagogicalAdaptation` du blueprint (marinade avant saisie pour le Lok Lak). Les textes audio approuvés restent exclus. L’absence de recette ou de variante déclarée interdit l’inférence.
+
+La sonde et le fournisseur de tâches partagent les contrôles Node équivalents aux blocages de `cmsCoralCandidate` : longueurs, lexique culinaire, bols, quantités fixes, listes et interaction fictive. Un chapitre rejeté arrête immédiatement les appels suivants. Ces contrôles ne remplacent ni la revue culinaire ni le visa humain. Les tests injectent volontairement chaque défaut ; ils sont synthétiques et ne constituent aucun benchmark VPS.
+
+La console KVM du VPS a été ouverte pendant cette mission. L’état du fournisseur et les résultats mesurés doivent être consignés séparément après le vrai appel ; aucun chiffre de CI ne doit être réutilisé comme mesure réelle.

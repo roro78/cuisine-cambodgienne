@@ -14,10 +14,11 @@ import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 import {resolve} from 'node:path';
+import {loadCanonicalRecipes} from './check-workshop-blueprints.mjs';
+import {coralChapterVoiceProblems} from './coral-chapter-voice-checks.mjs';
 
 const sha=x=>createHash('sha256').update(x).digest('hex');
 const ids=['intro','installer','preparer','assembler','maitriser','rectifier','terminer'];
-const forbidden=/(?<!\p{L})(?:fabriqu\p{L}*|fabrication\p{L}*|constru\p{L}*|chantier\p{L}*|maçonnerie|bétonnage|poste)(?!\p{L})/iu;
 const schema={
   type:'object',additionalProperties:false,
   required:['chapter'],
@@ -40,12 +41,7 @@ function candidate(id,body,details){
   if(!body?.chapter||body.chapter.id!==id
     ||typeof body.chapter.text!=='string')throw Error('QUALIFICATION_WRONG_CHAPTER');
   const value=body.chapter.text;
-  const problems=[];
-  if(value.length<400||value.length>7000)problems.push('length');
-  if(forbidden.test(value))problems.push('forbidden-culinary-lexicon');
-  if(/(?:^|\n)\s*(?:[-*]|\d+[.)])\s/u.test(value))problems.push('list-instead-of-voice');
-  if(/(?<![\p{L}\p{N}])\d+(?:[.,]\d+)?\s*(?:kg|g|grammes?|ml|cl|litres?|tomates?|oignons?|œufs?|portions?)\b/iu.test(value))
-    problems.push('fixed-quantities-or-portions');
+  const problems=coralChapterVoiceProblems(value);
   if(!/[\u00e0-\u00ff]/iu.test(value))problems.push('not-natural-french');
   if(!/(?:vous|on|nous)/iu.test(value))problems.push('not-directed-to-learner');
   return {chapterId:id,chars:value.length,words:value.trim().split(/\s+/u).length,
@@ -68,10 +64,22 @@ export async function qualify({
   const blueprint=JSON.parse(await readFile(join(root,'src/data/atelier-recette-guides/lok-lak.json'),'utf8'));
   if(blueprint.sourceRecipeSlug!=='lok-lak'||blueprint.phases.length!==6)
     throw Error('APPROVED_RECIPE_SOURCE_CHANGED');
+  const recipes=await loadCanonicalRecipes(join(root,'src/data/recipes.ts'));
+  const recipe=recipes.find(r=>r.slug===blueprint.sourceRecipeSlug);
+  if(!recipe?.ingredients?.length||!recipe?.steps?.length)
+    throw Error('QUALIFICATION_CANONICAL_RECIPE_MISSING');
+  // Same public ingredient/step data supplied by the Studio, never an approved narration.
+  const reference={id:'recette:'+recipe.slug,recipe_fields:{
+    title:recipe.title,baseServings:recipe.baseServings,
+    ingredients:recipe.ingredients,steps:recipe.steps
+  }};
+  const workshopAdaptation=blueprint.sources?.pedagogicalAdaptation;
+  if(typeof workshopAdaptation!=='string'||!workshopAdaptation.trim())
+    throw Error('QUALIFICATION_WORKSHOP_ADAPTATION_MISSING');
   const policyHash={structure:sha(structure),narration:sha(narration)};
   const dest=output||await mkdtemp(join(tmpdir(),'cdc-coral-ollama-'));
   const report={contract:'coral-v2-direct-ollama-qualification-v1',model,url,mode:full?'full':'probe',
-    policyHash,sourceSlug:blueprint.sourceRecipeSlug,startedAt:new Date().toISOString(),
+    canonicalRecipeHash:sha(JSON.stringify(reference)),policyHash,sourceSlug:blueprint.sourceRecipeSlug,startedAt:new Date().toISOString(),
     chapters:[],realProviderCalls:0,audioCalls:0,humanEditorialApproved:false};
   const indexes=full?[0,1,2,3,4,5,6]:[3];
   const relevantKeys=['title','sourceRecipeSlug','finalPreparation','learningGoal','canonicalServings',
@@ -79,12 +87,12 @@ export async function qualify({
   const base=Object.fromEntries(relevantKeys.map(k=>[k,blueprint[k]]));
   for(const i of indexes){
     const id=ids[i],phase=i?blueprint.phases[i-1]:null;
-    const source={...base,id,phase:phase?Object.fromEntries(Object.entries(phase).filter(([k])=>k!=='audioScript')):null};
+    const source={...base,reference,workshopAdaptation,id,phase:phase?Object.fromEntries(Object.entries(phase).filter(([k])=>k!=='audioScript')):null};
     const prompt={
       referentials:{structure,narration},
       source,
       requestedChapter:id,
-      instruction:'Rédige une seule narration française parlée, concrète et fidèle à la source. Suis le référentiel Coral V2. Pas de mots de chantier, de quantités fixes dans la voix, de faits inventés, de titres récités ou de faux dialogue interactif.'
+      instruction:'Rédige une seule narration française parlée, concrète et fidèle à la source. Suis le référentiel Coral V2. Applique la variante pédagogique explicitement déclarée pour la chronologie ; la recette canonique fournit les ingrédients. Pas de mots de chantier, de quantités fixes dans la voix, de faits inventés, de titres récités ou de faux dialogue interactif.'
     };
     const payload={model,stream:false,think:false,format:schema,
       options:{temperature:0,num_predict:1250,num_ctx:16384},
@@ -107,6 +115,9 @@ export async function qualify({
       const tokensPerSecond=evalCount>0&&evalDuration>0?evalCount*1e9/evalDuration:null;
       const record={...check,wallSeconds:Math.round((performance.now()-started)/100)/10,
         evalCount:Number.isFinite(evalCount)?evalCount:null,
+        promptEvalCount:Number.isFinite(result.prompt_eval_count)?result.prompt_eval_count:null,
+        promptEvalSeconds:Number.isFinite(result.prompt_eval_duration)?result.prompt_eval_duration/1e9:null,
+        loadSeconds:Number.isFinite(result.load_duration)?result.load_duration/1e9:null,
         tokensPerSecond:Number.isFinite(tokensPerSecond)?Math.round(tokensPerSecond*100)/100:null};
       report.chapters.push(record);
       const chapterPath=join(dest,'candidate-'+id+'.json');
