@@ -123,13 +123,16 @@ function cmsCoralStart(array $draft,array $catalog,array $canonical,array $guide
   $job['status']=$ack['status']==='succeeded'?'queued':$ack['status'];
   return $job;
 }
-function cmsCoralPoll(array &$job,array $draft,array $settings): ?array {
+function cmsCoralPoll(array &$job,array $draft,array $settings,array $canonical): ?array {
   if(($job['creation_id']??null)!==($draft['id']??null)
     ||($job['creation_version']??null)!==($draft['version']??null)
     ||($job['expires_at']??0)<time()||($job['status']??null)==='failed'
     ||($job['binding_digest']??null)!==cmsAtelierScriptSourceDigest(
       $draft['fields'],$draft['atelier_reference'],$draft['atelier_phase_details']))
     throw new RuntimeException('CORAL_STALE');
+  $recipeId='recette:'.($draft['atelier_reference']['recipeSlug']??'');
+  if(($canonical[$recipeId]['fingerprint']??null)!==($job['request']['canonical_fingerprint']??null))
+    throw new RuntimeException('CORAL_CANONICAL_STALE');
   if(($settings['mode']??null)!=='async'||!is_callable($settings['poll']??null))
     throw new RuntimeException('CORAL_DISABLED');
   try{$answer=($settings['poll'])($job['token']);}
