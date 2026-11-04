@@ -1364,7 +1364,7 @@ Un rafraîchissement ne relance pas le modèle.
 <p class="small muted">Enregistrez d'abord l'atelier et les six phases liées à
 une recette pour préparer automatiquement les narrations.</p>
 <?php endif; ?>
-<p class="small muted">Les MP3 existants sont conservés. Sept textes approuvés ne
+<p class="small muted">Les MP3 existants sont conservés. Aucun audio n'est généré depuis cet écran. Sept textes approuvés ne
 suffisent pas à autoriser une synthèse vocale : les validations Coral restent obligatoires.</p>
 </section>
 <?= cmsAtelierReferenceHtml($createForm['atelier_reference']??null,$catalog) ?>
