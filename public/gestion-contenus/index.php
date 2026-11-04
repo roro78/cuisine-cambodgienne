@@ -1342,9 +1342,30 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?php endif; ?>
 <?php if($createKind==='atelier'): ?>
 <section id="atelier-audio-draft" aria-label="Préparer les textes audio de l'atelier">
-<h3>Préparer le MP3</h3>
-<p class="small muted">Préparez ou corrigez les sept textes ci-dessous à partir de la recette et des phases de l'atelier. Enregistrez le brouillon avant de demander les visas humains. Aucun audio n'est généré depuis cet écran.</p>
-<p class="small muted">La synthèse Coral reste bloquée tant que les contrôles de recette, de textes, de droits et d'audio ne sont pas satisfaits. Les MP3 publiés sont conservés.</p>
+<h3>Guide audio de l'atelier</h3>
+<?php if($creation!==null && $studioSourceCurrent && !isset($creation['source_binding'])): ?>
+<input type="hidden" name="coral_intent" value="<?= cmsEsc($_SESSION['coral_intent']??'') ?>">
+<?php if($coralSettings!==null): ?>
+<button name="coral_prepare" value="1" formnovalidate data-coral-prepare>Préparer le MP3</button>
+<p class="small muted">Un seul clic prépare sept vrais textes parlés depuis votre recette
+et les deux référentiels Coral V2. Relisez les textes avant enregistrement ;
+aucune synthèse audio ni publication n'est lancée.</p>
+<?php else: ?>
+<button type="button" disabled aria-disabled="true">Préparer le MP3</button>
+<p class="small muted">La génération est désactivée : le fournisseur éditorial privé
+doit d'abord être qualifié pour Coral V2. Aucun texte artificiel n'est proposé.</p>
+<?php endif; ?>
+<?php if(is_array($coralJob)): ?>
+<p class="small" role="status">Demande Coral : <?= cmsEsc((string)$coralJob['status']) ?>.
+Un rafraîchissement ne relance pas le modèle.
+<a href="?new=1&amp;cid=<?= cmsEsc($creation['id']) ?>&amp;coral_job=<?= cmsEsc($coralJob['token']) ?>#cms-audio">Actualiser le suivi</a></p>
+<?php endif; ?>
+<?php elseif($creation===null): ?>
+<p class="small muted">Enregistrez d'abord l'atelier et les six phases liées à
+une recette pour préparer automatiquement les narrations.</p>
+<?php endif; ?>
+<p class="small muted">Les MP3 existants sont conservés. Sept textes approuvés ne
+suffisent pas à autoriser une synthèse vocale : les validations Coral restent obligatoires.</p>
 </section>
 <?= cmsAtelierReferenceHtml($createForm['atelier_reference']??null,$catalog) ?>
 <?= cmsAtelierPhaseDetailsHtml($createForm['atelier_phase_details']??null,
@@ -1363,10 +1384,8 @@ $publishedCoral=$creation!==null && $studioSourceCurrent
 Cette zone n'est utile que pour préparer une nouvelle version privée après
 vérification de sa recette et de ses six phases. Aucun visa n'est repris.</p>
 <?php else: ?>
-<p class="small muted">La génération automatique d'une nouvelle narration
-immersive conforme au référentiel Coral V2 est encore à raccorder au
-moteur éditorial existant. Les champs privés ci-dessous ne remplacent
-pas le bouton de génération demandé.</p>
+<p class="small muted">Les sept champs ci-dessous sont les textes privés
+à corriger après « Préparer le MP3 ». Ils ne sont jamais approuvés automatiquement.</p>
 <?php endif; ?>
 <?= cmsAtelierScriptsHtml($createForm['atelier_scripts']??null,
     is_array($createForm['fields']??null)?$createForm['fields']:[],
@@ -2070,7 +2089,9 @@ let studioDirty=false;
 document.querySelectorAll('[data-studio-edit]').forEach(form=>{
   form.addEventListener('input',()=>{studioDirty=true;});
   form.addEventListener('change',()=>{studioDirty=true;});
-  form.addEventListener('submit',()=>{studioDirty=false;});
+  form.addEventListener('submit',event=>{
+    if(event.submitter?.name!=='coral_prepare')studioDirty=false;
+  });
 });
 window.addEventListener('beforeunload',event=>{
   if(studioDirty){event.preventDefault();event.returnValue='';}
@@ -2119,6 +2140,17 @@ document.querySelector('[data-atelier-prefill]')?.addEventListener('click',event
 });
 document.querySelector('[data-studio-transition]')?.addEventListener('submit',event=>{
   if(studioDirty){event.preventDefault();window.alert('Enregistrez les modifications de la fiche avant de préparer le brouillon lié.');}
+});
+document.querySelector('#cms-new-editor')?.addEventListener('submit',event=>{
+  if(event.submitter?.name!=='coral_prepare')return;
+  if(studioDirty){
+    event.preventDefault();
+    window.alert('Enregistrez votre atelier avant de préparer le MP3. Aucun texte n’a été transmis.');
+    return;
+  }
+  if(event.currentTarget.dataset.coralSubmitting==='1'){event.preventDefault();return;}
+  event.currentTarget.dataset.coralSubmitting='1';
+  event.submitter.setAttribute('aria-disabled','true');
 });
 document.querySelector('#cms-new-editor')?.addEventListener('submit',event=>{
   if(event.submitter?.name!=='ai_content_generate')return;
