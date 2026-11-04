@@ -136,7 +136,7 @@ async function getRemote(origin,{fetcher=fetch}={}){
   const snapshot=JSON.parse(await readFile(snapshotPath,'utf8'));
   if(snapshot.contract!=='cdc-workshop-existing-coral-narrations-v1'
     ||snapshot.schemaVersion!==1||!Array.isArray(snapshot.items)
-    ||snapshot.items.length!==6)fail('CORAL_PRIVATE_SNAPSHOT_INVALID');
+    ||snapshot.items.length!==out['editorial-source-index.json'].items.filter(x=>x.model==='cookingWorkshopGuides').length)fail('CORAL_PRIVATE_SNAPSHOT_INVALID');
   const sourceIndex=new Map(out['editorial-source-index.json'].items.map(x=>[x.id,x]));
   for(const item of snapshot.items){
     if(typeof item.id!=='string'||!item.id.startsWith('atelier:')
