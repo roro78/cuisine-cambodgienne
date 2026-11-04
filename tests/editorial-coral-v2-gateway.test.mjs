@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdtemp,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
+import {createHash} from 'node:crypto';
 import {validateJobRequest,ollamaJobProvider,createJobGateway} from '../scripts/editorial-ai-job-gateway.mjs';
 
 const request={
@@ -12,8 +13,8 @@ const request={
   atelier:{title:'Atelier privé',fields:{intro:'Bonjour'},recipeSlug:'amok-trey',
     phases:['installer','preparer','assembler','maitriser','rectifier','terminer'].map(id=>({id,actions:['Préparer']}))},
   reference:{id:'recette:amok-trey',recipe_fields:{ingredients:[{name:'poisson'}],steps:[{title:'Cuire'}]}},
-  referentials:{structure:{text:'Contrat lexical bloquant : faire cuire sans inventer',sha256:'a'.repeat(64)},
-    narration:{text:'Contrat lexical bloquant : narration immersive',sha256:'b'.repeat(64)}},
+  referentials:{structure:{text:'Contrat lexical bloquant : faire cuire sans inventer',sha256:createHash('sha256').update('Contrat lexical bloquant : faire cuire sans inventer').digest('hex')},
+    narration:{text:'Contrat lexical bloquant : narration immersive',sha256:createHash('sha256').update('Contrat lexical bloquant : narration immersive').digest('hex')}},
   response_schema:{type:'object',additionalProperties:false,properties:{chapters:{type:'array',minItems:7,maxItems:7}}},
   timeout_seconds:20,response_max_bytes:60000,max_output_tokens:6000
 };
