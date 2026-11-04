@@ -1,4 +1,5 @@
 import {coralChapterVoiceProblems} from './coral-chapter-voice-checks.mjs';
+import {createExternalCoralJobProvider} from './coral-external-job-provider.mjs';
 /** Private orchestration for the existing C2 contract. No network or worker on import. */
 import {createServer} from 'node:http';
 import {createHash,randomBytes,timingSafeEqual} from 'node:crypto';
@@ -151,7 +152,7 @@ export async function createJobGateway({root,token,provider}){
         active.add(id);let terminal;
         try{
           const saved=JSON.parse(await safeRead(join(folder,'request.json')));
-          const result=await provider(validateJobRequest(saved.request));
+          const result=await provider(validateJobRequest(saved.request),id);
           if(typeof result!=='string'||Buffer.byteLength(result)>30000)throw Error('JOB_RESPONSE');
           terminal={status:'succeeded',result};
         }catch{terminal={status:'failed'};}
@@ -185,7 +186,27 @@ export async function createJobGateway({root,token,provider}){
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
   if(process.env.CDC_EDITORIAL_JOB_SERVICE_ENABLED!=='true')throw Error('JOB_SERVICE_DISABLED');
-  const gateway=await createJobGateway({root:process.env.CDC_EDITORIAL_JOB_DIR,token:process.env.CDC_EDITORIAL_JOB_TOKEN,
-    provider:ollamaJobProvider({model:process.env.CDC_EDITORIAL_JOB_MODEL||'llama3.2:latest'})});
+  // Never switch to paid text generation implicitly: qualification + explicit
+  // operator go-live gate + authenticated secret + private spending ledger.
+  const providerKind=process.env.CDC_EDITORIAL_JOB_PROVIDER||'ollama';
+  if(!['ollama','openai-coral'].includes(providerKind))throw Error('JOB_PROVIDER_KIND');
+  let provider;
+  if(providerKind==='ollama'){
+    provider=ollamaJobProvider({model:process.env.CDC_EDITORIAL_JOB_MODEL||'llama3.2:latest'});
+  }else{
+    if(process.env.CDC_CORAL_EXTERNAL_QUALIFIED!=='true'
+      ||process.env.CDC_CORAL_EXTERNAL_ENABLED!=='true')
+      throw Error('CORAL_EXTERNAL_NOT_APPROVED');
+    provider=createExternalCoralJobProvider({
+      apiKey:process.env.OPENAI_API_KEY,
+      model:process.env.CDC_CORAL_EXTERNAL_MODEL,
+      budgetDir:process.env.CDC_CORAL_EXTERNAL_BUDGET_DIR,
+      maxDailyUsd:Number(process.env.CDC_CORAL_EXTERNAL_DAILY_USD||0)
+    });
+  }
+  const gateway=await createJobGateway({
+    root:process.env.CDC_EDITORIAL_JOB_DIR,token:process.env.CDC_EDITORIAL_JOB_TOKEN,
+    provider
+  });
   gateway.server.listen(18678,'127.0.0.1',()=>gateway.startWorker());
 }
