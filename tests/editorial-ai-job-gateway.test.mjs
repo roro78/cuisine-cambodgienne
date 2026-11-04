@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {mkdtemp,rm,writeFile,mkdir,symlink} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {createJobGateway,ollamaJobProvider} from '../scripts/editorial-ai-job-gateway.mjs';
+import {createJobGateway,ollamaJobProvider,routeEditorialJobProviders} from '../scripts/editorial-ai-job-gateway.mjs';
+import {createHash} from 'node:crypto';
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {readFile} from 'node:fs/promises';
@@ -92,3 +93,47 @@ test('Ollama stays internal, bounded, and rejects truncated or oversized output'
   const bad=ollamaJobProvider({fetcher:async()=>new Response(JSON.stringify({done:true,done_reason:'length',message:{content:'{}'}}))});
   await assert.rejects(bad(request),/JOB_RESPONSE/);
 });
+
+test('external Coral and all five C2 families succeed in the same durable queue',async t=>{
+  const calls=[];
+  const provider=routeEditorialJobProviders({
+    editorialProvider:async(r,id)=>{calls.push(['ollama',r.brief.kind,id]);return '{}';},
+    coralProvider:async(r,id)=>{calls.push(['external',r.contract,id]);return '{"chapters":[]}';}
+  });
+  const {gateway}=await fixture(t,provider);
+  const kinds=['recette','atelier','culture','ingredient','technique'];
+  for(const [i,kind] of kinds.entries()){
+    const key=String(i+1).repeat(48);
+    const r={...request,brief:{...request.brief,kind},
+      reference:{fingerprint:'f'.repeat(64),recipe_fields:{ingredients:[{name:'riz'}]}}};
+    await gateway.submit(key,r);await gateway.workOnce();
+    assert.equal((await gateway.state(key)).status,'succeeded');
+  }
+  const text='Contrat lexical bloquant';
+  const doc={text,sha256:createHash('sha256').update(text).digest('hex')};
+  const coral={contract:'cdc-coral-v2-script-request-v1',scope:'workshop-seven-spoken-scripts-v1',
+    creation_id:'c-'+'a'.repeat(24),creation_version:1,
+    binding_digest:'b'.repeat(64),canonical_fingerprint:'c'.repeat(64),
+    atelier:{phases:Array.from({length:6},()=>({}))},
+    reference:{recipe_fields:{ingredients:[{name:'riz'}],steps:['Cuire']}},
+    referentials:{structure:doc,narration:doc},
+    response_schema:{type:'object',additionalProperties:false,
+      properties:{chapters:{minItems:7,maxItems:7}}},
+    timeout_seconds:20,max_output_tokens:6000,response_max_bytes:30000};
+  const coralId='6'.repeat(48);
+  await gateway.submit(coralId,coral);await gateway.workOnce();
+  assert.equal((await gateway.state(coralId)).status,'succeeded');
+  assert.deepEqual(calls.slice(0,5).map(c=>c.slice(0,2)),kinds.map(k=>['ollama',k]));
+  assert.deepEqual(calls[5],['external',coral.contract,coralId]);
+  await gateway.workOnce();assert.equal(calls.length,6,'no duplicate dispatch');
+  await assert.rejects(provider({...coral,scope:'invalid'},coralId),/JOB_CORAL_V2_REQUEST/);
+  assert.equal(calls.length,6,'invalid requests never reach a provider');
+  let fallbacks=0;
+  const failing=routeEditorialJobProviders({
+    editorialProvider:async()=>{fallbacks++;return '{}';},
+    coralProvider:async()=>{throw Error('EXTERNAL_FAILURE');}
+  });
+  await assert.rejects(failing(coral,coralId),/EXTERNAL_FAILURE/);
+  assert.equal(fallbacks,0,'external errors must not silently trigger another model');
+});
+
