@@ -41,7 +41,7 @@ Le résultat est écrit dans un dossier temporaire privé (permissions 0600). La
 
 ## État du jour
 
-La qualification **réelle sur Orvekio** n'a pas été exécutée depuis cette conversation : ni terminal VPS authentifié ni service de tâches connecté n'étaient disponibles. Les tests GitHub couvrent uniquement un fournisseur synthétique direct, sans n8n, sans audio. Le résultat de ces tests ne permet donc pas l'activation de l'IA Coral ni le déploiement OVH.
+La qualification **réelle sur Orvekio a été exécutée via KVM le 4 novembre** sur le correctif #209 (`54d2b00`). Un seul appel direct au modèle pour `assembler` : **180 s, timeout, aucun texte retourné, zéro TTS**. Les sept chapitres n’ont pas été lancés. **NO-GO pour cette configuration et ce budget** ; le débit et la qualité culinaire sont non mesurables sur cet échec. Voir le [rapport réel détaillé](CMS-CORAL-VPS-REAL-QUALIFICATION-20261104.md), distinct des tests synthétiques et de la CI verte. Aucun moteur activé et aucun déploiement OVH.
 
 **Référentiels immuables** : `docs/ateliers/REFERENTIEL-ATELIER-CUISINE-ET-MP3.md` et `docs/ateliers/REFERENTIEL-NARRATION-IMMERSIVE-V2.md`. Exemples réels conservés sous `src/data/atelier-recette-guides/`.
 
