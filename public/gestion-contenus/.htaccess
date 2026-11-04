@@ -20,3 +20,8 @@ DirectoryIndex index.php
 <Files "openai-brief-adapter.php">
   Require all denied
 </Files>
+
+# Published Coral scripts are only readable by the authenticated PHP Studio.
+<Files "atelier-narrations.json">
+  Require all denied
+</Files>

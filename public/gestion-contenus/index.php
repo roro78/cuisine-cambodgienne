@@ -1265,12 +1265,30 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?= cmsAtelierPhaseDetailsHtml($createForm['atelier_phase_details']??null,
     is_array($createForm['fields']??null)?$createForm['fields']:[],
     $createForm['atelier_reference']??null) ?>
+<?php
+$publishedCoral=$creation!==null && $studioSourceCurrent
+    && isset($creation['source_binding'])
+    ?cmsStudioExistingCoralNarrations($creation['source_binding'],$canonicalById):null;
+?>
+<?= cmsStudioExistingCoralNarrationsHtml($publishedCoral) ?>
+<?php if($publishedCoral!==null): ?>
+<details class="guided-group" data-private-new-coral-version>
+<summary>Préparer une autre version des textes — facultatif</summary>
+<p class="small muted">Les narrations et les MP3 déjà réalisés restent intacts.
+Cette zone n'est utile que pour préparer une nouvelle version privée après
+vérification de sa recette et de ses six phases. Aucun visa n'est repris.</p>
+<?php else: ?>
+<p class="small muted">La génération automatique d'une nouvelle narration
+immersive conforme au référentiel Coral V2 est encore à raccorder au
+moteur éditorial existant. Les champs privés ci-dessous ne remplacent
+pas le bouton de génération demandé.</p>
+<?php endif; ?>
 <?= cmsAtelierScriptsHtml($createForm['atelier_scripts']??null,
     is_array($createForm['fields']??null)?$createForm['fields']:[],
     $createForm['atelier_reference']??null,
     $createForm['atelier_phase_details']??null,
-    $creation!==null && $studioSourceCurrent && $method==='GET'
-    && $pendingContent===null && $candidateToken==='' && $aiJobToken==='') ?>
+    false) ?>
+<?php if($publishedCoral!==null): ?></details><?php endif; ?>
 <?php endif; ?>
 <details class="guided-group"><summary>Notes et calendrier — facultatifs</summary>
 <label>Notes de recherche privées (jamais publiées)

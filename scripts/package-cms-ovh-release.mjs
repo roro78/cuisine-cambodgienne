@@ -17,7 +17,8 @@ const filenames=[
  'gestion-contenus/index.php',
  'gestion-contenus/lib.php',
  'gestion-contenus/publication-gap-audit.php',
- 'gestion-contenus/.htaccess'
+ 'gestion-contenus/.htaccess',
+ 'gestion-contenus/atelier-narrations.json'
 ];
 export async function packageCmsRelease({dist,out}){
  const source=resolve(dist),destination=resolve(out);
@@ -52,14 +53,14 @@ export async function packageCmsRelease({dist,out}){
  await writeFile(join(destination,'CMS-OVH-MANIFEST.json'),JSON.stringify(manifest,null,2)+'\n',{mode:0o600});
  await writeFile(join(destination,'README.txt'),
   'Cuisine du Cambodge — CMS OVH scoped release (NO AUTO DEPLOY)\n'+
-  'Transfer only the 3 root JSON indexes and the 4 files in gestion-contenus/.\n'+
-  'Before transfer, BACK UP any existing versions of these exact 7 files.\n'+
-  'Require HTTPS, executable PHP and Apache denies for all five private PHP helpers; keep the config outside webroot.\n'+
+  'Transfer only the 3 root JSON indexes and 5 Studio files, including the protected Coral scripts in gestion-contenus/.\n'+
+  'Before transfer, BACK UP any existing versions of these exact 8 files.\n'+
+  'Require HTTPS, executable PHP and Apache denies for all five private PHP helpers AND atelier-narrations.json; keep config outside webroot.\n'+
   'This package intentionally excludes optional AI adapters and never enables an AI provider.\n'+
   'Do not transfer CMS-OVH-MANIFEST.json or README.txt into the site webroot.\n'+
   'Do not trigger ovh-production full-site replacement or any n8n/Meta workflow.\n'+
   'After transfer run: node scripts/check-cms-ovh-readiness.mjs --url https://www.cuisine-du-cambodge.com/\n'+
-  'On a failed login or index check, restore the 7 backed-up files and block CMS access.\n',
+  'On a failed login or index check, restore the 8 backed-up files and block CMS access.\n',
   {mode:0o600});
  return manifest;
 }
