@@ -108,6 +108,16 @@ async function safeRead(file,max=120000){
   if(!s.isFile()||s.isSymbolicLink()||s.size>max||(process.platform!=='win32'&&(s.mode&0o077)))throw Error('JOB_STORE');
   return readFile(file,'utf8');
 }
+/** Route paid Coral only for its validated contract; preserve the shared C2 queue. */
+export function routeEditorialJobProviders({editorialProvider,coralProvider}){
+  if(typeof editorialProvider!=='function'||typeof coralProvider!=='function')
+    throw Error('JOB_PROVIDER_CONFIG');
+  return async(request,id)=>{
+    validateJobRequest(request);
+    return (request.contract==='cdc-coral-v2-script-request-v1'
+      ?coralProvider:editorialProvider)(request,id);
+  };
+}
 export async function createJobGateway({root,token,provider}){
   if(typeof token!=='string'||token.length<32||token.length>512||!provider||!root)throw Error('JOB_CONFIG');
   const dir=resolve(root);await mkdir(dir,{mode:0o700,recursive:true});const info=await lstat(dir);
@@ -190,19 +200,19 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   // operator go-live gate + authenticated secret + private spending ledger.
   const providerKind=process.env.CDC_EDITORIAL_JOB_PROVIDER||'ollama';
   if(!['ollama','openai-coral'].includes(providerKind))throw Error('JOB_PROVIDER_KIND');
-  let provider;
-  if(providerKind==='ollama'){
-    provider=ollamaJobProvider({model:process.env.CDC_EDITORIAL_JOB_MODEL||'llama3.2:latest'});
-  }else{
+  const editorialProvider=ollamaJobProvider({model:process.env.CDC_EDITORIAL_JOB_MODEL||'llama3.2:latest'});
+  let provider=editorialProvider;
+  if(providerKind==='openai-coral'){
     if(process.env.CDC_CORAL_EXTERNAL_QUALIFIED!=='true'
       ||process.env.CDC_CORAL_EXTERNAL_ENABLED!=='true')
       throw Error('CORAL_EXTERNAL_NOT_APPROVED');
-    provider=createExternalCoralJobProvider({
+    const coralProvider=createExternalCoralJobProvider({
       apiKey:process.env.OPENAI_API_KEY,
       model:process.env.CDC_CORAL_EXTERNAL_MODEL,
       budgetDir:process.env.CDC_CORAL_EXTERNAL_BUDGET_DIR,
       maxDailyUsd:Number(process.env.CDC_CORAL_EXTERNAL_DAILY_USD||0)
     });
+    provider=routeEditorialJobProviders({editorialProvider,coralProvider});
   }
   const gateway=await createJobGateway({
     root:process.env.CDC_EDITORIAL_JOB_DIR,token:process.env.CDC_EDITORIAL_JOB_TOKEN,
@@ -210,3 +220,4 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   });
   gateway.server.listen(18678,'127.0.0.1',()=>gateway.startWorker());
 }
+
