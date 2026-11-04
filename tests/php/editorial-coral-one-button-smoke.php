@@ -70,4 +70,28 @@ catch(InvalidArgumentException $e){ck($e->getMessage()==='CORAL_SCRIPT_EXISTS','
 $dirty=$draft;$dirty['atelier_reference']['catalogFingerprint']=str_repeat('0',16);
 try{cmsCoralRequest($dirty,$catalog,$canonical,$guided);throw new RuntimeException('STALE_RECIPE');}
 catch(InvalidArgumentException $e){ck(in_array($e->getMessage(),['CORAL_RECIPE_STALE','CORAL_SOURCE_INCOMPLETE'],true),'SOURCE_STALE');}
+$temp=sys_get_temp_dir().'/cdc-coral-request-'.bin2hex(random_bytes(6));
+ck(mkdir($temp,0700),'PRIVATE_DIR');
+try{
+  $submitCalls=0;$pollCalls=0;
+  $settings=['mode'=>'async','max_attempts_per_day'=>5,
+    'submit'=>static function(array $r,string $id)use(&$submitCalls):array{
+      $submitCalls++;return ['id'=>$id,'status'=>'queued'];
+    },
+    'poll'=>static function(string $id)use(&$pollCalls,$json):array{
+      $pollCalls++;return ['id'=>$id,'status'=>'succeeded','result'=>$json];
+    }];
+  $job=cmsCoralStart($draft,$catalog,$canonical,$guided,$temp,$settings);
+  ck($submitCalls===1&&$job['status']==='queued','SINGLE_PROVIDER_SUBMIT');
+  $result=cmsCoralPoll($job,$draft,$settings,$canonical);
+  ck($pollCalls===1&&count($result['chapters'])===7&&$submitCalls===1,
+    'POLL_RETURNS_HUMAN_DRAFT_NOT_SECOND_INFERENCE');
+  $stale=$canonical;$stale[$recipeId]['fingerprint']=str_repeat('f',64);
+  try{cmsCoralPoll($job,$draft,$settings,$stale);throw new RuntimeException('ACCEPTED_NEW_RECIPE');}
+  catch(RuntimeException $e){ck($e->getMessage()==='CORAL_CANONICAL_STALE','RECIPE_CHANGED_DURING_JOB');}
+}finally{
+  foreach(glob($temp.'/editorial-drafts/*')?:[] as $f)unlink($f);
+  if(is_dir($temp.'/editorial-drafts'))rmdir($temp.'/editorial-drafts');
+  rmdir($temp);
+}
 echo "CORAL_V2_ONE_BUTTON_CONTRACT_PASS 7 voice scripts, source-bound, no TTS, no old MP3 touched\n";
