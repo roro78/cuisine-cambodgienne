@@ -76,7 +76,7 @@ function cmsCoralRequest(array $draft,array $catalog,array $canonical,array $gui
 
 /** Strict server acceptance of the model candidate; this is NOT a visa. */
 function cmsCoralCandidate(array $request,mixed $wire): array {
-  if(!is_string($wire)||strlen($wire)>60000)
+  if(!is_string($wire)||strlen($wire)>30000)
     throw new InvalidArgumentException('CORAL_RESPONSE');
   try{$out=json_decode($wire,true,12,JSON_THROW_ON_ERROR);}
   catch(Throwable $e){throw new InvalidArgumentException('CORAL_RESPONSE');}
