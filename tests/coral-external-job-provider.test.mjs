@@ -36,7 +36,7 @@ test('the opt-in existing job API produces exactly seven validated chapters for 
       assert.equal(ctx.structure,'Contrat lexical bloquant');
       const id=ctx.chapterId;
       return new Response(JSON.stringify({status:'completed',
-        usage:{input_tokens:10000,output_tokens:750},
+        usage:{input_tokens:900,output_tokens:750},
         output:[{type:'message',content:[{type:'output_text',
           text:JSON.stringify({id,text:validText})}]}]}));
     }});
