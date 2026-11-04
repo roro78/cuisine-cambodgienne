@@ -2,6 +2,7 @@
 declare(strict_types=1);
 /** Private editorial CMS P0: preview and immutable drafts only, no publishing. */
 require_once __DIR__.'/lib.php';
+require_once __DIR__.'/coral-v2-ai.php';
 require_once __DIR__.'/publication-gap-audit.php';
 ini_set('display_errors','0');
 header('Content-Type: text/html; charset=UTF-8');
