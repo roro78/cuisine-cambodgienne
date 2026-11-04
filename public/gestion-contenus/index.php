@@ -129,6 +129,7 @@ $createForm=[];$creation=null;$creations=[];$createVersion=null;
 $studioLinked=null;$studioSourceCurrent=true;$studioBoundSource=null;
 $aiSettings=null;$aiInputForm=[];
 $aiContentSettings=null;$aiContentInputForm=[];$pendingContent=null;$aiJob=null;$aiJobToken='';
+$coralSettings=null;$coralPending=null;$coralJob=null;$coralJobToken='';
 $publicationsMode=!$newMode && isset($_GET['publications']);
 $calendarMode=!$newMode && !$publicationsMode && isset($_GET['calendar']);
 // Keep old filtered library URLs valid; the bare home route only shows navigation.
@@ -241,6 +242,7 @@ if($auth){
         $createExpected=(int)($creation['version']??0);
         try{$aiSettings=cmsAiBriefSettings($cfg);}catch(Throwable $e){$aiSettings=null;}
         try{$aiContentSettings=cmsAiContentSettings($cfg);}catch(Throwable $e){$aiContentSettings=null;}
+        try{$coralSettings=cmsCoralSettings($cfg);}catch(Throwable $e){$coralSettings=null;}
         if($method==='GET'&&isset($_GET['ai_job'])){
             try{
                 $aiJobToken=is_string($_GET['ai_job'])?$_GET['ai_job']:'';
@@ -257,6 +259,50 @@ if($auth){
                 }
             }catch(Throwable $e){
                 http_response_code(503);$error='Génération indisponible ou proposition périmée. Aucune nouvelle génération automatique ; votre brouillon reste conservé.';
+            }
+        }
+        // One-button Coral V2: polling only observes the existing C2 job.
+        // A GET never resubmits or spends model quota.
+        if($method==='GET' && isset($_GET['coral_job'])){
+            try{
+                $coralJobToken=is_string($_GET['coral_job'])?$_GET['coral_job']:'';
+                $coralJob=$_SESSION['coral_jobs'][$coralJobToken]??null;
+                if($creation===null||$coralSettings===null||!is_array($coralJob)
+                   ||!preg_match('/^[0-9a-f]{48}$/D',$coralJobToken))
+                    throw new RuntimeException('CORAL_JOB_MISSING');
+                $proposal=cmsCoralPoll($coralJob,$creation,$coralSettings);
+                $_SESSION['coral_jobs'][$coralJobToken]=$coralJob;
+                if($proposal!==null){
+                    $token=bin2hex(random_bytes(24));
+                    $_SESSION['coral_pending']=[$token=>[
+                        'creation_id'=>$creation['id'],'creation_version'=>$creation['version'],
+                        'expires_at'=>time()+1800,'scripts'=>$proposal
+                    ]];
+                    unset($_SESSION['coral_jobs'][$coralJobToken]);
+                    header('Location: ?new=1&cid='.rawurlencode($creation['id'])
+                        .'&coral_candidate='.$token.'#cms-audio',true,303);exit;
+                }
+            }catch(Throwable $e){
+                http_response_code(503);
+                $error='Suivi Coral indisponible ou version modifiée. Aucun nouvel appel automatique ; vos fichiers sont conservés.';
+            }
+        }
+        if($method==='GET' && isset($_GET['coral_candidate'])){
+            $t=is_string($_GET['coral_candidate'])?$_GET['coral_candidate']:'';
+            $pending=$_SESSION['coral_pending'][$t]??null;
+            if($creation!==null && is_array($pending)
+               &&preg_match('/^[a-f0-9]{48}$/D',$t)
+               &&($pending['creation_id']??null)===$creation['id']
+               &&($pending['creation_version']??null)===$creation['version']
+               &&($pending['expires_at']??0)>=time()
+               &&($pending['scripts']['bindingDigest']??null)===cmsAtelierScriptSourceDigest(
+                 $creation['fields'],$creation['atelier_reference'],$creation['atelier_phase_details'])){
+                $coralPending=$pending;
+                $createForm['atelier_scripts']=$pending['scripts'];
+                $notice='Sept narrations proposées : relisez-les et enregistrez votre nouvelle version privée. Aucun MP3 généré.';
+            }else{
+                http_response_code(409);
+                $error='La proposition a expiré ou sa recette a changé. Aucun ancien texte n’a été modifié.';
             }
         }
         $candidateToken=$_POST['candidate_token']??($_GET['candidate']??'');
