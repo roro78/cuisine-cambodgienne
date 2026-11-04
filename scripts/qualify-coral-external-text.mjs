@@ -19,7 +19,7 @@ import {fileURLToPath,pathToFileURL} from 'node:url';
 import {loadCanonicalRecipes} from './check-workshop-blueprints.mjs';
 import {coralChapterVoiceProblems} from './coral-chapter-voice-checks.mjs';
 
-const MODELS=Object.freeze({
+export const CORAL_EXTERNAL_MODELS=Object.freeze({
   'gpt-6-luna':{inputUsdPerMillion:0.10,outputUsdPerMillion:0.50},
   'gpt-6.1-terra':{inputUsdPerMillion:1.00,outputUsdPerMillion:5.00}
 });
@@ -30,8 +30,8 @@ const ids=['intro','installer','preparer','assembler','maitriser','rectifier','t
 const sha=x=>createHash('sha256').update(x).digest('hex');
 const schema=id=>({type:'object',additionalProperties:false,required:['id','text'],
   properties:{id:{type:'string',enum:[id]},text:{type:'string'}}});
-const cost=(input,output,model)=>Math.ceil(
-  (input*MODELS[model].inputUsdPerMillion+output*MODELS[model].outputUsdPerMillion)/1e6*1e8)/1e8;
+export const coralExternalEstimatedUsd=(input,output,model)=>Math.ceil(
+  (input*CORAL_EXTERNAL_MODELS[model].inputUsdPerMillion+output*CORAL_EXTERNAL_MODELS[model].outputUsdPerMillion)/1e6*1e8)/1e8;
 function verifyKey(value){
   if(typeof value!=='string'||!/^sk-[\w-]{18,}$/.test(value))throw Error('API_KEY_NOT_CONFIGURED');
 }
@@ -69,7 +69,7 @@ async function sourceContext(root){
         finalPreparation:guide.finalPreparation,adaptation,phase:clean},
       chapterId:'assembler'}};
 }
-function createBody(model,source){
+export function coralExternalRequestBody(model,source){
   const body={model,store:false,max_output_tokens:MAX_OUTPUT_TOKENS,
     reasoning:{effort:'none'},
     text:{format:{type:'json_schema',name:'coral_spoken_chapter',
@@ -82,7 +82,7 @@ function createBody(model,source){
   if(Buffer.byteLength(JSON.stringify(body))>MAX_INPUT_BYTES)throw Error('QUAL_INPUT_TOO_LARGE');
   return body;
 }
-function parseResponse(data,id){
+export function coralExternalResult(data,id){
   if(data?.status!=='completed'||!Array.isArray(data.output))
     throw Error('QUAL_RESPONSE_NOT_COMPLETE');
   const parts=data.output.filter(x=>x?.type==='message').flatMap(x=>x.content||[]);
@@ -108,11 +108,11 @@ export async function compareCoralTextModels({
   fetcher=fetch
 }={}){
   const source=await sourceContext(root);
-  const bodies=Object.keys(MODELS).map(model=>[model,createBody(model,source)]);
+  const bodies=Object.keys(CORAL_EXTERNAL_MODELS).map(model=>[model,coralExternalRequestBody(model,source)]);
   const planned=bodies.map(([model,body])=>{
     const inputBytes=Buffer.byteLength(JSON.stringify(body));
     // Conservative preauthorisation: at most one token per UTF-8 byte.
-    const reservedUsd=cost(inputBytes,MAX_OUTPUT_TOKENS,model);
+    const reservedUsd=coralExternalEstimatedUsd(inputBytes,MAX_OUTPUT_TOKENS,model);
     return {model,requestBytes:inputBytes,maxOutputTokens:MAX_OUTPUT_TOKENS,reservedUsd};
   });
   const maxUsd=planned.reduce((a,x)=>a+x.reservedUsd,0);
@@ -142,8 +142,8 @@ export async function compareCoralTextModels({
       if(!response.ok)throw Error('QUAL_API_HTTP_'+response.status);
       const raw=await response.text();
       if(Buffer.byteLength(raw)>80000)throw Error('QUAL_RESPONSE_OVERSIZE');
-      const parsed=parseResponse(JSON.parse(raw),source.chapterId);
-      const measuredUsd=cost(parsed.inputTokens,parsed.outputTokens,model);
+      const parsed=coralExternalResult(JSON.parse(raw),source.chapterId);
+      const measuredUsd=coralExternalEstimatedUsd(parsed.inputTokens,parsed.outputTokens,model);
       if(measuredUsd>reserve.reservedUsd)throw Error('QUAL_SPEND_EXCEEDS_RESERVED');
       record.inputTokens=parsed.inputTokens;record.outputTokens=parsed.outputTokens;
       record.actualEstimatedUsd=measuredUsd;record.mechanicalPass=true;
