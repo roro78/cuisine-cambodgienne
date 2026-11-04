@@ -1,5 +1,16 @@
 # Instructions de travail pour les agents du dépôt
 
+## Référence obligatoire — déploiements OVH et Orvekio
+
+**Avant toute mission qui touche une publication, livraison, synchronisation, mise en production, rollback, Studio PHP, fichier statique ou worker Coral : lire en premier [`docs/OVH-DEPLOYMENT-RUNBOOK.md`](docs/OVH-DEPLOYMENT-RUNBOOK.md).** C'est le point d'entrée permanent des agents (Codex, Work, ChatGPT). Ne pas redécouvrir le mécanisme à partir de zéro ni présenter l'absence de déploiement comme un fait.
+
+- **Trois cibles, trois circuits distincts :** site public Astro statique sur hébergement OVH mutualisé (GitHub `ovh-production` + webhook/contrôle public), Studio privé PHP/JSON sur ce même hébergement (paquet ciblé + SFTP/SSH sauvegardé), worker Coral Docker sur **VPS Orvekio** (SSH local Windows `orvekio-vps`). Ne pas confondre ce dernier avec l'accès SSH au mutualisé.
+- **Preuve historique reçue le 03/11/2026 :** le propriétaire a vu en public le fichier témoin créé depuis ChatGPT, commit GitHub `775a0674` sur `ovh-production` (voir `docs/CMS-OVH-GIT-REPRISE-20261103.md` et #204). Cela prouve une publication statique ponctuelle, **pas** que toute nouvelle livraison ou le Studio PHP s'installera automatiquement.
+- La branche `main` contient la source ; `ovh-production` est un artefact compilé à historique divergent. **Ne jamais les fusionner/synchroniser automatiquement.** Le workflow `deploy-ovh.yml` est manuel et son garde-fou de périmètre interdit actuellement certains builds complets avec fichiers privés. Une fusion de PR n'est pas une approbation de déploiement.
+- Toujours vérifier la cible réellement servie, le canal disponible, le périmètre et ses effets, sauvegarder/valider la restauration avant écriture en production, puis vérifier publiquement la version livrée. **Aucune écriture/push de livraison, changement réseau ou activation de service sans autorisation explicite.**
+- En cas de 404 du Manager OVH, consulter d'abord les preuves et accès historiques documentés ; **ne pas assimiler ce 404 à l'absence d'un circuit de livraison**. Ne jamais contourner une authentification, une validation d'empreinte ou une sauvegarde.
+
+
 ## Référentiel prioritaire — Studio éditorial
 
 **Lire `docs/CMS-STUDIO-ARCHITECTURE.md` avant toute création, refonte ou modification d'une page de CMS.** Il constitue une décision d'architecture globale, pas une amélioration limitée à Bai Sach Chrouk ou à un atelier.
