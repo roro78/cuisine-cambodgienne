@@ -25,3 +25,8 @@ DirectoryIndex index.php
 <Files "atelier-narrations.json">
   Require all denied
 </Files>
+
+# Exact V2 referentials are private build-time inputs for narrated drafts.
+<Files "coral-v2-contract.json">
+  Require all denied
+</Files>
