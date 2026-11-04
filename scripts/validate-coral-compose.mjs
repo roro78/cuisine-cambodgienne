@@ -1,5 +1,6 @@
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
+import {isIP} from 'node:net';
 const immutable=x=>typeof x==='string'&&/^(?:[A-Za-z0-9._:/-]+@)?sha256:[a-f0-9]{64}$/.test(x);
 function hardening(service){
   if(!immutable(service.image)||service.user!=='1000:1000'||service.read_only!==true
@@ -26,6 +27,37 @@ export function validateCoralCompose(c){
     ||s.environment?.CDC_EDITORIAL_JOB_BIND_HOST!=='0.0.0.0')throw Error('CORAL_COMPOSE_RUNTIME');
   if((s.volumes||[]).some(v=>v.bind?.create_host_path!==false))throw Error('CORAL_COMPOSE_IMPLICIT_DIRECTORY');
   return {status:'PASS',services:1,publishedPorts:0};
+}
+/** Validate the OPTIONAL exposed route after Compose has resolved its labels. */
+export function validateCoralTraefikRoute(c){
+  const s=c.services?.['coral-job-worker'],l=s?.labels;
+  if(!s||!l||s.ports?.length||l['traefik.enable']!=='true'
+    ||l['traefik.docker.network']!=='cdc-coral-ingress'
+    ||l['traefik.http.routers.cdc-coral.rule']!=='Host(`n8n.orvekio.com`) && PathPrefix(`/editorial-ai/v1/jobs/`)'
+    ||l['traefik.http.routers.cdc-coral.entrypoints']!=='websecure'
+    ||l['traefik.http.routers.cdc-coral.tls']!=='true'
+    ||l['traefik.http.routers.cdc-coral.service']!=='cdc-coral'
+    ||l['traefik.http.services.cdc-coral.loadbalancer.server.port']!=='18678'
+    ||l['traefik.http.routers.cdc-coral.middlewares']!=='cdc-coral-allow@docker,cdc-coral-rate@docker,cdc-coral-flight@docker')
+    throw Error('CORAL_TRAEFIK_ROUTE');
+  const allowed=l['traefik.http.middlewares.cdc-coral-allow.ipallowlist.sourcerange'];
+  if(typeof allowed!=='string')throw Error('CORAL_TRAEFIK_SOURCES');
+  const cidrs=allowed.split(',').map(x=>x.trim());
+  if(cidrs.length<1||cidrs.length>8||!cidrs.every(value=>{
+    const parts=value.split('/');
+    if(parts.length!==2||!(/^[0-9]{1,3}$/).test(parts[1]))return false;
+    const family=isIP(parts[0]),bits=Number(parts[1]);
+    return (family===4&&bits>=24&&bits<=32)||(family===6&&bits>=64&&bits<=128);
+  }))throw Error('CORAL_TRAEFIK_SOURCES');
+  const bounded=(name,min,max)=>{
+    const v=l[name];return typeof v==='string'&&(/^[0-9]+$/).test(v)&&Number(v)>=min&&Number(v)<=max;
+  };
+  if(!bounded('traefik.http.middlewares.cdc-coral-rate.ratelimit.average',1,120)
+    ||l['traefik.http.middlewares.cdc-coral-rate.ratelimit.period']!=='1m'
+    ||!bounded('traefik.http.middlewares.cdc-coral-rate.ratelimit.burst',1,12)
+    ||!bounded('traefik.http.middlewares.cdc-coral-flight.inflightreq.amount',1,4))
+    throw Error('CORAL_TRAEFIK_ADMISSION');
+  return {status:'PASS',sourceCidrs:cidrs.length,rateLimited:true,concurrencyLimited:true};
 }
 export function validateCoralMaintenanceCompose(c){
   if(Object.keys(c.services||{}).sort().join()!=='coral-backup,coral-restore')throw Error('CORAL_COMPOSE_SCOPE');

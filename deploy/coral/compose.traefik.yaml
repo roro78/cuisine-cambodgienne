@@ -1,4 +1,5 @@
-# Optional route. Applying this file requires a separate installation approval.
+# Optional route; no production change until a separate installation approval.
+# Require the verified egress IP(s) of the OVH PHP client, not its DNS address.
 services:
   coral-job-worker:
     labels:
@@ -9,4 +10,10 @@ services:
       traefik.http.routers.cdc-coral.tls: "true"
       traefik.http.routers.cdc-coral.tls.certresolver: mytlschallenge
       traefik.http.routers.cdc-coral.service: cdc-coral
+      traefik.http.routers.cdc-coral.middlewares: cdc-coral-allow@docker,cdc-coral-rate@docker,cdc-coral-flight@docker
+      traefik.http.middlewares.cdc-coral-allow.ipallowlist.sourcerange: ${CDC_CORAL_ALLOWED_SOURCE_CIDRS:?verified source CIDRs required}
+      traefik.http.middlewares.cdc-coral-rate.ratelimit.average: "120"
+      traefik.http.middlewares.cdc-coral-rate.ratelimit.period: 1m
+      traefik.http.middlewares.cdc-coral-rate.ratelimit.burst: "12"
+      traefik.http.middlewares.cdc-coral-flight.inflightreq.amount: "4"
       traefik.http.services.cdc-coral.loadbalancer.server.port: "18678"

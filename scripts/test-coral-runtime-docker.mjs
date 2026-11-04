@@ -6,7 +6,7 @@ import {join,resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {randomBytes} from 'node:crypto';
 import assert from 'node:assert/strict';
-import {validateCoralCompose,validateCoralMaintenanceCompose} from './validate-coral-compose.mjs';
+import {validateCoralCompose,validateCoralMaintenanceCompose,validateCoralTraefikRoute} from './validate-coral-compose.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const lock=JSON.parse(await readFile(join(root,'deploy/coral/images.lock.json'),'utf8'));
@@ -125,9 +125,18 @@ try{
     CDC_CORAL_DAILY_USD:'0.01',CDC_CORAL_STATE_DIR:join(fixture,'state'),
     CDC_CORAL_OPENAI_SECRET_FILE:join(fixture,'secrets/api'),CDC_CORAL_JOB_TOKEN_FILE:join(fixture,'secrets/token'),
     CDC_CORAL_BACKUP_KEY_FILE:join(fixture,'secrets/backup'),CDC_CORAL_ARCHIVE_DIR:join(fixture,'archives'),
-    CDC_CORAL_RECOVERY_DIR:join(fixture,'recovery')};
+    CDC_CORAL_RECOVERY_DIR:join(fixture,'recovery'),
+    CDC_CORAL_ALLOWED_SOURCE_CIDRS:'192.0.2.10/32'};
   const compose=JSON.parse(docker(['compose','-f','deploy/coral/compose.yaml','--profile','runtime','config','--format','json'],{env}).stdout);
   check('real Compose runtime normalization passes security contract',validateCoralCompose(compose).status==='PASS');
+  const routeCompose=JSON.parse(docker(['compose','-f','deploy/coral/compose.yaml',
+    '-f','deploy/coral/compose.traefik.yaml','--profile','runtime','config','--format','json'],{env}).stdout);
+  check('optional Traefik route has CIDR, throttle and in-flight controls',
+    validateCoralTraefikRoute(routeCompose).status==='PASS');
+  const noSourceEnv={...env};delete noSourceEnv.CDC_CORAL_ALLOWED_SOURCE_CIDRS;
+  check('route refuses Compose rendering without verified source',
+    docker(['compose','-f','deploy/coral/compose.yaml','-f','deploy/coral/compose.traefik.yaml',
+      'config'],{env:noSourceEnv,allowFailure:true}).status!==0);
   const maintenanceCompose=JSON.parse(docker(['compose','-f','deploy/coral/compose.maintenance.yaml','--profile','maintenance','config','--format','json'],{env}).stdout);
   check('real Compose maintenance normalization passes isolation contract',validateCoralMaintenanceCompose(maintenanceCompose).status==='PASS');
   for(const kind of ['ingress','provider']){
