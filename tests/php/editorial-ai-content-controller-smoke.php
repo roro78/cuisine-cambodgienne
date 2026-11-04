@@ -25,6 +25,8 @@ try{
         copy($dist.'/'.$name,$base.'/'.$name);
     copy(__DIR__.'/fixtures/editorial-ai-content.php',$base.'/fixture.php');
     copy(__DIR__.'/../../public/gestion-contenus/index.php',$public.'/index.php');
+    copy(__DIR__.'/../../public/gestion-contenus/coral-v2-ai.php',
+        $public.'/coral-v2-ai.php');
     // The controller also requires this shared read-only Astro gap helper.
     copy(__DIR__.'/../../public/gestion-contenus/publication-gap-audit.php',
         $public.'/publication-gap-audit.php');

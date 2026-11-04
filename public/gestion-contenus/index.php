@@ -2,6 +2,7 @@
 declare(strict_types=1);
 /** Private editorial CMS P0: preview and immutable drafts only, no publishing. */
 require_once __DIR__.'/lib.php';
+require_once __DIR__.'/coral-v2-ai.php';
 require_once __DIR__.'/publication-gap-audit.php';
 ini_set('display_errors','0');
 header('Content-Type: text/html; charset=UTF-8');
@@ -128,6 +129,7 @@ $createForm=[];$creation=null;$creations=[];$createVersion=null;
 $studioLinked=null;$studioSourceCurrent=true;$studioBoundSource=null;
 $aiSettings=null;$aiInputForm=[];
 $aiContentSettings=null;$aiContentInputForm=[];$pendingContent=null;$aiJob=null;$aiJobToken='';
+$coralSettings=null;$coralPending=null;$coralJob=null;$coralJobToken='';
 $publicationsMode=!$newMode && isset($_GET['publications']);
 $calendarMode=!$newMode && !$publicationsMode && isset($_GET['calendar']);
 // Keep old filtered library URLs valid; the bare home route only shows navigation.
@@ -240,6 +242,7 @@ if($auth){
         $createExpected=(int)($creation['version']??0);
         try{$aiSettings=cmsAiBriefSettings($cfg);}catch(Throwable $e){$aiSettings=null;}
         try{$aiContentSettings=cmsAiContentSettings($cfg);}catch(Throwable $e){$aiContentSettings=null;}
+        try{$coralSettings=cmsCoralSettings($cfg);}catch(Throwable $e){$coralSettings=null;}
         if($method==='GET'&&isset($_GET['ai_job'])){
             try{
                 $aiJobToken=is_string($_GET['ai_job'])?$_GET['ai_job']:'';
@@ -256,6 +259,50 @@ if($auth){
                 }
             }catch(Throwable $e){
                 http_response_code(503);$error='Génération indisponible ou proposition périmée. Aucune nouvelle génération automatique ; votre brouillon reste conservé.';
+            }
+        }
+        // One-button Coral V2: polling only observes the existing C2 job.
+        // A GET never resubmits or spends model quota.
+        if($method==='GET' && isset($_GET['coral_job'])){
+            try{
+                $coralJobToken=is_string($_GET['coral_job'])?$_GET['coral_job']:'';
+                $coralJob=$_SESSION['coral_jobs'][$coralJobToken]??null;
+                if($creation===null||$coralSettings===null||!is_array($coralJob)
+                   ||!preg_match('/^[0-9a-f]{48}$/D',$coralJobToken))
+                    throw new RuntimeException('CORAL_JOB_MISSING');
+                $proposal=cmsCoralPoll($coralJob,$creation,$coralSettings,$canonicalById);
+                $_SESSION['coral_jobs'][$coralJobToken]=$coralJob;
+                if($proposal!==null){
+                    $token=bin2hex(random_bytes(24));
+                    $_SESSION['coral_pending']=[$token=>[
+                        'creation_id'=>$creation['id'],'creation_version'=>$creation['version'],
+                        'expires_at'=>time()+1800,'scripts'=>$proposal
+                    ]];
+                    unset($_SESSION['coral_jobs'][$coralJobToken]);
+                    header('Location: ?new=1&cid='.rawurlencode($creation['id'])
+                        .'&coral_candidate='.$token.'#cms-audio',true,303);exit;
+                }
+            }catch(Throwable $e){
+                http_response_code(503);
+                $error='Suivi Coral indisponible ou version modifiée. Aucun nouvel appel automatique ; vos fichiers sont conservés.';
+            }
+        }
+        if($method==='GET' && isset($_GET['coral_candidate'])){
+            $t=is_string($_GET['coral_candidate'])?$_GET['coral_candidate']:'';
+            $pending=$_SESSION['coral_pending'][$t]??null;
+            if($creation!==null && is_array($pending)
+               &&preg_match('/^[a-f0-9]{48}$/D',$t)
+               &&($pending['creation_id']??null)===$creation['id']
+               &&($pending['creation_version']??null)===$creation['version']
+               &&($pending['expires_at']??0)>=time()
+               &&($pending['scripts']['bindingDigest']??null)===cmsAtelierScriptSourceDigest(
+                 $creation['fields'],$creation['atelier_reference'],$creation['atelier_phase_details'])){
+                $coralPending=$pending;
+                $createForm['atelier_scripts']=$pending['scripts'];
+                $notice='Sept narrations proposées : relisez-les et enregistrez votre nouvelle version privée. Aucun MP3 généré.';
+            }else{
+                http_response_code(409);
+                $error='La proposition a expiré ou sa recette a changé. Aucun ancien texte n’a été modifié.';
             }
         }
         $candidateToken=$_POST['candidate_token']??($_GET['candidate']??'');
@@ -292,6 +339,47 @@ if($auth){
             }catch(Throwable $e){
                 $pendingContent=null;http_response_code(409);
                 $error='Proposition temporaire indisponible ou expirée. Le brouillon enregistré reste conservé.';
+            }
+        }
+        if($method==='POST' && isset($_POST['coral_prepare'])){
+            try{
+                // Only the sole explicitly submitted action is allowed to call the
+                // model. The browser's unsaved fields are NEVER transmitted.
+                $competing=['coral_prepare','create_save','review_action','culinary_action',
+                    'ai_brief_generate','ai_content_generate','ai_content_discard',
+                    'visual_action','studio_transition','save'];
+                if(count(array_intersect($competing,array_keys($_POST)))!==1
+                   ||$creation===null||$createKind!=='atelier'
+                   ||!$studioSourceCurrent||$coralSettings===null)
+                    throw new RuntimeException('CORAL_DISABLED');
+                $expected=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
+                    ['options'=>['min_range'=>1,'max_range'=>9998]]);
+                if($expected===false||$expected!==$creation['version'])
+                    throw new RuntimeException('CORAL_STALE');
+                $intent=$_POST['coral_intent']??null;
+                if(!is_string($intent)||!is_string($_SESSION['coral_intent']??null)
+                  ||!hash_equals($_SESSION['coral_intent'],$intent))
+                    throw new RuntimeException('CORAL_INTENT');
+                unset($_SESSION['coral_intent']); // consumed even on model failure
+                foreach(($_SESSION['coral_jobs']??[]) as $jobToken=>$pastJob)
+                    if(!is_array($pastJob)||($pastJob['expires_at']??0)<time()
+                        ||($pastJob['status']??'')==='failed')
+                        unset($_SESSION['coral_jobs'][$jobToken]);
+                if(count($_SESSION['coral_jobs']??[])>=2)
+                    throw new RuntimeException('CORAL_BUSY');
+                $feed=cmsGetGuidedFields();
+                if(!is_array($feed))throw new RuntimeException('CORAL_REFERENCE');
+                $guides=cmsGuidedSourceList($feed,$canonicalById);
+                cmsAssertGuidedCoverage($guides,$canonicalById);
+                $job=cmsCoralStart($creation,$catalog,$canonicalById,$guides,
+                    $private,$coralSettings);
+                $_SESSION['coral_jobs'][$job['token']]=$job;
+                header('Location: ?new=1&cid='.rawurlencode($creation['id'])
+                    .'&coral_job='.$job['token'].'#cms-audio',true,303);exit;
+            }catch(Throwable $e){
+                http_response_code(in_array($e->getMessage(),
+                    ['CORAL_STALE','CORAL_SCRIPT_EXISTS','CORAL_INTENT'],true)?409:503);
+                $error='Préparation Coral non lancée : enregistrez votre atelier et ses six phases, vérifiez la recette et la disponibilité du moteur. Aucun MP3 ni texte existant n’a été modifié.';
             }
         }
         if($method==='POST' && isset($_POST['culinary_action'])){
@@ -491,6 +579,7 @@ if($auth){
                         unset($_SESSION['ai_content_pending'][$pending['token']]);
                     }else $saved=cmsCreationSave($private,$posted,$catalog,$expected,$cid,
                         null,null,null,$canonicalById);
+                    unset($_SESSION['coral_pending']); // the reviewed proposal was saved, or another draft superseded it
                     header('Location: ?new=1&cid='.rawurlencode($saved['id'])
                         .'&'.$filtersUrl.'&saved_new=1',true,303);
                     exit;
@@ -510,6 +599,7 @@ if($auth){
             }
         }
         $_SESSION['ai_content_intent']=bin2hex(random_bytes(24));
+        $_SESSION['coral_intent']=bin2hex(random_bytes(24));
         if($creation){
             $requested=filter_var($_GET['revision']??null,FILTER_VALIDATE_INT,
                 ['options'=>['min_range'=>1,'max_range'=>9999]]);
@@ -1257,9 +1347,30 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?php endif; ?>
 <?php if($createKind==='atelier'): ?>
 <section id="atelier-audio-draft" aria-label="Préparer les textes audio de l'atelier">
-<h3>Préparer le MP3</h3>
-<p class="small muted">Préparez ou corrigez les sept textes ci-dessous à partir de la recette et des phases de l'atelier. Enregistrez le brouillon avant de demander les visas humains. Aucun audio n'est généré depuis cet écran.</p>
-<p class="small muted">La synthèse Coral reste bloquée tant que les contrôles de recette, de textes, de droits et d'audio ne sont pas satisfaits. Les MP3 publiés sont conservés.</p>
+<h3>Guide audio de l'atelier</h3>
+<?php if($creation!==null && $studioSourceCurrent && !isset($creation['source_binding'])): ?>
+<input type="hidden" name="coral_intent" value="<?= cmsEsc($_SESSION['coral_intent']??'') ?>">
+<?php if($coralSettings!==null): ?>
+<button name="coral_prepare" value="1" formnovalidate data-coral-prepare>Préparer le MP3</button>
+<p class="small muted">Un seul clic prépare sept vrais textes parlés depuis votre recette
+et les deux référentiels Coral V2. Relisez les textes avant enregistrement ;
+aucune synthèse audio ni publication n'est lancée.</p>
+<?php else: ?>
+<button type="button" disabled aria-disabled="true">Préparer le MP3</button>
+<p class="small muted">La génération est désactivée : le fournisseur éditorial privé
+doit d'abord être qualifié pour Coral V2. Aucun texte artificiel n'est proposé.</p>
+<?php endif; ?>
+<?php if(is_array($coralJob)): ?>
+<p class="small" role="status">Demande Coral : <?= cmsEsc((string)$coralJob['status']) ?>.
+Un rafraîchissement ne relance pas le modèle.
+<a href="?new=1&amp;cid=<?= cmsEsc($creation['id']) ?>&amp;coral_job=<?= cmsEsc($coralJob['token']) ?>#cms-audio">Actualiser le suivi</a></p>
+<?php endif; ?>
+<?php elseif($creation===null): ?>
+<p class="small muted">Enregistrez d'abord l'atelier et les six phases liées à
+une recette pour préparer automatiquement les narrations.</p>
+<?php endif; ?>
+<p class="small muted">Les MP3 existants sont conservés. Aucun audio n'est généré depuis cet écran. Sept textes approuvés ne
+suffisent pas à autoriser une synthèse vocale : les validations Coral restent obligatoires.</p>
 </section>
 <?= cmsAtelierReferenceHtml($createForm['atelier_reference']??null,$catalog) ?>
 <?= cmsAtelierPhaseDetailsHtml($createForm['atelier_phase_details']??null,
@@ -1278,10 +1389,8 @@ $publishedCoral=$creation!==null && $studioSourceCurrent
 Cette zone n'est utile que pour préparer une nouvelle version privée après
 vérification de sa recette et de ses six phases. Aucun visa n'est repris.</p>
 <?php else: ?>
-<p class="small muted">La génération automatique d'une nouvelle narration
-immersive conforme au référentiel Coral V2 est encore à raccorder au
-moteur éditorial existant. Les champs privés ci-dessous ne remplacent
-pas le bouton de génération demandé.</p>
+<p class="small muted">Les sept champs ci-dessous sont les textes privés
+à corriger après « Préparer le MP3 ». Ils ne sont jamais approuvés automatiquement.</p>
 <?php endif; ?>
 <?= cmsAtelierScriptsHtml($createForm['atelier_scripts']??null,
     is_array($createForm['fields']??null)?$createForm['fields']:[],
@@ -1985,7 +2094,9 @@ let studioDirty=false;
 document.querySelectorAll('[data-studio-edit]').forEach(form=>{
   form.addEventListener('input',()=>{studioDirty=true;});
   form.addEventListener('change',()=>{studioDirty=true;});
-  form.addEventListener('submit',()=>{studioDirty=false;});
+  form.addEventListener('submit',event=>{
+    if(event.submitter?.name!=='coral_prepare')studioDirty=false;
+  });
 });
 window.addEventListener('beforeunload',event=>{
   if(studioDirty){event.preventDefault();event.returnValue='';}
@@ -2034,6 +2145,17 @@ document.querySelector('[data-atelier-prefill]')?.addEventListener('click',event
 });
 document.querySelector('[data-studio-transition]')?.addEventListener('submit',event=>{
   if(studioDirty){event.preventDefault();window.alert('Enregistrez les modifications de la fiche avant de préparer le brouillon lié.');}
+});
+document.querySelector('#cms-new-editor')?.addEventListener('submit',event=>{
+  if(event.submitter?.name!=='coral_prepare')return;
+  if(studioDirty){
+    event.preventDefault();
+    window.alert('Enregistrez votre atelier avant de préparer le MP3. Aucun texte n’a été transmis.');
+    return;
+  }
+  if(event.currentTarget.dataset.coralSubmitting==='1'){event.preventDefault();return;}
+  event.currentTarget.dataset.coralSubmitting='1';
+  event.submitter.setAttribute('aria-disabled','true');
 });
 document.querySelector('#cms-new-editor')?.addEventListener('submit',event=>{
   if(event.submitter?.name!=='ai_content_generate')return;

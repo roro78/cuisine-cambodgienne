@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
 import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
@@ -71,7 +72,7 @@ test('remote verification fetches only public pages and checks library denial',a
   requested.push(pathname);
   if(['/gestion-contenus/lib.php','/gestion-contenus/publication-gap-audit.php',
    '/gestion-contenus/visual-provider-adapter.php','/gestion-contenus/content-gateway-adapter.php',
-   '/gestion-contenus/openai-brief-adapter.php','/gestion-contenus/atelier-narrations.json'].includes(pathname))return new Response('Denied',{status:403});
+   '/gestion-contenus/openai-brief-adapter.php','/gestion-contenus/atelier-narrations.json','/gestion-contenus/coral-v2-contract.json','/gestion-contenus/coral-v2-ai.php'].includes(pathname))return new Response('Denied',{status:403});
   if(pathname==='/gestion-contenus/')return new Response(login,{status:200,headers:safeHeaders});
   const document=feeds[pathname.slice(1)];
   if(document)return new Response(JSON.stringify(document),{status:200,
@@ -80,12 +81,14 @@ test('remote verification fetches only public pages and checks library denial',a
  };
  const result=await cmsReception({url:'https://www.cuisine-du-cambodge.com/',fetcher});
  assert.deepEqual(result,{social:1,canonical:1,guided:1,login:'protected',library:'blocked'});
- assert.equal(requested.length,10);
+ assert.equal(requested.length,12);
  assert.ok(requested.includes('/gestion-contenus/publication-gap-audit.php'));
  assert.ok(requested.includes('/gestion-contenus/content-gateway-adapter.php'));
  assert.ok(requested.includes('/gestion-contenus/openai-brief-adapter.php'));
  assert.ok(requested.includes('/gestion-contenus/visual-provider-adapter.php'));
  assert.ok(requested.includes('/gestion-contenus/atelier-narrations.json'));
+ assert.ok(requested.includes('/gestion-contenus/coral-v2-contract.json'));
+ assert.ok(requested.includes('/gestion-contenus/coral-v2-ai.php'));
  const exposed=async url=>{
   const pathname=new URL(url).pathname;
   if(pathname==='/gestion-contenus/publication-gap-audit.php')
@@ -100,7 +103,7 @@ test('remote verification fetches only public pages and checks library denial',a
   /HTTP_social-feed.json_404/);
  await assert.rejects(cmsReception({url:'http://example.com/',fetcher}),/HTTPS_HOST_REQUIRED/);
 });
-test('release package includes exactly eight scoped files and private rollback manifest',async()=>{
+test('release package includes exactly ten scoped files and private rollback manifest',async()=>{
  const root=await mkdtemp(join(tmpdir(),'cdc-ovh-'));
  try{
   const dist=join(root,'dist'),out=join(root,'package');
@@ -112,15 +115,19 @@ test('release package includes exactly eight scoped files and private rollback m
   await writeFile(join(dist,'gestion-contenus','lib.php'),'<?php function example(){}');
   await writeFile(join(dist,'gestion-contenus','publication-gap-audit.php'),'<?php function prereception(){}');
   await writeFile(join(dist,'gestion-contenus','atelier-narrations.json'),JSON.stringify({contract:'cdc-workshop-existing-coral-narrations-v1',schemaVersion:1,items:[]}));
+  await writeFile(join(dist,'gestion-contenus','coral-v2-ai.php'),'<?php // guarded private provider');
+  await writeFile(join(dist,'gestion-contenus','coral-v2-contract.json'),JSON.stringify({contract:'cdc-coral-v2-complete-policy-v1',schemaVersion:1,structure:{text:'Contrat lexical bloquant',sha256:createHash('sha256').update('Contrat lexical bloquant').digest('hex')},narration:{text:'Contrat lexical bloquant',sha256:createHash('sha256').update('Contrat lexical bloquant').digest('hex')}}));
   await writeFile(join(dist,'gestion-contenus','.htaccess'),
    '<Files "lib.php">\nRequire all denied\n</Files>\n'+
    '<Files "publication-gap-audit.php">\nRequire all denied\n</Files>\n'+
    '<Files "visual-provider-adapter.php">\nRequire all denied\n</Files>\n'+
    '<Files "content-gateway-adapter.php">\nRequire all denied\n</Files>\n'+
    '<Files "openai-brief-adapter.php">\nRequire all denied\n</Files>\n'+
-   '<Files "atelier-narrations.json">\nRequire all denied\n</Files>\n');
+   '<Files "atelier-narrations.json">\nRequire all denied\n</Files>\n'+
+   '<Files "coral-v2-contract.json">\nRequire all denied\n</Files>\n'+
+   '<Files "coral-v2-ai.php">\nRequire all denied\n</Files>\n');
   const packageInfo=await packageCmsRelease({dist,out});
-  assert.equal(packageInfo.files.length,8);
+  assert.equal(packageInfo.files.length,10);
   assert.ok(packageInfo.files.some(item=>item.path==='gestion-contenus/publication-gap-audit.php'));
   assert.equal(packageInfo.requires.manualUpload,true);
   assert.equal((await cmsReception({dir:out})).social,1);
@@ -129,7 +136,7 @@ test('release package includes exactly eight scoped files and private rollback m
   assert.match(await readFile(join(out,'README.txt'),'utf8'),/BACK UP/);
   assert.ok(packageInfo.files.some(file=>file.path==='gestion-contenus/publication-gap-audit.php'
     &&/^[0-9a-f]{64}$/.test(file.sha256)));
-  // The eight-file package must not be accepted after an incomplete transfer.
+  // The ten-file package must not be accepted after an incomplete transfer.
   await rm(join(out,'gestion-contenus','publication-gap-audit.php'));
   await assert.rejects(cmsReception({dir:out}),/ENOENT|CMS_PHP_FILE_MISSING/);
  }finally{await rm(root,{recursive:true,force:true})}
