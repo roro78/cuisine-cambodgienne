@@ -29,18 +29,39 @@ test('exact Coral V2 request reuses existing job gateway but never general C2 sc
     {...request,canonical_fingerprint:'invalid'}
   ]) assert.throws(()=>validateJobRequest(wrong),/JOB_CORAL_V2_REQUEST/);
 });
-test('existing Ollama worker uses exact two referentials and separate spoken narration prompt',async()=>{
-  let sent;
+test('one durable Coral job makes seven ordered local Ollama chapter calls without n8n',async()=>{
+  const ids=['intro','installer','preparer','assembler','maitriser','rectifier','terminer'];
+  const sent=[];
   const provider=ollamaJobProvider({fetcher:async(url,opt)=>{
     assert.equal(url,'http://ollama:11434/api/chat');
-    sent=JSON.parse(opt.body);
-    return new Response(JSON.stringify({done:true,message:{content:'{"chapters":[]}'}}));
+    const payload=JSON.parse(opt.body);
+    sent.push(payload);
+    const id=JSON.parse(payload.messages[1].content).id;
+    const text='Nous allons préparer le plat avec soin. Vous observez la texture et rectifiez votre geste progressivement. Écoutez la cuisson, ajustez la préparation sans précipitation et reprenez quand la consistance est correcte. '.repeat(3);
+    return new Response(JSON.stringify({done:true,done_reason:'stop',
+      message:{content:JSON.stringify({id,text})}}));
   }});
-  assert.equal(await provider(request),'{"chapters":[]}');
-  assert.equal(sent.format.properties.chapters.minItems,7);
-  assert.equal(sent.messages[1].content.includes('Contrat lexical bloquant'),true);
-  assert.ok(sent.messages[0].content.includes('narrations orales'));
-  assert.ok(!sent.messages[0].content.includes('six phases, aucun audio ni code'));
+  const r=JSON.parse(await provider(request));
+  assert.deepEqual(r.chapters.map(c=>c.id),ids);
+  assert.equal(sent.length,7,'one UI request, seven sequential provider calls');
+  for(const p of sent){
+    assert.equal(p.options.num_ctx,16384);
+    assert.equal(p.options.num_predict,1250);
+    assert.equal(p.format.required[0],'id');
+    assert.equal(p.messages[1].content.includes('Contrat lexical bloquant'),true);
+    assert.ok(p.messages[0].content.includes('chapitre oral français'));
+    assert.ok(!p.messages[0].content.includes('six phases, aucun audio ni code'));
+  }
+});
+test('bad first model chapter stops all further calls without retry',async()=>{
+  let calls=0;
+  const provider=ollamaJobProvider({fetcher:async()=>{
+    calls++;
+    return new Response(JSON.stringify({done:true,done_reason:'stop',
+      message:{content:JSON.stringify({id:'assembler',text:'Texte erroné'})}}));
+  }});
+  await assert.rejects(provider(request),/JOB_CORAL_INVALID_CHAPTER/);
+  assert.equal(calls,1);
 });
 test('one visible user intent produces at most one async job, with durable failed state',async t=>{
   const root=await mkdtemp(join(tmpdir(),'cdc-coral-v2-'));
