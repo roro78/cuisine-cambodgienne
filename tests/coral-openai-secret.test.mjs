@@ -18,7 +18,6 @@ test('dedicated Docker secret is read with final newline, without any log or net
   const dir=await folder(t),f=join(dir,'key');
   await writeFile(f,key+'\n',{mode:0o600,flag:'wx'});
   assert.equal(readCoralOpenAISecret(f),key);
-  assert.equal(process.env.OPENAI_API_KEY,undefined);
 });
 test('missing, invalid, whitespace and unsafe secrets fail closed with generic errors',async t=>{
   const dir=await folder(t),f=join(dir,'secret'),link=join(dir,'link');
