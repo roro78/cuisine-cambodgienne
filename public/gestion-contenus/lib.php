@@ -1406,6 +1406,7 @@ function cmsAtelierScriptsDraftComplete(mixed $value): bool {
     return true;
 }
 /**
+ * Legacy drafting helper, never exposed as a Coral V2 narration generator.
  * Draft ONLY: create seven editable text suggestions from the saved,
  * source-bound workshop fields. No model, TTS, media write or human visa.
  * Never call this implicitly from a save, draft migration or audio approval.
@@ -1544,10 +1545,12 @@ function cmsAtelierScriptsHtml(mixed $raw,array $fields,
     $stale=($occupied && $claimed==='') || ($claimed!==''&&$claimed!==$digest);
     $html='<details id="cms-audio" class="guided-group" data-atelier-seven-scripts>'
         .'<summary>Préparer le guide audio — facultatif · sept chapitres</summary>'
-        .'<p class="small muted">Écrivez et relisez chaque narration après '
-        .'avoir enregistré les six phases complètes. Aucun script n’est '
-        .'approuvé automatiquement. Vous pouvez enregistrer le contenu sans '
-        .'renseigner le guide audio. Aucun MP3 n’est produit.</p>';
+        .'<p class="small muted">Ces sept zones servent aux versions privées '
+        .'à relire, distinctes des textes et MP3 déjà réalisés. '
+        .'Ne recopiez pas les narrations historiques à la main. '
+        .'Une nouvelle narration complète doit respecter le référentiel Coral V2 '
+        .'avant toute validation humaine ou génération audio. '
+        .'Aucun MP3 n’est produit sur cette page.</p>';
     if($digest==='')$html.='<p class="small muted">Source pédagogique '
         .'incomplète : sauvegardez d’abord les six phases détaillées.</p>';
     if($stale)$html.='<p class="small muted" role="alert">'
