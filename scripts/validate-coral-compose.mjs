@@ -26,6 +26,8 @@ export function validateCoralCompose(c){
   if(s.environment?.CDC_EDITORIAL_JOB_TOKEN_FILE!=='/run/secrets/cdc_editorial_job_token'
     ||s.environment?.CDC_EDITORIAL_JOB_BIND_HOST!=='0.0.0.0')throw Error('CORAL_COMPOSE_RUNTIME');
   if((s.volumes||[]).some(v=>v.bind?.create_host_path!==false))throw Error('CORAL_COMPOSE_IMPLICIT_DIRECTORY');
+  if(JSON.stringify(s.tmpfs)!==JSON.stringify(['/tmp:rw,noexec,nosuid,size=16m,uid=1000,gid=1000,mode=0700']))
+    throw Error('CORAL_COMPOSE_TMPFS');
   return {status:'PASS',services:1,publishedPorts:0};
 }
 /** A live but unexposed staging worker: only existing Ollama routing, NEVER OpenAI. */
