@@ -117,7 +117,10 @@ try{
   $result=cmsCoralPoll($job,$draft,$settings,$canonical);
   ck($pollCalls===1&&count($result['chapters'])===7&&$submitCalls===1,
     'POLL_RETURNS_HUMAN_DRAFT_NOT_SECOND_INFERENCE');
-  $linkedJob=cmsCoralStart($linked,$catalog,$canonical,$guided,$temp,$settings);
+  // Independent private fixture: production enforces >=60 seconds between
+  // two attempts for the SAME Studio owner. Do not weaken this safeguard.
+  $linkedPrivate=$temp.'/linked';ck(mkdir($linkedPrivate,0700),'LINKED_PRIVATE_DIR');
+  $linkedJob=cmsCoralStart($linked,$catalog,$canonical,$guided,$linkedPrivate,$settings);
   $linkedResult=cmsCoralPoll($linkedJob,$linked,$settings,$canonical,$catalog);
   ck(count($linkedResult['chapters'])===7&&$linkedResult['bindingDigest']===$request['binding_digest'],
     'LINKED_PUBLISHED_WORKSHOP_SEVEN_NEW_PRIVATE_SCRIPTS');
@@ -129,8 +132,10 @@ try{
   try{cmsCoralPoll($job,$draft,$settings,$stale);throw new RuntimeException('ACCEPTED_NEW_RECIPE');}
   catch(RuntimeException $e){ck($e->getMessage()==='CORAL_CANONICAL_STALE','RECIPE_CHANGED_DURING_JOB');}
 }finally{
-  foreach(glob($temp.'/editorial-drafts/*')?:[] as $f)unlink($f);
-  if(is_dir($temp.'/editorial-drafts'))rmdir($temp.'/editorial-drafts');
-  rmdir($temp);
+  foreach([$temp.'/linked',$temp] as $root){
+    foreach(glob($root.'/editorial-drafts/*')?:[] as $f)unlink($f);
+    if(is_dir($root.'/editorial-drafts'))rmdir($root.'/editorial-drafts');
+    if(is_dir($root))rmdir($root);
+  }
 }
 echo "CORAL_V2_ONE_BUTTON_CONTRACT_PASS 7 voice scripts, source-bound, no TTS, no old MP3 touched\n";
