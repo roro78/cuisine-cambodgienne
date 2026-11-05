@@ -1347,16 +1347,21 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?php endif; ?>
 <?php if($createKind==='atelier'): ?>
 <section id="atelier-audio-draft" aria-label="Préparer les textes audio de l'atelier">
-<h3>Guide audio de l'atelier</h3>
+<h3>Guide vocal de l’atelier — après validation du contenu</h3>
+<p class="small muted">Parcours : <strong>1. Enregistrer et vérifier la recette et les six phases</strong>
+→ <strong>2. Préparer et relire les sept narrations</strong>
+→ <strong>3. Générer le MP3 Coral après les validations humaines</strong>.
+Le bouton ci-dessous produit uniquement des textes privés : il ne lance aucune synthèse vocale.</p>
 <?php if($creation!==null && $studioSourceCurrent && !isset($creation['source_binding'])): ?>
 <input type="hidden" name="coral_intent" value="<?= cmsEsc($_SESSION['coral_intent']??'') ?>">
 <?php if($coralSettings!==null): ?>
-<button name="coral_prepare" value="1" formnovalidate data-coral-prepare>Préparer le MP3</button>
-<p class="small muted">Un seul clic prépare sept vrais textes parlés depuis votre recette
-et les deux référentiels Coral V2. Relisez les textes avant enregistrement ;
-aucune synthèse audio ni publication n'est lancée.</p>
+<button name="coral_prepare" value="1" formnovalidate data-coral-prepare>Préparer les 7 narrations</button>
+<p class="small muted">Un seul clic prépare sept propositions de textes parlés depuis l’atelier enregistré,
+sa recette de référence et les deux référentiels Coral V2. Relisez les textes,
+corrigez-les et enregistrez leur nouvelle version privée avant tout visa.
+Aucune synthèse audio ni publication n’est lancée.</p>
 <?php else: ?>
-<button type="button" disabled aria-disabled="true">Préparer le MP3</button>
+<button type="button" disabled aria-disabled="true">Préparer les 7 narrations</button>
 <p class="small muted">La génération est désactivée : le fournisseur éditorial privé
 doit d'abord être qualifié pour Coral V2. Aucun texte artificiel n'est proposé.</p>
 <?php endif; ?>
@@ -1390,7 +1395,7 @@ Cette zone n'est utile que pour préparer une nouvelle version privée après
 vérification de sa recette et de ses six phases. Aucun visa n'est repris.</p>
 <?php else: ?>
 <p class="small muted">Les sept champs ci-dessous sont les textes privés
-à corriger après « Préparer le MP3 ». Ils ne sont jamais approuvés automatiquement.</p>
+à corriger après « Préparer les 7 narrations ». Ils ne sont jamais approuvés automatiquement.</p>
 <?php endif; ?>
 <?= cmsAtelierScriptsHtml($createForm['atelier_scripts']??null,
     is_array($createForm['fields']??null)?$createForm['fields']:[],
@@ -2020,7 +2025,7 @@ Télécharger la demande de modification (JSON)</button>
 <?php if($selected['kind']==='atelier'): ?>
 <?php if($studioLinked!==null): ?>
 <p class="note">Les modifications et le guide audio facultatif sont réunis dans le brouillon lié. Cet écran conserve les versions antérieures en lecture seule.</p>
-<a class="btn" href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>#atelier-audio-draft">Préparer le MP3 — textes à relire</a>
+<a class="btn" href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>#atelier-audio-draft">Préparer les narrations — 7 textes à relire</a>
 <a href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>#cms-quality">Contrôler l’atelier</a>
 <?php else: ?>
 <div data-coral-prereception>
@@ -2150,7 +2155,7 @@ document.querySelector('#cms-new-editor')?.addEventListener('submit',event=>{
   if(event.submitter?.name!=='coral_prepare')return;
   if(studioDirty){
     event.preventDefault();
-    window.alert('Enregistrez votre atelier avant de préparer le MP3. Aucun texte n’a été transmis.');
+    window.alert('Enregistrez d’abord l’atelier et ses six phases avant de préparer les sept narrations. Aucun texte n’a été transmis.');
     return;
   }
   if(event.currentTarget.dataset.coralSubmitting==='1'){event.preventDefault();return;}

@@ -1544,7 +1544,7 @@ function cmsAtelierScriptsHtml(mixed $raw,array $fields,
     if(!$occupied)$claimed=$digest;
     $stale=($occupied && $claimed==='') || ($claimed!==''&&$claimed!==$digest);
     $html='<details id="cms-audio" class="guided-group" data-atelier-seven-scripts>'
-        .'<summary>Préparer le guide audio — facultatif · sept chapitres</summary>'
+        .'<summary>Sept textes vocaux — relecture préalable au MP3 (facultatif)</summary>'
         .'<p class="small muted">Ces sept zones servent aux versions privées '
         .'à relire, distinctes des textes et MP3 déjà réalisés. '
         .'Ne recopiez pas les narrations historiques à la main. '
