@@ -92,3 +92,12 @@ test('Coral Studio keeps workshop content before narration and MP3 as separate a
  assert.match(lib,/Sept textes vocaux — relecture préalable au MP3/);
  assert.match(lib,/Aucun MP3 n’est produit sur cette page/);
 });
+
+test('Coral Studio places the recipe and detailed phases BEFORE narration in one form',()=>{
+ const recipe=ui.indexOf('<?= cmsAtelierReferenceHtml(');
+ const phases=ui.indexOf('<?= cmsAtelierPhaseDetailsHtml(');
+ const narration=ui.indexOf('<section id="atelier-audio-draft"');
+ const scripts=ui.indexOf('<?= cmsAtelierScriptsHtml(');
+ assert.ok(recipe>0&&recipe<phases&&phases<narration&&narration<scripts,
+   'workshop source must be visible before the optional voice step');
+});

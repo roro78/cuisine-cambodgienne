@@ -1346,6 +1346,11 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?= cmsTechniqueLinksHtml($createForm['technique_links']??null) ?>
 <?php endif; ?>
 <?php if($createKind==='atelier'): ?>
+
+<?= cmsAtelierReferenceHtml($createForm['atelier_reference']??null,$catalog) ?>
+<?= cmsAtelierPhaseDetailsHtml($createForm['atelier_phase_details']??null,
+    is_array($createForm['fields']??null)?$createForm['fields']:[],
+    $createForm['atelier_reference']??null) ?>
 <section id="atelier-audio-draft" aria-label="Préparer les textes audio de l'atelier">
 <h3>Guide vocal de l’atelier — après validation du contenu</h3>
 <p class="small muted">Parcours : <strong>1. Enregistrer et vérifier la recette et les six phases</strong>
@@ -1377,10 +1382,6 @@ une recette pour préparer automatiquement les narrations.</p>
 <p class="small muted">Les MP3 existants sont conservés. Aucun audio n'est généré depuis cet écran. Sept textes approuvés ne
 suffisent pas à autoriser une synthèse vocale : les validations Coral restent obligatoires.</p>
 </section>
-<?= cmsAtelierReferenceHtml($createForm['atelier_reference']??null,$catalog) ?>
-<?= cmsAtelierPhaseDetailsHtml($createForm['atelier_phase_details']??null,
-    is_array($createForm['fields']??null)?$createForm['fields']:[],
-    $createForm['atelier_reference']??null) ?>
 <?php
 $publishedCoral=$creation!==null && $studioSourceCurrent
     && isset($creation['source_binding'])
