@@ -39,8 +39,8 @@
 ## 5. Chemin C — worker Coral V2 / VPS Orvekio
 
 - Le canal SSH/SFTP local **Windows → VPS** est validé, avec alias `orvekio-vps` (ticket #205), mais l'accès cloud peut rester indisponible. Le projet OpenAI API existant ne doit pas être recréé.
-- Consulter `deploy/coral/README.md` et la PR #215 (si elle n'est pas encore fusionnée) ; les tests Docker/Linux en environnement isolé ne sont pas une installation réelle.
-- Avant installation : avis sur route Traefik (authentification, accès, débit/concurrence), plafonds effectifs OpenAI (le constat « No spend limit set » est un blocage), modèle/permissions, transfert privé des clés, coffre externe, droits montages, sauvegarde/restauration et **autorisation explicite**. L'installation n'autorise ni appel payant, ni TTS, ni publication.
+- Consulter `deploy/coral/README.md` et `deploy/coral/PREFLIGHT-SECRETS-ET-RESEAU.md` ; #215 et #217 sont fusionnées dans `main`, mais les tests Docker/Linux isolés ne sont pas une installation réelle.
+- Avant installation : avis sur route Traefik (authentification, accès, débit/concurrence), plafond du projet OpenAI existant (1 USD appliqué selon les captures du 4 novembre ; « No spend limit set » concernait le projet Default), modèle/permissions et compte de service à revérifier avant usage, transfert privé des clés, coffre externe, droits montages, sauvegarde/restauration et **autorisation explicite**. L'installation n'autorise ni appel payant, ni TTS, ni publication.
 - Aucune modification à PostgreSQL, n8n, Ollama, Traefik, Qdrant, MP3 ni aux sauvegardes en l'absence du périmètre autorisé.
 
 ## 6. Comportement obligatoire de l'agent et preuve de livraison
