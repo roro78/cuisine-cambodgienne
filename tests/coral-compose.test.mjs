@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {validateCoralCompose,validateCoralMaintenanceCompose,validateCoralTraefikRoute} from '../scripts/validate-coral-compose.mjs';
+import {validateCoralCompose,validateCoralMaintenanceCompose,validateCoralTraefikRoute,validateCoralStagingCompose} from '../scripts/validate-coral-compose.mjs';
 function valid(){return {services:{'coral-job-worker':{
   image:'sha256:'+'a'.repeat(64),user:'1000:1000',read_only:true,cap_drop:['ALL'],security_opt:['no-new-privileges:true'],
   environment:{CDC_EDITORIAL_JOB_BIND_HOST:'0.0.0.0',CDC_EDITORIAL_JOB_TOKEN_FILE:'/run/secrets/cdc_editorial_job_token'},
@@ -53,5 +53,25 @@ test('optional TLS route requires a narrow allowlist, rate cap and concurrency c
     'traefik.http.middlewares.cdc-coral-flight.inflightreq.amount']){
     const invalid=structuredClone(c);delete invalid.services['coral-job-worker'].labels[key];
     assert.throws(()=>validateCoralTraefikRoute(invalid));
+  }
+});
+
+test('staging startup allows no OpenAI, no route and no restart',()=>{
+  const c=valid(),s=c.services['coral-job-worker'];
+  s.environment={...s.environment,CDC_EDITORIAL_JOB_SERVICE_ENABLED:'true',
+    CDC_EDITORIAL_JOB_PROVIDER:'ollama',CDC_CORAL_EXTERNAL_QUALIFIED:'false',
+    CDC_CORAL_EXTERNAL_ENABLED:'false'};
+  s.labels={'traefik.enable':'false'};s.restart='no';
+  assert.equal(validateCoralStagingCompose(c).status,'PASS');
+  for(const change of [
+    x=>x.services['coral-job-worker'].environment.CDC_EDITORIAL_JOB_PROVIDER='openai-coral',
+    x=>x.services['coral-job-worker'].environment.CDC_CORAL_EXTERNAL_ENABLED='true',
+    x=>x.services['coral-job-worker'].environment.CDC_CORAL_EXTERNAL_QUALIFIED='true',
+    x=>x.services['coral-job-worker'].labels['traefik.enable']='true',
+    x=>x.services['coral-job-worker'].labels['traefik.http.routers.cdc-coral.rule']='Host(\`n8n.orvekio.com\`)',
+    x=>x.services['coral-job-worker'].restart='always',
+  ]){
+    const invalid=structuredClone(c);change(invalid);
+    assert.throws(()=>validateCoralStagingCompose(invalid),/STAGING_REFUSED/);
   }
 });
