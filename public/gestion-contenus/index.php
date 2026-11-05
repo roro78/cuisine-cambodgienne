@@ -270,7 +270,7 @@ if($auth){
                 if($creation===null||$coralSettings===null||!is_array($coralJob)
                    ||!preg_match('/^[0-9a-f]{48}$/D',$coralJobToken))
                     throw new RuntimeException('CORAL_JOB_MISSING');
-                $proposal=cmsCoralPoll($coralJob,$creation,$coralSettings,$canonicalById);
+                $proposal=cmsCoralPoll($coralJob,$creation,$coralSettings,$canonicalById,$catalog);
                 $_SESSION['coral_jobs'][$coralJobToken]=$coralJob;
                 if($proposal!==null){
                     $token=bin2hex(random_bytes(24));
@@ -290,7 +290,7 @@ if($auth){
         if($method==='GET' && isset($_GET['coral_candidate'])){
             $t=is_string($_GET['coral_candidate'])?$_GET['coral_candidate']:'';
             $pending=$_SESSION['coral_pending'][$t]??null;
-            if($creation!==null && is_array($pending)
+            if($creation!==null && $studioSourceCurrent && is_array($pending)
                &&preg_match('/^[a-f0-9]{48}$/D',$t)
                &&($pending['creation_id']??null)===$creation['id']
                &&($pending['creation_version']??null)===$creation['version']
@@ -379,7 +379,7 @@ if($auth){
             }catch(Throwable $e){
                 http_response_code(in_array($e->getMessage(),
                     ['CORAL_STALE','CORAL_SCRIPT_EXISTS','CORAL_INTENT'],true)?409:503);
-                $error='Préparation Coral non lancée : enregistrez votre atelier et ses six phases, vérifiez la recette et la disponibilité du moteur. Aucun MP3 ni texte existant n’a été modifié.';
+                $error='Préparation des narrations non lancée : enregistrez l’atelier et ses six phases, vérifiez sa recette et le moteur. Les scripts et MP3 existants sont conservés.';
             }
         }
         if($method==='POST' && isset($_POST['culinary_action'])){
@@ -1352,7 +1352,7 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 → <strong>2. Préparer et relire les sept narrations</strong>
 → <strong>3. Générer le MP3 Coral après les validations humaines</strong>.
 Le bouton ci-dessous produit uniquement des textes privés : il ne lance aucune synthèse vocale.</p>
-<?php if($creation!==null && $studioSourceCurrent && !isset($creation['source_binding'])): ?>
+<?php if($creation!==null && $studioSourceCurrent): ?>
 <input type="hidden" name="coral_intent" value="<?= cmsEsc($_SESSION['coral_intent']??'') ?>">
 <?php if($coralSettings!==null): ?>
 <button name="coral_prepare" value="1" formnovalidate data-coral-prepare>Préparer les 7 narrations</button>

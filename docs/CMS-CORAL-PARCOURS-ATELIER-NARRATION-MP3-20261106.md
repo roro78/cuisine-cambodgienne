@@ -28,7 +28,7 @@ Contrat de préparation existant : `cmsCoralRequest()` dans `coral-v2-ai.php` re
 - Références : `REFERENTIEL-NARRATION-IMMERSIVE-V2.md`, `cmsCoralCandidate()`, audits culinaires humains.
 - L'interface active ce bouton **uniquement si** le fournisseur est qualifié et la fiche enregistrée. Un bouton désactivé n'est pas une preuve de fonction activable en production.
 
-**Écart à résoudre avant la réception UX complète :** `cmsCoralRequest()` refuse aujourd'hui les brouillons liés à un atelier déjà publié (`source_binding`). Conserver les MP3 existants et prévoir, après étude d'identité/version, un chemin de nouvelle narration privée à partir d'un atelier publié **sans** contourner ce garde-fou ni recopier les approbations historiques.
+**Cas des ateliers publiés corrigé dans cette PR :** `cmsCoralRequest()` accepte désormais un brouillon privé `source_binding` lorsque sa relation serveur correspond toujours exactement à l'atelier public courant (catalogue, empreinte canonique, modèle guidé). Les sept nouveaux textes proviennent de la **recette choisie et des six phases enregistrées** dans cette version privée, jamais d'anciens MP3, scripts ou visas. Si la fiche publiée change pendant l'attente, `cmsCoralPoll()` refuse le résultat sans relancer l'appel. Un script déjà rempli empêche tout remplacement. Aucun TTS n'est autorisé.
 
 ## 3. Le vrai MP3 seulement après visa
 

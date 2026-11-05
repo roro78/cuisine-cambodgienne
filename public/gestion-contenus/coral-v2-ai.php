@@ -36,9 +36,23 @@ function cmsCoralSchema(): array {
       'text'=>['type'=>'string','minLength'=>300,'maxLength'=>7000]]]]]];
 }
 function cmsCoralRequest(array $draft,array $catalog,array $canonical,array $guided): array {
-  if(($draft['kind']??null)!=='atelier'||isset($draft['source_binding'])
+  if(($draft['kind']??null)!=='atelier'
     ||!cmsCreationId($draft['id']??null)||!is_int($draft['version']??null))
     throw new InvalidArgumentException('CORAL_SAVED_REQUIRED');
+  // An explicitly linked PRIVATE draft can start a new text proposal.
+  // The relationship is server-owned and must still match the current public
+  // workshop; historical scripts, MP3 and prior visas are NEVER imported.
+  if(array_key_exists('source_binding',$draft)){
+    $binding=$draft['source_binding'];
+    if(!is_array($binding)
+       ||!cmsStudioBindingCurrent($binding,$catalog,$canonical))
+      throw new InvalidArgumentException('CORAL_SOURCE_STALE');
+    $sourceId=$binding['source_id'];
+    if(($canonical[$sourceId]['model']??null)!=='cookingWorkshopGuides'
+       ||($guided[$sourceId]['model']??null)!=='cookingWorkshopGuides'
+       ||($guided[$sourceId]['fingerprint']??null)!==($canonical[$sourceId]['fingerprint']??null))
+      throw new InvalidArgumentException('CORAL_SOURCE_STALE');
+  }
   $fields=$draft['fields']??null;$ref=$draft['atelier_reference']??null;
   $phases=$draft['atelier_phase_details']??null;
   if(!is_array($fields)||!is_array($ref)||!is_array($phases))
@@ -123,7 +137,13 @@ function cmsCoralStart(array $draft,array $catalog,array $canonical,array $guide
   $job['status']=$ack['status']==='succeeded'?'queued':$ack['status'];
   return $job;
 }
-function cmsCoralPoll(array &$job,array $draft,array $settings,array $canonical): ?array {
+function cmsCoralPoll(array &$job,array $draft,array $settings,array $canonical,array $catalog=[]): ?array {
+  // Refuse a result if the published workshop changed during generation.
+  if(array_key_exists('source_binding',$draft)){
+    if(!is_array($draft['source_binding'])
+      ||!cmsStudioBindingCurrent($draft['source_binding'],$catalog,$canonical))
+      throw new RuntimeException('CORAL_SOURCE_STALE');
+  }
   if(($job['creation_id']??null)!==($draft['id']??null)
     ||($job['creation_version']??null)!==($draft['version']??null)
     ||($job['expires_at']??0)<time()||($job['status']??null)==='failed'
