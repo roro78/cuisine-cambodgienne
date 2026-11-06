@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Current Studio TTS authority, HTTPS bearer only, no cached grants",
+  "oneOf": [{"$ref":"#/$defs/check"},{"$ref":"#/$defs/answer"}],
+  "$defs": {
+    "hash":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "id":{"type":"string","pattern":"^[a-f0-9]{48}$"},
+    "selector": {
+      "type":"object","additionalProperties":false,
+      "required":["contract","creation_id","creation_version","binding_sha256","recipe_sha256","chapters","voice","provider","rights_sha256","reviews_sha256","reserve_microusd","request_id"],
+      "properties": {
+        "contract":{"const":"cdc-coral-private-tts-request-v1"},
+        "creation_id":{"type":"string","pattern":"^c-[a-f0-9]{24}$"},
+        "creation_version":{"type":"integer","minimum":1,"maximum":9999},
+        "binding_sha256":{"$ref":"#/$defs/hash"},"recipe_sha256":{"$ref":"#/$defs/hash"},
+        "chapters":{"type":"array","minItems":7,"maxItems":7,"items":{"type":"object","additionalProperties":false,"required":["id","sha256"],"properties":{"id":{"enum":["intro","installer","preparer","assembler","maitriser","rectifier","terminer"]},"sha256":{"$ref":"#/$defs/hash"}}}},
+        "voice":{"const":"test-tone"},"provider":{"const":"simulated-tone-v1"},
+        "rights_sha256":{"$ref":"#/$defs/hash"},"reviews_sha256":{"$ref":"#/$defs/hash"},
+        "reserve_microusd":{"const":7000},"request_id":{"$ref":"#/$defs/id"}
+      }
+    },
+    "check":{"type":"object","additionalProperties":false,"required":["contract","challenge","request"],"properties":{"contract":{"const":"cdc-coral-tts-authority-check-v1"},"challenge":{"$ref":"#/$defs/hash"},"request":{"$ref":"#/$defs/selector"}}},
+    "answer":{"type":"object","additionalProperties":false,"required":["contract","challenge","request_id","authorized"],"properties":{"contract":{"const":"cdc-coral-tts-authority-check-v1"},"challenge":{"$ref":"#/$defs/hash"},"request_id":{"$ref":"#/$defs/id"},"authorized":{"type":"boolean"}}}
+  }
+}

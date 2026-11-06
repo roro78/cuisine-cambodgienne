@@ -26,6 +26,26 @@ if(!is_array($cfg) || !is_string($cfg['admin_user']??null)
     || !is_string($cfg['password_hash']??null)
     || !(str_starts_with($cfg['password_hash'],'$2')
         || str_starts_with($cfg['password_hash'],'$argon')))cmsUnavailable();
+// Separate machine READ only; disabled by default. Never creates an admin session.
+if(isset($_GET['tts_authority'])){
+    header('Content-Type: application/json; charset=UTF-8');
+    try{
+        cmsCoralTtsAuthorityToken($private,$cfg);
+        if($_GET['tts_authority']!=='1'||count($_GET)!==1||isset($_SERVER['HTTP_ORIGIN']))throw new RuntimeException('AUTHORITY_ROUTE');
+        $bearer=(string)($_SERVER['HTTP_AUTHORIZATION']??'');
+        if(!hash_equals('Bearer '.cmsCoralTtsAuthorityToken($private,$cfg),$bearer)){
+            http_response_code(401);exit('{"error":"TTS_AUTHORITY_UNAUTHORIZED"}');
+        }
+        $feed=cmsSourceList(cmsGetFeed()??[]);
+        $canon=cmsCanonicalSourceList(cmsGetEditorialIndex()??[],$feed);
+        $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canon);cmsAssertGuidedCoverage($guides,$canon);
+        $body=file_get_contents('php://input',false,null,0,6001);
+        if(!is_string($body))throw new RuntimeException('AUTHORITY_BODY');
+        [$code,$reply]=cmsCoralTtsAuthorityCheck($private,$cfg,(string)($_SERVER['REQUEST_METHOD']??''),$bearer,
+            (string)($_SERVER['CONTENT_TYPE']??''),$body,$feed,$canon,$guides);
+        http_response_code($code);echo json_encode($reply,JSON_THROW_ON_ERROR);exit;
+    }catch(Throwable $e){http_response_code(404);exit('{"error":"TTS_AUTHORITY_UNAVAILABLE"}');}
+}
 session_name('CDC_EDITORIAL_CMS');
 ini_set('session.use_strict_mode','1');
 ini_set('session.use_only_cookies','1');
@@ -81,7 +101,13 @@ if($method==='GET'&&isset($_GET['tts_file'])){
         $canon=cmsCanonicalSourceList(cmsGetEditorialIndex()??[],$feed);
         $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canon);cmsAssertGuidedCoverage($guides,$canon);
         $bytes=cmsCoralTtsAudio($private,$id,$job,$ttsSettings,$feed,$canon,$guides);
-        header('Content-Type: audio/mpeg');header('Content-Length: '.strlen($bytes));echo $bytes;exit;
+        $etag='"'.hash('sha256',$bytes).'"';
+        [$code,$start,$end]=cmsCoralTtsByteRange(isset($_SERVER['HTTP_IF_RANGE'])&&$_SERVER['HTTP_IF_RANGE']!==$etag?null:($_SERVER['HTTP_RANGE']??null),strlen($bytes));
+        header('Accept-Ranges: bytes');header('ETag: '.$etag);
+        if($code===416){header('Content-Range: bytes */'.strlen($bytes));http_response_code(416);exit;}
+        header('Content-Type: audio/mpeg');header('Content-Length: '.($end-$start+1));
+        if($code===206)header('Content-Range: bytes '.$start.'-'.$end.'/'.strlen($bytes));
+        http_response_code($code);echo substr($bytes,$start,$end-$start+1);exit;
     }catch(Throwable $e){http_response_code(404);exit('Audio privé indisponible.');}
 }
 // Authenticated binary reads must not rerun editor/AI intent initialization.

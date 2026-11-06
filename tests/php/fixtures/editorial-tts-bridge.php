@@ -70,6 +70,11 @@ if($mode==='authorize'){
     $request=json_decode(stream_get_contents(STDIN),true,32,JSON_THROW_ON_ERROR);
     echo json_encode(cmsCoralTtsAuthorize($private,$request,$catalog,$canonical,$guided));exit;
 }
+if($mode==='confirm'){
+    $settings=['enabled'=>true,'test_only'=>true,'mode'=>'simulated','submit'=>static fn($r,$id)=>['id'=>$id],
+      'poll'=>static fn()=>[],'resume'=>static fn()=>null,'artifact'=>static fn()=>''];
+    cmsCoralTtsSubmit($private,$id,$record['version'],true,true,$settings,$catalog,$canonical,$guided);echo 'true';exit;
+}
 if($mode==='request'){
     echo json_encode(cmsCoralTtsRequest($private,$record,$catalog,$canonical,$guided),JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);exit;
 }
@@ -81,5 +86,14 @@ if($mode==='rights'||$mode==='revoke-rights'){
 elseif($mode==='change-text'){
     $posted=json_decode(file_get_contents($root.'/test-posted.json'),true);$posted['atelier_scripts']['chapters'][0]['text'].=' Modification de test.';
     cmsCreationSave($private,$posted,$catalog,$record['version'],$id);
+}elseif($mode==='change-recipe'){
+    $path=$root.'/editorial-source-index.json';$data=json_decode(file_get_contents($path),true);
+    $alter=static function(&$node)use(&$alter):void{
+        if(!is_array($node))return;
+        foreach($node as $key=>&$value){
+            if(is_string($value)&&preg_match('/^[a-f0-9]{64}$/D',$value))$value=str_repeat('e',64);
+            elseif(is_array($value))$alter($value);
+        }
+    };$alter($data);file_put_contents($path,json_encode($data,JSON_THROW_ON_ERROR));
 }else throw new RuntimeException('TTS_FIXTURE_MODE');
 echo 'true';

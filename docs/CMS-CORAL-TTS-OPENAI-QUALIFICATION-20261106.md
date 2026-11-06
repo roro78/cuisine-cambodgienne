@@ -1,5 +1,7 @@
 # OpenAI vocal — préparation de qualification, aucun appel
 
+Suite de #223 : voir la [qualification longue et chiffrée](CMS-CORAL-TTS-LOAD-COST-20261106.md) et le [contrôle d'autorité HTTPS](CMS-CORAL-TTS-AUTHORITY-QUALIFICATION-20261106.md). Le harness Realtime préparé est inexécutable en production ; aucune clé ou voix réelle n'est utilisée.
+
 Vérification documentaire du 6 novembre 2026 via documentation officielle. Ne pas confondre disponibilité publiée, autorisation du projet « Cuisine du Cambodge », droits humains et qualité réellement reçue. Aucun projet, compte, clé, limite ou modèle du compte n'a été modifié.
 
 ## Changement à prendre en compte avant un nouvel adaptateur
@@ -11,7 +13,7 @@ Les modèles `tts-1`, `tts-1-hd`, `gpt-4o-mini-tts` et leurs snapshots sont dép
 - Speech historique : MP3, Opus, AAC, FLAC, WAV, PCM ; PCM brut mono 24 kHz, 16 bits little-endian. La liste des voix comprend `coral`, avec disponibilité dépendante du modèle. Le français est pris en charge, les voix étant optimisées pour l'anglais. Avertissement utilisateur obligatoire sur l'origine IA de la voix. [Guide officiel](https://developers.openai.com/api/docs/guides/text-to-speech).
 - `gpt-4o-mini-tts` : maximum d'entrée publié de **2 000 tokens** ; une limite de caractères ne remplace pas le contrôle des tokens. Le schéma simulé accepte des textes plus longs : cela n'autorise pas à les envoyer tels quels à ce modèle. [Fiche modèle](https://developers.openai.com/api/docs/models/gpt-4o-mini-tts).
 - Remplacement recommandé : `gpt-realtime-2.1-mini`, endpoint Realtime, fenêtre 128 000 tokens et sortie maximale publiée 32 000 tokens. Cela ne vaut pas qualification d'une narration fidèle et finie ; voix, événements de fin, quotas et sortie PCM/WAV doivent être testés sur le compte existant. [Fiche officielle](https://developers.openai.com/api/docs/models/gpt-realtime-2.1-mini).
-- Les voix personnalisées requièrent un circuit de consentement spécifique ; aucun clonage ni création de voix n'est prévu par cette mission. Les droits `test-tone` ne valent jamais consentement pour `coral` ou une personne réelle. [Voix personnalisées](https://developers.openai.com/api/docs/guides/custom-voices).
+- Les voix personnalisées créées depuis un enregistrement requièrent un circuit de consentement spécifique ; aucun clonage ni création de voix n'est prévu par cette mission. Les droits `test-tone` ne valent jamais consentement pour `coral` ou une personne réelle. [Voix personnalisées](https://developers.openai.com/api/docs/guides/custom-voices).
 
 ## Tarifs vérifiés et calcul, pas de garantie externe
 

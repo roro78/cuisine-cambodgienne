@@ -87,6 +87,11 @@ test('shared Studio through authenticated HTTP: rights, double submit, seven act
  const request=await f.bridge('request');const state=await gateway.state(request.request_id);assert.equal(state.status,'succeeded');manifest=JSON.parse(state.result);
  const binary=await ctx.request.get(base+'?new=1&cid='+f.id+'&tts_file='+request.request_id);assert.equal(binary.status(),200);
  assert.equal(audioSha(await binary.body()),manifest.sha256);
+ const partial=await ctx.request.get(base+'?new=1&cid='+f.id+'&tts_file='+request.request_id,{headers:{Range:'bytes=0-127'}});
+ assert.equal(partial.status(),206);assert.deepEqual(await partial.body(),(await binary.body()).subarray(0,128));
+ assert.equal(partial.headers()['content-range'],'bytes 0-127/'+manifest.bytes);
+ const invalidRange=await ctx.request.get(base+'?new=1&cid='+f.id+'&tts_file='+request.request_id,{headers:{Range:'bytes=0-1,3-4'}});
+ assert.equal(invalidRange.status(),416);
  const audio=panel.locator('audio');await audio.evaluate(e=>e.load());
  await page.waitForFunction(()=>{const a=document.querySelector('#cms-tts audio');return a&&a.readyState>=2&&a.duration>0;});
  assert.ok(await audio.evaluate(e=>e.duration)>1);
@@ -112,6 +117,6 @@ test('shared Studio through authenticated HTTP: rights, double submit, seven act
   for(const id of ['intro','installer','preparer','assembler','maitriser','rectifier','terminer'])await copyFile(join(folder,id+'.wav'),join(output,id+'.wav'));
   await writeFile(join(output,'manifest.json'),JSON.stringify(manifest,null,2));
  }
- await f.bridge('revoke-rights');const denied=await ctx.request.get(base+'?new=1&cid='+f.id+'&tts_file='+request.request_id);assert.equal(denied.status(),404);
+ await f.bridge('revoke-rights');const denied=await ctx.request.get(base+'?new=1&cid='+f.id+'&tts_file='+request.request_id,{headers:{Range:'bytes=0-127'}});assert.equal(denied.status(),404);
  assert.equal(calls,7);
 });

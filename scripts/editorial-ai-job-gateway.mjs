@@ -4,7 +4,7 @@ import {readCoralOpenAISecret} from './coral-openai-secret.mjs';
 import {readEditorialJobToken} from './private-runtime-secret.mjs';
 import {existsSync,lstatSync,accessSync,constants} from 'node:fs';
 import {TTS_CONTRACT,validateTtsRequest,ttsSourceKey} from './coral-tts-jobs.mjs';
-import {durableWrite} from './coral-tts-audio.mjs';
+import {durableWrite,audioByteRange} from './coral-tts-audio.mjs';
 /** Private orchestration for the existing C2 contract. No network or worker on import. */
 import {createServer} from 'node:http';
 import {createHash,randomBytes,timingSafeEqual} from 'node:crypto';
@@ -245,7 +245,15 @@ export async function createJobGateway({root,token,provider,ttsJobs=null}){
     try{
       if(match[2]){
         const result=await ttsOperation(match[1],match[2]);
-        if(match[2]==='audio'){res.setHeader('Content-Type','audio/mpeg');res.setHeader('Content-Length',result.length);res.writeHead(200);return res.end(result);}
+        if(match[2]==='audio'){
+          const etag='"'+digest(result)+'"';
+          const range=audioByteRange(req.headers['if-range']&&req.headers['if-range']!==etag?undefined:req.headers.range,result.length);
+          res.setHeader('Accept-Ranges','bytes');res.setHeader('ETag',etag);
+          if(range.status===416){res.setHeader('Content-Range','bytes */'+result.length);return send(416,{error:'RANGE_NOT_SATISFIABLE'});}
+          res.setHeader('Content-Type','audio/mpeg');res.setHeader('Content-Length',range.end-range.start+1);
+          if(range.status===206)res.setHeader('Content-Range','bytes '+range.start+'-'+range.end+'/'+result.length);
+          res.writeHead(range.status);return res.end(result.subarray(range.start,range.end+1));
+        }
         return send(202,result);
       }
       if(req.method==='GET')return send(200,await state(match[1]));

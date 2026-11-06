@@ -8,6 +8,9 @@
 !scripts/coral-chapter-voice-checks.mjs
 !scripts/coral-tts-jobs.mjs
 !scripts/coral-tts-audio.mjs
+!scripts/coral-tts-authority.mjs
+!scripts/coral-tts-cost-plan.mjs
+!scripts/coral-tts-realtime-contract.mjs
 !scripts/coral-state-backup.mjs
 !deploy
 !deploy/coral

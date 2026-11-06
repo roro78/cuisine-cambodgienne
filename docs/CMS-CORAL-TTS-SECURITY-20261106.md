@@ -1,5 +1,7 @@
 # Bilan de sécurité — TTS simulé Coral V2
 
+Complément dépendant de #223 : [autorité courante HTTPS et révocation](CMS-CORAL-TTS-AUTHORITY-QUALIFICATION-20261106.md), [recette longue, ressources et coûts](CMS-CORAL-TTS-LOAD-COST-20261106.md). La route préparée est fermée par défaut et non installée ; le fournisseur réel reste inexécutable.
+
 Périmètre : code et tests isolés de la PR dépendante de #222. Aucun changement OVH, Orvekio, clé, MP3 historique, base ou sauvegarde réelle. La réception technique Studio reste acquise.
 
 | Risque | Contrôle implémenté | Vérification |

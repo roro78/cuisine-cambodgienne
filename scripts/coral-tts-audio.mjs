@@ -7,6 +7,18 @@ import {join} from 'node:path';
 const exec=promisify(execFile);
 export const TTS_CHAPTER_IDS=['intro','installer','preparer','assembler','maitriser','rectifier','terminer'];
 export const audioSha=bytes=>createHash('sha256').update(bytes).digest('hex');
+/** Single RFC byte range, only AFTER authorization and full-file integrity checks. */
+export function audioByteRange(header,length){
+ if(header===undefined||header===null)return {status:200,start:0,end:length-1};
+ const invalid={status:416,start:0,end:-1};
+ if(typeof header!=='string'||header.length>80)return invalid;
+ const m=/^bytes=(\d*)-(\d*)$/.exec(header);if(!m||(!m[1]&&!m[2]))return invalid;
+ const a=m[1]?Number(m[1]):null,b=m[2]?Number(m[2]):null;
+ if((a!==null&&!Number.isSafeInteger(a))||(b!==null&&!Number.isSafeInteger(b)))return invalid;
+ if(a===null)return b>0?{status:206,start:Math.max(0,length-b),end:length-1}:invalid;
+ if(a>=length||(b!==null&&b<a))return invalid;
+ return {status:206,start:a,end:b===null?length-1:Math.min(b,length-1)};
+}
 export async function privateAudioRead(file,max=32000000){
  const s=await lstat(file);
  if(!s.isFile()||s.isSymbolicLink()||s.size<1||s.size>max
@@ -23,15 +35,23 @@ export async function atomicJson(file,value){
  const temp=file+'.'+randomBytes(12).toString('hex')+'.tmp';
  await durableWrite(temp,JSON.stringify(value));await rename(temp,file);
 }
-export function simulatedTtsProvider({failAt=null}={}){
+export function pcmToWav(pcm){
+ if(!Buffer.isBuffer(pcm)||pcm.length<2||pcm.length%2||pcm.length+44>32000000)throw Error('TTS_PCM');
+ const wav=Buffer.alloc(44+pcm.length);wav.write('RIFF');wav.writeUInt32LE(wav.length-8,4);wav.write('WAVEfmt ',8);
+ wav.writeUInt32LE(16,16);wav.writeUInt16LE(1,20);wav.writeUInt16LE(1,22);wav.writeUInt32LE(24000,24);
+ wav.writeUInt32LE(48000,28);wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);wav.write('data',36);wav.writeUInt32LE(pcm.length,40);pcm.copy(wav,44);return wav;
+}
+export function simulatedTtsProvider({failAt=null,durations=null}={}){
+ if(durations!==null&&(!Array.isArray(durations)||durations.length!==7
+  ||durations.some(x=>!Number.isFinite(x)||x<=0||x>600)||durations.reduce((a,b)=>a+b,0)>4200))throw Error('TTS_SIMULATION_DURATION');
  return {kind:'simulated-tone-v1',paid:false,async synthesize({index}){
   if(index===failAt)throw Error('SIMULATED_UNCERTAIN_RESPONSE');
   // Different fixed frequencies/durations verify order; never mimic a real voice.
-  const rate=24000,frames=rate/5+index*240,pcm=Buffer.alloc(frames*2);
-  for(let n=0;n<frames;n++)pcm.writeInt16LE(Math.round(2500*Math.sin(2*Math.PI*(330+index*70)*n/rate)),n*2);
-  const wav=Buffer.alloc(44+pcm.length);wav.write('RIFF');wav.writeUInt32LE(wav.length-8,4);wav.write('WAVEfmt ',8);
+  const rate=24000,frames=durations===null?rate/5+index*240:Math.round(rate*durations[index]);
+  const wav=Buffer.alloc(44+frames*2);wav.write('RIFF');wav.writeUInt32LE(wav.length-8,4);wav.write('WAVEfmt ',8);
   wav.writeUInt32LE(16,16);wav.writeUInt16LE(1,20);wav.writeUInt16LE(1,22);wav.writeUInt32LE(rate,24);
-  wav.writeUInt32LE(rate*2,28);wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);wav.write('data',36);wav.writeUInt32LE(pcm.length,40);pcm.copy(wav,44);
+  wav.writeUInt32LE(rate*2,28);wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);wav.write('data',36);wav.writeUInt32LE(frames*2,40);
+  for(let n=0;n<frames;n++)wav.writeInt16LE(Math.round(2500*Math.sin(2*Math.PI*(330+index*70)*n/rate)),44+n*2);
   return wav;
  }};
 }

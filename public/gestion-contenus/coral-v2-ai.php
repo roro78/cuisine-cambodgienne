@@ -127,6 +127,89 @@ function cmsCoralTtsAuthorize(string $private,array $request,array $catalog,arra
     return $record!==null&&cmsCoralTtsRequest($private,$record,$catalog,$canonical,$guided)===$request;
   }catch(Throwable $e){return false;}
 }
+/** Read-only machine check on the SAME Studio entry point; no session/CSRF bypass for edits. */
+function cmsCoralTtsAuthorityToken(string $private,array $cfg): string {
+  $s=$cfg['editorial_tts_authority']??null;
+  if(!is_array($s)||($s['enabled']??false)!==true||($s['qualified']??false)!==true
+    ||!is_string($s['token_file']??null))throw new RuntimeException('TTS_AUTHORITY_DISABLED');
+  $file=$s['token_file'];$dir=realpath($private);
+  if($dir===false||is_link($private)||is_link($file)||!is_file($file)||realpath(dirname($file))!==$dir
+    ||filesize($file)>128||filesize($file)<64
+    ||(PHP_OS_FAMILY!=='Windows'&&((fileperms($file)&0077)!==0||(fileperms($private)&0077)!==0
+      ||fileowner($file)!==fileowner($private))))throw new RuntimeException('TTS_AUTHORITY_SECRET');
+  $token=file_get_contents($file);
+  if(!is_string($token))throw new RuntimeException('TTS_AUTHORITY_SECRET');
+  $token=preg_replace('/\r?\n$/D','',$token);
+  if(!is_string($token)||!preg_match('/^[a-f0-9]{64}$/D',$token))throw new RuntimeException('TTS_AUTHORITY_SECRET');
+  return $token;
+}
+function cmsCoralTtsAuthorityRate(string $private): void {
+  $path=$private.'/tts-authority-rate.json';
+  if(is_link($path))throw new RuntimeException('TTS_AUTHORITY_LIMIT');
+  $h=fopen($path,'c+');if(!$h||!flock($h,LOCK_EX|LOCK_NB))throw new RuntimeException('TTS_AUTHORITY_LIMIT');
+  try{
+    $stat=fstat($h);if(!$stat||$stat['size']>4096)throw new RuntimeException('TTS_AUTHORITY_LIMIT');
+    $raw=stream_get_contents($h);$times=json_decode($raw===''?'[]':$raw,true,4,JSON_THROW_ON_ERROR);
+    if(!is_array($times)||!array_is_list($times)||count($times)>120
+      ||count(array_filter($times,'is_int'))!==count($times))throw new RuntimeException('TTS_AUTHORITY_LIMIT');
+    $now=time();$times=array_values(array_filter($times,static fn($t)=>$t>=$now-60&&$t<=$now));
+    if(count($times)>=120)throw new RuntimeException('TTS_AUTHORITY_LIMIT');
+    $times[]=$now;$json=json_encode($times,JSON_THROW_ON_ERROR);
+    if(!chmod($path,0600)||!rewind($h)||!ftruncate($h,0)||fwrite($h,$json)!==strlen($json)||!fflush($h))
+      throw new RuntimeException('TTS_AUTHORITY_LIMIT');
+  }finally{flock($h,LOCK_UN);fclose($h);}
+}
+function cmsCoralTtsAuthorityProjection(array $r): array {
+  $out=[];foreach(['contract','creation_id','creation_version','binding_sha256','recipe_sha256','chapters','voice','provider',
+    'rights_sha256','reviews_sha256','reserve_microusd','request_id'] as $key)$out[$key]=$r[$key];
+  $out['chapters']=array_map(static fn($c)=>['id'=>$c['id'],'sha256'=>$c['sha256']],$r['chapters']);return $out;
+}
+function cmsCoralTtsAuthoritySelectorValid(array $r): bool {
+  $keys=['contract','creation_id','creation_version','binding_sha256','recipe_sha256','chapters','voice','provider',
+    'rights_sha256','reviews_sha256','reserve_microusd','request_id'];
+  if(count($r)!==12||array_diff($keys,array_keys($r))||($r['contract']??null)!=='cdc-coral-private-tts-request-v1'
+    ||cmsCreationId($r['creation_id']??null)===null||!is_int($r['creation_version']??null)||$r['creation_version']<1||$r['creation_version']>9999
+    ||($r['voice']??null)!=='test-tone'||($r['provider']??null)!=='simulated-tone-v1'||($r['reserve_microusd']??null)!==7000
+    ||!is_array($r['chapters']??null)||!array_is_list($r['chapters'])||count($r['chapters'])!==7)return false;
+  foreach(['binding_sha256','recipe_sha256','rights_sha256','reviews_sha256'] as $key)
+    if(!is_string($r[$key])||!preg_match('/^[a-f0-9]{64}$/D',$r[$key]))return false;
+  foreach(cmsAtelierScriptIds() as $i=>$id){$c=$r['chapters'][$i];
+    if(!is_array($c)||count($c)!==2||($c['id']??null)!==$id||!is_string($c['sha256']??null)||!preg_match('/^[a-f0-9]{64}$/D',$c['sha256']))return false;
+  }
+  $expected=substr(hash('sha256',implode("\n",array_merge([$r['creation_id'],(string)$r['creation_version'],$r['binding_sha256'],$r['recipe_sha256']],
+    array_column($r['chapters'],'sha256'),[$r['voice'],$r['rights_sha256'],$r['reviews_sha256'],$r['provider']]))),0,48);
+  return is_string($r['request_id'])&&hash_equals($expected,$r['request_id']);
+}
+function cmsCoralTtsAuthorityCheck(string $private,array $cfg,string $method,string $bearer,string $contentType,
+  string $body,array $catalog,array $canonical,array $guided): array {
+  try{$token=cmsCoralTtsAuthorityToken($private,$cfg);}catch(Throwable $e){return [404,['error'=>'TTS_AUTHORITY_UNAVAILABLE']];}
+  if($method!=='POST')return [405,['error'=>'TTS_AUTHORITY_METHOD']];
+  if(!hash_equals('Bearer '.$token,$bearer))return [401,['error'=>'TTS_AUTHORITY_UNAUTHORIZED']];
+  try{
+    cmsCoralTtsAuthorityRate($private);
+    if(strlen($body)>6000||!preg_match('~^application/json(?:;\s*charset=utf-8)?$~iD',$contentType))
+      return [422,['error'=>'TTS_AUTHORITY_REQUEST']];
+    $q=json_decode($body,true,20,JSON_THROW_ON_ERROR);
+    if(!is_array($q)||count($q)!==3||($q['contract']??null)!=='cdc-coral-tts-authority-check-v1'
+      ||!is_string($q['challenge']??null)||!preg_match('/^[a-f0-9]{64}$/D',$q['challenge'])
+      ||!is_array($q['request']??null))return [422,['error'=>'TTS_AUTHORITY_REQUEST']];
+    $r=$q['request'];$allowed=false;if(!cmsCoralTtsAuthoritySelectorValid($r))return [422,['error'=>'TTS_AUTHORITY_REQUEST']];
+    // The request is a selector, NEVER an authorization. Rebuild from CURRENT server journals.
+    $id=cmsCreationId($r['creation_id']??null);$job=$r['request_id']??'';
+    if($id!==null&&is_string($job)&&preg_match('/^[a-f0-9]{48}$/D',$job)){
+      try{
+        $allowed=cmsCoralTtsLocked($private,$id,static function($dir,$record)use($private,$id,$job,$r,$catalog,$canonical,$guided){
+          $current=cmsCoralTtsRequest($private,$record,$catalog,$canonical,$guided);
+          // This immutable server record exists only after the human generation confirmation.
+          $confirmed=cmsCoralTtsStoredRequest($private,$id,$job);
+          return $confirmed===$current&&cmsCoralTtsAuthorityProjection($current)===cmsCoralTtsAuthorityProjection($r);
+        });
+      }catch(Throwable $e){$allowed=false;}
+    }
+    return [200,['contract'=>'cdc-coral-tts-authority-check-v1','challenge'=>$q['challenge'],
+      'request_id'=>is_string($job)&&preg_match('/^[a-f0-9]{48}$/D',$job)?$job:'','authorized'=>$allowed]];
+  }catch(Throwable $e){return [503,['error'=>'TTS_AUTHORITY_UNAVAILABLE']];}
+}
 function cmsCoralTtsStoredRequest(string $private,string $id,string $job): array {
   if(!cmsCreationId($id)||!preg_match('/^[a-f0-9]{48}$/D',$job))throw new RuntimeException('TTS_JOB_ID');
   $r=cmsCoralTtsRead(cmsCreationDir($private).'/tts-request-'.$job.'.json');
@@ -184,6 +267,17 @@ function cmsCoralTtsAudio(string $private,string $id,string $job,array $settings
     ||!hash_equals($s['manifest']['sha256'],hash('sha256',$bytes)))throw new RuntimeException('TTS_AUDIO_INTEGRITY');
   return $bytes;
 }
+/** Same bounded single-range protocol as worker; never replaces authorization or SHA validation. */
+function cmsCoralTtsByteRange(?string $header,int $length): array {
+  if($header===null)return [200,0,$length-1];
+  if(strlen($header)>80||!preg_match('/^bytes=(\d*)-(\d*)$/D',$header,$m)||($m[1]===''&&$m[2]===''))return [416,0,-1];
+  $a=$m[1]===''?null:filter_var(ltrim($m[1],'0')?:'0',FILTER_VALIDATE_INT,['options'=>['min_range'=>0]]);
+  $b=$m[2]===''?null:filter_var(ltrim($m[2],'0')?:'0',FILTER_VALIDATE_INT,['options'=>['min_range'=>0]]);
+  if($a===false||$b===false||($a!==null&&$a>9007199254740991)||($b!==null&&$b>9007199254740991))return [416,0,-1];
+  if($a===null)return $b>0?[206,max(0,$length-$b),$length-1]:[416,0,-1];
+  if($a>=$length||($b!==null&&$b<$a))return [416,0,-1];
+  return [206,$a,$b===null?$length-1:min($b,$length-1)];
+}
 function cmsCoralTtsListeningAction(string $private,string $id,int $version,string $job,string $action,array $checks,
   string $note,bool $confirmed,bool $authenticated,array $settings,array $catalog,array $canonical,array $guided): void {
   $s=cmsCoralTtsObserve($private,$id,$job,$settings,$catalog,$canonical,$guided);
@@ -228,7 +322,7 @@ function cmsCoralTtsPanel(string $private,?array $record,array $catalog,array $c
       &&($ready===null||$r['request_id']===$ready['request_id']))$job=$r['request_id'];}
   if($job!==null){
     try{$state=cmsCoralTtsObserve($private,$id,$job,$settings,$catalog,$canonical,$guided);}catch(Throwable $e){}
-    $labels=['queued'=>'En attente','running'=>'Génération en cours','interrupted'=>'Génération interrompue',
+    $labels=['queued'=>'Génération demandée — en attente','running'=>'Génération en cours','interrupted'=>'Génération interrompue',
       'uncertain'=>'Génération interrompue — réponse incertaine, aucun nouvel essai','succeeded'=>'MP3 prêt pour écoute'];
     $html.='<p data-tts-status>'.cmsEsc($labels[$state['status']??'']??'Suivi indisponible ou autorisation périmée : aucun renvoi automatique.').'</p>';
     if($state!==null)$html.='<p>Chapitres terminés : '.(int)$state['completed_chapters'].'/7.</p>';
@@ -258,9 +352,10 @@ function cmsCoralTtsPanel(string $private,?array $record,array $catalog,array $c
     $html.='<form method="post" action="'.$base.'#cms-tts">'.$hidden;
     if($ready!==null)$html.='<label><input type="checkbox" name="tts_confirm" value="1" required> Je confirme la génération privée simulée de cette version et la réservation affichée.</label>';
     $html.='<button name="tts_action" value="generate"'.($ready===null?' disabled aria-disabled="true"':'').'>Valider et générer le MP3</button></form>';
+    $html.='<p data-tts-readiness>'.($ready===null?'Autorisations incomplètes.':'Prêt pour génération — confirmation requise.').'</p>';
     if($ready===null)$html.='<p>Manquent les sept visas actifs, la revue culinaire, les droits ou une source complète et courante.</p>';
   }
-  return $html.'<p>Aucun remplacement des anciens MP3. La publication reste une décision distincte et indisponible ici.</p></section>';
+  return $html.'<p>Publication non autorisée. Aucun remplacement des anciens MP3. La publication reste une décision distincte et indisponible ici.</p></section>';
 }
 function cmsCoralPolicy(): array {
   $path=__DIR__.'/coral-v2-contract.json';

@@ -31,7 +31,7 @@ Les schémas se trouvent dans `contracts/coral-tts-request-v1.schema.json` et `c
 
 Le worker exige un callback **serveur** `authorize(request)` et le relit avant chaque chapitre, avant assemblage et avant finalisation. Le test utilise les vrais journaux PHP via une fixture CLI privée, sans croire les booléens de la requête. Une révocation ou une modification arrête les chapitres suivants et ferme la lecture. Un appel déjà engagé ne peut pas être annulé rétroactivement ; aucun suivant n'est émis.
 
-Le raccordement d'une telle autorité aux deux hôtes réels n'est pas installé : il devra être qualifié avant une voix payante. Aucun endpoint public de validation n'a été créé.
+Le raccordement d'une telle autorité aux deux hôtes réels n'est pas installé : il devra être qualifié avant une voix payante. La suite de #223 prépare une [route d'autorité HTTPS fermée par défaut](CMS-CORAL-TTS-AUTHORITY-QUALIFICATION-20261106.md), testée sur le vrai PHP en isolation ; elle n'est pas livrée en production.
 
 ## File, fragments et reprise
 

@@ -1,0 +1,67 @@
+name: Coral TTS authority and realistic load
+on:
+  push:
+    branches: ['feat/coral-tts-authority-*']
+permissions:
+  contents: read
+jobs:
+  authority:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, json, gd
+          coverage: none
+      - name: Existing build and isolated audio tooling
+        run: |
+          npm install --no-audit --no-fund
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          npm run build
+      - name: Current server authority and inert Realtime contract
+        run: |
+          php -l public/gestion-contenus/index.php
+          php -l public/gestion-contenus/coral-v2-ai.php
+          php tests/php/editorial-all-guided-smoke.php dist
+          node --test --test-concurrency=1 tests/coral-tts-authority.test.mjs tests/coral-tts-realtime-contract.test.mjs tests/coral-tts-http-range.test.mjs
+  realistic-load:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Offline test image, not a service or deployment
+        run: docker build -f tests/fixtures/coral-tts-load.Dockerfile -t coral-tts-load-fixture .
+      - name: Real resource envelope of existing worker, no network or secrets
+        run: |
+          mkdir -p artifacts/coral-tts-qualification-load
+          sudo chown 1000:1000 artifacts/coral-tts-qualification-load
+          docker run --rm --network none --read-only --cpus 0.5 --memory 256m --memory-swap 256m --pids-limit 64 --cap-drop ALL --security-opt no-new-privileges \
+            --tmpfs /tmp:rw,noexec,nosuid,size=16m,uid=1000,gid=1000,mode=0700 \
+            -v "$PWD/artifacts/coral-tts-qualification-load:/evidence" \
+            -e TTS_EVIDENCE_DIR=/evidence -e TTS_REQUIRE_RESOURCE_LIMITS=true coral-tts-load-fixture
+      - name: Read synthetic outputs only after the stopped test container
+        if: always()
+        run: sudo chown -R "$(id -u):$(id -g)" artifacts/coral-tts-qualification-load
+      - name: Browser dependencies for long native audio seek, outside worker envelope
+        run: |
+          npm install --no-audit --no-fund
+          node node_modules/playwright-core/cli.js install --with-deps chromium
+      - name: Native private audio playback and each measured chapter
+        env:
+          TTS_LONG_EVIDENCE_DIR: artifacts/coral-tts-qualification-load/coral-tts-load
+        run: node --test tests/coral-tts-long-player.test.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coral-tts-realistic-load-evidence
+          path: artifacts/coral-tts-qualification-load
+          if-no-files-found: error
