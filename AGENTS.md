@@ -1,5 +1,8 @@
 # Instructions de travail pour les agents du dépôt
 
+**JALON REÇU (6 novembre 2026) :** lire [la clôture technique Studio Coral V2](docs/CMS-CORAL-STUDIO-RECEPTION-CLOTURE-20261106.md) avant toute mission Studio/Coral. Le parcours administrateur réel sur OVH est PASS au commit #220 `8c2698f5998bbba384d16d485d292d009f5fa0cd` ; ne pas refaire réseau, installation ou sauvegardes sans incident nouveau. **IA de narration, OpenAI, TTS et publication restent désactivés.**
+
+
 ## Référence obligatoire — déploiements OVH et Orvekio
 
 **Avant toute mission qui touche une publication, livraison, synchronisation, mise en production, rollback, Studio PHP, fichier statique ou worker Coral : lire en premier [`docs/OVH-DEPLOYMENT-RUNBOOK.md`](docs/OVH-DEPLOYMENT-RUNBOOK.md).** C'est le point d'entrée permanent des agents (Codex, Work, ChatGPT). Ne pas redécouvrir le mécanisme à partir de zéro ni présenter l'absence de déploiement comme un fait.
