@@ -1,5 +1,8 @@
 # Studio — préparation des sept narrations Coral V2 avec un seul bouton
 
+**NOTE HISTORIQUE :** ce document décrit la situation du 4 novembre. La [réception du Studio sur OVH du 6 novembre est clôturée](CMS-CORAL-STUDIO-RECEPTION-CLOTURE-20261106.md) ; le bouton s'intitule désormais « Préparer les 7 narrations ». Les ateliers publiés peuvent être repris en brouillon lié selon PR #220. La préparation automatique des narrations et le TTS sont toujours désactivés. Ne pas utiliser les anciens NO-GO pour rouvrir l'installation.
+
+
 **4 novembre 2026 · correctif technique sans activation de fournisseur**
 
 ## Parcours attendu
