@@ -1703,6 +1703,17 @@ MP3/écoute/pauses : <strong>non vérifiés</strong>.</li>
 <ul><?php foreach($coralPreflight['blocking_notes'] as $note): ?>
 <li><?= cmsEsc($note) ?></li><?php endforeach; ?></ul>
 <?php endif; ?>
+<?php $ttsGate=cmsCoralTtsPreproductionGate($coralPreflight); ?>
+<div data-coral-tts-preproduction>
+<h3>Valider et générer le MP3 — étape distincte</h3>
+<p>Textes et revue culinaire :
+<strong><?= $ttsGate['text_and_culinary_reviews_complete']?'complets':'à terminer' ?></strong>.
+La synthèse exige encore les droits de voix, le fournisseur TTS, le budget,
+l'idempotence et une confirmation humaine spécifique.</p>
+<button type="button" disabled aria-disabled="true">Valider et générer le MP3</button>
+<p class="small muted">Action verrouillée : aucun TTS, MP3 ou coût.
+Écoute, durées réelles et navigation sont contrôlées après génération.</p>
+</div>
 <p class="notice">Génération TTS : <strong>non autorisée</strong>.
 Droits voix et images, sept MP3 réels, durées réelles, synchronisation
 des pauses et navigation mobile doivent être réceptionnés séparément.
