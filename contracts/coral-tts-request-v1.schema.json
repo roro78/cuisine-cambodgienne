@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cdc:coral-private-tts-request-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract","creation_id","creation_version","binding_sha256","recipe_sha256","chapters","voice","provider","rights_sha256","reviews_sha256","request_id","reserve_microusd"],
+  "properties": {
+    "contract": {"const":"cdc-coral-private-tts-request-v1"},
+    "creation_id": {"type":"string","pattern":"^c-[a-f0-9]{24}$"},
+    "creation_version": {"type":"integer","minimum":1,"maximum":9999},
+    "binding_sha256": {"$ref":"#/$defs/hash"},
+    "recipe_sha256": {"$ref":"#/$defs/hash"},
+    "rights_sha256": {"$ref":"#/$defs/hash"},
+    "reviews_sha256": {"$ref":"#/$defs/hash"},
+    "request_id": {"type":"string","pattern":"^[a-f0-9]{48}$"},
+    "reserve_microusd": {"const":7000},
+    "voice": {"const":"test-tone"},
+    "provider": {"const":"simulated-tone-v1"},
+    "chapters": {"type":"array","minItems":7,"maxItems":7,"items":{"type":"object","additionalProperties":false,"required":["id","text","sha256"],"properties":{"id":{"enum":["intro","installer","preparer","assembler","maitriser","rectifier","terminer"]},"text":{"type":"string","minLength":120,"maxLength":7000},"sha256":{"$ref":"#/$defs/hash"}}}}
+  },
+  "$defs":{"hash":{"type":"string","pattern":"^[a-f0-9]{64}$"}},
+  "$comment":"Runtime also verifies ordered IDs, UTF-8 hashes, deterministic request ID and server-side current authorization. JSON alone never grants rights. Simulation only."
+}

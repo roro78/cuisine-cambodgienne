@@ -6,6 +6,8 @@
 !scripts/coral-external-job-provider.mjs
 !scripts/coral-text-api-contract.mjs
 !scripts/coral-chapter-voice-checks.mjs
+!scripts/coral-tts-jobs.mjs
+!scripts/coral-tts-audio.mjs
 !scripts/coral-state-backup.mjs
 !deploy
 !deploy/coral

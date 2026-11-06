@@ -1,0 +1,57 @@
+name: Coral TTS simulated end-to-end
+on:
+  push:
+    branches: ['feat/coral-tts-*']
+  pull_request:
+    paths:
+      - 'scripts/coral-tts-*'
+      - 'scripts/editorial-ai-job-gateway.mjs'
+      - 'scripts/coral-external-job-provider.mjs'
+      - 'public/gestion-contenus/**'
+      - 'tests/coral-tts-*'
+      - 'tests/fixtures/*tts*'
+      - 'tests/php/fixtures/editorial-tts-bridge.php'
+      - 'contracts/coral-tts-*'
+      - '.github/workflows/coral-tts-simulation.yml'
+permissions:
+  contents: read
+jobs:
+  simulated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, json, gd
+          coverage: none
+      - name: Existing build dependencies and local audio tooling
+        run: |
+          npm install --no-audit --no-fund
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          node node_modules/playwright-core/cli.js install --with-deps chromium
+      - name: Build and verify all real editorial contents (no publication)
+        run: |
+          npm run build
+          php -l public/gestion-contenus/index.php
+          php -l public/gestion-contenus/coral-v2-ai.php
+          php tests/php/editorial-all-guided-smoke.php dist
+          php tests/php/editorial-coral-culinary-review-smoke.php dist
+          node --test tests/cms-studio-architecture.test.mjs tests/editorial-coral-v2-gateway.test.mjs
+      - name: Durable jobs, real test audio and authenticated shared Studio
+        env:
+          TTS_EVIDENCE_DIR: artifacts/tts-simulated
+        run: |
+          node --test --test-concurrency=1 tests/coral-tts-jobs.test.mjs tests/coral-tts-studio-e2e.test.mjs tests/coral-external-job-provider.test.mjs tests/editorial-ai-job-gateway.test.mjs
+      - name: Synthetic evidence only, never secrets or production drafts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coral-tts-simulated-evidence
+          path: artifacts/tts-simulated
+          if-no-files-found: warn

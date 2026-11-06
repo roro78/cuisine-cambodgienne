@@ -6,6 +6,7 @@ WORKDIR /app
 COPY scripts/editorial-ai-job-gateway.mjs scripts/private-runtime-secret.mjs \
      scripts/coral-openai-secret.mjs scripts/coral-external-job-provider.mjs \
      scripts/coral-text-api-contract.mjs scripts/coral-chapter-voice-checks.mjs \
+     scripts/coral-tts-jobs.mjs scripts/coral-tts-audio.mjs \
      scripts/coral-state-backup.mjs ./scripts/
 RUN chmod -R 0555 /app
 USER 1000:1000

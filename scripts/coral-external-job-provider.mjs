@@ -7,7 +7,7 @@
  * retries; never refund uncertain/partial calls. A failed process holds its
  * reservation. Any stale lock blocks future jobs until manually audited.
  */
-import {mkdir,lstat,readFile,writeFile,rename,rmdir} from 'node:fs/promises';
+import {mkdir,lstat,readFile,writeFile,rename,rmdir,readdir} from 'node:fs/promises';
 import {randomBytes} from 'node:crypto';
 import {resolve,join} from 'node:path';
 import {coralExternalRequestBody,coralExternalResult,coralExternalEstimatedUsd,
@@ -30,16 +30,35 @@ async function enforcePrivate(dir){
   return dir;
 }
 export async function reserveCoralBudget({budgetDir,jobId,model,costUsd,
-  maxDailyUsd=0.75}){
+  maxDailyUsd=0.75,maxMonthlyUsd=1}){
   if(typeof jobId!=='string'||!/^[a-f0-9]{48}$/.test(jobId))throw Error('CORAL_EXTERNAL_JOB_ID');
   positiveUsd(costUsd,'RESERVATION',0.75);
   positiveUsd(maxDailyUsd,'DAILY_LIMIT',0.75);
+  positiveUsd(maxMonthlyUsd,'MONTHLY_LIMIT',1);
   const dir=await enforcePrivate(resolve(budgetDir));
   const day=new Date().toISOString().slice(0,10);
   const dayPath=join(dir,'budget-'+day+'.json'),lock=join(dir,'budget-'+day+'.lock');
   // mkdir is atomic across Node workers/processes; stale lock fails closed.
-  await mkdir(lock,{mode:0o700});
+  const globalLock=join(dir,'.budget.lock');
+  await mkdir(globalLock,{mode:0o700});
+  let dailyLocked=false;
   try{
+    await mkdir(lock,{mode:0o700});dailyLocked=true;
+    let monthReserved=0;
+    for(const name of await readdir(dir)){
+      if(!new RegExp('^budget-'+day.slice(0,7)+'-\\d{2}\\.json$').test(name))continue;
+      const file=join(dir,name),info=await lstat(file);
+      if(!info.isFile()||info.isSymbolicLink()||info.size>200000
+        ||(process.platform!=='win32'&&(info.mode&0o077)))throw Error('CORAL_EXTERNAL_BUDGET_CORRUPT');
+      const ledger=JSON.parse(await readFile(file,'utf8'));
+      if(ledger.contract!=='cdc-coral-daily-reservations-v1'||'budget-'+ledger.day+'.json'!==name||!Array.isArray(ledger.requests)
+        ||ledger.requests.length>500)throw Error('CORAL_EXTERNAL_BUDGET_CORRUPT');
+      for(const row of ledger.requests){
+        if(typeof row.reservedUsd!=='number'||!Number.isFinite(row.reservedUsd)||row.reservedUsd<=0)throw Error('CORAL_EXTERNAL_BUDGET_CORRUPT');
+        monthReserved+=row.reservedUsd;
+      }
+    }
+    if(!Number.isFinite(monthReserved)||Math.round((monthReserved+costUsd)*1e8)>Math.round(maxMonthlyUsd*1e8))throw Error('CORAL_EXTERNAL_MONTHLY_LIMIT');
     let old={contract:'cdc-coral-daily-reservations-v1',day,requests:[]};
     try{old=JSON.parse(await readFile(dayPath,'utf8'))}
     catch(e){if(e.code!=='ENOENT')throw e;}
@@ -56,7 +75,7 @@ export async function reserveCoralBudget({budgetDir,jobId,model,costUsd,
     await writeFile(tmp,JSON.stringify(old),{flag:'wx',mode:0o600});
     await rename(tmp,dayPath);
     return {day,reservedUsd:costUsd,totalReservedUsd:before+costUsd};
-  }finally{await rmdir(lock);}
+  }finally{if(dailyLocked)await rmdir(lock);await rmdir(globalLock);}
 }
 export function createExternalCoralJobProvider({
   apiKey,model,budgetDir,maxDailyUsd=0.75,fetcher=fetch

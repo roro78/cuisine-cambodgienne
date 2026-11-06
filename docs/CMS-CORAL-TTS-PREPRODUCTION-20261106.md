@@ -1,5 +1,7 @@
 # Coral V2 — chantier audio, jalon 1 : séparation pré-TTS et contrôle MP3
 
+**Complément de développement :** le [parcours MP3 simulé](CMS-CORAL-TTS-SIMULATION-20261106.md) ajoute le journal de droits et l'action isolée, sans ouvrir la porte de production décrite ici.
+
 **6 novembre 2026 — PR de préparation sans appel facturable.** Dépend de [PR #220](https://github.com/roro78/cuisine-cambodgienne/pull/220), déjà reçue sur OVH au SHA `8c2698f5998bbba384d16d485d292d009f5fa0cd`, et de la [clôture technique](https://github.com/roro78/cuisine-cambodgienne/pull/221).
 
 ## Décision métier
