@@ -770,6 +770,213 @@ function cmsAtelierCulinaryAction(string $private,string $id,int $expected,
 }
 
 
+
+/**
+ * FINAL CROSS-REVIEW after all seven scripts: deterministic internal checks
+ * and a separately documented HUMAN comparison against two external sources.
+ * No network fetch, recipe rewrite, provider call, audio or publication.
+ * A difference between culinary sources is never automatically called an error.
+ */
+function cmsCoralFinalAudit(array $record,array $catalog,array $canonical,array $guided): array {
+    if(($record['kind']??null)!=='atelier'||!cmsCreationId($record['id']??null))
+        throw new InvalidArgumentException('CORAL_FINAL_KIND');
+    $issues=[];$warnings=[];$recipeSha=null;
+    try{
+        $gate=cmsAtelierBlueprintPreflight($record,$catalog);
+        if(($gate['ready_for_audio_review']??false)!==true)
+            $issues[]=['code'=>'INCOMPLETE_WORKSHOP','chapter'=>null,
+                'finding'=>'Recette liée, six phases ou sept narrations incomplètes.',
+                'suggestion'=>'Corriger le brouillon privé avant la relecture finale.'];
+        $recipe=cmsAtelierCanonicalRecipeAudit($record,$catalog,$canonical,$guided);
+        $recipeSha=$recipe['canonical_sha256'];
+        if(($recipe['model_supported_for_quantity_review']??false)!==true)
+            $issues[]=['code'=>'CANONICAL_NOT_COMPARABLE','chapter'=>null,
+                'finding'=>'La recette source ne permet pas de contrôler ses quantités.',
+                'suggestion'=>'Compléter et valider la source canonique, sans inventer de portions.'];
+        foreach($recipe['phase_ingredient_not_exact']??[] as $name)
+            $warnings[]=['code'=>'INGREDIENT_NAME_TO_VERIFY','chapter'=>null,
+                'finding'=>'Ingrédient de phase à rapprocher de la recette : '.$name,
+                'suggestion'=>'Vérifier s’il s’agit d’un synonyme, d’une variante ou d’un ajout erroné.'];
+    }catch(Throwable $e){
+        $issues[]=['code'=>'SOURCE_UNAVAILABLE','chapter'=>null,
+            'finding'=>'Références de recette ou phases impossibles à vérifier.',
+            'suggestion'=>'Restaurer les index canoniques et corriger la fiche source.'];
+    }
+    $chapters=$record['atelier_scripts']['chapters']??[];
+    if(!is_array($chapters)||count($chapters)!==7)
+        $issues[]=['code'=>'SEVEN_SCRIPTS_REQUIRED','chapter'=>null,
+            'finding'=>'Les sept textes doivent exister avant le contrôle final.',
+            'suggestion'=>'Terminer les textes dans le brouillon privé.'];
+    else foreach(cmsAtelierScriptIds() as $i=>$id){
+        $c=$chapters[$i]??null;$text=is_array($c)?($c['text']??null):null;
+        if(!is_string($text)||($c['id']??null)!==$id||mbLen($text)<120){
+            $issues[]=['code'=>'SCRIPT_MISSING','chapter'=>$id,
+                'finding'=>'Narration manquante, incomplète ou désordonnée.',
+                'suggestion'=>'Restaurer la narration correspondante.'];
+            continue;
+        }
+        $patterns=[
+            'FIXED_SERVINGS'=>'~(?<![\p{L}\p{N}])(?:\d+|deux|trois|quatre|cinq|six|sept|huit|neuf|dix)\s+(?:petits?\s+|grands?\s+)?(?:ramequins?|assiettes?|portions?|convives?|personnes?|bols?)\b~iu',
+            'FIXED_INGREDIENT_QUANTITY'=>'~(?<![\p{L}\p{N}])\d+(?:[,.]\d+)?\s*(?:g|kg|ml|cl|grammes?|millilitres?|centilitres?|litres?)\b~iu'
+        ];
+        foreach($patterns as $code=>$regex){
+            if(preg_match($regex,$text,$hit,PREG_OFFSET_CAPTURE)===1)
+                $issues[]=['code'=>$code,'chapter'=>$id,
+                    'finding'=>'Valeur chiffrée potentiellement liée aux convives : '.$hit[0][0],
+                    'suggestion'=>'Remplacer par une consigne renvoyant aux quantités de la fiche ; préserver les repères techniques invariants.'];
+        }
+        if(preg_match('~(?<!\p{L})(?:fabriqu\p{L}*|fabrication\p{L}*|constru\p{L}*|chantier|poste)(?!\p{L})~iu',$text)===1)
+            $issues[]=['code'=>'LEXICON','chapter'=>$id,
+                'finding'=>'Vocabulaire interdit dans la narration.',
+                'suggestion'=>'Employer le lexique culinaire du référentiel.'];
+    }
+    $digest=hash('sha256',json_encode([
+        'contract'=>'cdc-coral-final-cross-audit-v1',
+        'id'=>$record['id'],'version'=>$record['version']??null,
+        'recipe_sha256'=>$recipeSha,
+        'title'=>$record['title']??null,'summary'=>$record['summary']??null,
+        'fields'=>$record['fields']??null,'reference'=>$record['atelier_reference']??null,
+        'phases'=>$record['atelier_phase_details']??null,
+        'scripts'=>$record['atelier_scripts']??null
+    ],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR));
+    return ['contract'=>'cdc-coral-final-cross-audit-v1',
+        'creation_id'=>$record['id'],'creation_version'=>$record['version']??null,
+        'recipe_sha256'=>$recipeSha,'digest'=>$digest,
+        'blocking'=>$issues,'warnings'=>$warnings,
+        'automated_checks_pass'=>count($issues)===0,
+        // Claims about cultural authenticity / safety need a human judgment.
+        'external_sources_independently_verified'=>false,
+        'corrections_automatically_applied'=>false,'tts_authorized'=>false];
+}
+function cmsCoralFinalSources(mixed $sources): array {
+    if(!is_array($sources)||!array_is_list($sources)||count($sources)!==2)
+        throw new InvalidArgumentException('CORAL_FINAL_SOURCES');
+    $out=[];$hosts=[];
+    foreach($sources as $source){
+        if(!is_array($source)||array_keys($source)!==['title','url','note'])
+            throw new InvalidArgumentException('CORAL_FINAL_SOURCES');
+        $row=[];
+        foreach(['title'=>180,'url'=>500,'note'=>900] as $key=>$max){
+            $value=cmsCreationText($source[$key]??null,$max);
+            if($value===''||($key==='note'&&mbLen($value)<30))
+                throw new InvalidArgumentException('CORAL_FINAL_SOURCES');
+            $row[$key]=$value;
+        }
+        $url=parse_url($row['url']);
+        if(!is_array($url)||($url['scheme']??null)!=='https'
+           ||empty($url['host'])||isset($url['user'])||isset($url['pass'])
+           ||isset($url['query'])||isset($url['fragment'])
+           ||preg_match('/[\x00-\x20\x7f]/',$row['url']))
+            throw new InvalidArgumentException('CORAL_FINAL_SOURCES');
+        $hosts[strtolower($url['host'])]=true;$out[]=$row;
+    }
+    if(count($hosts)!==2)throw new InvalidArgumentException('CORAL_FINAL_SOURCES');
+    return $out;
+}
+function cmsCoralFinalJournal(string $dir,string $id): array {
+    if(!cmsCreationId($id))throw new InvalidArgumentException('CORAL_FINAL_ID');
+    $files=glob($dir.'/final-review-'.$id.'.*.json');
+    if(!is_array($files)||count($files)>9998)throw new RuntimeException('CORAL_FINAL_STORE');
+    $events=[];$previous='';
+    foreach($files as $path){
+        if(is_link($path)||!is_file($path)||filesize($path)>9000
+            ||(PHP_OS_FAMILY!=='Windows'&&(fileperms($path)&0077)!==0))
+            throw new RuntimeException('CORAL_FINAL_STORE');
+        $raw=file_get_contents($path);if(!is_string($raw))throw new RuntimeException('CORAL_FINAL_STORE');
+        $r=json_decode($raw,true,24,JSON_THROW_ON_ERROR);
+        $keys=['contract','creation_id','event','creation_version','action','audit_digest','recipe_sha256',
+            'sources','note','reviewer','reviewed_at','previous_event_sha256'];
+        if(!is_array($r)||count($r)!==count($keys)||array_diff(array_keys($r),$keys)
+            ||($r['contract']??null)!=='cdc-coral-final-human-review-v1'
+            ||($r['creation_id']??null)!==$id||($r['event']??null)!==count($events)+1
+            ||basename($path)!=='final-review-'.$id.'.'.sprintf('%04d',$r['event']).'.json'
+            ||!is_int($r['creation_version']??null)||$r['creation_version']<1
+            ||!in_array($r['action']??null,['approve','revoke'],true)
+            ||!is_string($r['audit_digest']??null)||!preg_match('/^[a-f0-9]{64}$/D',$r['audit_digest'])
+            ||!is_string($r['recipe_sha256']??null)||!preg_match('/^[a-f0-9]{64}$/D',$r['recipe_sha256'])
+            ||!is_array($r['sources']??null)
+            ||($r['action']==='approve' ? cmsCoralFinalSources($r['sources'])!==$r['sources'] : $r['sources']!==[])
+            ||!is_string($r['note']??null)||mbLen($r['note'])<50||mbLen($r['note'])>900
+            ||($r['reviewer']??null)!=='authenticated-cms-owner'
+            ||!is_string($r['reviewed_at']??null)
+            ||!preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/D',$r['reviewed_at'])
+            ||($r['previous_event_sha256']??null)!==$previous)
+            throw new RuntimeException('CORAL_FINAL_CORRUPT');
+        $events[]=$r;$previous=hash('sha256',$raw);
+    }
+    return ['events'=>$events,'last_hash'=>$previous];
+}
+function cmsCoralFinalStatus(string $private,array $record,array $catalog,array $canonical,array $guided): array {
+    $report=cmsCoralFinalAudit($record,$catalog,$canonical,$guided);
+    $events=cmsCoralFinalJournal(cmsCreationDir($private),$record['id'])['events'];
+    $last=$events?end($events):null;
+    $approved=is_array($last)&&$last['action']==='approve'
+        &&$last['creation_version']===$record['version']
+        &&hash_equals($report['digest'],$last['audit_digest'])
+        &&$report['recipe_sha256']!==null
+        &&hash_equals($report['recipe_sha256'],$last['recipe_sha256'])
+        &&$report['automated_checks_pass'];
+    // Existing seven per-text visas and culinary attestation remain mandatory.
+    try{
+        $texts=cmsAtelierVisaStatus(cmsCreationDir($private),$record,$catalog);
+        $culinary=cmsAtelierCulinaryStatus(cmsCreationDir($private),$record,$catalog,$canonical,$guided);
+        $approved=$approved&&$texts['all_seven_texts_reviewed']===true
+            &&$culinary['human_culinary_review_recorded']===true;
+    }catch(Throwable $e){$approved=false;}
+    return ['contract'=>'cdc-coral-final-review-status-v1','approved'=>$approved,
+        'report'=>$report,'review_event_count'=>count($events),
+        'sources'=>$approved?$last['sources']:[],
+        'tts_authorized'=>false,'publication_ready'=>false];
+}
+function cmsCoralFinalAction(string $private,string $id,int $version,string $action,mixed $sources,mixed $note,
+    bool $confirmed,bool $authenticated,array $catalog,array $canonical,array $guided): array {
+    if(!$authenticated||!$confirmed)throw new RuntimeException('CORAL_FINAL_AUTH');
+    if(!cmsCreationId($id)||$version<1||!in_array($action,['approve','revoke'],true))
+        throw new InvalidArgumentException('CORAL_FINAL_INPUT');
+    $sourceRows=$action==='approve'?cmsCoralFinalSources($sources):[];
+    $note=cmsCreationText($note,900);
+    if(mbLen($note)<50)throw new InvalidArgumentException('CORAL_FINAL_NOTE');
+    $dir=cmsCreationDir($private);$lock=$dir.'/catalog.lock';
+    if(is_link($lock))throw new RuntimeException('CORAL_FINAL_LOCK');
+    $handle=fopen($lock,'c');if(!$handle||!flock($handle,LOCK_EX))throw new RuntimeException('CORAL_FINAL_LOCK');
+    try{
+        if(!chmod($lock,0600))throw new RuntimeException('CORAL_FINAL_LOCK');
+        $record=cmsCreationRead($dir,$id);
+        if(!$record||$record['version']!==$version||($record['kind']??null)!=='atelier')
+            throw new RuntimeException('CORAL_FINAL_VERSION_STALE');
+        $current=cmsCoralFinalStatus($private,$record,$catalog,$canonical,$guided);
+        if($current['approved']===($action==='approve'))
+            throw new RuntimeException('CORAL_FINAL_ALREADY_SET');
+        if($action==='approve'){
+            if(!$current['report']['automated_checks_pass']
+                ||$current['report']['recipe_sha256']===null)
+                throw new RuntimeException('CORAL_FINAL_BLOCKING');
+            $texts=cmsAtelierVisaStatus($dir,$record,$catalog);
+            $culinary=cmsAtelierCulinaryStatus($dir,$record,$catalog,$canonical,$guided);
+            if(!$texts['all_seven_texts_reviewed']||!$culinary['human_culinary_review_recorded'])
+                throw new RuntimeException('CORAL_FINAL_REVIEWS_REQUIRED');
+        }
+        $journal=cmsCoralFinalJournal($dir,$id);
+        $n=count($journal['events'])+1;if($n>9998)throw new RuntimeException('CORAL_FINAL_CAPACITY');
+        $report=$current['report'];
+        $row=['contract'=>'cdc-coral-final-human-review-v1',
+            'creation_id'=>$id,'event'=>$n,'creation_version'=>$version,'action'=>$action,
+            'audit_digest'=>$report['digest'],'recipe_sha256'=>$report['recipe_sha256'],
+            'sources'=>$sourceRows,'note'=>$note,'reviewer'=>'authenticated-cms-owner',
+            'reviewed_at'=>gmdate('Y-m-d\TH:i:s\Z'),
+            'previous_event_sha256'=>$journal['last_hash']];
+        if($row['recipe_sha256']===null)throw new RuntimeException('CORAL_FINAL_SOURCE');
+        $json=json_encode($row,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
+        $target=$dir.'/final-review-'.$id.'.'.sprintf('%04d',$n).'.json';
+        if(file_exists($target)||is_link($target))throw new RuntimeException('CORAL_FINAL_CONFLICT');
+        $temp=tempnam($dir,'final-');if($temp===false)throw new RuntimeException('CORAL_FINAL_STORE');
+        try{if(!chmod($temp,0600)||file_put_contents($temp,$json,LOCK_EX)!==strlen($json)
+            ||!rename($temp,$target))throw new RuntimeException('CORAL_FINAL_STORE');
+        }finally{if(is_file($temp))unlink($temp);}
+        return $row;
+    }finally{flock($handle,LOCK_UN);fclose($handle);}
+}
+
 /**
  * C4C3G — single read-only private Coral V2 pre-reception dossier.
  * Caller MUST supply canonical+guided indexes validated against the actual
