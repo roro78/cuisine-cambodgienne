@@ -10,7 +10,7 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const names=['social-feed.json','editorial-source-index.json','editorial-guided-fields.json'];
-const privateModules=['lib.php','publication-gap-audit.php','visual-provider-adapter.php','content-gateway-adapter.php','openai-brief-adapter.php','atelier-narrations.json','coral-v2-contract.json','coral-v2-ai.php'];
+const privateModules=['lib.php','publication-gap-audit.php','visual-provider-adapter.php','content-gateway-adapter.php','openai-brief-adapter.php','atelier-narrations.json','coral-v2-contract.json','coral-v2-ai.php','narrations-export.php'];
 const sensitiveKeys=new Set(['audioScript','sources','sourceReferences','culinaryReferences',
   'github_token','password_hash','secret','private_config','service_role','access_token']);
 function plain(x){return x!==null&&typeof x==='object'&&!Array.isArray(x);}
@@ -170,7 +170,7 @@ async function getDist(dir){
       ||!Array.isArray(item.chapters)||item.chapters.length!==7)
       fail('CORAL_PRIVATE_SNAPSHOT_STALE');
   }
-  for(const name of ['index.php','lib.php','publication-gap-audit.php','coral-v2-ai.php','.htaccess']){
+  for(const name of ['index.php','lib.php','publication-gap-audit.php','coral-v2-ai.php','narrations-export.php','.htaccess']){
     const path=join(dir,'gestion-contenus',name);
     if(!(await stat(path)).isFile())fail('CMS_PHP_FILE_MISSING_'+name);
   }

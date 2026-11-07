@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__.'/../../public/gestion-contenus/publication-gap-audit.php';
+require_once __DIR__.'/../../public/gestion-contenus/narrations-export.php';
 function scriptCheck(bool $ok,string $name):void {
     if(!$ok)throw new RuntimeException('C4C3C_'.$name);
 }
@@ -139,6 +140,31 @@ try{
         &&$v3['atelier_scripts']['chapters'][6]['id']==='terminer'
         &&cmsAtelierScriptsDraftComplete($v3['atelier_scripts']),
         'SEVEN_DISTINCT_DRAFTS');
+    // Export reproduces only the exact SAVED texts and identifies their version.
+    $export=cmsAtelierNarrationsExport($v3);
+    scriptCheck($export['filename']==='atelier-'.$v3['slug'].'-7-narrations-v3.txt'
+        &&str_contains($export['content'],'Version sauvegardée : v3')
+        &&str_contains($export['content'],$v3['atelier_scripts']['chapters'][3]['text'])
+        &&substr_count($export['content'],'=== ')===7
+        &&!str_contains($export['content'],'PRIVATE_EDITOR_NOTE_')
+        &&!str_contains($export['content'],'PRIVATE_SCRIPT_RESEARCH_NOT_EXPOSED'),
+        'EXPORT_SAVED_TEXTS_NO_PRIVATE_NOTES');
+    try {
+        cmsAtelierNarrationsExport($v2);
+        throw new RuntimeException('EXPORT_INCOMPLETE_ACCEPTED');
+    }catch(InvalidArgumentException $e){
+        scriptCheck($e->getMessage()==='ATELIER_NARRATIONS_EXPORT_INCOMPLETE',
+            'EXPORT_INCOMPLETE_DENIED');
+    }
+    $badExport=$v3;
+    $badExport['atelier_scripts']['chapters'][3]['index']='0';
+    try {
+        cmsAtelierNarrationsExport($badExport);
+        throw new RuntimeException('EXPORT_TAMPER_ACCEPTED');
+    }catch(InvalidArgumentException $e){
+        scriptCheck($e->getMessage()==='ATELIER_NARRATIONS_EXPORT_INCOMPLETE',
+            'EXPORT_TAMPER_DENIED');
+    }
     $gate=cmsAtelierBlueprintPreflight($v3,$catalog);
     scriptCheck($gate['script_draft_count']===7
         &&$gate['seven_scripts_drafted']===true
@@ -232,6 +258,10 @@ try{
         &&str_contains($ui,"inputs.some(el=>el.value.trim()!=='')")
         &&str_contains($ui,'studioDirty'),
         'PREFILL_BROWSER_DOES_NOT_OVERWRITE_UNSAVED_INPUT');
+    scriptCheck(str_contains($ui,'name="export_narrations"')
+        &&str_contains($ui,'cmsAtelierNarrationsExport($latestSaved)')
+        &&str_contains($ui,'NARRATIONS_EXPORT_STALE'),
+        'EXPORT_ACTION_AUTH_VERSION_PROTECTION');
     scriptCheck(str_contains($ui,'cmsAtelierScriptsHtml')
         &&str_contains($ui,'seven_scripts_drafted'),
         'SAME_STUDIO');

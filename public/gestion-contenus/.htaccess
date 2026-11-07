@@ -34,3 +34,8 @@ DirectoryIndex index.php
 <Files "coral-v2-ai.php">
   Require all denied
 </Files>
+
+# Narration export helper is callable only from the authenticated Studio.
+<Files "narrations-export.php">
+  Require all denied
+</Files>
