@@ -80,6 +80,23 @@ test('shared Studio through authenticated HTTP: rights, double submit, seven act
  const finalPanel=page.locator('[data-coral-final-audit]');assert.equal(await finalPanel.count(),1);
  assert.match(await finalPanel.innerText(),/Visa final actif/);
  assert.equal(await finalPanel.locator('button[value=revoke]').count(),1);
+ let finalForm=finalPanel.locator('form');
+ await finalForm.locator('[name=final_note]').fill('Révocation du contrôle final fictif pour vérifier que le Studio ne conserve aucun visa actif.');
+ await finalForm.locator('[name=final_confirm]').check();
+ await finalForm.locator('button[value=revoke]').click();
+ await page.goto(url+'&final_audit=1');
+ assert.match(await finalPanel.innerText(),/validation humaine nécessaire/i);
+ finalForm=finalPanel.locator('form');
+ for(const [i,host] of ['example.org','example.net'].entries()){
+  await finalForm.locator('[name="final_source['+i+'][title]"]').fill('Source de test '+i);
+  await finalForm.locator('[name="final_source['+i+'][url]"]').fill('https://'+host+'/atelier-test');
+  await finalForm.locator('[name="final_source['+i+'][note]"]').fill('Comparaison purement fictive dans le navigateur local, sans consultation du site source.');
+ }
+ await finalForm.locator('[name=final_note]').fill('Nouvelle revue finale fictive des sept textes, de la recette et des six phases, sans portée culinaire.');
+ await finalForm.locator('[name=final_confirm]').check();
+ await finalForm.locator('button[value=approve]').click();
+ await page.goto(url+'&final_audit=1');
+ assert.match(await finalPanel.innerText(),/Visa final actif/);
  await page.goto(url);
  assert.equal(await panel.locator('button[value=generate]').isDisabled(),true);
  for(const name of ['voice','content','private_audio'])await panel.locator('[name="tts_checks['+name+']"]').check();
