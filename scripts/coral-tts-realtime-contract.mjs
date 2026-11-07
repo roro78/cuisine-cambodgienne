@@ -5,7 +5,7 @@ export const CORAL_REALTIME_CANDIDATE=Object.freeze({model:'gpt-realtime-2.1-min
  endpoint:'wss://api.openai.com/v1/realtime?model=gpt-realtime-2.1-mini',external_maximum_microusd:null});
 export function createCoralRealtimeProvider(){throw Error('CORAL_REAL_PROVIDER_DISABLED');}
 export function coralRealtimeResponseEvent(text,maxOutputTokens=4096){
- if(typeof text!=='string'||text.length<120||text.length>7000||!Number.isInteger(maxOutputTokens)||maxOutputTokens<1||maxOutputTokens>4096)
+ if(typeof text!=='string'||text.length<1||text.length>7000||!Number.isInteger(maxOutputTokens)||maxOutputTokens<1||maxOutputTokens>4096)
   throw Error('CORAL_REALTIME_INPUT');
  return {type:'response.create',response:{conversation:'none',output_modalities:['audio'],
   audio:{output:{format:{type:'audio/pcm',rate:24000},voice:'coral'}},max_output_tokens:maxOutputTokens,
@@ -47,7 +47,10 @@ export function createCoralRealtimeContractHarness({testOnly=false,exchange,time
        ||transcript.replace(/\s+/g,' ').trim()!==chapter.text.replace(/\s+/g,' ').trim())throw Error('INCOMPLETE');
       usage=e.response.usage;const cost=coralUsageCostMicrousd(usage);
       if(usage.output_tokens>maxOutputTokens)throw Error('OUTPUT_LIMIT');
-      last={model:CORAL_REALTIME_CANDIDATE.model,voice:'coral',usage,cost_microusd:cost,transcript_sha256:audioSha(transcript)};done=true;
+      // Persist counters only: never copy arbitrary provider fields into a durable receipt.
+      usage={input_tokens:usage.input_tokens,output_tokens:usage.output_tokens,input_token_details:{text_tokens:usage.input_token_details.text_tokens,audio_tokens:0},
+       output_token_details:{text_tokens:usage.output_token_details.text_tokens,audio_tokens:usage.output_token_details.audio_tokens}};
+      last={response_id:id,model:CORAL_REALTIME_CANDIDATE.model,voice:'coral',usage,cost_microusd:cost,transcript_sha256:audioSha(transcript)};done=true;
      }else if(!['session.created','session.updated','conversation.item.added','conversation.item.done','response.output_item.added',
        'response.content_part.added','response.output_audio_transcript.delta','response.content_part.done','response.output_item.done','rate_limits.updated'].includes(e.type))throw Error('UNEXPECTED');
     }

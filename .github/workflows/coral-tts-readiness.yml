@@ -40,6 +40,7 @@ jobs:
           docker run --name coral-offline --network none --read-only --cpus 0.5 --memory 256m --memory-swap 256m --pids-limit 64 --cap-drop ALL --security-opt no-new-privileges \
             --tmpfs /tmp:rw,noexec,nosuid,size=16m,uid=1000,gid=1000,mode=0700 -v "$PWD/evidence:/evidence" \
             -e TTS_EVIDENCE_DIR=/evidence -e TTS_REQUIRE_RESOURCE_LIMITS=true -e TTS_REQUIRE_MARGIN=$margin \
+            -e TTS_MEDIA_BACKUP=$margin \
             -e TTS_SCENARIO=${{ matrix.scenario }} coral-readiness
       - name: Capture isolated container outcome
         if: always()
@@ -52,3 +53,63 @@ jobs:
           name: coral-memory-${{ matrix.variant }}-${{ matrix.scenario }}-${{ matrix.repeat }}
           path: evidence
           if-no-files-found: error
+  contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, json, gd
+          coverage: none
+      - name: Offline dependencies and all real content build
+        run: |
+          npm install --no-audit --no-fund
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          npm run build
+      - name: Authority, Range, encrypted media, sub-fragments and costs
+        env:
+          TTS_EVIDENCE_DIR: artifacts/coral-contracts
+        run: |
+          php tests/php/editorial-all-guided-smoke.php dist
+          php tests/php/editorial-coral-culinary-review-smoke.php dist
+          node --test --test-concurrency=1 tests/coral-tts-authority.test.mjs tests/coral-tts-realtime-contract.test.mjs tests/coral-tts-http-range.test.mjs tests/coral-media-backup.test.mjs tests/coral-tts-checkpoints.test.mjs tests/coral-tts-fragment-cost.test.mjs tests/coral-authority-install-preflight.test.mjs
+          mkdir -p artifacts/coral-contracts
+          node scripts/coral-tts-fragment-cost-report.mjs > artifacts/coral-contracts/cost-report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coral-readiness-contracts
+          path: artifacts/coral-contracts
+  restored-player:
+    needs: memory
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: coral-memory-streaming-*-1
+          path: artifacts/restored
+      - name: Browser outside worker resource envelope
+        run: |
+          npm install --no-audit --no-fund
+          node node_modules/playwright-core/cli.js install --with-deps chromium
+      - name: Play restored private MP3s and seek all fourteen chapter positions
+        env:
+          TTS_LONG_EVIDENCE_DIR: artifacts/restored
+          TTS_RESTORED_PLAYER: 'true'
+        run: node --test tests/coral-tts-long-player.test.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coral-restored-player-proof
+          path: artifacts/restored/**/player-metrics.json

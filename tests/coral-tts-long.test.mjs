@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp,mkdir,readFile,rm,readdir,writeFile} from 'node:fs/promises';
+import {mkdtemp,mkdir,readFile,rm,readdir,writeFile,rename} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
 import {tmpdir} from 'node:os';
 import {execFile} from 'node:child_process';
@@ -43,7 +43,19 @@ for(const scenario of (await coralTtsLoadScenarios()).filter(s=>!process.env.TTS
    for(const r of [before,after])assert.equal(r.memory.event_delta.oom_kill,0);
   }
  }
- const summary={...after,begin_measurements:before,fragments,total_wav_bytes:totalWav,
+ let mediaRestore=null;
+ if(process.env.TTS_MEDIA_BACKUP==='true'){
+  const {backupCoralMedia,restoreCoralMedia}=await import('../scripts/coral-media-backup.mjs');
+  const archive=join(root,'synthetic-media-v1.enc'),key=Buffer.alloc(32,17),target=join(root,'restored-audio');
+  const backup=await backupCoralMedia({folder,archive,key,validation:{contract:'cdc-coral-audio-validation-v1',sha256:m.sha256,decode_passed:true,simulated:true}});
+  await rename(join(root,'jobs'),join(root,'simulated-loss-jobs')); // ONLY this generated fixture; historical witness stays unchanged
+  const restored=await restoreCoralMedia({archive,target,key,reviewed:true});assert.equal(restored.mp3_sha256,m.sha256);
+  const measured=await probeAudio(join(target,mp3));assert.equal(measured.chapters.length,7);assert.equal((await digestFile(join(target,mp3))).sha256,m.sha256);
+  let restorePeak=null;try{restorePeak=Number(await readFile('/sys/fs/cgroup/memory.peak','utf8'));}catch{}
+  if(process.env.TTS_REQUIRE_RESOURCE_LIMITS==='true')assert.ok(restorePeak<=268435456);
+  mediaRestore={backup,restored,target:'restored-audio',measured_chapters:measured.chapters.length,memory_peak_bytes:restorePeak,loss_simulated:true,original_fixture_retained:true};
+ }
+ const summary={...after,media_restore:mediaRestore,begin_measurements:before,fragments,total_wav_bytes:totalWav,
   backup_1mib_file_compatible:fragments.every(f=>f.bytes<=1048576)&&m.bytes<=1048576,
   backup_32mib_total_compatible:after.tts_directory_bytes<=33554432,
   validation_cgroup_memory_peak_bytes:validationPeak,historical_fixture_sha256:audioSha(historical),historical_files_modified:false,provider_calls_paid:0};
@@ -53,4 +65,5 @@ for(const scenario of (await coralTtsLoadScenarios()).filter(s=>!process.env.TTS
   wall_ms:before.wall_ms+after.wall_ms,cgroup_peak_bytes:after.cgroup?.memory_peak_bytes,validation_peak_bytes:validationPeak,
   cgroup_cpu_ms:after.cgroup&&before.cgroup?(after.cgroup.cpu_usage_usec_delta+before.cgroup.cpu_usage_usec_delta)/1000:null,
   audio_operations:[...before.audio_commands,...after.audio_commands].filter(c=>c.operation==='assemble'||c.operation==='decode')}));
+ console.log(JSON.stringify({scenario:scenario.name,memory_breakdown:{begin:before.memory,resume:after.memory},media_restore:mediaRestore}));
 });

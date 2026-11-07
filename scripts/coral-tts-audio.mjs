@@ -4,10 +4,11 @@ import {promisify} from 'node:util';
 import {createHash,randomBytes} from 'node:crypto';
 import {readFile,writeFile,lstat,chmod,link,unlink,open} from 'node:fs/promises';
 import {constants} from 'node:fs';
-import {join} from 'node:path';
+import {join,dirname} from 'node:path';
 const exec=promisify(execFile);
 export const TTS_CHAPTER_IDS=['intro','installer','preparer','assembler','maitriser','rectifier','terminer'];
 export const audioSha=bytes=>createHash('sha256').update(bytes).digest('hex');
+export async function syncPrivateDirectory(dir){if(process.platform==='win32')return;const f=await open(dir,constants.O_RDONLY|constants.O_DIRECTORY);try{await f.sync();}finally{await f.close();}}
 /** Single RFC byte range, only AFTER authorization and full-file integrity checks. */
 export function audioByteRange(header,length){
  if(header===undefined||header===null)return {status:200,start:0,end:length-1};
@@ -49,18 +50,24 @@ export async function durableAudioWrite(file,source,max=32000000){
  const f=await open(file,'wx',0o600),hash=createHash('sha256');let bytes=0;
  try{for await(const chunk of Buffer.isBuffer(source)?[source]:source){
   if(!Buffer.isBuffer(chunk)||(bytes+=chunk.length)>max)throw Error('TTS_UNCERTAIN');hash.update(chunk);await f.writeFile(chunk);
- }if(bytes<1)throw Error('TTS_UNCERTAIN');await f.sync();return {sha256:hash.digest('hex'),bytes};}
+ }if(bytes<1)throw Error('TTS_UNCERTAIN');await f.sync();await syncPrivateDirectory(dirname(file));return {sha256:hash.digest('hex'),bytes};}
  finally{await f.close();}
+}
+export async function durableAudioCommit(file,source){
+ const incoming=file+'.incoming-'+randomBytes(12).toString('hex');
+ const digest=await durableAudioWrite(incoming,source);
+ try{await link(incoming,file);}catch(e){if(e.code!=='EEXIST'||(await privateAudioDigest(file)).sha256!==digest.sha256)throw e;}
+ await syncPrivateDirectory(dirname(file));await unlink(incoming);await syncPrivateDirectory(dirname(file));return digest;
 }
 export async function durableWrite(file,bytes){
  const {open}=await import('node:fs/promises');
  const f=await open(file,'wx',0o600);
- try{await f.writeFile(bytes);await f.sync();}finally{await f.close();}
+ try{await f.writeFile(bytes);await f.sync();await syncPrivateDirectory(dirname(file));}finally{await f.close();}
 }
 export async function atomicJson(file,value){
  const {rename}=await import('node:fs/promises');
  const temp=file+'.'+randomBytes(12).toString('hex')+'.tmp';
- await durableWrite(temp,JSON.stringify(value));await rename(temp,file);
+ await durableWrite(temp,JSON.stringify(value));await rename(temp,file);await syncPrivateDirectory(dirname(file));
 }
 export function pcmToWav(pcm){
  if(!Buffer.isBuffer(pcm)||pcm.length<2||pcm.length%2||pcm.length+44>32000000)throw Error('TTS_PCM');
@@ -116,6 +123,7 @@ export async function assemblePrivateMp3(folder,segments,{ffmpeg='ffmpeg',ffprob
   await exec(ffmpeg,['-nostdin','-v','error','-protocol_whitelist','file,pipe','-max_alloc','33554432','-i',tmp,'-f','null','-'],{timeout:30000,maxBuffer:200000,windowsHide:true});
   const name='final-'+digest.sha256+'.mp3';
   try{await link(tmp,join(folder,name));}catch(e){if(e.code!=='EEXIST'||(await privateAudioDigest(join(folder,name))).sha256!==digest.sha256)throw e;}
+  const committed=await open(join(folder,name),constants.O_RDONLY);try{await committed.sync();}finally{await committed.close();}await syncPrivateDirectory(folder);
   return {file:name,...digest,duration:m.duration,chapters,format:'mp3',simulated:true};
  }finally{
   for(const f of [tmp,list,metadata])try{await unlink(f);}catch(e){if(e.code!=='ENOENT')throw e;}

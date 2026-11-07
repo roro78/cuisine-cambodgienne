@@ -2,7 +2,7 @@
 import {mkdir,lstat,readdir} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
 import {reserveCoralBudget} from './coral-external-job-provider.mjs';
-import {TTS_CHAPTER_IDS as IDS,audioSha,privateAudioRead,privateAudioDigest,privateAudioVerifiedOpen,durableAudioWrite,durableWrite,atomicJson,
+import {TTS_CHAPTER_IDS as IDS,audioSha,privateAudioRead,privateAudioDigest,privateAudioVerifiedOpen,durableAudioCommit,durableWrite,atomicJson,
  simulatedTtsProvider,probeAudio,assemblePrivateMp3} from './coral-tts-audio.mjs';
 export const TTS_CONTRACT='cdc-coral-private-tts-request-v1';
 const hex=/^[a-f0-9]{64}$/,idPattern=/^[a-f0-9]{48}$/;
@@ -64,7 +64,7 @@ export function createSimulatedTtsJobs({authorize,budgetDir,maxDailyUsd=0.1,maxM
   for(let i=0;i<7;i++){
    const id=IDS[i],receipt=await optional(join(folder,id+'.receipt.json'));
    const attempted=await optional(join(folder,id+'.attempt.json'));
-   if(!receipt){if(attempted)throw Error('TTS_UNCERTAIN');break;}
+   if(!receipt){if(attempted&&!(await provider.checkpointStatus?.(checkpointArgs(folder,r,i)))?.safe_to_resume)throw Error('TTS_UNCERTAIN');break;}
    const digest=await privateAudioDigest(join(folder,id+'.wav'));
    if(receipt.id!==id||receipt.text_sha256!==r.chapters[i].sha256||receipt.sha256!==digest.sha256
      ||receipt.cost_microusd!==1000)throw Error('TTS_FRAGMENT_HASH');
@@ -75,6 +75,7 @@ export function createSimulatedTtsJobs({authorize,budgetDir,maxDailyUsd=0.1,maxM
   }
   return parts;
  }
+ function checkpointArgs(dir,r,index){return {index,chapter:r.chapters[index],requestId:r.request_id,checkpointDir:join(dir,'fragments',IDS[index])};}
  async function state(r,id,folder,active=false){
   validateTtsRequest(r);if(id!==r.request_id)throw Error('TTS_ID');
   const s=await load(folder);if(!s)return {id,status:'queued',completed_chapters:0};
@@ -106,10 +107,12 @@ export function createSimulatedTtsJobs({authorize,budgetDir,maxDailyUsd=0.1,maxM
     await authority(r);await verifyReservation(dir,r);const chapter=r.chapters[i];
     // Durable intent BEFORE provider invocation. A crash or uncertain reply blocks replay.
     inFlight=true;
-    await durableWrite(join(dir,chapter.id+'.attempt.json'),JSON.stringify({text_sha256:chapter.sha256,reserved_microusd:1000}));
-    let bytes;try{bytes=await provider.synthesize({index:i,chapter,requestId:id});}catch{throw Error('TTS_UNCERTAIN');}
+    if(!await optional(join(dir,chapter.id+'.attempt.json')))await durableWrite(join(dir,chapter.id+'.attempt.json'),JSON.stringify({text_sha256:chapter.sha256,reserved_microusd:1000}));
+    let bytes;try{bytes=await provider.synthesize(checkpointArgs(dir,r,i));}catch{
+     if((await provider.checkpointStatus?.(checkpointArgs(dir,r,i)))?.safe_to_resume){inFlight=false;throw Error('TTS_INTERRUPTED');}throw Error('TTS_UNCERTAIN');}
     if(!Buffer.isBuffer(bytes)&&typeof bytes?.[Symbol.asyncIterator]!=='function')throw Error('TTS_UNCERTAIN');
-    const digest=await durableAudioWrite(join(dir,chapter.id+'.wav'),bytes);
+    let digest;try{digest=await durableAudioCommit(join(dir,chapter.id+'.wav'),bytes);}catch{
+     if((await provider.checkpointStatus?.(checkpointArgs(dir,r,i)))?.safe_to_resume){inFlight=false;throw Error('TTS_INTERRUPTED');}throw Error('TTS_UNCERTAIN');}
     const m=await probeAudio(join(dir,chapter.id+'.wav'),audioTools);
     const part={id:chapter.id,text_sha256:chapter.sha256,sha256:digest.sha256,duration:m.duration,cost_microusd:1000};
     await durableWrite(join(dir,chapter.id+'.receipt.json'),JSON.stringify(part));parts.push(part);inFlight=false;
