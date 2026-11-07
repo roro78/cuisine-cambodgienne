@@ -2554,17 +2554,21 @@ function cmsAiContentPreflight(string $private,string $kind,string $title,
 }
 /** Closed provenance, stored with the explicit private save; never from POST. */
 function cmsAiContentMetadata(array $raw): array {
+    $complete=($raw['scope']??null)==='workshop-complete-draft-v1';
     $keys=['contract','kind','provider_label','model_label','generated_at','request_contract',
         'scope','brief_id','brief_version','brief_digest','input_title','reference_id',
         'reference_fingerprint','transmission_confirmed','proposal'];
+    if($complete)$keys[]='workshop_output_sha256';
     if(count($raw)!==count($keys)||array_diff(array_keys($raw),$keys)
         || ($raw['contract']??null)!=='cdc-editorial-ai-content-provenance-v1'
-        || ($raw['request_contract']??null)!=='cdc-editorial-ai-content-request-v1'
-        || ($raw['scope']??null)!=='creation-form-core-v1'
+        || ($raw['request_contract']??null)!==($complete?'cdc-coral-v2-workshop-request-v1':'cdc-editorial-ai-content-request-v1')
+        || ($raw['scope']??null)!==($complete?'workshop-complete-draft-v1':'creation-form-core-v1')
         || ($raw['transmission_confirmed']??null)!==true
         || !is_string($raw['kind']??null)||!isset(cmsCreationKinds()[$raw['kind']])
         || !is_int($raw['brief_version']??null)||$raw['brief_version']<0||$raw['brief_version']>9998
         || !is_array($raw['proposal']??null))throw new InvalidArgumentException('AI_CONTENT_PROVENANCE');
+    if($complete&&(($raw['kind']??null)!=='atelier'||!is_string($raw['workshop_output_sha256']??null)
+        ||!preg_match('/^[a-f0-9]{64}$/D',$raw['workshop_output_sha256'])))throw new InvalidArgumentException('AI_CONTENT_PROVENANCE');
     foreach(['provider_label','model_label'] as $key)
         if(!is_string($raw[$key]??null)||!preg_match('/^[a-zA-Z0-9][a-zA-Z0-9._:\/ -]{0,79}$/D',$raw[$key]))
             throw new InvalidArgumentException('AI_CONTENT_PROVENANCE');
@@ -2609,7 +2613,7 @@ function cmsAiContentEdits(array $proposal,array $record): array {
 }
 /** Generate once, validate, and return a session candidate. NO draft is saved. */
 function cmsAiContentPrepare(string $private,array $raw,array $catalog,array $cfg,
-    array $canonical,array $guided,?string $id=null,int $expected=0): array {
+    array $canonical,array $guided,?string $id=null,int $expected=0,bool $reserve=true): array {
     $settings=cmsAiContentSettings($cfg);
     if($settings===null)throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
     if(!in_array($raw['transmission_review']??null,['1',true],true))
@@ -2619,7 +2623,7 @@ function cmsAiContentPrepare(string $private,array $raw,array $catalog,array $cf
     $input=$request['brief'];
     cmsAiContentPreflight($private,$input['kind'],$input['title'],$catalog,$id,$expected);
     // Same persistent global ledger/cooldown/lock as briefs, strictest active limit.
-    cmsAiBriefReserve($private,$settings['max_attempts_per_day']);
+    if($reserve)cmsAiBriefReserve($private,$settings['max_attempts_per_day']);
     $request['timeout_seconds']=20;$request['max_output_tokens']=6000;
     $request['response_max_bytes']=30000;
     return ['request'=>$request,'settings'=>$settings,'creation_id'=>$id,'expected_version'=>$expected];
@@ -2659,19 +2663,77 @@ function cmsAiContentComplete(string $private,array $request,array $settings,mix
         'creation_id'=>$id,'expected_version'=>$expected,'candidate'=>$candidate,
         'metadata'=>$metadata,'similar_titles'=>$similar];
 }
-/** The job ID is also the gateway idempotency key. No automatic resubmission. */
+/** Same existing queue, private durable submission receipt. The file is an
+ * intent journal, never a second worker. It survives a lost browser session.
+ */
+function cmsAiContentJobLocked(string $private,string $token,callable $operation): mixed {
+    if(!preg_match('/^[a-f0-9]{48}$/D',$token))throw new RuntimeException('AI_CONTENT_JOB_STORE');
+    $dir=cmsDraftDir($private).'/ai-content-jobs';
+    if(!is_dir($dir)&&!@mkdir($dir,0700)&&!is_dir($dir))throw new RuntimeException('AI_CONTENT_JOB_STORE');
+    clearstatcache(true,$dir);
+    if(is_link($dir)||!is_dir($dir))throw new RuntimeException('AI_CONTENT_JOB_STORE');
+    if(DIRECTORY_SEPARATOR!=='\\'&&((fileperms($dir)&0077)!==0
+        ||(function_exists('posix_geteuid')&&fileowner($dir)!==posix_geteuid())))throw new RuntimeException('AI_CONTENT_JOB_STORE');
+    $path=$dir.'/'.$token.'.json';$lock=$dir.'/'.$token.'.lock';
+    if(is_link($lock)||is_link($path))throw new RuntimeException('AI_CONTENT_JOB_STORE');
+    $f=fopen($lock,'c');
+    if(!$f)throw new RuntimeException('AI_CONTENT_JOB_STORE');
+    try{
+        if(!chmod($lock,0600)||!flock($f,LOCK_EX))throw new RuntimeException('AI_CONTENT_JOB_STORE');
+        $entry=null;clearstatcache(true,$path);
+        if(file_exists($path)){
+            if(is_link($path)||!is_file($path)||filesize($path)>120000
+                ||(DIRECTORY_SEPARATOR!=='\\'&&((fileperms($path)&0077)!==0
+                    ||(function_exists('posix_geteuid')&&fileowner($path)!==posix_geteuid()))))throw new RuntimeException('AI_CONTENT_JOB_STORE');
+            try{$entry=json_decode((string)file_get_contents($path),true,64,JSON_THROW_ON_ERROR);}
+            catch(Throwable $e){throw new RuntimeException('AI_CONTENT_JOB_STORE');}
+            if(!is_array($entry)||($entry['contract']??null)!=='cdc-editorial-submission-v1'
+                ||($entry['job']['token']??null)!==$token)throw new RuntimeException('AI_CONTENT_JOB_STORE');
+        }
+        return $operation($entry,$path);
+    }finally{flock($f,LOCK_UN);fclose($f);}
+}
+function cmsAiContentJobWrite(string $path,array $entry): void {
+    $json=json_encode($entry,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
+    if(strlen($json)>120000)throw new RuntimeException('AI_CONTENT_JOB_STORE');
+    $tmp=$path.'.'.bin2hex(random_bytes(12));$f=fopen($tmp,'x');
+    if(!$f)throw new RuntimeException('AI_CONTENT_JOB_STORE');
+    try{
+        if(!chmod($tmp,0600)||fwrite($f,$json)!==strlen($json)||!fflush($f)
+            ||(function_exists('fsync')&&!fsync($f)))throw new RuntimeException('AI_CONTENT_JOB_STORE');
+        fclose($f);$f=null;
+        if(!rename($tmp,$path))throw new RuntimeException('AI_CONTENT_JOB_STORE');
+    }finally{if(is_resource($f))fclose($f);if(is_file($tmp))unlink($tmp);}
+}
+/** Stable gateway ID for one exact brief/source version/provider. A lost ack
+ * returns the prior ID for GET polling, never a second submission or quota.
+ */
 function cmsAiContentAsyncStart(string $private,array $raw,array $catalog,array $cfg,
     array $canonical,array $guided,?string $id=null,int $expected=0): array {
-    $p=cmsAiContentPrepare($private,$raw,$catalog,$cfg,$canonical,$guided,$id,$expected);$s=$p['settings'];
+    $p=cmsAiContentPrepare($private,$raw,$catalog,$cfg,$canonical,$guided,$id,$expected,false);$s=$p['settings'];
     if($s['mode']!=='async')throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
-    $token=bin2hex(random_bytes(24));
-    $job=['token'=>$token,'expires_at'=>time()+1800,'creation_id'=>$id,'expected_version'=>$expected,
-        'request'=>$p['request'],'provider_label'=>$s['provider_label'],'model_label'=>$s['model_label'],'status'=>'submission_unknown'];
-    try{$answer=($s['submit'])($p['request'],$token);}
-    catch(Throwable $e){return $job;}
-    if(!is_array($answer)||($answer['id']??null)!==$token||!in_array($answer['status']??null,['queued','running','succeeded'],true))
-        throw new RuntimeException('AI_CONTENT_PROVIDER');
-    $job['status']='queued';return $job;
+    $key=hash('sha256',json_encode([$p['request'],$id,$expected,$s['provider_label'],$s['model_label']],JSON_THROW_ON_ERROR));
+    $token=substr($key,0,48);
+    return cmsAiContentJobLocked($private,$token,static function(?array $entry,string $path)use($private,$p,$s,$id,$expected,$key,$token):array{
+        if($entry!==null){
+            if(($entry['fingerprint']??null)!==$key||isset($entry['save_attempt']))throw new RuntimeException('AI_CONTENT_JOB_REVIEW_REQUIRED');
+            $job=$entry['job'];
+            if(($job['request']??null)!==$p['request']||($job['creation_id']??null)!==$id
+                ||($job['expected_version']??null)!==$expected||($job['provider_label']??null)!==$s['provider_label']
+                ||($job['model_label']??null)!==$s['model_label']||!is_int($job['expires_at']??null)
+                ||!in_array($job['status']??null,['queued','submission_unknown'],true))throw new RuntimeException('AI_CONTENT_JOB_STORE');
+            $job['expires_at']=time()+1800;return $job; // polling window only
+        }
+        cmsAiBriefReserve($private,$s['max_attempts_per_day']);
+        $job=['token'=>$token,'expires_at'=>time()+1800,'creation_id'=>$id,'expected_version'=>$expected,
+            'request'=>$p['request'],'provider_label'=>$s['provider_label'],'model_label'=>$s['model_label'],'status'=>'submission_unknown'];
+        $entry=['contract'=>'cdc-editorial-submission-v1','fingerprint'=>$key,'job'=>$job];
+        cmsAiContentJobWrite($path,$entry); // durable intent BEFORE transport
+        try{$answer=($s['submit'])($p['request'],$token);}
+        catch(Throwable $e){return $job;}
+        if(!is_array($answer)||($answer['id']??null)!==$token||!in_array($answer['status']??null,['queued','running','succeeded'],true))return $job;
+        $job['status']='queued';$entry['job']=$job;cmsAiContentJobWrite($path,$entry);return $job;
+    });
 }
 /** Polling is read-only on the provider. It cannot reserve quota or generate. */
 function cmsAiContentAsyncPoll(string $private,array &$job,array $catalog,array $cfg,array $canonical): ?array {
@@ -2687,7 +2749,8 @@ function cmsAiContentAsyncPoll(string $private,array &$job,array $catalog,array 
     if(!is_array($a)||($a['id']??null)!==$job['token'])throw new RuntimeException('AI_CONTENT_PROVIDER');
     if(in_array($a['status']??null,['queued','running'],true)){$job['status']=$a['status'];return null;}
     if(($a['status']??null)!=='succeeded'){$job['status']='failed';throw new RuntimeException('AI_CONTENT_PROVIDER');}
-    try{return cmsAiContentComplete($private,$r,$s,$a['result']??null,$catalog,$id,$expected);}
+    try{$pending=cmsAiContentComplete($private,$r,$s,$a['result']??null,$catalog,$id,$expected);
+        $pending['async_job_token']=$job['token'];return $pending;}
     catch(Throwable $e){$job['status']='failed';throw $e;}
 }
 /** Session-only holding area: bounded, no raw provider response or secret. */
@@ -2724,9 +2787,39 @@ function cmsAiContentSave(string $private,array $posted,array $catalog,int $expe
             || !is_string($canonical[$ref]['fingerprint']??null)
             || !hash_equals($metadata['reference_fingerprint'],$canonical[$ref]['fingerprint']))
             throw new RuntimeException('AI_CONTENT_REFERENCE_CHANGED');
+        // Reuse the explicitly selected request reference, never infer a
+        // recipe from a title or allow a different source during AI save.
+        $selected=cmsAtelierReferenceClean($posted['atelier_reference']??null,$catalog);
+        $recipeSlug=explode(':',$ref,2)[1];
+        if(($selected['recipeSlug']??'')!==''&&$selected['recipeSlug']!==$recipeSlug)
+            throw new RuntimeException('AI_CONTENT_REFERENCE_CHANGED');
+        $posted['atelier_reference']=['version'=>1,'recipeSlug'=>$recipeSlug,
+            'catalogFingerprint'=>$catalog[$ref]['fingerprint']];
     }
     // Common append-only save repeats BOTH aliases and the final title under lock.
-    return cmsCreationSave($private,$posted,$catalog,$expected,$id,null,$metadata);
+    if(!isset($pending['async_job_token']))return cmsCreationSave($private,$posted,$catalog,$expected,$id,null,$metadata);
+    return cmsAiContentJobLocked($private,$pending['async_job_token'],static function(?array $entry,string $path)use($private,$posted,$catalog,$expected,$id,$metadata):array{
+        if($entry===null||($entry['job']['creation_id']??null)!==$id||($entry['job']['expected_version']??null)!==$expected
+            ||hash('sha256',json_encode($entry['job']['request']['brief'],JSON_THROW_ON_ERROR))!==$metadata['brief_digest'])
+            throw new RuntimeException('AI_CONTENT_JOB_STORE');
+        $digest=hash('sha256',json_encode([$posted,$metadata],JSON_THROW_ON_ERROR));
+        if(isset($entry['save_attempt'])){
+            if($entry['save_attempt']!==$digest||!isset($entry['saved']))throw new RuntimeException('AI_CONTENT_SAVE_UNCERTAIN');
+            $saved=cmsCreationRead(cmsCreationDir($private),$entry['saved']['id'],$entry['saved']['version']);
+            if($saved===null||hash('sha256',json_encode($saved,JSON_THROW_ON_ERROR))!==$entry['saved']['sha256'])
+                throw new RuntimeException('AI_CONTENT_JOB_STORE');
+            return $saved;
+        }
+        $entry['save_attempt']=$digest;cmsAiContentJobWrite($path,$entry);
+        try{$record=cmsCreationSave($private,$posted,$catalog,$expected,$id,null,$metadata);}
+        catch(InvalidArgumentException $e){
+            // Common validation failed BEFORE any draft commit; allow the
+            // editor to correct fields. IO/commit uncertainty stays blocked.
+            unset($entry['save_attempt']);cmsAiContentJobWrite($path,$entry);throw $e;
+        }
+        $entry['saved']=['id'=>$record['id'],'version'=>$record['version'],'sha256'=>hash('sha256',json_encode($record,JSON_THROW_ON_ERROR))];
+        cmsAiContentJobWrite($path,$entry);return $record;
+    });
 }
 /** Next lot: data interface only, never an image generation or approval. */
 function cmsVisualBriefDraft(string $kind,array $raw): array {

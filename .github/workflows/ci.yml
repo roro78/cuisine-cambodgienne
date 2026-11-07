@@ -91,6 +91,7 @@ jobs:
           php -l tests/php/editorial-ai-content-generation-smoke.php
           php tests/php/editorial-ai-content-generation-smoke.php dist
           php tests/php/editorial-ai-content-async-smoke.php dist
+          php tests/php/editorial-complete-workshop-smoke.php dist
           php -l tests/php/editorial-ai-content-controller-smoke.php
           php tests/php/editorial-ai-content-controller-smoke.php dist
           php tests/php/editorial-ai-content-controller-smoke.php dist --async
@@ -252,7 +253,12 @@ jobs:
       - name: Production build
         run: npm run build
 
-      - name: Preserve only public CMS indexes for explicit PHP runtime checks
+      - name: Complete private workshop contract (synthetic transports only)
+        run: |
+          node --test tests/coral-complete-workshop.test.mjs
+          php tests/php/editorial-complete-workshop-smoke.php dist
+
+      - name: Preserve CMS indexes and generated non-secret reference policy for PHP checks
         uses: actions/upload-artifact@v4
         with:
           name: cms-php-public-indexes
@@ -260,6 +266,7 @@ jobs:
             dist/social-feed.json
             dist/editorial-source-index.json
             dist/editorial-guided-fields.json
+            dist/gestion-contenus/coral-v2-contract.json
           if-no-files-found: error
           retention-days: 7
 
@@ -335,6 +342,11 @@ jobs:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
         run: node tests/editorial-studio-generation-integration.test.mjs
 
+      - name: Calendar to complete workshop in shared Studio (synthetic loopback only)
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tests/coral-complete-workshop-browser.mjs
+
       - name: Upload private Studio synthetic browser evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -344,6 +356,7 @@ jobs:
             artifacts/cms-unified-review/*.png
             artifacts/ai-async-browser/*.png
             artifacts/studio-integrated-browser/*.png
+            artifacts/coral-complete-browser/*
           retention-days: 7
           if-no-files-found: ignore
 

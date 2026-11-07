@@ -146,3 +146,69 @@ export function contentIdeaFingerprint(value){
     kind:value.kind,slug:value.slug,angle:normalizeEditorialTitle(value.angle)
   })).digest('hex');
 }
+
+/** Read-only selection from the SAME private Studio calendar. A target date
+ * selects work; it never authorizes spending, audio, saving or publication.
+ * Exclusions are operator decisions, not title-based guesses about test data.
+ */
+export function selectNextEditorialWorkshop({records,published,recipes,
+  excludedCreationIds=[],excludedSourceIds=[],fallback=null}={}){
+  if(!Array.isArray(records)||records.length>250||!Array.isArray(published)
+    ||!Array.isArray(recipes)||!Array.isArray(excludedCreationIds)||!Array.isArray(excludedSourceIds)
+    ||excludedCreationIds.some(id=>!/^c-[a-f0-9]{24}$/.test(id))
+    ||excludedSourceIds.some(id=>!/^atelier:[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)))
+    throw Error('EDITORIAL_SELECTION_INPUT');
+  const seen=new Set(),blocked=[],scheduled=[];
+  const recipeFor=slug=>{
+    const found=recipes.filter(r=>r.id==='recette:'+slug);
+    if(found.length!==1||! /^[a-f0-9]{64}$/.test(found[0].fingerprint||''))
+      throw Error('EDITORIAL_CANONICAL_REFERENCE');
+    return found[0];
+  };
+  for(const r of records){
+    if(!r||!/^c-[a-f0-9]{24}$/.test(r.id||'')||seen.has(r.id)
+      ||!Number.isSafeInteger(r.version)||r.version<1||r.version>9999
+      ||!EDITORIAL_KINDS.includes(r.kind)||!requireText(r.title,180)
+      ||!['draft','review'].includes(r.state)||!dateValid(r.target_date))
+      throw Error('EDITORIAL_SELECTION_RECORD');
+    seen.add(r.id);
+    if(r.kind!=='atelier')continue;
+    let reason=null;
+    if(excludedCreationIds.includes(r.id))reason='operator_exclusion';
+    else if(r.source_binding)reason='published_identity_preserved';
+    else if(excludedSourceIds.includes('atelier:'+r.slug))reason='operator_exclusion';
+    else if(findEditorialOverlaps(r,published).some(m=>m.reason==='exact_title_or_slug'))reason='already_published';
+    if(reason){blocked.push({id:r.id,reason});continue;}
+    if(r.target_date!==null)scheduled.push(r);
+  }
+  scheduled.sort((a,b)=>a.target_date.localeCompare(b.target_date)||a.id.localeCompare(b.id));
+  const selected=scheduled[0]||null;
+  // A scheduled item with missing source blocks its own generation. Do not
+  // silently skip a real priority by inferring its recipe from its title.
+  let chosen=selected,origin='calendar';
+  if(!chosen){
+    if(fallback===null)return {selection:null,blocked,production_writes:0,provider_calls:0};
+    if(!fallback||!requireText(fallback.title,180)||! /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(fallback.recipeSlug||''))
+      throw Error('EDITORIAL_SELECTION_FALLBACK');
+    const candidate={kind:'atelier',title:fallback.title,slug:editorialSlug(fallback.title)};
+    assertNoExactDuplicate(candidate,published);
+    const available=records.filter(r=>r.kind==='atelier'&&!blocked.some(b=>b.id===r.id));
+    const matches=available.filter(r=>r.atelier_reference?.recipeSlug===fallback.recipeSlug
+      ||normalizeEditorialTitle(r.title)===normalizeEditorialTitle(fallback.title)||r.slug===candidate.slug);
+    if(matches.length>1)throw Error('EDITORIAL_MULTIPLE_DRAFTS');
+    chosen=matches[0]||{...candidate,id:null,version:null,target_date:null,
+      atelier_reference:{recipeSlug:fallback.recipeSlug}};
+    origin=matches.length?'existing_draft':'candidate';
+  }
+  const recipeSlug=chosen.atelier_reference?.recipeSlug;
+  const recipe=recipeFor(recipeSlug);
+  const other=records.filter(r=>r.id!==chosen.id&&r.kind==='atelier'&&!blocked.some(b=>b.id===r.id));
+  if(other.some(r=>r.atelier_reference?.recipeSlug===recipeSlug))throw Error('EDITORIAL_MULTIPLE_DRAFTS');
+  assertNoExactDuplicate(chosen,published,other);
+  const similar=findEditorialOverlaps(chosen,published,other);
+  const selection={origin,creation_id:chosen.id,creation_version:chosen.version,title:chosen.title,
+    recipe_id:recipe.id,recipe_fingerprint:recipe.fingerprint,target_date:chosen.target_date,
+    similar_titles:similar,human_semantic_review_required:true,publication_authorized:false};
+  selection.preparation_key=createHash('sha256').update(JSON.stringify(selection)).digest('hex').slice(0,48);
+  return {selection,blocked,production_writes:0,provider_calls:0};
+}

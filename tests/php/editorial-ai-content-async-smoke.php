@@ -16,6 +16,34 @@ $remove=function(string $dir)use(&$remove,$base):void{
     foreach(scandir($dir)?:[] as $n){if($n==='.'||$n==='..')continue;$p=$dir.'/'.$n;if(is_dir($p)&&!is_link($p))$remove($p);else unlink($p);}rmdir($dir);
 };
 try{
+    // Two independent PHP processes represent two lost/reopened sessions.
+    $concurrent=$base.'/concurrent';mkdir($concurrent,0700);
+    // The installed Studio's common directories already exist. Leave the NEW
+    // journal directory absent to exercise concurrent first use of that store.
+    cmsCreationDir($concurrent);
+    $input=['kind'=>'recette','title'=>'Concurrence fictive de reprise','angle'=>'Angle à vérifier',
+        'objective'=>'Objectif synthétique','context'=>'Données fictives','reference_id'=>'',
+        'semantic_review'=>'1','transmission_review'=>'1'];
+    file_put_contents($concurrent.'/input.json',json_encode($input,JSON_THROW_ON_ERROR));chmod($concurrent.'/input.json',0600);
+    $children=[];
+    for($i=0;$i<2;$i++){
+        $proc=proc_open([PHP_BINARY,__DIR__.'/fixtures/editorial-ai-job-submission.php',$concurrent,$dist],
+            [0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);
+        asyncCheck(is_resource($proc),'CHILD_START');fclose($pipes[0]);$children[]=[$proc,$pipes];
+    }
+    $tokens=[];
+    foreach($children as [$proc,$pipes]){
+        $out=stream_get_contents($pipes[1]);$err=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);
+        $exit=proc_close($proc);
+        if($exit!==0||$err!==''){
+            preg_match('/(?:RuntimeException|InvalidArgumentException): ([A-Z_]+)/',$err,$m);
+            throw new RuntimeException('ASYNC_TEST_CHILD_SUCCESS_'.($m[1]??'PROCESS_FAILURE'));
+        }
+        $tokens[]=json_decode($out,true,16,JSON_THROW_ON_ERROR)['token'];
+    }
+    asyncCheck($tokens[0]===$tokens[1],'CROSS_PROCESS_SAME_ID');
+    asyncCheck(count(file($concurrent.'/calls.txt',FILE_IGNORE_NEW_LINES))===1,'CROSS_PROCESS_ONE_CALL');
+    asyncCheck(count(json_decode((string)file_get_contents(cmsDraftDir($concurrent).'/ai-brief-attempts.json'),true))===1,'CROSS_PROCESS_ONE_QUOTA');
     $submits=0;$polls=0;
     foreach(array_keys(cmsCreationKinds()) as $kind){
         $private=$base.'/'.$kind;mkdir($private,0700);$phase='running';$sent=[];
@@ -33,21 +61,49 @@ try{
         asyncCheck(cmsAiContentAsyncPoll($private,$job,$catalog,$cfg,$canonical)===null,'RUNNING');
         asyncCheck(cmsAiContentAsyncPoll($private,$job,$catalog,$cfg,$canonical)===null,'REFRESH_READONLY');
         asyncCheck(count(json_decode((string)file_get_contents(cmsDraftDir($private).'/ai-brief-attempts.json'),true))===1,'ONE_QUOTA_RESERVATION');
-        asyncReject(fn()=>cmsAiContentAsyncStart($private,$input,$catalog,$cfg,$canonical,$guided),'AI_BRIEF_LIMIT');
+        $resumed=cmsAiContentAsyncStart($private,$input,$catalog,$cfg,$canonical,$guided);
+        asyncCheck($resumed['token']===$job['token']&&$submits===array_search($kind,array_keys(cmsCreationKinds()),true)+1,'SAME_ID_ACROSS_SESSIONS');
+        $different=$input;$different['title'].=' autre';
+        asyncReject(fn()=>cmsAiContentAsyncStart($private,$different,$catalog,$cfg,$canonical,$guided),'AI_BRIEF_LIMIT');
         $phase='succeeded';$pending=cmsAiContentAsyncPoll($private,$job,$catalog,$cfg,$canonical);
         asyncCheck($pending['metadata']['scope']==='creation-form-core-v1'&&!$pending['candidate']['publication_ready'],'SAME_C2_CANDIDATE');
         $posted=['kind'=>$kind,'title'=>$pending['candidate']['title'],'angle'=>$pending['candidate']['angle'],'summary'=>$pending['candidate']['summary'],
             'research_note'=>$pending['candidate']['research_note'],'fields'=>$pending['candidate']['form_fields'],'state'=>'draft'];
         $saved=cmsAiContentSave($private,$posted,$catalog,0,null,$pending,$canonical);
         asyncCheck($saved['version']===1&&$saved['origin']==='ai','EXPLICIT_COMMON_SAVE');
+        if($kind==='atelier'){
+            asyncCheck($saved['atelier_reference']['recipeSlug']===explode(':',$recipe,2)[1],'EXPLICIT_AI_CANONICAL_REFERENCE_REUSED');
+            foreach($catalog as $otherId=>$source){
+                if($source['kind']==='recette'&&$otherId!==$recipe){
+                    $wrong=$posted;$wrong['atelier_reference']=['version'=>1,'recipeSlug'=>explode(':',$otherId,2)[1]];
+                    asyncReject(fn()=>cmsAiContentSave($private,$wrong,$catalog,0,null,$pending,$canonical),'AI_CONTENT_REFERENCE_CHANGED');break;
+                }
+            }
+        }
+        $again=cmsAiContentSave($private,$posted,$catalog,0,null,$pending,$canonical);
+        asyncCheck($again['id']===$saved['id']&&$again['version']===1,'REPLAY_SAVE_SAME_ID_VERSION');
+        $renamed=$posted;$renamed['title'].=' concurrent';
+        asyncReject(fn()=>cmsAiContentSave($private,$renamed,$catalog,0,null,$pending,$canonical),'AI_CONTENT_SAVE_UNCERTAIN');
     }
     asyncCheck($submits===5&&$polls===15,'ONE_SUBMISSION_PER_FAMILY');
     $once=['ai_content_intent'=>str_repeat('f',48)];cmsAiContentIntent($once,str_repeat('f',48));
     asyncReject(function()use(&$once){cmsAiContentIntent($once,str_repeat('f',48));},'AI_CONTENT_INTENT');
     $private=$base.'/failure';mkdir($private,0700);
-    $cfg['editorial_ai_content']['submit']=static function():array{throw new RuntimeException('PRIVATE_TRANSPORT_FAILURE');};
+    $attempts=0;
+    $cfg['editorial_ai_content']['submit']=static function()use(&$attempts):array{++$attempts;throw new RuntimeException('PRIVATE_TRANSPORT_FAILURE');};
     $job=cmsAiContentAsyncStart($private,$input,$catalog,$cfg,$canonical,$guided);
     asyncCheck($job['status']==='submission_unknown','LOST_ACK_TRACKED_NOT_RESUBMITTED');
+    $recovered=cmsAiContentAsyncStart($private,$input,$catalog,$cfg,$canonical,$guided);
+    asyncCheck($recovered['token']===$job['token']&&$recovered['status']==='submission_unknown'&&$attempts===1,'LOST_SESSION_NO_SECOND_TRANSPORT');
+    $journal=cmsDraftDir($private).'/ai-content-jobs/'.$job['token'].'.json';
+    $entry=json_decode((string)file_get_contents($journal),true,64,JSON_THROW_ON_ERROR);
+    $entry['job']['expires_at']=time()-100;file_put_contents($journal,json_encode($entry));
+    $recovered=cmsAiContentAsyncStart($private,$input,$catalog,$cfg,$canonical,$guided);
+    asyncCheck($recovered['expires_at']>time()&&$attempts===1,'POLL_WINDOW_REFRESH_ONLY');
+    file_put_contents($journal,'broken');
+    asyncReject(fn()=>cmsAiContentAsyncStart($private,$input,$catalog,$cfg,$canonical,$guided),'AI_CONTENT_JOB_STORE');
+    asyncCheck($attempts===1,'CORRUPTION_NO_RESUBMISSION');
+    file_put_contents($journal,json_encode($entry));
     $cfg['editorial_ai_content']['poll']=static fn(string $id):array=>['id'=>$id,'status'=>'failed'];
     asyncReject(function()use($private,&$job,$catalog,$cfg,$canonical){cmsAiContentAsyncPoll($private,$job,$catalog,$cfg,$canonical);},'AI_CONTENT_PROVIDER');
     asyncCheck($job['status']==='failed','TERMINAL_FAILURE');

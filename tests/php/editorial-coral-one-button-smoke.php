@@ -114,6 +114,8 @@ try{
     }];
   $job=cmsCoralStart($draft,$catalog,$canonical,$guided,$temp,$settings);
   ck($submitCalls===1&&$job['status']==='queued','SINGLE_PROVIDER_SUBMIT');
+  $same=cmsCoralStart($draft,$catalog,$canonical,$guided,$temp,$settings);
+  ck($same['token']===$job['token']&&$submitCalls===1,'LOST_SESSION_SAME_CORAL_JOB');
   $result=cmsCoralPoll($job,$draft,$settings,$canonical);
   ck($pollCalls===1&&count($result['chapters'])===7&&$submitCalls===1,
     'POLL_RETURNS_HUMAN_DRAFT_NOT_SECOND_INFERENCE');
@@ -131,11 +133,18 @@ try{
   $stale=$canonical;$stale[$recipeId]['fingerprint']=str_repeat('f',64);
   try{cmsCoralPoll($job,$draft,$settings,$stale);throw new RuntimeException('ACCEPTED_NEW_RECIPE');}
   catch(RuntimeException $e){ck($e->getMessage()==='CORAL_CANONICAL_STALE','RECIPE_CHANGED_DURING_JOB');}
+  $lost=$temp.'/lost';ck(mkdir($lost,0700),'LOST_ACK_PRIVATE');$calls=0;$fail=$settings;
+  $fail['submit']=static function()use(&$calls):array{++$calls;throw new RuntimeException('SYNTHETIC_LOST_ACK');};
+  $unknown=cmsCoralStart($draft,$catalog,$canonical,$guided,$lost,$fail);
+  $again=cmsCoralStart($draft,$catalog,$canonical,$guided,$lost,$fail);
+  ck($calls===1&&$unknown['token']===$again['token']&&$again['status']==='submission_unknown','CORAL_LOST_ACK_NO_REPLAY');
 }finally{
-  foreach([$temp.'/linked',$temp] as $root){
-    foreach(glob($root.'/editorial-drafts/*')?:[] as $f)unlink($f);
-    if(is_dir($root.'/editorial-drafts'))rmdir($root.'/editorial-drafts');
-    if(is_dir($root))rmdir($root);
-  }
+  $remove=static function(string $dir)use(&$remove,$temp):void{
+    if($dir!==$temp&&!str_starts_with($dir,$temp.'/'))throw new RuntimeException('TEST_CLEANUP_SCOPE');
+    foreach(scandir($dir)?:[] as $n){if($n==='.'||$n==='..')continue;$p=$dir.'/'.$n;
+      if(is_dir($p)&&!is_link($p))$remove($p);else unlink($p);}
+    rmdir($dir);
+  };
+  $remove($temp);
 }
 echo "CORAL_V2_ONE_BUTTON_CONTRACT_PASS 7 voice scripts, source-bound, no TTS, no old MP3 touched\n";

@@ -126,7 +126,7 @@ if($method==='GET'&&$auth&&isset($_GET['visual_file'])){
 
 if($method==='POST'){
     if(isset($_POST['tts_action'])&&count(array_intersect(['tts_action','create_save','ai_brief_generate','ai_content_generate',
-        'ai_content_discard','review_action','culinary_action','save','studio_transition','export_review','visual_action','coral_prepare','login','logout'],array_keys($_POST)))!==1){
+        'ai_content_discard','review_action','culinary_action','save','studio_transition','export_review','visual_action','coral_prepare','prepare_next_workshop','login','logout'],array_keys($_POST)))!==1){
         http_response_code(422);exit('Action invalide.');
     }
     if(isset($_POST['visual_action']) && count(array_intersect(['visual_action','create_save','ai_brief_generate','ai_content_generate','ai_content_discard','review_action','culinary_action','save','studio_transition','export_review','login','logout'],array_keys($_POST)))!==1){http_response_code(422);exit('Action invalide.');}
@@ -183,6 +183,7 @@ $libraryMode=!$newMode && !$calendarMode && !$publicationsMode && (isset($_GET['
 $calendarMonth=gmdate('Y-m');$calendarKind='all';$calendarStatus='all';
 $calendarPlan=null;$calendarPrev='';$calendarNext='';$calendarError='';
 $calendarRuntimeInfo='';$calendarFileHashes=[];
+$calendarWorkshopSettings=null;$calendarWorkshop=null;
 if($calendarMode){
     try{
         $calendarMonth=cmsCalendarMonth($_GET['month']??gmdate('Y-m'));
@@ -222,6 +223,22 @@ if($auth){
     // hide the whole CMS or masquerade as an expired login. Fail closed for the
     // affected view, preserve all private drafts and report a safe diagnostic.
     if($calendarMode){
+        try{
+            $s=cmsCoralSettings($cfg);
+            if(($s['workshop_complete_qualified']??false)===true){
+                $calendarWorkshopSettings=$s;$calendarWorkshop=cmsCoralNextWorkshop($creations,$catalog,$s);
+            }
+        }catch(Throwable $ignored){$calendarWorkshopSettings=null;$calendarWorkshop=null;}
+        if($method==='POST'&&isset($_POST['prepare_next_workshop'])){
+            try{
+                if($calendarWorkshopSettings===null||$calendarWorkshop===null||count($_SESSION['coral_jobs']??[])>=2)
+                    throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
+                $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);cmsAssertGuidedCoverage($guides,$canonicalById);
+                $job=cmsCoralStart($calendarWorkshop,$catalog,$canonicalById,$guides,$private,$calendarWorkshopSettings);
+                $_SESSION['coral_jobs'][$job['token']]=$job;
+                header('Location: ?new=1&cid='.rawurlencode($calendarWorkshop['id']).'&coral_job='.$job['token'].'#cms-audio',true,303);exit;
+            }catch(Throwable $e){http_response_code(409);$error='Préparation non lancée ou accusé incertain. Vérifiez l’atelier autorisé et son suivi. Aucun nouvel essai automatique ni publication.';}
+        }
         try{
             if(!function_exists('cmsCalendarPlan'))
                 throw new RuntimeException('CALENDAR_HELPER_MISSING');
@@ -346,6 +363,18 @@ if($auth){
                 $_SESSION['coral_jobs'][$coralJobToken]=$coralJob;
                 if($proposal!==null){
                     $token=bin2hex(random_bytes(24));
+                    if(($coralJob['request']['contract']??null)==='cdc-coral-v2-workshop-request-v1'){
+                        // The complete proposal uses the SAME temporary candidate,
+                        // shared editable form and explicit append-only save as C2.
+                        $_SESSION['ai_content_pending'][$token]=[
+                            'token'=>$token,'expires_at'=>time()+1800,'creation_id'=>$creation['id'],
+                            'expected_version'=>$creation['version'],'candidate'=>$proposal['candidate'],
+                            'metadata'=>$proposal['metadata'],'similar_titles'=>[],
+                            'async_job_token'=>$coralJob['token'],
+                            'before_form'=>array_merge($creation,$proposal['supplement'])];
+                        unset($_SESSION['coral_jobs'][$coralJobToken]);
+                        header('Location: ?new=1&cid='.rawurlencode($creation['id']).'&candidate='.$token.'#cms-content',true,303);exit;
+                    }
                     $_SESSION['coral_pending']=[$token=>[
                         'creation_id'=>$creation['id'],'creation_version'=>$creation['version'],
                         'expires_at'=>time()+1800,'scripts'=>$proposal
@@ -1124,6 +1153,14 @@ La création de contenus et le calendrier restent disponibles.</p>
 <h2>Calendrier éditorial — <?= cmsEsc($calendarMonth) ?></h2>
 <p class="small muted">Dates cibles des projets de nouvelles pages.
 Elles ne déclenchent aucune publication sur le site, Facebook ou Instagram.</p>
+<?php if($calendarWorkshopSettings!==null&&$calendarWorkshop!==null): ?>
+<form method="post" class="stack">
+<input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
+<p>Prochain atelier éligible : <strong><?= cmsEsc($calendarWorkshop['title']) ?></strong>.
+Cette action prépare une proposition privée à relire ; elle ne valide aucun texte et ne produit aucun MP3.</p>
+<button name="prepare_next_workshop" value="1">Préparer le prochain atelier</button>
+</form>
+<?php endif; ?>
 <?php if($calendarError!==''): ?>
 <p class="notice" role="alert">Impossible de charger ce calendrier :
 <strong><?= cmsEsc($calendarError) ?></strong>. Les projets privés et leurs versions
@@ -1433,7 +1470,10 @@ Le bouton ci-dessous produit uniquement des textes privés : il ne lance aucune 
 <?php if($creation!==null && $studioSourceCurrent): ?>
 <input type="hidden" name="coral_intent" value="<?= cmsEsc($_SESSION['coral_intent']??'') ?>">
 <?php if($coralSettings!==null): ?>
-<button name="coral_prepare" value="1" formnovalidate data-coral-prepare>Préparer les 7 narrations</button>
+<?php $prepareComplete=($coralSettings['workshop_complete_qualified']??false)===true
+    &&!cmsAtelierPhaseDetailsComplete($creation['atelier_phase_details']??null); ?>
+<button name="coral_prepare" value="1" formnovalidate data-coral-prepare><?= $prepareComplete?'Préparer l’atelier et ses 7 textes':'Préparer les 7 narrations' ?></button>
+<?php if($prepareComplete): ?><p class="small muted">Proposition complète depuis la recette choisie : contenu, six phases détaillées et sept textes à relire. Vérifiez puis enregistrez explicitement le brouillon privé. Aucun visa, MP3 ou publication.</p><?php endif; ?>
 <p class="small muted">Un seul clic prépare sept propositions de textes parlés depuis l’atelier enregistré,
 sa recette de référence et les deux référentiels Coral V2. Relisez les textes,
 corrigez-les et enregistrez leur nouvelle version privée avant tout visa.

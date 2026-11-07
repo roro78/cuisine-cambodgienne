@@ -92,6 +92,8 @@ jobs:
           npm run build
       - name: CMS and editorial Node regression tests
         run: |
+          node --test tests/coral-complete-workshop.test.mjs
+          php tests/php/editorial-complete-workshop-smoke.php dist
           node --test tests/editorial-cms-contract.test.mjs
           if test -f tests/editorial-dashboard-ux-navigation.test.mjs; then node --test tests/editorial-dashboard-ux-navigation.test.mjs; fi
           if test -f tests/editorial-ollama-structured-benchmark.test.mjs; then node --test tests/editorial-ollama-structured-benchmark.test.mjs; fi
