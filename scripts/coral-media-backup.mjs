@@ -1,6 +1,6 @@
 /** Separate versioned audio archive. No network, old snapshots, queue restore or deletion. */
 import {createCipheriv,createDecipheriv,createHash,randomBytes} from 'node:crypto';
-import {mkdir,open,lstat,link,unlink} from 'node:fs/promises';
+import {mkdir,open,lstat,link,unlink,rmdir} from 'node:fs/promises';
 import {join,dirname} from 'node:path';
 import {privateAudioRead,privateAudioVerifiedOpen,durableWrite,audioSha,TTS_CHAPTER_IDS,syncPrivateDirectory,probeAudio} from './coral-tts-audio.mjs';
 import {execFile} from 'node:child_process';import {promisify} from 'node:util';
@@ -31,9 +31,13 @@ async function collectSubfragments(folder,request){
 function validateManifest(m){if(m?.contract!=='cdc-coral-private-tts-result-v1'||!/^final-[a-f0-9]{64}\.mp3$/.test(m.file||'')||m.file!=='final-'+m.sha256+'.mp3'||!Number.isSafeInteger(m.bytes)||m.bytes<1||m.bytes>32000000||m.chapters?.length!==7||m.chapters.some((c,i)=>c.id!==TTS_CHAPTER_IDS[i]||!Number.isFinite(c.start)||!Number.isFinite(c.end)||c.end<=c.start))throw Error('MEDIA_MANIFEST');}
 /** An archive is immutable and uniquely named by its own digest; caller chooses a NEW path. */
 export async function backupCoralMedia({folder,archive,key,validation}){
+ keyCheck(key);await privateDir(folder);const lock=join(folder,'.media-backup.lock');await mkdir(lock,{mode:0o700});
+ try{return await backupUnlocked({folder,archive,key,validation});}finally{await rmdir(lock);}
+}
+async function backupUnlocked({folder,archive,key,validation}){
  keyCheck(key);await privateDir(folder);await privateDir(dirname(archive));
+ try{await lstat(archive);throw Object.assign(Error('MEDIA_ARCHIVE_EXISTS'),{code:'EEXIST'});}catch(e){if(e.code!=='ENOENT')throw e;}
  const manifest=JSON.parse(await privateAudioRead(join(folder,'manifest.json'),150000));validateManifest(manifest);
- await verifyAudio(folder,manifest);
  const state=JSON.parse(await privateAudioRead(join(folder,'state.json'),150000));
  const request=JSON.parse(await privateAudioRead(join(folder,'..','request.json'),150000));validateTtsRequest(request.request);
  const subfragments=await collectSubfragments(folder,request.request);
@@ -42,6 +46,7 @@ export async function backupCoralMedia({folder,archive,key,validation}){
  if(validation?.contract!=='cdc-coral-audio-validation-v1'||validation.sha256!==manifest.sha256||validation.decode_passed!==true)throw Error('MEDIA_VALIDATION');
  if(Object.keys(validation).some(k=>!['contract','sha256','decode_passed','simulated','authority_evidence_sha256','culinary_review_sha256','human_visas_sha256'].includes(k))
   ||['authority_evidence_sha256','culinary_review_sha256','human_visas_sha256'].some(k=>validation[k]!==undefined&&!/^[a-f0-9]{64}$/.test(validation[k])))throw Error('MEDIA_VALIDATION');
+ await verifyAudio(folder,manifest);
  const entries=['request.json','manifest.json','state.json',...TTS_CHAPTER_IDS.map(id=>id+'.receipt.json'),manifest.file];
  const iv=randomBytes(12),header=Buffer.concat([MAGIC,iv]),cipher=createCipheriv('aes-256-gcm',key,iv);cipher.setAAD(header);
  const temp=archive+'.incoming-'+randomBytes(12).toString('hex'),out=await open(temp,'wx',0o600),hash=createHash('sha256');let total=0;

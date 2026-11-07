@@ -123,7 +123,7 @@ export async function assemblePrivateMp3(folder,segments,{ffmpeg='ffmpeg',ffprob
   await exec(ffmpeg,['-nostdin','-v','error','-protocol_whitelist','file,pipe','-max_alloc','33554432','-i',tmp,'-f','null','-'],{timeout:30000,maxBuffer:200000,windowsHide:true});
   const name='final-'+digest.sha256+'.mp3';
   try{await link(tmp,join(folder,name));}catch(e){if(e.code!=='EEXIST'||(await privateAudioDigest(join(folder,name))).sha256!==digest.sha256)throw e;}
-  const committed=await open(join(folder,name),constants.O_RDONLY);try{await committed.sync();}finally{await committed.close();}await syncPrivateDirectory(folder);
+  const committed=await open(join(folder,name),constants.O_RDWR|(constants.O_NOFOLLOW||0));try{await committed.sync();}finally{await committed.close();}await syncPrivateDirectory(folder);
   return {file:name,...digest,duration:m.duration,chapters,format:'mp3',simulated:true};
  }finally{
   for(const f of [tmp,list,metadata])try{await unlink(f);}catch(e){if(e.code!=='ENOENT')throw e;}

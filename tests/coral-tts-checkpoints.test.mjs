@@ -4,6 +4,7 @@ import {createCoralCheckpointHarness,coralFragmentPlan} from '../scripts/coral-t
 import {audioSha,durableAudioWrite,TTS_CHAPTER_IDS} from '../scripts/coral-tts-audio.mjs';
 import {createSimulatedTtsJobs,ttsRequestId} from '../scripts/coral-tts-jobs.mjs';import {createJobGateway} from '../scripts/editorial-ai-job-gateway.mjs';
 import {execFile} from 'node:child_process';import {promisify} from 'node:util';
+import {backupCoralMedia,restoreCoralMedia} from '../scripts/coral-media-backup.mjs';
 function fixtureText(){return 'Texte fictif de qualification, sans recommandation culinaire ni voix réelle. '.repeat(18);}
 function fakeExchange({cut=false,onCall=()=>{}}={}){let calls=0;return {count:()=>calls,exchange:async({event})=>{
  calls++;onCall(calls);const id='resp_fake_'+calls,text=event.response.input[0].content[0].text;
@@ -50,4 +51,8 @@ test('existing single gateway resumes a receipted partial chapter without a seco
  const second=await make(null);await second.ttsOperation(r.request_id,'resume');await second.workOnce();const state=await second.state(r.request_id);assert.equal(state.status,'succeeded');
  assert.equal(fake.count(),r.chapters.reduce((n,c)=>n+coralFragmentPlan(c).length,0));assert.equal(JSON.parse(state.result).provider_charged_microusd,0);
  const receipt=JSON.parse(await readFile(join(root,'jobs',r.request_id,'tts','fragments','intro','00.receipt.json'),'utf8'));assert.ok(receipt.usage);assert.ok(receipt.response_id);assert.equal(receipt.cost_microusd,417);
+ const folder=join(root,'jobs',r.request_id,'tts'),m=JSON.parse(await readFile(join(folder,'manifest.json'),'utf8')),archive=join(root,'subfragment-media.enc'),key=Buffer.alloc(32,23);
+ await backupCoralMedia({folder,archive,key,validation:{contract:'cdc-coral-audio-validation-v1',sha256:m.sha256,decode_passed:true,simulated:true}});
+ const target=join(root,'restored-subfragments');await restoreCoralMedia({archive,target,key,reviewed:true});
+ const evidence=JSON.parse(await readFile(join(target,'subfragments.json'),'utf8'));assert.equal(evidence.chapters.length,7);assert.equal(evidence.chapters[0].receipts[0].cost_microusd,417);assert.equal(evidence.chapters[0].receipts[0].response_id,receipt.response_id);
 });

@@ -20,6 +20,7 @@ test('long private native player: load, pause and seek all seven measured chapte
  for(const root of await roots(base)){
   const summary=JSON.parse(await readFile(join(root,'summary.json'),'utf8')),restored=process.env.TTS_RESTORED_PLAYER==='true';
   const m=summary.manifest,token='synthetic-private-load-player-'.repeat(3);
+  const restoredDir=process.env.TTS_RESTORED_DIR||'restored-audio';assert.ok(['restored-audio','restored-download-audio'].includes(restoredDir));
   const jobs=createSimulatedTtsJobs({authorize:async()=>true,budgetDir:join(root,'budget')});
   const gateway=restored?null:await createJobGateway({root:join(root,'jobs'),token,provider:async()=>{throw Error('NO_PROVIDER')},ttsJobs:jobs});
   if(restored){assert.equal(summary.media_restore?.restored.authenticated,true);assert.equal(summary.media_restore.restored.mp3_sha256,m.sha256);}
@@ -35,8 +36,8 @@ test('long private native player: load, pause and seek all seven measured chapte
     // Closed restore namespace only, synthetic authority + Bearer; never reinserts a job.
     let opened;try{
      if(req.url!=='/editorial-ai/v1/jobs/'+m.request_id+'/audio')throw Error('FIXTURE_ROUTE');
-     const marker=JSON.parse(await readFile(join(root,'restored-audio','restore-complete.json'),'utf8'));assert.equal(marker.mp3_sha256,m.sha256);
-     opened=await privateAudioVerifiedOpen(join(root,'restored-audio','final-'+m.sha256+'.mp3'),m.sha256);
+     const marker=JSON.parse(await readFile(join(root,restoredDir,'restore-complete.json'),'utf8'));assert.equal(marker.mp3_sha256,m.sha256);
+     opened=await privateAudioVerifiedOpen(join(root,restoredDir,'final-'+m.sha256+'.mp3'),m.sha256);
      const range=audioByteRange(req.headers.range,opened.size);if(range.status===416){await opened.handle.close();res.writeHead(416,{'Content-Range':'bytes */'+opened.size});res.end();return;}
      const headers={'Content-Type':'audio/mpeg','Cache-Control':'no-store','Accept-Ranges':'bytes','Content-Length':range.end-range.start+1};
      if(range.status===206)headers['Content-Range']='bytes '+range.start+'-'+range.end+'/'+opened.size;res.writeHead(range.status,headers);

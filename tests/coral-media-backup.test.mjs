@@ -3,6 +3,7 @@ import {mkdtemp,mkdir,readFile,writeFile,rm,chmod,lstat} from 'node:fs/promises'
 import {backupCoralMedia,restoreCoralMedia,coralAudioRetentionPlan} from '../scripts/coral-media-backup.mjs';
 import {audioSha,TTS_CHAPTER_IDS,probeAudio,privateAudioDigest} from '../scripts/coral-tts-audio.mjs';
 import {createSimulatedTtsJobs,ttsRequestId} from '../scripts/coral-tts-jobs.mjs';import {createJobGateway} from '../scripts/editorial-ai-job-gateway.mjs';
+import {createCipheriv} from 'node:crypto';
 test('separate authenticated media backup, loss, closed restore, corruption and immutable history',async t=>{
  const root=await mkdtemp(join(tmpdir(),'cdc-coral-media-'));t.after(()=>rm(root,{recursive:true,force:true}));
  const r={contract:'cdc-coral-private-tts-request-v1',creation_id:'c-'+'a'.repeat(24),creation_version:3,binding_sha256:'b'.repeat(64),recipe_sha256:'c'.repeat(64),chapters:TTS_CHAPTER_IDS.map(id=>{const text='Texte fictif pour qualification sans voix ni fournisseur réel. '.repeat(4)+id;return {id,text,sha256:audioSha(text)};}),voice:'test-tone',provider:'simulated-tone-v1',rights_sha256:'d'.repeat(64),reviews_sha256:'e'.repeat(64),reserve_microusd:7000};r.request_id=ttsRequestId(r);
@@ -22,6 +23,12 @@ test('separate authenticated media backup, loss, closed restore, corruption and 
  for(const [name,bytes,wrongKey] of [['corrupt',Buffer.from(encrypted),key],['truncated',encrypted.subarray(0,-9),key],['wrong-key',encrypted,Buffer.alloc(32,19)]]){
   if(name==='corrupt')bytes[Math.floor(bytes.length/2)]^=1;const file=join(root,name+'.enc');await writeFile(file,bytes,{mode:0o600});const destination=join(root,name);
   await assert.rejects(restoreCoralMedia({archive:file,target:destination,key:wrongKey,reviewed:true}));await assert.rejects(lstat(join(destination,'restore-complete.json')),e=>e.code==='ENOENT');
+ }
+ for(const [name,entry] of [['path-traversal',{path:'../historical.mp3',bytes:4,sha256:audioSha('evil')}],['oversize',{path:'manifest.json',bytes:999999999,sha256:audioSha('evil')}]]){
+  const header=Buffer.concat([Buffer.from('CDCAUD1\n'),Buffer.alloc(12,29)]),cipher=createCipheriv('aes-256-gcm',key,header.subarray(8));cipher.setAAD(header);
+  const meta=Buffer.from(JSON.stringify(entry)),length=Buffer.alloc(4);length.writeUInt32BE(meta.length);const file=join(root,name+'.enc');
+  await writeFile(file,Buffer.concat([header,cipher.update(Buffer.concat([length,meta,Buffer.from('evil'),Buffer.alloc(4)])),cipher.final(),cipher.getAuthTag()]),{mode:0o600});
+  await assert.rejects(restoreCoralMedia({archive:file,target:join(root,name),key,reviewed:true}),/REJECTED/);
  }
  assert.equal(await readFile(historical,'utf8'),'historical witness');
  for(const status of ['uncertain','interrupted','running'])assert.equal(coralAudioRetentionPlan({status,manifest,backup,restored,completedAt:0}).wav,'retain');

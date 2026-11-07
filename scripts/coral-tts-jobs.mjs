@@ -156,7 +156,8 @@ export function createSimulatedTtsJobs({authorize,budgetDir,maxDailyUsd=0.1,maxM
  async function audioStream(r,id,folder){
   await authority(validateTtsRequest(r));const s=await load(folder);
   if(s?.status!=='succeeded'||!/^final-[a-f0-9]{64}\.mp3$/.test(s.manifest?.file||''))throw Error('TTS_AUDIO_UNAVAILABLE');
-  return privateAudioVerifiedOpen(join(folderFor(folder),s.manifest.file),s.manifest.sha256);
+  const opened=await privateAudioVerifiedOpen(join(folderFor(folder),s.manifest.file),s.manifest.sha256);
+  try{await authority(r);return opened;}catch(e){await opened.handle.close();throw e;}
  }
  return {state,run,resume,audio,audioStream};
 }

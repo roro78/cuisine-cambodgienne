@@ -5,6 +5,40 @@ on:
 permissions:
   contents: read
 jobs:
+  candidate-package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Candidate image only, production compose unchanged
+        run: |
+          docker build --build-arg SOURCE_REVISION="$GITHUB_SHA" -f deploy/coral/Dockerfile.audio-candidate -t coral-audio-candidate .
+          mkdir candidate-evidence
+          docker image inspect --format '{{json .Id}}' coral-audio-candidate > candidate-evidence/image-id.json
+          docker run --rm --network none --read-only --cpus 0.5 --memory 256m --memory-swap 256m --pids-limit 64 --cap-drop ALL --security-opt no-new-privileges coral-audio-candidate > candidate-evidence/tools-before.json
+          set +e
+          docker run --rm --network none --read-only coral-audio-candidate node scripts/editorial-ai-job-gateway.mjs > candidate-evidence/closed-bootstrap.log 2>&1
+          status=$?
+          set -e
+          test "$status" -eq 1
+          grep -qx JOB_STARTUP_REFUSED candidate-evidence/closed-bootstrap.log
+      - name: Export, reload and verify exact image without registry publication
+        run: |
+          docker save coral-audio-candidate | gzip -n > candidate-evidence/coral-audio-candidate.tar.gz
+          sha256sum candidate-evidence/coral-audio-candidate.tar.gz > candidate-evidence/archive-sha256.txt
+          docker image rm coral-audio-candidate
+          gunzip -c candidate-evidence/coral-audio-candidate.tar.gz | docker load
+          docker image inspect --format '{{json .Id}}' coral-audio-candidate > candidate-evidence/reloaded-image-id.json
+          cmp candidate-evidence/image-id.json candidate-evidence/reloaded-image-id.json
+          docker run --rm --network none --read-only --cpus 0.5 --memory 256m --memory-swap 256m --pids-limit 64 --cap-drop ALL --security-opt no-new-privileges coral-audio-candidate > candidate-evidence/tools-after.json
+          cmp candidate-evidence/tools-before.json candidate-evidence/tools-after.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coral-audio-candidate-package
+          path: candidate-evidence
+          compression-level: 0
+          if-no-files-found: error
   memory:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -102,14 +136,21 @@ jobs:
       - name: Browser outside worker resource envelope
         run: |
           npm install --no-audit --no-fund
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
           node node_modules/playwright-core/cli.js install --with-deps chromium
       - name: Play restored private MP3s and seek all fourteen chapter positions
         env:
           TTS_LONG_EVIDENCE_DIR: artifacts/restored
           TTS_RESTORED_PLAYER: 'true'
-        run: node --test tests/coral-tts-long-player.test.mjs
+          TTS_RESTORED_DIR: restored-download-audio
+        run: |
+          node tests/fixtures/coral-tts-restored-download.mjs
+          node --test tests/coral-tts-long-player.test.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: coral-restored-player-proof
-          path: artifacts/restored/**/player-metrics.json
+          path: |
+            artifacts/restored/**/player-metrics.json
+            artifacts/restored/**/download-restore-proof.json
