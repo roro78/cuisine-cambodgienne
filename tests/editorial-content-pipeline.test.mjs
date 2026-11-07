@@ -8,11 +8,49 @@ import {fileURLToPath,pathToFileURL} from 'node:url';
 import {EDITORIAL_KINDS,makeEditorialIdea,normalizeEditorialTitle,
   editorialSlug,findEditorialOverlaps,assertNoExactDuplicate,
   validateEditorialProposal,transitionEditorialProposal,
-  contentIdeaFingerprint} from '../scripts/editorial-content-pipeline.mjs';
+  contentIdeaFingerprint,selectNextEditorialWorkshop} from '../scripts/editorial-content-pipeline.mjs';
 
 const make=(kind='recette',title='Amok de poisson')=>
   makeEditorialIdea({kind,title,angle:'Une approche culinaire approfondie'});
 const sections=[{title:'Une première section',paragraphs:['Texte complet avec des informations à vérifier.']}];
+const workshop=(id,title,date,recipe='amok-trey')=>({id:'c-'+id.repeat(24),version:1,
+ kind:'atelier',title,slug:editorialSlug(title),state:'draft',target_date:date,
+ atelier_reference:{recipeSlug:recipe}});
+const recipes=[{id:'recette:amok-trey',fingerprint:'a'.repeat(64)}];
+const fallback={title:'Amok Trey — Réussir un poisson au lait de coco à la vapeur',recipeSlug:'amok-trey'};
+
+test('selection preserves published workshops and quarantined drafts, returns a candidate without fake scheduling',()=>{
+ const historical=workshop('a','Atelier historique','2026-11-12','kroeung-jaune');
+ historical.source_binding={source_id:'atelier:atelier-historique'};
+ const technical=workshop('b','Données privées de qualification',null);
+ const input={records:[technical,historical],published:[],recipes,excludedCreationIds:[technical.id],fallback};
+ const before=JSON.stringify(input),result=selectNextEditorialWorkshop(input);
+ assert.equal(result.selection.origin,'candidate');assert.equal(result.selection.creation_id,null);
+ assert.equal(result.selection.target_date,null);assert.equal(result.selection.recipe_id,'recette:amok-trey');
+ assert.equal(result.selection.publication_authorized,false);assert.equal(result.selection.human_semantic_review_required,true);
+ assert.equal(result.blocked.length,2);assert.equal(result.provider_calls,0);assert.equal(result.production_writes,0);
+ assert.equal(JSON.stringify(input),before);
+ assert.equal(result.selection.preparation_key,selectNextEditorialWorkshop(input).selection.preparation_key);
+});
+test('calendar priority and existing draft identity are reused, never inferred from titles',()=>{
+ const later=workshop('c','Travail suivant','2026-11-20','other');
+ const first=workshop('d','Atelier prioritaire','2026-11-11');
+ const r=selectNextEditorialWorkshop({records:[later,first],published:[],recipes,fallback});
+ assert.equal(r.selection.creation_id,first.id);assert.equal(r.selection.origin,'calendar');
+ const undated=workshop('e','Amok en projet',null);
+ const a=selectNextEditorialWorkshop({records:[undated],published:[],recipes,fallback});
+ assert.equal(a.selection.creation_id,undated.id);assert.equal(a.selection.origin,'existing_draft');
+ const missing={...first,atelier_reference:{recipeSlug:''}};
+ assert.throws(()=>selectNextEditorialWorkshop({records:[missing],published:[],recipes,fallback}),/EDITORIAL_CANONICAL_REFERENCE/);
+ assert.throws(()=>selectNextEditorialWorkshop({records:[{...first,target_date:'2026-02-30'}],published:[],recipes}),/EDITORIAL_SELECTION_RECORD/);
+});
+test('selection fails closed on ambiguous drafts and exact published duplicates',()=>{
+ assert.throws(()=>selectNextEditorialWorkshop({records:[workshop('c','Amok A',null),workshop('d','Amok B',null)],published:[],recipes,fallback}),/EDITORIAL_MULTIPLE_DRAFTS/);
+ assert.throws(()=>selectNextEditorialWorkshop({records:[],published:[{kind:'atelier',title:fallback.title}],recipes,fallback}),/EDITORIAL_DUPLICATE_BLOCKED/);
+ const first=workshop('e','Amok B',null);
+ assert.throws(()=>selectNextEditorialWorkshop({records:[first,first],published:[],recipes}),/EDITORIAL_SELECTION_RECORD/);
+ assert.throws(()=>selectNextEditorialWorkshop({records:[],published:[],recipes:[{id:'recette:amok-trey',fingerprint:'bad'}],fallback}),/EDITORIAL_CANONICAL_REFERENCE/);
+});
 
 test('all editorial families accept the same manual and AI idea contract',()=>{
   assert.deepEqual(EDITORIAL_KINDS,[
