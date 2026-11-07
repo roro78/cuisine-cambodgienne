@@ -1,7 +1,9 @@
 # Réception du workflow éditorial — 7 novembre 2026
 
 Mission #205, PR #226, base main : `6a57b3d7520184e4f82998f554b88dec545d2e51`.
-**Chantier ouvert : aucun nouvel atelier complet reçu, aucune livraison de cette PR.**
+**État initial de préparation de #226.** La livraison et le premier appel réel
+sont actualisés dans [le rapport Amok et reprise contrôlée](CMS-AMOK-PREMIER-APPEL-ET-REPRISE-20261107.md).
+L'atelier complet reste non reçu.
 
 ## Atelier réel retenu
 

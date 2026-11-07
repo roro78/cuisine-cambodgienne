@@ -24,6 +24,14 @@ function cmsCoralSettings(array $cfg): ?array {
     if(!is_array($s['workshop_excluded_creation_ids'])||!array_is_list($s['workshop_excluded_creation_ids'])
       ||count($s['workshop_excluded_creation_ids'])>250)throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
     foreach($s['workshop_excluded_creation_ids'] as $id)if(!cmsCreationId($id))throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
+    $s['workshop_continuation']=$cfg['editorial_ai_content']['workshop_continuation']??null;
+    if($s['workshop_continuation']!==null){
+      $c=$s['workshop_continuation'];
+      if(!is_array($c)||count($c)!==2||array_diff(array_keys($c),['source_job_id','phase_output_sha256'])
+        ||!is_string($c['source_job_id']??null)||!preg_match('/^[a-f0-9]{48}$/D',$c['source_job_id'])
+        ||!is_string($c['phase_output_sha256']??null)||!preg_match('/^[a-f0-9]{64}$/D',$c['phase_output_sha256']))
+        throw new RuntimeException('CORAL_WORKSHOP_CONTINUATION');
+    }
   }
   return $s;
 }
@@ -496,6 +504,14 @@ function cmsCoralWorkshopRequest(array $draft,array $catalog,array $canonical,ar
   if(strlen(json_encode($r,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR))>90000)throw new RuntimeException('CORAL_REQUEST_OVERSIZE');
   return $r;
 }
+function cmsCoralAmokAllergens(array $labels): bool {
+  $fish=false;$egg=false;
+  foreach($labels as $label){
+    if(preg_match('/^poissons?$/iu',trim($label)))$fish=true;
+    if(preg_match('/^(?:œ|oe)ufs?$/iu',trim($label)))$egg=true;
+  }
+  return $fish&&$egg;
+}
 function cmsCoralWorkshopCandidate(array $request,mixed $wire,array $settings,array $catalog): array {
   if(!is_string($wire)||strlen($wire)>30000)throw new InvalidArgumentException('CORAL_RESPONSE');
   try{$out=cmsAiContentValue(json_decode($wire,false,16,JSON_THROW_ON_ERROR),cmsCoralWorkshopSchema());}
@@ -503,7 +519,7 @@ function cmsCoralWorkshopCandidate(array $request,mixed $wire,array $settings,ar
   $profile=$out['profile'];
   if(!in_array($profile['difficulty'],['Facile','Intermédiaire','Avancé'],true)
     ||array_sum(array_column($out['phase_details'],'minutes'))!==$profile['practicalMinutes']
-    ||($request['atelier']['recipeSlug']==='amok-trey'&&array_diff(['poisson','œuf'],$profile['allergens'])))
+    ||($request['atelier']['recipeSlug']==='amok-trey'&&!cmsCoralAmokAllergens($profile['allergens'])))
     throw new InvalidArgumentException('CORAL_WORKSHOP_PROFILE');
   // Explicit projection into the EXISTING editable public preparation list.
   // The typed profile remains traceable in the private provider output/hash.
@@ -633,6 +649,8 @@ function cmsCoralStart(array $draft,array $catalog,array $canonical,array $guide
     throw new RuntimeException('CORAL_DISABLED');
   $complete=($settings['workshop_complete_qualified']??false)===true
     &&!cmsAtelierPhaseDetailsComplete($draft['atelier_phase_details']??null);
+  $continuation=$settings['workshop_continuation']??null;
+  if($continuation!==null&&!$complete)throw new RuntimeException('CORAL_WORKSHOP_CONTINUATION');
   $request=$complete?cmsCoralWorkshopRequest($draft,$catalog,$canonical,$guided,$settings['workshop_research']??[]):cmsCoralRequest($draft,$catalog,$canonical,$guided);
   if(($settings['workshop_complete_qualified']??false)===true){
     if(($settings['workshop_creation_id']??null)!==$draft['id']
@@ -641,9 +659,20 @@ function cmsCoralStart(array $draft,array $catalog,array $canonical,array $guide
     cmsAiContentPreflight($private,'atelier',$draft['title'],$catalog,$draft['id'],$draft['version']);
   }
   $provider=$settings['provider_label']??'';$model=$settings['model_label']??'';
+  if($continuation!==null){
+    $source=$continuation['source_job_id']??'';
+    cmsAiContentJobLocked($private,$source,static function(?array $entry,string $path)use($request,$draft,$provider,$model,$source):void{
+      $j=$entry['job']??null;
+      if(!is_array($j)||isset($entry['save_attempt'])||isset($j['request']['continuation'])
+        ||($j['token']??null)!==$source||($j['creation_id']??null)!==$draft['id']||($j['creation_version']??null)!==$draft['version']
+        ||($j['provider_label']??null)!==$provider||($j['model_label']??null)!==$model||($j['request']??null)!==$request)
+        throw new RuntimeException('CORAL_CONTINUATION_SOURCE_STALE');
+    });
+    $request['continuation']=$continuation;
+  }
   $key=hash('sha256',json_encode([$request,$draft['id'],$draft['version'],$provider,$model],JSON_THROW_ON_ERROR));
   $token=substr($key,0,48);
-  return cmsAiContentJobLocked($private,$token,static function(?array $entry,string $path)use($private,$settings,$request,$draft,$provider,$model,$key,$token):array{
+  return cmsAiContentJobLocked($private,$token,static function(?array $entry,string $path)use($private,$settings,$request,$draft,$provider,$model,$key,$token,$continuation):array{
     if($entry!==null){
       $j=$entry['job'];
       if(($entry['fingerprint']??null)!==$key||isset($entry['save_attempt'])
@@ -654,7 +683,10 @@ function cmsCoralStart(array $draft,array $catalog,array $canonical,array $guide
         throw new RuntimeException('CORAL_JOB_REVIEW_REQUIRED');
       $j['expires_at']=time()+1800;return $j; // refresh observation, NEVER submit
     }
-    cmsAiBriefReserve($private,$settings['max_attempts_per_day']);
+    // Same workshop attempt: original quota remains consumed. The worker
+    // separately validates the checkpoint, reserves seven calls and claims
+    // this source exclusively; no second new workshop escapes the quota.
+    if($continuation===null)cmsAiBriefReserve($private,$settings['max_attempts_per_day']);
     $job=['token'=>$token,'expires_at'=>time()+1800,'status'=>'submission_unknown',
       'creation_id'=>$draft['id'],'creation_version'=>$draft['version'],
       'expected_version'=>$draft['version'],

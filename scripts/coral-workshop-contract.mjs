@@ -8,6 +8,11 @@ const sha=v=>createHash('sha256').update(v).digest('hex');
 const fields=['intro','learningGoal','finalPreparation','portionLabel','beforeStarting','equipment','phases'];
 const phaseKeys=['id','minutes','ingredientNames','actions','observe','check','mistake','recovery','safety','pausePrompt'];
 const keys=(v,list)=>v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length===list.length&&list.every(k=>Object.hasOwn(v,k));
+export function validateWorkshopContinuation(c){
+ if(!keys(c,['source_job_id','phase_output_sha256'])||!/^[a-f0-9]{48}$/.test(c.source_job_id||'')
+  ||!/^[a-f0-9]{64}$/.test(c.phase_output_sha256||''))throw Error('JOB_WORKSHOP_CONTINUATION');
+ return c;
+}
 export function validateCompleteWorkshopRequest(r){
  if(!r||r.contract!==COMPLETE_WORKSHOP_CONTRACT||r.scope!=='workshop-complete-draft-v1'
   ||!/^c-[a-f0-9]{24}$/.test(r.creation_id||'')||!Number.isInteger(r.creation_version)||r.creation_version<1||r.creation_version>9998
@@ -28,6 +33,7 @@ export function validateCompleteWorkshopRequest(r){
   ||r.response_schema.properties.chapters.minItems!==7||r.response_schema.properties.chapters.maxItems!==7
   ||r.timeout_seconds!==20||r.max_output_tokens!==6000||r.response_max_bytes!==30000
   ||Buffer.byteLength(JSON.stringify(r))>90000)throw Error('JOB_WORKSHOP_REQUEST');
+ if(Object.hasOwn(r,'continuation'))validateWorkshopContinuation(r.continuation);
  return r;
 }
 /** Deliberately small closed JSON dialect shared with the PHP form. */
@@ -53,6 +59,25 @@ export function workshopPhaseSchema(r){
  const properties={...r.response_schema.properties};delete properties.chapters;
  return {type:'object',properties,required:Object.keys(properties),additionalProperties:false};
 }
+export function hasAmokAllergens(labels){
+ return labels.some(v=>/^poissons?$/iu.test(v.trim()))&&labels.some(v=>/^(?:œ|oe)ufs?$/iu.test(v.trim()));
+}
+/** Derive one internally consistent estimated total. Preserve the raw model
+ * output in its receipt; callers record this projection before further calls.
+ * No quantities, phase durations, ingredients or safety texts are changed.
+ */
+export function normalizeWorkshopPhaseProfile(r,value){
+ validateWorkshopValue(value,workshopPhaseSchema(r));
+ const phase=structuredClone(value),changes=[];
+ const total=phase.phase_details.reduce((sum,p)=>sum+p.minutes,0);
+ if(total<1||total>600)throw Error('JOB_WORKSHOP_PROFILE');
+ if(phase.profile.practicalMinutes!==total){
+  changes.push({field:'profile.practicalMinutes',reported:phase.profile.practicalMinutes,derived:total,reason:'sum_of_six_phase_estimates'});
+  phase.profile.practicalMinutes=total;
+ }
+ validateWorkshopPhases(r,phase);
+ return {phase,changes};
+}
 export function validateWorkshopPhases(r,v){
  validateWorkshopValue(v,workshopPhaseSchema(r));
  const names=r.reference.recipe_fields.ingredients.map(i=>i.name),used=new Set();
@@ -63,7 +88,7 @@ export function validateWorkshopPhases(r,v){
  }
  if(names.some(n=>!used.has(n)))throw Error('JOB_WORKSHOP_INGREDIENTS');
  if(v.profile.practicalMinutes!==v.phase_details.reduce((sum,p)=>sum+p.minutes,0)
-  ||(r.atelier.recipeSlug==='amok-trey'&&['poisson','œuf'].some(a=>!v.profile.allergens.includes(a))))throw Error('JOB_WORKSHOP_PROFILE');
+  ||(r.atelier.recipeSlug==='amok-trey'&&!hasAmokAllergens(v.profile.allergens)))throw Error('JOB_WORKSHOP_PROFILE');
  const publicText=JSON.stringify([v.summary,v.profile,v.fields,v.phase_details]);
  if(/\b(?:fabriqu\p{L}*|fabrication\p{L}*|constru\p{L}*|chantier\p{L}*|poste)\b/iu.test(publicText))throw Error('JOB_WORKSHOP_LEXICON');
  return v;
@@ -71,12 +96,13 @@ export function validateWorkshopPhases(r,v){
 /** One job: structured fields + six real phases, then seven bounded texts.
  * Any failed/uncertain exchange stops the set; the gateway never replays it.
  */
-export async function produceCompleteWorkshop(r,{phaseCall,chapterCall}){
+export async function produceCompleteWorkshop(r,{phaseCall,chapterCall,onPhaseValidated=async()=>{}}){
  validateCompleteWorkshopRequest(r);
  const raw=await phaseCall({request:r,schema:workshopPhaseSchema(r)});
  if(typeof raw!=='string'||Buffer.byteLength(raw)>12000)throw Error('JOB_WORKSHOP_RESPONSE');
  let phase;try{phase=JSON.parse(raw);}catch{throw Error('JOB_WORKSHOP_RESPONSE');}
- validateWorkshopPhases(r,phase);
+ const normalized=normalizeWorkshopPhaseProfile(r,phase);phase=normalized.phase;
+ await onPhaseValidated({raw,phase,changes:normalized.changes});
  const chapters=[];
  for(let i=0;i<7;i++){
   const id=WORKSHOP_CHAPTER_IDS[i],schema={type:'object',additionalProperties:false,required:['id','text'],
