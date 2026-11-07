@@ -1,5 +1,8 @@
 # Runbook de référence — déployer Cuisine du Cambodge sur OVH / Orvekio
 
+**RÉCEPTION TECHNIQUE CLOSE (6 novembre 2026) :** [procès-verbal Studio Coral](CMS-CORAL-STUDIO-RECEPTION-CLOTURE-20261106.md), preuves [#205](https://github.com/roro78/cuisine-cambodgienne/issues/205#issuecomment-6685255339). Studio PHP livré et reçu en session administrateur réelle depuis #220 ; une PR ouverte n'invalide pas le déploiement. Ne pas relivrer le même SHA ni relancer les précédents contrôles sans régression. Toute nouvelle modification de production nécessite néanmoins son propre diff et rollback ciblé.
+
+
 **Statut : procédure et index de preuves, pas autorisation permanente de déployer.** Référence pour ChatGPT, Work, Codex et les agents opérant sur `roro78/cuisine-cambodgienne`. À lire **avant** toute action de publication, de livraison de Studio, d'installation Docker ou de restauration. Une PR fusionnée, une CI verte, un HTTP 200 de webhook ou un commit GitHub ne prouvent pas à eux seuls une version reçue en production.
 
 ## 1. Identifier sans ambiguïté la cible
