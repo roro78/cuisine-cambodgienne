@@ -12,7 +12,19 @@ export async function coralAuthorityInstallPreflight(folder){
  return {status:'LOCAL_PACKAGE_VERIFIED',target_files:targets,remote_writes:0,ready_for_scope_authorization:true,
   remote_hash_readback_required:true,private_config_backup_required:true,installation_authorized:false,generation_authorized:false};
 }
+/** Public source payload only. Never exports observed host hashes, modes, paths or config. */
+export async function coralAuthorityDeliveryManifest(folder){
+ await coralAuthorityInstallPreflight(folder);const files=[];
+ for(const name of targets){const bytes=await readFile(join(folder,'CANDIDATE',name));files.push({repo_path:'public/gestion-contenus/'+name,sha256:createHash('sha256').update(bytes).digest('hex'),bytes:bytes.length});}
+ return {contract:'cdc-coral-authority-delivery-redacted-v1',public_payload_source_sha:'0d5a688f7184d556a51dd1981593300d9421826b',
+  files,dependencies:[{repo_path:'public/gestion-contenus/lib.php',delivery:'unchanged'},{repo_path:'public/gestion-contenus/.htaccess',delivery:'unchanged'}],
+  php_qualification:['8.3','8.4'],permissions:{public_files:'preserve verified target modes',private_directory:'0700',private_token:'0600 or 0400; effective owner; readonly mount'},
+  private_configuration:'not included',host_details_included:false,observed_host_hashes_included:false,
+  authorization:{delivery:false,authority_activation:false,secret_creation:false,worker_installation:false,paid_calls:false},
+  before_any_write:['new targeted authorization','fresh private host readback','verified rollback outside webroot'],
+  reception:['HTTPS and distinct Bearer','fresh challenge','current version and revocable rights','network failure closed','generation remains disabled']};
+}
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
- if(process.argv[2]!=='--verify-local'||process.argv.length!==4)throw Error('INSTALL_APPLY_DISABLED');
- console.log(JSON.stringify(await coralAuthorityInstallPreflight(process.argv[3])));
+ if(!['--verify-local','--manifest-redacted'].includes(process.argv[2])||process.argv.length!==4)throw Error('INSTALL_APPLY_DISABLED');
+ console.log(JSON.stringify(await (process.argv[2]==='--verify-local'?coralAuthorityInstallPreflight:coralAuthorityDeliveryManifest)(process.argv[3])));
 }

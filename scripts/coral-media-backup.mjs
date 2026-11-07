@@ -7,6 +7,7 @@ import {execFile} from 'node:child_process';import {promisify} from 'node:util';
 import {validateTtsRequest} from './coral-tts-jobs.mjs';
 import {coralFragmentPlan} from './coral-tts-checkpoints.mjs';
 import {coralUsageCostMicrousd} from './coral-tts-cost-plan.mjs';
+import {CORAL_TRANSCRIPT_NORMALIZATION,coralTranscriptSha} from './coral-tts-realtime-contract.mjs';
 const MAGIC=Buffer.from('CDCAUD1\n'),MAX=64000000;
 const closed=(o,keys)=>o&&Object.keys(o).sort().join(',')===[...keys].sort().join(',');
 const allowed=n=>n==='subfragments.json'||n==='request.json'||n==='manifest.json'||n==='state.json'||n==='validation.json'||/^final-[a-f0-9]{64}\.mp3$/.test(n)||TTS_CHAPTER_IDS.some(id=>n===id+'.receipt.json');
@@ -22,10 +23,12 @@ function validateSubfragments(evidence,request){
    ||!closed(item.plan,['contract','request_id','chapter','index','text_sha256','model','voice','max_output_tokens','fragments'])
    ||item.plan.contract!=='cdc-coral-subfragments-v1'||item.plan.chapter!==chapter.id||item.plan.index!==request.chapters.indexOf(chapter)
    ||item.plan.model!=='gpt-realtime-2.1-mini'||item.plan.voice!=='coral'||item.plan.max_output_tokens!==2048||item.plan.request_id!==request.request_id||item.plan.text_sha256!==chapter.sha256||item.plan.fragments?.length!==parts.length)throw Error('MEDIA_SUBFRAGMENTS');seen.add(item.chapter);
-  for(let i=0;i<parts.length;i++){const r=item.receipts[i];if(!closed(r,['response_id','model','voice','usage','cost_microusd','transcript_sha256','text_sha256','sha256','bytes'])
+  for(let i=0;i<parts.length;i++){const r=item.receipts[i];if(!closed(r,['response_id','model','voice','usage','cost_microusd','transcript_sha256','transcript_normalization','text_sha256','sha256','bytes'])
    ||!closed(r.usage,['input_tokens','output_tokens','input_token_details','output_token_details'])||!closed(r.usage.input_token_details,['text_tokens','audio_tokens'])||!closed(r.usage.output_token_details,['text_tokens','audio_tokens'])
    ||!closed(item.plan.fragments[i],['index','sha256'])||item.plan.fragments[i].index!==i||item.plan.fragments[i].sha256!==parts[i].sha256
-   ||r.model!==item.plan.model||r.voice!==item.plan.voice||!/^resp_[a-zA-Z0-9_]{1,100}$/.test(r.response_id||'')||r.text_sha256!==parts[i].sha256||r.transcript_sha256!==parts[i].sha256||r.cost_microusd!==coralUsageCostMicrousd(r.usage)||r.usage.output_tokens>2048||!/^[a-f0-9]{64}$/.test(r.sha256||'')||!Number.isSafeInteger(r.bytes)||r.bytes<46||r.bytes>10000000)throw Error('MEDIA_SUBFRAGMENTS');}
+   ||r.model!==item.plan.model||r.voice!==item.plan.voice||!/^resp_[a-zA-Z0-9_]{1,100}$/.test(r.response_id||'')||r.text_sha256!==parts[i].sha256
+   ||r.transcript_normalization!==CORAL_TRANSCRIPT_NORMALIZATION||r.transcript_sha256!==coralTranscriptSha(parts[i].text)
+   ||r.cost_microusd!==coralUsageCostMicrousd(r.usage)||r.usage.output_tokens>2048||!/^[a-f0-9]{64}$/.test(r.sha256||'')||!Number.isSafeInteger(r.bytes)||r.bytes<46||r.bytes>10000000)throw Error('MEDIA_SUBFRAGMENTS');}
  }
 }
 async function collectSubfragments(folder,request){

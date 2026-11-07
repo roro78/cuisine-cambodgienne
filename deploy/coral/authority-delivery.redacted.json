@@ -1,0 +1,62 @@
+{
+  "contract": "cdc-coral-authority-delivery-redacted-v1",
+  "public_payload_source_sha": "0d5a688f7184d556a51dd1981593300d9421826b",
+  "files": [
+    {
+      "repo_path": "public/gestion-contenus/coral-v2-ai.php",
+      "sha256": "12f85b9698f11f69a3c72b3df6b20375518b16c6595335def8d3034a662ed9ca",
+      "bytes": 37807
+    },
+    {
+      "repo_path": "public/gestion-contenus/index.php",
+      "sha256": "2412124b27cbcab6bfcf1eeb0a45c06c575dfc4302a9cd7e437ea5e2206d4bdc",
+      "bytes": 153114
+    },
+    {
+      "repo_path": "public/gestion-contenus/publication-gap-audit.php",
+      "sha256": "44f85cffca6ee0477e21c1b72a237a0f7b5095a12b10b12682e6ecb28e489e1c",
+      "bytes": 50914
+    }
+  ],
+  "dependencies": [
+    {
+      "repo_path": "public/gestion-contenus/lib.php",
+      "delivery": "unchanged"
+    },
+    {
+      "repo_path": "public/gestion-contenus/.htaccess",
+      "delivery": "unchanged"
+    }
+  ],
+  "php_qualification": [
+    "8.3",
+    "8.4"
+  ],
+  "permissions": {
+    "public_files": "preserve verified target modes",
+    "private_directory": "0700",
+    "private_token": "0600 or 0400; effective owner; readonly mount"
+  },
+  "private_configuration": "not included",
+  "host_details_included": false,
+  "observed_host_hashes_included": false,
+  "authorization": {
+    "delivery": false,
+    "authority_activation": false,
+    "secret_creation": false,
+    "worker_installation": false,
+    "paid_calls": false
+  },
+  "before_any_write": [
+    "new targeted authorization",
+    "fresh private host readback",
+    "verified rollback outside webroot"
+  ],
+  "reception": [
+    "HTTPS and distinct Bearer",
+    "fresh challenge",
+    "current version and revocable rights",
+    "network failure closed",
+    "generation remains disabled"
+  ]
+}

@@ -112,7 +112,7 @@ jobs:
         run: |
           php tests/php/editorial-all-guided-smoke.php dist
           php tests/php/editorial-coral-culinary-review-smoke.php dist
-          node --test --test-concurrency=1 tests/coral-tts-authority.test.mjs tests/coral-tts-realtime-contract.test.mjs tests/coral-tts-http-range.test.mjs tests/coral-media-backup.test.mjs tests/coral-tts-checkpoints.test.mjs tests/coral-tts-fragment-cost.test.mjs tests/coral-authority-install-preflight.test.mjs
+          node --test --test-concurrency=1 tests/coral-tts-authority.test.mjs tests/coral-tts-realtime-contract.test.mjs tests/coral-tts-transcript.test.mjs tests/coral-tts-http-range.test.mjs tests/coral-media-backup.test.mjs tests/coral-tts-checkpoints.test.mjs tests/coral-tts-fragment-cost.test.mjs tests/coral-authority-install-preflight.test.mjs
           mkdir -p artifacts/coral-contracts
           node scripts/coral-tts-fragment-cost-report.mjs > artifacts/coral-contracts/cost-report.json
       - uses: actions/upload-artifact@v4

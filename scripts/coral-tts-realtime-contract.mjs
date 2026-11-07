@@ -4,6 +4,13 @@ import {coralUsageCostMicrousd} from './coral-tts-cost-plan.mjs';
 export const CORAL_REALTIME_CANDIDATE=Object.freeze({model:'gpt-realtime-2.1-mini',voice:'coral',enabled:false,qualified:false,
  endpoint:'wss://api.openai.com/v1/realtime?model=gpt-realtime-2.1-mini',external_maximum_microusd:null});
 export function createCoralRealtimeProvider(){throw Error('CORAL_REAL_PROVIDER_DISABLED');}
+export const CORAL_TRANSCRIPT_NORMALIZATION='ecmascript-whitespace-v1';
+/** Frozen ECMAScript whitespace set only. No NFC/NFKC, case, punctuation or invisible-letter folding. */
+export function normalizeCoralTranscript(text){
+ if(typeof text!=='string'||!text.isWellFormed())throw Error('CORAL_TRANSCRIPT_UNICODE');
+ return text.replace(/[\u0009-\u000d\u0020\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+/gu,' ').replace(/^ | $/g,'');
+}
+export const coralTranscriptSha=text=>audioSha(normalizeCoralTranscript(text));
 export function coralRealtimeResponseEvent(text,maxOutputTokens=4096){
  if(typeof text!=='string'||text.length<1||text.length>7000||!Number.isInteger(maxOutputTokens)||maxOutputTokens<1||maxOutputTokens>4096)
   throw Error('CORAL_REALTIME_INPUT');
@@ -19,7 +26,7 @@ export function createCoralRealtimeContractHarness({testOnly=false,exchange,time
  let last=null;
  return {kind:'openai-realtime-unqualified',paid:true,qualified:false,lastReceipt:()=>last,
   async synthesize({chapter}){
-   const event=coralRealtimeResponseEvent(chapter?.text,maxOutputTokens);last=null;
+   last=null;const sourceText=chapter?.text,event=coralRealtimeResponseEvent(sourceText,maxOutputTokens),sourceSha=audioSha(sourceText),acceptedSha=coralTranscriptSha(sourceText);
    const abort=new AbortController();let timer,iterator;
    const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('TIMEOUT'));},timeoutMs);});
    try{
@@ -44,13 +51,14 @@ export function createCoralRealtimeContractHarness({testOnly=false,exchange,time
       transcript=e.transcript;
      }else if(e.type==='response.done'){
       if(!id||e.response?.id!==id||e.response.status!=='completed'||!audioDone||transcript===null
-       ||transcript.replace(/\s+/g,' ').trim()!==chapter.text.replace(/\s+/g,' ').trim())throw Error('INCOMPLETE');
+       ||coralTranscriptSha(transcript)!==acceptedSha)throw Error('INCOMPLETE');
       usage=e.response.usage;const cost=coralUsageCostMicrousd(usage);
       if(usage.output_tokens>maxOutputTokens)throw Error('OUTPUT_LIMIT');
       // Persist counters only: never copy arbitrary provider fields into a durable receipt.
       usage={input_tokens:usage.input_tokens,output_tokens:usage.output_tokens,input_token_details:{text_tokens:usage.input_token_details.text_tokens,audio_tokens:0},
        output_token_details:{text_tokens:usage.output_token_details.text_tokens,audio_tokens:usage.output_token_details.audio_tokens}};
-      last={response_id:id,model:CORAL_REALTIME_CANDIDATE.model,voice:'coral',usage,cost_microusd:cost,transcript_sha256:audioSha(transcript)};done=true;
+      last={response_id:id,model:CORAL_REALTIME_CANDIDATE.model,voice:'coral',usage,cost_microusd:cost,
+       text_sha256:sourceSha,transcript_sha256:acceptedSha,transcript_normalization:CORAL_TRANSCRIPT_NORMALIZATION};done=true;
      }else if(!['session.created','session.updated','conversation.item.added','conversation.item.done','response.output_item.added',
        'response.content_part.added','response.output_audio_transcript.delta','response.content_part.done','response.output_item.done','rate_limits.updated'].includes(e.type))throw Error('UNEXPECTED');
     }

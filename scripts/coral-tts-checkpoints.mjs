@@ -1,10 +1,10 @@
 /** Durable sub-fragments for the INERT contract harness. No production transport or key. */
 import {mkdir,lstat,rmdir} from 'node:fs/promises';import {join} from 'node:path';
-import {createCoralRealtimeContractHarness,CORAL_REALTIME_CANDIDATE} from './coral-tts-realtime-contract.mjs';
+import {createCoralRealtimeContractHarness,CORAL_REALTIME_CANDIDATE,CORAL_TRANSCRIPT_NORMALIZATION,coralTranscriptSha} from './coral-tts-realtime-contract.mjs';
 import {audioSha,privateAudioRead,privateAudioDigest,privateAudioVerifiedOpen,durableWrite} from './coral-tts-audio.mjs';
 import {coralUsageCostMicrousd} from './coral-tts-cost-plan.mjs';
 export function coralFragmentPlan(chapter){
- if(typeof chapter?.text!=='string'||chapter.text.length<1||chapter.text.length>7000||audioSha(chapter.text)!==chapter.sha256)throw Error('CORAL_FRAGMENT_TEXT');
+ if(typeof chapter?.text!=='string'||!chapter.text.isWellFormed()||chapter.text.length<1||chapter.text.length>7000||audioSha(chapter.text)!==chapter.sha256)throw Error('CORAL_FRAGMENT_TEXT');
  const chars=Array.from(chapter.text),fragments=[];let start=0;
  while(start<chars.length){let end=Math.min(start+600,chars.length);if(end<chars.length){for(let n=end;n>start+300;n--)if(/[\s.!?;]/u.test(chars[n-1])){end=n;break;}}
   const text=chars.slice(start,end).join('');fragments.push({index:fragments.length,text,sha256:audioSha(text)});start=end;
@@ -27,7 +27,8 @@ export function createCoralCheckpointHarness({testOnly=false,exchange,authorize,
   for(const fragment of texts){
    const stem=String(fragment.index).padStart(2,'0'),receipt=await optional(join(p.checkpointDir,stem+'.receipt.json')),attempt=await optional(join(p.checkpointDir,stem+'.attempt.json'));
    if(!receipt){if(attempt)throw Error('CORAL_REALTIME_UNCERTAIN_NO_RETRY');missing=true;continue;}
-   if(missing||!attempt||attempt.text_sha256!==fragment.sha256||receipt.text_sha256!==fragment.sha256||receipt.transcript_sha256!==fragment.sha256
+   if(missing||!attempt||attempt.text_sha256!==fragment.sha256||receipt.text_sha256!==fragment.sha256
+    ||receipt.transcript_normalization!==CORAL_TRANSCRIPT_NORMALIZATION||receipt.transcript_sha256!==coralTranscriptSha(fragment.text)
     ||receipt.model!==plan.model||receipt.voice!==plan.voice||receipt.cost_microusd!==coralUsageCostMicrousd(receipt.usage)
     ||receipt.usage.output_tokens>2048||!/^resp_[a-zA-Z0-9_]{1,100}$/.test(receipt.response_id||'')||receipts.some(r=>r.response_id===receipt.response_id))throw Error('CORAL_CHECKPOINT_RECEIPT');
    const file=join(p.checkpointDir,stem+'.wav'),digest=await privateAudioDigest(file,10000000);
@@ -47,7 +48,8 @@ export function createCoralCheckpointHarness({testOnly=false,exchange,authorize,
     await authority(p);const fragment=texts[n],stem=String(n).padStart(2,'0');
     await durableWrite(join(p.checkpointDir,stem+'.attempt.json'),JSON.stringify({text_sha256:fragment.sha256,max_output_tokens:2048}));
     const wav=await inert.synthesize({chapter:{text:fragment.text}}),receipt=inert.lastReceipt();
-    if(wav.length>10000000||receipt.transcript_sha256!==fragment.sha256)throw Error('CORAL_REALTIME_UNCERTAIN_NO_RETRY');
+    if(wav.length>10000000||receipt.text_sha256!==fragment.sha256||receipt.transcript_normalization!==CORAL_TRANSCRIPT_NORMALIZATION
+     ||receipt.transcript_sha256!==coralTranscriptSha(fragment.text))throw Error('CORAL_REALTIME_UNCERTAIN_NO_RETRY');
     await durableWrite(join(p.checkpointDir,stem+'.wav'),wav);
     await durableWrite(join(p.checkpointDir,stem+'.receipt.json'),JSON.stringify({...receipt,text_sha256:fragment.sha256,sha256:audioSha(wav),bytes:wav.length}));
     if(pauseAfter===n+1&&n+1<texts.length)throw Error('CORAL_CHECKPOINT_PAUSED');
