@@ -46,14 +46,19 @@ Une **cuisinière francophone, voix féminine Coral**, qui parle comme une créa
 - « Vous pouvez mettre pause » toutes les vingt secondes ; réserver cette phrase aux gestes ou attentes qui le justifient.
 - Inventer des anecdotes personnelles ou attribuer une coutume khmère à tout un pays sans source.
 
-## 4. Quantités et matériel — règle non négociable
+## 4. Quantités, convives et matériel — règle universelle et non négociable
 
-- La fiche propose un **nombre de convives modifiable** ; les quantités doivent être recalculées et visibles sur la page. Vérifier les ingrédients fractionnaires, les œufs, les sauces, les garnitures et les unités, notamment à 1, 2, 4, 6, 8 ou 12 personnes.
-- **Un MP3 unique pour toutes les portions. Ne pas annoncer de grammages, volumes ou nombres d'ingrédients qui changent avec les convives** : ni « 200 g de poulet », ni « prenez quatre tomates », ni « deux assiettes ».
-- Dire au début : « Choisissez votre nombre de convives sur la fiche et préparez les quantités indiquées. » Ensuite nommer **chaque ingrédient au moment de l'utiliser**, sans chiffre de portion.
-- Les **repères de technique invariants** sont permis à la voix : cubes d'environ 2–3 cm, « laisser mariner vingt minutes au frais », température à cœur sourcée, texture, consistance, couleur. Distinguer nettement ces repères des quantités variables.
-- La cuisinière **annonce le matériel au début**, de manière naturelle et suffisamment courte (généralement moins d'une minute) ; compter les ustensiles uniquement si leur nombre ne dépend pas des convives.
-- Chaque ajout pédagogique au catalogue canonique (huile de cuisson, eau, pickles, accompagnement, etc.) doit figurer **séparément** sur la fiche, avec sa provenance, son rôle et ses quantités adaptables. **Ne jamais ajouter un ingrédient dans la voix qui manque à la fiche.**
+**Décision éditoriale permanente du 7 novembre 2026 — tous les ateliers, sans exception : une seule narration et un seul MP3 par atelier et par version, quel que soit le nombre de convives sélectionné.** Cette règle s'applique à l'introduction, aux six chapitres, à toute narration future, à la relecture des brouillons et à leur validation avant TTS. Elle ne se limite pas aux ramequins ni à une recette particulière.
+
+- **Séparation des responsabilités :** la fiche et l'interface portent le nombre de convives et recalculent les quantités, portions et besoins associés ; la voix explique les gestes et renvoie à la fiche pour les valeurs qui dépendent du nombre de convives. Aucun appel TTS ni fichier MP3 différent pour 1, 2, 4, 6, 8 ou 12 personnes.
+- **Interdit dans la voix :** tout nombre figé qui dépend des convives, notamment grammages et volumes d'ingrédients, nombre d'œufs, de morceaux, de portions, d'assiettes, de bols, de ramequins ou d'autres contenants, nombre de fournées et quantité à dresser ou à servir. Ne pas remplacer « quatre ramequins » par un autre nombre présumé universel.
+- **Formulations préférées :** « Préparez les quantités indiquées pour vos convives sur la fiche », « Ajoutez le lait de coco prévu dans vos ingrédients », « Répartissez la préparation dans vos contenants », « Procédez en plusieurs fournées si votre matériel ne permet pas de tout cuire correctement ». Nommer chaque ingrédient quand il est utilisé, sans transformer le cours en lecture de liste.
+- **Matériel :** annoncer naturellement le matériel nécessaire, sans imposer un nombre de contenants ou de couverts lié aux portions. Des nombres de matériels strictement invariants pour une technique restent possibles s'ils sont réellement nécessaires et vérifiés.
+- **Technique et sécurité :** conserver les repères *indépendants des portions*, tels que taille de coupe, intensité, texture, température de sécurité sourcée et contrôles sensoriels. Une durée dépendant de la masse, de l'épaisseur, du remplissage ou des contenants est **indicative**, jamais garantie pour tous : expliquer les critères sûrs de vérification et signaler, si utile, que plusieurs contenants peuvent cuire différemment.
+- **Fiche et audio cohérents :** l'adaptation des quantités à l'écran n'entraîne **pas** d'adaptation du MP3. Si un format ou un temps de cuisson change matériellement selon l'échelle, la fiche doit signaler les ajustements utiles et la voix doit fournir des repères généraux fiables ; ne pas prétendre qu'une quantité arbitraire fonctionne à toute échelle.
+- **Contrôle éditorial bloquant avant TTS :** relire **les sept narrations** pour détecter les nombres et consignes dépendants des convives ; corriger uniquement les occurrences concernées, préserver les explications culinaires, et faire approuver les textes modifiés. Une narration modifiée n'hérite jamais de l'approbation ni de l'empreinte d'un ancien MP3. Conserver les scripts, versions et MP3 historiques intacts.
+
+Les nombres associés à une **technique réellement invariante** restent autorisés à la voix (par exemple des cubes d'environ 2–3 cm, une température de cuisson sourcée ou un repos de durée justifiée et indépendante de la quantité). Il faut toujours distinguer ces repères des valeurs qui varient avec les portions.
 
 ## 5. Sept chapitres, six étapes invariantes
 
