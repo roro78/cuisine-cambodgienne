@@ -65,7 +65,10 @@ test('shared Studio through authenticated HTTP: rights, double submit, seven act
  const additional=await readFile('tests/fixtures/editorial-tts-config.php','utf8');
  await writeFile(config,original.replace('return $cfg;',additional.replace(/^<\?php\s*/, '')+'\nreturn $cfg;'),{mode:0o600});
  const port=await freePort(),origin='http://127.0.0.1:'+port,base=origin+'/gestion-contenus/';
- const server=spawn(php,['-S','127.0.0.1:'+port,join(f.root,'router.php')],{stdio:['ignore','ignore','pipe'],windowsHide:true});
+  const server=spawn(php,['-S','127.0.0.1:'+port,join(f.root,'router.php')],{
+   stdio:['ignore','ignore','pipe'],windowsHide:true,
+   env:{...process.env,CORAL_FINAL_SOURCE_FIXTURE:'1'}
+  });
  let errors='';server.stderr.on('data',b=>errors+=b);t.after(()=>server.kill());
  const browser=await chromium.launch({executablePath:process.env.CHROME_BIN||undefined,headless:true,args:['--autoplay-policy=no-user-gesture-required']});
  t.after(()=>browser.close());const ctx=await browser.newContext({viewport:{width:390,height:844}});
@@ -88,9 +91,8 @@ test('shared Studio through authenticated HTTP: rights, double submit, seven act
  await finalPanel.evaluate(el=>{el.open=true;});
  assert.match(await finalPanel.textContent(),/validation humaine nécessaire/i);
  finalForm=finalPanel.locator('form');
- for(const [i,host] of ['example.org','example.net'].entries()){
-  await finalForm.locator('[name="final_source['+i+'][title]"]').fill('Source de test '+i);
-  await finalForm.locator('[name="final_source['+i+'][url]"]').fill('https://'+host+'/atelier-test');
+ for(const i of [0,1]){
+  assert.equal(await finalForm.locator('[name="final_source['+i+'][url]"]').isEditable(),false);
   await finalForm.locator('[name="final_source['+i+'][note]"]').fill('Comparaison purement fictive dans le navigateur local, sans consultation du site source.');
  }
  await finalForm.locator('[name=final_note]').fill('Nouvelle revue finale fictive des sept textes, de la recette et des six phases, sans portée culinaire.');
@@ -99,6 +101,13 @@ test('shared Studio through authenticated HTTP: rights, double submit, seven act
  await page.goto(url+'&final_audit=1');
  await finalPanel.evaluate(el=>{el.open=true;});
  assert.match(await finalPanel.textContent(),/Visa final actif/);
+  for(const width of [360,390,1440]){
+   await page.setViewportSize({width,height:950});
+   const overflow=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,
+    elements:[...document.querySelectorAll('*')].filter(el=>el.scrollWidth>Math.max(el.clientWidth,innerWidth)+1)
+      .slice(0,12).map(el=>({tag:el.tagName,cls:el.className,text:(el.textContent||'').slice(0,60),scroll:el.scrollWidth,client:el.clientWidth}))}));
+   assert.ok(overflow.scroll<=width+1,'final review responsive '+JSON.stringify(overflow));
+  }
  await page.goto(url);
  assert.equal(await panel.locator('button[value=generate]').isDisabled(),true);
  for(const name of ['voice','content','private_audio'])await panel.locator('[name="tts_checks['+name+']"]').check();

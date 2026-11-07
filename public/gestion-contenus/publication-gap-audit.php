@@ -773,14 +773,14 @@ function cmsAtelierCulinaryAction(string $private,string $id,int $expected,
 
 /**
  * FINAL CROSS-REVIEW after all seven scripts: deterministic internal checks
- * and a separately documented HUMAN comparison against two external sources.
- * No network fetch, recipe rewrite, provider call, audio or publication.
+ * and a separately documented human comparison against two fetched external sources.
+ * This audit itself does not fetch, rewrite, call a provider, generate audio or publish.
  * A difference between culinary sources is never automatically called an error.
  */
 function cmsCoralFinalAudit(array $record,array $catalog,array $canonical,array $guided): array {
     if(($record['kind']??null)!=='atelier'||!cmsCreationId($record['id']??null))
         throw new InvalidArgumentException('CORAL_FINAL_KIND');
-    $issues=[];$warnings=[];$recipeSha=null;
+    $issues=[];$warnings=[];$recipeSha=null;$related=[];
     try{
         $gate=cmsAtelierBlueprintPreflight($record,$catalog);
         if(($gate['ready_for_audio_review']??false)!==true)
@@ -794,13 +794,52 @@ function cmsCoralFinalAudit(array $record,array $catalog,array $canonical,array 
                 'finding'=>'La recette source ne permet pas de contrôler ses quantités.',
                 'suggestion'=>'Compléter et valider la source canonique, sans inventer de portions.'];
         foreach($recipe['phase_ingredient_not_exact']??[] as $name)
-            $warnings[]=['code'=>'INGREDIENT_NAME_TO_VERIFY','chapter'=>null,
-                'finding'=>'Ingrédient de phase à rapprocher de la recette : '.$name,
-                'suggestion'=>'Vérifier s’il s’agit d’un synonyme, d’une variante ou d’un ajout erroné.'];
+            $issues[]=['code'=>'INGREDIENT_UNMATCHED','chapter'=>null,
+                'finding'=>'Ingrédient de phase absent sous ce nom dans la recette : '.$name,
+                'suggestion'=>'Corriger la phase si elle diverge ; une variante exige une décision sur la fiche, sans changer la recette publiée.'];
+        if(($recipe['model_supported_for_quantity_review']??false)===true){
+            $used=[];foreach($record['atelier_phase_details']['phases']??[] as $phase)
+                foreach($phase['ingredientNames']??[] as $name)
+                    if(is_string($name)){
+                        $key=trim($name);
+                        $used[function_exists('mb_strtolower')?mb_strtolower($key,'UTF-8'):strtolower($key)]=true;
+                    }
+            foreach($recipe['canonical_ingredients'] as $ingredient)
+                if(!isset($used[function_exists('mb_strtolower')
+                    ?mb_strtolower(trim($ingredient['name']),'UTF-8'):strtolower(trim($ingredient['name']))]))
+                    $issues[]=['code'=>'INGREDIENT_NOT_USED','chapter'=>null,
+                        'finding'=>'Ingrédient canonique absent des phases : '.$ingredient['name'],
+                        'suggestion'=>'Indiquer où et comment cet ingrédient est utilisé, ou soumettre la variante à une décision éditoriale.'];
+        }
     }catch(Throwable $e){
         $issues[]=['code'=>'SOURCE_UNAVAILABLE','chapter'=>null,
             'finding'=>'Références de recette ou phases impossibles à vérifier.',
             'suggestion'=>'Restaurer les index canoniques et corriger la fiche source.'];
+    }
+    // Pilot Amok also binds the published cultural and ingredient pages: a
+    // source change invalidates the final digest, while regional variants stay human decisions.
+    if(($recipe['recipe_id']??null)==='recette:amok-trey'){
+        foreach(['culture:comprendre-amok','ingredient:kroeung'] as $id){
+            $source=$canonical[$id]??null;$entry=$guided[$id]??null;
+            if(!is_array($source)||!is_array($entry)
+                ||($source['fingerprint']??null)!==($entry['fingerprint']??null)
+                ||!preg_match('/^[a-f0-9]{64}$/D',(string)($source['fingerprint']??''))){
+                $issues[]=['code'=>'RELATED_SITE_SOURCE_MISSING','chapter'=>null,
+                    'finding'=>'Fiche culinaire connexe introuvable ou empreinte divergente : '.$id,
+                    'suggestion'=>'Rétablir les index publics cohérents avant la validation finale.'];
+                continue;
+            }
+            $fields=$entry['fields']??[];
+            $ok=$id==='culture:comprendre-amok'
+                ?is_array($fields)&&preg_match('/feuilles? de bananier/iu',json_encode($fields,JSON_UNESCAPED_UNICODE))===1
+                :is_array($fields)&&in_array('Amok',$fields['uses']??[],true)
+                    &&in_array('Poisson blanc',$fields['pairings']??[],true)
+                    &&in_array('Lait de coco',$fields['pairings']??[],true);
+            if(!$ok)$issues[]=['code'=>'RELATED_SITE_FACT_CHANGED','chapter'=>null,
+                'finding'=>'Le lien culinaire avec la fiche '.$id.' doit être revérifié.',
+                'suggestion'=>'Comparer la fiche publiée et l’atelier avant un nouveau visa.'];
+            $related[]=['id'=>$id,'sha256'=>$source['fingerprint'],'facts_checked'=>$ok];
+        }
     }
     $chapters=$record['atelier_scripts']['chapters']??[];
     if(!is_array($chapters)||count($chapters)!==7)
@@ -816,24 +855,47 @@ function cmsCoralFinalAudit(array $record,array $catalog,array $canonical,array 
             continue;
         }
         $patterns=[
-            'FIXED_SERVINGS'=>'~(?<![\p{L}\p{N}])(?:\d+|deux|trois|quatre|cinq|six|sept|huit|neuf|dix)\s+(?:petits?\s+|grands?\s+)?(?:ramequins?|assiettes?|portions?|convives?|personnes?|bols?)\b~iu',
-            'FIXED_INGREDIENT_QUANTITY'=>'~(?<![\p{L}\p{N}])\d+(?:[,.]\d+)?\s*(?:g|kg|ml|cl|grammes?|millilitres?|centilitres?|litres?)\b~iu'
+            'FIXED_SERVINGS'=>'~(?<![\p{L}\p{N}])(?:\d+|un|une|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze)\s+(?:petits?\s+|grands?\s+)?(?:ramequins?|assiettes?|portions?|convives?|personnes?|bols?)\b~iu',
+            'FIXED_INGREDIENT_QUANTITY'=>'~(?<![\p{L}\p{N}])(?:\d+(?:[,.]\d+)?|une?|deux|trois|quatre|cinq|six|sept|huit|neuf|dix)\s*(?:g|kg|ml|cl|grammes?|millilitres?|centilitres?|litres?|cuillerées?|cuillères?\s+à\s+(?:soupe|café)|œufs?|oeufs?)\b~iu'
         ];
         foreach($patterns as $code=>$regex){
-            if(preg_match($regex,$text,$hit,PREG_OFFSET_CAPTURE)===1)
-                $issues[]=['code'=>$code,'chapter'=>$id,
+            if(preg_match($regex,$text,$hit,PREG_OFFSET_CAPTURE)===1){
+                $passage=$hit[0][0];$replacement=null;
+                if($code==='FIXED_SERVINGS'){
+                    if(preg_match('/ramequins?$/iu',$passage))$replacement='vos ramequins';
+                    elseif(preg_match('/assiettes?$/iu',$passage))$replacement='vos assiettes';
+                    elseif(preg_match('/bols?$/iu',$passage))$replacement='vos bols';
+                    elseif(preg_match('/portions?$/iu',$passage))$replacement='les portions indiquées sur la fiche';
+                    elseif(preg_match('/convives?|personnes?$/iu',$passage))$replacement='vos convives';
+                }
+                $issues[]=['code'=>$code,'chapter'=>$id,'passage'=>$passage,
                     'finding'=>'Valeur chiffrée potentiellement liée aux convives : '.$hit[0][0],
-                    'suggestion'=>'Remplacer par une consigne renvoyant aux quantités de la fiche ; préserver les repères techniques invariants.'];
+                    'suggestion'=>'Remplacer par une consigne renvoyant aux quantités de la fiche ; préserver les repères techniques invariants.',
+                    'proposed_correction'=>$replacement];
+            }
         }
         if(preg_match('~(?<!\p{L})(?:fabriqu\p{L}*|fabrication\p{L}*|constru\p{L}*|chantier|poste)(?!\p{L})~iu',$text)===1)
             $issues[]=['code'=>'LEXICON','chapter'=>$id,
                 'finding'=>'Vocabulaire interdit dans la narration.',
                 'suggestion'=>'Employer le lexique culinaire du référentiel.'];
+        if(($recipe['recipe_id']??null)==='recette:amok-trey'
+            &&preg_match('/(?:seule vraie recette|unique façon traditionnelle|origine royale (?:prouvée|démontrée))/iu',$text,$hit)===1)
+            $issues[]=['code'=>'AMOK_HISTORY_UNSUPPORTED','chapter'=>$id,
+                'passage'=>$hit[0],
+                'finding'=>'Affirmation historique ou exclusivité contredite par le Carnet Amok.',
+                'suggestion'=>'Présenter la version de la fiche comme un choix parmi plusieurs variantes documentées.'];
     }
+    foreach($issues as &$issue){
+        $issue['location']=$issue['chapter']===null?'atelier et recette':'atelier_scripts.chapters.'.$issue['chapter'].'.text';
+        $issue['passage']=$issue['passage']??$issue['finding'];
+        $issue['reference']=$recipeSha??'recette canonique indisponible';
+        $issue['severity']='bloquant';
+        $issue['proposed_correction']=$issue['proposed_correction']??null;
+    }unset($issue);
     $digest=hash('sha256',json_encode([
         'contract'=>'cdc-coral-final-cross-audit-v1',
         'id'=>$record['id'],'version'=>$record['version']??null,
-        'recipe_sha256'=>$recipeSha,
+        'recipe_sha256'=>$recipeSha,'related_site_sources'=>$related,
         'title'=>$record['title']??null,'summary'=>$record['summary']??null,
         'fields'=>$record['fields']??null,'reference'=>$record['atelier_reference']??null,
         'phases'=>$record['atelier_phase_details']??null,
@@ -841,7 +903,7 @@ function cmsCoralFinalAudit(array $record,array $catalog,array $canonical,array 
     ],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR));
     return ['contract'=>'cdc-coral-final-cross-audit-v1',
         'creation_id'=>$record['id'],'creation_version'=>$record['version']??null,
-        'recipe_sha256'=>$recipeSha,'digest'=>$digest,
+        'recipe_sha256'=>$recipeSha,'related_site_sources'=>$related,'digest'=>$digest,
         'blocking'=>$issues,'warnings'=>$warnings,
         'automated_checks_pass'=>count($issues)===0,
         // Claims about cultural authenticity / safety need a human judgment.
@@ -851,7 +913,7 @@ function cmsCoralFinalAudit(array $record,array $catalog,array $canonical,array 
 function cmsCoralFinalSources(mixed $sources): array {
     if(!is_array($sources)||!array_is_list($sources)||count($sources)!==2)
         throw new InvalidArgumentException('CORAL_FINAL_SOURCES');
-    $out=[];$hosts=[];
+    $out=[];$hosts=[];$catalog=cmsCoralFinalSourceCatalog();
     foreach($sources as $source){
         if(!is_array($source)||array_keys($source)!==['title','url','note'])
             throw new InvalidArgumentException('CORAL_FINAL_SOURCES');
@@ -869,9 +931,115 @@ function cmsCoralFinalSources(mixed $sources): array {
            ||preg_match('/[\x00-\x20\x7f]/',$row['url']))
             throw new InvalidArgumentException('CORAL_FINAL_SOURCES');
         $hosts[strtolower($url['host'])]=true;$out[]=$row;
+        if(!isset($catalog[$row['url']])||$row['title']!==$catalog[$row['url']]['title'])
+            throw new InvalidArgumentException('CORAL_FINAL_SOURCES');
     }
     if(count($hosts)!==2)throw new InvalidArgumentException('CORAL_FINAL_SOURCES');
     return $out;
+}
+/** Only these two editorially identified Amok pages may be fetched by the Studio. */
+function cmsCoralFinalSourceCatalog(): array {
+    return [
+        'https://chefnak.squarespace.com/cambodian-fish-amok'=>[
+            'title'=>'Chef Nak — Cambodian Fish Amok','author'=>'Chef Nak',
+            'source_id'=>'chef-nak-amok','method'=>'vapeur douce, crème de coco et œufs',
+            'variant'=>'Poisson et coco en quantités différentes ; cuisson vapeur de 10 + 2 minutes dans des coupes de bananier.'],
+        'https://www.cambodiaembassyuk.org/fish-amok-recipe/'=>[
+            'title'=>'Eleven One Kitchen — Ambassade du Cambodge','author'=>'Soklim Srun / Eleven One Kitchen',
+            'source_id'=>'embassy-eleven-one-amok','method'=>'variante poêlée ; note sur la variante vapeur avec œuf',
+            'variant'=>'Poisson, lait de coco et kroeung dosés différemment ; la méthode détaillée est poêlée, la note décrit aussi la vapeur.']
+    ];
+}
+/** Fixed URL, public IPv4 pin, TLS verification, no proxy/redirect and bounded body. */
+function cmsCoralFinalHttpFetch(string $url): array {
+    if(!isset(cmsCoralFinalSourceCatalog()[$url])||!function_exists('curl_init'))
+        throw new RuntimeException('CORAL_FINAL_FETCH_UNAVAILABLE');
+    $host=parse_url($url,PHP_URL_HOST);
+    if(!is_string($host)||$host==='')throw new RuntimeException('CORAL_FINAL_FETCH_UNAVAILABLE');
+    $ips=gethostbynamel($host);
+    if(!is_array($ips)||$ips===[])throw new RuntimeException('CORAL_FINAL_FETCH_UNAVAILABLE');
+    foreach($ips as $ip)if(!filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4|FILTER_FLAG_NO_PRIV_RANGE|FILTER_FLAG_NO_RES_RANGE))
+        throw new RuntimeException('CORAL_FINAL_FETCH_UNAVAILABLE');
+    $ch=curl_init($url);if($ch===false)throw new RuntimeException('CORAL_FINAL_FETCH_UNAVAILABLE');
+    $body='';
+    try{
+        curl_setopt_array($ch,[CURLOPT_RETURNTRANSFER=>false,CURLOPT_FOLLOWLOCATION=>false,
+            CURLOPT_MAXREDIRS=>0,CURLOPT_CONNECTTIMEOUT=>4,CURLOPT_TIMEOUT=>10,
+            CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2,
+            CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS,CURLOPT_REDIR_PROTOCOLS=>CURLPROTO_HTTPS,
+            CURLOPT_PROXY=>'',CURLOPT_NOPROXY=>'*',CURLOPT_USERAGENT=>'CuisineDuCambodge-CoralAudit/1.0',
+            CURLOPT_RESOLVE=>[$host.':443:'.$ips[0]],
+            CURLOPT_WRITEFUNCTION=>static function($handle,string $chunk)use(&$body):int{
+                if(strlen($body)+strlen($chunk)>524288)return 0;
+                $body.=$chunk;return strlen($chunk);
+            }]);
+        if(curl_exec($ch)!==true||curl_errno($ch)!==0)
+            throw new RuntimeException('CORAL_FINAL_FETCH_UNAVAILABLE');
+        $status=(int)curl_getinfo($ch,CURLINFO_RESPONSE_CODE);
+        $type=(string)curl_getinfo($ch,CURLINFO_CONTENT_TYPE);
+        if($status!==200||!preg_match('~^text/html(?:;|$)~i',$type)||strlen($body)<500)
+            throw new RuntimeException('CORAL_FINAL_FETCH_UNAVAILABLE');
+        return ['status'=>$status,'content_type'=>$type,'body'=>$body];
+    }finally{curl_close($ch);}
+}
+/** External statements are derived from fetched bytes, never from POST claims. */
+function cmsCoralFinalEvidence(mixed $sources,?callable $fetcher=null): array {
+    $rows=cmsCoralFinalSources($sources);$catalog=cmsCoralFinalSourceCatalog();$seen=[];
+    foreach($rows as &$row){
+        $response=($fetcher??'cmsCoralFinalHttpFetch')($row['url']);
+        if(!is_array($response)||($response['status']??null)!==200
+            ||!preg_match('~^text/html(?:;|$)~i',(string)($response['content_type']??''))
+            ||!is_string($response['body']??null)
+            ||strlen($response['body'])<500||strlen($response['body'])>524288)
+            throw new RuntimeException('CORAL_FINAL_FETCH_UNAVAILABLE');
+        $raw=$response['body'];
+        $clean=preg_replace('~<(?:script|style|template|noscript)\b[^>]*>.*?</(?:script|style|template|noscript)>~is',' ',$raw);
+        if(!is_string($clean))throw new RuntimeException('CORAL_FINAL_FETCH_UNAVAILABLE');
+        $plain=preg_replace('~<[^>]*>~',' ',$clean);
+        if(!is_string($plain))throw new RuntimeException('CORAL_FINAL_FETCH_UNAVAILABLE');
+        $text=html_entity_decode($plain,ENT_QUOTES|ENT_HTML5,'UTF-8');
+        $text=preg_replace('/\s+/u',' ',$text);
+        if(!is_string($text)||!preg_match('~fish\s+amok|amok\s+fish~iu',$text))
+            throw new RuntimeException('CORAL_FINAL_SOURCE_UNRELATED');
+        $patterns=['fish'=>'~\bfish\b~iu','coconut'=>'~\bcoconut\b~iu',
+            'kroeung'=>'~\b(?:kroeung|kreoung)\b~iu','steam'=>'~\bsteam(?:ed|ing)?\b~iu'];
+        $observed=[];foreach($patterns as $term=>$pattern){
+            if(!preg_match($pattern,$text))throw new RuntimeException('CORAL_FINAL_SOURCE_UNRELATED');
+            $observed[]=$term;
+        }
+        $meta=$catalog[$row['url']];$seen[$meta['source_id']]=true;
+        $required=$meta['source_id']==='chef-nak-amok'
+            ?['~\b1\s*kg\s+fish\b~iu','~\b320\s*g\s+coconut\b~iu','~\bsteam\s+for\s+10\s+minutes\b~iu','~\bsteam\s+2\s+more\s+minutes\b~iu']
+            :['~\b0[.,]25\s*kg\s+fish\b~iu','~\b70\s*ml\s+coconut\b~iu','~\bfry\s+them\b~iu','~\bto\s+be\s+steamed\b~iu'];
+        foreach($required as $pattern)if(!preg_match($pattern,$text))
+            throw new RuntimeException('CORAL_FINAL_SOURCE_CHANGED');
+        $row['evidence']=['source_id'=>$meta['source_id'],'author'=>$meta['author'],
+            'retrieved_at'=>gmdate('Y-m-d\TH:i:s\Z'),'content_sha256'=>hash('sha256',$raw),
+            'observed_terms'=>$observed,'method'=>$meta['method'],'variant'=>$meta['variant']];
+    }unset($row);
+    if(count($seen)!==2)throw new RuntimeException('CORAL_FINAL_SOURCES');
+    return $rows;
+}
+function cmsCoralFinalEvidenceCurrent(array $sources,bool $fresh=true): bool {
+    try{
+        if(count($sources)!==2)return false;$catalog=cmsCoralFinalSourceCatalog();$seen=[];
+        foreach($sources as $row){
+            if(!is_array($row)||array_keys($row)!==['title','url','note','evidence'])return false;
+        }
+        foreach($sources as $row){
+            $e=$row['evidence'];$meta=$catalog[$row['url']]??null;
+            if(!is_array($e)||array_keys($e)!==['source_id','author','retrieved_at','content_sha256','observed_terms','method','variant']
+                ||!is_array($meta)||$e['source_id']!==$meta['source_id']||$e['author']!==$meta['author']
+                ||$e['method']!==$meta['method']||$e['variant']!==$meta['variant']
+                ||$e['observed_terms']!==['fish','coconut','kroeung','steam']
+                ||!is_string($e['content_sha256'])||!preg_match('/^[a-f0-9]{64}$/D',$e['content_sha256']))return false;
+            $then=strtotime((string)$e['retrieved_at']);
+            if($then===false||$then>time()+30||($fresh&&$then<time()-3600))return false;
+            $seen[$e['source_id']]=true;
+        }
+        cmsCoralFinalSources(array_map(static fn($r)=>array_intersect_key($r,array_flip(['title','url','note'])),$sources));
+        return count($seen)===2;
+    }catch(Throwable $e){return false;}
 }
 function cmsCoralFinalJournal(string $dir,string $id): array {
     if(!cmsCreationId($id))throw new InvalidArgumentException('CORAL_FINAL_ID');
@@ -895,7 +1063,7 @@ function cmsCoralFinalJournal(string $dir,string $id): array {
             ||!is_string($r['audit_digest']??null)||!preg_match('/^[a-f0-9]{64}$/D',$r['audit_digest'])
             ||!is_string($r['recipe_sha256']??null)||!preg_match('/^[a-f0-9]{64}$/D',$r['recipe_sha256'])
             ||!is_array($r['sources']??null)
-            ||($r['action']==='approve' ? cmsCoralFinalSources($r['sources'])!==$r['sources'] : $r['sources']!==[])
+            ||($r['action']==='approve' ? !cmsCoralFinalEvidenceCurrent($r['sources'],false) : $r['sources']!==[])
             ||!is_string($r['note']??null)||mbLen($r['note'])<50||mbLen($r['note'])>900
             ||($r['reviewer']??null)!=='authenticated-cms-owner'
             ||!is_string($r['reviewed_at']??null)
@@ -915,7 +1083,8 @@ function cmsCoralFinalStatus(string $private,array $record,array $catalog,array 
         &&hash_equals($report['digest'],$last['audit_digest'])
         &&$report['recipe_sha256']!==null
         &&hash_equals($report['recipe_sha256'],$last['recipe_sha256'])
-        &&$report['automated_checks_pass'];
+        &&$report['automated_checks_pass']
+        &&cmsCoralFinalEvidenceCurrent($last['sources']);
     // Existing seven per-text visas and culinary attestation remain mandatory.
     try{
         $texts=cmsAtelierVisaStatus(cmsCreationDir($private),$record,$catalog);
@@ -929,7 +1098,8 @@ function cmsCoralFinalStatus(string $private,array $record,array $catalog,array 
         'tts_authorized'=>false,'publication_ready'=>false];
 }
 function cmsCoralFinalAction(string $private,string $id,int $version,string $action,mixed $sources,mixed $note,
-    bool $confirmed,bool $authenticated,array $catalog,array $canonical,array $guided): array {
+    bool $confirmed,bool $authenticated,array $catalog,array $canonical,array $guided,
+    ?callable $fetcher=null): array {
     if(!$authenticated||!$confirmed)throw new RuntimeException('CORAL_FINAL_AUTH');
     if(!cmsCreationId($id)||$version<1||!in_array($action,['approve','revoke'],true))
         throw new InvalidArgumentException('CORAL_FINAL_INPUT');
@@ -955,6 +1125,7 @@ function cmsCoralFinalAction(string $private,string $id,int $version,string $act
             $culinary=cmsAtelierCulinaryStatus($dir,$record,$catalog,$canonical,$guided);
             if(!$texts['all_seven_texts_reviewed']||!$culinary['human_culinary_review_recorded'])
                 throw new RuntimeException('CORAL_FINAL_REVIEWS_REQUIRED');
+            $sourceRows=cmsCoralFinalEvidence($sourceRows,$fetcher);
         }
         $journal=cmsCoralFinalJournal($dir,$id);
         $n=count($journal['events'])+1;if($n>9998)throw new RuntimeException('CORAL_FINAL_CAPACITY');
@@ -975,6 +1146,83 @@ function cmsCoralFinalAction(string $private,string $id,int $version,string $act
         }finally{if(is_file($temp))unlink($temp);}
         return $row;
     }finally{flock($handle,LOCK_UN);fclose($handle);}
+}
+/** A human may accept a narrow deterministic suggestion, edit it, or reject it. */
+function cmsCoralFinalCorrection(string $private,string $id,int $version,string $code,
+    ?string $chapter,string $passage,string $action,mixed $replacement,mixed $note,
+    bool $confirmed,bool $authenticated,array $catalog,array $canonical,array $guided): array {
+    if(!$authenticated||!$confirmed)throw new RuntimeException('CORAL_CORRECTION_AUTH');
+    if(!cmsCreationId($id)||$version<1||!in_array($action,['accept','modify','reject'],true)
+        ||!preg_match('/^[A-Z_]{4,50}$/D',$code)||mbLen($passage)<1||mbLen($passage)>300)
+        throw new InvalidArgumentException('CORAL_CORRECTION_INPUT');
+    $note=cmsCreationText($note,600);
+    if(mbLen($note)<20)throw new InvalidArgumentException('CORAL_CORRECTION_NOTE');
+    $dir=cmsCreationDir($private);$record=cmsCreationRead($dir,$id);
+    if(!$record||$record['version']!==$version)throw new RuntimeException('CORAL_CORRECTION_STALE');
+    $audit=cmsCoralFinalAudit($record,$catalog,$canonical,$guided);$issue=null;
+    foreach($audit['blocking'] as $item)
+        if($item['code']===$code&&$item['chapter']===$chapter&&$item['passage']===$passage){$issue=$item;break;}
+    if($issue===null)throw new RuntimeException('CORAL_CORRECTION_STALE');
+    if($action==='reject'){
+        $lock=$dir.'/catalog.lock';if(is_link($lock))throw new RuntimeException('CORAL_CORRECTION_STORE');
+        $h=fopen($lock,'c');if(!$h||!flock($h,LOCK_EX))throw new RuntimeException('CORAL_CORRECTION_STORE');
+        try{
+            if(cmsCreationRead($dir,$id)['version']!==$version)throw new RuntimeException('CORAL_CORRECTION_STALE');
+            $prefix=$dir.'/final-correction-'.$id.'.';$files=glob($prefix.'*.json');
+            if(!is_array($files)||count($files)>=9998)throw new RuntimeException('CORAL_CORRECTION_STORE');
+            $previous='';foreach($files as $i=>$file){
+                if(basename($file)!=='final-correction-'.$id.'.'.sprintf('%04d',$i+1).'.json'
+                    ||is_link($file)||filesize($file)>2000
+                    ||(PHP_OS_FAMILY!=='Windows'&&(fileperms($file)&0077)!==0))
+                    throw new RuntimeException('CORAL_CORRECTION_STORE');
+                $row=json_decode(file_get_contents($file),true,16,JSON_THROW_ON_ERROR);
+                if(!is_array($row)||($row['previous_sha256']??null)!==$previous)
+                    throw new RuntimeException('CORAL_CORRECTION_STORE');
+                $previous=hash_file('sha256',$file);
+            }
+            $n=count($files)+1;$row=['contract'=>'cdc-coral-final-correction-rejection-v1',
+                'creation_id'=>$id,'version'=>$version,'audit_digest'=>$audit['digest'],
+                'code'=>$code,'chapter'=>$chapter,'passage_sha256'=>hash('sha256',$passage),
+                'note'=>$note,'at'=>gmdate('Y-m-d\TH:i:s\Z'),'previous_sha256'=>$previous];
+            $json=json_encode($row,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
+            $target=$prefix.sprintf('%04d',$n).'.json';
+            if(file_exists($target)||is_link($target))throw new RuntimeException('CORAL_CORRECTION_STORE');
+            $tmp=tempnam($dir,'correction-');if($tmp===false)throw new RuntimeException('CORAL_CORRECTION_STORE');
+            try{if(!chmod($tmp,0600)||file_put_contents($tmp,$json,LOCK_EX)!==strlen($json)
+                ||!rename($tmp,$target))throw new RuntimeException('CORAL_CORRECTION_STORE');
+            }finally{if(is_file($tmp))unlink($tmp);}
+            return ['action'=>'reject','version'=>$version,'remaining_blocker'=>$code];
+        }finally{flock($h,LOCK_UN);fclose($h);}
+    }
+    if($chapter===null||$issue['proposed_correction']===null)
+        throw new RuntimeException('CORAL_CORRECTION_MANUAL_REQUIRED');
+    $new=$action==='accept'?$issue['proposed_correction']:cmsCreationText($replacement,300);
+    if($new===''||$new===$passage||str_contains($new,'<')||str_contains($new,'>'))
+        throw new InvalidArgumentException('CORAL_CORRECTION_INPUT');
+    $scripts=$record['atelier_scripts'];$found=false;
+    foreach($scripts['chapters'] as &$entry){
+        if($entry['id']!==$chapter)continue;
+        if(substr_count($entry['text'],$passage)!==1)throw new RuntimeException('CORAL_CORRECTION_AMBIGUOUS');
+        $entry['text']=str_replace($passage,$new,$entry['text']);$found=true;break;
+    }unset($entry);
+    if(!$found)throw new RuntimeException('CORAL_CORRECTION_STALE');
+    $trace='Correction finale explicite : '.$code.' / '.$chapter.' ; motif : '.$note;
+    $research=trim($record['research_note']."\n".$trace);
+    if(mbLen($research)>3000)throw new RuntimeException('CORAL_CORRECTION_NOTE_CAPACITY');
+    // cmsCreationSave accepts the shared form's newline text for list fields;
+    // stored records contain arrays. Reconstruct only those form values.
+    $fields=$record['fields'];
+    foreach(cmsCreationSchema()['atelier'] as $field=>$spec)
+        if($spec[1]==='list'&&is_array($fields[$field]??null))
+            $fields[$field]=implode("\n",$fields[$field]);
+    $posted=['kind'=>'atelier','title'=>$record['title'],'angle'=>$record['angle'],
+        'summary'=>$record['summary'],'research_note'=>$research,
+        'target_date'=>$record['target_date']??'','state'=>'draft','fields'=>$fields,
+        'atelier_reference'=>$record['atelier_reference'],
+        'atelier_phase_details'=>$record['atelier_phase_details'],'atelier_scripts'=>$scripts];
+    $saved=cmsCreationSave($private,$posted,$catalog,$version,$id,null,null,null,$canonical);
+    return ['action'=>$action,'version'=>$saved['version'],'reviewed'=>$saved['reviewed'],
+        'before'=>$passage,'after'=>$new,'new_audit'=>cmsCoralFinalAudit($saved,$catalog,$canonical,$guided)];
 }
 
 /**

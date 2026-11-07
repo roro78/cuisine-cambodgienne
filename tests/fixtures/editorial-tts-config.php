@@ -18,3 +18,10 @@ $cfg['editorial_tts']=['enabled'=>true,'test_only'=>true,'mode'=>'simulated',
   'poll'=>static fn(string $id):array=>$ttsCall($id,'poll'),
   'resume'=>static fn(string $id):array=>$ttsCall($id,'resume'),
   'artifact'=>static fn(string $id):string=>$ttsCall($id,'artifact')];
+// Local fixture transport only. Production has no such callback and uses guarded HTTPS.
+$cfg['editorial_final_source_fetch']=static fn(string $url):array=>[
+  'status'=>200,'content_type'=>'text/html; charset=UTF-8',
+  'body'=>'<html><body><h1>Fish Amok</h1>1 kg fish, 320 g coconut cream, steam for 10 minutes, steam 2 more minutes. 0.25kg fish, 70ml coconut milk, fry them, to be steamed.<p>'.str_repeat(
+    'Synthetic fixture only: fish, coconut, kroeung and steam are represented for a bounded source audit. ',12
+  ).'</p></body></html>'
+];
