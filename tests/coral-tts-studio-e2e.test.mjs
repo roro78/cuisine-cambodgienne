@@ -31,6 +31,13 @@ test('real PHP journals invalidate source/rights/visas and refuse fabricated or 
  await f.bridge('rights');const r2=await f.bridge('request');assert.notEqual(r.request_id,r2.request_id);
  await f.bridge('revoke-visa');assert.equal(await f.bridge('authorize',r2),false);
 });
+test('revoking final cross-review vetoes even a previously authorized simulated TTS request',async t=>{
+ const f=await fixture(t);await f.bridge('rights');
+ const request=await f.bridge('request');assert.equal(await f.bridge('authorize',request),true);
+ await f.bridge('revoke-final');
+ assert.equal(await f.bridge('authorize',request),false);
+ await assert.rejects(f.bridge('request'),/TTS_FINAL_REVIEW_REQUIRED/);
+});
 test('PHP rights require authenticated explicit decisions and reject stale, forged or corrupt journals',async t=>{
  const f=await fixture(t);const result=await f.bridge('safety');assert.ok(result.passed.length>=8);
 });
@@ -58,7 +65,10 @@ test('shared Studio through authenticated HTTP: rights, double submit, seven act
  const additional=await readFile('tests/fixtures/editorial-tts-config.php','utf8');
  await writeFile(config,original.replace('return $cfg;',additional.replace(/^<\?php\s*/, '')+'\nreturn $cfg;'),{mode:0o600});
  const port=await freePort(),origin='http://127.0.0.1:'+port,base=origin+'/gestion-contenus/';
- const server=spawn(php,['-S','127.0.0.1:'+port,join(f.root,'router.php')],{stdio:['ignore','ignore','pipe'],windowsHide:true});
+  const server=spawn(php,['-S','127.0.0.1:'+port,join(f.root,'router.php')],{
+   stdio:['ignore','ignore','pipe'],windowsHide:true,
+   env:{...process.env,CORAL_FINAL_SOURCE_FIXTURE:'1'}
+  });
  let errors='';server.stderr.on('data',b=>errors+=b);t.after(()=>server.kill());
  const browser=await chromium.launch({executablePath:process.env.CHROME_BIN||undefined,headless:true,args:['--autoplay-policy=no-user-gesture-required']});
  t.after(()=>browser.close());const ctx=await browser.newContext({viewport:{width:390,height:844}});
@@ -69,6 +79,36 @@ test('shared Studio through authenticated HTTP: rights, double submit, seven act
  await page.locator('[name=username]').fill('fixture-admin');await page.locator('[name=password]').fill('synthetic-login-only');await page.locator('button[name=login]').click();
  const url=base+'?new=1&cid='+f.id;await page.goto(url);
  const panel=page.locator('#cms-tts');assert.equal(await panel.count(),1,errors.slice(-1000));
+ await page.goto(url+'&final_audit=1#final-review');
+ const finalPanel=page.locator('[data-coral-final-audit]');assert.equal(await finalPanel.count(),1);
+ assert.match(await finalPanel.innerText(),/Visa final actif/);
+ assert.equal(await finalPanel.locator('button[value=revoke]').count(),1);
+ let finalForm=finalPanel.locator('form');
+ await finalForm.locator('[name=final_note]').fill('Révocation du contrôle final fictif pour vérifier que le Studio ne conserve aucun visa actif.');
+ await finalForm.locator('[name=final_confirm]').check();
+ await finalForm.locator('button[value=revoke]').click();
+ await page.goto(url+'&final_audit=1');
+ await finalPanel.evaluate(el=>{el.open=true;});
+ assert.match(await finalPanel.textContent(),/validation humaine nécessaire/i);
+ finalForm=finalPanel.locator('form');
+ for(const i of [0,1]){
+  assert.equal(await finalForm.locator('[name="final_source['+i+'][url]"]').isEditable(),false);
+  await finalForm.locator('[name="final_source['+i+'][note]"]').fill('Comparaison purement fictive dans le navigateur local, sans consultation du site source.');
+ }
+ await finalForm.locator('[name=final_note]').fill('Nouvelle revue finale fictive des sept textes, de la recette et des six phases, sans portée culinaire.');
+ await finalForm.locator('[name=final_confirm]').check();
+ await finalForm.locator('button[value=approve]').click();
+ await page.goto(url+'&final_audit=1');
+ await finalPanel.evaluate(el=>{el.open=true;});
+ assert.match(await finalPanel.textContent(),/Visa final actif/);
+  for(const width of [360,390,1440]){
+   await page.setViewportSize({width,height:950});
+   const overflow=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,
+    elements:[...document.querySelectorAll('*')].filter(el=>el.scrollWidth>Math.max(el.clientWidth,innerWidth)+1)
+      .slice(0,12).map(el=>({tag:el.tagName,cls:el.className,text:(el.textContent||'').slice(0,60),scroll:el.scrollWidth,client:el.clientWidth}))}));
+   assert.ok(overflow.scroll<=width+1,'final review responsive '+JSON.stringify(overflow));
+  }
+ await page.goto(url);
  assert.equal(await panel.locator('button[value=generate]').isDisabled(),true);
  for(const name of ['voice','content','private_audio'])await panel.locator('[name="tts_checks['+name+']"]').check();
  await panel.locator('[name=tts_note]').fill('Autorisation fictive du test isolé, sans droits de production.');

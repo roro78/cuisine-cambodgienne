@@ -8,7 +8,7 @@
 
 Une recette ou un atelier se **prépare** et se **cuisine** : on coupe, émince, pile, mélange, fait revenir, laisse mijoter, rectifie l'assaisonnement et dresse. Le mot **« fabriquer »** et toutes ses flexions, ainsi que « fabrication », sont **interdits dans tout contenu éditorial de recette, fiche pratique et narration**. Ne pas écrire non plus « construire une sauce », « construire un bouillon », « chantier », « poste » (dire « plan de travail »), « monter les bols » (dire « dresser les bols »). Les identifiants internes `installer`, `preparer`, `assembler`, `maitriser`, `rectifier`, `terminer` restent stables ; ce ne sont pas des titres obligatoires pour le visiteur.
 
-**Ordre non négociable** : recette et ingrédients contrôlés → fiche pratique complète → sept textes parlés lisibles remis à l'utilisateur → **approbation explicite des textes** → synthèse Coral → écoute et contrôle des chapitres sur mobile. L'existence d'un MP3 ne vaut jamais approbation. Modifier une phrase parlée invalide l'association au MP3 précédent, lequel doit être conservé séparément, sans lecture sous le nouveau script.
+**Ordre non négociable** : recette et ingrédients contrôlés → fiche pratique complète → sept textes parlés lisibles remis à l'utilisateur → **revue finale croisée de la recette, de l'atelier, des sept textes et des sources externes** → résolution des incohérences → **approbation humaine explicite du dossier exact** → synthèse Coral → écoute et contrôle des chapitres sur mobile. L'existence d'un MP3 ne vaut jamais approbation. Modifier une phrase parlée invalide l'association au MP3 précédent, lequel doit être conservé séparément, sans lecture sous le nouveau script.
 
 Le contrôle automatique `node scripts/check-culinary-lexicon.mjs` bloque le catalogue et les fiches de revue s'il trouve du vocabulaire de chantier ou une narration modifiée encore associée à une ancienne piste. La passerelle TTS exige en plus les validations humaines et l'empreinte exacte du script approuvé avant tout appel audio.
 
@@ -46,14 +46,19 @@ Une **cuisinière francophone, voix féminine Coral**, qui parle comme une créa
 - « Vous pouvez mettre pause » toutes les vingt secondes ; réserver cette phrase aux gestes ou attentes qui le justifient.
 - Inventer des anecdotes personnelles ou attribuer une coutume khmère à tout un pays sans source.
 
-## 4. Quantités et matériel — règle non négociable
+## 4. Quantités, convives et matériel — règle universelle et non négociable
 
-- La fiche propose un **nombre de convives modifiable** ; les quantités doivent être recalculées et visibles sur la page. Vérifier les ingrédients fractionnaires, les œufs, les sauces, les garnitures et les unités, notamment à 1, 2, 4, 6, 8 ou 12 personnes.
-- **Un MP3 unique pour toutes les portions. Ne pas annoncer de grammages, volumes ou nombres d'ingrédients qui changent avec les convives** : ni « 200 g de poulet », ni « prenez quatre tomates », ni « deux assiettes ».
-- Dire au début : « Choisissez votre nombre de convives sur la fiche et préparez les quantités indiquées. » Ensuite nommer **chaque ingrédient au moment de l'utiliser**, sans chiffre de portion.
-- Les **repères de technique invariants** sont permis à la voix : cubes d'environ 2–3 cm, « laisser mariner vingt minutes au frais », température à cœur sourcée, texture, consistance, couleur. Distinguer nettement ces repères des quantités variables.
-- La cuisinière **annonce le matériel au début**, de manière naturelle et suffisamment courte (généralement moins d'une minute) ; compter les ustensiles uniquement si leur nombre ne dépend pas des convives.
-- Chaque ajout pédagogique au catalogue canonique (huile de cuisson, eau, pickles, accompagnement, etc.) doit figurer **séparément** sur la fiche, avec sa provenance, son rôle et ses quantités adaptables. **Ne jamais ajouter un ingrédient dans la voix qui manque à la fiche.**
+**Décision éditoriale permanente du 7 novembre 2026 — tous les ateliers, sans exception : une seule narration et un seul MP3 par atelier et par version, quel que soit le nombre de convives sélectionné.** Cette règle s'applique à l'introduction, aux six chapitres, à toute narration future, à la relecture des brouillons et à leur validation avant TTS. Elle ne se limite pas aux ramequins ni à une recette particulière.
+
+- **Séparation des responsabilités :** la fiche et l'interface portent le nombre de convives et recalculent les quantités, portions et besoins associés ; la voix explique les gestes et renvoie à la fiche pour les valeurs qui dépendent du nombre de convives. Aucun appel TTS ni fichier MP3 différent pour 1, 2, 4, 6, 8 ou 12 personnes.
+- **Interdit dans la voix :** tout nombre figé qui dépend des convives, notamment grammages et volumes d'ingrédients, nombre d'œufs, de morceaux, de portions, d'assiettes, de bols, de ramequins ou d'autres contenants, nombre de fournées et quantité à dresser ou à servir. Ne pas remplacer « quatre ramequins » par un autre nombre présumé universel.
+- **Formulations préférées :** « Préparez les quantités indiquées pour vos convives sur la fiche », « Ajoutez le lait de coco prévu dans vos ingrédients », « Répartissez la préparation dans vos contenants », « Procédez en plusieurs fournées si votre matériel ne permet pas de tout cuire correctement ». Nommer chaque ingrédient quand il est utilisé, sans transformer le cours en lecture de liste.
+- **Matériel :** annoncer naturellement le matériel nécessaire, sans imposer un nombre de contenants ou de couverts lié aux portions. Des nombres de matériels strictement invariants pour une technique restent possibles s'ils sont réellement nécessaires et vérifiés.
+- **Technique et sécurité :** conserver les repères *indépendants des portions*, tels que taille de coupe, intensité, texture, température de sécurité sourcée et contrôles sensoriels. Une durée dépendant de la masse, de l'épaisseur, du remplissage ou des contenants est **indicative**, jamais garantie pour tous : expliquer les critères sûrs de vérification et signaler, si utile, que plusieurs contenants peuvent cuire différemment.
+- **Fiche et audio cohérents :** l'adaptation des quantités à l'écran n'entraîne **pas** d'adaptation du MP3. Si un format ou un temps de cuisson change matériellement selon l'échelle, la fiche doit signaler les ajustements utiles et la voix doit fournir des repères généraux fiables ; ne pas prétendre qu'une quantité arbitraire fonctionne à toute échelle.
+- **Contrôle éditorial bloquant avant TTS :** relire **les sept narrations** pour détecter les nombres et consignes dépendants des convives ; corriger uniquement les occurrences concernées, préserver les explications culinaires, et faire approuver les textes modifiés. Une narration modifiée n'hérite jamais de l'approbation ni de l'empreinte d'un ancien MP3. Conserver les scripts, versions et MP3 historiques intacts.
+
+Les nombres associés à une **technique réellement invariante** restent autorisés à la voix (par exemple des cubes d'environ 2–3 cm, une température de cuisson sourcée ou un repos de durée justifiée et indépendante de la quantité). Il faut toujours distinguer ces repères des valeurs qui varient avec les portions.
 
 ## 5. Sept chapitres, six étapes invariantes
 
@@ -90,6 +95,33 @@ Avant de synthétiser, vérifier **chaque ingrédient et sous-préparation** dan
 
 Pour la prépublication, photographies **fidèles au vrai plat réalisé** et droits vérifiables ; ne jamais déclarer validée une image provisoire ou générée qui ne prouve pas le résultat cuisiné.
 
+## 7 bis. Contrôle final obligatoire et traitement des incohérences — avant tout MP3
+
+**Décision du 7 novembre 2026 — contrat fonctionnel à implémenter et tester dans le Studio, pas une fonctionnalité présumée déjà opérationnelle.** Une fois les **sept narrations produites ou retouchées**, le Studio doit déclencher un **contrôle final global** sur la version exacte de la recette canonique, la fiche atelier, les six phases, les sept narrations et les références culinaires externes documentées. Le contrôle préliminaire réalisé avant la rédaction ne suffit pas.
+
+### Repérer et qualifier plutôt que corriger aveuglément
+
+1. **Comparer les éléments internes** : ingrédients, proportions, portions dynamiques, sous-préparations, gestes, chronologie, durée, matériel, températures, sécurité et critères de cuisson. Rechercher les omissions, contradictions recette ↔ atelier ↔ narrations, répétitions, nombres de convives figés, sécurité et lexique.
+2. **Comparer aux sources culinaires indépendantes** : au moins deux références fiables, idéalement des auteurs cambodgiens, avec lien, auteur, date de consultation et passages pertinents résumés. Distinguer **erreur démontrable**, **variante culinaire documentée**, **préférence éditoriale** et **incertitude à instruire**. Les avis et notes d'utilisateurs peuvent signaler des problèmes de pratique mais ne prouvent pas, à eux seuls, l'authenticité ou la sécurité.
+3. **Afficher un rapport inspectable** : pour chaque point, indiquer l'emplacement exact, le contenu actuel, la preuve ou source contradictoire, la nature et le niveau de risque (bloquant / amélioration / variante acceptable), ainsi que la **correction proposée et ses conséquences**. Ne pas transformer une différence entre recettes en anomalie certaine.
+
+### Corriger selon le type d'écart
+
+- **Écart formel certain, sans changement culinaire** (lexique, redondance, quantités vocales figées, formulation qui contredit la fiche à cause d'une coquille) : le système **peut proposer automatiquement un correctif** dans une **nouvelle version privée**, avec diff lisible. L'application automatique est permise **uniquement si elle est déterministe, explicitement autorisée, auditée et réversible**. Aucune approbation finale implicite.
+- **Écart de fond** (ingrédient, dosage, temps de cuisson, technique, sécurité, authenticité, contradiction entre sources) : **ne jamais modifier automatiquement la recette canonique**. Proposer plusieurs options sourcées : conserver la version canonique et documenter une variante ; corriger le texte/atelier s'il diverge de la recette ; ou proposer une modification de recette **soumise à décision éditoriale humaine**, puis répercutée dans l'atelier et l'audio seulement après décision. Une instruction potentiellement dangereuse reste bloquante tant qu'elle n'est pas résolue.
+- **Écart non tranché** : conserver les versions intactes, demander l'arbitrage humain nécessaire et bloquer la synthèse ; ne pas inventer un consensus entre sources.
+
+### Boucle de validation
+
+**DÉTECTER → QUALIFIER ET SOURCER → PROPOSER → CORRIGER EN BROUILLON VERSIONNÉ → RECONTRÔLER TOUT LE DOSSIER → FAIRE VALIDER → AUTORISER TTS.**
+
+- Chaque correction, y compris une correction automatique, **invalide le contrôle et l'accord précédents** : recommencer le contrôle croisé sur la **nouvelle version** jusqu'à disparition des points bloquants.
+- Le Studio doit présenter un **verdict explicite** (*BLOQUÉ* ou *PRÊT POUR VALIDATION HUMAINE*), la liste des points résolus/non résolus et les versions/empreintes exactes de la recette, de l'atelier et des sept textes. « Aucun blocage détecté » n'est **pas** une preuve que la recette a été réellement cuisinée ni un visa humain.
+- Le serveur doit **refuser toute synthèse MP3** si le contrôle final croisé échoue, si une incohérence importante reste ouverte ou si l'éditeur n'a pas approuvé explicitement **les versions exactes contrôlées**. L'interface seule ne constitue pas un verrou de sécurité.
+- Ne pas écraser la recette d'origine, les brouillons, les scripts déjà approuvés ni les MP3 historiques. Une modification des textes ne déclenche **aucune** régénération IA ou Coral par défaut ; demander une autorisation séparée pour toute dépense.
+
+**Cas pilote Amok Trey V2 :** reprendre les sept textes déjà payés, comparer en particulier le déroulement vapeur « maîtriser/rectifier », les durées, les rappels de sécurité, les quantités et contenants dépendant des convives, le kroeung préparé à l'avance et la conformité aux sources khmères. Corriger d'abord la copie privée ; **aucun TTS** avant nouveau rapport global et approbation explicite.
+
 ## 8. Contrat technique, synthèse et sauvegardes
 
 - Les fichiers `src/data/atelier-recette-guides/<recette>.json` et `src/data/atelier-recette-audio/<recette>-v2.json` sont la source de vérité machine. `storyboardVersion: 2`, script actuel intégré au blueprint, et manifeste de l'ancienne version conservé.
@@ -120,7 +152,7 @@ Ne pas produire de scripts identiques avec seulement le nom du plat remplacé. C
 ## 10. Gates — ne pas mélanger les états
 
 - **V0 Source** : recette et variantes documentées, tous les ingrédients et préparations expliqués, portions adaptables, sécurité.
-- **V1 Script** : sept textes **entiers, jouables sans regarder la page**, relus contre les gestes et les sources, puis intégrés à la fiche. Sans validation du script, pas de synthèse payante.
+- **V1 Script + contrôle final croisé** : sept textes **entiers, jouables sans regarder la page**, comparés à la recette canonique, à l'atelier et aux sources externes ; incohérences corrigées en brouillon et dossier recontrôlé. Sans absence de blocages et sans approbation humaine de la version exacte, pas de synthèse payante.
 - **V2 Technique** : nouveau MP3 Coral enregistré une fois, MP3 lisible, hash et timestamps exacts, tests automatisés et responsive.
 - **V3 Écoute humaine** : l'utilisateur écoute le fichier réel et exprime sa validation du rendu vocal. Ne jamais inventer cette approbation.
 - **V4 Réalité culinaire** : recette cuisinée, résultat vérifié, photos du plat réel + droits, tests humains Android/desktop.

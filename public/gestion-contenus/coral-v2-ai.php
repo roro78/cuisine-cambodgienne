@@ -132,6 +132,8 @@ function cmsCoralTtsRequest(string $private,array $record,array $catalog,array $
   if(!$saved||$saved!==$record)throw new RuntimeException('TTS_VERSION_STALE');
   $gate=cmsCoralTtsPreproductionGate(cmsAtelierCoralPrereception($private,$record,$catalog,$canonical,$guided));
   if(!$gate['text_and_culinary_reviews_complete'])throw new RuntimeException('TTS_REVIEWS_REQUIRED');
+  $final=cmsCoralFinalStatus($private,$record,$catalog,$canonical,$guided);
+  if(($final['approved']??false)!==true)throw new RuntimeException('TTS_FINAL_REVIEW_REQUIRED');
   $binding=cmsCoralTtsBinding($record,$catalog,$canonical,$guided);$rights=cmsCoralTtsJournal($dir,$record['id'],'rights');
   $last=$rights['events']?end($rights['events']):null;
   if(!$last||$last['action']!=='approve'||$last['creation_version']!==$record['version']
@@ -324,8 +326,10 @@ function cmsCoralTtsPanel(string $private,?array $record,array $catalog,array $c
     .'<p>Signal audio de test, pas une voix Coral. Aucun appel payant et aucune publication.</p>'
     .'<p>Voix : signal test-tone. Réservation simulée : 0,007 USD au maximum ; coût fournisseur réel : 0 USD.</p>';
   try{$gate=cmsAtelierCoralPrereception($private,$record,$catalog,$canonical,$guided);
+    $final=cmsCoralFinalStatus($private,$record,$catalog,$canonical,$guided);
     $html.='<p>Textes visés : '.(int)$gate['human_text_visas_count'].'/7. Revue culinaire : '
-      .(($gate['checks'][4]['complete']??false)?'active':'manquante').'.</p>';
+      .(($gate['checks'][4]['complete']??false)?'active':'manquante').'. Revue finale croisée : '
+      .($final['approved']?'validée':'absente ou périmée').'.</p>';
   }catch(Throwable $e){$html.='<p>Contrôles indisponibles : génération bloquée.</p>';}
   if($binding!==null){
     $last=$rights['events']?end($rights['events']):null;
