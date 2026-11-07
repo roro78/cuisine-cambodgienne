@@ -121,6 +121,20 @@ if($mode==='safety'){
     $passed[]='REVOCATION_AND_APPEND_ONLY';
     $row=json_decode(file_get_contents($file),true);$row['note'].=' Modification illégitime';file_put_contents($file,json_encode($row));
     $check(static fn()=>cmsCoralTtsJournal($dir,$id,'rights'),'TTS_JOURNAL_CORRUPT');
+    $generic=$record;
+    $generic['atelier_scripts']['chapters'][5]['text']='Avec un thermomètre propre, mesurez au centre d’un ramequin, sans toucher la céramique. '
+      .$generic['atelier_scripts']['chapters'][5]['text'];
+    foreach(cmsCoralFinalAudit($generic,$catalog,$canonical,$guided)['blocking'] as $item)
+      if($item['code']==='FIXED_SERVINGS')throw new RuntimeException('GENERIC_SINGULAR_FALSE_POSITIVE');
+    $passed[]='GENERIC_SINGULAR_CONTAINER_NOT_FIXED_SERVINGS';
+    $singlePerson=$record;
+    $singlePerson['atelier_scripts']['chapters'][5]['text']='Cette recette est pour une personne. '
+      .$singlePerson['atelier_scripts']['chapters'][5]['text'];
+    $hasFixedPerson=false;
+    foreach(cmsCoralFinalAudit($singlePerson,$catalog,$canonical,$guided)['blocking'] as $item)
+      if($item['code']==='FIXED_SERVINGS')$hasFixedPerson=true;
+    if(!$hasFixedPerson)throw new RuntimeException('FIXED_PERSON_NOT_BLOCKED');
+    $passed[]='FIXED_PERSON_STILL_BLOCKED';
     $posted=json_decode(file_get_contents($root.'/test-posted.json'),true);
     $posted['atelier_scripts']['chapters'][0]['text']='Préparez quatre ramequins. '.$posted['atelier_scripts']['chapters'][0]['text'];
     $v4=cmsCreationSave($private,$posted,$catalog,3,$id);

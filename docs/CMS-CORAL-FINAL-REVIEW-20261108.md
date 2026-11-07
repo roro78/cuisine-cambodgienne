@@ -22,6 +22,10 @@ PR #228, Studio PHP partagé. Aucun nouveau CMS, moteur, MP3 ou contenu public. 
 ## Limites et conditions avant production
 
 - Les contrôles déterministes ciblent surtout Amok. Ils ne prouvent pas à eux seuls l'exactitude de chaque geste, temps, allergène ou récit culturel ; la relecture culinaire humaine reste requise.
-- Le blocage `FIXED_SERVINGS` du brouillon v2 doit être corrigé dans le Studio, puis les sept textes et le visa final de la nouvelle version doivent être relus et approuvés par l'humain. Aucun ancien MP3 n'est modifié.
+- Le résultat initial `FIXED_SERVINGS` du brouillon v2 est réévalué dans l'addendum ci-dessous. Les sept textes, la revue culinaire et le visa final doivent toujours être approuvés par l'humain avant toute génération audio. Aucun ancien MP3 n'est modifié.
 - La preuve OVH ci-dessus valide la sortie HTTPS du PHP CLI, pas le parcours authentifié du Studio après livraison. Exiger CI verte sur le SHA exact, sauvegarde hors webroot/restauration contrôlée, diff et empreintes des fichiers distants, accord distinct de livraison, réception mobile et ordinateur, puis rollback ciblé si nécessaire.
 - La fusion de code et le transfert OVH demandent deux décisions distinctes selon `docs/OVH-DEPLOYMENT-RUNBOOK.md`. Aucun vrai TTS, fournisseur payant, publication ou changement du calendrier social n'est autorisé ici.
+
+## Addendum de réception mobile
+
+La capture du propriétaire a révélé que `FIXED_SERVINGS` sur « un ramequin » était un faux positif : la narration dit « mesurez au centre d’un ramequin », ce qui désigne un point de mesure. Ne pas accepter la substitution « vos ramequins ». Le correctif ciblé exclut le récipient singulier indéfini du contrôle de rendement, tout en conservant le blocage des nombres pluriels et de « une personne ». Sur une copie du brouillon Amok v2, le contrôle automatique corrigé ne signale plus de bloquant ; cela ne remplace pas les visas culinaires et éditoriaux humains.
