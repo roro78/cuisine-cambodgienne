@@ -12,6 +12,8 @@ test('separate authenticated media backup, loss, closed restore, corruption and 
  const folder=join(root,'jobs',r.request_id,'tts'),manifest=JSON.parse(await readFile(join(folder,'manifest.json'),'utf8'));
  const key=Buffer.alloc(32,17),archive=join(root,'media-v1.enc'),validation={contract:'cdc-coral-audio-validation-v1',sha256:manifest.sha256,decode_passed:true,simulated:true};
  const historical=join(root,'historical.mp3');await writeFile(historical,'historical witness',{mode:0o600});
+ const stateFile=join(folder,'state.json'),savedState=await readFile(stateFile,'utf8');await writeFile(stateFile,JSON.stringify({...JSON.parse(savedState),debug:'synthetic unexpected private field'}),{mode:0o600});
+ await assert.rejects(backupCoralMedia({folder,archive,key,validation}),/NOT_FINAL/);await writeFile(stateFile,savedState,{mode:0o600});
  const backup=await backupCoralMedia({folder,archive,key,validation});assert.equal(backup.contains_wav,false);
  const before=await privateAudioDigest(archive,64000000);await assert.rejects(backupCoralMedia({folder,archive,key,validation}),e=>e.code==='EEXIST');assert.deepEqual(await privateAudioDigest(archive,64000000),before);
  await assert.rejects(restoreCoralMedia({archive,target:join(root,'no-review'),key}),/REVIEW/);

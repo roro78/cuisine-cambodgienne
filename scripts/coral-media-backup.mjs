@@ -8,15 +8,24 @@ import {validateTtsRequest} from './coral-tts-jobs.mjs';
 import {coralFragmentPlan} from './coral-tts-checkpoints.mjs';
 import {coralUsageCostMicrousd} from './coral-tts-cost-plan.mjs';
 const MAGIC=Buffer.from('CDCAUD1\n'),MAX=64000000;
+const closed=(o,keys)=>o&&Object.keys(o).sort().join(',')===[...keys].sort().join(',');
 const allowed=n=>n==='subfragments.json'||n==='request.json'||n==='manifest.json'||n==='state.json'||n==='validation.json'||/^final-[a-f0-9]{64}\.mp3$/.test(n)||TTS_CHAPTER_IDS.some(id=>n===id+'.receipt.json');
 async function privateDir(dir,{create=false}={}){if(create){await mkdir(dir,{mode:0o700});await syncPrivateDirectory(dirname(dir));}const s=await lstat(dir);if(!s.isDirectory()||s.isSymbolicLink()||(process.platform!=='win32'&&((s.mode&0o077)||s.uid!==process.geteuid())))throw Error('MEDIA_PRIVATE_DIR');}
 async function verifyAudio(folder,m){const file=join(folder,m.file),p=await probeAudio(file);if(p.codec!=='mp3'||p.chapters.length!==7||Math.abs(p.duration-m.duration)>0.15||p.chapters.some((c,i)=>c.tags?.title!==m.chapters[i].id||Math.abs(Number(c.start_time)-m.chapters[i].start)>0.002))throw Error('MEDIA_AUDIO');await promisify(execFile)('ffmpeg',['-nostdin','-v','error','-protocol_whitelist','file,pipe','-max_alloc','33554432','-i',file,'-f','null','-'],{timeout:30000,maxBuffer:200000,windowsHide:true});}
 function keyCheck(key){if(!Buffer.isBuffer(key)||key.length!==32)throw Error('MEDIA_KEY');}
+function bindRequest(m,r){if(['request_id','creation_id','creation_version','binding_sha256','voice','provider'].some(k=>m[k]!==r[k])||m.reserved_microusd!==r.reserve_microusd)throw Error('MEDIA_REQUEST');}
+function validateReceipt(r,c){if(!closed(r,['id','text_sha256','sha256','duration','cost_microusd'])||r.id!==c.id||r.text_sha256!==c.sha256||!/^[a-f0-9]{64}$/.test(r.sha256||'')||!Number.isFinite(r.duration)||r.duration<=0||!Number.isSafeInteger(r.cost_microusd)||r.cost_microusd<0)throw Error('MEDIA_RECEIPT');}
 function validateSubfragments(evidence,request){
  if(evidence?.contract!=='cdc-coral-subfragment-evidence-v1'||!Array.isArray(evidence.chapters)||evidence.chapters.length>7)throw Error('MEDIA_SUBFRAGMENTS');const seen=new Set();
  for(const item of evidence.chapters){const chapter=request.chapters.find(c=>c.id===item.chapter),parts=chapter&&coralFragmentPlan(chapter);
-  if(!parts||seen.has(item.chapter)||item.receipts?.length!==parts.length||item.plan?.request_id!==request.request_id||item.plan.text_sha256!==chapter.sha256||item.plan.fragments?.length!==parts.length)throw Error('MEDIA_SUBFRAGMENTS');seen.add(item.chapter);
-  for(let i=0;i<parts.length;i++){const r=item.receipts[i];if(item.plan.fragments[i].sha256!==parts[i].sha256||r.text_sha256!==parts[i].sha256||r.transcript_sha256!==parts[i].sha256||r.cost_microusd!==coralUsageCostMicrousd(r.usage)||r.usage.output_tokens>2048||!/^[a-f0-9]{64}$/.test(r.sha256||'')||!Number.isSafeInteger(r.bytes)||r.bytes<46||r.bytes>10000000)throw Error('MEDIA_SUBFRAGMENTS');}
+  if(!parts||seen.has(item.chapter)||!closed(item,['chapter','plan','receipts'])||item.receipts?.length!==parts.length
+   ||!closed(item.plan,['contract','request_id','chapter','index','text_sha256','model','voice','max_output_tokens','fragments'])
+   ||item.plan.contract!=='cdc-coral-subfragments-v1'||item.plan.chapter!==chapter.id||item.plan.index!==request.chapters.indexOf(chapter)
+   ||item.plan.model!=='gpt-realtime-2.1-mini'||item.plan.voice!=='coral'||item.plan.max_output_tokens!==2048||item.plan.request_id!==request.request_id||item.plan.text_sha256!==chapter.sha256||item.plan.fragments?.length!==parts.length)throw Error('MEDIA_SUBFRAGMENTS');seen.add(item.chapter);
+  for(let i=0;i<parts.length;i++){const r=item.receipts[i];if(!closed(r,['response_id','model','voice','usage','cost_microusd','transcript_sha256','text_sha256','sha256','bytes'])
+   ||!closed(r.usage,['input_tokens','output_tokens','input_token_details','output_token_details'])||!closed(r.usage.input_token_details,['text_tokens','audio_tokens'])||!closed(r.usage.output_token_details,['text_tokens','audio_tokens'])
+   ||!closed(item.plan.fragments[i],['index','sha256'])||item.plan.fragments[i].index!==i||item.plan.fragments[i].sha256!==parts[i].sha256
+   ||r.model!==item.plan.model||r.voice!==item.plan.voice||!/^resp_[a-zA-Z0-9_]{1,100}$/.test(r.response_id||'')||r.text_sha256!==parts[i].sha256||r.transcript_sha256!==parts[i].sha256||r.cost_microusd!==coralUsageCostMicrousd(r.usage)||r.usage.output_tokens>2048||!/^[a-f0-9]{64}$/.test(r.sha256||'')||!Number.isSafeInteger(r.bytes)||r.bytes<46||r.bytes>10000000)throw Error('MEDIA_SUBFRAGMENTS');}
  }
 }
 async function collectSubfragments(folder,request){
@@ -28,7 +37,8 @@ async function collectSubfragments(folder,request){
   result.chapters.push({chapter:chapter.id,plan,receipts});
  }validateSubfragments(result,request);return result;
 }
-function validateManifest(m){if(m?.contract!=='cdc-coral-private-tts-result-v1'||!/^final-[a-f0-9]{64}\.mp3$/.test(m.file||'')||m.file!=='final-'+m.sha256+'.mp3'||!Number.isSafeInteger(m.bytes)||m.bytes<1||m.bytes>32000000||m.chapters?.length!==7||m.chapters.some((c,i)=>c.id!==TTS_CHAPTER_IDS[i]||!Number.isFinite(c.start)||!Number.isFinite(c.end)||c.end<=c.start))throw Error('MEDIA_MANIFEST');}
+function validateManifest(m){if(!closed(m,['contract','file','sha256','bytes','duration','chapters','format','simulated','request_id','creation_id','creation_version','binding_sha256','provider','voice','reserved_microusd','simulated_cost_microusd','provider_charged_microusd','audio_approved','publication_ready'])
+ ||m.contract!=='cdc-coral-private-tts-result-v1'||m.format!=='mp3'||['simulated','audio_approved','publication_ready'].some(k=>typeof m[k]!=='boolean')||['reserved_microusd','simulated_cost_microusd','provider_charged_microusd'].some(k=>!Number.isSafeInteger(m[k])||m[k]<0)||!Number.isFinite(m.duration)||m.duration<=0||m.duration>7200||!/^final-[a-f0-9]{64}\.mp3$/.test(m.file||'')||m.file!=='final-'+m.sha256+'.mp3'||!Number.isSafeInteger(m.bytes)||m.bytes<1||m.bytes>32000000||m.chapters?.length!==7||m.chapters.some((c,i)=>!closed(c,['id','start','end'])||c.id!==TTS_CHAPTER_IDS[i]||!Number.isFinite(c.start)||!Number.isFinite(c.end)||c.end<=c.start||Math.abs(c.start-(i?m.chapters[i-1].end:0))>0.002)||Math.abs(m.chapters[6].end-m.duration)>0.15)throw Error('MEDIA_MANIFEST');}
 /** An archive is immutable and uniquely named by its own digest; caller chooses a NEW path. */
 export async function backupCoralMedia({folder,archive,key,validation}){
  keyCheck(key);await privateDir(folder);const lock=join(folder,'.media-backup.lock');await mkdir(lock,{mode:0o700});
@@ -41,12 +51,13 @@ async function backupUnlocked({folder,archive,key,validation}){
  const state=JSON.parse(await privateAudioRead(join(folder,'state.json'),150000));
  const request=JSON.parse(await privateAudioRead(join(folder,'..','request.json'),150000));validateTtsRequest(request.request);
  const subfragments=await collectSubfragments(folder,request.request);
- if(request.request.request_id!==manifest.request_id||request.request.binding_sha256!==manifest.binding_sha256)throw Error('MEDIA_REQUEST');
- if(state.status!=='succeeded'||state.manifest?.sha256!==manifest.sha256)throw Error('MEDIA_NOT_FINAL');
+ bindRequest(manifest,request.request);
+ if(!closed(state,['status','completed_chapters','manifest'])||state.status!=='succeeded'||state.completed_chapters!==7||JSON.stringify(state.manifest)!==JSON.stringify(manifest))throw Error('MEDIA_NOT_FINAL');
  if(validation?.contract!=='cdc-coral-audio-validation-v1'||validation.sha256!==manifest.sha256||validation.decode_passed!==true)throw Error('MEDIA_VALIDATION');
- if(Object.keys(validation).some(k=>!['contract','sha256','decode_passed','simulated','authority_evidence_sha256','culinary_review_sha256','human_visas_sha256'].includes(k))
+ if((validation.simulated!==undefined&&typeof validation.simulated!=='boolean')||Object.keys(validation).some(k=>!['contract','sha256','decode_passed','simulated','authority_evidence_sha256','culinary_review_sha256','human_visas_sha256'].includes(k))
   ||['authority_evidence_sha256','culinary_review_sha256','human_visas_sha256'].some(k=>validation[k]!==undefined&&!/^[a-f0-9]{64}$/.test(validation[k])))throw Error('MEDIA_VALIDATION');
  await verifyAudio(folder,manifest);
+ for(const chapter of request.request.chapters)validateReceipt(JSON.parse(await privateAudioRead(join(folder,chapter.id+'.receipt.json'),150000)),chapter);
  const entries=['request.json','manifest.json','state.json',...TTS_CHAPTER_IDS.map(id=>id+'.receipt.json'),manifest.file];
  const iv=randomBytes(12),header=Buffer.concat([MAGIC,iv]),cipher=createCipheriv('aes-256-gcm',key,iv);cipher.setAAD(header);
  const temp=archive+'.incoming-'+randomBytes(12).toString('hex'),out=await open(temp,'wx',0o600),hash=createHash('sha256');let total=0;
@@ -70,7 +81,7 @@ async function backupUnlocked({folder,archive,key,validation}){
  // link is exclusive, unlike rename over an existing historical archive.
  await link(temp,archive);await syncPrivateDirectory(dirname(archive));await unlink(temp);await syncPrivateDirectory(dirname(archive));
  return {contract:'cdc-coral-media-backup-v1',archive_sha256:hash.digest('hex'),archive_bytes:total,mp3_sha256:manifest.sha256,
-  files:entries.length+2,encrypted:true,contains_secrets:false,contains_wav:false,restore_tested:false};
+  files:entries.length+2,encrypted:true,secret_files_included:false,contains_wav:false,restore_tested:false};
 }
 class Reader{
  constructor(it){this.it=it[Symbol.asyncIterator]();this.buffer=Buffer.alloc(0);}
@@ -101,10 +112,10 @@ export async function restoreCoralMedia({archive,target,key,reviewed=false}){
   if(validation.sha256!==manifest.sha256||validation.decode_passed!==true)throw Error('MEDIA_VALIDATION');
   const request=JSON.parse(await privateAudioRead(join(target,'request.json'),150000));validateTtsRequest(request.request);
   validateSubfragments(JSON.parse(await privateAudioRead(join(target,'subfragments.json'),1048576)),request.request);
-  if(request.request.request_id!==manifest.request_id||request.request.binding_sha256!==manifest.binding_sha256)throw Error('MEDIA_REQUEST');
-  const state=JSON.parse(await privateAudioRead(join(target,'state.json'),150000));if(state.status!=='succeeded'||state.manifest?.sha256!==manifest.sha256)throw Error('MEDIA_NOT_FINAL');
+  bindRequest(manifest,request.request);
+  const state=JSON.parse(await privateAudioRead(join(target,'state.json'),150000));if(!closed(state,['status','completed_chapters','manifest'])||state.status!=='succeeded'||state.completed_chapters!==7||JSON.stringify(state.manifest)!==JSON.stringify(manifest))throw Error('MEDIA_NOT_FINAL');
   await verifyAudio(target,manifest);
-  for(const chapter of request.request.chapters){const receipt=JSON.parse(await privateAudioRead(join(target,chapter.id+'.receipt.json'),150000));if(receipt.id!==chapter.id||receipt.text_sha256!==chapter.sha256)throw Error('MEDIA_RECEIPT');}
+  for(const chapter of request.request.chapters)validateReceipt(JSON.parse(await privateAudioRead(join(target,chapter.id+'.receipt.json'),150000)),chapter);
   const proof={contract:'cdc-coral-media-restored-v1',archive_sha256:source.sha256,mp3_sha256:manifest.sha256,bytes:manifest.bytes,
    authenticated:true,requires_current_authority:true,audio_approved:false,publication_ready:false};
   await durableWrite(join(target,'restore-complete.json'),JSON.stringify(proof));committed=true;return proof;
