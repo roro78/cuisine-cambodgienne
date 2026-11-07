@@ -3,6 +3,7 @@ declare(strict_types=1);
 /** Private editorial CMS P0: preview and immutable drafts only, no publishing. */
 require_once __DIR__.'/lib.php';
 require_once __DIR__.'/coral-v2-ai.php';
+require_once __DIR__.'/narrations-export.php';
 require_once __DIR__.'/publication-gap-audit.php';
 ini_set('display_errors','0');
 header('Content-Type: text/html; charset=UTF-8');
@@ -125,6 +126,12 @@ if($method==='GET'&&$auth&&isset($_GET['visual_file'])){
 }
 
 if($method==='POST'){
+    // Export is intentionally READ ONLY: accept no other form action or fields.
+    if(isset($_POST['export_narrations']) &&
+        (count($_POST)!==4 || array_diff(array_keys($_POST),
+            ['csrf','export_narrations','creation_id','expected_version']))) {
+        http_response_code(422);exit('Action invalide.');
+    }
     if(isset($_POST['tts_action'])&&count(array_intersect(['tts_action','create_save','ai_brief_generate','ai_content_generate',
         'ai_content_discard','review_action','culinary_action','save','studio_transition','export_review','visual_action','coral_prepare','prepare_next_workshop','final_review_action','correction_action','login','logout'],array_keys($_POST)))!==1){
         http_response_code(422);exit('Action invalide.');
@@ -166,7 +173,7 @@ $filtersUrl=http_build_query($filters,'','&',PHP_QUERY_RFC3986);
 $newMode=isset($_GET['new']) || ($method==='POST'
     && (isset($_POST['tts_action']) || isset($_POST['visual_action']) || isset($_POST['create_save']) || isset($_POST['ai_brief_generate'])
         || isset($_POST['ai_content_generate']) || isset($_POST['ai_content_discard'])
-        || isset($_POST['review_action']) || isset($_POST['culinary_action']) || isset($_POST['final_review_action']) || isset($_POST['correction_action'])));
+        || isset($_POST['review_action']) || isset($_POST['culinary_action']) || isset($_POST['final_review_action']) || isset($_POST['correction_action']) || isset($_POST['export_narrations'])));
 $createKind=is_string($_POST['kind']??null)?$_POST['kind']:
     (is_string($_GET['kind']??null)?$_GET['kind']:'recette');
 if(!isset(cmsCreationKinds()[$createKind]))$createKind='recette';
@@ -302,6 +309,33 @@ if($auth){
         }
         $createForm=$creation??[];
         $createExpected=(int)($creation['version']??0);
+        if($method==='POST'&&isset($_POST['export_narrations'])){
+            try {
+                if(!$auth||$creation===null||$createKind!=='atelier'
+                   ||($_POST['export_narrations']??null)!=='1'
+                   ||($_POST['creation_id']??null)!==$creation['id'])
+                    throw new RuntimeException('NARRATIONS_EXPORT_FORBIDDEN');
+                $version=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
+                    ['options'=>['min_range'=>1,'max_range'=>9999]]);
+                // Re-read the actual latest saved revision: never export a browser draft
+                // or silently substitute a different version after a concurrent edit.
+                $latestSaved=cmsCreationRead($creationDir,$creation['id']);
+                if($version===false||!is_array($latestSaved)
+                   ||$latestSaved['version']!==$version||$latestSaved!==$creation)
+                    throw new RuntimeException('NARRATIONS_EXPORT_STALE');
+                $export=cmsAtelierNarrationsExport($latestSaved);
+                header('Content-Type: text/plain; charset=UTF-8');
+                header('Content-Disposition: attachment; filename="'.$export['filename'].'"');
+                header('Content-Length: '.strlen($export['content']));
+                header('Cache-Control: no-store, private, max-age=0');
+                echo $export['content'];
+                exit;
+            }catch(Throwable $e){
+                http_response_code(409);
+                $error='Export des narrations refusé : version modifiée, textes incomplets ou session expirée. '
+                    .'Actualisez la fiche puis réessayez. Aucun texte ni MP3 modifié.';
+            }
+        }
         if($method==='POST'&&isset($_POST['tts_action'])){
             try{
                 if($creation===null||!$studioSourceCurrent)throw new RuntimeException('TTS_SOURCE');
@@ -1596,6 +1630,29 @@ vérification de sa recette et de ses six phases. Aucun visa n'est repris.</p>
 <button name="ai_content_discard" value="1" class="secondary" formnovalidate>Écarter la proposition et restaurer ma saisie</button>
 <?php endif; ?>
 </form></section>
+<?php if($creation!==null&&$creation['kind']==='atelier'): ?>
+<?php $narrationsExportReady=false;
+try{cmsAtelierNarrationsExport($creation);$narrationsExportReady=true;}
+catch(Throwable $ignored){} ?>
+<section id="cms-narrations-export" data-coral-narrations-export>
+<h2>Exporter les narrations enregistrées</h2>
+<p class="small muted">Télécharge les sept textes exacts de la version
+<strong><?= (int)$creation['version'] ?></strong> dans un fichier texte UTF-8.
+Cela ne régénère rien, ne valide aucun texte et ne modifie ni les MP3 ni les brouillons.</p>
+<form method="post" action="?new=1&amp;cid=<?= cmsEsc($creation['id']) ?>" class="stack">
+<input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
+<input type="hidden" name="creation_id" value="<?= cmsEsc($creation['id']) ?>">
+<input type="hidden" name="expected_version" value="<?= (int)$creation['version'] ?>">
+<button type="submit" name="export_narrations" value="1"
+ <?= $narrationsExportReady?'':'disabled aria-disabled="true"' ?>>
+Exporter les 7 narrations (.txt)</button>
+</form>
+<?php if(!$narrationsExportReady): ?>
+<p class="small muted">Le téléchargement sera disponible après l'enregistrement
+des sept textes complets dans cette fiche.</p>
+<?php endif; ?>
+</section>
+<?php endif; ?>
 <?php if($creation!==null&&$creation['kind']==='atelier'&&$ttsSettings!==null): ?>
 <?php try{$ttsGuides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);
 echo cmsCoralTtsPanel($private,$creation,$catalog,$canonicalById,$ttsGuides,(string)$_SESSION['csrf'],$ttsSettings,$filtersUrl);
