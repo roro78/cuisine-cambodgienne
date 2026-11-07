@@ -126,10 +126,10 @@ if($method==='GET'&&$auth&&isset($_GET['visual_file'])){
 
 if($method==='POST'){
     if(isset($_POST['tts_action'])&&count(array_intersect(['tts_action','create_save','ai_brief_generate','ai_content_generate',
-        'ai_content_discard','review_action','culinary_action','save','studio_transition','export_review','visual_action','coral_prepare','prepare_next_workshop','login','logout'],array_keys($_POST)))!==1){
+        'ai_content_discard','review_action','culinary_action','save','studio_transition','export_review','visual_action','coral_prepare','prepare_next_workshop','final_review_action','login','logout'],array_keys($_POST)))!==1){
         http_response_code(422);exit('Action invalide.');
     }
-    if(isset($_POST['visual_action']) && count(array_intersect(['visual_action','create_save','ai_brief_generate','ai_content_generate','ai_content_discard','review_action','culinary_action','save','studio_transition','export_review','login','logout'],array_keys($_POST)))!==1){http_response_code(422);exit('Action invalide.');}
+    if(isset($_POST['visual_action']) && count(array_intersect(['visual_action','create_save','ai_brief_generate','ai_content_generate','ai_content_discard','review_action','culinary_action','final_review_action','save','studio_transition','export_review','login','logout'],array_keys($_POST)))!==1){http_response_code(422);exit('Action invalide.');}
     if(!is_string($_POST['csrf']??null)
         || !hash_equals((string)$_SESSION['csrf'],$_POST['csrf'])){
         http_response_code(403);exit('Session expirée. Rechargez.');
@@ -166,7 +166,7 @@ $filtersUrl=http_build_query($filters,'','&',PHP_QUERY_RFC3986);
 $newMode=isset($_GET['new']) || ($method==='POST'
     && (isset($_POST['tts_action']) || isset($_POST['visual_action']) || isset($_POST['create_save']) || isset($_POST['ai_brief_generate'])
         || isset($_POST['ai_content_generate']) || isset($_POST['ai_content_discard'])
-        || isset($_POST['review_action']) || isset($_POST['culinary_action'])));
+        || isset($_POST['review_action']) || isset($_POST['culinary_action']) || isset($_POST['final_review_action'])));
 $createKind=is_string($_POST['kind']??null)?$_POST['kind']:
     (is_string($_GET['kind']??null)?$_GET['kind']:'recette');
 if(!isset(cmsCreationKinds()[$createKind]))$createKind='recette';
@@ -517,6 +517,37 @@ if($auth){
                 $error=$conflict
                     ?'La recette ou la version du brouillon a changé : rechargez la comparaison.'
                     :'Décision culinaire non enregistrée. Vérifiez la recette complète, les quatre confirmations et votre note.';
+            }
+        }
+        if($method==='POST' && isset($_POST['final_review_action'])){
+            try{
+                if(!$studioSourceCurrent||$creation===null||$createKind!=='atelier'
+                    ||count(array_intersect(['final_review_action','culinary_action','review_action',
+                        'create_save','ai_content_generate','ai_content_discard','tts_action','visual_action'],
+                        array_keys($_POST)))!==1)
+                    throw new InvalidArgumentException('CORAL_FINAL_INPUT');
+                $expected=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
+                    ['options'=>['min_range'=>1,'max_range'=>9998]]);
+                if($expected===false||$canonicalById===[])
+                    throw new RuntimeException('CORAL_FINAL_SOURCE');
+                $feed=cmsGetGuidedFields();
+                if(!is_array($feed))throw new RuntimeException('CORAL_FINAL_SOURCE');
+                $guides=cmsGuidedSourceList($feed,$canonicalById);
+                cmsAssertGuidedCoverage($guides,$canonicalById);
+                $action=is_string($_POST['final_review_action']??null)?$_POST['final_review_action']:'';
+                $sources=[];
+                if($action==='approve')foreach([0,1] as $i)$sources[]=[
+                    'title'=>$_POST['final_source'][$i]['title']??null,
+                    'url'=>$_POST['final_source'][$i]['url']??null,
+                    'note'=>$_POST['final_source'][$i]['note']??null];
+                cmsCoralFinalAction($private,$creation['id'],$expected,$action,$sources,
+                    $_POST['final_note']??null,($_POST['final_confirm']??null)==='1',
+                    $auth,$catalog,$canonicalById,$guides);
+                header('Location: ?new=1&cid='.rawurlencode($creation['id'])
+                    .'&'.$filtersUrl.'&final_audit=1&final_saved=1#final-review',true,303);exit;
+            }catch(Throwable $e){
+                http_response_code(in_array($e->getMessage(),['CORAL_FINAL_VERSION_STALE','CORAL_FINAL_ALREADY_SET'],true)?409:422);
+                $error='Visa final refusé : corrigez les incohérences, confirmez les deux sources externes distinctes et vérifiez les sept textes ainsi que la revue culinaire. Aucun MP3 lancé.';
             }
         }
         if($method==='POST' && isset($_POST['review_action'])){
@@ -1773,6 +1804,78 @@ attestation culinaire ne peut être enregistrée automatiquement.</p>
 <p class="small muted">Même avec les sept narrations visées et
 la revue culinaire consignée, le TTS Coral, les MP3 et la publication
 restent désactivés.</p>
+<?php endif; ?>
+</details>
+<?php $finalStatus=null;$finalUnavailable=false;
+if(isset($_GET['final_audit'])){
+    try{
+        if($canonicalById===[])throw new RuntimeException('FINAL_SOURCE_UNAVAILABLE');
+        $feed=cmsGetGuidedFields();
+        if(!is_array($feed))throw new RuntimeException('FINAL_SOURCE_UNAVAILABLE');
+        $finalGuides=cmsGuidedSourceList($feed,$canonicalById);
+        cmsAssertGuidedCoverage($finalGuides,$canonicalById);
+        $finalStatus=cmsCoralFinalStatus($private,$creation,$catalog,$canonicalById,$finalGuides);
+    }catch(Throwable $ignored){$finalUnavailable=true;}
+} ?>
+<details class="guided-group" id="final-review" data-coral-final-audit
+ <?= isset($_GET['final_audit'])?'open':'' ?>>
+<summary>Contrôle final obligatoire — recette, atelier, 7 textes et sources culinaires</summary>
+<p class="small muted">Après la préparation des sept textes, le Studio relève les incohérences
+structurelles et les chiffres potentiellement liés aux portions. Le rapprochement avec
+les sources externes et les variantes culinaires exige une vérification humaine explicite.
+Aucune correction automatique de recette et aucun MP3 ne sont déclenchés.</p>
+<a href="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>&amp;final_audit=1#final-review">Calculer le contrôle final de cette version</a>
+<?php if($finalUnavailable): ?>
+<p role="alert">Contrôle indisponible : génération audio bloquée.</p>
+<?php elseif($finalStatus!==null): ?>
+<?php $finalReport=$finalStatus['report'];$finalApproved=$finalStatus['approved']; ?>
+<p>Résultat : <strong><?= $finalApproved?'Visa final actif':($finalReport['automated_checks_pass']?'Contrôle technique sans blocage ; validation humaine nécessaire':'Incohérences bloquantes à corriger') ?></strong>.
+Revue enregistrée : <?= (int)$finalStatus['review_event_count'] ?> décision(s).</p>
+<?php if($finalReport['blocking']!==[]): ?>
+<ul><?php foreach($finalReport['blocking'] as $issue): ?>
+<li><strong><?= cmsEsc($issue['code']) ?></strong> — <?= cmsEsc($issue['chapter']??'ensemble') ?> :
+<?= cmsEsc($issue['finding']) ?>. Proposition : <?= cmsEsc($issue['suggestion']) ?></li>
+<?php endforeach; ?></ul>
+<?php endif; ?>
+<?php if($finalReport['warnings']!==[]): ?>
+<p>Éléments à arbitrer (variantes ou synonymes possibles) :</p>
+<ul><?php foreach($finalReport['warnings'] as $item): ?>
+<li><?= cmsEsc($item['finding']) ?> — <?= cmsEsc($item['suggestion']) ?></li>
+<?php endforeach; ?></ul>
+<?php endif; ?>
+<p class="small muted">Les sources externes ne sont pas consultées automatiquement par ce contrôle.
+Renseignez deux références fiables consultées réellement et indiquez les divergences,
+les variantes acceptées, les températures, l'ordre des gestes et les corrections effectuées.
+En cas de doute sur la sécurité ou la recette, ne validez pas.</p>
+<?php if(isset($_GET['final_saved'])): ?>
+<p role="status">Décision finale enregistrée. Aucun traitement audio déclenché.</p>
+<?php endif; ?>
+<?php if($studioSourceCurrent): ?>
+<form method="post" class="stack" action="?new=1&amp;cid=<?= rawurlencode($creation['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>&amp;final_audit=1#final-review">
+<input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
+<input type="hidden" name="creation_id" value="<?= cmsEsc($creation['id']) ?>">
+<input type="hidden" name="expected_version" value="<?= (int)$creation['version'] ?>">
+<?php if(!$finalApproved): ?>
+<?php foreach([0,1] as $i): ?>
+<fieldset><legend>Source culinaire externe <?= $i+1 ?></legend>
+<label>Nom / auteur<input name="final_source[<?= $i ?>][title]" maxlength="180" required></label>
+<label>Lien HTTPS (deux domaines indépendants)<input name="final_source[<?= $i ?>][url]" type="url" maxlength="500" required></label>
+<label>Comparaison réalisée, variantes et constats<textarea name="final_source[<?= $i ?>][note]" minlength="30" maxlength="900" required></textarea></label>
+</fieldset>
+<?php endforeach; ?>
+<?php else: ?>
+<p>Les deux références externes et leurs notes ont été conservées dans le visa privé de cette version.</p>
+<?php endif; ?>
+<label><?= $finalApproved?'Motif de révocation':'Bilan final : écarts, décisions et vérifications (minimum 50 caractères)' ?>
+<textarea name="final_note" minlength="50" maxlength="900" required></textarea></label>
+<label><input type="checkbox" name="final_confirm" value="1" required>
+Je confirme avoir confronté les sept narrations à la recette, aux six phases
+et à deux sources externes ; aucun risque ni incohérence importante ne reste non résolu.</label>
+<button name="final_review_action" value="<?= $finalApproved?'revoke':'approve' ?>"
+<?= !$finalApproved&&!$finalReport['automated_checks_pass']?' disabled aria-disabled="true"':'' ?>>
+<?= $finalApproved?'Révoquer le visa final':'Approuver le contrôle final de cette version' ?></button>
+</form>
+<?php endif; ?>
 <?php endif; ?>
 </details>
 <details class="guided-group" id="coral-preflight" data-coral-prereception
