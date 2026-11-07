@@ -80,3 +80,24 @@ test('calendar reports safe, specific diagnostics without revealing private draf
  assert.match(ui,/http_response_code\(503\)/);
  assert.match(ui,/Les projets privés et leurs versions/);
 });
+
+test('Coral Studio keeps workshop content before narration and MP3 as separate actions',()=>{
+ assert.match(ui,/Guide vocal de l’atelier — après validation du contenu/);
+ assert.match(ui,/1\. Enregistrer et vérifier la recette et les six phases/);
+ assert.match(ui,/2\. Préparer et relire les sept narrations/);
+ assert.match(ui,/3\. Générer le MP3 Coral après les validations humaines/);
+ assert.match(ui,/<button name="coral_prepare" value="1" formnovalidate data-coral-prepare>Préparer les 7 narrations<\/button>/);
+ assert.match(ui,/Préparer les narrations — 7 textes à relire/);
+ assert.doesNotMatch(ui,/Préparer le MP3/);
+ assert.match(lib,/Sept textes vocaux — relecture préalable au MP3/);
+ assert.match(lib,/Aucun MP3 n’est produit sur cette page/);
+});
+
+test('Coral Studio places the recipe and detailed phases BEFORE narration in one form',()=>{
+ const recipe=ui.indexOf('<?= cmsAtelierReferenceHtml(');
+ const phases=ui.indexOf('<?= cmsAtelierPhaseDetailsHtml(');
+ const narration=ui.indexOf('<section id="atelier-audio-draft"');
+ const scripts=ui.indexOf('<?= cmsAtelierScriptsHtml(');
+ assert.ok(recipe>0&&recipe<phases&&phases<narration&&narration<scripts,
+   'workshop source must be visible before the optional voice step');
+});

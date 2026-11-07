@@ -95,6 +95,18 @@ try{
         &&$initialPreflight['ready_for_audio_production']===false
         &&$initialPreflight['publication_ready']===false,
         'CORAL_PREFLIGHT_INIT');
+    $ttsInitial=cmsCoralTtsPreproductionGate($initialPreflight);
+    visaAssert($ttsInitial['contract']==='cdc-coral-tts-preproduction-gate-v1'
+        &&$ttsInitial['text_and_culinary_reviews_complete']===false
+        &&count($ttsInitial['blocking_ids'])===6
+        &&$ttsInitial['launch_available']===false
+        &&$ttsInitial['tts_authorized']===false,'TTS_INITIAL_LOCKED');
+    $forged=$initialPreflight;$forged['tts_authorized']=true;
+    visaFail(static fn()=>cmsCoralTtsPreproductionGate($forged),
+        'CORAL_TTS_PREFLIGHT_INVALID');
+    $forged=$initialPreflight;$forged['checks'][0]['id']='invented';
+    visaFail(static fn()=>cmsCoralTtsPreproductionGate($forged),
+        'CORAL_TTS_PREFLIGHT_INVALID');
     foreach($initialPreflight['chapters'] as $n=>$chapter){
         visaAssert($chapter['id']===cmsAtelierScriptIds()[$n]
             &&$chapter['script_drafted']===true
@@ -202,6 +214,15 @@ try{
         &&$bothChecked['seven_audio_scripts_approved']===false
         &&$bothChecked['export_enabled']===false,
         'NEVER_AUTO_AUTHORIZE_MP3');
+    $ttsReviewed=cmsCoralTtsPreproductionGate($bothChecked);
+    visaAssert($ttsReviewed['text_and_culinary_reviews_complete']===true
+        &&count($ttsReviewed['blocking_ids'])===4
+        &&in_array('voice_and_media_rights_recorded',$ttsReviewed['blocking_ids'],true)
+        &&in_array('tts_provider_qualified',$ttsReviewed['blocking_ids'],true)
+        &&$ttsReviewed['launch_available']===false
+        &&$ttsReviewed['audio_generated']===false
+        &&$ttsReviewed['publication_ready']===false,
+        'REVIEWED_TEXT_NEVER_AUTHORIZES_TTS');
     visaFail(static fn()=>$act('approve',$checks),'ATELIER_CULINARY_ALREADY_SET');
     visaFail(static fn()=>$act('revoke',$checks),'ATELIER_CULINARY_CHECKS');
     $firstFile=$dir.'/culinary-visa-'.$id.'.0001.json';

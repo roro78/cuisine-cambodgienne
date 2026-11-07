@@ -1,0 +1,22 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:cdc:coral-private-tts-result-v1",
+  "type":"object",
+  "required":["contract","request_id","creation_id","creation_version","binding_sha256","sha256","bytes","duration","chapters","format","simulated","provider","voice","reserved_microusd","simulated_cost_microusd","provider_charged_microusd","audio_approved","publication_ready"],
+  "properties":{
+    "contract":{"const":"cdc-coral-private-tts-result-v1"},
+    "request_id":{"type":"string","pattern":"^[a-f0-9]{48}$"},
+    "creation_id":{"type":"string","pattern":"^c-[a-f0-9]{24}$"},
+    "creation_version":{"type":"integer","minimum":1,"maximum":9999},
+    "binding_sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "bytes":{"type":"integer","minimum":1,"maximum":32000000},
+    "duration":{"type":"number","exclusiveMinimum":0,"maximum":7200},
+    "format":{"const":"mp3"},"simulated":{"const":true},"provider":{"const":"simulated-tone-v1"},"voice":{"const":"test-tone"},
+    "reserved_microusd":{"const":7000},"simulated_cost_microusd":{"const":7000},"provider_charged_microusd":{"const":0},
+    "audio_approved":{"const":false},"publication_ready":{"const":false},
+    "chapters":{"type":"array","minItems":7,"maxItems":7,"items":{"type":"object","additionalProperties":false,"required":["id","start","end"],"properties":{"id":{"type":"string"},"start":{"type":"number","minimum":0},"end":{"type":"number","exclusiveMinimum":0}}}}
+  },
+  "additionalProperties":false,
+  "$comment":"Private filesystem filename is removed from HTTP projection. Chapter order, continuity and measured timings are checked in runtime/PHP and ffprobe. Human listening approval is a separate version-bound private journal."
+}

@@ -888,6 +888,57 @@ function cmsAtelierCoralPrereception(string $private,array $record,array $catalo
     ];
 }
 
+/**
+ * Separation of PRE-generation checks from POST-generation MP3 acceptance.
+ * This is a READ-ONLY UI/protocol projection: no entitlement, consent,
+ * quota, reservation, TTS request or file write can originate here.
+ * No caller-supplied flag may turn it into authorization.
+ */
+function cmsCoralTtsPreproductionGate(array $receipt): array {
+    $ids=['canonical_source','six_phases','seven_drafts',
+        'seven_human_text_visas','human_culinary_visa',
+        'media_rights_verified','seven_coral_mp3_verified',
+        'audio_durations_verified','mobile_pause_sync_verified'];
+    if(($receipt['contract']??null)!=='cdc-coral-private-prereception-v1'
+        ||($receipt['check_count']??null)!==9
+        ||!is_array($receipt['checks']??null)
+        ||count($receipt['checks'])!==9
+        ||!is_int($receipt['creation_version']??null)
+        ||($receipt['creation_version']??0)<1
+        ||($receipt['tts_authorized']??null)!==false)
+        throw new InvalidArgumentException('CORAL_TTS_PREFLIGHT_INVALID');
+    $status=[];
+    foreach($receipt['checks'] as $i=>$item){
+        if(!is_array($item)||($item['id']??null)!==$ids[$i]
+            ||!is_bool($item['complete']??null)
+            ||($item['status']??null)!==($item['complete']?'checked':'blocked'))
+            throw new InvalidArgumentException('CORAL_TTS_PREFLIGHT_INVALID');
+        $status[$ids[$i]]=$item['complete'];
+    }
+    // These five conditions are necessary, NEVER sufficient, for TTS.
+    $contentChecks=array_slice($status,0,5,true);
+    $textReady=!in_array(false,$contentChecks,true);
+    $checks=$contentChecks+[
+        // No private, versioned human rights decision exists in the Studio yet.
+        'voice_and_media_rights_recorded'=>false,
+        // Model/voice, provider, limits and true costs are not qualified.
+        'tts_provider_qualified'=>false,
+        'budget_and_idempotency_verified'=>false,
+        // A separate intentional, authenticated user confirmation is missing.
+        'generation_confirmed'=>false
+    ];
+    return [
+        'contract'=>'cdc-coral-tts-preproduction-gate-v1',
+        'creation_version'=>$receipt['creation_version'],
+        'text_and_culinary_reviews_complete'=>$textReady,
+        'checks'=>$checks,
+        'blocking_ids'=>array_keys(array_filter($checks,static fn(bool $ok):bool=>!$ok)),
+        // Invariants until a *different*, audited action owns TTS submission.
+        'launch_available'=>false,'tts_authorized'=>false,
+        'audio_generated'=>false,'publication_ready'=>false
+    ];
+}
+
 function cmsAstroPublicationGapReport(array $record): array {
     $kind=$record['kind']??null;
     $coverage=cmsAstroPublicationCoverage();

@@ -70,6 +70,37 @@ catch(InvalidArgumentException $e){ck($e->getMessage()==='CORAL_SCRIPT_EXISTS','
 $dirty=$draft;$dirty['atelier_reference']['catalogFingerprint']=str_repeat('0',16);
 try{cmsCoralRequest($dirty,$catalog,$canonical,$guided);throw new RuntimeException('STALE_RECIPE');}
 catch(InvalidArgumentException $e){ck(in_array($e->getMessage(),['CORAL_RECIPE_STALE','CORAL_SOURCE_INCOMPLETE'],true),'SOURCE_STALE');}
+// Published workshops can be revised only through an explicitly linked,
+// append-only private draft whose canonical and catalog anchors remain current.
+$workshopId=null;
+foreach($canonical as $id=>$source){
+  if(($source['model']??null)==='cookingWorkshopGuides'
+    &&($catalog[$id]['kind']??null)==='atelier'
+    &&($guided[$id]['model']??null)==='cookingWorkshopGuides'){
+    $workshopId=$id;break;
+  }
+}
+ck(is_string($workshopId),'PUBLISHED_WORKSHOP_REQUIRED');
+$linked=$draft;
+$linked['source_binding']=cmsStudioSourceBinding(
+  $catalog[$workshopId],$canonical[$workshopId],0,null);
+$linkedRequest=cmsCoralRequest($linked,$catalog,$canonical,$guided);
+ck($linkedRequest['creation_id']===$draft['id']
+  &&$linkedRequest['binding_digest']===$request['binding_digest']
+  &&!isset($linkedRequest['source_binding']),
+  'LINKED_DRAFT_SAME_PRIVATE_SCRIPT_CONTRACT');
+$changedBinding=$linked;
+$changedBinding['source_binding']['canonical_fingerprint']=str_repeat('f',64);
+try{cmsCoralRequest($changedBinding,$catalog,$canonical,$guided);throw new RuntimeException('ACCEPTED_STALE_SOURCE');}
+catch(InvalidArgumentException $e){ck($e->getMessage()==='CORAL_SOURCE_STALE','BLOCK_STALE_PUBLISHED_SOURCE');}
+$changedFeed=$catalog;
+$changedFeed[$workshopId]['fingerprint']=str_repeat('0',16);
+try{cmsCoralRequest($linked,$changedFeed,$canonical,$guided);throw new RuntimeException('ACCEPTED_STALE_FEED');}
+catch(InvalidArgumentException $e){ck($e->getMessage()==='CORAL_SOURCE_STALE','BLOCK_CHANGED_PUBLISHED_FEED');}
+$linkedWithScripts=$linked;
+$linkedWithScripts['atelier_scripts']['chapters']=[['text'=>'Historique protégé']];
+try{cmsCoralRequest($linkedWithScripts,$catalog,$canonical,$guided);throw new RuntimeException('ACCEPTED_SCRIPT_REPLACE');}
+catch(InvalidArgumentException $e){ck($e->getMessage()==='CORAL_SCRIPT_EXISTS','BLOCK_LINKED_SCRIPT_REPLACE');}
 $temp=sys_get_temp_dir().'/cdc-coral-request-'.bin2hex(random_bytes(6));
 ck(mkdir($temp,0700),'PRIVATE_DIR');
 try{
@@ -86,12 +117,25 @@ try{
   $result=cmsCoralPoll($job,$draft,$settings,$canonical);
   ck($pollCalls===1&&count($result['chapters'])===7&&$submitCalls===1,
     'POLL_RETURNS_HUMAN_DRAFT_NOT_SECOND_INFERENCE');
+  // Independent private fixture: production enforces >=60 seconds between
+  // two attempts for the SAME Studio owner. Do not weaken this safeguard.
+  $linkedPrivate=$temp.'/linked';ck(mkdir($linkedPrivate,0700),'LINKED_PRIVATE_DIR');
+  $linkedJob=cmsCoralStart($linked,$catalog,$canonical,$guided,$linkedPrivate,$settings);
+  $linkedResult=cmsCoralPoll($linkedJob,$linked,$settings,$canonical,$catalog);
+  ck(count($linkedResult['chapters'])===7&&$linkedResult['bindingDigest']===$request['binding_digest'],
+    'LINKED_PUBLISHED_WORKSHOP_SEVEN_NEW_PRIVATE_SCRIPTS');
+  try{
+    cmsCoralPoll($linkedJob,$linked,$settings,$canonical,$changedFeed);
+    throw new RuntimeException('ACCEPTED_STALE_POLL');
+  }catch(RuntimeException $e){ck($e->getMessage()==='CORAL_SOURCE_STALE','POLL_REJECTS_CHANGED_PUBLISHED_SOURCE');}
   $stale=$canonical;$stale[$recipeId]['fingerprint']=str_repeat('f',64);
   try{cmsCoralPoll($job,$draft,$settings,$stale);throw new RuntimeException('ACCEPTED_NEW_RECIPE');}
   catch(RuntimeException $e){ck($e->getMessage()==='CORAL_CANONICAL_STALE','RECIPE_CHANGED_DURING_JOB');}
 }finally{
-  foreach(glob($temp.'/editorial-drafts/*')?:[] as $f)unlink($f);
-  if(is_dir($temp.'/editorial-drafts'))rmdir($temp.'/editorial-drafts');
-  rmdir($temp);
+  foreach([$temp.'/linked',$temp] as $root){
+    foreach(glob($root.'/editorial-drafts/*')?:[] as $f)unlink($f);
+    if(is_dir($root.'/editorial-drafts'))rmdir($root.'/editorial-drafts');
+    if(is_dir($root))rmdir($root);
+  }
 }
 echo "CORAL_V2_ONE_BUTTON_CONTRACT_PASS 7 voice scripts, source-bound, no TTS, no old MP3 touched\n";

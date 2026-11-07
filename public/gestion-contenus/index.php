@@ -12,7 +12,7 @@ header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('Referrer-Policy: no-referrer');
 $nonce=base64_encode(random_bytes(18));
-header("Content-Security-Policy: default-src 'none'; style-src 'nonce-{$nonce}'; script-src 'nonce-{$nonce}'; img-src 'self' https://www.cuisine-du-cambodge.com; frame-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
+header("Content-Security-Policy: default-src 'none'; style-src 'nonce-{$nonce}'; script-src 'nonce-{$nonce}'; img-src 'self' https://www.cuisine-du-cambodge.com; media-src 'self'; frame-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
 function cmsUnavailable(): never { http_response_code(503);exit('Espace CMS privé indisponible.'); }
 $https=(!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS'])!=='off')
     || (string)($_SERVER['SERVER_PORT']??'')==='443';
@@ -26,6 +26,26 @@ if(!is_array($cfg) || !is_string($cfg['admin_user']??null)
     || !is_string($cfg['password_hash']??null)
     || !(str_starts_with($cfg['password_hash'],'$2')
         || str_starts_with($cfg['password_hash'],'$argon')))cmsUnavailable();
+// Separate machine READ only; disabled by default. Never creates an admin session.
+if(isset($_GET['tts_authority'])){
+    header('Content-Type: application/json; charset=UTF-8');
+    try{
+        cmsCoralTtsAuthorityToken($private,$cfg);
+        if($_GET['tts_authority']!=='1'||count($_GET)!==1||isset($_SERVER['HTTP_ORIGIN']))throw new RuntimeException('AUTHORITY_ROUTE');
+        $bearer=(string)($_SERVER['HTTP_AUTHORIZATION']??'');
+        if(!hash_equals('Bearer '.cmsCoralTtsAuthorityToken($private,$cfg),$bearer)){
+            http_response_code(401);exit('{"error":"TTS_AUTHORITY_UNAUTHORIZED"}');
+        }
+        $feed=cmsSourceList(cmsGetFeed()??[]);
+        $canon=cmsCanonicalSourceList(cmsGetEditorialIndex()??[],$feed);
+        $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canon);cmsAssertGuidedCoverage($guides,$canon);
+        $body=file_get_contents('php://input',false,null,0,6001);
+        if(!is_string($body))throw new RuntimeException('AUTHORITY_BODY');
+        [$code,$reply]=cmsCoralTtsAuthorityCheck($private,$cfg,(string)($_SERVER['REQUEST_METHOD']??''),$bearer,
+            (string)($_SERVER['CONTENT_TYPE']??''),$body,$feed,$canon,$guides);
+        http_response_code($code);echo json_encode($reply,JSON_THROW_ON_ERROR);exit;
+    }catch(Throwable $e){http_response_code(404);exit('{"error":"TTS_AUTHORITY_UNAVAILABLE"}');}
+}
 session_name('CDC_EDITORIAL_CMS');
 ini_set('session.use_strict_mode','1');
 ini_set('session.use_only_cookies','1');
@@ -38,6 +58,7 @@ if(!is_string($_SESSION['csrf']??null))$_SESSION['csrf']=bin2hex(random_bytes(24
 if(isset($_SESSION['authenticated_at']) && time()-(int)$_SESSION['authenticated_at']>1800)
     unset($_SESSION['authenticated_at']);
 $auth=isset($_SESSION['authenticated_at']);
+$ttsSettings=cmsCoralTtsSettings($cfg);
 // Opening a public PHP directory is not proof of private acceptance.
 $publicationsReady=($cfg['social_dashboard_received']??false)===true;
 foreach(['index.php','catalog-readonly.php','n8n-wait-readonly.php','diagnostic-cli.php','.htaccess'] as $socialFile)
@@ -69,6 +90,26 @@ function cmsLoginAttempt(string $dir,string $ip,bool $failed=false): bool {
     } finally{flock($f,LOCK_UN);fclose($f);}
 }
 $method=(string)($_SERVER['REQUEST_METHOD']??'GET');
+// Same session and source gates as the shared Studio; no public audio URL.
+if($method==='GET'&&isset($_GET['tts_file'])){
+    if(!$auth){http_response_code(403);exit('Connexion privée requise.');}
+    try{
+        if($ttsSettings===null)throw new RuntimeException('TTS_DISABLED');
+        $id=cmsCreationId($_GET['cid']??null);$job=is_string($_GET['tts_file'])?$_GET['tts_file']:'';
+        if($id===null)throw new RuntimeException('TTS_ID');
+        $feed=cmsSourceList(cmsGetFeed()??[]);
+        $canon=cmsCanonicalSourceList(cmsGetEditorialIndex()??[],$feed);
+        $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canon);cmsAssertGuidedCoverage($guides,$canon);
+        $bytes=cmsCoralTtsAudio($private,$id,$job,$ttsSettings,$feed,$canon,$guides);
+        $etag='"'.hash('sha256',$bytes).'"';
+        [$code,$start,$end]=cmsCoralTtsByteRange(isset($_SERVER['HTTP_IF_RANGE'])&&$_SERVER['HTTP_IF_RANGE']!==$etag?null:($_SERVER['HTTP_RANGE']??null),strlen($bytes));
+        header('Accept-Ranges: bytes');header('ETag: '.$etag);
+        if($code===416){header('Content-Range: bytes */'.strlen($bytes));http_response_code(416);exit;}
+        header('Content-Type: audio/mpeg');header('Content-Length: '.($end-$start+1));
+        if($code===206)header('Content-Range: bytes '.$start.'-'.$end.'/'.strlen($bytes));
+        http_response_code($code);echo substr($bytes,$start,$end-$start+1);exit;
+    }catch(Throwable $e){http_response_code(404);exit('Audio privé indisponible.');}
+}
 // Authenticated binary reads must not rerun editor/AI intent initialization.
 if($method==='GET'&&$auth&&isset($_GET['visual_file'])){
     try{
@@ -84,6 +125,10 @@ if($method==='GET'&&$auth&&isset($_GET['visual_file'])){
 }
 
 if($method==='POST'){
+    if(isset($_POST['tts_action'])&&count(array_intersect(['tts_action','create_save','ai_brief_generate','ai_content_generate',
+        'ai_content_discard','review_action','culinary_action','save','studio_transition','export_review','visual_action','coral_prepare','login','logout'],array_keys($_POST)))!==1){
+        http_response_code(422);exit('Action invalide.');
+    }
     if(isset($_POST['visual_action']) && count(array_intersect(['visual_action','create_save','ai_brief_generate','ai_content_generate','ai_content_discard','review_action','culinary_action','save','studio_transition','export_review','login','logout'],array_keys($_POST)))!==1){http_response_code(422);exit('Action invalide.');}
     if(!is_string($_POST['csrf']??null)
         || !hash_equals((string)$_SESSION['csrf'],$_POST['csrf'])){
@@ -119,7 +164,7 @@ $filtersUrl=http_build_query($filters,'','&',PHP_QUERY_RFC3986);
 // A new editorial idea is deliberately distinct from a published source ID.
 // Both paths still use the SAME authenticated Studio and shared field renderer.
 $newMode=isset($_GET['new']) || ($method==='POST'
-    && (isset($_POST['visual_action']) || isset($_POST['create_save']) || isset($_POST['ai_brief_generate'])
+    && (isset($_POST['tts_action']) || isset($_POST['visual_action']) || isset($_POST['create_save']) || isset($_POST['ai_brief_generate'])
         || isset($_POST['ai_content_generate']) || isset($_POST['ai_content_discard'])
         || isset($_POST['review_action']) || isset($_POST['culinary_action'])));
 $createKind=is_string($_POST['kind']??null)?$_POST['kind']:
@@ -240,6 +285,33 @@ if($auth){
         }
         $createForm=$creation??[];
         $createExpected=(int)($creation['version']??0);
+        if($method==='POST'&&isset($_POST['tts_action'])){
+            try{
+                if($creation===null||!$studioSourceCurrent)throw new RuntimeException('TTS_SOURCE');
+                $version=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT);
+                if($version===false||$version!==$creation['version'])throw new RuntimeException('TTS_VERSION_STALE');
+                $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);cmsAssertGuidedCoverage($guides,$canonicalById);
+                $action=is_string($_POST['tts_action'])?$_POST['tts_action']:'';
+                $confirm=($_POST['tts_confirm']??null)==='1';
+                $checks=is_array($_POST['tts_checks']??null)?$_POST['tts_checks']:[];
+                $note=is_string($_POST['tts_note']??null)?$_POST['tts_note']:'';
+                $job=is_string($_POST['tts_job']??null)?$_POST['tts_job']:'';
+                if(in_array($action,['approve_rights','revoke_rights'],true)){
+                    cmsCoralTtsDecision($private,$creation['id'],$version,'rights',$action==='approve_rights'?'approve':'revoke',
+                        $checks,$note,$confirm,$auth,$catalog,$canonicalById,$guides);
+                }else{
+                    if($ttsSettings===null)throw new RuntimeException('TTS_DISABLED');
+                    if($action==='generate')cmsCoralTtsSubmit($private,$creation['id'],$version,$confirm,$auth,$ttsSettings,$catalog,$canonicalById,$guides);
+                    elseif($action==='resume')cmsCoralTtsResume($private,$creation['id'],$version,$job,$confirm,$ttsSettings,$catalog,$canonicalById,$guides);
+                    elseif(in_array($action,['approve_audio','revoke_audio'],true))cmsCoralTtsListeningAction($private,$creation['id'],$version,$job,
+                        $action==='approve_audio'?'approve':'revoke',$checks,$note,$confirm,$auth,$ttsSettings,$catalog,$canonicalById,$guides);
+                    else throw new RuntimeException('TTS_ACTION');
+                }
+                header('Location: ?new=1&cid='.rawurlencode($creation['id']).'&'.$filtersUrl.'#cms-tts',true,303);exit;
+            }catch(Throwable $e){
+                http_response_code(409);$error='Action audio refusée ou accusé incertain. Aucun renvoi automatique : vérifiez le suivi, la version, les droits et les validations. Les anciens MP3 sont conservés.';
+            }
+        }
         try{$aiSettings=cmsAiBriefSettings($cfg);}catch(Throwable $e){$aiSettings=null;}
         try{$aiContentSettings=cmsAiContentSettings($cfg);}catch(Throwable $e){$aiContentSettings=null;}
         try{$coralSettings=cmsCoralSettings($cfg);}catch(Throwable $e){$coralSettings=null;}
@@ -270,7 +342,7 @@ if($auth){
                 if($creation===null||$coralSettings===null||!is_array($coralJob)
                    ||!preg_match('/^[0-9a-f]{48}$/D',$coralJobToken))
                     throw new RuntimeException('CORAL_JOB_MISSING');
-                $proposal=cmsCoralPoll($coralJob,$creation,$coralSettings,$canonicalById);
+                $proposal=cmsCoralPoll($coralJob,$creation,$coralSettings,$canonicalById,$catalog);
                 $_SESSION['coral_jobs'][$coralJobToken]=$coralJob;
                 if($proposal!==null){
                     $token=bin2hex(random_bytes(24));
@@ -290,7 +362,7 @@ if($auth){
         if($method==='GET' && isset($_GET['coral_candidate'])){
             $t=is_string($_GET['coral_candidate'])?$_GET['coral_candidate']:'';
             $pending=$_SESSION['coral_pending'][$t]??null;
-            if($creation!==null && is_array($pending)
+            if($creation!==null && $studioSourceCurrent && is_array($pending)
                &&preg_match('/^[a-f0-9]{48}$/D',$t)
                &&($pending['creation_id']??null)===$creation['id']
                &&($pending['creation_version']??null)===$creation['version']
@@ -379,7 +451,7 @@ if($auth){
             }catch(Throwable $e){
                 http_response_code(in_array($e->getMessage(),
                     ['CORAL_STALE','CORAL_SCRIPT_EXISTS','CORAL_INTENT'],true)?409:503);
-                $error='Préparation Coral non lancée : enregistrez votre atelier et ses six phases, vérifiez la recette et la disponibilité du moteur. Aucun MP3 ni texte existant n’a été modifié.';
+                $error='Préparation des narrations non lancée : enregistrez l’atelier et ses six phases, vérifiez sa recette et le moteur. Les scripts et MP3 existants sont conservés.';
             }
         }
         if($method==='POST' && isset($_POST['culinary_action'])){
@@ -990,6 +1062,7 @@ section,fieldset,.stack,.grid>*{min-width:0}code,pre{overflow-wrap:anywhere;whit
 .ux-tile:focus-visible{outline:3px solid #17663b;outline-offset:3px}
 @media(max-width:650px){.ux-home{grid-template-columns:1fr;gap:10px}.ux-tile{min-height:92px;padding:15px}}
 .private-visual-preview{display:block;width:min(100%,540px);height:auto;border-radius:10px}.private-visual-preview--social{width:min(100%,300px)}
+#cms-tts audio{width:100%;max-width:100%}
 </style></head><body><main>
 <header><div><strong>Cuisine du Cambodge</strong> · Studio éditorial privé</div>
 <?php if($auth): ?><form method="post"><input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
@@ -1346,17 +1419,27 @@ Un atelier reçoit ici un plan de six phases ; la narration Coral reste une éta
 <?= cmsTechniqueLinksHtml($createForm['technique_links']??null) ?>
 <?php endif; ?>
 <?php if($createKind==='atelier'): ?>
+
+<?= cmsAtelierReferenceHtml($createForm['atelier_reference']??null,$catalog) ?>
+<?= cmsAtelierPhaseDetailsHtml($createForm['atelier_phase_details']??null,
+    is_array($createForm['fields']??null)?$createForm['fields']:[],
+    $createForm['atelier_reference']??null) ?>
 <section id="atelier-audio-draft" aria-label="Préparer les textes audio de l'atelier">
-<h3>Guide audio de l'atelier</h3>
-<?php if($creation!==null && $studioSourceCurrent && !isset($creation['source_binding'])): ?>
+<h3>Guide vocal de l’atelier — après validation du contenu</h3>
+<p class="small muted">Parcours : <strong>1. Enregistrer et vérifier la recette et les six phases</strong>
+→ <strong>2. Préparer et relire les sept narrations</strong>
+→ <strong>3. Générer le MP3 Coral après les validations humaines</strong>.
+Le bouton ci-dessous produit uniquement des textes privés : il ne lance aucune synthèse vocale.</p>
+<?php if($creation!==null && $studioSourceCurrent): ?>
 <input type="hidden" name="coral_intent" value="<?= cmsEsc($_SESSION['coral_intent']??'') ?>">
 <?php if($coralSettings!==null): ?>
-<button name="coral_prepare" value="1" formnovalidate data-coral-prepare>Préparer le MP3</button>
-<p class="small muted">Un seul clic prépare sept vrais textes parlés depuis votre recette
-et les deux référentiels Coral V2. Relisez les textes avant enregistrement ;
-aucune synthèse audio ni publication n'est lancée.</p>
+<button name="coral_prepare" value="1" formnovalidate data-coral-prepare>Préparer les 7 narrations</button>
+<p class="small muted">Un seul clic prépare sept propositions de textes parlés depuis l’atelier enregistré,
+sa recette de référence et les deux référentiels Coral V2. Relisez les textes,
+corrigez-les et enregistrez leur nouvelle version privée avant tout visa.
+Aucune synthèse audio ni publication n’est lancée.</p>
 <?php else: ?>
-<button type="button" disabled aria-disabled="true">Préparer le MP3</button>
+<button type="button" disabled aria-disabled="true">Préparer les 7 narrations</button>
 <p class="small muted">La génération est désactivée : le fournisseur éditorial privé
 doit d'abord être qualifié pour Coral V2. Aucun texte artificiel n'est proposé.</p>
 <?php endif; ?>
@@ -1372,10 +1455,6 @@ une recette pour préparer automatiquement les narrations.</p>
 <p class="small muted">Les MP3 existants sont conservés. Aucun audio n'est généré depuis cet écran. Sept textes approuvés ne
 suffisent pas à autoriser une synthèse vocale : les validations Coral restent obligatoires.</p>
 </section>
-<?= cmsAtelierReferenceHtml($createForm['atelier_reference']??null,$catalog) ?>
-<?= cmsAtelierPhaseDetailsHtml($createForm['atelier_phase_details']??null,
-    is_array($createForm['fields']??null)?$createForm['fields']:[],
-    $createForm['atelier_reference']??null) ?>
 <?php
 $publishedCoral=$creation!==null && $studioSourceCurrent
     && isset($creation['source_binding'])
@@ -1390,7 +1469,7 @@ Cette zone n'est utile que pour préparer une nouvelle version privée après
 vérification de sa recette et de ses six phases. Aucun visa n'est repris.</p>
 <?php else: ?>
 <p class="small muted">Les sept champs ci-dessous sont les textes privés
-à corriger après « Préparer le MP3 ». Ils ne sont jamais approuvés automatiquement.</p>
+à corriger après « Préparer les 7 narrations ». Ils ne sont jamais approuvés automatiquement.</p>
 <?php endif; ?>
 <?= cmsAtelierScriptsHtml($createForm['atelier_scripts']??null,
     is_array($createForm['fields']??null)?$createForm['fields']:[],
@@ -1416,6 +1495,11 @@ vérification de sa recette et de ses six phases. Aucun visa n'est repris.</p>
 <button name="ai_content_discard" value="1" class="secondary" formnovalidate>Écarter la proposition et restaurer ma saisie</button>
 <?php endif; ?>
 </form></section>
+<?php if($creation!==null&&$creation['kind']==='atelier'&&$ttsSettings!==null): ?>
+<?php try{$ttsGuides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);
+echo cmsCoralTtsPanel($private,$creation,$catalog,$canonicalById,$ttsGuides,(string)$_SESSION['csrf'],$ttsSettings,$filtersUrl);
+}catch(Throwable $e){echo '<p>Audio privé indisponible : aucune génération autorisée.</p>';} ?>
+<?php endif; ?>
 <?= cmsVisualPanel($creation,$visualLatest,$visualDisplay,$visualInput,$visualSettings!==null,
     (string)$_SESSION['csrf'],$filtersUrl,(string)($_SESSION['visual_intent']??''),$visualApproved,$studioSourceCurrent,$visualSelected) ?>
 <?php if($creation): ?>
@@ -1697,10 +1781,22 @@ MP3/écoute/pauses : <strong>non vérifiés</strong>.</li>
 <ul><?php foreach($coralPreflight['blocking_notes'] as $note): ?>
 <li><?= cmsEsc($note) ?></li><?php endforeach; ?></ul>
 <?php endif; ?>
+<?php $ttsGate=cmsCoralTtsPreproductionGate($coralPreflight); ?>
+<?php if($ttsSettings===null): ?><div data-coral-tts-preproduction>
+<h3>Valider et générer le MP3 — étape distincte</h3>
+<p>Textes et revue culinaire :
+<strong><?= $ttsGate['text_and_culinary_reviews_complete']?'complets':'à terminer' ?></strong>.
+La synthèse exige encore les droits de voix, le fournisseur TTS, le budget,
+l'idempotence et une confirmation humaine spécifique.</p>
+<button type="button" disabled aria-disabled="true">Valider et générer le MP3</button>
+<p class="small muted">Action verrouillée : aucun TTS, MP3 ou coût.
+Écoute, durées réelles et navigation sont contrôlées après génération.</p>
+</div>
 <p class="notice">Génération TTS : <strong>non autorisée</strong>.
 Droits voix et images, sept MP3 réels, durées réelles, synchronisation
 des pauses et navigation mobile doivent être réceptionnés séparément.
 Aucun fichier existant n'est modifié.</p>
+<?php endif; ?>
 <?php endif; ?>
 </details>
 <?php endif; ?>
@@ -2020,7 +2116,7 @@ Télécharger la demande de modification (JSON)</button>
 <?php if($selected['kind']==='atelier'): ?>
 <?php if($studioLinked!==null): ?>
 <p class="note">Les modifications et le guide audio facultatif sont réunis dans le brouillon lié. Cet écran conserve les versions antérieures en lecture seule.</p>
-<a class="btn" href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>#atelier-audio-draft">Préparer le MP3 — textes à relire</a>
+<a class="btn" href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>#atelier-audio-draft">Préparer les narrations — 7 textes à relire</a>
 <a href="?new=1&amp;cid=<?= cmsEsc($studioLinked['id']) ?>&amp;<?= cmsEsc($filtersUrl) ?>#cms-quality">Contrôler l’atelier</a>
 <?php else: ?>
 <div data-coral-prereception>
@@ -2150,7 +2246,7 @@ document.querySelector('#cms-new-editor')?.addEventListener('submit',event=>{
   if(event.submitter?.name!=='coral_prepare')return;
   if(studioDirty){
     event.preventDefault();
-    window.alert('Enregistrez votre atelier avant de préparer le MP3. Aucun texte n’a été transmis.');
+    window.alert('Enregistrez d’abord l’atelier et ses six phases avant de préparer les sept narrations. Aucun texte n’a été transmis.');
     return;
   }
   if(event.currentTarget.dataset.coralSubmitting==='1'){event.preventDefault();return;}
