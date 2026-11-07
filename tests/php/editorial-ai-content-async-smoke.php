@@ -16,6 +16,26 @@ $remove=function(string $dir)use(&$remove,$base):void{
     foreach(scandir($dir)?:[] as $n){if($n==='.'||$n==='..')continue;$p=$dir.'/'.$n;if(is_dir($p)&&!is_link($p))$remove($p);else unlink($p);}rmdir($dir);
 };
 try{
+    // Two independent PHP processes represent two lost/reopened sessions.
+    $concurrent=$base.'/concurrent';mkdir($concurrent,0700);
+    $input=['kind'=>'recette','title'=>'Concurrence fictive de reprise','angle'=>'Angle à vérifier',
+        'objective'=>'Objectif synthétique','context'=>'Données fictives','reference_id'=>'',
+        'semantic_review'=>'1','transmission_review'=>'1'];
+    file_put_contents($concurrent.'/input.json',json_encode($input,JSON_THROW_ON_ERROR));chmod($concurrent.'/input.json',0600);
+    $children=[];
+    for($i=0;$i<2;$i++){
+        $proc=proc_open([PHP_BINARY,__DIR__.'/fixtures/editorial-ai-job-submission.php',$concurrent,$dist],
+            [0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);
+        asyncCheck(is_resource($proc),'CHILD_START');fclose($pipes[0]);$children[]=[$proc,$pipes];
+    }
+    $tokens=[];
+    foreach($children as [$proc,$pipes]){
+        $out=stream_get_contents($pipes[1]);$err=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);
+        asyncCheck(proc_close($proc)===0&&$err==='','CHILD_SUCCESS');$tokens[]=json_decode($out,true,16,JSON_THROW_ON_ERROR)['token'];
+    }
+    asyncCheck($tokens[0]===$tokens[1],'CROSS_PROCESS_SAME_ID');
+    asyncCheck(count(file($concurrent.'/calls.txt',FILE_IGNORE_NEW_LINES))===1,'CROSS_PROCESS_ONE_CALL');
+    asyncCheck(count(json_decode((string)file_get_contents(cmsDraftDir($concurrent).'/ai-brief-attempts.json'),true))===1,'CROSS_PROCESS_ONE_QUOTA');
     $submits=0;$polls=0;
     foreach(array_keys(cmsCreationKinds()) as $kind){
         $private=$base.'/'.$kind;mkdir($private,0700);$phase='running';$sent=[];
