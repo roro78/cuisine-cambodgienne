@@ -34,6 +34,17 @@ if($mode==='init'){
     foreach(cmsAtelierScriptIds() as $chapter)cmsAtelierVisaAction($private,$id,3,$chapter,'approve',true,true,$catalog);
     cmsAtelierCulinaryAction($private,$id,3,'approve',['servings'=>'1','quantities'=>'1','allergens'=>'1','gestures'=>'1'],
       'Validation fictive en fixture isolée, aucune cuisine ni production réelle.',true,true,$catalog,$canonical,$guided);
+    // Final cross-check is an independent, post-script, human-sourced veto.
+    // Synthetic domains and statements are isolated fixture data, never real evidence.
+    $fakeSources=[
+      ['title'=>'Source fictive A (fixture)','url'=>'https://example.org/amok-demo',
+        'note'=>'Comparaison de test uniquement, sans visite externe réelle ni valeur culinaire.'],
+      ['title'=>'Source fictive B (fixture)','url'=>'https://example.net/amok-demo',
+        'note'=>'Deuxième comparaison technique fictive, aucune validation publique ou réelle.']
+    ];
+    cmsCoralFinalAction($private,$id,3,'approve',$fakeSources,
+      'Visa de fixture technique uniquement, sans valeur culinaire ni autorisation de dépenses.',true,true,
+      $catalog,$canonical,$guided);
     file_put_contents($root.'/test-posted.json',json_encode($posted,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR));
     file_put_contents($root.'/test-id.txt',$id);
     echo json_encode(['id'=>$id,'version'=>3]);exit;
@@ -44,6 +55,15 @@ if($mode==='safety'){
         try{$f();throw new RuntimeException('UNEXPECTED_ALLOW');}
         catch(Throwable $e){if($e->getMessage()!==$code)throw $e;$passed[]=$code;}
     };
+    $final=cmsCoralFinalStatus($private,$record,$catalog,$canonical,$guided);
+    if(($final['approved']??false)!==true||!$final['report']['automated_checks_pass'])
+      throw new RuntimeException('FINAL_REVIEW_FIXTURE_NOT_READY');
+    $bad=$record;$bad['atelier_scripts']['chapters'][0]['text']='Préparez quatre ramequins. '.$bad['atelier_scripts']['chapters'][0]['text'];
+    $badReport=cmsCoralFinalAudit($bad,$catalog,$canonical,$guided);
+    if($badReport['automated_checks_pass']||!in_array('FIXED_SERVINGS',array_column($badReport['blocking'],'code'),true)
+      ||cmsCoralFinalStatus($private,$bad,$catalog,$canonical,$guided)['approved'])
+      throw new RuntimeException('FINAL_REVIEW_FIXED_SERVINGS_NOT_BLOCKED');
+    $passed[]='FINAL_REVIEW_AND_PORTIONS_BLOCKED';
     $decision=static fn($checks,$confirm,$auth,$version=3)=>cmsCoralTtsDecision($private,$id,$version,'rights','approve',$checks,
       'Décision exclusivement fictive en fixture isolée.',$confirm,$auth,$catalog,$canonical,$guided);
     $all=['voice'=>'1','content'=>'1','private_audio'=>'1'];
