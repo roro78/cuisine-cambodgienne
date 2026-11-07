@@ -9,7 +9,7 @@ mkdir($public,0700,true);mkdir($base.'/sessions',0700);
 $private=$base.'/.cuisine-asset-portal';mkdir($private,0700);
 foreach(['social-feed.json','editorial-source-index.json','editorial-guided-fields.json'] as $name)
     copy($dist.'/'.$name,$base.'/'.$name);
-foreach(['index.php','publication-gap-audit.php','coral-v2-ai.php'] as $name)
+foreach(['index.php','publication-gap-audit.php','coral-v2-ai.php','narrations-export.php'] as $name)
     copy($repo.'/public/gestion-contenus/'.$name,$public.'/'.$name);
 copy($dist.'/gestion-contenus/coral-v2-contract.json',$public.'/coral-v2-contract.json');
 $lib=file_get_contents($repo.'/public/gestion-contenus/lib.php');
