@@ -67,7 +67,7 @@ $cfg['editorial_ai_content']=['enabled'=>true,'qualified'=>true,'mode'=>'async',
 }];
 ASYNC;
 }
-if(($argv[3]??'')==='combined'){
+if(in_array($argv[3]??'',['combined','complete'],true)){
     $port=filter_var($argv[4]??'',FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>65535]]);
     if($port===false)throw new RuntimeException('FIXTURE_GATEWAY_PORT');
     require_once __DIR__.'/editorial-ai-content.php';
@@ -90,6 +90,22 @@ $cfg['editorial_ai_content']=['enabled'=>true,'qualified'=>true,'mode'=>'async',
  'poll'=>static fn(string $id):array=>cmsAiContentJobTransport($fixtureBase,$fixtureToken,$id,null,$fixtureTransport)];
 COMBINED;
 }
+if(($argv[3]??'')==='complete'){
+    $index=(string)file_get_contents($public.'/index.php');
+    $debug="error_log('[SYNTHETIC_CORAL_FAILURE] '.(preg_match('/^[A-Z_]+$/D',\$e->getMessage())?\$e->getMessage():'TEST_FAILURE')); ";
+    $index=str_replace("\$error='Suivi Coral",$debug."\$error='Suivi Coral",$index);
+    file_put_contents($public.'/index.php',$index); // synthetic copy only, fixed error code only
+    require_once __DIR__.'/editorial-workshop-proposal.php';$full=completeWorkshopFixture($dist);
+    $completeCreation=cmsCreationSave($private,['kind'=>'atelier','title'=>$full['draft']['title'],
+        'angle'=>$full['draft']['angle'],'fields'=>[],'state'=>'draft',
+        'atelier_reference'=>$full['draft']['atelier_reference']],$catalog,0);
+    file_put_contents($base.'/candidate.json',json_encode([...$full['phase'],'chapters'=>$full['chapters']],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR));
+    $expires=min(time()+3600,(new DateTimeImmutable('last day of this month 23:59:59',new DateTimeZone('UTC')))->getTimestamp());
+    $grant=['coral_v2_qualified'=>true,'workshop_complete_qualified'=>true,
+        'workshop_creation_id'=>$completeCreation['id'],'workshop_recipe_sha256'=>$full['request']['canonical_fingerprint'],
+        'workshop_expires_at'=>gmdate('Y-m-d\TH:i:s\Z',$expires),'workshop_research'=>$full['research']];
+    $configSource.='$cfg[\'editorial_ai_content\']=array_merge($cfg[\'editorial_ai_content\'],'.var_export($grant,true).');';
+}
 file_put_contents($private.'/config.php',$configSource.'return $cfg;');chmod($private.'/config.php',0600);
 $router= <<<'PHP'
 <?php
@@ -102,7 +118,9 @@ function cmsGetGuidedFields():?array{return json_decode(file_get_contents(__DIR_
 require __DIR__.'/site/public/gestion-contenus/index.php';
 PHP;
 file_put_contents($base.'/router.php',$router);
-echo json_encode(['id'=>$id,'legacy'=>cmsDraftDir($private).'/'.cmsKey($id).'.0001.json',
+$fixtureOutput=['id'=>$id,'legacy'=>cmsDraftDir($private).'/'.cmsKey($id).'.0001.json',
     'categories'=>array_map(static fn(string $kind):string=>array_values(array_filter(
         array_keys($catalog),static fn(string $id):bool=>str_starts_with($id,$kind.':')))[0],
-        ['recette','culture','ingredient','technique'])],JSON_THROW_ON_ERROR);
+        ['recette','culture','ingredient','technique'])];
+if(isset($completeCreation))$fixtureOutput['workshop_creation_id']=$completeCreation['id'];
+echo json_encode($fixtureOutput,JSON_THROW_ON_ERROR);

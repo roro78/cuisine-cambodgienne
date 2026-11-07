@@ -71,6 +71,15 @@ try{
             'research_note'=>$pending['candidate']['research_note'],'fields'=>$pending['candidate']['form_fields'],'state'=>'draft'];
         $saved=cmsAiContentSave($private,$posted,$catalog,0,null,$pending,$canonical);
         asyncCheck($saved['version']===1&&$saved['origin']==='ai','EXPLICIT_COMMON_SAVE');
+        if($kind==='atelier'){
+            asyncCheck($saved['atelier_reference']['recipeSlug']===explode(':',$recipe,2)[1],'EXPLICIT_AI_CANONICAL_REFERENCE_REUSED');
+            foreach($catalog as $otherId=>$source){
+                if($source['kind']==='recette'&&$otherId!==$recipe){
+                    $wrong=$posted;$wrong['atelier_reference']=['version'=>1,'recipeSlug'=>explode(':',$otherId,2)[1]];
+                    asyncReject(fn()=>cmsAiContentSave($private,$wrong,$catalog,0,null,$pending,$canonical),'AI_CONTENT_REFERENCE_CHANGED');break;
+                }
+            }
+        }
         $again=cmsAiContentSave($private,$posted,$catalog,0,null,$pending,$canonical);
         asyncCheck($again['id']===$saved['id']&&$again['version']===1,'REPLAY_SAVE_SAME_ID_VERSION');
         $renamed=$posted;$renamed['title'].=' concurrent';

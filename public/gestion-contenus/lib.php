@@ -2554,17 +2554,21 @@ function cmsAiContentPreflight(string $private,string $kind,string $title,
 }
 /** Closed provenance, stored with the explicit private save; never from POST. */
 function cmsAiContentMetadata(array $raw): array {
+    $complete=($raw['scope']??null)==='workshop-complete-draft-v1';
     $keys=['contract','kind','provider_label','model_label','generated_at','request_contract',
         'scope','brief_id','brief_version','brief_digest','input_title','reference_id',
         'reference_fingerprint','transmission_confirmed','proposal'];
+    if($complete)$keys[]='workshop_output_sha256';
     if(count($raw)!==count($keys)||array_diff(array_keys($raw),$keys)
         || ($raw['contract']??null)!=='cdc-editorial-ai-content-provenance-v1'
-        || ($raw['request_contract']??null)!=='cdc-editorial-ai-content-request-v1'
-        || ($raw['scope']??null)!=='creation-form-core-v1'
+        || ($raw['request_contract']??null)!==($complete?'cdc-coral-v2-workshop-request-v1':'cdc-editorial-ai-content-request-v1')
+        || ($raw['scope']??null)!==($complete?'workshop-complete-draft-v1':'creation-form-core-v1')
         || ($raw['transmission_confirmed']??null)!==true
         || !is_string($raw['kind']??null)||!isset(cmsCreationKinds()[$raw['kind']])
         || !is_int($raw['brief_version']??null)||$raw['brief_version']<0||$raw['brief_version']>9998
         || !is_array($raw['proposal']??null))throw new InvalidArgumentException('AI_CONTENT_PROVENANCE');
+    if($complete&&(($raw['kind']??null)!=='atelier'||!is_string($raw['workshop_output_sha256']??null)
+        ||!preg_match('/^[a-f0-9]{64}$/D',$raw['workshop_output_sha256'])))throw new InvalidArgumentException('AI_CONTENT_PROVENANCE');
     foreach(['provider_label','model_label'] as $key)
         if(!is_string($raw[$key]??null)||!preg_match('/^[a-zA-Z0-9][a-zA-Z0-9._:\/ -]{0,79}$/D',$raw[$key]))
             throw new InvalidArgumentException('AI_CONTENT_PROVENANCE');
@@ -2783,6 +2787,14 @@ function cmsAiContentSave(string $private,array $posted,array $catalog,int $expe
             || !is_string($canonical[$ref]['fingerprint']??null)
             || !hash_equals($metadata['reference_fingerprint'],$canonical[$ref]['fingerprint']))
             throw new RuntimeException('AI_CONTENT_REFERENCE_CHANGED');
+        // Reuse the explicitly selected request reference, never infer a
+        // recipe from a title or allow a different source during AI save.
+        $selected=cmsAtelierReferenceClean($posted['atelier_reference']??null,$catalog);
+        $recipeSlug=explode(':',$ref,2)[1];
+        if(($selected['recipeSlug']??'')!==''&&$selected['recipeSlug']!==$recipeSlug)
+            throw new RuntimeException('AI_CONTENT_REFERENCE_CHANGED');
+        $posted['atelier_reference']=['version'=>1,'recipeSlug'=>$recipeSlug,
+            'catalogFingerprint'=>$catalog[$ref]['fingerprint']];
     }
     // Common append-only save repeats BOTH aliases and the final title under lock.
     if(!isset($pending['async_job_token']))return cmsCreationSave($private,$posted,$catalog,$expected,$id,null,$metadata);

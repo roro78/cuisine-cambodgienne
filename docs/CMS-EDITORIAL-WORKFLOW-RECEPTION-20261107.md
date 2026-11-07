@@ -1,144 +1,150 @@
 # Réception du workflow éditorial — 7 novembre 2026
 
-Mission #205, référence `main` : `6a57b3d7520184e4f82998f554b88dec545d2e51`.
-**Chantier en cours. Aucun atelier complet nouveau reçu. Aucun déploiement.**
+Mission #205, PR #226, base main : `6a57b3d7520184e4f82998f554b88dec545d2e51`.
+**Chantier ouvert : aucun nouvel atelier complet reçu, aucune livraison de cette PR.**
 
-## Atelier retenu et patrimoine préservé
+## Atelier réel retenu
 
-Le calendrier privé a été lu par le SFTP déjà authentifié, sans écriture.
-Il comporte trois projets : une qualification technique explicitement privée,
-une modification liée à Bai Sach Chrouk sans date et une modification liée au
-kroeung datée du 12 novembre. Le propriétaire a explicitement exclu le kroeung :
-son brouillon, ses textes, ses images et ses MP3 restent intacts. Les projets
-liés à une identité publiée ne sont pas des commandes de nouvelle génération.
-La qualification technique n'est jamais recyclée en contenu réel.
+La lecture du calendrier privé a trouvé trois projets : qualification technique,
+modification liée à Bai Sach Chrouk sans date, modification liée au kroeung
+datée du 12 novembre. Kroeung est explicitement exclu et intégralement conservé.
+Les identités publiées ne sont pas des commandes de nouvelle génération.
 
-Il ne reste donc aucun atelier nouveau éligible programmé. Le candidat demandé
-est **Amok Trey — Réussir un poisson au lait de coco à la vapeur**. Il n'a encore
-ni identité de brouillon réel, ni date cible : ne pas en inventer.
-La recette existante `recette:amok-trey` est présente dans les trois index réels ;
-son empreinte canonique relevée est
+Aucun nouvel atelier éligible n'était programmé. Le repli demandé est
+**Amok Trey — Réussir un poisson au lait de coco à la vapeur**.
+Un vrai brief privé **v1** a été créé par `cmsCreationSave`, recette explicitement
+liée, sans date inventée, origine manuelle, reviewed=false. Les huit versions
+historiques conservent leurs empreintes. Ce brief n'est pas une production IA.
+Reçu local privé : `private-brief-receipt.json`.
+Empreinte de l'enregistrement :
+`69148d476191b5bd36a46b40f160623e821bd543f28468c4130153428a8897d0`.
+
+La recette `recette:amok-trey` figure dans les trois index réels. Empreinte :
 `67277bfaf88761c9ad5d5a79d1375052302192bb21eabd4ad98812fda26283b5`.
-La revue sémantique humaine reste distincte des collisions exactes.
+600 g poisson, 250 ml coco, trois cuillères à soupe kroeung, deux œufs,
+assaisonnements, combava/basilic, quatre ramequins. Goûter la base avant les
+œufs et le poisson crus, jamais ensuite. L'image historique montre une feuille
+de bananier : conserver son alt fidèle et l'actif. Les futures illustrations
+privées doivent montrer les ramequins et les vrais gestes ; elles ne constituent
+pas des photos documentaires ni la preuve d'une recette essayée.
 
-L'image historique a été inspectée : elle montre une feuille de bananier.
-Son texte alternatif est fidèle à cette image, tandis que la recette utilise
-quatre ramequins. Ne pas lui donner un faux texte alternatif « ramequins ».
-Conserver cet actif et prévoir des illustrations privées distinctes montrant
-les ramequins et les véritables gestes de la recette. Aucune image générée
-ne vaut photographie documentaire ou preuve d'un essai de cuisine.
+## Corrections implémentées, non livrées
 
-## État des maillons et preuves
+- Sélection dans le module éditorial et le calendrier existants : dates
+  prioritaires, identités publiées/exclusions préservées, recette explicite,
+  doublons bloqués. Aucun cron, second CMS ou moteur parallèle. Une date seule
+  ne déclenche rien ; lancement authentifié par le bouton commun et CSRF.
+- Contrat fermé `cdc-coral-v2-workshop-request-v1` : champs éditoriaux communs,
+  six phases détaillées, difficulté/durée/allergènes/sécurité et sept textes.
+  Le profil est explicitement projeté dans la préparation initiale éditable ;
+  résumé SEO et provenance privée distincts.
+- Une proposition de phases puis sept chapitres bornés : huit appels maximum,
+  référentiels permanents et recette liés par empreintes, recherche préalable
+  d'au moins deux sources indépendantes, absence d'essai culinaire explicite.
+  Ingrédients, ordre, durée et lexique contrôlés ; justesse culinaire et
+  quantités restent à relire humainement.
+- Journal durable avant transport, y compris anciens C2/sept narrations :
+  concurrence, perte de session/accusé et relance ne resoumettent pas.
+  Corruption ou intention incertaine bloquent ; aucun retry fournisseur.
+- Proposition dans le formulaire commun puis sauvegarde explicite append-only
+  d'une v2 du même ID. Aucun autosave, visa humain ou publication automatique.
+- Activation fermée par défaut ; modèle, ID et source bornés, bail de 48 h
+  maximum dans le même mois UTC, plafond mensuel worker 0,75 USD.
+  Autorité revérifiée avant chaque appel et réservation des huit avant le premier.
+  Tentatives, sorties et usages privés conservés ; coûts incertains non libérés.
+- Image de base immuable, UID1000, secrets existants en fichiers séparés,
+  aucun nouveau port ni changement Traefik/DB/n8n. CI : paquet Docker inerte
+  avec SHA source, ID d'image et empreinte d'archive, sans registre ni déploiement.
 
-| Maillon | État vérifié | Limite |
-| --- | --- | --- |
-| Studio/dashboard/formulaire/calendrier | Réception #221 réutilisée, inventaire privé actuel lu | Ne pas refaire sa livraison ou son réseau |
-| Recette Amok | Canonique existante, 600 g poisson, 250 ml coco, 3 c. à soupe kroeung, 2 œufs, assaisonnement, combava/basilic | L'atelier ne peut changer ces quantités ni ajouter une dégustation après les ingrédients crus |
-| Sélection | Sélecteur hors ligne ajouté au module éditorial existant | Aucun cron ni déclencheur automatique installé ; une date seule ne démarre rien |
-| Texte éditorial | Configuration distante existante, `enabled=false`, `qualified=false` | C2 produit seulement un canevas, pas un atelier complet avec détails et scripts |
-| Reprise de tâche | Correction du journal de soumission dans le Studio commun | À qualifier en Linux/CI puis en session authentifiée après livraison autorisée |
-| Visuels | Adaptateur présent dans le code, configuration distante absente | Pas de génération ni de média reçu |
-| Narrations | Contrat et formulaires intégrés, génération réelle désactivée | Aucun nouveau texte IA ni visa humain créé |
-| MP3 | Contrats/checkpoints/backup intégrés par #225 | Fournisseur Realtime inerte ; démarrage réel et raccordement TTS non livrés |
-| n8n | Workflows sociaux existants distincts de l'orchestration éditoriale | Clé API de lecture non configurée dans le Studio, inventaire distant actuel non vérifié |
-| Publication | Circuit existant à préserver | Jamais autorisée par une date, une génération ou cette PR |
+## Preuves et limites
 
-Les fichiers de preuve locale `live-planning.json`, `selection.json` et
-`runtime-readonly.json` restent privés ; aucun export brut de configuration,
-secret, brouillon ou identifiant technique n'est publié avec ce rapport.
-Le relevé distant a effectué zéro écriture et zéro génération.
+Tests isolés Node/PHP : réservation avant appel, huit reçus, réponse invalide,
+révocation, plafond, refus du rejeu et sauvegarde AES/restauration des nouvelles
+sorties fictives, avec marqueur bloquant de revue après restauration.
+Navigateur local à **390 et 1400 px** : authentification/CSRF, quatre boutons,
+calendrier → une tâche → six phases/sept textes → formulaire commun → v2 explicite,
+v1 et ancien brouillon intacts, aucune approbation, aucun débordement horizontal.
+**Toutes ces générations sont fictives, sans vraie clé ni appel fournisseur.**
+Les contrôles Windows ne remplacent pas les permissions POSIX Linux ou OVH.
 
-## Corrections proposées
+Les résultats Linux/Docker/CI seront cités sur le SHA final dans #205.
+Les six workflows verts de `2d26db34` précèdent le contrat complet :
+ils ne constituent pas sa preuve.
 
-`selectNextEditorialWorkshop` utilise les dernières révisions du même Studio,
-ordonne les dates, préserve les identités publiées, applique les exclusions
-explicites et vérifie la recette par son empreinte complète. Une référence
-manquante, des doublons exacts ou plusieurs projets concurrents bloquent la
-sélection. Un projet sans date existant est réutilisé ; un candidat ne reçoit
-ni faux ID persistant ni fausse programmation. Ce sélecteur ne fait aucun appel.
+Un seul GET gratuit `/v1/models` depuis le chargeur de secret existant a répondu403.
+Cela ne démontre ni clé invalide ni modèle absent. Le propriétaire confirme
+graphiquement l'autorisation de `gpt-image-1-mini` et
+`gpt-realtime-2.1-mini` dans le projet existant ; endpoints de génération encore
+non reçus. Aucun secret créé/copié/affiché, aucun appel payant effectué.
 
-Les soumissions asynchrones C2 et des sept narrations Coral utilisent maintenant un ID stable pour le brief exact,
-la version de création, la source et le fournisseur. Le journal privé avec
-verrou et intention écrite avant transport évite une seconde soumission et une
-seconde réservation après perte de session ou d'accusé. La reprise ne rouvre
-qu'une fenêtre de consultation GET du même job. Une corruption bloque ; elle
-n'autorise jamais un nouvel essai fournisseur.
+## Recherche et devis
 
-Le test C2 lance deux processus PHP concurrents avec un transport fictif : une
-seule intention, une seule réservation et un seul appel, y compris lors de la
-première création du répertoire de journal. Le contrat Coral vérifie aussi la
-perte de session et d'accusé sans second appel des sept narrations. Ce sont des
-preuves isolées, pas des productions éditoriales ou vocales.
+Sources primaires consultées le 7 novembre :
+[Chef Nak](https://chefnak.squarespace.com/cambodian-fish-amok),
+[Ambassade du Cambodge / Eleven One Kitchen](https://www.cambodiaembassyuk.org/fish-amok-recipe/),
+[FoodSafety.gov](https://www.foodsafety.gov/food-safety-charts/safe-minimum-internal-temperatures).
+Les recettes externes sont des variantes, pas une substitution à la canonique.
+Seuils officiels : poisson63°C, plats aux œufs71°C. Le seuil supérieur pour le
+mélange est une proposition conservatrice à valider, pas un essai culinaire.
+Le paquet opérationnel privé doit être borné, lié à la source et réel ;
+ne jamais installer les sources fictives des tests.
 
-La sauvegarde explicite reste `cmsCreationSave`, append-only et privée. Le
-journal lie cette opération au même ID/version ; un rejeu identique retrouve
-le même enregistrement. Un engagement de sauvegarde sans reçu final exige
-une revue, sans création aveugle d'un second brouillon. Les erreurs de validation
-des champs restent corrigeables ; les incertitudes de stockage restent fermées.
-Ces garanties n'autorisent ni génération payante, ni validation, ni publication.
-
-## Modèles et préparation du coût
-
-Un seul `GET /v1/models`, non génératif, a été tenté depuis le worker et son
-chargeur de secret existant : HTTP 403. Cela ne démontre ni une clé invalide,
-ni l'absence d'un modèle, ni un refus des endpoints de génération. Le propriétaire
-confirme ensuite depuis le projet existant que `gpt-image-1-mini` et
-`gpt-realtime-2.1-mini` sont autorisés. Il s'agit d'une vérification graphique
-rapportée, pas d'une génération qualifiée. Aucun secret créé, copié ou affiché.
-
-Estimation préparatoire pour Amok, **sans appel** :
+Le propriétaire a autorisé **0,75 USD maximum pour Amok seul** : textes,
+cinq illustrations privées, sept chapitres complets. **Cet accord n'autorise
+ni livraison ni publication ; les sept textes exacts doivent être validés avant l'audio.**
 
 | Poste | Hypothèses | Estimation USD |
 | --- | --- | --- |
-| Texte | `gpt-6-luna`, contexte court ; enveloppe de préparation/rédaction des phases et sept scripts, sans nouvelle tentative payante | jusqu'à 0,12 |
-| Images | cinq illustrations privées `gpt-image-1-mini`, low, 1536×1024 ; sortie 0,006 chacune et prompts courts | environ 0,05 avec entrées |
-| Audio | `gpt-realtime-2.1-mini`, Coral, 12–18 minutes estimées ; 20 tokens audio/seconde, texte et instructions inclus dans la marge | environ 0,32–0,47 |
-| Total de travail | ni facture ni borne externe démontrée ; à recalculer sur les scripts exacts | environ 0,50–0,65 |
+| Texte | gpt-6-luna, huit appels bornés, sans retry | réservation maximale 0,0653 |
+| Images | cinq gpt-image-1-mini, low1536×1024, prompts courts | environ0,05 |
+| Audio | gpt-realtime-2.1-mini, Coral, environ12–18min | environ0,32–0,47 |
+| Total de travail | à recalculer sur scripts exacts et sorties bornées | environ0,50–0,65 |
 
-Sources officielles consultées le 7 novembre : [tarifs](https://developers.openai.com/api/docs/pricing)
-et [génération d'images](https://developers.openai.com/api/docs/guides/image-generation).
-Une enveloppe de **0,75 USD** est proposée au propriétaire, sans l'assimiler à
-un accord acquis, une autorisation de livraison ou une capacité technique.
-Le devis définitif et les réservations doivent couvrir les sorties bornées et
-conserver tout montant incertain sans rejeu. S'ils dépassent l'accord disponible,
-bloquer avant appel. La durée finale ne peut être déduite des temps de cuisine.
-Le dernier écran utilisateur à 1 USD avec limite appliquée ne constitue pas
-une autorisation de cette nouvelle dépense ni une relecture actuelle de facture.
+Sources : [tarifs](https://developers.openai.com/api/docs/pricing),
+[images](https://developers.openai.com/api/docs/guides/image-generation).
+Devis, pas facture. Si les bornes maximales dépassent le reliquat de0,75,
+bloquer avant appel. Le plafond de projet1USD rapporté antérieurement ne
+remplace pas la limite de mission ou sa réservation.
 
-Le journal `editorial-drafts/ai-content-jobs` doit être inclus dans la sauvegarde
-privée du Studio lors d'une future livraison. Dossiers 0700, fichiers 0600,
-liens refusés, propriétaire contrôlé quand l'API POSIX est disponible. Pas de
-purge automatique. Une restauration conserve les intentions ; ne pas effacer
-un journal pour réémettre un travail incertain.
+## Livraison proposée et rollback
 
-## Conditions de suite, sans consentement implicite
+Première étape à autoriser séparément : trois PHP Studio (`index.php`,
+`lib.php`, `coral-v2-ai.php`), contrat public généré seulement si son empreinte
+diffère, image du seul worker existant, paramètres privés non secrets de portée
+Amok/source/bail et recherche réelle. Images, TTS et publication restent fermés.
 
-1. Vérifier la CI exacte de cette PR et les tests PHP Linux sur les contenus
-   réels ; une réussite locale ne vaut pas livraison OVH.
-2. Compléter le contrat de génération des six phases détaillées et sa provenance
-   dans le formulaire commun. Le canevas C2 actuel n'est pas cette réception.
-3. Raccorder explicitement la sélection au lancement autorisé et à la file
-   existante. L'automatisation doit respecter exclusions, identité/version,
-   limites, décision de coût et absence de nouvelle génération sur relance.
-4. Réceptionner l'inventaire n8n avec une authentification autorisée en lecture,
-   sans modifier/activer les workflows sociaux ni dévoiler de clé.
-5. Préparer le coût total texte + images + sept chapitres audio avec les modèles
-   réellement accessibles. Obtenir l'accord explicite sur le montant avant le
-   premier appel facturable. Les anciens accords et le plafond du projet ne
-   constituent pas cet accord pour Amok.
-6. Préparer le diff de livraison ciblé, sauvegarde vérifiée et rollback ;
-   obtenir une autorisation de déploiement distincte. Aucun push
-   `ovh-production`, transfert SFTP ou changement de service dans cette mission.
-7. Recevoir le vrai brouillon puis les visuels et sept textes ; corrections et
-   décisions éditoriales/culinaires/droits humaines, empreintes exactes.
-8. Achever et qualifier le fournisseur Coral existant et son autorité serveur,
-   la réservation commune des coûts, les checkpoints et sauvegardes réelles.
-   Aucun mini-test vocal payant ; premier appel vocal utile à l'atelier approuvé.
-9. Générer une seule fois, mesurer/assembler et sauvegarder le MP3 privé ;
-   demander écoute intégrale et recette réelle mobile/desktop.
-10. Préparer le site et les déclinaisons sociales ; publication par approbations
-    séparées. Aucun média ni validation historique n'est repris automatiquement.
+Avant transfert : empreintes installées, copie ciblée vérifiée hors webroot,
+configuration privée/brouillons/journal inclus, nouvelle sauvegarde sans toucher
+aux archives historiques. État Coral sauvegardé hors ligne après gel autorisé
+du seul worker : jobs, budgets, tentatives, reçus/sorties, autorisations et
+checkpoints. Chiffrement existant, nouvelle archive hors site, empreinte comparée,
+restauration isolée sans appel avant activation. Une copie à chaud ne vaut pas
+sauvegarde hors ligne cohérente.
 
-**Verdicts à ce stade :** code proposé à tester/revoir ; génération éditoriale
-réelle **NON VALIDÉE** ; génération audio **NO-GO** ; publication **NO-GO**.
-L'objectif métier reste ouvert tant que les maillons réels n'ont pas leurs preuves.
+Retour arrière : fermer la génération, revenir à l'ancienne image/configuration
+du seul worker, préserver budgets/intentions sans rejeu. L'ancien PHP #220 ne
+comprend pas le nouveau scope de provenance pour l'édition : préférer le Studio
+compatible avec flags fermés. Si retour PHP indispensable, garder le nouveau
+brouillon intact et en lecture seule jusqu'au rétablissement compatible.
+Ne pas maquiller la provenance, supprimer des versions ou effacer une dépense.
+Aucun down-v, prune, restauration de base ou remplacement des MP3.
+
+## Verdicts
+
+**Code :** revue et CI sur le SHA final avant proposition de livraison.
+**Texte réel : NO-GO tant que livraison ciblée et sauvegarde ne sont pas autorisées/vérifiées.**
+**Audio : NO-GO** : fournisseur Realtime encore inerte, raccordement/réservations
+communes à achever et qualifier, sept textes exacts à recevoir puis valider.
+**Visuels : non reçus** : adaptateur existant, configuration distante absente,
+cinq médias privés versionnés avec provenance/droits à produire.
+**Publication : NO-GO**, approbation séparée obligatoire.
+
+n8n actuel non inventorié : clé de lecture absente du Studio et interfaces
+graphiques indisponibles. Aucun workflow social modifié ou activé. Le parcours
+utile réutilise calendrier/file existants sans revendiquer une preuve n8n.
+
+Suite : livraison autorisée, vrai travail texte utile, sauvegarde explicite,
+revue éditoriale/culinaire, cinq visuels privés, validation des sept textes,
+qualification puis audio complet utile, assemblage/mesures, sauvegardes,
+écoute intégrale mobile/desktop et préparation de diffusion. Aucun mini-test
+vocal payant. L'objectif métier reste ouvert jusqu'à ces preuves réelles.

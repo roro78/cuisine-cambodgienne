@@ -41,6 +41,20 @@ test('restored state cannot start without an explicit review',async t=>{
   const {env,jobs}=await fixture(t);await writeFile(join(jobs,'.restore-review-required'),'{}',{mode:0o600});
   assert.throws(()=>editorialJobRuntimeConfig(env),/JOB_RESTORE_REVIEW_REQUIRED/);
 });
+test('complete workshop activation requires a narrow source, short lease and monthly ceiling',async t=>{
+ const {env,root}=await fixture(t),budget=join(root,'budget');await mkdir(budget,{mode:0o700});
+ const expires=Math.min(Date.now()+3600000,Date.UTC(new Date().getUTCFullYear(),new Date().getUTCMonth()+1,1)-1000);
+ const grant={...env,CDC_EDITORIAL_JOB_PROVIDER:'openai-coral',CDC_CORAL_EXTERNAL_QUALIFIED:'true',CDC_CORAL_EXTERNAL_ENABLED:'true',
+  CDC_CORAL_EXTERNAL_BUDGET_DIR:budget,CDC_CORAL_EXTERNAL_MODEL:'gpt-6-luna',CDC_CORAL_EXTERNAL_MONTHLY_USD:'.75',
+  CDC_CORAL_COMPLETE_WORKSHOP_ENABLED:'true',CDC_CORAL_COMPLETE_WORKSHOP_QUALIFIED:'true',
+  CDC_CORAL_COMPLETE_WORKSHOP_CREATION_ID:'c-'+'a'.repeat(24),CDC_CORAL_COMPLETE_WORKSHOP_SOURCE_SHA256:'a'.repeat(64),
+  CDC_CORAL_COMPLETE_WORKSHOP_EXPIRES_AT:new Date(expires).toISOString().replace(/\.\d{3}Z$/,'Z')};
+ assert.equal(editorialJobRuntimeConfig(grant).providerKind,'openai-coral');
+ for(const k of ['CDC_CORAL_COMPLETE_WORKSHOP_QUALIFIED','CDC_CORAL_COMPLETE_WORKSHOP_CREATION_ID','CDC_CORAL_COMPLETE_WORKSHOP_SOURCE_SHA256','CDC_CORAL_COMPLETE_WORKSHOP_EXPIRES_AT'])
+  assert.throws(()=>editorialJobRuntimeConfig({...grant,[k]:undefined}),/WORKSHOP_NOT_QUALIFIED/);
+ assert.throws(()=>editorialJobRuntimeConfig({...grant,CDC_CORAL_EXTERNAL_MONTHLY_USD:'1'}),/WORKSHOP_NOT_QUALIFIED/);
+ assert.throws(()=>editorialJobRuntimeConfig({...grant,CDC_CORAL_EXTERNAL_MODEL:'gpt-6.1-terra'}),/WORKSHOP_NOT_QUALIFIED/);
+});
 
 test('external startup requires a distinct private writable budget directory',async t=>{
   const {env,root,jobs}=await fixture(t);

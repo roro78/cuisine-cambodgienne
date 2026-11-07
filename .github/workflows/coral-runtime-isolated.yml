@@ -15,6 +15,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -22,6 +24,33 @@ jobs:
         run: node --test tests/editorial-job-runtime.test.mjs tests/coral-state-backup.test.mjs tests/coral-compose.test.mjs tests/coral-openai-secret.test.mjs tests/editorial-ai-job-gateway.test.mjs tests/coral-external-job-provider.test.mjs
       - name: Isolated Docker and TLS with synthetic credentials only
         run: sudo --preserve-env=PATH,GITHUB_SHA node scripts/test-coral-runtime-docker.mjs
+      - name: Package the exact reviewed worker without publishing or deploying
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha=$(git rev-parse HEAD)
+          mkdir -p artifacts/coral-worker-package
+          docker build --build-arg SOURCE_REVISION="$source_sha" -f deploy/coral/Dockerfile -t "cdc-coral-candidate:$source_sha" .
+          docker image inspect "cdc-coral-candidate:$source_sha" > artifacts/coral-worker-package/image-inspect.json
+          docker save "cdc-coral-candidate:$source_sha" | gzip -n > artifacts/coral-worker-package/worker.tar.gz
+          node --input-type=module <<'NODE'
+          import {readFile,writeFile} from 'node:fs/promises';
+          import {createHash} from 'node:crypto';
+          import {execFileSync} from 'node:child_process';
+          const root='artifacts/coral-worker-package/',sha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const [image]=JSON.parse(await readFile(root+'image-inspect.json','utf8'));
+          if(image.Config.Labels['org.opencontainers.image.revision']!==sha||image.Config.User!=='1000:1000')throw Error('PACKAGE_SOURCE');
+          const archive=await readFile(root+'worker.tar.gz');
+          await writeFile(root+'manifest.json',JSON.stringify({contract:'cdc-coral-worker-package-v1',source_sha:sha,
+            image_id:image.Id,archive_sha256:createHash('sha256').update(archive).digest('hex'),
+            secrets_included:false,production_deployment:false},null,2)+'\n');
+          NODE
+      - name: Upload inert worker package for a separately authorized installation
+        uses: actions/upload-artifact@v4
+        with:
+          name: coral-worker-package-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/coral-worker-package/
+          if-no-files-found: error
       - name: Upload expunged runtime receipt
         if: always()
         uses: actions/upload-artifact@v4

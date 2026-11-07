@@ -7,8 +7,25 @@ if(isset($_SERVER['SCRIPT_FILENAME'])
 }
 function cmsCoralSettings(array $cfg): ?array {
   $s=cmsAiContentSettings($cfg);
-  return $s!==null&&$s['mode']==='async'
-    &&($cfg['editorial_ai_content']['coral_v2_qualified']??false)===true?$s:null;
+  if($s===null||$s['mode']!=='async'||($cfg['editorial_ai_content']['coral_v2_qualified']??false)!==true)return null;
+  $s['workshop_complete_qualified']=($cfg['editorial_ai_content']['workshop_complete_qualified']??false)===true;
+  if($s['workshop_complete_qualified']){
+    $s['workshop_creation_id']=$cfg['editorial_ai_content']['workshop_creation_id']??null;
+    $s['workshop_recipe_sha256']=$cfg['editorial_ai_content']['workshop_recipe_sha256']??null;
+    $expires=$cfg['editorial_ai_content']['workshop_expires_at']??null;
+    $s['workshop_expires_at']=is_string($expires)?strtotime($expires):false;
+    if(!cmsCreationId($s['workshop_creation_id'])||!is_string($s['workshop_recipe_sha256'])
+      ||!preg_match('/^[a-f0-9]{64}$/D',$s['workshop_recipe_sha256'])
+      ||!is_string($expires)||!preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/D',$expires)
+      ||$s['workshop_expires_at']<=time()||$s['workshop_expires_at']>time()+172800
+      ||gmdate('Y-m',(int)$s['workshop_expires_at'])!==gmdate('Y-m'))throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
+    $s['workshop_research']=cmsCoralWorkshopResearch($cfg['editorial_ai_content']['workshop_research']??null,$s['workshop_recipe_sha256']);
+    $s['workshop_excluded_creation_ids']=$cfg['editorial_ai_content']['workshop_excluded_creation_ids']??[];
+    if(!is_array($s['workshop_excluded_creation_ids'])||!array_is_list($s['workshop_excluded_creation_ids'])
+      ||count($s['workshop_excluded_creation_ids'])>250)throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
+    foreach($s['workshop_excluded_creation_ids'] as $id)if(!cmsCreationId($id))throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
+  }
+  return $s;
 }
 
 /** Optional AUDIO simulation, independent from text provider flags. Never a paid adapter. */
@@ -382,6 +399,150 @@ function cmsCoralSchema(): array {
       'id'=>['type'=>'string','enum'=>cmsAtelierScriptIds()],
       'text'=>['type'=>'string','minLength'=>300,'maxLength'=>7000]]]]]];
 }
+/** Complete private proposal, same form/queue, separately qualified and closed by default. */
+function cmsCoralNextWorkshop(array $creations,array $catalog,array $settings): array {
+  cmsCalendarPlan($creations,gmdate('Y-m'));$eligible=[];$dated=[];
+  $excluded=$settings['workshop_excluded_creation_ids']??[];
+  foreach($creations as $r){
+    if($r['kind']!=='atelier'||isset($r['source_binding'])||in_array($r['id'],$excluded,true))continue;
+    try{cmsCreationDuplicateCheck('atelier',$r['slug'],$catalog,[],$r['id']);}
+    catch(InvalidArgumentException $e){if($e->getMessage()==='CREATION_DUPLICATE')continue;throw $e;}
+    $eligible[$r['id']]=$r;if(($r['target_date']??null)!==null)$dated[]=$r;
+  }
+  usort($dated,static fn(array $a,array $b):int=>strcmp($a['target_date'],$b['target_date'])?:strcmp($a['id'],$b['id']));
+  $r=$dated[0]??($eligible[$settings['workshop_creation_id']??'']??null);
+  if(!is_array($r)||$r['id']!==($settings['workshop_creation_id']??null))throw new RuntimeException('CORAL_WORKSHOP_PRIORITY_NOT_AUTHORIZED');
+  foreach($r['atelier_scripts']['chapters']??[] as $chapter)
+    if(trim((string)($chapter['text']??''))!=='')throw new RuntimeException('CORAL_WORKSHOP_ALREADY_PREPARED');
+  $slug=$r['atelier_reference']['recipeSlug']??'';
+  if($slug==='')throw new RuntimeException('CORAL_RECIPE_STALE');
+  foreach($eligible as $other)if($other['id']!==$r['id']&&($other['atelier_reference']['recipeSlug']??'')===$slug)
+    throw new RuntimeException('CORAL_WORKSHOP_DUPLICATE_SOURCE');
+  cmsCreationDuplicateCheck('atelier',$r['slug'],$catalog,$eligible,$r['id']);
+  return $r; // Selection only; no save, provider, scheduling or approval.
+}
+function cmsCoralWorkshopInputDigest(array $draft): string {
+  return hash('sha256',json_encode([$draft['id']??null,$draft['version']??null,$draft['title']??null,
+    $draft['angle']??null,$draft['fields']??null,$draft['atelier_reference']??null],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR));
+}
+function cmsCoralWorkshopSchema(): array {
+  $text=static fn(int $max,int $min=1):array=>['type'=>'string','minLength'=>$min,'maxLength'=>$max];
+  $list=static fn(array $item,int $min,int $max):array=>['type'=>'array','items'=>$item,'minItems'=>$min,'maxItems'=>$max];
+  $object=static fn(array $props):array=>['type'=>'object','properties'=>$props,'required'=>array_keys($props),'additionalProperties'=>false];
+  $form=cmsAiContentSchema('atelier')['properties']['fields'];
+  $form['properties']['beforeStarting']['maxItems']=10;
+  $phase=$object(['id'=>['type'=>'string','minLength'=>1,'maxLength'=>16,'enum'=>cmsAtelierPhaseIds()],
+    'minutes'=>['type'=>'integer','minimum'=>1,'maximum'=>240],
+    'ingredientNames'=>$list($text(200),1,20),'actions'=>$list($text(500),1,4),
+    'observe'=>$text(600),'check'=>$text(600),'mistake'=>$text(600),'recovery'=>$text(600),
+    'safety'=>$text(600),'pausePrompt'=>$text(400)]);
+  return $object(['summary'=>$text(200),'research_note'=>$text(2000),
+    'profile'=>$object(['difficulty'=>['type'=>'string','minLength'=>1,'maxLength'=>20,'enum'=>['Facile','Intermédiaire','Avancé']],
+      'practicalMinutes'=>['type'=>'integer','minimum'=>1,'maximum'=>600],
+      'waitingNote'=>$text(500,0),'allergens'=>$list($text(80),0,12),'safety'=>$list($text(500),1,8)]),
+    'fields'=>$form,
+    'phase_details'=>$list($phase,6,6),
+    'chapters'=>$list($object(['id'=>['type'=>'string','minLength'=>1,'maxLength'=>16,'enum'=>cmsAtelierScriptIds()],
+      'text'=>$text(1800,300)]),7,7)]);
+}
+function cmsCoralWorkshopResearch(mixed $raw,string $recipeSha): array {
+  if(!is_array($raw)||array_keys($raw)!==['recipe_sha256','verified_at','sources','cooking_test_performed']
+    ||($raw['recipe_sha256']??null)!==$recipeSha||($raw['cooking_test_performed']??null)!==false
+    ||!is_string($raw['verified_at']??null)||!preg_match('/^\d{4}-\d{2}-\d{2}$/D',$raw['verified_at'])
+    ||!is_array($raw['sources']??null)||count($raw['sources'])<2||count($raw['sources'])>5)throw new InvalidArgumentException('CORAL_WORKSHOP_RESEARCH');
+  $date=$raw['verified_at'];
+  if(!checkdate((int)substr($date,5,2),(int)substr($date,8,2),(int)substr($date,0,4))||$date>gmdate('Y-m-d'))throw new InvalidArgumentException('CORAL_WORKSHOP_RESEARCH');
+  $hosts=[];
+  foreach($raw['sources'] as $s){
+    if(!is_array($s)||array_keys($s)!==['title','url','note'])throw new InvalidArgumentException('CORAL_WORKSHOP_RESEARCH');
+    foreach(['title'=>180,'url'=>500,'note'=>2000] as $key=>$max)
+      if(!is_string($s[$key])||cmsCreationText($s[$key],$max)==='')throw new InvalidArgumentException('CORAL_WORKSHOP_RESEARCH');
+    $u=parse_url($s['url']);
+    if(!is_array($u)||($u['scheme']??null)!=='https'||empty($u['host'])||isset($u['user'])||isset($u['pass'])
+      ||isset($u['query'])||isset($u['fragment'])||preg_match('/[\x00-\x20\x7f]/',$s['url']))throw new InvalidArgumentException('CORAL_WORKSHOP_RESEARCH');
+    $hosts[$u['host']]=true;
+  }
+  if(count($hosts)<2||strlen(json_encode($raw,JSON_THROW_ON_ERROR))>10000)throw new InvalidArgumentException('CORAL_WORKSHOP_RESEARCH');
+  return $raw;
+}
+function cmsCoralWorkshopRequest(array $draft,array $catalog,array $canonical,array $guided,array $research=[]): array {
+  if(($draft['kind']??null)!=='atelier'||!cmsCreationId($draft['id']??null)
+    ||!is_int($draft['version']??null)||isset($draft['source_binding']))throw new InvalidArgumentException('CORAL_WORKSHOP_SAVED_PRIVATE_REQUIRED');
+  foreach($draft['atelier_scripts']['chapters']??[] as $c)
+    if(trim((string)($c['text']??''))!==''||trim((string)($c['editorNote']??''))!=='')throw new InvalidArgumentException('CORAL_SCRIPT_EXISTS');
+  $ref=cmsAtelierReferenceClean($draft['atelier_reference']??null,$catalog);$id='recette:'.($ref['recipeSlug']??'');
+  $c=$canonical[$id]??[];$g=$guided[$id]??[];
+  if(($c['model']??null)!=='recipes'||($g['model']??null)!=='recipes'
+    ||!preg_match('/^[a-f0-9]{64}$/D',$c['fingerprint']??'')
+    ||($g['fingerprint']??null)!==$c['fingerprint']||!is_array($g['fields']['ingredients']??null)
+    ||!is_array($g['fields']['steps']??null))throw new InvalidArgumentException('CORAL_RECIPE_STALE');
+  $formFields=$draft['fields']??[];
+  foreach(cmsCreationSchema()['atelier'] as $key=>$spec){
+    if($spec[1]!=='list'||!is_array($formFields[$key]??null))continue;
+    foreach($formFields[$key] as $line)if(!is_string($line))throw new InvalidArgumentException('CORAL_SOURCE_INCOMPLETE');
+    $formFields[$key]=implode("\n",$formFields[$key]);
+  }
+  $fields=cmsCreationCleanFields('atelier',$formFields);$policy=cmsCoralPolicy();
+  $brief=['kind'=>'atelier','title'=>$draft['title'],'angle'=>$draft['angle'],
+    'objective'=>$fields['learningGoal']?:$draft['title'],'context'=>$draft['summary']??'','reference_id'=>$id];
+  $r=['contract'=>'cdc-coral-v2-workshop-request-v1','scope'=>'workshop-complete-draft-v1',
+    'creation_id'=>$draft['id'],'creation_version'=>$draft['version'],'binding_digest'=>cmsCoralWorkshopInputDigest($draft),
+    'canonical_fingerprint'=>$c['fingerprint'],'brief'=>$brief,
+    'atelier'=>['title'=>$draft['title'],'fields'=>$fields,'recipeSlug'=>$ref['recipeSlug']],
+    'reference'=>['id'=>$id,'recipe_fields'=>$g['fields']],
+    'culinary_evidence'=>cmsCoralWorkshopResearch($research,$c['fingerprint']),
+    'referentials'=>['structure'=>$policy['structure'],'narration'=>$policy['narration']],
+    'response_schema'=>cmsCoralWorkshopSchema(),'timeout_seconds'=>20,'response_max_bytes'=>30000,'max_output_tokens'=>6000];
+  if(strlen(json_encode($r,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR))>90000)throw new RuntimeException('CORAL_REQUEST_OVERSIZE');
+  return $r;
+}
+function cmsCoralWorkshopCandidate(array $request,mixed $wire,array $settings,array $catalog): array {
+  if(!is_string($wire)||strlen($wire)>30000)throw new InvalidArgumentException('CORAL_RESPONSE');
+  try{$out=cmsAiContentValue(json_decode($wire,false,16,JSON_THROW_ON_ERROR),cmsCoralWorkshopSchema());}
+  catch(Throwable $e){throw new InvalidArgumentException('CORAL_RESPONSE');}
+  $profile=$out['profile'];
+  if(!in_array($profile['difficulty'],['Facile','Intermédiaire','Avancé'],true)
+    ||array_sum(array_column($out['phase_details'],'minutes'))!==$profile['practicalMinutes']
+    ||($request['atelier']['recipeSlug']==='amok-trey'&&array_diff(['poisson','œuf'],$profile['allergens'])))
+    throw new InvalidArgumentException('CORAL_WORKSHOP_PROFILE');
+  // Explicit projection into the EXISTING editable public preparation list.
+  // The typed profile remains traceable in the private provider output/hash.
+  $form=$out['fields'];$prefix=['Niveau proposé : '.$profile['difficulty'],
+    'Durée de travail estimée : '.$profile['practicalMinutes'].' minutes — à vérifier à la relecture.',
+    'Allergènes à vérifier : '.($profile['allergens']?implode(', ',$profile['allergens']):'vérifier la recette et les étiquettes des ingrédients').'.'];
+  if($profile['waitingNote']!=='')$prefix[]=$profile['waitingNote'];
+  $form['beforeStarting']=array_merge($prefix,$profile['safety'],$form['beforeStarting']);
+  $core=['title'=>$request['brief']['title'],'angle'=>$request['brief']['angle'],
+    'summary'=>$out['summary'],'research_note'=>$out['research_note'],'fields'=>$form];
+  $candidate=cmsAiContentCandidate('atelier',json_encode($core,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR));
+  $ref=cmsAtelierReferenceClean(['version'=>1,'recipeSlug'=>$request['atelier']['recipeSlug']],$catalog);
+  $known=array_column($request['reference']['recipe_fields']['ingredients'],'name');$used=[];$phases=[];
+  foreach(cmsAtelierPhaseIds() as $i=>$id){
+    $p=$out['phase_details'][$i];
+    if($p['id']!==$id||array_diff($p['ingredientNames'],$known))throw new InvalidArgumentException('CORAL_WORKSHOP_INGREDIENTS');
+    if($i>0)$used=array_merge($used,$p['ingredientNames']);
+    $phases[]=array_merge(['index'=>$i,'sourceTitle'=>$candidate['fields']['phases'][$i]['title'],
+      'sourceLearning'=>$candidate['fields']['phases'][$i]['learning']],$p);
+  }
+  if(array_diff($known,$used))throw new InvalidArgumentException('CORAL_WORKSHOP_INGREDIENTS');
+  $details=cmsAtelierPhaseDetailsClean(['version'=>1,'recipeSlug'=>$ref['recipeSlug'],
+    'catalogFingerprint'=>$ref['catalogFingerprint'],'phases'=>$phases],$candidate['fields'],$ref);
+  if(!cmsAtelierPhaseDetailsComplete($details))throw new InvalidArgumentException('CORAL_SOURCE_INCOMPLETE');
+  $public=json_encode([$candidate['title'],$candidate['summary'],$candidate['fields'],$details],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
+  if(preg_match('/(?<!\p{L})(?:fabriqu\p{L}*|fabrication\p{L}*|constru\p{L}*|chantier\p{L}*|poste)(?!\p{L})/iu',$public))throw new InvalidArgumentException('CORAL_LEXICON_OR_VOICE');
+  $scriptsRequest=$request;$scriptsRequest['binding_digest']=cmsAtelierScriptSourceDigest($candidate['fields'],$ref,$details);
+  $scripts=cmsCoralCandidate($scriptsRequest,json_encode(['chapters'=>$out['chapters']],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR));
+  $metadata=cmsAiContentMetadata(['contract'=>'cdc-editorial-ai-content-provenance-v1','kind'=>'atelier',
+    'provider_label'=>$settings['provider_label'],'model_label'=>$settings['model_label'],
+    'generated_at'=>gmdate('Y-m-d\TH:i:s\Z'),'request_contract'=>$request['contract'],'scope'=>$request['scope'],
+    'brief_id'=>$request['creation_id'],'brief_version'=>$request['creation_version'],
+    'brief_digest'=>hash('sha256',json_encode($request['brief'],JSON_THROW_ON_ERROR)),
+    'input_title'=>$request['brief']['title'],'reference_id'=>$request['reference']['id'],
+    'reference_fingerprint'=>$request['canonical_fingerprint'],'transmission_confirmed'=>true,
+    'proposal'=>$core,'workshop_output_sha256'=>hash('sha256',$wire)]);
+  return ['candidate'=>$candidate,'metadata'=>$metadata,'supplement'=>[
+    'atelier_reference'=>$ref,'atelier_phase_details'=>$details,'atelier_scripts'=>$scripts]];
+}
 function cmsCoralRequest(array $draft,array $catalog,array $canonical,array $guided): array {
   if(($draft['kind']??null)!=='atelier'
     ||!cmsCreationId($draft['id']??null)||!is_int($draft['version']??null))
@@ -470,7 +631,15 @@ function cmsCoralStart(array $draft,array $catalog,array $canonical,array $guide
   string $private,array $settings): array {
   if(($settings['mode']??null)!=='async'||!is_callable($settings['submit']??null))
     throw new RuntimeException('CORAL_DISABLED');
-  $request=cmsCoralRequest($draft,$catalog,$canonical,$guided);
+  $complete=($settings['workshop_complete_qualified']??false)===true
+    &&!cmsAtelierPhaseDetailsComplete($draft['atelier_phase_details']??null);
+  $request=$complete?cmsCoralWorkshopRequest($draft,$catalog,$canonical,$guided,$settings['workshop_research']??[]):cmsCoralRequest($draft,$catalog,$canonical,$guided);
+  if(($settings['workshop_complete_qualified']??false)===true){
+    if(($settings['workshop_creation_id']??null)!==$draft['id']
+      ||($settings['workshop_recipe_sha256']??null)!==$request['canonical_fingerprint']
+      ||($settings['workshop_expires_at']??0)<=time())throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
+    cmsAiContentPreflight($private,'atelier',$draft['title'],$catalog,$draft['id'],$draft['version']);
+  }
   $provider=$settings['provider_label']??'';$model=$settings['model_label']??'';
   $key=hash('sha256',json_encode([$request,$draft['id'],$draft['version'],$provider,$model],JSON_THROW_ON_ERROR));
   $token=substr($key,0,48);
@@ -488,6 +657,7 @@ function cmsCoralStart(array $draft,array $catalog,array $canonical,array $guide
     cmsAiBriefReserve($private,$settings['max_attempts_per_day']);
     $job=['token'=>$token,'expires_at'=>time()+1800,'status'=>'submission_unknown',
       'creation_id'=>$draft['id'],'creation_version'=>$draft['version'],
+      'expected_version'=>$draft['version'],
       'binding_digest'=>$request['binding_digest'],'request'=>$request,
       'provider_label'=>$provider,'model_label'=>$model];
     $entry=['contract'=>'cdc-editorial-submission-v1','fingerprint'=>$key,'job'=>$job];
@@ -501,6 +671,7 @@ function cmsCoralStart(array $draft,array $catalog,array $canonical,array $guide
   });
 }
 function cmsCoralPoll(array &$job,array $draft,array $settings,array $canonical,array $catalog=[]): ?array {
+  $complete=($job['request']['contract']??null)==='cdc-coral-v2-workshop-request-v1';
   // Refuse a result if the published workshop changed during generation.
   if(array_key_exists('source_binding',$draft)){
     if(!is_array($draft['source_binding'])
@@ -510,14 +681,19 @@ function cmsCoralPoll(array &$job,array $draft,array $settings,array $canonical,
   if(($job['creation_id']??null)!==($draft['id']??null)
     ||($job['creation_version']??null)!==($draft['version']??null)
     ||($job['expires_at']??0)<time()||($job['status']??null)==='failed'
-    ||($job['binding_digest']??null)!==cmsAtelierScriptSourceDigest(
-      $draft['fields'],$draft['atelier_reference'],$draft['atelier_phase_details']))
+    ||($job['binding_digest']??null)!==($complete?cmsCoralWorkshopInputDigest($draft):cmsAtelierScriptSourceDigest(
+      $draft['fields'],$draft['atelier_reference'],$draft['atelier_phase_details'])))
     throw new RuntimeException('CORAL_STALE');
   $recipeId='recette:'.($draft['atelier_reference']['recipeSlug']??'');
   if(($canonical[$recipeId]['fingerprint']??null)!==($job['request']['canonical_fingerprint']??null))
     throw new RuntimeException('CORAL_CANONICAL_STALE');
   if(($settings['mode']??null)!=='async'||!is_callable($settings['poll']??null))
     throw new RuntimeException('CORAL_DISABLED');
+  if($complete&&($settings['workshop_complete_qualified']??false)!==true)throw new RuntimeException('CORAL_DISABLED');
+  if(($settings['workshop_complete_qualified']??false)===true&&(($settings['workshop_creation_id']??null)!==$draft['id']
+    ||($settings['workshop_recipe_sha256']??null)!==($job['request']['canonical_fingerprint']??null)
+    ||($settings['workshop_expires_at']??0)<=time()))throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
+  if($complete&&cmsCoralWorkshopResearch($settings['workshop_research']??null,$job['request']['canonical_fingerprint'])!==$job['request']['culinary_evidence'])throw new RuntimeException('CORAL_WORKSHOP_RESEARCH');
   foreach(['provider_label','model_label'] as $k)
     if(isset($job[$k])&&$job[$k]!==($settings[$k]??''))throw new RuntimeException('CORAL_PROVIDER_CHANGED');
   try{$answer=($settings['poll'])($job['token']);}
@@ -530,6 +706,6 @@ function cmsCoralPoll(array &$job,array $draft,array $settings,array $canonical,
   if(($answer['status']??null)!=='succeeded'){
     $job['status']='failed';throw new RuntimeException('CORAL_PROVIDER');
   }
-  try{return cmsCoralCandidate($job['request'],$answer['result']??null);}
+  try{return $complete?cmsCoralWorkshopCandidate($job['request'],$answer['result']??null,$settings,$catalog):cmsCoralCandidate($job['request'],$answer['result']??null);}
   catch(Throwable $e){$job['status']='failed';throw $e;}
 }
