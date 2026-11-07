@@ -57,12 +57,18 @@ manquante, des doublons exacts ou plusieurs projets concurrents bloquent la
 sélection. Un projet sans date existant est réutilisé ; un candidat ne reçoit
 ni faux ID persistant ni fausse programmation. Ce sélecteur ne fait aucun appel.
 
-La soumission asynchrone C2 utilise maintenant un ID stable pour le brief exact,
+Les soumissions asynchrones C2 et des sept narrations Coral utilisent maintenant un ID stable pour le brief exact,
 la version de création, la source et le fournisseur. Le journal privé avec
 verrou et intention écrite avant transport évite une seconde soumission et une
 seconde réservation après perte de session ou d'accusé. La reprise ne rouvre
 qu'une fenêtre de consultation GET du même job. Une corruption bloque ; elle
 n'autorise jamais un nouvel essai fournisseur.
+
+Le test C2 lance deux processus PHP concurrents avec un transport fictif : une
+seule intention, une seule réservation et un seul appel, y compris lors de la
+première création du répertoire de journal. Le contrat Coral vérifie aussi la
+perte de session et d'accusé sans second appel des sept narrations. Ce sont des
+preuves isolées, pas des productions éditoriales ou vocales.
 
 La sauvegarde explicite reste `cmsCreationSave`, append-only et privée. Le
 journal lie cette opération au même ID/version ; un rejeu identique retrouve
@@ -70,6 +76,34 @@ le même enregistrement. Un engagement de sauvegarde sans reçu final exige
 une revue, sans création aveugle d'un second brouillon. Les erreurs de validation
 des champs restent corrigeables ; les incertitudes de stockage restent fermées.
 Ces garanties n'autorisent ni génération payante, ni validation, ni publication.
+
+## Modèles et préparation du coût
+
+Un seul `GET /v1/models`, non génératif, a été tenté depuis le worker et son
+chargeur de secret existant : HTTP 403. Cela ne démontre ni une clé invalide,
+ni l'absence d'un modèle, ni un refus des endpoints de génération. Le propriétaire
+confirme ensuite depuis le projet existant que `gpt-image-1-mini` et
+`gpt-realtime-2.1-mini` sont autorisés. Il s'agit d'une vérification graphique
+rapportée, pas d'une génération qualifiée. Aucun secret créé, copié ou affiché.
+
+Estimation préparatoire pour Amok, **sans appel** :
+
+| Poste | Hypothèses | Estimation USD |
+| --- | --- | --- |
+| Texte | `gpt-6-luna`, contexte court ; enveloppe de préparation/rédaction des phases et sept scripts, sans nouvelle tentative payante | jusqu'à 0,12 |
+| Images | cinq illustrations privées `gpt-image-1-mini`, low, 1536×1024 ; sortie 0,006 chacune et prompts courts | environ 0,05 avec entrées |
+| Audio | `gpt-realtime-2.1-mini`, Coral, 12–18 minutes estimées ; 20 tokens audio/seconde, texte et instructions inclus dans la marge | environ 0,32–0,47 |
+| Total de travail | ni facture ni borne externe démontrée ; à recalculer sur les scripts exacts | environ 0,50–0,65 |
+
+Sources officielles consultées le 7 novembre : [tarifs](https://developers.openai.com/api/docs/pricing)
+et [génération d'images](https://developers.openai.com/api/docs/guides/image-generation).
+Une enveloppe de **0,75 USD** est proposée au propriétaire, sans l'assimiler à
+un accord acquis, une autorisation de livraison ou une capacité technique.
+Le devis définitif et les réservations doivent couvrir les sorties bornées et
+conserver tout montant incertain sans rejeu. S'ils dépassent l'accord disponible,
+bloquer avant appel. La durée finale ne peut être déduite des temps de cuisine.
+Le dernier écran utilisateur à 1 USD avec limite appliquée ne constitue pas
+une autorisation de cette nouvelle dépense ni une relecture actuelle de facture.
 
 Le journal `editorial-drafts/ai-content-jobs` doit être inclus dans la sauvegarde
 privée du Studio lors d'une future livraison. Dossiers 0700, fichiers 0600,

@@ -471,18 +471,34 @@ function cmsCoralStart(array $draft,array $catalog,array $canonical,array $guide
   if(($settings['mode']??null)!=='async'||!is_callable($settings['submit']??null))
     throw new RuntimeException('CORAL_DISABLED');
   $request=cmsCoralRequest($draft,$catalog,$canonical,$guided);
-  cmsAiBriefReserve($private,$settings['max_attempts_per_day']);
-  $token=bin2hex(random_bytes(24));
-  $job=['token'=>$token,'expires_at'=>time()+1800,'status'=>'submission_unknown',
-    'creation_id'=>$draft['id'],'creation_version'=>$draft['version'],
-    'binding_digest'=>$request['binding_digest'],'request'=>$request];
-  try{$ack=($settings['submit'])($request,$token);}
-  catch(Throwable $e){return $job;}
-  if(!is_array($ack)||($ack['id']??null)!==$token
-     ||!in_array($ack['status']??null,['queued','running','succeeded'],true))
-     throw new RuntimeException('CORAL_PROVIDER');
-  $job['status']=$ack['status']==='succeeded'?'queued':$ack['status'];
-  return $job;
+  $provider=$settings['provider_label']??'';$model=$settings['model_label']??'';
+  $key=hash('sha256',json_encode([$request,$draft['id'],$draft['version'],$provider,$model],JSON_THROW_ON_ERROR));
+  $token=substr($key,0,48);
+  return cmsAiContentJobLocked($private,$token,static function(?array $entry,string $path)use($private,$settings,$request,$draft,$provider,$model,$key,$token):array{
+    if($entry!==null){
+      $j=$entry['job'];
+      if(($entry['fingerprint']??null)!==$key||isset($entry['save_attempt'])
+        ||($j['request']??null)!==$request||($j['creation_id']??null)!==$draft['id']
+        ||($j['creation_version']??null)!==$draft['version']
+        ||($j['provider_label']??null)!==$provider||($j['model_label']??null)!==$model
+        ||!in_array($j['status']??null,['queued','running','submission_unknown'],true))
+        throw new RuntimeException('CORAL_JOB_REVIEW_REQUIRED');
+      $j['expires_at']=time()+1800;return $j; // refresh observation, NEVER submit
+    }
+    cmsAiBriefReserve($private,$settings['max_attempts_per_day']);
+    $job=['token'=>$token,'expires_at'=>time()+1800,'status'=>'submission_unknown',
+      'creation_id'=>$draft['id'],'creation_version'=>$draft['version'],
+      'binding_digest'=>$request['binding_digest'],'request'=>$request,
+      'provider_label'=>$provider,'model_label'=>$model];
+    $entry=['contract'=>'cdc-editorial-submission-v1','fingerprint'=>$key,'job'=>$job];
+    cmsAiContentJobWrite($path,$entry);
+    try{$ack=($settings['submit'])($request,$token);}
+    catch(Throwable $e){return $job;}
+    if(!is_array($ack)||($ack['id']??null)!==$token
+       ||!in_array($ack['status']??null,['queued','running','succeeded'],true))return $job;
+    $job['status']=$ack['status']==='succeeded'?'queued':$ack['status'];
+    $entry['job']=$job;cmsAiContentJobWrite($path,$entry);return $job;
+  });
 }
 function cmsCoralPoll(array &$job,array $draft,array $settings,array $canonical,array $catalog=[]): ?array {
   // Refuse a result if the published workshop changed during generation.
@@ -502,6 +518,8 @@ function cmsCoralPoll(array &$job,array $draft,array $settings,array $canonical,
     throw new RuntimeException('CORAL_CANONICAL_STALE');
   if(($settings['mode']??null)!=='async'||!is_callable($settings['poll']??null))
     throw new RuntimeException('CORAL_DISABLED');
+  foreach(['provider_label','model_label'] as $k)
+    if(isset($job[$k])&&$job[$k]!==($settings[$k]??''))throw new RuntimeException('CORAL_PROVIDER_CHANGED');
   try{$answer=($settings['poll'])($job['token']);}
   catch(Throwable $e){throw new RuntimeException('CORAL_PROVIDER');}
   if(!is_array($answer)||($answer['id']??null)!==$job['token'])
