@@ -2665,7 +2665,9 @@ function cmsAiContentComplete(string $private,array $request,array $settings,mix
 function cmsAiContentJobLocked(string $private,string $token,callable $operation): mixed {
     if(!preg_match('/^[a-f0-9]{48}$/D',$token))throw new RuntimeException('AI_CONTENT_JOB_STORE');
     $dir=cmsDraftDir($private).'/ai-content-jobs';
-    if(is_link($dir)||(!is_dir($dir)&&!mkdir($dir,0700)))throw new RuntimeException('AI_CONTENT_JOB_STORE');
+    if(!is_dir($dir)&&!@mkdir($dir,0700)&&!is_dir($dir))throw new RuntimeException('AI_CONTENT_JOB_STORE');
+    clearstatcache(true,$dir);
+    if(is_link($dir)||!is_dir($dir))throw new RuntimeException('AI_CONTENT_JOB_STORE');
     if(DIRECTORY_SEPARATOR!=='\\'&&((fileperms($dir)&0077)!==0
         ||(function_exists('posix_geteuid')&&fileowner($dir)!==posix_geteuid())))throw new RuntimeException('AI_CONTENT_JOB_STORE');
     $path=$dir.'/'.$token.'.json';$lock=$dir.'/'.$token.'.lock';

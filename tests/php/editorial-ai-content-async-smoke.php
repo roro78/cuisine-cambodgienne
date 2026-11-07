@@ -18,6 +18,9 @@ $remove=function(string $dir)use(&$remove,$base):void{
 try{
     // Two independent PHP processes represent two lost/reopened sessions.
     $concurrent=$base.'/concurrent';mkdir($concurrent,0700);
+    // The installed Studio's common directories already exist. Leave the NEW
+    // journal directory absent to exercise concurrent first use of that store.
+    cmsCreationDir($concurrent);
     $input=['kind'=>'recette','title'=>'Concurrence fictive de reprise','angle'=>'Angle à vérifier',
         'objective'=>'Objectif synthétique','context'=>'Données fictives','reference_id'=>'',
         'semantic_review'=>'1','transmission_review'=>'1'];
@@ -31,7 +34,12 @@ try{
     $tokens=[];
     foreach($children as [$proc,$pipes]){
         $out=stream_get_contents($pipes[1]);$err=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);
-        asyncCheck(proc_close($proc)===0&&$err==='','CHILD_SUCCESS');$tokens[]=json_decode($out,true,16,JSON_THROW_ON_ERROR)['token'];
+        $exit=proc_close($proc);
+        if($exit!==0||$err!==''){
+            preg_match('/(?:RuntimeException|InvalidArgumentException): ([A-Z_]+)/',$err,$m);
+            throw new RuntimeException('ASYNC_TEST_CHILD_SUCCESS_'.($m[1]??'PROCESS_FAILURE'));
+        }
+        $tokens[]=json_decode($out,true,16,JSON_THROW_ON_ERROR)['token'];
     }
     asyncCheck($tokens[0]===$tokens[1],'CROSS_PROCESS_SAME_ID');
     asyncCheck(count(file($concurrent.'/calls.txt',FILE_IGNORE_NEW_LINES))===1,'CROSS_PROCESS_ONE_CALL');
