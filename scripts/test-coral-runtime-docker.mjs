@@ -6,7 +6,7 @@ import {join,resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {randomBytes} from 'node:crypto';
 import assert from 'node:assert/strict';
-import {validateCoralCompose,validateCoralMaintenanceCompose,validateCoralTraefikRoute} from './validate-coral-compose.mjs';
+import {validateCoralCompose,validateCoralMaintenanceCompose,validateCoralTraefikRoute,validateCoralStagingCompose} from './validate-coral-compose.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const lock=JSON.parse(await readFile(join(root,'deploy/coral/images.lock.json'),'utf8'));
@@ -129,6 +129,10 @@ try{
     CDC_CORAL_ALLOWED_SOURCE_CIDRS:'192.0.2.10/32'};
   const compose=JSON.parse(docker(['compose','-f','deploy/coral/compose.yaml','--profile','runtime','config','--format','json'],{env}).stdout);
   check('real Compose runtime normalization passes security contract',validateCoralCompose(compose).status==='PASS');
+  const stagingCompose=JSON.parse(docker(['compose','-f','deploy/coral/compose.yaml',
+    '-f','deploy/coral/compose.staging.yaml','--profile','runtime','config','--format','json'],{env}).stdout);
+  check('isolated Coral staging config boots without OpenAI or Traefik route',
+    validateCoralStagingCompose(stagingCompose).status==='PASS');
   const routeCompose=JSON.parse(docker(['compose','-f','deploy/coral/compose.yaml',
     '-f','deploy/coral/compose.traefik.yaml','--profile','runtime','config','--format','json'],{env}).stdout);
   check('optional Traefik route has CIDR, throttle and in-flight controls',
