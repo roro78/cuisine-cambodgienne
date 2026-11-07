@@ -31,6 +31,13 @@ test('real PHP journals invalidate source/rights/visas and refuse fabricated or 
  await f.bridge('rights');const r2=await f.bridge('request');assert.notEqual(r.request_id,r2.request_id);
  await f.bridge('revoke-visa');assert.equal(await f.bridge('authorize',r2),false);
 });
+test('revoking final cross-review vetoes even a previously authorized simulated TTS request',async t=>{
+ const f=await fixture(t);await f.bridge('rights');
+ const request=await f.bridge('request');assert.equal(await f.bridge('authorize',request),true);
+ await f.bridge('revoke-final');
+ assert.equal(await f.bridge('authorize',request),false);
+ await assert.rejects(f.bridge('request'),/TTS_FINAL_REVIEW_REQUIRED/);
+});
 test('PHP rights require authenticated explicit decisions and reject stale, forged or corrupt journals',async t=>{
  const f=await fixture(t);const result=await f.bridge('safety');assert.ok(result.passed.length>=8);
 });
@@ -69,6 +76,11 @@ test('shared Studio through authenticated HTTP: rights, double submit, seven act
  await page.locator('[name=username]').fill('fixture-admin');await page.locator('[name=password]').fill('synthetic-login-only');await page.locator('button[name=login]').click();
  const url=base+'?new=1&cid='+f.id;await page.goto(url);
  const panel=page.locator('#cms-tts');assert.equal(await panel.count(),1,errors.slice(-1000));
+ await page.goto(url+'&final_audit=1#final-review');
+ const finalPanel=page.locator('[data-coral-final-audit]');assert.equal(await finalPanel.count(),1);
+ assert.match(await finalPanel.innerText(),/Visa final actif/);
+ assert.equal(await finalPanel.locator('button[value=revoke]').count(),1);
+ await page.goto(url);
  assert.equal(await panel.locator('button[value=generate]').isDisabled(),true);
  for(const name of ['voice','content','private_audio'])await panel.locator('[name="tts_checks['+name+']"]').check();
  await panel.locator('[name=tts_note]').fill('Autorisation fictive du test isolé, sans droits de production.');
