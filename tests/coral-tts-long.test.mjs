@@ -5,10 +5,13 @@ import {join,resolve} from 'node:path';
 import {tmpdir} from 'node:os';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
+import {createReadStream} from 'node:fs';
+import {createHash} from 'node:crypto';
 import {coralTtsLoadScenarios} from '../scripts/coral-tts-load-scenarios.mjs';
 import {audioSha,probeAudio} from '../scripts/coral-tts-audio.mjs';
 const exec=promisify(execFile);
-for(const scenario of await coralTtsLoadScenarios())test('realistic offline audio '+scenario.name+' with restart, resources and seven chapters',{timeout:240000},async t=>{
+async function digestFile(file){const h=createHash('sha256');let bytes=0;for await(const c of createReadStream(file,{highWaterMark:65536})){h.update(c);bytes+=c.length;}return {sha256:h.digest('hex'),bytes};}
+for(const scenario of (await coralTtsLoadScenarios()).filter(s=>!process.env.TTS_SCENARIO||s.name===process.env.TTS_SCENARIO))test('realistic offline audio '+scenario.name+' with restart, resources and seven chapters',{timeout:240000},async t=>{
  const evidence=process.env.TTS_EVIDENCE_DIR?resolve(process.env.TTS_EVIDENCE_DIR,'coral-tts-load'):null;
  if(evidence)await mkdir(evidence,{recursive:true,mode:0o700});
  const root=await mkdtemp(join(evidence||tmpdir(),'cdc-coral-load-'+scenario.name+'-'));
@@ -23,18 +26,22 @@ for(const scenario of await coralTtsLoadScenarios())test('realistic offline audi
  const job=(await readdir(join(root,'jobs'))).find(x=>/^[a-f0-9]{48}$/.test(x)),folder=join(root,'jobs',job,'tts');
  let expected=0,totalWav=0;const fragments=[];
  for(let i=0;i<7;i++){
-  const c=m.chapters[i],bytes=await readFile(join(folder,c.id+'.wav')),receipt=JSON.parse(await readFile(join(folder,c.id+'.receipt.json'),'utf8'));
-  assert.equal(audioSha(bytes),receipt.sha256);assert.ok(Math.abs(c.start-expected)<0.002);expected+=scenario.durations[i];assert.ok(Math.abs(c.end-expected)<0.002);
-  fragments.push({id:c.id,bytes:bytes.length,duration:receipt.duration,sha256:receipt.sha256});totalWav+=bytes.length;
+  const c=m.chapters[i],digest=await digestFile(join(folder,c.id+'.wav')),receipt=JSON.parse(await readFile(join(folder,c.id+'.receipt.json'),'utf8'));
+  assert.equal(digest.sha256,receipt.sha256);assert.ok(Math.abs(c.start-expected)<0.002);expected+=scenario.durations[i];assert.ok(Math.abs(c.end-expected)<0.002);
+  fragments.push({id:c.id,bytes:digest.bytes,duration:receipt.duration,sha256:receipt.sha256});totalWav+=digest.bytes;
  }
  const files=await readdir(folder),mp3=files.find(x=>/^final-[a-f0-9]{64}\.mp3$/.test(x));
- const bytes=await readFile(join(folder,mp3));assert.equal(audioSha(bytes),m.sha256);assert.equal(bytes.length,m.bytes);assert.ok(bytes.length<32000000);
+ const digest=await digestFile(join(folder,mp3));assert.equal(digest.sha256,m.sha256);assert.equal(digest.bytes,m.bytes);assert.ok(digest.bytes<32000000);
  const actual=await probeAudio(join(folder,mp3));assert.equal(actual.chapters.length,7);
  assert.equal(audioSha(await readFile(join(root,'historical-fixture.mp3'))),audioSha(historical));
  let validationPeak=null;try{validationPeak=Number(await readFile('/sys/fs/cgroup/memory.peak','utf8'));}catch{}
  if(process.env.TTS_REQUIRE_RESOURCE_LIMITS==='true'){
   assert.equal(after.cgroup?.memory_max,'268435456');assert.match(after.cgroup.cpu_max,/^50000 100000$/);
   assert.ok(after.cgroup.memory_peak_bytes<=268435456);assert.ok(after.audio_commands.length>0);
+  if(process.env.TTS_REQUIRE_MARGIN==='true'){
+   assert.ok(validationPeak<=201326592,'worker needs at least 25% reproducible memory headroom');
+   for(const r of [before,after])assert.equal(r.memory.event_delta.oom_kill,0);
+  }
  }
  const summary={...after,begin_measurements:before,fragments,total_wav_bytes:totalWav,
   backup_1mib_file_compatible:fragments.every(f=>f.bytes<=1048576)&&m.bytes<=1048576,

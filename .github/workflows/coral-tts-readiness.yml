@@ -1,0 +1,54 @@
+name: Coral audio readiness - offline only
+on:
+  push:
+    branches: ['feat/coral-tts-memory-*']
+permissions:
+  contents: read
+jobs:
+  memory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario: [representative, bounded-adverse]
+        variant: [baseline, streaming]
+        repeat: [1, 2]
+        exclude:
+          - {variant: baseline, repeat: 2}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Immutable baseline core plus identical instrumentation
+        if: matrix.variant == 'baseline'
+        run: |
+          mkdir baseline
+          git archive 0d5a688f7184d556a51dd1981593300d9421826b scripts src/data/atelier-recette-audio src/data/atelier-recette-guides | tar -x -C baseline
+          cp -R tests baseline/
+      - name: Build isolated image
+        run: |
+          context=.
+          if [ '${{ matrix.variant }}' = baseline ]; then context=baseline; fi
+          docker build -f "$context/tests/fixtures/coral-tts-load.Dockerfile" -t coral-readiness ./$context
+      - name: Fresh cgroup - no network, production mounts or credentials
+        run: |
+          mkdir evidence
+          sudo chown 1000:1000 evidence
+          margin=false
+          if [ '${{ matrix.variant }}' = streaming ]; then margin=true; fi
+          docker run --name coral-offline --network none --read-only --cpus 0.5 --memory 256m --memory-swap 256m --pids-limit 64 --cap-drop ALL --security-opt no-new-privileges \
+            --tmpfs /tmp:rw,noexec,nosuid,size=16m,uid=1000,gid=1000,mode=0700 -v "$PWD/evidence:/evidence" \
+            -e TTS_EVIDENCE_DIR=/evidence -e TTS_REQUIRE_RESOURCE_LIMITS=true -e TTS_REQUIRE_MARGIN=$margin \
+            -e TTS_SCENARIO=${{ matrix.scenario }} coral-readiness
+      - name: Capture isolated container outcome
+        if: always()
+        run: |
+          docker inspect --format '{{json .State}}' coral-offline > evidence/container-state.json || true
+          sudo chown -R "$(id -u):$(id -g)" evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coral-memory-${{ matrix.variant }}-${{ matrix.scenario }}-${{ matrix.repeat }}
+          path: evidence
+          if-no-files-found: error

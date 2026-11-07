@@ -220,11 +220,11 @@ export async function createJobGateway({root,token,provider,ttsJobs=null}){
       }
     }finally{working=false;}
   }
-  async function ttsOperation(id,operation){
+  async function ttsOperation(id,operation,{stream=false}={}){
     if(!ttsJobs||active.has(id))throw Error('JOB_TTS_BUSY_OR_DISABLED');
     const folder=path(id),saved=JSON.parse(await safeRead(join(folder,'request.json')));
     if(saved.request?.contract!==TTS_CONTRACT)throw Error('JOB_TTS_CONTRACT');
-    if(operation==='audio')return ttsJobs.audio(saved.request,id,folder);
+    if(operation==='audio')return stream?ttsJobs.audioStream(saved.request,id,folder):ttsJobs.audio(saved.request,id,folder);
     if(operation!=='resume')throw Error('JOB_TTS_OPERATION');
     const lock=join(folder,'.operation.lock');await mkdir(lock,{mode:0o700});
     try{
@@ -244,15 +244,16 @@ export async function createJobGateway({root,token,provider,ttsJobs=null}){
     if(!match||!(match[2]==='resume'?req.method==='POST':match[2]==='audio'?req.method==='GET':['GET','PUT'].includes(req.method)))return send(404,{error:'NOT_FOUND'});
     try{
       if(match[2]){
-        const result=await ttsOperation(match[1],match[2]);
+        const result=await ttsOperation(match[1],match[2],{stream:match[2]==='audio'});
         if(match[2]==='audio'){
-          const etag='"'+digest(result)+'"';
-          const range=audioByteRange(req.headers['if-range']&&req.headers['if-range']!==etag?undefined:req.headers.range,result.length);
+          const etag='"'+result.sha256+'"';
+          const range=audioByteRange(req.headers['if-range']&&req.headers['if-range']!==etag?undefined:req.headers.range,result.size);
           res.setHeader('Accept-Ranges','bytes');res.setHeader('ETag',etag);
-          if(range.status===416){res.setHeader('Content-Range','bytes */'+result.length);return send(416,{error:'RANGE_NOT_SATISFIABLE'});}
+          if(range.status===416){await result.handle.close();res.setHeader('Content-Range','bytes */'+result.size);return send(416,{error:'RANGE_NOT_SATISFIABLE'});}
           res.setHeader('Content-Type','audio/mpeg');res.setHeader('Content-Length',range.end-range.start+1);
-          if(range.status===206)res.setHeader('Content-Range','bytes '+range.start+'-'+range.end+'/'+result.length);
-          res.writeHead(range.status);return res.end(result.subarray(range.start,range.end+1));
+          if(range.status===206)res.setHeader('Content-Range','bytes '+range.start+'-'+range.end+'/'+result.size);
+          res.writeHead(range.status);const {pipeline}=await import('node:stream/promises');
+          return await pipeline(result.handle.createReadStream({start:range.start,end:range.end,highWaterMark:65536}),res);
         }
         return send(202,result);
       }
@@ -260,7 +261,7 @@ export async function createJobGateway({root,token,provider,ttsJobs=null}){
       let bytes=0;const chunks=[];
       for await(const chunk of req){bytes+=chunk.length;if(bytes>90000)return send(413,{error:'REQUEST_SIZE'});chunks.push(chunk);}
       return send(202,await submit(match[1],JSON.parse(Buffer.concat(chunks).toString('utf8'))));
-    }catch(e){return send(e.code==='ENOENT'?404:e.message==='JOB_CONFLICT'?409:422,{error:'JOB_UNAVAILABLE'});}
+    }catch(e){if(res.headersSent){res.destroy();return;}return send(e.code==='ENOENT'?404:e.message==='JOB_CONFLICT'?409:422,{error:'JOB_UNAVAILABLE'});}
   });
   server.requestTimeout=15000;server.headersTimeout=10000;
   return {server,submit,state,workOnce,ttsOperation,startWorker(){

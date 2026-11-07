@@ -9,6 +9,7 @@ import {audioSha,simulatedTtsProvider,TTS_CHAPTER_IDS} from '../../scripts/coral
 import {createJobGateway} from '../../scripts/editorial-ai-job-gateway.mjs';
 import {coralTtsLoadScenarios} from '../../scripts/coral-tts-load-scenarios.mjs';
 import {coralCostPlan} from '../../scripts/coral-tts-cost-plan.mjs';
+import {monitorMemory} from './coral-memory.mjs';
 const [stage,folder,name]=process.argv.slice(2),root=resolve(folder||'');
 if(!['begin','resume'].includes(stage)||!basename(root).startsWith('cdc-coral-load-')||!['representative','bounded-adverse'].includes(name))throw Error('LOAD_FIXTURE_ONLY');
 const scenario=(await coralTtsLoadScenarios()).find(s=>s.name===name);
@@ -36,7 +37,7 @@ const jobs=createSimulatedTtsJobs({authorize:async()=>true,budgetDir:join(root,'
  provider:{...tone,async synthesize(p){calls++;return tone.synthesize(p);}}});
 const gateway=await createJobGateway({root:join(root,'jobs'),token:'isolated-load-queue-token-'.repeat(3),provider:async()=>{throw Error('NO_PROVIDER')},ttsJobs:jobs});
 let cgroupCpuStart=null;try{cgroupCpuStart=Number((await readFile('/sys/fs/cgroup/cpu.stat','utf8')).match(/^usage_usec (\d+)$/m)?.[1]);}catch{}
-const started=performance.now(),cpu=process.cpuUsage();
+const stopMemory=await monitorMemory(),started=performance.now(),cpu=process.cpuUsage();
 if(stage==='begin')await gateway.submit(r.request_id,r);else await gateway.ttsOperation(r.request_id,'resume');
 await gateway.workOnce();const state=await gateway.state(r.request_id),elapsed=performance.now()-started,used=process.cpuUsage(cpu);
 const measurements=[];
@@ -46,7 +47,7 @@ try{cgroup={memory_peak_bytes:Number(await readFile('/sys/fs/cgroup/memory.peak'
  memory_max:(await readFile('/sys/fs/cgroup/memory.max','utf8')).trim(),cpu_max:(await readFile('/sys/fs/cgroup/cpu.max','utf8')).trim(),
  cpu_stat:(await readFile('/sys/fs/cgroup/cpu.stat','utf8')).trim()};}catch{}
 if(cgroup&&Number.isFinite(cgroupCpuStart))cgroup.cpu_usage_usec_delta=Number(cgroup.cpu_stat.match(/^usage_usec (\d+)$/m)?.[1])-cgroupCpuStart;
-const report={scenario,stage,pid:process.pid,node_version:process.version,ffmpeg_version:ffmpegVersion,calls,status:state.status,error:state.error,completed_chapters:state.completed_chapters,
+const report={memory:await stopMemory(),scenario,stage,pid:process.pid,node_version:process.version,ffmpeg_version:ffmpegVersion,calls,status:state.status,error:state.error,completed_chapters:state.completed_chapters,
  wall_ms:elapsed,node_cpu_user_ms:used.user/1000,node_cpu_system_ms:used.system/1000,node_max_rss_kib:process.resourceUsage().maxRSS,
  audio_commands:measurements,cgroup};
 if(state.status==='succeeded'){

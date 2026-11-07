@@ -2,7 +2,7 @@
 import {mkdir,lstat,readdir} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
 import {reserveCoralBudget} from './coral-external-job-provider.mjs';
-import {TTS_CHAPTER_IDS as IDS,audioSha,privateAudioRead,durableWrite,atomicJson,
+import {TTS_CHAPTER_IDS as IDS,audioSha,privateAudioRead,privateAudioDigest,privateAudioVerifiedOpen,durableAudioWrite,durableWrite,atomicJson,
  simulatedTtsProvider,probeAudio,assemblePrivateMp3} from './coral-tts-audio.mjs';
 export const TTS_CONTRACT='cdc-coral-private-tts-request-v1';
 const hex=/^[a-f0-9]{64}$/,idPattern=/^[a-f0-9]{48}$/;
@@ -65,8 +65,8 @@ export function createSimulatedTtsJobs({authorize,budgetDir,maxDailyUsd=0.1,maxM
    const id=IDS[i],receipt=await optional(join(folder,id+'.receipt.json'));
    const attempted=await optional(join(folder,id+'.attempt.json'));
    if(!receipt){if(attempted)throw Error('TTS_UNCERTAIN');break;}
-   const bytes=await privateAudioRead(join(folder,id+'.wav'));
-   if(receipt.id!==id||receipt.text_sha256!==r.chapters[i].sha256||receipt.sha256!==audioSha(bytes)
+   const digest=await privateAudioDigest(join(folder,id+'.wav'));
+   if(receipt.id!==id||receipt.text_sha256!==r.chapters[i].sha256||receipt.sha256!==digest.sha256
      ||receipt.cost_microusd!==1000)throw Error('TTS_FRAGMENT_HASH');
    const actual=await probeAudio(join(folder,id+'.wav'),audioTools);
    if(actual.codec!=='pcm_s16le'||actual.sampleRate!==24000||actual.channels!==1
@@ -83,7 +83,7 @@ export function createSimulatedTtsJobs({authorize,budgetDir,maxDailyUsd=0.1,maxM
   if(s.status==='succeeded'){
    if(s.manifest?.request_id!==id||s.manifest.binding_sha256!==r.binding_sha256
     ||!/^final-[a-f0-9]{64}\.mp3$/.test(s.manifest.file||'')
-    ||audioSha(await privateAudioRead(join(folderFor(folder),s.manifest.file)))!==s.manifest.sha256)throw Error('TTS_FINAL_HASH');
+    ||(await privateAudioDigest(join(folderFor(folder),s.manifest.file))).sha256!==s.manifest.sha256)throw Error('TTS_FINAL_HASH');
   }
   const status=s.status==='running'&&!active?'interrupted':s.status;
   return {id,status,completed_chapters:s.completed_chapters||0,...(s.error?{error:s.error}:{}),
@@ -108,10 +108,10 @@ export function createSimulatedTtsJobs({authorize,budgetDir,maxDailyUsd=0.1,maxM
     inFlight=true;
     await durableWrite(join(dir,chapter.id+'.attempt.json'),JSON.stringify({text_sha256:chapter.sha256,reserved_microusd:1000}));
     let bytes;try{bytes=await provider.synthesize({index:i,chapter,requestId:id});}catch{throw Error('TTS_UNCERTAIN');}
-    if(!Buffer.isBuffer(bytes)||bytes.length>32000000)throw Error('TTS_UNCERTAIN');
-    await durableWrite(join(dir,chapter.id+'.wav'),bytes);
+    if(!Buffer.isBuffer(bytes)&&typeof bytes?.[Symbol.asyncIterator]!=='function')throw Error('TTS_UNCERTAIN');
+    const digest=await durableAudioWrite(join(dir,chapter.id+'.wav'),bytes);
     const m=await probeAudio(join(dir,chapter.id+'.wav'),audioTools);
-    const part={id:chapter.id,text_sha256:chapter.sha256,sha256:audioSha(bytes),duration:m.duration,cost_microusd:1000};
+    const part={id:chapter.id,text_sha256:chapter.sha256,sha256:digest.sha256,duration:m.duration,cost_microusd:1000};
     await durableWrite(join(dir,chapter.id+'.receipt.json'),JSON.stringify(part));parts.push(part);inFlight=false;
     current.completed_chapters=parts.length;await atomicJson(join(dir,'state.json'),current);
     if(pauseAfter===parts.length&&parts.length<7)throw Error('TTS_INTERRUPTED');
@@ -120,7 +120,7 @@ export function createSimulatedTtsJobs({authorize,budgetDir,maxDailyUsd=0.1,maxM
    // Verify again before assembly, including fragments restored across a restart.
    parts=await verifiedParts(dir,r);
    let manifest=await optional(join(dir,'manifest.json'));
-   if(manifest){if(manifest.sha256!==audioSha(await privateAudioRead(join(dir,manifest.file))))throw Error('TTS_FINAL_HASH');}
+   if(manifest){if(manifest.sha256!==(await privateAudioDigest(join(dir,manifest.file))).sha256)throw Error('TTS_FINAL_HASH');}
    else{
     manifest={contract:'cdc-coral-private-tts-result-v1',...await assemblePrivateMp3(dir,parts,audioTools),request_id:id,creation_id:r.creation_id,
      creation_version:r.creation_version,binding_sha256:r.binding_sha256,provider:r.provider,voice:r.voice,
@@ -148,10 +148,12 @@ export function createSimulatedTtsJobs({authorize,budgetDir,maxDailyUsd=0.1,maxM
   return state(r,id,folder);
  }
  async function audio(r,id,folder){
+  const opened=await audioStream(r,id,folder);try{return await opened.handle.readFile();}finally{await opened.handle.close();}
+ }
+ async function audioStream(r,id,folder){
   await authority(validateTtsRequest(r));const s=await load(folder);
   if(s?.status!=='succeeded'||!/^final-[a-f0-9]{64}\.mp3$/.test(s.manifest?.file||''))throw Error('TTS_AUDIO_UNAVAILABLE');
-  const bytes=await privateAudioRead(join(folderFor(folder),s.manifest.file));
-  if(audioSha(bytes)!==s.manifest.sha256)throw Error('TTS_FINAL_HASH');return bytes;
+  return privateAudioVerifiedOpen(join(folderFor(folder),s.manifest.file),s.manifest.sha256);
  }
- return {state,run,resume,audio};
+ return {state,run,resume,audio,audioStream};
 }

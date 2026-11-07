@@ -11,5 +11,6 @@
 !tests/coral-tts-long.test.mjs
 !tests/fixtures/
 !tests/fixtures/coral-tts-long-process.mjs
+!tests/fixtures/coral-memory.mjs
 !tests/fixtures/coral-tts-load.Dockerfile
 !tests/fixtures/coral-tts-load.Dockerfile.dockerignore
