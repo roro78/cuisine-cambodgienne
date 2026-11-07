@@ -64,6 +64,16 @@ if($mode==='safety'){
       ||cmsCoralFinalStatus($private,$bad,$catalog,$canonical,$guided)['approved'])
       throw new RuntimeException('FINAL_REVIEW_FIXED_SERVINGS_NOT_BLOCKED');
     $passed[]='FINAL_REVIEW_AND_PORTIONS_BLOCKED';
+    try{
+      cmsCoralFinalSources([
+        ['title'=>'Source A','url'=>'https://example.org/a','note'=>'Source fictive uniquement pour le contrôle de domaine.'],
+        ['title'=>'Source B','url'=>'https://example.org/b','note'=>'Autre source fictive, même hôte interdit pour le visa.']
+      ]);
+      throw new RuntimeException('DUPLICATE_SOURCES_WERE_ALLOWED');
+    }catch(InvalidArgumentException $e){
+      if($e->getMessage()!=='CORAL_FINAL_SOURCES')throw $e;
+    }
+    $passed[]='INDEPENDENT_EXTERNAL_SOURCE_DOMAINS_REQUIRED';
     $decision=static fn($checks,$confirm,$auth,$version=3)=>cmsCoralTtsDecision($private,$id,$version,'rights','approve',$checks,
       'Décision exclusivement fictive en fixture isolée.',$confirm,$auth,$catalog,$canonical,$guided);
     $all=['voice'=>'1','content'=>'1','private_audio'=>'1'];
@@ -102,7 +112,9 @@ if($mode==='rights'||$mode==='revoke-rights'){
     cmsCoralTtsDecision($private,$id,$record['version'],'rights',$mode==='rights'?'approve':'revoke',
       $mode==='rights'?['voice'=>'1','content'=>'1','private_audio'=>'1']:[],
       'Décision fictive de droits en environnement de test isolé.',true,true,$catalog,$canonical,$guided);
-}elseif($mode==='revoke-visa')cmsAtelierVisaAction($private,$id,$record['version'],'intro','revoke',true,true,$catalog);
+}elseif($mode==='revoke-final')cmsCoralFinalAction($private,$id,$record['version'],'revoke',[],
+    'Révocation explicite du visa final de démonstration, aucun effet sur une recette réelle.',true,true,$catalog,$canonical,$guided);
+elseif($mode==='revoke-visa')cmsAtelierVisaAction($private,$id,$record['version'],'intro','revoke',true,true,$catalog);
 elseif($mode==='change-text'){
     $posted=json_decode(file_get_contents($root.'/test-posted.json'),true);$posted['atelier_scripts']['chapters'][0]['text'].=' Modification de test.';
     cmsCreationSave($private,$posted,$catalog,$record['version'],$id);
