@@ -32,9 +32,23 @@ try{
  completeReject(fn()=>cmsCoralStart($saved,$catalog,$canonical,$guided,$private,$wrong),'CORAL_WORKSHOP_SCOPE');
  $expired=$settings;$expired['workshop_expires_at']=time()-1;
  completeReject(fn()=>cmsCoralStart($saved,$catalog,$canonical,$guided,$private,$expired),'CORAL_WORKSHOP_SCOPE');
+ $continuation=$settings;$continuation['workshop_continuation']=['source_job_id'=>$job['token'],'phase_output_sha256'=>str_repeat('a',64)];
+ $resumed=cmsCoralStart($saved,$catalog,$canonical,$guided,$private,$continuation);
+ completeCheck($resumed['token']!==$job['token']&&$calls===2,'EXPLICIT_CONTINUATION_DISTINCT_JOB');
+ $again=cmsCoralStart($saved,$catalog,$canonical,$guided,$private,$continuation);
+ completeCheck($again['token']===$resumed['token']&&$calls===2,'CONTINUATION_NO_RESUBMISSION');
+ $quota=json_decode(file_get_contents(cmsDraftDir($private).'/ai-brief-attempts.json'),true,16,JSON_THROW_ON_ERROR);
+ completeCheck(count($quota)===1,'SAME_WORKSHOP_ORIGINAL_QUOTA_PRESERVED');
+ $stale=$saved;$stale['summary'].=' changed';
+ completeReject(fn()=>cmsCoralStart($stale,$catalog,$canonical,$guided,$private,$continuation),'CORAL_CONTINUATION_SOURCE_STALE');
  $proposal=cmsCoralPoll($job,$saved,$settings,$canonical,$catalog);
  completeCheck(cmsAtelierPhaseDetailsComplete($proposal['supplement']['atelier_phase_details']),'SIX_COMPLETE_PHASES');
  completeCheck(cmsAtelierScriptsDraftComplete($proposal['supplement']['atelier_scripts']),'SEVEN_DRAFT_SCRIPTS');
+ $spelled=$phase;$spelled['profile']['allergens']=['Poisson','Œufs'];
+ $accepted=cmsCoralWorkshopCandidate($job['request'],json_encode([...$spelled,'chapters'=>$chapters],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR),$settings,$catalog);
+ completeCheck(str_contains(implode(' ',$accepted['candidate']['fields']['beforeStarting']),'Poisson, Œufs'),'MEANINGFUL_ALLERGEN_SPELLING_ACCEPTED');
+ $spelled['profile']['allergens']=['Poisson'];
+ completeReject(fn()=>cmsCoralWorkshopCandidate($job['request'],json_encode([...$spelled,'chapters'=>$chapters],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR),$settings,$catalog),'CORAL_WORKSHOP_PROFILE');
  completeCheck(str_contains(implode(' ', $proposal['candidate']['fields']['beforeStarting']),'Allergènes à vérifier : poisson, œuf.'),'EDITABLE_ALLERGEN_PROJECTION');
  completeCheck($proposal['metadata']['scope']==='workshop-complete-draft-v1','EXACT_PROVENANCE_SCOPE');
  completeCheck(cmsCreationRead(cmsCreationDir($private),$saved['id'])['version']===1,'NO_AUTOSAVE');
@@ -54,5 +68,5 @@ try{
  completeReject(fn()=>cmsCoralWorkshopCandidate($job['request'],json_encode([...$bad,'chapters'=>$chapters]),$settings,$catalog),'CORAL_WORKSHOP_INGREDIENTS');
  $bad=$proposal['metadata'];$bad['approved']=true;
  completeReject(fn()=>cmsAiContentMetadata($bad),'AI_CONTENT_PROVENANCE');
- echo "COMPLETE_WORKSHOP_OFFLINE_PASS common private form/save, source-bound 6 phases + 7 texts, 1 job, no approval, realProviderCalls=0\n";
+ echo "COMPLETE_WORKSHOP_OFFLINE_PASS common private form/save, source-bound 6 phases + 7 texts, 1 source + 1 explicit continuation, no approval, realProviderCalls=0\n";
 }finally{$remove($private);}

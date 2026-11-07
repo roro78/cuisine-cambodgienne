@@ -128,6 +128,10 @@ try{
     CDC_CORAL_RECOVERY_DIR:join(fixture,'recovery'),
     CDC_CORAL_ALLOWED_SOURCE_CIDRS:'192.0.2.10/32'};
   const compose=JSON.parse(docker(['compose','-f','deploy/coral/compose.yaml','--profile','runtime','config','--format','json'],{env}).stdout);
+  check('Compose keeps the private tmpfs as one mount, not seven YAML entries',
+    Array.isArray(compose.services['coral-job-worker'].tmpfs)&&compose.services['coral-job-worker'].tmpfs.length===1
+    &&compose.services['coral-job-worker'].tmpfs[0].startsWith('/tmp:')
+    &&['noexec','nosuid','uid=1000','gid=1000','mode=0700'].every(x=>compose.services['coral-job-worker'].tmpfs[0].includes(x)));
   check('real Compose runtime normalization passes security contract',validateCoralCompose(compose).status==='PASS');
   const routeCompose=JSON.parse(docker(['compose','-f','deploy/coral/compose.yaml',
     '-f','deploy/coral/compose.traefik.yaml','--profile','runtime','config','--format','json'],{env}).stdout);

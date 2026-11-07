@@ -44,7 +44,7 @@ services:
         source: ${CDC_CORAL_STATE_DIR:?private state directory required}/budget
         target: /var/lib/cdc/budget
         bind: {create_host_path: false}
-    tmpfs: [/tmp:rw,noexec,nosuid,size=16m,uid=1000,gid=1000,mode=0700]
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=16m,uid=1000,gid=1000,mode=0700"]
     networks: [ingress, provider, egress]
     labels:
       traefik.enable: "false"
