@@ -85,7 +85,8 @@ test('shared Studio through authenticated HTTP: rights, double submit, seven act
  await finalForm.locator('[name=final_confirm]').check();
  await finalForm.locator('button[value=revoke]').click();
  await page.goto(url+'&final_audit=1');
- assert.match(await finalPanel.innerText(),/validation humaine nécessaire/i);
+ await finalPanel.evaluate(el=>{el.open=true;});
+ assert.match(await finalPanel.textContent(),/validation humaine nécessaire/i);
  finalForm=finalPanel.locator('form');
  for(const [i,host] of ['example.org','example.net'].entries()){
   await finalForm.locator('[name="final_source['+i+'][title]"]').fill('Source de test '+i);
@@ -96,7 +97,8 @@ test('shared Studio through authenticated HTTP: rights, double submit, seven act
  await finalForm.locator('[name=final_confirm]').check();
  await finalForm.locator('button[value=approve]').click();
  await page.goto(url+'&final_audit=1');
- assert.match(await finalPanel.innerText(),/Visa final actif/);
+ await finalPanel.evaluate(el=>{el.open=true;});
+ assert.match(await finalPanel.textContent(),/Visa final actif/);
  await page.goto(url);
  assert.equal(await panel.locator('button[value=generate]').isDisabled(),true);
  for(const name of ['voice','content','private_audio'])await panel.locator('[name="tts_checks['+name+']"]').check();
