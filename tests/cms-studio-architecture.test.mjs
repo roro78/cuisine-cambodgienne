@@ -86,7 +86,8 @@ test('Coral Studio keeps workshop content before narration and MP3 as separate a
  assert.match(ui,/1\. Enregistrer et vérifier la recette et les six phases/);
  assert.match(ui,/2\. Préparer et relire les sept narrations/);
  assert.match(ui,/3\. Générer le MP3 Coral après les validations humaines/);
- assert.match(ui,/<button name="coral_prepare" value="1" formnovalidate data-coral-prepare>Préparer les 7 narrations<\/button>/);
+ assert.ok(ui.includes(`<button name="coral_prepare" value="1" formnovalidate data-coral-prepare><?= $prepareComplete?'Préparer l’atelier et ses 7 textes':'Préparer les 7 narrations' ?></button>`));
+ assert.ok(ui.includes("$prepareComplete=($coralSettings['workshop_complete_qualified']??false)===true"));
  assert.match(ui,/Préparer les narrations — 7 textes à relire/);
  assert.doesNotMatch(ui,/Préparer le MP3/);
  assert.match(lib,/Sept textes vocaux — relecture préalable au MP3/);

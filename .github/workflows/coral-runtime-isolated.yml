@@ -29,15 +29,15 @@ jobs:
         run: |
           set -euo pipefail
           source_sha=$(git rev-parse HEAD)
-          mkdir -p artifacts/coral-worker-package
+          mkdir -p "$RUNNER_TEMP/coral-worker-package"
           docker build --build-arg SOURCE_REVISION="$source_sha" -f deploy/coral/Dockerfile -t "cdc-coral-candidate:$source_sha" .
-          docker image inspect "cdc-coral-candidate:$source_sha" > artifacts/coral-worker-package/image-inspect.json
-          docker save "cdc-coral-candidate:$source_sha" | gzip -n > artifacts/coral-worker-package/worker.tar.gz
+          docker image inspect "cdc-coral-candidate:$source_sha" > "$RUNNER_TEMP/coral-worker-package/image-inspect.json"
+          docker save "cdc-coral-candidate:$source_sha" | gzip -n > "$RUNNER_TEMP/coral-worker-package/worker.tar.gz"
           node --input-type=module <<'NODE'
           import {readFile,writeFile} from 'node:fs/promises';
           import {createHash} from 'node:crypto';
           import {execFileSync} from 'node:child_process';
-          const root='artifacts/coral-worker-package/',sha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const root=process.env.RUNNER_TEMP+'/coral-worker-package/',sha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
           const [image]=JSON.parse(await readFile(root+'image-inspect.json','utf8'));
           if(image.Config.Labels['org.opencontainers.image.revision']!==sha||image.Config.User!=='1000:1000')throw Error('PACKAGE_SOURCE');
           const archive=await readFile(root+'worker.tar.gz');
@@ -49,7 +49,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coral-worker-package-${{ github.event.pull_request.head.sha || github.sha }}
-          path: artifacts/coral-worker-package/
+          path: ${{ runner.temp }}/coral-worker-package/
           if-no-files-found: error
       - name: Upload expunged runtime receipt
         if: always()
