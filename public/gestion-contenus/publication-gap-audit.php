@@ -815,7 +815,7 @@ function cmsCulinaryAutomaticAudit(array $record,array $sourceFields=[],?array $
     // Detect for review; NEVER replace arbitrary numbers or rescale temperatures.
     foreach($recipe['steps']??[] as $i=>$step){
         $text=(string)($step['text']??'');
-        if(preg_match('/(?:\d+|deux|trois|quatre)\s*(?:ml|cl|kg|g|c\.\s*à\s*soupe|ramequins?|œufs?)\b/iu',$text,$hit)){
+        if(preg_match('/(?<![\p{L}\p{N}])(?:\d+(?:[,.]\d+|/\d+)?|[¼½¾]|une?|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze)\s*(?:ml|cl|kg|g|litres?|grammes?|c\.\s*à\s*(?:soupe|café)|cuillères?\s+à\s+(?:soupe|café)|ramequins?|bols?|assiettes?|portions?|œufs?)\b/iu',$text,$hit)){
             $bound=false;
             foreach($portionContract['steps']??[] as $binding)
                 if(($binding['index']??null)===$i&&($binding['sourceText']??null)===$text

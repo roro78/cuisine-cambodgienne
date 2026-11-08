@@ -3,7 +3,7 @@ import type {Recipe} from '../data/recipes';
 export type PortionValue =
   | {kind:'ingredient'; ingredient:string}
   | {kind:'reserve'; ingredient:string; fraction:number}
-  | {kind:'containers'; perServing:number};
+  | {kind:'containers'; perServing:number; singular?:string; plural?:string};
 export interface PortionBinding { literal:string; value:PortionValue; prefix?:string; suffix?:string }
 export interface RecipePortionBindings {
   steps:Record<number,PortionBinding[]>;
@@ -40,16 +40,17 @@ export function formatQuantity(value:number,unit=''):string {
 export function resolvePortionValue(recipe:Recipe,value:PortionValue){
   if(value.kind==='containers'){
     if(!Number.isFinite(value.perServing)||value.perServing<=0)throw Error('PORTION_CONTAINERS');
-    return {amount:recipe.baseServings*value.perServing,unit:'ramequins',scalable:true,approximate:false};
+    return {amount:recipe.baseServings*value.perServing,unit:'',scalable:true,approximate:false,singular:value.singular??'ramequin',plural:value.plural??'ramequins'};
   }
   const matches=recipe.ingredients.filter(i=>i.name===value.ingredient);
   if(matches.length!==1||matches[0].quantity===undefined)throw Error('PORTION_SOURCE_INGREDIENT');
   const i=matches[0];
   if(value.kind==='reserve'&&(!(value.fraction>0&&value.fraction<1)||i.unit!=='ml'))throw Error('PORTION_RESERVE');
   return {amount:i.quantity!*(value.kind==='reserve'?value.fraction:1),unit:i.unit??'',
-    scalable:i.scalable!==false,approximate:value.kind==='reserve'};
+    scalable:i.scalable!==false,approximate:value.kind==='reserve',singular:undefined,plural:undefined};
 }
-export function portionLabel(amount:number,unit:string,approximate=false):string {
+export function portionLabel(amount:number,unit:string,approximate=false,singular?:string,plural?:string):string {
+  if(singular)return formatQuantity(amount)+' '+(amount>1?(plural??singular):singular);
   if(unit==='ramequins')return amount+' ramequin'+(amount>1?'s':'');
   // A 3.75 ml reserve is a practical "environ 4 ml", not a new exact dose.
   const display=approximate&&amount<5?Math.round(amount):amount;
@@ -65,7 +66,7 @@ export function portionSegments(recipe:Recipe,text:string,bindings:PortionBindin
   for(const slot of slots){
     if(slot.start<cursor)throw Error('PORTION_BINDING_OVERLAP');
     if(slot.start>cursor)parts.push({text:text.slice(cursor,slot.start)});
-    parts.push({text:(slot.binding.prefix??'')+portionLabel(slot.amount,slot.unit,slot.approximate)+(slot.binding.suffix??''),slot});
+    parts.push({text:(slot.binding.prefix??'')+portionLabel(slot.amount,slot.unit,slot.approximate,slot.singular,slot.plural)+(slot.binding.suffix??''),slot});
     cursor=slot.end;
   }
   if(cursor<text.length)parts.push({text:text.slice(cursor)});
@@ -73,12 +74,12 @@ export function portionSegments(recipe:Recipe,text:string,bindings:PortionBindin
 }
 export function renderPortionText(recipe:Recipe,text:string,bindings:PortionBinding[],servings:number){
   return portionSegments(recipe,text,bindings).map(p=>p.slot
-    ?(p.slot.binding.prefix??'')+portionLabel(scaledQuantity(p.slot.amount,recipe.baseServings,servings,p.slot.scalable),p.slot.unit,p.slot.approximate)+(p.slot.binding.suffix??''):p.text).join('');
+    ?(p.slot.binding.prefix??'')+portionLabel(scaledQuantity(p.slot.amount,recipe.baseServings,servings,p.slot.scalable),p.slot.unit,p.slot.approximate,p.slot.singular,p.slot.plural)+(p.slot.binding.suffix??''):p.text).join('');
 }
 export function updatePortionSlots(scope:ParentNode,servings:number):void {
   scope.querySelectorAll<HTMLElement>('[data-portion-slot]').forEach(el=>{
     const amount=scaledQuantity(Number(el.dataset.portionAmount),Number(el.dataset.portionBase),servings,el.dataset.portionScalable!=='false');
-    el.textContent=(el.dataset.portionPrefix??'')+portionLabel(amount,el.dataset.portionUnit??'',el.dataset.portionApproximate==='true')+(el.dataset.portionSuffix??'');
+    el.textContent=(el.dataset.portionPrefix??'')+portionLabel(amount,el.dataset.portionUnit??'',el.dataset.portionApproximate==='true',el.dataset.portionSingular,el.dataset.portionPlural)+(el.dataset.portionSuffix??'');
   });
 }
 /** Public read-only projection; never an editable recipe or private source. */
