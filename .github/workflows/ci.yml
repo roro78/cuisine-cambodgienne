@@ -334,7 +334,8 @@ jobs:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
         run: |
           node tests/editorial-studio-browser.test.mjs
-          node --test tests/editorial-narrations-export.test.mjs tests/recipe-portions.test.mjs tests/recipe-portions-browser.test.mjs
+          node --test tests/editorial-narrations-export.test.mjs
+          node --test tests/coral-real-tts-preparation.test.mjs tests/recipe-portions.test.mjs tests/recipe-portions-browser.test.mjs
 
       - name: Private asynchronous text progress and explicit save (synthetic)
         env:
