@@ -156,6 +156,10 @@ if($mode==='safety'){
     $unsafe=$record;$unsafe['atelier_scripts']['chapters'][5]['text']='Visez 50 °C au cœur. '.$unsafe['atelier_scripts']['chapters'][5]['text'];
     $unsafeReport=cmsCoralFinalAudit($unsafe,$catalog,$canonical,$guided);
     if($unsafeReport['automated_checks_pass']||!in_array('CORE_TEMPERATURE_TOO_LOW',array_column($unsafeReport['blocking'],'code'),true))throw new RuntimeException('UNSAFE_CORE_TEMPERATURE_ALLOWED');
+    $unsafe['atelier_scripts']['chapters'][5]['text']='Visez au moins cinquante degrés Celsius au cœur.';
+    $unsafeReport=cmsCoralFinalAudit($unsafe,$catalog,$canonical,$guided);
+    if($unsafeReport['automated_checks_pass']||!in_array('CORE_TEMPERATURE_TOO_LOW',array_column($unsafeReport['blocking'],'code'),true))throw new RuntimeException('SPELLED_UNSAFE_CORE_TEMPERATURE_ALLOWED');
+    $passed[]='DIGIT_AND_SPELLED_TEMPERATURE_VETO_FINAL_AUDIT';
     $unknown=$record;$unknown['atelier_phase_details']['phases'][2]['ingredientNames'][]='ingr?dient ?tranger fictif';
     if(!in_array('UNMATCHED_PHASE_INGREDIENT',array_column(cmsCulinaryAutomaticAudit($unknown,$recipeFields)['findings'],'code'),true))throw new RuntimeException('UNKNOWN_INGREDIENT_ALLOWED');
     $recipeChange=['kind'=>'recette','fields'=>$recipeFields];$recipeChange['fields']['steps'][0]['text']='Ajoutez 800 ml de liquide.';

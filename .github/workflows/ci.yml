@@ -56,6 +56,8 @@ jobs:
           php tests/php/editorial-private-visuals-smoke.php dist
           php tests/php/editorial-create-manual-smoke.php dist
           php -l public/gestion-contenus/publication-gap-audit.php
+          php -l tests/php/editorial-culinary-automatic-smoke.php
+          php tests/php/editorial-culinary-automatic-smoke.php
           php -l tests/php/editorial-astro-publication-gap-smoke.php
           php tests/php/editorial-astro-publication-gap-smoke.php
           php -l tests/php/editorial-recipe-astro-profile-smoke.php

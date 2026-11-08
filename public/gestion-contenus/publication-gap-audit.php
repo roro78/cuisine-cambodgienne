@@ -777,6 +777,56 @@ function cmsAtelierCulinaryAction(string $private,string $id,int $expected,
  * This audit itself does not fetch, rewrite, call a provider, generate audio or publish.
  * A difference between culinary sources is never automatically called an error.
  */
+/** Parse an explicit Celsius target: digits or French words, never prose guesses. */
+function cmsCulinaryTemperatureNumber(string $number): ?float {
+    $normalize=static function(string $s):string{
+        $s=strtolower(strtr(trim($s),['É'=>'e','È'=>'e','é'=>'e','è'=>'e','ê'=>'e',
+            '‑'=>' ','–'=>' ','-'=>' ']));
+        return trim(preg_replace('/\s+/u',' ',str_replace([' et ','vingts'],[' ','vingt'],$s)));
+    };
+    if(preg_match('/^-?\d+(?:[,.]\d+)?$/D',trim($number)))return (float)str_replace(',','.',trim($number));
+    static $words=null;
+    if($words===null){
+        $small=['zéro','un','deux','trois','quatre','cinq','six','sept','huit','neuf',
+            'dix','onze','douze','treize','quatorze','quinze','seize'];
+        $spell=static function(int $n)use(&$spell,$small):string{
+            if($n<17)return $small[$n];
+            if($n<20)return 'dix '.$small[$n-10];
+            if($n<70){$t=[2=>'vingt',3=>'trente',4=>'quarante',5=>'cinquante',6=>'soixante'];
+                return $t[intdiv($n,10)].($n%10?' '.$small[$n%10]:'');}
+            if($n<80)return 'soixante '.$spell($n-60);
+            if($n<100)return 'quatre vingt'.($n>80?' '.$spell($n-80):'');
+            return 'cent'.($n>100?' '.$spell($n-100):'');
+        };
+        $words=[];for($n=0;$n<200;$n++)$words[$normalize($spell($n))]=$n;
+        $words['quatre vingts']=80;
+        foreach([70=>'septante',80=>'huitante',90=>'nonante'] as $base=>$word)
+            for($n=0;$n<10;$n++)$words[$word.($n?' '.$small[$n]:'')]=$base+$n;
+    }
+    $s=$normalize($number);$sign=1;
+    if(str_starts_with($s,'moins ')){$sign=-1;$s=substr($s,6);}
+    $parts=explode(' virgule ',$s);
+    if(count($parts)>2||!isset($words[$parts[0]]))return null;
+    $value=(float)$words[$parts[0]];
+    if(isset($parts[1])){
+        if(!isset($words[$parts[1]])||$words[$parts[1]]>9)return null;
+        $value+=$words[$parts[1]]/10;
+    }
+    return $sign*$value;
+}
+/** Only labelled declarations in existing preparation/safety fields count. */
+function cmsCulinaryAllergenDeclarations(array $fields,array $phases): array {
+    $candidates=[];
+    foreach(['beforeStarting','beforeYouStart','notes'] as $key)
+        foreach(is_array($fields[$key]??null)?$fields[$key]:[$fields[$key]??''] as $i=>$text)
+            if(is_string($text))$candidates['fields.'.$key.'.'.$i]=$text;
+    foreach($phases as $i=>$phase)$candidates['atelier_phase_details.phases.'.$i.'.safety']=(string)($phase['safety']??'');
+    $declarations=[];
+    foreach($candidates as $path=>$text)
+        if(preg_match_all('/^\h*allerg[eè]nes?\b[^:\r\n]{0,100}:\h*([^\r\n]+)/imu',$text,$rows))
+            $declarations[$path]=implode("\n",$rows[1]);
+    return $declarations;
+}
 /** Shared deterministic review, never a culinary opinion or human approval. */
 function cmsCulinaryAutomaticAudit(array $record,array $sourceFields=[],?array $portionContract=null): array {
     $findings=[];$categories=['portions','ingredients','durations','narrations','safety'];
@@ -815,15 +865,17 @@ function cmsCulinaryAutomaticAudit(array $record,array $sourceFields=[],?array $
     // Detect for review; NEVER replace arbitrary numbers or rescale temperatures.
     foreach($recipe['steps']??[] as $i=>$step){
         $text=(string)($step['text']??'');
-        if(preg_match('~(?<![\p{L}\p{N}])(?:\d+(?:[,.]\d+|/\d+)?|[¼½¾]|une?|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze)\s*(?:ml|cl|kg|g|litres?|grammes?|c\.\s*à\s*(?:soupe|café)|cuillères?\s+à\s+(?:soupe|café)|ramequins?|bols?|assiettes?|portions?|œufs?)\b~iu',$text,$hit)){
+        preg_match_all('~(?<![\p{L}\p{N}])(?:\d+(?:[,.]\d+|/\d+)?|[¼½¾]|une?|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze)\s*(?:ml|cl|kg|g|litres?|grammes?|c\.\s*à\s*(?:soupe|café)|cuillères?\s+à\s+(?:soupe|café)|ramequins?|bols?|assiettes?|portions?|œufs?)\b~iu',$text,$hits,PREG_OFFSET_CAPTURE);
+        foreach($hits[0] as [$quantity,$offset]){
             $bound=false;
             foreach($portionContract['steps']??[] as $binding)
                 if(($binding['index']??null)===$i&&($binding['sourceText']??null)===$text
-                    &&in_array($hit[0],$binding['anchors']??[],true))$bound=true;
+                    &&in_array($quantity,$binding['anchors']??[],true)
+                    &&substr_count($text,$quantity)===1)$bound=true;
             if($bound)continue;
             $changed=!$atelier&&($sourceFields['steps'][$i]['text']??null)!==$text;
             $add('portions','INSTRUCTION_QUANTITY_BINDING_REQUIRED',$changed?'bloquant':'avertissement',
-                'recipe.steps.'.$i,$hit[0],
+                'recipe.steps.'.$i.'.byte.'.$offset,$quantity,
                 'Une quantité textuelle exige une liaison explicite au calcul des portions.',
                 'Déclarer une liaison typée dans recipePortions.ts et tester tous les rendements ; conserver les repères techniques.');
         }
@@ -854,15 +906,17 @@ function cmsCulinaryAutomaticAudit(array $record,array $sourceFields=[],?array $
         }
     }
     $written=json_encode($fields,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
+    $declared=implode("\n",cmsCulinaryAllergenDeclarations($fields,$phases));
+    $claims=$written."\n".$declared;
     $hasEgg=preg_match('/œuf|oeuf/iu',$ingredientText)===1;
     $hasFish=preg_match('/poisson/iu',$ingredientText)===1;
     foreach(['œufs'=>$hasEgg,'poisson'=>$hasFish] as $allergen=>$present){
         if(!$present)continue;
         $pattern=$allergen==='œufs'?'/œuf|oeuf/iu':'/poisson/iu';
-        if(!preg_match($pattern,$written))$add('safety','ALLERGEN_DECLARATION_MISSING','avertissement',
-            'fields.beforeStarting',$allergen,'Allergène canonique non annoncé dans la fiche.',
-            'Déclarer les allergènes et vérifier les étiquettes des produits achetés.');
-        if(preg_match($allergen==='œufs'?'/sans\s+(?:œufs?|oeufs?)\b/iu':'/sans\s+poisson\b/iu',$written,$hit))
+        if(!preg_match($pattern,$declared))$add('safety','ALLERGEN_DECLARATION_MISSING','avertissement',
+            'fields.beforeStarting / beforeYouStart / notes / phases.safety',$allergen,'Allergène canonique absent des déclarations explicites.',
+            'Ajouter une ligne « Allergènes : … » dans les préparatifs ou précautions ; vérifier les étiquettes. La liste des ingrédients ne vaut pas déclaration.');
+        if(preg_match($allergen==='œufs'?'/sans\s+(?:œufs?|oeufs?)\b/iu':'/sans\s+poisson\b/iu',$claims,$hit))
             $add('safety','ALLERGEN_CONTRADICTION','bloquant','fields',$hit[0],
                 'Mention sans allergène incompatible avec les ingrédients canoniques.',
                 'Retirer la garantie erronée et faire vérifier les ingrédients réels.');
@@ -873,11 +927,19 @@ function cmsCulinaryAutomaticAudit(array $record,array $sourceFields=[],?array $
         'Vérifier les risques et les références propres aux ingrédients ; aucun seuil inventé.');
     foreach($chapters as $chapter){
         $text=(string)($chapter['text']??'');
-        if($minimum!==null&&preg_match_all('/(?:au moins|visez|attei(?:nt|ndre))\s*(\d+(?:[,.]\d+)?)\s*(?:°\s*C|degrés)/iu',$text,$hits,PREG_SET_ORDER))
-            foreach($hits as $hit)if((float)str_replace(',','.',$hit[1])<$minimum)
+        $word='(?:zéro|un|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize|vingts?|trente|quarante|cinquante|soixante|septante|huitante|nonante|cent|et|virgule|moins)';
+        $number='(?:-?\d+(?:[,.]\d+)?|'.$word.'(?:[\s\x{2011}\x{2013}-]+'.$word.')*)';
+        if($minimum!==null&&preg_match_all('~(?:au moins|visez|attei(?:nt|ndre)|objectif(?:\h+de)?)\s*('.$number.')\s*(?:°\s*C\b|degr[eé]s?(?:\s+Celsius)?\b)~iu',$text,$hits,PREG_SET_ORDER))
+            foreach($hits as $hit){
+                $value=cmsCulinaryTemperatureNumber($hit[1]);
+                if($value===null)$add('safety','CORE_TEMPERATURE_UNPARSED','avertissement','atelier_scripts.'.$chapter['id'],$hit[0],
+                    'Objectif de température non interprétable par la règle déterministe.',
+                    'Vérifier explicitement la valeur et la référence sanitaire.',$chapter['id']);
+                elseif($value<$minimum)
                 $add('safety','CORE_TEMPERATURE_TOO_LOW','bloquant','atelier_scripts.'.$chapter['id'],$hit[0],
                     'Repère annoncé inférieur au seuil général du profil d’ingrédients.',
                     'Vérifier la référence sanitaire et corriger explicitement le texte, sans visa automatique.',$chapter['id']);
+            }
         if(preg_match('/(?<!ne )(?<!jamais )goûtez\s+(?:le poisson cru|les œufs crus|la préparation crue)/iu',$text,$hit))
             $add('safety','RAW_TASTING_INSTRUCTION','bloquant','atelier_scripts.'.$chapter['id'],$hit[0],
                 'Consigne explicite de dégustation crue à risque.','Rectifier avant les ingrédients crus ; préserver la chronologie.',$chapter['id']);
@@ -891,7 +953,7 @@ function cmsCulinaryAutomaticAudit(array $record,array $sourceFields=[],?array $
         $states=array_column(array_filter($findings,static fn(array $f):bool=>$f['category']===$category),'severity');
         $checks[$category]=in_array('bloquant',$states,true)?'bloquant':($states?'avertissement':'conforme');
     }
-    return ['contract'=>'cdc-culinary-coherence-v1','checks'=>$checks,'findings'=>$findings,
+    return ['contract'=>'cdc-culinary-coherence-v2','checks'=>$checks,'findings'=>$findings,
         'portion_matrix'=>$matrix,'canonical_minutes'=>$prep!==null&&$cook!==null?$prep+$cook:null,
         'phase_estimate_minutes'=>$sum,'human_validation'=>false,'tts_authorized'=>false];
 }
@@ -1031,7 +1093,7 @@ function cmsCoralFinalAudit(array $record,array $catalog,array $canonical,array 
     }unset($issue);
     $digest=hash('sha256',json_encode([
         'contract'=>'cdc-coral-final-cross-audit-v1',
-        'automation_policy'=>'cdc-culinary-coherence-v1','portion_contract'=>$portionContract,
+        'automation_policy'=>'cdc-culinary-coherence-v2','portion_contract'=>$portionContract,
         'id'=>$record['id'],'version'=>$record['version']??null,
         'recipe_sha256'=>$recipeSha,'related_site_sources'=>$related,
         'title'=>$record['title']??null,'summary'=>$record['summary']??null,
