@@ -34,6 +34,14 @@ test('seven saved narrations download as plain text; login, CSRF and stale reque
     const ctx=await browser.newContext({viewport:{width,height:950},isMobile:width===390,hasTouch:width===390,acceptDownloads:true});
     await ctx.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort());
     const page=await ctx.newPage();await page.goto(base);
+    // The real PHP Web router must persist the same private session through
+    // two HTTP requests. This is NOT derived from CLI php.ini or .user.ini.
+    const firstProbe=await ctx.request.get(base+'?session_storage_probe=1');
+    assert.equal(firstProbe.status(),200,'private Web session file must be writable');
+    assert.deepEqual(await firstProbe.json(),{storage_ready:true,cookie_persisted:false});
+    const secondProbe=await ctx.request.get(base+'?session_storage_probe=1');
+    assert.equal(secondProbe.status(),200);
+    assert.deepEqual(await secondProbe.json(),{storage_ready:true,cookie_persisted:true});
     const csrf=await page.locator('[name=csrf]').inputValue();
     const anonymous={csrf,export_narrations:'1',creation_id:f.id,expected_version:'3'};
     const noLogin=await ctx.request.post(url,{form:anonymous,maxRedirects:0});
@@ -135,7 +143,7 @@ test('seven saved narrations download as plain text; login, CSRF and stale reque
         +'$_SESSION["authenticated_at"]=time()-(int)$argv[3];'
         +'$_SESSION["auth_last_activity_at"]=time()-(int)$argv[4];'
         +'session_write_close();';
-      execFileSync(php,['-r',change,join(root,'sessions'),sessionCookie.value,
+      execFileSync(php,['-r',change,join(root,'.cuisine-asset-portal','cms-editorial-session-files'),sessionCookie.value,
         String(signedSeconds),String(activitySeconds)],{windowsHide:true});
     };
     age(3600,1795);
