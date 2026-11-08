@@ -94,13 +94,13 @@ test('seven saved narrations download as plain text; login, CSRF and stale reque
     assert.equal(await visa.locator('button[name=review_action]').inputValue(),'revoke');
     await visa.locator('input[name=csrf]').evaluate(el=>el.value='obsolete-session-csrf');
     await visa.locator('[name=review_confirm]').check();
-    await visa.locator('button[name=review_action]').click();
-    await page.waitForURL(/visa_saved=1/);
+    await Promise.all([page.waitForNavigation(),visa.locator('button[name=review_action]').click()]);
+    assert.match(page.url(),/visa_saved=1/);
     assert.match(await page.locator('[data-coral-human-visas]').innerText(),/6\/7/);
     visa=await openVisa();
     await visa.locator('[name=review_confirm]').check();
-    await visa.locator('button[name=review_action]').click();
-    await page.waitForURL(/visa_saved=1/);
+    await Promise.all([page.waitForNavigation(),visa.locator('button[name=review_action]').click()]);
+    assert.match(page.url(),/visa_saved=1/);
     assert.match(await page.locator('[data-coral-human-visas]').innerText(),/7\/7/);
     assert.deepEqual(await readFile(saved),before,'visa journal must not rewrite scripts');
     // Lost cookie fails closed before the browser submits a human decision.
@@ -111,9 +111,7 @@ test('seven saved narrations download as plain text; login, CSRF and stale reque
     page.on('request',countVisa);
     await visa.locator('[name=review_confirm]').check();
     await visa.locator('button[name=review_action]').click();
-    await page.locator('[data-visa-session-status]').first().getByText(/Connexion non confirmée/).waitFor().catch(async()=>{
-      assert.match(await page.locator('[data-visa-session-status]').first().innerText(),/Connexion non confirmée/);
-    });
+    await page.waitForFunction(()=>document.querySelector('[data-visa-session-status]')?.textContent?.includes('Connexion non confirmée'));
     assert.equal(visaPosts,0,'do not POST a visa after session cookie loss');
     page.off('request',countVisa);
     results.push({width,realBrowserClick:true,syntheticLocalLogin:true,filename,bytes:bytes.length,sevenExactTexts:true,html:false,visaStaleCsrfRecovered:true,missingCookieFailsClosed:true});
