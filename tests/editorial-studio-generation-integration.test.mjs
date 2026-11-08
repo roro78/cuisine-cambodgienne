@@ -64,8 +64,8 @@ try{
   await page.reload();await page.waitForSelector('[data-ai-job-status="running"]');
   const intent=await editor.locator('[name=ai_content_request_token]').inputValue();
   await context.request.get(base+'&visual_file=site800&visual_version=1');
-  const tokens=[];for(const name of await readdir(path.join(root,'sessions'))){
-    const raw=await readFile(path.join(root,'sessions',name),'utf8');const found=raw.match(/ai_content_intent\|s:48:"([a-f0-9]+)"/);if(found)tokens.push(found[1]);
+  const tokens=[];for(const name of await readdir(path.join(root,'.cuisine-asset-portal','cms-editorial-session-files'))){
+    const raw=await readFile(path.join(root,'.cuisine-asset-portal','cms-editorial-session-files',name),'utf8');const found=raw.match(/ai_content_intent\|s:48:"([a-f0-9]+)"/);if(found)tokens.push(found[1]);
   }
   assert.ok(tokens.includes(intent),'private image GET preserves text intent');assert.equal(calls,1);
   const csrf=await editor.locator('[name=csrf]').inputValue();
