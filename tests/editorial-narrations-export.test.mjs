@@ -15,6 +15,12 @@ test('seven saved narrations download as plain text; login, CSRF and stale reque
   // Existing synthetic common-Studio fixture; no live account or provider.
   const f=JSON.parse(execFileSync(php,['-d','display_errors=stderr','tests/php/fixtures/editorial-tts-bridge.php',
     'init',root,resolve('dist')],{encoding:'utf8',windowsHide:true}));
+  // Exercise OVH's private-file adapter in the isolated Web fixture even
+  // though stock PHP has no system-only session.force_path directive.
+  const entry=join(root,'site','public','gestion-contenus','index.php');
+  const entryText=await readFile(entry,'utf8');
+  assert.ok(entryText.includes("if(ini_get('session.force_path')==='1'){"));
+  await writeFile(entry,entryText.replace("if(ini_get('session.force_path')==='1'){",'if(true){'));
   const saved=join(root,'.cuisine-asset-portal','editorial-drafts','new-content',f.id+'.0003.json');
   const before=await readFile(saved),record=JSON.parse(before);
   const socket=createServer();await new Promise(r=>socket.listen(0,'127.0.0.1',r));
@@ -34,6 +40,14 @@ test('seven saved narrations download as plain text; login, CSRF and stale reque
     const ctx=await browser.newContext({viewport:{width,height:950},isMobile:width===390,hasTouch:width===390,acceptDownloads:true});
     await ctx.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort());
     const page=await ctx.newPage();await page.goto(base);
+    // The real PHP Web router must persist the same private session through
+    // two HTTP requests. This is NOT derived from CLI php.ini or .user.ini.
+    const firstProbe=await ctx.request.get(base+'?session_storage_probe=1');
+    assert.equal(firstProbe.status(),200,'private Web session file must be writable');
+    assert.deepEqual(await firstProbe.json(),{storage_ready:true,cookie_persisted:false});
+    const secondProbe=await ctx.request.get(base+'?session_storage_probe=1');
+    assert.equal(secondProbe.status(),200);
+    assert.deepEqual(await secondProbe.json(),{storage_ready:true,cookie_persisted:true});
     const csrf=await page.locator('[name=csrf]').inputValue();
     const anonymous={csrf,export_narrations:'1',creation_id:f.id,expected_version:'3'};
     const noLogin=await ctx.request.post(url,{form:anonymous,maxRedirects:0});
@@ -114,11 +128,107 @@ test('seven saved narrations download as plain text; login, CSRF and stale reque
     await page.waitForFunction(()=>document.querySelector('[data-visa-session-status]')?.textContent?.includes('Connexion non confirmée'));
     assert.equal(visaPosts,0,'do not POST a visa after session cookie loss');
     page.off('request',countVisa);
-    results.push({width,realBrowserClick:true,syntheticLocalLogin:true,filename,bytes:bytes.length,sevenExactTexts:true,html:false,visaStaleCsrfRecovered:true,missingCookieFailsClosed:true});
+    // The owner must return to the exact final audit after login, without a
+    // new human approval. Purely synthetic fixture session, no OVH account.
+    const auditUrl=url+'&final_audit=1#final-review';
+    await page.goto(auditUrl);
+    assert.equal(await page.locator('h2').first().innerText(),'Connexion administrateur');
+    await page.locator('[name=username]').fill('fixture-admin');
+    await page.locator('[name=password]').fill('synthetic-login-only');
+    await Promise.all([page.waitForNavigation(),page.locator('button[name=login]').click()]);
+    assert.equal(new URL(page.url()).searchParams.get('final_audit'),'1');
+    assert.equal(new URL(page.url()).hash,'#final-review');
+    assert.equal(await page.locator('[data-coral-final-audit]').getAttribute('open'),'');
+    assert.equal(await page.locator('[data-studio-advanced]').getAttribute('open'),'');
+    const sessionCookie=(await ctx.cookies()).find(c=>c.name==='CDC_EDITORIAL_CMS');
+    assert.ok(sessionCookie?.value,'fixture session cookie');
+    // Set times on the private local PHP fixture, not through a public endpoint.
+    const age=(signedSeconds,activitySeconds)=>{
+      const change='session_save_path($argv[1]);session_name("CDC_EDITORIAL_CMS");'
+        +'session_id($argv[2]);session_start();'
+        +'$_SESSION["authenticated_at"]=time()-(int)$argv[3];'
+        +'$_SESSION["auth_last_activity_at"]=time()-(int)$argv[4];'
+        +'session_write_close();';
+      execFileSync(php,['-r',change,join(root,'.cuisine-asset-portal','cms-editorial-session-files'),sessionCookie.value,
+        String(signedSeconds),String(activitySeconds)],{windowsHide:true});
+    };
+    age(3600,1795);
+    const stillActive=await ctx.request.get(base+'?session_status=1');
+    assert.equal(stillActive.status(),200,'active session survives 1 hour since login');
+    const refreshed=await stillActive.json();
+    assert.equal(refreshed.authenticated,true);
+    assert.ok(refreshed.expires_in>=1700&&refreshed.expires_in<=1800);
+    age(3600,1801);
+    const inactive=await ctx.request.get(base+'?session_status=1');
+    assert.equal(inactive.status(),401,'session expires after 30 minutes without activity');
+    age(43201,2);
+    const absolute=await ctx.request.get(base+'?session_status=1');
+    assert.equal(absolute.status(),401,'12-hour absolute boundary still applies');
+    results.push({width,realBrowserClick:true,syntheticLocalLogin:true,filename,bytes:bytes.length,sevenExactTexts:true,html:false,visaStaleCsrfRecovered:true,missingCookieFailsClosed:true,idleSessionExpires:true,activeSessionSlides:true,auditRestoredAfterLogin:true});
+
     await ctx.close();
   }
   if(process.env.EXPORT_EVIDENCE_DIR){
     await mkdir(process.env.EXPORT_EVIDENCE_DIR,{recursive:true});
     await writeFile(join(process.env.EXPORT_EVIDENCE_DIR,'export-browser-tests.json'),JSON.stringify(results,null,2)+'\n');
   }
+});
+
+
+test('private session files reject unknown IDs and links, lock GC, renew timestamps and regenerate IDs', async t=>{
+  const root=await mkdtemp(join(tmpdir(),'cdc-private-session-contract-'));
+  t.after(()=>rm(root,{recursive:true,force:true}));
+  const php=process.env.PHP_BIN||'php';
+  const source=resolve('public/gestion-contenus/index.php');
+  const code=String.raw`<?php
+    $source=file_get_contents($argv[1]);$dir=$argv[2];
+    $start=strpos($source,'final class CmsPrivateSessionFiles ');
+    $end=strpos($source,'$studioSessionDir=',$start);
+    eval(substr($source,$start,$end-$start));
+    function check($ok,$label){if(!$ok)throw new RuntimeException($label);}
+    chmod($dir,0700);$h=new CmsPrivateSessionFiles($dir);
+    check($h->open($dir,'fixture'),'open');
+    check(!$h->validateId(str_repeat('a',32)),'unknown ID');
+    check($h->read('../bad')===false,'path traversal');
+    $id=str_repeat('b',32);check($h->read($id)==='','new file');
+    $contender=new CmsPrivateSessionFiles($dir);
+    check($contender->read($id)===false,'concurrent read times out without stealing lock');
+    check($h->write($id,'fixture|s:4:"test";'),'write after contention');
+    check(!$h->write($id,str_repeat('x',65537)),'oversize rejected');
+    check($h->close(),'close');check($h->validateId($id),'known ID');
+    check($h->read($id)==='fixture|s:4:"test";','read back');
+    touch($dir.'/sess_'.$id,time()-50000);
+    $gc=new CmsPrivateSessionFiles($dir);
+    check($h->gc(43200)===0,'GC skips its own locked session');
+    check($h->updateTimestamp($id,''),'timestamp renewed');
+    check($h->close(),'release');clearstatcache();
+    check(filemtime($dir.'/sess_'.$id)>time()-10,'fresh timestamp');
+    touch($dir.'/sess_'.$id,time()-50000);
+    check($gc->gc(43200)===1,'GC removes old unlocked file');
+    check(!$h->validateId($id),'GC result');
+    $links='not available on Windows';
+    if(PHP_OS_FAMILY!=='Windows'){
+      $outside=$dir.'/outside';file_put_contents($outside,'preserve');
+      symlink($outside,$dir.'/sess_'.$id);
+      check(!$h->validateId($id)&&$h->read($id)===false,'symlink rejected');
+      check($h->gc(43200)===0&&file_get_contents($outside)==='preserve','symlink GC ignored');
+      unlink($dir.'/sess_'.$id);unlink($outside);$links='rejected';
+    }
+    session_set_save_handler(new CmsPrivateSessionFiles($dir),true);
+    session_save_path($dir);ini_set('session.use_cookies','0');
+    ini_set('session.use_strict_mode','1');session_id(str_repeat('c',32));
+    check(session_start(),'engine start');check(session_id()!==str_repeat('c',32),'strict mode rejects fixation');
+    $old=session_id();$_SESSION['fixture']='engine-value';
+    check(session_regenerate_id(true),'regenerate');$new=session_id();
+    check($old!==$new&&!is_file($dir.'/sess_'.$old),'old ID removed');
+    check(session_write_close(),'engine close');$_SESSION=[];session_id($new);
+    check(session_start()&&$_SESSION['fixture']==='engine-value','engine persistence');
+    check(session_destroy(),'logout removes file');
+    check(!is_file($dir.'/sess_'.$new),'logout file removed');
+    echo json_encode(['privateFileLifecycle'=>true,'strictIds'=>true,'lockingAndGc'=>true,'timestampRenewal'=>true,'regenerationAndLogout'=>true,'symlinks'=>$links]);
+  `;
+  const result=JSON.parse(execFileSync(php,['-r',code.replace('<?php',''),source,root],{encoding:'utf8',windowsHide:true}));
+  assert.equal(result.privateFileLifecycle,true);
+  assert.equal(result.strictIds,true);
+  assert.equal(result.regenerationAndLogout,true);
 });

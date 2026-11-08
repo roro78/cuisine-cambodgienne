@@ -73,9 +73,13 @@ try{
   }
   await page.setViewportSize({width:390,height:844});
   await page.locator('.ux-home a[href="?publications=1"]').click();
+  // The Studio navigates to a new PHP document; wait for its visible section,
+  // rather than inspecting the outgoing page during the navigation.
+  await page.locator('#cms-publications-status').waitFor({state:'visible'});
   assert.equal(await page.locator('#cms-publications-status').count(),1,'unavailable social route remains inside private Studio');
   assert.equal(await page.locator('.cards, .create-card').count(),0);
   await page.locator('.ux-home a[href="?library=1"]').click();
+  await page.locator('[aria-label="Filtres de la bibliothèque"]').waitFor({state:'visible'});
   assert.equal(new URL(page.url()).searchParams.get('library'),'1');
   assert.equal(await page.locator('[aria-label="Filtres de la bibliothèque"]').count(),1);
   assert.ok(await page.locator('.create-card').count()>0,'existing private projects available in library');
@@ -189,8 +193,8 @@ try{
     // A private image must not rotate the text-generation intent of another form.
     await context.request.get(linkedUrl);
     const intentSnapshot=async()=>{
-      const names=await readdir(path.join(root,'sessions'));
-      const values=await Promise.all(names.map(name=>readFile(path.join(root,'sessions',name),'utf8')));
+      const names=await readdir(path.join(root,'.cuisine-asset-portal','cms-editorial-session-files'));
+      const values=await Promise.all(names.map(name=>readFile(path.join(root,'.cuisine-asset-portal','cms-editorial-session-files',name),'utf8')));
       return values.filter(raw=>raw.includes('authenticated_at|')).map(raw=>raw.match(/ai_content_intent\|s:48:"([0-9a-f]+)"/)?.[1]).filter(Boolean).sort();
     };
     const intentsBefore=await intentSnapshot();assert.ok(intentsBefore.length>0);
