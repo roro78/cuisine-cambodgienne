@@ -75,7 +75,48 @@ test('seven saved narrations download as plain text; login, CSRF and stale reque
     assert.equal(await download.failure(),null);
     assert.deepEqual(await readFile(await download.path()),bytes);
     assert.deepEqual(await readFile(saved),before,'read-only download');
-    results.push({width,realBrowserClick:true,syntheticLocalLogin:true,filename,bytes:bytes.length,sevenExactTexts:true,html:false});
+    // Real DOM visa click with deliberately stale hidden CSRF after a good
+    // authentication. The preflight must refresh it, not bypass the POST guard.
+    const probe=await ctx.request.get(base+'?session_status=1',{maxRedirects:0});
+    assert.equal(probe.status(),200,'authenticated session must survive a new GET');
+    const current=await probe.json();
+    assert.equal(current.authenticated,true);
+    assert.match(current.csrf,/^[a-f0-9]{48}$/);
+    const openVisa=async()=>{
+      await page.locator('[data-coral-human-visas]').evaluate(el=>{
+        for(let parent=el;parent;parent=parent.parentElement)
+          if(parent.tagName==='DETAILS')parent.open=true;
+        el.querySelector('details.guided-group').open=true;
+      });
+      return page.locator('[data-coral-human-visas] form').first();
+    };
+    let visa=await openVisa();
+    assert.equal(await visa.locator('button[name=review_action]').inputValue(),'revoke');
+    await visa.locator('input[name=csrf]').evaluate(el=>el.value='obsolete-session-csrf');
+    await visa.locator('[name=review_confirm]').check();
+    await visa.locator('button[name=review_action]').click();
+    await page.waitForURL(/visa_saved=1/);
+    assert.match(await page.locator('[data-coral-human-visas]').innerText(),/6\/7/);
+    visa=await openVisa();
+    await visa.locator('[name=review_confirm]').check();
+    await visa.locator('button[name=review_action]').click();
+    await page.waitForURL(/visa_saved=1/);
+    assert.match(await page.locator('[data-coral-human-visas]').innerText(),/7\/7/);
+    assert.deepEqual(await readFile(saved),before,'visa journal must not rewrite scripts');
+    // Lost cookie fails closed before the browser submits a human decision.
+    visa=await openVisa();
+    await ctx.clearCookies();
+    let visaPosts=0;
+    const countVisa=req=>{if(req.method()==='POST' && req.postData()?.includes('review_action='))visaPosts++;};
+    page.on('request',countVisa);
+    await visa.locator('[name=review_confirm]').check();
+    await visa.locator('button[name=review_action]').click();
+    await page.locator('[data-visa-session-status]').first().getByText(/Connexion non confirmée/).waitFor().catch(async()=>{
+      assert.match(await page.locator('[data-visa-session-status]').first().innerText(),/Connexion non confirmée/);
+    });
+    assert.equal(visaPosts,0,'do not POST a visa after session cookie loss');
+    page.off('request',countVisa);
+    results.push({width,realBrowserClick:true,syntheticLocalLogin:true,filename,bytes:bytes.length,sevenExactTexts:true,html:false,visaStaleCsrfRecovered:true,missingCookieFailsClosed:true});
     await ctx.close();
   }
   if(process.env.EXPORT_EVIDENCE_DIR){
