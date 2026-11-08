@@ -224,10 +224,11 @@ if($method==='POST'){
             session_regenerate_id(true);
             $_SESSION['authenticated_at']=time();
             $_SESSION['auth_last_activity_at']=$_SESSION['authenticated_at'];
+            $sessionExpiresAt=min($_SESSION['authenticated_at']+$sessionIdleSeconds,
+                $_SESSION['authenticated_at']+$sessionAbsoluteSeconds);
             $auth=true;
-            // A POST login is redirected back to its exact safe Studio route,
-            // including the previously requested final/culinary panel.
-            header('Location: '.$studioReturnUrl,true,303);exit;
+            // Render the requested audit in this same response. Existing Studio
+            // login clients rely on HTTP 200 (no POST redirect).
         }else{
             cmsLoginAttempt($private,$ip,true);$error='Identifiants incorrects.';
         }
