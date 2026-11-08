@@ -13,7 +13,7 @@ header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('Referrer-Policy: no-referrer');
 $nonce=base64_encode(random_bytes(18));
-header("Content-Security-Policy: default-src 'none'; style-src 'nonce-{$nonce}'; script-src 'nonce-{$nonce}'; img-src 'self' https://www.cuisine-du-cambodge.com; media-src 'self'; frame-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
+header("Content-Security-Policy: default-src 'none'; style-src 'nonce-{$nonce}'; script-src 'nonce-{$nonce}'; connect-src 'self'; img-src 'self' https://www.cuisine-du-cambodge.com; media-src 'self'; frame-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
 function cmsUnavailable(): never { http_response_code(503);exit('Espace CMS privé indisponible.'); }
 $https=(!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS'])!=='off')
     || (string)($_SERVER['SERVER_PORT']??'')==='443';
@@ -54,11 +54,24 @@ session_set_cookie_params([
     'lifetime'=>0,'path'=>'/gestion-contenus/',
     'secure'=>true,'httponly'=>true,'samesite'=>'Strict'
 ]);
-session_start();
+if(session_start()!==true)cmsUnavailable();
 if(!is_string($_SESSION['csrf']??null))$_SESSION['csrf']=bin2hex(random_bytes(24));
 if(isset($_SESSION['authenticated_at']) && time()-(int)$_SESSION['authenticated_at']>1800)
     unset($_SESSION['authenticated_at']);
 $auth=isset($_SESSION['authenticated_at']);
+// Same-origin read-only freshness probe. An old tab can contain a CSRF token
+// from a previous PHP session after reauthentication in another tab.
+// The actual POST remains CSRF-protected and never grants a visa automatically.
+if(isset($_GET['session_status'])){
+    header('Content-Type: application/json; charset=UTF-8');
+    header('Vary: Cookie');
+    if(count($_GET)!==1 || $_GET['session_status']!=='1'){
+        http_response_code(400);exit('{"error":"INVALID_SESSION_PROBE"}');
+    }
+    if(!$auth){http_response_code(401);exit('{"authenticated":false}');}
+    echo json_encode(['authenticated'=>true,'csrf'=>$_SESSION['csrf']],JSON_THROW_ON_ERROR);
+    exit;
+}
 $ttsSettings=cmsCoralTtsSettings($cfg);
 // Opening a public PHP directory is not proof of private acceptance.
 $publicationsReady=($cfg['social_dashboard_received']??false)===true;
@@ -145,7 +158,14 @@ if($method==='POST'){
     if(isset($_POST['visual_action']) && count(array_intersect(['visual_action','create_save','ai_brief_generate','ai_content_generate','ai_content_discard','review_action','culinary_action','final_review_action','correction_action','save','studio_transition','export_review','login','logout'],array_keys($_POST)))!==1){http_response_code(422);exit('Action invalide.');}
     if(!is_string($_POST['csrf']??null)
         || !hash_equals((string)$_SESSION['csrf'],$_POST['csrf'])){
-        http_response_code(403);exit('Session expirée. Rechargez.');
+        // Only booleans in logs: NEVER session IDs, CSRF values or form content.
+        if(isset($_POST['review_action'])){
+            error_log('CDC_STUDIO_VISA_CSRF_REJECT '.json_encode([
+                'authenticated'=>$auth,'session_cookie_present'=>isset($_COOKIE[session_name()]),
+                'csrf_field_present'=>isset($_POST['csrf'])
+            ],JSON_THROW_ON_ERROR));
+        }
+        http_response_code(403);exit('Session non synchronisée. Rechargez et reconnectez-vous avant de réessayer.');
     }
     if(isset($_POST['logout']) && $auth){
         $_SESSION=[];session_regenerate_id(true);
@@ -636,7 +656,7 @@ if($auth){
                     is_string($_POST['review_action']??null)?$_POST['review_action']:'',
                     ($_POST['review_confirm']??null)==='1',$auth,$catalog);
                 header('Location: ?new=1&cid='.rawurlencode($creation['id'])
-                    .'&'.$filtersUrl.'&visa_saved=1',true,303);
+                    .'&'.$filtersUrl.'&visa_saved=1&visa_chapter='.rawurlencode((string)$_POST['review_chapter']).'#cms-human-visas',true,303);
                 exit;
             }catch(Throwable $e){
                 $conflict=in_array($e->getMessage(),
@@ -1702,7 +1722,7 @@ echo cmsCoralTtsPanel($private,$creation,$catalog,$canonicalById,$ttsGuides,(str
 </ul>
 <?php endif; ?>
 <?php if($creation['similar_titles']): ?><p class="note">Des sujets proches existent : examinez-les dans les contrôles ci-dessous avant de poursuivre.</p><?php endif; ?>
-<details class="guided-group" data-studio-advanced <?= isset($_GET['final_audit'])?'open':'' ?>><summary>Contrôles avancés — vérifications et validations complètes</summary>
+<details class="guided-group" data-studio-advanced <?= isset($_GET['final_audit'])||isset($_GET['visa_saved'])?'open':'' ?>><summary>Contrôles avancés — vérifications et validations complètes</summary>
 <p class="small muted">Les contrôles concernent la version enregistrée. Enregistrez vos modifications avant de les évaluer.</p>
 <?php if(!$studioSourceCurrent): ?>
 <p class="note" role="alert">Contrôles et visas indisponibles : la source publiée ne correspond plus à ce brouillon.</p>
@@ -1732,7 +1752,7 @@ de publication n’est déduit de ce contrôle.</p>
 <?php $visaStatus=null;
 try{$visaStatus=cmsAtelierVisaStatus($creationDir,$creation,$catalog);}
 catch(Throwable $ignored){$visaStatus=null;} ?>
-<details class="guided-group" data-coral-human-visas>
+<details class="guided-group" id="cms-human-visas" data-coral-human-visas <?= isset($_GET['visa_saved'])?'open':'' ?>>
 <summary>Visa humain des sept textes — privé, sans génération audio</summary>
 <p class="small muted">Validation explicite par chapitre et par version enregistrée.
 Chaque visa est révocable. Toute nouvelle version de la fiche invalide les
@@ -1754,7 +1774,7 @@ foreach(cmsAtelierScriptIds() as $i=>$chapterId):
 $chapter=$creation['atelier_scripts']['chapters'][$i]??null;
 $text=is_array($chapter)&&is_string($chapter['text']??null)?$chapter['text']:'';
 $approved=($visaStatus['by_chapter'][$chapterId]??false)===true; ?>
-<details class="guided-group">
+<details class="guided-group" <?= ($_GET['visa_chapter']??'')===$chapterId?'open':'' ?>>
 <summary><?= cmsEsc($i===0?'Introduction':('Phase '.$i.' · '.$chapterId)) ?>
  — <?= $approved?'texte visé':'visa absent ou périmé' ?></summary>
 <div class="coral-script-text"><?= cmsEsc($text!==''?$text:'Texte non rédigé.') ?></div>
@@ -2483,6 +2503,51 @@ document.addEventListener('input',event=>{
   event.target.closest('[data-create-row]').querySelector('summary strong').textContent=event.target.value.trim()||'Sans titre';
 });
 let studioDirty=false;
+// Recheck the active PHP session immediately before a human visa submission.
+// The browser may retain a pre-login tab with an obsolete hidden token.
+// Never suppress the server's CSRF validation or silently retry a rejected POST.
+document.querySelectorAll('[data-coral-human-visas] form').forEach(form=>{
+  let pending=false;
+  form.addEventListener('submit',async event=>{
+    if(form.dataset.csrfFresh==='1'){delete form.dataset.csrfFresh;return;}
+    event.preventDefault();
+    if(pending)return;
+    pending=true;
+    const submitter=event.submitter;
+    let status=form.querySelector('[data-visa-session-status]');
+    if(!status){
+      status=document.createElement('p');
+      status.setAttribute('role','alert');
+      status.setAttribute('data-visa-session-status','');
+      form.append(status);
+    }
+    status.textContent='Vérification de la session…';
+    try{
+      const response=await fetch('?session_status=1',{
+        credentials:'same-origin',cache:'no-store',headers:{Accept:'application/json'}
+      });
+      if(!response.ok){
+        status.textContent='Connexion non confirmée. Ouvrez le Studio dans un nouvel onglet et reconnectez-vous, puis réessayez.';
+        return;
+      }
+      const fresh=await response.json();
+      const field=form.querySelector('input[name="csrf"]');
+      if(fresh.authenticated!==true||typeof fresh.csrf!=='string'
+          ||!/^([a-f0-9]{48})$/i.test(fresh.csrf)||!field){
+        status.textContent='Session indisponible. Rechargez le Studio avant de valider.';
+        return;
+      }
+      field.value=fresh.csrf;
+      status.textContent='';
+      form.dataset.csrfFresh='1';
+      form.requestSubmit(submitter||undefined);
+    }catch{
+      status.textContent='Impossible de vérifier la session. Aucun visa envoyé ; réessayez après reconnexion.';
+    }finally{
+      pending=false;
+    }
+  });
+});
 document.querySelectorAll('[data-studio-edit]').forEach(form=>{
   form.addEventListener('input',()=>{studioDirty=true;});
   form.addEventListener('change',()=>{studioDirty=true;});
