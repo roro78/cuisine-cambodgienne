@@ -103,3 +103,7 @@ Copier le fichier [exemple-kroeung-jaune.json](./exemples/exemple-kroeung-jaune.
 La CI applique désormais les règles suivantes : quantité de portions égale à la recette canonique (aucun changement implicite d'échelle), tous les ingrédients réellement utilisés dans une phase de cuisine après la mise en place, réserves d'essai distinctes déclarées, somme des six temps égale à `duration.practicalMinutes`, allergènes explicités, voix Coral imposée, bloc de recette verbatim refusé dans l'audio. Le champ `preparationMinutes` ne comprend que du travail **hors des six phases** (zéro si tout est déjà inclus).
 
 Au statut `release_ready`, le contrôle réclame en outre une image finale existante sous `public/` et un manifeste `audio.asset` à sept chapitres mesurés, avec URL MP3 valide, durée vérifiée par ffprobe, signature MP3 et SHA256 exact. Sans ces fichiers, le statut reste `draft` ou `review` ; une simple case « validé » ne suffit pas. La CI ne produit pas de MP3 et ne publie pas sur OVH.
+
+## Contrôle permanent des portions et de la cohérence
+
+La règle unique est définie au §4 bis du [référentiel Coral V2](REFERENTIEL-NARRATION-IMMERSIVE-V2.md) : recette canonique, calcul typé partagé, liaisons explicites, cinq contrôles du Studio et veto serveur avant visa final et TTS. Ce document ne duplique pas les seuils ou les règles. Les décisions culinaires, les chronométrages et les visas restent humains.

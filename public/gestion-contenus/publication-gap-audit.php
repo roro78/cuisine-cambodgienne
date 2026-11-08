@@ -777,6 +777,194 @@ function cmsAtelierCulinaryAction(string $private,string $id,int $expected,
  * This audit itself does not fetch, rewrite, call a provider, generate audio or publish.
  * A difference between culinary sources is never automatically called an error.
  */
+/** Parse an explicit Celsius target: digits or French words, never prose guesses. */
+function cmsCulinaryTemperatureNumber(string $number): ?float {
+    $normalize=static function(string $s):string{
+        $s=strtolower(strtr(trim($s),['É'=>'e','È'=>'e','é'=>'e','è'=>'e','ê'=>'e',
+            '‑'=>' ','–'=>' ','-'=>' ']));
+        return trim(preg_replace('/\s+/u',' ',str_replace([' et ','vingts'],[' ','vingt'],$s)));
+    };
+    if(preg_match('/^-?\d+(?:[,.]\d+)?$/D',trim($number)))return (float)str_replace(',','.',trim($number));
+    static $words=null;
+    if($words===null){
+        $small=['zéro','un','deux','trois','quatre','cinq','six','sept','huit','neuf',
+            'dix','onze','douze','treize','quatorze','quinze','seize'];
+        $spell=static function(int $n)use(&$spell,$small):string{
+            if($n<17)return $small[$n];
+            if($n<20)return 'dix '.$small[$n-10];
+            if($n<70){$t=[2=>'vingt',3=>'trente',4=>'quarante',5=>'cinquante',6=>'soixante'];
+                return $t[intdiv($n,10)].($n%10?' '.$small[$n%10]:'');}
+            if($n<80)return 'soixante '.$spell($n-60);
+            if($n<100)return 'quatre vingt'.($n>80?' '.$spell($n-80):'');
+            return 'cent'.($n>100?' '.$spell($n-100):'');
+        };
+        $words=[];for($n=0;$n<200;$n++)$words[$normalize($spell($n))]=$n;
+        $words['quatre vingts']=80;
+        foreach([70=>'septante',80=>'huitante',90=>'nonante'] as $base=>$word)
+            for($n=0;$n<10;$n++)$words[$word.($n?' '.$small[$n]:'')]=$base+$n;
+    }
+    $s=$normalize($number);$sign=1;
+    if(str_starts_with($s,'moins ')){$sign=-1;$s=substr($s,6);}
+    $parts=explode(' virgule ',$s);
+    if(count($parts)>2||!isset($words[$parts[0]]))return null;
+    $value=(float)$words[$parts[0]];
+    if(isset($parts[1])){
+        if(!isset($words[$parts[1]])||$words[$parts[1]]>9)return null;
+        $value+=$words[$parts[1]]/10;
+    }
+    return $sign*$value;
+}
+/** Only labelled declarations in existing preparation/safety fields count. */
+function cmsCulinaryAllergenDeclarations(array $fields,array $phases): array {
+    $candidates=[];
+    foreach(['beforeStarting','beforeYouStart','notes'] as $key)
+        foreach(is_array($fields[$key]??null)?$fields[$key]:[$fields[$key]??''] as $i=>$text)
+            if(is_string($text))$candidates['fields.'.$key.'.'.$i]=$text;
+    foreach($phases as $i=>$phase)$candidates['atelier_phase_details.phases.'.$i.'.safety']=(string)($phase['safety']??'');
+    $declarations=[];
+    foreach($candidates as $path=>$text)
+        if(preg_match_all('/^\h*allerg[eè]nes?\b[^:\r\n]{0,100}:\h*([^\r\n]+)/imu',$text,$rows))
+            $declarations[$path]=implode("\n",$rows[1]);
+    return $declarations;
+}
+/** Shared deterministic review, never a culinary opinion or human approval. */
+function cmsCulinaryAutomaticAudit(array $record,array $sourceFields=[],?array $portionContract=null): array {
+    $findings=[];$categories=['portions','ingredients','durations','narrations','safety'];
+    $add=static function(string $category,string $code,string $severity,string $where,string $passage,string $finding,string $suggestion,?string $chapter=null)use(&$findings):void{
+        $findings[]=['category'=>$category,'code'=>$code,'severity'=>$severity,'location'=>$where,
+            'chapter'=>$chapter,'passage'=>function_exists('mb_substr')?mb_substr($passage,0,250,'UTF-8'):substr($passage,0,250),
+            'finding'=>$finding,'suggestion'=>$suggestion,'rule'=>'REFERENTIEL-NARRATION-IMMERSIVE-V2 §§4–7 bis'];
+    };
+    $fields=$record['fields']??[];$atelier=($record['kind']??null)==='atelier';
+    $recipe=$atelier?$sourceFields:$fields;$ingredients=$recipe['ingredients']??[];
+    $base=$recipe['baseServings']??null;$matrix=[];
+    if(!is_numeric($base)||$base<=0){
+        $add('portions','PORTIONS_SOURCE_UNAVAILABLE','avertissement','recette','',
+            'Rendement canonique non vérifiable.','Vérifier le modèle et sa recette de référence.');
+    }else foreach([1,2,4,8,12] as $servings){
+        $matrix[$servings]=[];
+        foreach($ingredients as $i){
+            if(!is_array($i)||!is_numeric($i['quantity']??null))continue;
+            if($i['quantity']<0)$add('portions','NEGATIVE_QUANTITY','bloquant','ingredients',(string)$i['name'],
+                'Quantité négative.','Corriger la donnée structurée dans le formulaire.');
+            $matrix[$servings][]=['name'=>$i['name'],'quantity'=>($i['scalable']??true)===false
+                ?$i['quantity']:$i['quantity']*$servings/$base,'unit'=>$i['unit']??'','scalable'=>($i['scalable']??true)!==false];
+        }
+    }
+    $names=array_values(array_filter(array_column($ingredients,'name'),'is_string'));
+    $ingredientText=implode(' ',$names);$phases=$record['atelier_phase_details']['phases']??[];
+    if($atelier&&$ingredients){
+        $used=[];foreach($phases as $phase)foreach($phase['ingredientNames']??[] as $name)$used[]=$name;
+        foreach(array_diff($used,$names) as $name)$add('ingredients','UNMATCHED_PHASE_INGREDIENT','bloquant',
+            'phases.ingredientNames',(string)$name,'Ingrédient de phase absent de la recette canonique.',
+            'Vérifier un synonyme ou soumettre la substitution ; ne pas modifier la recette automatiquement.');
+        foreach(array_diff($names,$used) as $name)$add('ingredients','MISSING_PHASE_INGREDIENT','bloquant',
+            'phases.ingredientNames',$name,'Ingrédient canonique sans phase d’utilisation.',
+            'Indiquer sa préparation et son utilisation dans les six phases.');
+    }
+    // Detect for review; NEVER replace arbitrary numbers or rescale temperatures.
+    foreach($recipe['steps']??[] as $i=>$step){
+        $text=(string)($step['text']??'');
+        preg_match_all('~(?<![\p{L}\p{N}])(?:\d+(?:[,.]\d+|/\d+)?|[¼½¾]|une?|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze)\s*(?:ml|cl|kg|g|litres?|grammes?|c\.\s*à\s*(?:soupe|café)|cuillères?\s+à\s+(?:soupe|café)|ramequins?|bols?|assiettes?|portions?|œufs?)\b~iu',$text,$hits,PREG_OFFSET_CAPTURE);
+        foreach($hits[0] as [$quantity,$offset]){
+            $bound=false;
+            foreach($portionContract['steps']??[] as $binding)
+                if(($binding['index']??null)===$i&&($binding['sourceText']??null)===$text
+                    &&in_array($quantity,$binding['anchors']??[],true)
+                    &&substr_count($text,$quantity)===1)$bound=true;
+            if($bound)continue;
+            $changed=!$atelier&&($sourceFields['steps'][$i]['text']??null)!==$text;
+            $add('portions','INSTRUCTION_QUANTITY_BINDING_REQUIRED',$changed?'bloquant':'avertissement',
+                'recipe.steps.'.$i.'.byte.'.$offset,$quantity,
+                'Une quantité textuelle exige une liaison explicite au calcul des portions.',
+                'Déclarer une liaison typée dans recipePortions.ts et tester tous les rendements ; conserver les repères techniques.');
+        }
+    }
+    $minutes=static function(mixed $v):?int{
+        if(!is_string($v)||preg_match('/^\s*(\d+)\s*min(?:utes?)?\s*$/iu',$v,$m)!==1)return null;
+        return (int)$m[1];
+    };
+    $prep=$minutes($recipe['prepTime']??null);$cook=$minutes($recipe['cookTime']??null);
+    $sum=$phases?array_sum(array_map(static fn(array $p):int=>(int)($p['minutes']??0),$phases)):null;
+    if($atelier&&$sum!==null&&$prep!==null&&$cook!==null&&$sum!==$prep+$cook)
+        $add('durations','PEDAGOGICAL_DURATION_NOT_MEASURED','avertissement','phases.minutes',(string)$sum,
+            'Somme des phases différente de la durée canonique ; un chevauchement ou supplément n’est pas prouvé.',
+            'Afficher séparément la durée de recette et l’estimation pédagogique ; ne pas inventer un chronométrage.');
+    $chapters=$record['atelier_scripts']['chapters']??[];
+    if($atelier&&count($chapters)!==7)$add('narrations','NARRATION_INCOMPLETE','avertissement','atelier_scripts','',
+        'Les sept textes ne sont pas encore présents.','Terminer le brouillon avant les validations ; aucun texte inventé automatiquement.');
+    $spoken=implode(' ',array_column($chapters,'text'));
+    if($atelier&&count($chapters)===7){
+        foreach($names as $name){
+            $needle=$name;
+            foreach(['combava','basilic','kroeung','sucre','poisson','œufs'] as $token)
+                if(preg_match('/'.preg_quote($token,'/').'/iu',$name)){$needle=$token;break;}
+            if(!preg_match('/'.preg_quote($needle,'/').'/iu',$spoken))
+                $add('narrations','INGREDIENT_NARRATION_TO_REVIEW','avertissement','atelier_scripts',$name,
+                    'Nom ou synonyme de l’ingrédient non retrouvé dans les sept textes.',
+                    'Vérifier l’usage oral et les synonymes ; ne pas ajouter automatiquement un ingrédient.');
+        }
+    }
+    $written=json_encode($fields,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
+    $declared=implode("\n",cmsCulinaryAllergenDeclarations($fields,$phases));
+    $claims=$written."\n".$declared;
+    $hasEgg=preg_match('/œuf|oeuf/iu',$ingredientText)===1;
+    $hasFish=preg_match('/poisson/iu',$ingredientText)===1;
+    foreach(['œufs'=>$hasEgg,'poisson'=>$hasFish] as $allergen=>$present){
+        if(!$present)continue;
+        $pattern=$allergen==='œufs'?'/œuf|oeuf/iu':'/poisson/iu';
+        if(!preg_match($pattern,$declared))$add('safety','ALLERGEN_DECLARATION_MISSING','avertissement',
+            'fields.beforeStarting / beforeYouStart / notes / phases.safety',$allergen,'Allergène canonique absent des déclarations explicites.',
+            'Ajouter une ligne « Allergènes : … » dans les préparatifs ou précautions ; vérifier les étiquettes. La liste des ingrédients ne vaut pas déclaration.');
+        if(preg_match($allergen==='œufs'?'/sans\s+(?:œufs?|oeufs?)\b/iu':'/sans\s+poisson\b/iu',$claims,$hit))
+            $add('safety','ALLERGEN_CONTRADICTION','bloquant','fields',$hit[0],
+                'Mention sans allergène incompatible avec les ingrédients canoniques.',
+                'Retirer la garantie erronée et faire vérifier les ingrédients réels.');
+    }
+    $minimum=$hasEgg?71:($hasFish?63:null);
+    if($atelier&&$minimum===null)$add('safety','SAFETY_PROFILE_REQUIRES_REVIEW','avertissement','recette','',
+        'Aucun profil de température générique applicable n’est établi ici.',
+        'Vérifier les risques et les références propres aux ingrédients ; aucun seuil inventé.');
+    foreach($chapters as $chapter){
+        $text=(string)($chapter['text']??'');
+        $word='(?:zéro|un|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize|vingts?|trente|quarante|cinquante|soixante|septante|huitante|nonante|cent|et|virgule|moins)';
+        $number='(?:-?\d+(?:[,.]\d+)?|'.$word.'(?:[\s\x{2011}\x{2013}-]+'.$word.')*)';
+        if($minimum!==null&&preg_match_all('~(?:au moins|visez|attei(?:nt|ndre)|objectif(?:\h+de)?)\s*('.$number.')\s*(?:°\s*C\b|degr[eé]s?(?:\s+Celsius)?\b)~iu',$text,$hits,PREG_SET_ORDER))
+            foreach($hits as $hit){
+                $value=cmsCulinaryTemperatureNumber($hit[1]);
+                if($value===null)$add('safety','CORE_TEMPERATURE_UNPARSED','avertissement','atelier_scripts.'.$chapter['id'],$hit[0],
+                    'Objectif de température non interprétable par la règle déterministe.',
+                    'Vérifier explicitement la valeur et la référence sanitaire.',$chapter['id']);
+                elseif($value<$minimum)
+                $add('safety','CORE_TEMPERATURE_TOO_LOW','bloquant','atelier_scripts.'.$chapter['id'],$hit[0],
+                    'Repère annoncé inférieur au seuil général du profil d’ingrédients.',
+                    'Vérifier la référence sanitaire et corriger explicitement le texte, sans visa automatique.',$chapter['id']);
+            }
+        if(preg_match('/(?<!ne )(?<!jamais )goûtez\s+(?:le poisson cru|les œufs crus|la préparation crue)/iu',$text,$hit))
+            $add('safety','RAW_TASTING_INSTRUCTION','bloquant','atelier_scripts.'.$chapter['id'],$hit[0],
+                'Consigne explicite de dégustation crue à risque.','Rectifier avant les ingrédients crus ; préserver la chronologie.',$chapter['id']);
+        if($atelier&&$hasEgg&&preg_match('/œuf|oeuf/iu',$spoken)!==1)
+            $add('narrations','EGG_GESTURE_NOT_DOCUMENTED','avertissement','atelier_scripts','',
+                'L’incorporation des œufs n’est pas retrouvée dans les narrations.',
+                'Relire le geste et son emplacement ; une recherche lexicale ne prouve pas la compréhension.');
+    }
+    $checks=[];
+    foreach($categories as $category){
+        $states=array_column(array_filter($findings,static fn(array $f):bool=>$f['category']===$category),'severity');
+        $checks[$category]=in_array('bloquant',$states,true)?'bloquant':($states?'avertissement':'conforme');
+    }
+    return ['contract'=>'cdc-culinary-coherence-v2','checks'=>$checks,'findings'=>$findings,
+        'portion_matrix'=>$matrix,'canonical_minutes'=>$prep!==null&&$cook!==null?$prep+$cook:null,
+        'phase_estimate_minutes'=>$sum,'human_validation'=>false,'tts_authorized'=>false];
+}
+function cmsCulinaryAutomaticHtml(array $report): string {
+    $html='<details class="guided-group" data-culinary-automatic><summary>Contrôles culinaires automatiques</summary><ul>';
+    $labels=['portions'=>'Portions','ingredients'=>'Ingrédients','durations'=>'Durées','narrations'=>'Narrations','safety'=>'Sécurité culinaire'];
+    foreach($report['checks'] as $category=>$status)$html.='<li>'.cmsEsc($labels[$category]).' : <strong>'.cmsEsc($status).'</strong></li>';
+    $html.='</ul>';
+    foreach($report['findings'] as $f)$html.='<p><strong>'.cmsEsc($f['code']).'</strong> — '.cmsEsc($f['location']).' : '.cmsEsc($f['finding']).' Passage : '.cmsEsc($f['passage']).'. '.cmsEsc($f['suggestion']).' Règle : '.cmsEsc($f['rule']).'</p>';
+    return $html.'<p>Contrôle déterministe limité : authenticité, goût, chronométrage réel et qualité pédagogique restent à valider humainement. Aucun visa ni MP3.</p></details>';
+}
 function cmsCoralFinalAudit(array $record,array $catalog,array $canonical,array $guided): array {
     if(($record['kind']??null)!=='atelier'||!cmsCreationId($record['id']??null))
         throw new InvalidArgumentException('CORAL_FINAL_KIND');
@@ -887,15 +1075,25 @@ function cmsCoralFinalAudit(array $record,array $catalog,array $canonical,array 
                 'finding'=>'Affirmation historique ou exclusivité contredite par le Carnet Amok.',
                 'suggestion'=>'Présenter la version de la fiche comme un choix parmi plusieurs variantes documentées.'];
     }
+    $recipeFields=$guided[$recipe['recipe_id']??'']['fields']??[];
+    $portionContract=$guided[$recipe['recipe_id']??'']['portionContract']??null;
+    $automatic=cmsCulinaryAutomaticAudit($record,$recipeFields,$portionContract);
+    foreach($automatic['findings'] as $finding){
+        $entry=['code'=>$finding['code'],'chapter'=>$finding['chapter'],
+            'finding'=>$finding['finding'],'suggestion'=>$finding['suggestion'],
+            'passage'=>$finding['passage'],'reference'=>$finding['rule']];
+        if($finding['severity']==='bloquant')$issues[]=$entry;else $warnings[]=$entry;
+    }
     foreach($issues as &$issue){
         $issue['location']=$issue['chapter']===null?'atelier et recette':'atelier_scripts.chapters.'.$issue['chapter'].'.text';
         $issue['passage']=$issue['passage']??$issue['finding'];
-        $issue['reference']=$recipeSha??'recette canonique indisponible';
+        $issue['reference']=$issue['reference']??$recipeSha??'recette canonique indisponible';
         $issue['severity']='bloquant';
         $issue['proposed_correction']=$issue['proposed_correction']??null;
     }unset($issue);
     $digest=hash('sha256',json_encode([
         'contract'=>'cdc-coral-final-cross-audit-v1',
+        'automation_policy'=>'cdc-culinary-coherence-v2','portion_contract'=>$portionContract,
         'id'=>$record['id'],'version'=>$record['version']??null,
         'recipe_sha256'=>$recipeSha,'related_site_sources'=>$related,
         'title'=>$record['title']??null,'summary'=>$record['summary']??null,
@@ -906,7 +1104,7 @@ function cmsCoralFinalAudit(array $record,array $catalog,array $canonical,array 
     return ['contract'=>'cdc-coral-final-cross-audit-v1',
         'creation_id'=>$record['id'],'creation_version'=>$record['version']??null,
         'recipe_sha256'=>$recipeSha,'related_site_sources'=>$related,'digest'=>$digest,
-        'blocking'=>$issues,'warnings'=>$warnings,
+        'blocking'=>$issues,'warnings'=>$warnings,'automatic_checks'=>$automatic['checks'],'automatic_details'=>$automatic,
         'automated_checks_pass'=>count($issues)===0,
         // Claims about cultural authenticity / safety need a human judgment.
         'external_sources_independently_verified'=>false,
@@ -944,11 +1142,11 @@ function cmsCoralFinalSourceCatalog(): array {
     return [
         'https://chefnak.squarespace.com/cambodian-fish-amok'=>[
             'title'=>'Chef Nak — Cambodian Fish Amok','author'=>'Chef Nak',
-            'source_id'=>'chef-nak-amok','method'=>'vapeur douce, crème de coco et œufs',
+            'max_bytes'=>1048576,'source_id'=>'chef-nak-amok','method'=>'vapeur douce, crème de coco et œufs',
             'variant'=>'Poisson et coco en quantités différentes ; cuisson vapeur de 10 + 2 minutes dans des coupes de bananier.'],
         'https://www.cambodiaembassyuk.org/fish-amok-recipe/'=>[
             'title'=>'Eleven One Kitchen — Ambassade du Cambodge','author'=>'Soklim Srun / Eleven One Kitchen',
-            'source_id'=>'embassy-eleven-one-amok','method'=>'variante poêlée ; note sur la variante vapeur avec œuf',
+            'max_bytes'=>524288,'source_id'=>'embassy-eleven-one-amok','method'=>'variante poêlée ; note sur la variante vapeur avec œuf',
             'variant'=>'Poisson, lait de coco et kroeung dosés différemment ; la méthode détaillée est poêlée, la note décrit aussi la vapeur.']
     ];
 }
@@ -963,7 +1161,7 @@ function cmsCoralFinalHttpFetch(string $url): array {
     foreach($ips as $ip)if(!filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4|FILTER_FLAG_NO_PRIV_RANGE|FILTER_FLAG_NO_RES_RANGE))
         throw new RuntimeException('CORAL_FINAL_FETCH_UNAVAILABLE');
     $ch=curl_init($url);if($ch===false)throw new RuntimeException('CORAL_FINAL_FETCH_UNAVAILABLE');
-    $body='';
+    $body='';$maxBytes=cmsCoralFinalSourceCatalog()[$url]['max_bytes'];
     try{
         curl_setopt_array($ch,[CURLOPT_RETURNTRANSFER=>false,CURLOPT_FOLLOWLOCATION=>false,
             CURLOPT_MAXREDIRS=>0,CURLOPT_CONNECTTIMEOUT=>4,CURLOPT_TIMEOUT=>10,
@@ -971,8 +1169,8 @@ function cmsCoralFinalHttpFetch(string $url): array {
             CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS,CURLOPT_REDIR_PROTOCOLS=>CURLPROTO_HTTPS,
             CURLOPT_PROXY=>'',CURLOPT_NOPROXY=>'*',CURLOPT_USERAGENT=>'CuisineDuCambodge-CoralAudit/1.0',
             CURLOPT_RESOLVE=>[$host.':443:'.$ips[0]],
-            CURLOPT_WRITEFUNCTION=>static function($handle,string $chunk)use(&$body):int{
-                if(strlen($body)+strlen($chunk)>524288)return 0;
+            CURLOPT_WRITEFUNCTION=>static function($handle,string $chunk)use(&$body,$maxBytes):int{
+                if(strlen($body)+strlen($chunk)>$maxBytes)return 0;
                 $body.=$chunk;return strlen($chunk);
             }]);
         if(curl_exec($ch)!==true||curl_errno($ch)!==0)
@@ -992,7 +1190,7 @@ function cmsCoralFinalEvidence(mixed $sources,?callable $fetcher=null): array {
         if(!is_array($response)||($response['status']??null)!==200
             ||!preg_match('~^text/html(?:;|$)~i',(string)($response['content_type']??''))
             ||!is_string($response['body']??null)
-            ||strlen($response['body'])<500||strlen($response['body'])>524288)
+            ||strlen($response['body'])<500||strlen($response['body'])>$catalog[$row['url']]['max_bytes'])
             throw new RuntimeException('CORAL_FINAL_FETCH_UNAVAILABLE');
         $raw=$response['body'];
         $clean=preg_replace('~<(?:script|style|template|noscript)\b[^>]*>.*?</(?:script|style|template|noscript)>~is',' ',$raw);

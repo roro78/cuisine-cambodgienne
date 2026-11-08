@@ -1,21 +1,4 @@
-/**
- * Portion selection is scoped to new cooking-workshop pages only.
- * Legacy recipe pages, recipe data, audio files and manifests remain untouched.
- */
-function quantityLabel(value: number, unit: string): string {
-  if (!Number.isFinite(value)) return '';
-  const rounded = Math.round(value * 1000) / 1000;
-  if (unit === 'g' || unit === 'ml') return String(Math.round(rounded));
-  const whole = Math.floor(rounded);
-  const fractions: Array<[number, string]> = [
-    [0.125, '⅛'], [0.25, '¼'], [0.333, '⅓'], [0.5, '½'],
-    [0.667, '⅔'], [0.75, '¾'], [0.875, '⅞']
-  ];
-  const part = rounded - whole;
-  const fraction = fractions.find(([v]) => Math.abs(part - v) < 0.015)?.[1];
-  if (fraction) return whole ? `${whole} ${fraction}` : fraction;
-  return rounded.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
-}
+import {formatQuantity as quantityLabel,scaledQuantity,updatePortionSlots} from '../utils/recipePortions';
 
 export function initCookingWorkshopServings(): void {
   document.querySelectorAll<HTMLElement>('[data-workshop-servings-root]').forEach((root) => {
@@ -44,7 +27,7 @@ export function initCookingWorkshopServings(): void {
     const max = 12;
     let servings = base;
     const render = () => {
-      const factor = servings / base;
+      updatePortionSlots(root.closest('main') ?? root,servings);
       input.value = String(servings);
       summary.textContent = root.dataset.workshopPortionKind === 'pot'
         ? `${servings} petit${servings > 1 ? 's' : ''} pot${servings > 1 ? 's' : ''}`
@@ -61,7 +44,7 @@ export function initCookingWorkshopServings(): void {
       quantities.forEach((quantity) => {
         const source = Number(quantity.dataset.baseQuantity);
         if (!Number.isFinite(source)) return;
-        const adjusted = source * factor;
+        const adjusted = scaledQuantity(source,base,servings,quantity.dataset.scalable !== 'false');
         const unit = quantity.dataset.unit ?? '';
         quantity.textContent = quantityLabel(adjusted, unit);
         const item = quantity.closest<HTMLElement>('[data-workshop-ingredient]');

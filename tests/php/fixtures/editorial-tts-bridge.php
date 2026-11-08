@@ -149,6 +149,30 @@ if($mode==='safety'){
       if($item['code']==='FIXED_SERVINGS')$hasFixedPerson=true;
     if(!$hasFixedPerson)throw new RuntimeException('FIXED_PERSON_NOT_BLOCKED');
     $passed[]='FIXED_PERSON_STILL_BLOCKED';
+    $recipeFields=$guided['recette:'.$record['atelier_reference']['recipeSlug']]['fields'];
+    $automatic=cmsCulinaryAutomaticAudit($record,$recipeFields);
+    if(array_keys($automatic['checks'])!==['portions','ingredients','durations','narrations','safety'])throw new RuntimeException('FIVE_CHECKS_REQUIRED');
+    foreach([1,2,4,8,12] as $n)if(!isset($automatic['portion_matrix'][$n]))throw new RuntimeException('PORTION_MATRIX_MISSING');
+    $unsafe=$record;$unsafe['atelier_scripts']['chapters'][5]['text']='Visez 50 °C au cœur. '.$unsafe['atelier_scripts']['chapters'][5]['text'];
+    $unsafeReport=cmsCoralFinalAudit($unsafe,$catalog,$canonical,$guided);
+    if($unsafeReport['automated_checks_pass']||!in_array('CORE_TEMPERATURE_TOO_LOW',array_column($unsafeReport['blocking'],'code'),true))throw new RuntimeException('UNSAFE_CORE_TEMPERATURE_ALLOWED');
+    $unsafe['atelier_scripts']['chapters'][5]['text']='Visez au moins cinquante degrés Celsius au cœur.';
+    $unsafeReport=cmsCoralFinalAudit($unsafe,$catalog,$canonical,$guided);
+    if($unsafeReport['automated_checks_pass']||!in_array('CORE_TEMPERATURE_TOO_LOW',array_column($unsafeReport['blocking'],'code'),true))throw new RuntimeException('SPELLED_UNSAFE_CORE_TEMPERATURE_ALLOWED');
+    $passed[]='DIGIT_AND_SPELLED_TEMPERATURE_VETO_FINAL_AUDIT';
+    $unknown=$record;$unknown['atelier_phase_details']['phases'][2]['ingredientNames'][]='ingr?dient ?tranger fictif';
+    if(!in_array('UNMATCHED_PHASE_INGREDIENT',array_column(cmsCulinaryAutomaticAudit($unknown,$recipeFields)['findings'],'code'),true))throw new RuntimeException('UNKNOWN_INGREDIENT_ALLOWED');
+    $recipeChange=['kind'=>'recette','fields'=>$recipeFields];$recipeChange['fields']['steps'][0]['text']='Ajoutez 800 ml de liquide.';
+    $changedReport=cmsCulinaryAutomaticAudit($recipeChange,$recipeFields);
+    if(!in_array('bloquant',array_column($changedReport['findings'],'severity'),true))throw new RuntimeException('CHANGED_FIXED_INSTRUCTION_ALLOWED');
+    $fakeSourceRows=$sourceRows;
+    $largeFetcher=static function(string $url)use($fixtureFetch):array{
+      $r=$fixtureFetch($url);if(str_contains($url,'squarespace'))$r['body'].=str_repeat(' ',600000);return $r;
+    };
+    if(count(cmsCoralFinalEvidence($fakeSourceRows,$largeFetcher))!==2)throw new RuntimeException('BOUNDED_LARGE_CHEF_PAGE_REJECTED');
+    $check(static fn()=>cmsCoralFinalEvidence($fakeSourceRows,static fn(string $url):array=>['status'=>200,'content_type'=>'text/html','body'=>str_repeat('x',1048577)]),'CORAL_FINAL_FETCH_UNAVAILABLE');
+    $passed[]='FIVE_UNIVERSAL_CHECKS_AND_BOUNDED_SOURCES';
+
     $posted=json_decode(file_get_contents($root.'/test-posted.json'),true);
     $posted['atelier_scripts']['chapters'][0]['text']='Préparez quatre ramequins. '.$posted['atelier_scripts']['chapters'][0]['text'];
     $v4=cmsCreationSave($private,$posted,$catalog,3,$id);

@@ -1,4 +1,6 @@
 ---
+import PortionText from '../../components/PortionText.astro';
+import {portionBindings,renderPortionText} from '../../utils/recipePortions';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
@@ -93,7 +95,7 @@ const recipeSchema = {
     '@type': 'HowToStep',
     position: index + 1,
     name: step.title,
-    text: step.text
+    text: renderPortionText(recipe,step.text,portionBindings[recipe.slug]?.steps[index]??[],recipe.baseServings)
   })),
   recipeCategory: recipe.category,
   recipeCuisine: 'Cambodgienne',
@@ -247,7 +249,7 @@ const recipeSchema = {
           {equipment.length > 0 && (
             <section class="recipe-equipment">
               <h3>Matériel</h3>
-              <ul>{equipment.map((item) => <li>{item}</li>)}</ul>
+              <ul>{equipment.map((item,index) => <li><PortionText recipe={recipe} text={item} bindings={portionBindings[recipe.slug]?.equipment[index]??[]} /></li>)}</ul>
             </section>
           )}
 
@@ -276,7 +278,7 @@ const recipeSchema = {
                   <h3>{step.title}</h3>
                   {step.duration && <span class="recipe-step-duration">{step.duration}</span>}
                 </div>
-                <p>{step.text}</p>
+                <p><PortionText recipe={recipe} text={step.text} bindings={portionBindings[recipe.slug]?.steps[index]??[]} /></p>
                 {step.cue && <div class="recipe-step-cue"><strong>Le bon repère</strong>{step.cue}</div>}
                 {step.mistake && <div class="recipe-step-mistake"><strong>À éviter</strong>{step.mistake}</div>}
                 <button type="button" class="recipe-step-toggle" data-step-toggle aria-pressed="false">Marquer comme faite</button>
