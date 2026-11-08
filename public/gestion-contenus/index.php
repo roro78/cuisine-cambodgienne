@@ -48,6 +48,9 @@ if(isset($_GET['tts_authority'])){
     }catch(Throwable $e){http_response_code(404);exit('{"error":"TTS_AUTHORITY_UNAVAILABLE"}');}
 }
 session_name('CDC_EDITORIAL_CMS');
+// PHP defaults to a 24-minute session GC on some hosts, below the Studio's
+// 30-minute inactivity policy. Dedicated storage must be verified on OVH.
+ini_set('session.gc_maxlifetime','43200');
 ini_set('session.use_strict_mode','1');
 ini_set('session.use_only_cookies','1');
 session_set_cookie_params([
@@ -56,8 +59,27 @@ session_set_cookie_params([
 ]);
 if(session_start()!==true)cmsUnavailable();
 if(!is_string($_SESSION['csrf']??null))$_SESSION['csrf']=bin2hex(random_bytes(24));
-if(isset($_SESSION['authenticated_at']) && time()-(int)$_SESSION['authenticated_at']>1800)
-    unset($_SESSION['authenticated_at']);
+// Sliding expiration is based on authenticated server activity, not the time
+// the owner first signed in. Retain a separate 12-hour absolute safety bound.
+// Old sessions without last_activity are migrated conservatively at login time.
+$sessionNow=time();
+$sessionIdleSeconds=1800;
+$sessionAbsoluteSeconds=43200;
+$sessionExpiresAt=0;
+if(isset($_SESSION['authenticated_at'])){
+    $signedAt=$_SESSION['authenticated_at'];
+    $lastAt=$_SESSION['auth_last_activity_at']??$signedAt;
+    if(!is_int($signedAt)||!is_int($lastAt)||$signedAt<1||$lastAt<$signedAt
+        ||$signedAt>$sessionNow||$lastAt>$sessionNow
+        ||$sessionNow-$lastAt>=$sessionIdleSeconds
+        ||$sessionNow-$signedAt>=$sessionAbsoluteSeconds){
+        unset($_SESSION['authenticated_at'],$_SESSION['auth_last_activity_at']);
+    }else{
+        $_SESSION['auth_last_activity_at']=$sessionNow;
+        $sessionExpiresAt=min($sessionNow+$sessionIdleSeconds,
+            $signedAt+$sessionAbsoluteSeconds);
+    }
+}
 $auth=isset($_SESSION['authenticated_at']);
 // Same-origin read-only freshness probe. An old tab can contain a CSRF token
 // from a previous PHP session after reauthentication in another tab.
@@ -69,7 +91,8 @@ if(isset($_GET['session_status'])){
         http_response_code(400);exit('{"error":"INVALID_SESSION_PROBE"}');
     }
     if(!$auth){http_response_code(401);exit('{"authenticated":false}');}
-    echo json_encode(['authenticated'=>true,'csrf'=>$_SESSION['csrf']],JSON_THROW_ON_ERROR);
+    echo json_encode(['authenticated'=>true,'csrf'=>$_SESSION['csrf'],
+        'expires_in'=>max(0,$sessionExpiresAt-time())],JSON_THROW_ON_ERROR);
     exit;
 }
 $ttsSettings=cmsCoralTtsSettings($cfg);
@@ -104,6 +127,24 @@ function cmsLoginAttempt(string $dir,string $ip,bool $failed=false): bool {
     } finally{flock($f,LOCK_UN);fclose($f);}
 }
 $method=(string)($_SERVER['REQUEST_METHOD']??'GET');
+// A strict same-path return route is preserved across login without trusting
+// an arbitrary URL or a redirect target supplied by the browser.
+$studioReturnKeys=['new','cid','final_audit','recipe_audit','library',
+    'calendar','publications','kind','status','q','month','calendar_kind',
+    'calendar_status','visa_saved','visa_chapter','culinary_saved','final_saved'];
+$studioReturnFields=[];
+foreach($studioReturnKeys as $studioReturnKey){
+    $studioReturnValue=$_GET[$studioReturnKey]??null;
+    if(is_string($studioReturnValue)&&strlen($studioReturnValue)<=100
+        &&!preg_match('/[\\x00-\\x1f\\x7f]/',$studioReturnValue)){
+        $studioReturnFields[$studioReturnKey]=$studioReturnValue;
+    }
+}
+if(isset($studioReturnFields['cid'])
+    &&cmsCreationId($studioReturnFields['cid'])===null)unset($studioReturnFields['cid']);
+$studioReturnUrl='?'.http_build_query($studioReturnFields,'','&',PHP_QUERY_RFC3986);
+if(isset($studioReturnFields['final_audit']))$studioReturnUrl.='#final-review';
+elseif(isset($studioReturnFields['recipe_audit']))$studioReturnUrl.='#canonical-review';
 // Same session and source gates as the shared Studio; no public audio URL.
 if($method==='GET'&&isset($_GET['tts_file'])){
     if(!$auth){http_response_code(403);exit('Connexion privée requise.');}
@@ -169,7 +210,8 @@ if($method==='POST'){
     }
     if(isset($_POST['logout']) && $auth){
         $_SESSION=[];session_regenerate_id(true);
-        $_SESSION['csrf']=bin2hex(random_bytes(24));$auth=false;
+        $_SESSION['csrf']=bin2hex(random_bytes(24));
+        $sessionExpiresAt=0;$auth=false;
     }elseif(isset($_POST['login']) && !$auth){
         if(!is_writable($private))cmsUnavailable();
         $ip=(string)($_SERVER['REMOTE_ADDR']??'unknown');
@@ -180,7 +222,12 @@ if($method==='POST'){
             && hash_equals($cfg['admin_user'],$_POST['username'])
             && password_verify($_POST['password'],$cfg['password_hash'])){
             session_regenerate_id(true);
-            $_SESSION['authenticated_at']=time();$auth=true;
+            $_SESSION['authenticated_at']=time();
+            $_SESSION['auth_last_activity_at']=$_SESSION['authenticated_at'];
+            $auth=true;
+            // A POST login is redirected back to its exact safe Studio route,
+            // including the previously requested final/culinary panel.
+            header('Location: '.$studioReturnUrl,true,303);exit;
         }else{
             cmsLoginAttempt($private,$ip,true);$error='Identifiants incorrects.';
         }
@@ -1220,11 +1267,19 @@ section,fieldset,.stack,.grid>*{min-width:0}code,pre{overflow-wrap:anywhere;whit
 <h1>Studio éditorial</h1>
 <p class="note">Version de préparation : <strong>les brouillons ne modifient pas le site publié</strong>.
 Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
+<?php if($auth): ?>
+<section id="cms-session-warning" class="notice" role="status" hidden
+ data-session-remaining="<?= max(0,$sessionExpiresAt-time()) ?>">
+<span data-session-message>Votre connexion va expirer après 30 minutes sans activité.</span>
+<button type="button" data-session-continue>Continuer ma session</button>
+<a data-session-login href="<?= cmsEsc($studioReturnUrl) ?>" hidden>Me reconnecter sur cette page</a>
+</section>
+<?php endif; ?>
 <?php if($error!==''): ?><p class="notice" role="alert"><?= cmsEsc($error) ?></p><?php endif; ?>
 <?php if($notice!==''): ?><p class="notice" role="status"><?= cmsEsc($notice) ?></p><?php endif; ?>
 <?php if(!$auth): ?>
 <section><h2>Connexion administrateur</h2>
-<form method="post" class="stack">
+<form method="post" class="stack" action="<?= cmsEsc($studioReturnUrl) ?>">
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <label>Identifiant<input name="username" autocomplete="username" required maxlength="100"></label>
 <label>Mot de passe<input type="password" name="password" autocomplete="current-password" required></label>
@@ -2548,6 +2603,61 @@ document.querySelectorAll('[data-coral-human-visas] form').forEach(form=>{
     }
   });
 });
+// Activity-based renewal only: user clicks, typing and scrolling can refresh
+// a real authenticated server session. No background keepalive while idle.
+const studioSessionWarning=document.querySelector('#cms-session-warning');
+if(studioSessionWarning){
+  const sessionMessage=studioSessionWarning.querySelector('[data-session-message]');
+  const sessionContinue=studioSessionWarning.querySelector('[data-session-continue]');
+  const sessionLogin=studioSessionWarning.querySelector('[data-session-login]');
+  let sessionDeadline=Date.now()+Number(studioSessionWarning.dataset.sessionRemaining||0)*1000;
+  let lastActivityProbe=Date.now();
+  let activityProbePending=false;
+  let sessionEnded=false;
+  const sessionDisplay=()=>{
+    const remaining=Math.ceil((sessionDeadline-Date.now())/1000);
+    if(sessionEnded||remaining<=0){
+      studioSessionWarning.hidden=false;
+      sessionMessage.textContent='Votre session est terminée. Reconnectez-vous pour retrouver cet écran.';
+      sessionContinue.hidden=true;sessionLogin.hidden=false;
+    }else if(remaining<=120){
+      studioSessionWarning.hidden=false;
+      sessionMessage.textContent='Connexion bientôt expirée : '+Math.max(1,Math.ceil(remaining/60))+' min restante(s) sans activité.';
+      sessionContinue.hidden=false;sessionLogin.hidden=true;
+    }else{
+      studioSessionWarning.hidden=true;
+    }
+  };
+  const sessionRefresh=async force=>{
+    if(sessionEnded||activityProbePending||document.hidden)return;
+    if(!force&&Date.now()-lastActivityProbe<240000)return;
+    activityProbePending=true;lastActivityProbe=Date.now();
+    try{
+      const response=await fetch('?session_status=1',{
+        credentials:'same-origin',cache:'no-store',headers:{Accept:'application/json'}
+      });
+      if(response.status===401){sessionEnded=true;return;}
+      if(!response.ok)throw new Error('SESSION_PROBE_FAILED');
+      const result=await response.json();
+      if(result.authenticated!==true||!Number.isInteger(result.expires_in)
+          ||result.expires_in<0||result.expires_in>1800)throw new Error('SESSION_PROBE_INVALID');
+      sessionDeadline=Date.now()+result.expires_in*1000;
+    }catch{
+      studioSessionWarning.hidden=false;
+      sessionMessage.textContent='Session non vérifiée. Reconnectez-vous si nécessaire ; aucune validation n’a été envoyée.';
+      sessionLogin.hidden=false;
+    }finally{
+      activityProbePending=false;sessionDisplay();
+    }
+  };
+  sessionContinue.addEventListener('click',()=>sessionRefresh(true));
+  document.addEventListener('pointerdown',()=>sessionRefresh(false),{passive:true});
+  document.addEventListener('keydown',()=>sessionRefresh(false));
+  document.addEventListener('scroll',()=>sessionRefresh(false),{passive:true,capture:true});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)sessionRefresh(false);});
+  setInterval(sessionDisplay,15000);
+  sessionDisplay();
+}
 document.querySelectorAll('[data-studio-edit]').forEach(form=>{
   form.addEventListener('input',()=>{studioDirty=true;});
   form.addEventListener('change',()=>{studioDirty=true;});
