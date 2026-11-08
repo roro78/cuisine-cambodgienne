@@ -91,7 +91,7 @@ test('seven saved narrations download as plain text; login, CSRF and stale reque
       return page.locator('[data-coral-human-visas] form').first();
     };
     let visa=await openVisa();
-    assert.equal(await visa.locator('button[name=review_action]').inputValue(),'revoke');
+    assert.equal(await visa.locator('button[name=review_action]').getAttribute('value'),'revoke');
     await visa.locator('input[name=csrf]').evaluate(el=>el.value='obsolete-session-csrf');
     await visa.locator('[name=review_confirm]').check();
     await Promise.all([page.waitForNavigation(),visa.locator('button[name=review_action]').click()]);
