@@ -142,7 +142,7 @@ try{
         'SEVEN_DISTINCT_DRAFTS');
     // Export reproduces only the exact SAVED texts and identifies their version.
     $export=cmsAtelierNarrationsExport($v3);
-    scriptCheck($export['filename']==='atelier-'.$v3['slug'].'-7-narrations-v3.txt'
+    scriptCheck($export['filename']==='atelier-'.$v3['atelier_reference']['recipeSlug'].'-7-narrations-v3.txt'
         &&str_contains($export['content'],'Version sauvegardée : v3')
         &&str_contains($export['content'],$v3['atelier_scripts']['chapters'][3]['text'])
         &&substr_count($export['content'],'=== ')===7
