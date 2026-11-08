@@ -79,6 +79,7 @@ try{
   assert.equal(await page.locator('#cms-publications-status').count(),1,'unavailable social route remains inside private Studio');
   assert.equal(await page.locator('.cards, .create-card').count(),0);
   await page.locator('.ux-home a[href="?library=1"]').click();
+  await page.locator('[aria-label="Filtres de la bibliothèque"]').waitFor({state:'visible'});
   assert.equal(new URL(page.url()).searchParams.get('library'),'1');
   assert.equal(await page.locator('[aria-label="Filtres de la bibliothèque"]').count(),1);
   assert.ok(await page.locator('.create-card').count()>0,'existing private projects available in library');
