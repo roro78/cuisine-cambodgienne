@@ -656,7 +656,7 @@ if($auth){
                     is_string($_POST['review_action']??null)?$_POST['review_action']:'',
                     ($_POST['review_confirm']??null)==='1',$auth,$catalog);
                 header('Location: ?new=1&cid='.rawurlencode($creation['id'])
-                    .'&'.$filtersUrl.'&visa_saved=1',true,303);
+                    .'&'.$filtersUrl.'&visa_saved=1&visa_chapter='.rawurlencode((string)$_POST['review_chapter']).'#cms-human-visas',true,303);
                 exit;
             }catch(Throwable $e){
                 $conflict=in_array($e->getMessage(),
@@ -1722,7 +1722,7 @@ echo cmsCoralTtsPanel($private,$creation,$catalog,$canonicalById,$ttsGuides,(str
 </ul>
 <?php endif; ?>
 <?php if($creation['similar_titles']): ?><p class="note">Des sujets proches existent : examinez-les dans les contrôles ci-dessous avant de poursuivre.</p><?php endif; ?>
-<details class="guided-group" data-studio-advanced <?= isset($_GET['final_audit'])?'open':'' ?>><summary>Contrôles avancés — vérifications et validations complètes</summary>
+<details class="guided-group" data-studio-advanced <?= isset($_GET['final_audit'])||isset($_GET['visa_saved'])?'open':'' ?>><summary>Contrôles avancés — vérifications et validations complètes</summary>
 <p class="small muted">Les contrôles concernent la version enregistrée. Enregistrez vos modifications avant de les évaluer.</p>
 <?php if(!$studioSourceCurrent): ?>
 <p class="note" role="alert">Contrôles et visas indisponibles : la source publiée ne correspond plus à ce brouillon.</p>
@@ -1752,7 +1752,7 @@ de publication n’est déduit de ce contrôle.</p>
 <?php $visaStatus=null;
 try{$visaStatus=cmsAtelierVisaStatus($creationDir,$creation,$catalog);}
 catch(Throwable $ignored){$visaStatus=null;} ?>
-<details class="guided-group" data-coral-human-visas>
+<details class="guided-group" id="cms-human-visas" data-coral-human-visas <?= isset($_GET['visa_saved'])?'open':'' ?>>
 <summary>Visa humain des sept textes — privé, sans génération audio</summary>
 <p class="small muted">Validation explicite par chapitre et par version enregistrée.
 Chaque visa est révocable. Toute nouvelle version de la fiche invalide les
@@ -1774,7 +1774,7 @@ foreach(cmsAtelierScriptIds() as $i=>$chapterId):
 $chapter=$creation['atelier_scripts']['chapters'][$i]??null;
 $text=is_array($chapter)&&is_string($chapter['text']??null)?$chapter['text']:'';
 $approved=($visaStatus['by_chapter'][$chapterId]??false)===true; ?>
-<details class="guided-group">
+<details class="guided-group" <?= ($_GET['visa_chapter']??'')===$chapterId?'open':'' ?>>
 <summary><?= cmsEsc($i===0?'Introduction':('Phase '.$i.' · '.$chapterId)) ?>
  — <?= $approved?'texte visé':'visa absent ou périmé' ?></summary>
 <div class="coral-script-text"><?= cmsEsc($text!==''?$text:'Texte non rédigé.') ?></div>
