@@ -32,7 +32,6 @@ function cmsAtelierNarrationsExport(array $record): array {
     $lines=[
         'CUISINE DU CAMBODGE — NARRATIONS DE L’ATELIER',
         'Atelier : '.$title,
-        'Brouillon privé : '.$id,
         'Version sauvegardée : v'.$version,
         'Statut : copie destinée à la relecture, sans approbation ni autorisation MP3.',
         'Les textes ci-dessous reproduisent la version enregistrée dans le Studio.',
@@ -58,8 +57,12 @@ function cmsAtelierNarrationsExport(array $record): array {
     foreach ($fingerprints as $fingerprint)$lines[]=$fingerprint;
     $lines[]='';
     $body=implode("\n",$lines);
+    $recipeSlug=$record['atelier_reference']['recipeSlug']??null;
+    $filenameSlug=is_string($recipeSlug)
+        &&preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/D',$recipeSlug)
+        ?$recipeSlug:$slug;
     return [
-        'filename'=>'atelier-'.$slug.'-7-narrations-v'.$version.'.txt',
+        'filename'=>'atelier-'.$filenameSlug.'-7-narrations-v'.$version.'.txt',
         'content'=>$body
     ];
 }

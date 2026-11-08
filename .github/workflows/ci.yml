@@ -330,7 +330,9 @@ jobs:
         env:
           STUDIO_TEST_VISUALS: "1"
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
-        run: node tests/editorial-studio-browser.test.mjs
+        run: |
+          node tests/editorial-studio-browser.test.mjs
+          node --test tests/editorial-narrations-export.test.mjs
 
       - name: Private asynchronous text progress and explicit save (synthetic)
         env:

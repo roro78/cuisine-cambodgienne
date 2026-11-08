@@ -858,7 +858,7 @@ function cmsCoralFinalAudit(array $record,array $catalog,array $canonical,array 
             // An indefinite singular container ("au centre d'un ramequin")
             // identifies a sample, not a fixed yield or number of servings.
             'FIXED_SERVINGS'=>'~(?<![\p{L}\p{N}])(?:(?:\d+|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze)\s+(?:petits?\s+|grands?\s+)?(?:ramequins?|assiettes?|portions?|convives?|personnes?|bols?)|(?:un|une)\s+(?:convives?|personnes?))\b~iu',
-            'FIXED_INGREDIENT_QUANTITY'=>'~(?<![\p{L}\p{N}])(?:\d+(?:[,.]\d+)?|une?|deux|trois|quatre|cinq|six|sept|huit|neuf|dix)\s*(?:g|kg|ml|cl|grammes?|millilitres?|centilitres?|litres?|cuillerées?|cuillères?\s+à\s+(?:soupe|café)|œufs?|oeufs?)\b~iu'
+            'FIXED_INGREDIENT_QUANTITY'=>'~(?<![\p{L}\p{N}])(?:(?:\d+(?:[,.]\d+|/\d+)?|[¼½¾]|une?|deux|trois|quatre|cinq|six|sept|huit|neuf|dix)\s*(?:g|kg|ml|cl|l|grammes?|millilitres?|centilitres?|litres?|cuillerées?|cuillères?\s+à\s+(?:soupe|café)|c\.\s*à\s*(?:soupe|café)|œufs?|oeufs?)\b|la\s+cuillerée\s+(?:prévue|réservée))~iu'
         ];
         foreach($patterns as $code=>$regex){
             if(preg_match($regex,$text,$hit,PREG_OFFSET_CAPTURE)===1){

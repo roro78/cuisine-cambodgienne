@@ -126,6 +126,12 @@ if($method==='GET'&&$auth&&isset($_GET['visual_file'])){
 }
 
 if($method==='POST'){
+    // A download request must never fall through to the HTML login/editor.
+    // In particular, an expired login can still have a valid session CSRF.
+    if(isset($_POST['export_narrations'])){
+        header('Content-Type: text/plain; charset=UTF-8');
+        if(!$auth){http_response_code(403);exit('Connexion privée requise. Rechargez le Studio et reconnectez-vous.');}
+    }
     // Export is intentionally READ ONLY: accept no other form action or fields.
     if(isset($_POST['export_narrations']) &&
         (count($_POST)!==4 || array_diff(array_keys($_POST),
@@ -332,8 +338,8 @@ if($auth){
                 exit;
             }catch(Throwable $e){
                 http_response_code(409);
-                $error='Export des narrations refusé : version modifiée, textes incomplets ou session expirée. '
-                    .'Actualisez la fiche puis réessayez. Aucun texte ni MP3 modifié.';
+                exit('Export des narrations refusé : version modifiée, textes incomplets ou session expirée. '
+                    .'Actualisez la fiche puis réessayez. Aucun texte ni MP3 modifié.');
             }
         }
         if($method==='POST'&&isset($_POST['tts_action'])){
