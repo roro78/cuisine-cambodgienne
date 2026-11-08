@@ -194,7 +194,7 @@ try{
     await context.request.get(linkedUrl);
     const intentSnapshot=async()=>{
       const names=await readdir(path.join(root,'.cuisine-asset-portal','cms-editorial-session-files'));
-      const values=await Promise.all(names.map(name=>readFile(path.join(root,'sessions',name),'utf8')));
+      const values=await Promise.all(names.map(name=>readFile(path.join(root,'.cuisine-asset-portal','cms-editorial-session-files',name),'utf8')));
       return values.filter(raw=>raw.includes('authenticated_at|')).map(raw=>raw.match(/ai_content_intent\|s:48:"([0-9a-f]+)"/)?.[1]).filter(Boolean).sort();
     };
     const intentsBefore=await intentSnapshot();assert.ok(intentsBefore.length>0);
