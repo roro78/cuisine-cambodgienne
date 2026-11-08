@@ -28,7 +28,16 @@ test('public guided fields match full canonical source versions without leaking 
    assert.ok(original,'unknown page '+item.id);
    assert.equal(item.fingerprint,original.fingerprint,'full-record digest mismatch for '+item.id);
    assert.equal(item.model,original.model);
-   assert.deepEqual(Object.keys(item).sort(),['editable','fields','fingerprint','id','model']);
+   assert.deepEqual(Object.keys(item).sort(),['editable','fields','fingerprint','id','model',...(item.portionContract?['portionContract']:[])]);
+   if(item.portionContract){
+    assert.equal(item.model,'recipes');
+    assert.equal(item.portionContract.sourceFingerprint,item.fingerprint);
+    assert.equal(item.portionContract.version,1);
+    for(const binding of item.portionContract.steps){
+      assert.equal(binding.sourceText,item.fields.steps[binding.index].text);
+      for(const anchor of binding.anchors)assert.equal(binding.sourceText.split(anchor).length-1,1);
+    }
+   }
    assert.ok(['recette','atelier','culture','ingredient','technique'].includes(item.id.split(':')[0]));
    assert.equal(item.editable,true);
    if(item.model==='cookingWorkshopGuides'){

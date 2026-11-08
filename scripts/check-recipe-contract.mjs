@@ -51,7 +51,7 @@ if (!detail.includes('Le bon repère') || !detail.includes('À éviter')) failur
 if (!detail.includes('getGlossaryEntries(recipe.glossarySlugs ?? recipe.relatedIngredients ?? [])')) failures.push('Recipe detail must use per-recipe glossary metadata without restrictive whitelists');
 
 if (!servings.includes('currentEls.forEach')) failures.push('All visible serving counters must update together');
-if (!servings.includes('original * factor')) failures.push('Ingredient quantities must scale from base servings');
+if (!servings.includes('scaledQuantity(original,base,current,scalable)')) failures.push('Ingredient quantities must use the shared canonical portions calculation');
 if (!servings.includes("data.scalable !== 'false'") && !servings.includes("dataset.scalable !== 'false'")) failures.push('Non-scalable ingredients must stay fixed');
 
 const sharedHeroUsed = listing.includes('<EditorialSectionHero');

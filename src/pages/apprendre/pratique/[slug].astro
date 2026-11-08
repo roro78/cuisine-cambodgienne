@@ -138,7 +138,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
             <label for="fca-servings-input">{presentation.portionKind==='pot'?'Nombre de petits pots (1 à 12)':'Nombre de personnes (1 à 12)'}</label>
             <input id="fca-servings-input" data-workshop-servings-input type="number" inputmode="numeric" min="1" max="12" step="1" value={recipe.baseServings} />
           </div>
-          <p>Seules les quantités de la liste changent. Les gestes et les repères de cuisson restent les mêmes, mais le nombre de fournées et le temps de cuisson peuvent évoluer.</p>
+          <p>Les quantités respectent les règles de la recette source, y compris les ingrédients non proportionnels. Les gestes et les repères de cuisson restent les mêmes, mais le nombre de fournées et le temps de cuisson peuvent évoluer.</p>
         </div>
       )}
       <div class="fca-kit">
@@ -150,7 +150,7 @@ const audioTexts = [guide.audio.intro,...guide.phases.map((phase)=>phase.audioSc
                 <label>
                   <input type="checkbox" aria-label={'Ingrédient préparé : ' + ingredient.name} />
                   <span>
-                    {ingredient.quantity !== undefined && <span data-workshop-ingredient-quantity="" data-base-quantity={ingredient.quantity} data-unit={ingredient.unit ?? ''}>{ingredient.quantity}</span>}
+                    {ingredient.quantity !== undefined && <span data-workshop-ingredient-quantity="" data-base-quantity={ingredient.quantity} data-unit={ingredient.unit ?? ''} data-scalable={ingredient.scalable===false?'false':'true'}>{ingredient.quantity}</span>}
                     {ingredient.unit && <span> {ingredient.unit}</span>}
                     {ingredient.quantity !== undefined && ' '}
                     <span data-workshop-ingredient-name="" data-singular-name={ingredientNames(ingredient).singular} data-plural-name={ingredientNames(ingredient).plural}>{ingredient.name}</span>

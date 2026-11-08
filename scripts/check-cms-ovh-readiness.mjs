@@ -52,7 +52,7 @@ export function verifyCmsIndexes(feeds) {
   if(canonicalById.size!==socialIds.size)fail('CANONICAL_MISSING_ID');
   const guidedIds=new Set;
   for(const item of guided.items){
-    requireKeys(item,['id','model','fingerprint','editable','fields']);
+    requireKeys(item,['id','model','fingerprint','editable','fields','portionContract'],['id','model','fingerprint','editable','fields']);
     const base=canonicalById.get(item.id);
     if(!base || guidedIds.has(item.id) || item.model!==base.model
        || item.fingerprint!==base.fingerprint || typeof item.editable!=='boolean'
@@ -87,6 +87,22 @@ export function verifyCmsIndexes(feeds) {
       cookingWorkshopGuides:['finalPreparation','learningGoal','phases']
     };
     requireKeys(item.fields,allowed[item.model],required[item.model]);
+    if(item.portionContract!==undefined){
+      const pc=item.portionContract;
+      requireKeys(pc,['version','sourceFingerprint','steps']);
+      if(item.model!=='recipes'||pc.version!==1||pc.sourceFingerprint!==item.fingerprint
+        ||!Array.isArray(pc.steps)||pc.steps.length>40)fail('GUIDED_PORTION_CONTRACT');
+      const seen=new Set;
+      for(const binding of pc.steps){
+        requireKeys(binding,['index','sourceText','anchors']);
+        if(!Number.isInteger(binding.index)||seen.has(binding.index)
+          ||binding.sourceText!==item.fields.steps[binding.index]?.text
+          ||!Array.isArray(binding.anchors)||binding.anchors.length>8)fail('GUIDED_PORTION_CONTRACT');
+        seen.add(binding.index);
+        for(const anchor of binding.anchors)if(typeof anchor!=='string'||!anchor.length||anchor.length>200
+          ||binding.sourceText.split(anchor).length!==2)fail('GUIDED_PORTION_CONTRACT');
+      }
+    }
     const fields=JSON.stringify(item.fields);
     for(const key of sensitiveKeys)if(fields.includes('"'+key+'":'))fail('GUIDED_PRIVATE_FIELDS');
   }

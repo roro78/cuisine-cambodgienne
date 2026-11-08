@@ -1,0 +1,9 @@
+---
+import {portionSegments} from '../utils/recipePortions';
+import type {PortionBinding} from '../utils/recipePortions';
+import type {Recipe} from '../data/recipes';
+interface Props {recipe:Recipe;text:string;bindings?:PortionBinding[]}
+const {recipe,text,bindings=[]}=Astro.props;
+const parts=portionSegments(recipe,text,bindings);
+---
+{parts.map(p=>p.slot?<span data-portion-slot data-portion-amount={p.slot.amount} data-portion-base={recipe.baseServings} data-portion-unit={p.slot.unit} data-portion-scalable={String(p.slot.scalable)} data-portion-approximate={String(p.slot.approximate)} data-portion-prefix={p.slot.binding.prefix} data-portion-suffix={p.slot.binding.suffix}>{p.text}</span>:p.text)}

@@ -60,6 +60,18 @@ Une **cuisinière francophone, voix féminine Coral**, qui parle comme une créa
 
 Les nombres associés à une **technique réellement invariante** restent autorisés à la voix (par exemple des cubes d'environ 2–3 cm, une température de cuisson sourcée ou un repos de durée justifiée et indépendante de la quantité). Il faut toujours distinguer ces repères des valeurs qui varient avec les portions.
 
+## 4 bis. Contrôle permanent de la chaîne éditoriale
+
+Source de vérité : ingrédients, rendement, unités et `scalable` de la recette canonique. Le module typé `src/utils/recipePortions.ts` est le calcul partagé par recette et atelier. Les liaisons de textes sont déclarées explicitement par emplacement et ancre exacte ; une ancre déplacée ou ambiguë échoue. Aucun remplacement global de nombres. Réserve : fraction prélevée sur le total, jamais quantité ajoutée ; une présentation arrondie est signalée comme approximative. Les données non proportionnelles sont conservées jusqu’à décision culinaire explicite.
+
+Cinq contrôles partagés dans le Studio : portions (matrice 1/2/4/8/12), ingrédients des phases, durées (recette versus estimations et chevauchements non prouvés), sept narrations universelles, sécurité (allergènes et consignes vérifiables). Recalcul lors du rendu des préparations/modifications et dans le veto serveur du contrôle final avant TTS. Les changements critiques empêchent le visa final et l’autorisation audio ; le brouillon reste sauvegardable sans visa. Les avertissements ne deviennent jamais une validation culinaire.
+
+Le rapport expose catégorie, emplacement, passage, règle, proposition et niveau conforme/avertissement/bloquant dans le Studio commun. Les instructions chiffrées historiques sans liaison sont signalées ; une instruction chiffrée modifiée en recette exige une liaison et ses tests. Un nom d’ingrédient non retrouvé peut être un synonyme : signaler, ne pas remplacer arbitrairement. Les contrôles ne certifient ni goût, authenticité, exhaustivité sémantique, ni température réellement atteinte.
+
+Durées : ne pas affirmer qu’une finition est ajoutée ou incluse dans le temps canonique sans preuve. Une somme des estimations de phases n’est pas un chronométrage. Afficher séparément durée canonique et estimation pédagogique ; l’audio a sa propre durée mesurée. Kroeung, riz, pauses et fournées doivent être explicitement situés.
+
+Tests : calcul et liaisons pour plusieurs recettes/rendements, changements successifs, non-proportionnalité, base sans JavaScript, navigateur mobile/ordinateur, contrôles PHP et veto TTS. Les futurs contenus réutilisent ces composants, pas une filière parallèle.
+
 ## 5. Sept chapitres, six étapes invariantes
 
 L'enregistrement comprend exactement **intro + installer + preparer + assembler + maitriser + rectifier + terminer**. Ces identifiants sont immuables, mais les titres entendus et le contenu changent selon le plat, la technique et l'ordre réel des opérations. Les phases ne sont **pas des cases à remplir artificiellement** : chaque phase correspond à un travail culinaire réel, réalisable et vérifiable.

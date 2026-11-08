@@ -1,3 +1,4 @@
+import {portionContract} from '../utils/recipePortions';
 import type { APIRoute } from 'astro';
 import { recipes } from '../data/recipes';
 import { cultureArticles } from '../data/culture';
@@ -14,6 +15,7 @@ import { editorialRecordFingerprint } from './editorial-source-index.json';
  * media metadata or backend configuration here.
  */
 interface GuidedItem {
+  portionContract?: ReturnType<typeof portionContract>;
   id: string;
   model: 'recipes' | 'restoredRecipes' | 'workshops' | 'cookingWorkshopGuides' | 'culture' | 'ingredients' | 'recipeTechniques';
   fingerprint: string;
@@ -64,6 +66,7 @@ export function getGuidedEditorialFields(): GuidedItem[] {
     id: 'recette:' + recipe.slug,
     model: 'recipes',
     fingerprint: editorialRecordFingerprint('recipes', recipe),
+    portionContract:portionContract(recipe,editorialRecordFingerprint('recipes',recipe)),
     editable: true,
     fields: {
       intro: recipe.intro, description: recipe.description, context: recipe.context,

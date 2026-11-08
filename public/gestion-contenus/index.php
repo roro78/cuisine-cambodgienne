@@ -1690,6 +1690,7 @@ echo cmsCoralTtsPanel($private,$creation,$catalog,$canonicalById,$ttsGuides,(str
 <?= cmsGuidedPreviewHtml('fiche',$creation['fields']) ?>
 </section><section id="cms-quality" class="studio-quality">
 <h2>Ce qu’il reste à faire</h2>
+<?php if($createKind==='recette')echo cmsCulinaryAutomaticHtml(cmsCulinaryAutomaticAudit(['kind'=>'recette','fields'=>$createForm['fields']??[]])); ?>
 <p>Relisez le contenu et enregistrez vos changements. Retrouvez ensuite cette version dans la bibliothèque.</p>
 <?php if($creation['kind']==='atelier'): ?>
 <p>Le guide audio est facultatif. Ces préparatifs audio ne bloquent pas l’enregistrement d’un brouillon sans narration.</p>
@@ -1900,7 +1901,7 @@ restent désactivés.</p>
 <?php endif; ?>
 </details>
 <?php $finalStatus=null;$finalUnavailable=false;$finalSourcesPreview=[];$finalSourceError=false;
-if(isset($_GET['final_audit'])){
+if($creation!==null){
     try{
         if($canonicalById===[])throw new RuntimeException('FINAL_SOURCE_UNAVAILABLE');
         $feed=cmsGetGuidedFields();
@@ -1908,7 +1909,7 @@ if(isset($_GET['final_audit'])){
         $finalGuides=cmsGuidedSourceList($feed,$canonicalById);
         cmsAssertGuidedCoverage($finalGuides,$canonicalById);
         $finalStatus=cmsCoralFinalStatus($private,$creation,$catalog,$canonicalById,$finalGuides);
-        if(!$finalStatus['approved']){
+        if(isset($_GET['final_audit'])&&!$finalStatus['approved']){
             $sourceCatalog=cmsCoralFinalSourceCatalog();$previewInput=[];
             foreach($sourceCatalog as $url=>$item)$previewInput[]=[
                 'title'=>$item['title'],'url'=>$url,
@@ -1932,6 +1933,7 @@ Aucune correction automatique de recette et aucun MP3 ne sont déclenchés.</p>
 <p role="alert">Contrôle indisponible : génération audio bloquée.</p>
 <?php elseif($finalStatus!==null): ?>
 <?php $finalReport=$finalStatus['report'];$finalApproved=$finalStatus['approved']; ?>
+<?= cmsCulinaryAutomaticHtml($finalReport['automatic_details']) ?>
 <p>Résultat : <strong><?= $finalApproved?'Visa final actif':($finalReport['automated_checks_pass']?'Contrôle technique sans blocage ; validation humaine nécessaire':'Incohérences bloquantes à corriger') ?></strong>.
 Revue enregistrée : <?= (int)$finalStatus['review_event_count'] ?> décision(s).</p>
 <?php if($finalReport['blocking']!==[]): ?>
@@ -2406,6 +2408,7 @@ Télécharger la demande de modification (JSON)</button>
 </div>
 <section id="cms-quality" class="studio-quality">
 <h2>Ce qu’il reste à faire — <?= cmsEsc($kindLabels[$selected['kind']]) ?></h2>
+<?php if($selected['kind']==='recette')echo cmsCulinaryAutomaticHtml(cmsCulinaryAutomaticAudit(['kind'=>'recette','fields'=>$guidedValues],$guidedSelected['fields']??[],$guidedSelected['portionContract']??null)); ?>
 <?php if($selected['kind']==='atelier'): ?>
 <?php if($studioLinked!==null): ?>
 <p class="note">Les modifications et le guide audio facultatif sont réunis dans le brouillon lié. Cet écran conserve les versions antérieures en lecture seule.</p>
