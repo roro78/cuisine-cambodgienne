@@ -73,6 +73,9 @@ try{
   }
   await page.setViewportSize({width:390,height:844});
   await page.locator('.ux-home a[href="?publications=1"]').click();
+  // The Studio navigates to a new PHP document; wait for its visible section,
+  // rather than inspecting the outgoing page during the navigation.
+  await page.locator('#cms-publications-status').waitFor({state:'visible'});
   assert.equal(await page.locator('#cms-publications-status').count(),1,'unavailable social route remains inside private Studio');
   assert.equal(await page.locator('.cards, .create-card').count(),0);
   await page.locator('.ux-home a[href="?library=1"]').click();
