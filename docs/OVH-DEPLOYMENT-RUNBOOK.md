@@ -76,7 +76,7 @@ Le Studio utilise une adaptation des seuls acces aux fichiers de session
 lorsque cette directive OVH est active, via les interfaces standard PHP.
 Les identifiants stricts, cookies, CSRF, regeneration et expirations restent
 pris en charge par PHP et le controleur commun. Fichiers prives 0600 dans un
-repertoire 0700 hors webroot, verrouillage exclusif et GC sans suppression de
+repertoire 0700 hors webroot, exclusion par mkdir atomique et GC sans suppression de
 sessions verrouillees ; aucune migration des sessions ou des brouillons.
 Ne pas desactiver une directive systeme ni reintroduire `.user.ini` pour cela.
 
@@ -86,3 +86,10 @@ vers `?session_storage_probe=1` doivent repondre HTTP 200, successivement
 `{"storage_ready":true,"cookie_persisted":true}`. Sinon rollback immediat.
 Aucun SID/cookie/CSRF ne doit figurer dans les preuves. Cette sonde anonyme
 ne vaut jamais reception administrateur ou Android, ni visa humain.
+
+Le diagnostic OVH entre deux processus a egalement montre `flock()` retourne
+positif aux deux demandes exclusives. L'adaptateur utilise donc un repertoire
+`.lock_` par session cree atomiquement, relache a la fermeture PHP. L'attente
+est bornee a 10 secondes et echoue fermee sans voler un verrou. Un arret brutal
+sans shutdown peut laisser un verrou orphelin : ne jamais supprimer tous les
+verrous ni modifier des sessions administrateur par script de diagnostic.

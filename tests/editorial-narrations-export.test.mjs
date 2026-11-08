@@ -191,13 +191,15 @@ test('private session files reject unknown IDs and links, lock GC, renew timesta
     check(!$h->validateId(str_repeat('a',32)),'unknown ID');
     check($h->read('../bad')===false,'path traversal');
     $id=str_repeat('b',32);check($h->read($id)==='','new file');
-    check($h->write($id,'fixture|s:4:"test";'),'write');
+    $contender=new CmsPrivateSessionFiles($dir);
+    check($contender->read($id)===false,'concurrent read times out without stealing lock');
+    check($h->write($id,'fixture|s:4:"test";'),'write after contention');
     check(!$h->write($id,str_repeat('x',65537)),'oversize rejected');
     check($h->close(),'close');check($h->validateId($id),'known ID');
     check($h->read($id)==='fixture|s:4:"test";','read back');
     touch($dir.'/sess_'.$id,time()-50000);
     $gc=new CmsPrivateSessionFiles($dir);
-    check($gc->gc(43200)===0,'GC skips locked session');
+    check($h->gc(43200)===0,'GC skips its own locked session');
     check($h->updateTimestamp($id,''),'timestamp renewed');
     check($h->close(),'release');clearstatcache();
     check(filemtime($dir.'/sess_'.$id)>time()-10,'fresh timestamp');

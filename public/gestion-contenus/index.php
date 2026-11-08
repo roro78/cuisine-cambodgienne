@@ -56,6 +56,7 @@ if(isset($_GET['tts_authority'])){
 final class CmsPrivateSessionFiles implements SessionHandlerInterface, SessionUpdateTimestampHandlerInterface {
     private mixed $stream=null;
     private string $lockedId='';
+    private string $mutex='';
     public function __construct(private readonly string $directory) {}
     private function path(string $id): string|false {
         return preg_match('/\A[a-zA-Z0-9,-]{22,256}\z/D',$id)===1
@@ -79,9 +80,25 @@ final class CmsPrivateSessionFiles implements SessionHandlerInterface, SessionUp
             &&(PHP_OS_FAMILY==='Windows'||(fileperms($path)&0077)===0);
     }
     public function close(): bool {
-        if(!is_resource($this->stream))return true;
-        $ok=flock($this->stream,LOCK_UN);$ok=fclose($this->stream)&&$ok;
-        $this->stream=null;$this->lockedId='';return $ok;
+        $ok=true;
+        if(is_resource($this->stream)){
+            $ok=flock($this->stream,LOCK_UN);$ok=fclose($this->stream)&&$ok;
+        }
+        $this->stream=null;$this->lockedId='';
+        if($this->mutex!==''){$ok=@rmdir($this->mutex)&&$ok;$this->mutex='';}
+        return $ok;
+    }
+    public function __destruct() {$this->close();}
+    private function acquire(string $id): bool {
+        // flock() can report success to simultaneous OVH processes. mkdir is
+        // atomic on the shared filesystem. Timeout fails closed, never steals
+        // another request's lock. PHP close/shutdown releases our own lock.
+        $lock=$this->directory.'/.lock_'.$id;$deadline=microtime(true)+10;
+        do{
+            if(@mkdir($lock,0700)){$this->mutex=$lock;return true;}
+            usleep(100000);
+        }while(microtime(true)<$deadline);
+        return false;
     }
     public function validateId(string $id): bool {
         $path=$this->path($id);return $path!==false&&$this->safeStat($path)!==false;
@@ -89,16 +106,16 @@ final class CmsPrivateSessionFiles implements SessionHandlerInterface, SessionUp
     public function read(string $id): string|false {
         $path=$this->path($id);if($path===false)return false;
         if(!is_resource($this->stream)||$this->lockedId!==$id){
-            if(!$this->close())return false;
+            if(!$this->close()||!$this->acquire($id))return false;
             // The directory is private (0700); reject links and unsafe existing
             // files before opening, then compare the locked inode once opened.
             clearstatcache(true,$path);
-            if(@lstat($path)!==false&&$this->safeStat($path)===false)return false;
+            if(@lstat($path)!==false&&$this->safeStat($path)===false){$this->close();return false;}
             $mask=umask(0077);
             try{$stream=@fopen($path,'c+b');}finally{umask($mask);}
-            if($stream===false)return false;
+            if($stream===false){$this->close();return false;}
             if(!flock($stream,LOCK_EX)||!$this->sameFile($path,$stream)){
-                fclose($stream);return false;
+                fclose($stream);$this->close();return false;
             }
             $this->stream=$stream;$this->lockedId=$id;
         }
@@ -136,14 +153,21 @@ final class CmsPrivateSessionFiles implements SessionHandlerInterface, SessionUp
         $files=glob($this->directory.'/sess_*');if($files===false)return false;
         $deleted=0;
         foreach($files as $path){
+            // Some network filesystems treat locks as process-owned. Never
+            // collect this handler's active file, even in that case.
+            if($this->lockedId!==''&&$path===$this->path($this->lockedId))continue;
             $st=$this->safeStat($path);
             if($st===false||$st['mtime']>=time()-$max_lifetime)continue;
-            $stream=@fopen($path,'r+b');if($stream===false)continue;
+            $id=substr(basename($path),5);if($this->path($id)===false)continue;
+            $lock=$this->directory.'/.lock_'.$id;
+            if(!@mkdir($lock,0700))continue;
+            $stream=null;
             try{
+                $stream=@fopen($path,'r+b');if($stream===false)continue;
                 if(!flock($stream,LOCK_EX|LOCK_NB)||!$this->sameFile($path,$stream))continue;
                 $st=fstat($stream);
                 if(is_array($st)&&$st['mtime']<time()-$max_lifetime&&unlink($path))$deleted++;
-            }finally{fclose($stream);}
+            }finally{if(is_resource($stream))fclose($stream);@rmdir($lock);}
         }
         return $deleted;
     }
