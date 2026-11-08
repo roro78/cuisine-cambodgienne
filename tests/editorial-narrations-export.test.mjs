@@ -114,7 +114,44 @@ test('seven saved narrations download as plain text; login, CSRF and stale reque
     await page.waitForFunction(()=>document.querySelector('[data-visa-session-status]')?.textContent?.includes('Connexion non confirmée'));
     assert.equal(visaPosts,0,'do not POST a visa after session cookie loss');
     page.off('request',countVisa);
-    results.push({width,realBrowserClick:true,syntheticLocalLogin:true,filename,bytes:bytes.length,sevenExactTexts:true,html:false,visaStaleCsrfRecovered:true,missingCookieFailsClosed:true});
+    // The owner must return to the exact final audit after login, without a
+    // new human approval. Purely synthetic fixture session, no OVH account.
+    const auditUrl=url+'&final_audit=1#final-review';
+    await page.goto(auditUrl);
+    assert.equal(await page.locator('h2').first().innerText(),'Connexion administrateur');
+    await page.locator('[name=username]').fill('fixture-admin');
+    await page.locator('[name=password]').fill('synthetic-login-only');
+    await Promise.all([page.waitForNavigation(),page.locator('button[name=login]').click()]);
+    assert.equal(new URL(page.url()).searchParams.get('final_audit'),'1');
+    assert.equal(new URL(page.url()).hash,'#final-review');
+    assert.equal(await page.locator('[data-coral-final-audit]').getAttribute('open'),'');
+    assert.equal(await page.locator('[data-studio-advanced]').getAttribute('open'),'');
+    const sessionCookie=(await ctx.cookies()).find(c=>c.name==='CDC_EDITORIAL_CMS');
+    assert.ok(sessionCookie?.value,'fixture session cookie');
+    // Set times on the private local PHP fixture, not through a public endpoint.
+    const age=(signedSeconds,activitySeconds)=>{
+      const change='session_save_path($argv[1]);session_name("CDC_EDITORIAL_CMS");'
+        +'session_id($argv[2]);session_start();'
+        +'$_SESSION["authenticated_at"]=time()-(int)$argv[3];'
+        +'$_SESSION["auth_last_activity_at"]=time()-(int)$argv[4];'
+        +'session_write_close();';
+      execFileSync(php,['-r',change,join(root,'sessions'),sessionCookie.value,
+        String(signedSeconds),String(activitySeconds)],{windowsHide:true});
+    };
+    age(3600,1795);
+    const stillActive=await ctx.request.get(base+'?session_status=1');
+    assert.equal(stillActive.status(),200,'active session survives 1 hour since login');
+    const refreshed=await stillActive.json();
+    assert.equal(refreshed.authenticated,true);
+    assert.ok(refreshed.expires_in>=1700&&refreshed.expires_in<=1800);
+    age(3600,1801);
+    const inactive=await ctx.request.get(base+'?session_status=1');
+    assert.equal(inactive.status(),401,'session expires after 30 minutes without activity');
+    age(43201,2);
+    const absolute=await ctx.request.get(base+'?session_status=1');
+    assert.equal(absolute.status(),401,'12-hour absolute boundary still applies');
+    results.push({width,realBrowserClick:true,syntheticLocalLogin:true,filename,bytes:bytes.length,sevenExactTexts:true,html:false,visaStaleCsrfRecovered:true,missingCookieFailsClosed:true,idleSessionExpires:true,activeSessionSlides:true,auditRestoredAfterLogin:true});
+
     await ctx.close();
   }
   if(process.env.EXPORT_EVIDENCE_DIR){
