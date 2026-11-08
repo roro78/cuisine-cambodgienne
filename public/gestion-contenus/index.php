@@ -54,11 +54,24 @@ session_set_cookie_params([
     'lifetime'=>0,'path'=>'/gestion-contenus/',
     'secure'=>true,'httponly'=>true,'samesite'=>'Strict'
 ]);
-session_start();
+if(session_start()!==true)cmsUnavailable();
 if(!is_string($_SESSION['csrf']??null))$_SESSION['csrf']=bin2hex(random_bytes(24));
 if(isset($_SESSION['authenticated_at']) && time()-(int)$_SESSION['authenticated_at']>1800)
     unset($_SESSION['authenticated_at']);
 $auth=isset($_SESSION['authenticated_at']);
+// Same-origin read-only freshness probe. An old tab can contain a CSRF token
+// from a previous PHP session after reauthentication in another tab.
+// The actual POST remains CSRF-protected and never grants a visa automatically.
+if(isset($_GET['session_status'])){
+    header('Content-Type: application/json; charset=UTF-8');
+    header('Vary: Cookie');
+    if(count($_GET)!==1 || $_GET['session_status']!=='1'){
+        http_response_code(400);exit('{"error":"INVALID_SESSION_PROBE"}');
+    }
+    if(!$auth){http_response_code(401);exit('{"authenticated":false}');}
+    echo json_encode(['authenticated'=>true,'csrf'=>$_SESSION['csrf']],JSON_THROW_ON_ERROR);
+    exit;
+}
 $ttsSettings=cmsCoralTtsSettings($cfg);
 // Opening a public PHP directory is not proof of private acceptance.
 $publicationsReady=($cfg['social_dashboard_received']??false)===true;
@@ -145,7 +158,14 @@ if($method==='POST'){
     if(isset($_POST['visual_action']) && count(array_intersect(['visual_action','create_save','ai_brief_generate','ai_content_generate','ai_content_discard','review_action','culinary_action','final_review_action','correction_action','save','studio_transition','export_review','login','logout'],array_keys($_POST)))!==1){http_response_code(422);exit('Action invalide.');}
     if(!is_string($_POST['csrf']??null)
         || !hash_equals((string)$_SESSION['csrf'],$_POST['csrf'])){
-        http_response_code(403);exit('Session expirée. Rechargez.');
+        // Only booleans in logs: NEVER session IDs, CSRF values or form content.
+        if(isset($_POST['review_action'])){
+            error_log('CDC_STUDIO_VISA_CSRF_REJECT '.json_encode([
+                'authenticated'=>$auth,'session_cookie_present'=>isset($_COOKIE[session_name()]),
+                'csrf_field_present'=>isset($_POST['csrf'])
+            ],JSON_THROW_ON_ERROR));
+        }
+        http_response_code(403);exit('Session non synchronisée. Rechargez et reconnectez-vous avant de réessayer.');
     }
     if(isset($_POST['logout']) && $auth){
         $_SESSION=[];session_regenerate_id(true);
@@ -2483,6 +2503,51 @@ document.addEventListener('input',event=>{
   event.target.closest('[data-create-row]').querySelector('summary strong').textContent=event.target.value.trim()||'Sans titre';
 });
 let studioDirty=false;
+// Recheck the active PHP session immediately before a human visa submission.
+// The browser may retain a pre-login tab with an obsolete hidden token.
+// Never suppress the server's CSRF validation or silently retry a rejected POST.
+document.querySelectorAll('[data-coral-human-visas] form').forEach(form=>{
+  let pending=false;
+  form.addEventListener('submit',async event=>{
+    if(form.dataset.csrfFresh==='1'){delete form.dataset.csrfFresh;return;}
+    event.preventDefault();
+    if(pending)return;
+    pending=true;
+    const submitter=event.submitter;
+    let status=form.querySelector('[data-visa-session-status]');
+    if(!status){
+      status=document.createElement('p');
+      status.setAttribute('role','alert');
+      status.setAttribute('data-visa-session-status','');
+      form.append(status);
+    }
+    status.textContent='Vérification de la session…';
+    try{
+      const response=await fetch('?session_status=1',{
+        credentials:'same-origin',cache:'no-store',headers:{Accept:'application/json'}
+      });
+      if(!response.ok){
+        status.textContent='Connexion non confirmée. Ouvrez le Studio dans un nouvel onglet et reconnectez-vous, puis réessayez.';
+        return;
+      }
+      const fresh=await response.json();
+      const field=form.querySelector('input[name="csrf"]');
+      if(fresh.authenticated!==true||typeof fresh.csrf!=='string'
+          ||!/^([a-f0-9]{48})$/i.test(fresh.csrf)||!field){
+        status.textContent='Session indisponible. Rechargez le Studio avant de valider.';
+        return;
+      }
+      field.value=fresh.csrf;
+      status.textContent='';
+      form.dataset.csrfFresh='1';
+      form.requestSubmit(submitter||undefined);
+    }catch{
+      status.textContent='Impossible de vérifier la session. Aucun visa envoyé ; réessayez après reconnexion.';
+    }finally{
+      pending=false;
+    }
+  });
+});
 document.querySelectorAll('[data-studio-edit]').forEach(form=>{
   form.addEventListener('input',()=>{studioDirty=true;});
   form.addEventListener('change',()=>{studioDirty=true;});
