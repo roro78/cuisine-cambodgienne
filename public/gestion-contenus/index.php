@@ -47,18 +47,55 @@ if(isset($_GET['tts_authority'])){
         http_response_code($code);echo json_encode($reply,JSON_THROW_ON_ERROR);exit;
     }catch(Throwable $e){http_response_code(404);exit('{"error":"TTS_AUTHORITY_UNAVAILABLE"}');}
 }
+// Configure the PHP Web handler directly, BEFORE session_start(). A .user.ini
+// can be cached/ignored on OVH. The existing private root is already required
+// and writable by the editorial CMS; never use shared /tmp for auth sessions.
+$studioSessionDir=$private.'/cms-editorial-session-files';
+if(is_link($studioSessionDir))cmsUnavailable();
+if(!is_dir($studioSessionDir)
+    && (!@mkdir($studioSessionDir,0700)||!is_dir($studioSessionDir)))cmsUnavailable();
+clearstatcache(true,$studioSessionDir);
+if(is_link($studioSessionDir)||!is_dir($studioSessionDir)
+    ||!is_writable($studioSessionDir)
+    ||(PHP_OS_FAMILY!=='Windows' && ((fileperms($studioSessionDir)&0077)!==0)))
+    cmsUnavailable();
+if(ini_set('session.save_handler','files')===false
+    ||ini_set('session.gc_maxlifetime','43200')===false
+    ||ini_set('session.gc_probability','1')===false
+    ||ini_set('session.gc_divisor','100')===false
+    ||ini_set('session.use_strict_mode','1')===false
+    ||ini_set('session.use_only_cookies','1')===false)cmsUnavailable();
+if(session_save_path($studioSessionDir)===false
+    ||session_save_path()!==$studioSessionDir
+    ||ini_get('session.save_handler')!=='files'
+    ||(int)ini_get('session.gc_maxlifetime')!==43200)cmsUnavailable();
 session_name('CDC_EDITORIAL_CMS');
-// PHP defaults to a 24-minute session GC on some hosts, below the Studio's
-// 30-minute inactivity policy. Dedicated storage must be verified on OVH.
-ini_set('session.gc_maxlifetime','43200');
-ini_set('session.use_strict_mode','1');
-ini_set('session.use_only_cookies','1');
 session_set_cookie_params([
     'lifetime'=>0,'path'=>'/gestion-contenus/',
     'secure'=>true,'httponly'=>true,'samesite'=>'Strict'
 ]);
 if(session_start()!==true)cmsUnavailable();
 if(!is_string($_SESSION['csrf']??null))$_SESSION['csrf']=bin2hex(random_bytes(24));
+// Read-only acceptance evidence via two anonymous GET requests sharing the
+// cookie. Return only booleans; no path, SID, token, session data or secrets.
+// No authorisation/visa follows from a successful probe.
+if(isset($_GET['session_storage_probe'])){
+    header('Content-Type: application/json; charset=UTF-8');
+    header('Vary: Cookie');
+    if(count($_GET)!==1||$_GET['session_storage_probe']!=='1'){
+        http_response_code(400);exit('{"error":"INVALID_STORAGE_PROBE"}');
+    }
+    $wasSeen=($_SESSION['cms_storage_probe_seen']??false)===true;
+    $_SESSION['cms_storage_probe_seen']=true;
+    $probeSid=session_id();
+    if(!session_write_close())cmsUnavailable();
+    $sessionFile=$studioSessionDir.'/sess_'.$probeSid;
+    clearstatcache(true,$sessionFile);
+    $stored=is_file($sessionFile)&&!is_link($sessionFile);
+    if(!$stored){http_response_code(503);exit('{"storage_ready":false}');}
+    echo json_encode(['storage_ready'=>true,'cookie_persisted'=>$wasSeen],
+        JSON_THROW_ON_ERROR);exit;
+}
 // Sliding expiration is based on authenticated server activity, not the time
 // the owner first signed in. Retain a separate 12-hour absolute safety bound.
 // Old sessions without last_activity are migrated conservatively at login time.
