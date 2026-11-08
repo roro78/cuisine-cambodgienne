@@ -15,6 +15,12 @@ test('seven saved narrations download as plain text; login, CSRF and stale reque
   // Existing synthetic common-Studio fixture; no live account or provider.
   const f=JSON.parse(execFileSync(php,['-d','display_errors=stderr','tests/php/fixtures/editorial-tts-bridge.php',
     'init',root,resolve('dist')],{encoding:'utf8',windowsHide:true}));
+  // Exercise OVH's private-file adapter in the isolated Web fixture even
+  // though stock PHP has no system-only session.force_path directive.
+  const entry=join(root,'site','public','gestion-contenus','index.php');
+  const entryText=await readFile(entry,'utf8');
+  assert.ok(entryText.includes("if(ini_get('session.force_path')==='1'){"));
+  await writeFile(entry,entryText.replace("if(ini_get('session.force_path')==='1'){",'if(true){'));
   const saved=join(root,'.cuisine-asset-portal','editorial-drafts','new-content',f.id+'.0003.json');
   const before=await readFile(saved),record=JSON.parse(before);
   const socket=createServer();await new Promise(r=>socket.listen(0,'127.0.0.1',r));
@@ -166,4 +172,61 @@ test('seven saved narrations download as plain text; login, CSRF and stale reque
     await mkdir(process.env.EXPORT_EVIDENCE_DIR,{recursive:true});
     await writeFile(join(process.env.EXPORT_EVIDENCE_DIR,'export-browser-tests.json'),JSON.stringify(results,null,2)+'\n');
   }
+});
+
+
+test('private session files reject unknown IDs and links, lock GC, renew timestamps and regenerate IDs', async t=>{
+  const root=await mkdtemp(join(tmpdir(),'cdc-private-session-contract-'));
+  t.after(()=>rm(root,{recursive:true,force:true}));
+  const php=process.env.PHP_BIN||'php';
+  const source=resolve('public/gestion-contenus/index.php');
+  const code=String.raw`<?php
+    $source=file_get_contents($argv[1]);$dir=$argv[2];
+    $start=strpos($source,'final class CmsPrivateSessionFiles ');
+    $end=strpos($source,'$studioSessionDir=',$start);
+    eval(substr($source,$start,$end-$start));
+    function check($ok,$label){if(!$ok)throw new RuntimeException($label);}
+    chmod($dir,0700);$h=new CmsPrivateSessionFiles($dir);
+    check($h->open($dir,'fixture'),'open');
+    check(!$h->validateId(str_repeat('a',32)),'unknown ID');
+    check($h->read('../bad')===false,'path traversal');
+    $id=str_repeat('b',32);check($h->read($id)==='','new file');
+    check($h->write($id,'fixture|s:4:"test";'),'write');
+    check(!$h->write($id,str_repeat('x',65537)),'oversize rejected');
+    check($h->close(),'close');check($h->validateId($id),'known ID');
+    check($h->read($id)==='fixture|s:4:"test";','read back');
+    touch($dir.'/sess_'.$id,time()-50000);
+    $gc=new CmsPrivateSessionFiles($dir);
+    check($gc->gc(43200)===0,'GC skips locked session');
+    check($h->updateTimestamp($id,''),'timestamp renewed');
+    check($h->close(),'release');clearstatcache();
+    check(filemtime($dir.'/sess_'.$id)>time()-10,'fresh timestamp');
+    touch($dir.'/sess_'.$id,time()-50000);
+    check($gc->gc(43200)===1,'GC removes old unlocked file');
+    check(!$h->validateId($id),'GC result');
+    $links='not available on Windows';
+    if(PHP_OS_FAMILY!=='Windows'){
+      $outside=$dir.'/outside';file_put_contents($outside,'preserve');
+      symlink($outside,$dir.'/sess_'.$id);
+      check(!$h->validateId($id)&&$h->read($id)===false,'symlink rejected');
+      check($h->gc(43200)===0&&file_get_contents($outside)==='preserve','symlink GC ignored');
+      unlink($dir.'/sess_'.$id);unlink($outside);$links='rejected';
+    }
+    session_set_save_handler(new CmsPrivateSessionFiles($dir),true);
+    session_save_path($dir);ini_set('session.use_cookies','0');
+    ini_set('session.use_strict_mode','1');session_id(str_repeat('c',32));
+    check(session_start(),'engine start');check(session_id()!==str_repeat('c',32),'strict mode rejects fixation');
+    $old=session_id();$_SESSION['fixture']='engine-value';
+    check(session_regenerate_id(true),'regenerate');$new=session_id();
+    check($old!==$new&&!is_file($dir.'/sess_'.$old),'old ID removed');
+    check(session_write_close(),'engine close');$_SESSION=[];session_id($new);
+    check(session_start()&&$_SESSION['fixture']==='engine-value','engine persistence');
+    check(session_destroy(),'logout removes file');
+    check(!is_file($dir.'/sess_'.$new),'logout file removed');
+    echo json_encode(['privateFileLifecycle'=>true,'strictIds'=>true,'lockingAndGc'=>true,'timestampRenewal'=>true,'regenerationAndLogout'=>true,'symlinks'=>$links]);
+  `;
+  const result=JSON.parse(execFileSync(php,['-r',code.replace('<?php',''),source,root],{encoding:'utf8',windowsHide:true}));
+  assert.equal(result.privateFileLifecycle,true);
+  assert.equal(result.strictIds,true);
+  assert.equal(result.regenerationAndLogout,true);
 });

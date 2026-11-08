@@ -63,3 +63,26 @@
 - `docs/release-runbook-2026-10-12.md` et `docs/runbook-ovh-ateliers-release.md` : procédure de publication statique manuelle historique.
 - `docs/CMS-OVH-RECEPTION-20261027.md` : réception Studio ciblée, sécurité et inventaire.
 - `.github/workflows/deploy-ovh.yml` : mécanisme actuel, déclenché manuellement et gardé par contrôle de périmètre.
+
+
+## Incident sessions Studio du 8 novembre 2026
+
+Sur le PHP OVH inspecte, `session.force_path=1` est une directive systeme :
+`session_save_path()` peut accepter le chemin prive sans que le gestionnaire
+natif y cree un fichier. Ni le retour de cette fonction, ni `session_start()`,
+ni un test CLI ne prouvent alors le stockage PHP Web.
+
+Le Studio utilise une adaptation des seuls acces aux fichiers de session
+lorsque cette directive OVH est active, via les interfaces standard PHP.
+Les identifiants stricts, cookies, CSRF, regeneration et expirations restent
+pris en charge par PHP et le controleur commun. Fichiers prives 0600 dans un
+repertoire 0700 hors webroot, verrouillage exclusif et GC sans suppression de
+sessions verrouillees ; aucune migration des sessions ou des brouillons.
+Ne pas desactiver une directive systeme ni reintroduire `.user.ini` pour cela.
+
+Apres chaque livraison autorisee, deux GET HTTPS avec un cookie jar ephemere
+vers `?session_storage_probe=1` doivent repondre HTTP 200, successivement
+`{"storage_ready":true,"cookie_persisted":false}` puis
+`{"storage_ready":true,"cookie_persisted":true}`. Sinon rollback immediat.
+Aucun SID/cookie/CSRF ne doit figurer dans les preuves. Cette sonde anonyme
+ne vaut jamais reception administrateur ou Android, ni visa humain.

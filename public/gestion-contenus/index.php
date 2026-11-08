@@ -50,6 +50,104 @@ if(isset($_GET['tts_authority'])){
 // Configure the PHP Web handler directly, BEFORE session_start(). A .user.ini
 // can be cached/ignored on OVH. The existing private root is already required
 // and writable by the editorial CMS; never use shared /tmp for auth sessions.
+// OVH's system-only session.force_path can silently redirect the native files
+// handler despite a successful session_save_path(). Keep PHP's session engine,
+// strict IDs, cookies and regeneration; only its private file I/O is adapted.
+final class CmsPrivateSessionFiles implements SessionHandlerInterface, SessionUpdateTimestampHandlerInterface {
+    private mixed $stream=null;
+    private string $lockedId='';
+    public function __construct(private readonly string $directory) {}
+    private function path(string $id): string|false {
+        return preg_match('/\A[a-zA-Z0-9,-]{22,256}\z/D',$id)===1
+            ? $this->directory.'/sess_'.$id : false;
+    }
+    private function safeStat(string $path): array|false {
+        clearstatcache(true,$path);
+        $st=@lstat($path);
+        return is_array($st)&&($st['mode']&0170000)===0100000
+            &&(PHP_OS_FAMILY==='Windows'||($st['mode']&0077)===0) ? $st : false;
+    }
+    private function sameFile(string $path,mixed $stream): bool {
+        $disk=$this->safeStat($path);$opened=fstat($stream);
+        return $disk!==false&&is_array($opened)
+            &&$disk['dev']===$opened['dev']&&$disk['ino']===$opened['ino'];
+    }
+    public function open(string $path,string $name): bool {
+        clearstatcache(true,$this->directory);
+        return $path===$this->directory&&!is_link($path)&&is_dir($path)
+            &&is_writable($path)
+            &&(PHP_OS_FAMILY==='Windows'||(fileperms($path)&0077)===0);
+    }
+    public function close(): bool {
+        if(!is_resource($this->stream))return true;
+        $ok=flock($this->stream,LOCK_UN);$ok=fclose($this->stream)&&$ok;
+        $this->stream=null;$this->lockedId='';return $ok;
+    }
+    public function validateId(string $id): bool {
+        $path=$this->path($id);return $path!==false&&$this->safeStat($path)!==false;
+    }
+    public function read(string $id): string|false {
+        $path=$this->path($id);if($path===false)return false;
+        if(!is_resource($this->stream)||$this->lockedId!==$id){
+            if(!$this->close())return false;
+            // The directory is private (0700); reject links and unsafe existing
+            // files before opening, then compare the locked inode once opened.
+            clearstatcache(true,$path);
+            if(@lstat($path)!==false&&$this->safeStat($path)===false)return false;
+            $mask=umask(0077);
+            try{$stream=@fopen($path,'c+b');}finally{umask($mask);}
+            if($stream===false)return false;
+            if(!flock($stream,LOCK_EX)||!$this->sameFile($path,$stream)){
+                fclose($stream);return false;
+            }
+            $this->stream=$stream;$this->lockedId=$id;
+        }
+        $st=fstat($this->stream);
+        if(!is_array($st)||$st['size']>65536||!rewind($this->stream))return false;
+        return stream_get_contents($this->stream,65537);
+    }
+    public function write(string $id,string $data): bool {
+        $path=$this->path($id);
+        if($path===false||strlen($data)>65536||!is_resource($this->stream)
+            ||$this->lockedId!==$id||!$this->sameFile($path,$this->stream)
+            ||!rewind($this->stream)||!ftruncate($this->stream,0))return false;
+        $offset=0;
+        while($offset<strlen($data)){
+            $n=fwrite($this->stream,substr($data,$offset));
+            if($n===false||$n===0)return false;$offset+=$n;
+        }
+        return fflush($this->stream);
+    }
+    public function updateTimestamp(string $id,string $data): bool {
+        $path=$this->path($id);
+        return $path!==false&&is_resource($this->stream)&&$this->lockedId===$id
+            &&$this->sameFile($path,$this->stream)&&touch($path);
+    }
+    public function destroy(string $id): bool {
+        $path=$this->path($id);if($path===false)return false;
+        if(!is_resource($this->stream)||$this->lockedId!==$id){
+            if(!$this->validateId($id))return true;
+            if($this->read($id)===false)return false;
+        }
+        $ok=$this->sameFile($path,$this->stream)&&unlink($path);
+        return $this->close()&&$ok;
+    }
+    public function gc(int $max_lifetime): int|false {
+        $files=glob($this->directory.'/sess_*');if($files===false)return false;
+        $deleted=0;
+        foreach($files as $path){
+            $st=$this->safeStat($path);
+            if($st===false||$st['mtime']>=time()-$max_lifetime)continue;
+            $stream=@fopen($path,'r+b');if($stream===false)continue;
+            try{
+                if(!flock($stream,LOCK_EX|LOCK_NB)||!$this->sameFile($path,$stream))continue;
+                $st=fstat($stream);
+                if(is_array($st)&&$st['mtime']<time()-$max_lifetime&&unlink($path))$deleted++;
+            }finally{fclose($stream);}
+        }
+        return $deleted;
+    }
+}
 $studioSessionDir=$private.'/cms-editorial-session-files';
 if(is_link($studioSessionDir))cmsUnavailable();
 if(!is_dir($studioSessionDir)
@@ -69,6 +167,10 @@ if(session_save_path($studioSessionDir)===false
     ||session_save_path()!==$studioSessionDir
     ||ini_get('session.save_handler')!=='files'
     ||(int)ini_get('session.gc_maxlifetime')!==43200)cmsUnavailable();
+// Keep the standard native handler everywhere it honours the private path.
+if(ini_get('session.force_path')==='1'){
+    if(!session_set_save_handler(new CmsPrivateSessionFiles($studioSessionDir),true))cmsUnavailable();
+}
 session_name('CDC_EDITORIAL_CMS');
 session_set_cookie_params([
     'lifetime'=>0,'path'=>'/gestion-contenus/',
