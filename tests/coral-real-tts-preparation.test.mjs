@@ -25,6 +25,20 @@ test('real voice rights stay separate from simulation, source visas and spending
   let state=f.bridge('voice-readiness');
   assert.equal(state.final_review_current,true);
   assert.equal(state.rights_current,false);
+  const visaPath=join(f.root,'.cuisine-asset-portal','editorial-drafts','new-content',
+    'final-review-'+f.id+'.0001.json');
+  const visa=JSON.parse(await readFile(visaPath,'utf8'));
+  const timestamp=ms=>new Date(ms).toISOString().replace(/\.\d{3}Z$/,'Z');
+  const signed=Date.now()-3*3600_000;
+  visa.reviewed_at=timestamp(signed);
+  for(const {evidence} of visa.sources)evidence.retrieved_at=timestamp(signed-120*60_000);
+  await writeFile(visaPath,JSON.stringify(visa));
+  assert.equal(f.bridge('voice-readiness').final_review_current,false,
+    'evidence already expired at approval cannot validate a visa');
+  for(const {evidence} of visa.sources)evidence.retrieved_at=timestamp(signed-4*60_000);
+  await writeFile(visaPath,JSON.stringify(visa));
+  assert.equal(f.bridge('voice-readiness').final_review_current,true,
+    'evidence that was fresh at approval does not expire a signed visa after an hour');
   f.bridge('rights');
   assert.equal(f.bridge('voice-readiness').rights_current,false,'test-tone approval never grants Coral rights');
   f.bridge('voice-rights');state=f.bridge('voice-readiness');
