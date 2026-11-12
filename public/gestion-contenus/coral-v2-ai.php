@@ -373,7 +373,7 @@ function cmsCoralRealTtsPanel(string $private,array $record,array $catalog,array
     .'<li>Suivre les fichiers sans relancer un chapitre déjà vérifié.</li><li>Écouter les sept narrations intégralement.</li><li>Approuver personnellement les fichiers privés.</li></ol>'
     .'<p>Voix standard proposée : Coral, en français, synthétique et non clonée. Modèle de référence historique : '.cmsEsc($state['model']).'. '
     .'Vitesse historique : 0,93. L’accès à ce modèle et le budget du projet OpenAI restent à confirmer. Ce modèle est annoncé en retrait au 6 janvier 2027 ; aucun remplacement de modèle ne sera déclaré identique sans comparaison d’écoute.</p>'
-    .'<p><a href="/audio/workshops/piler-aromates-au-mortier/atelier-coral.mp3#t=0,12">Écouter le début de la référence Coral historique (autre atelier)</a></p>'
+    .'<p><a href="/audio/workshops/atelier-pratique-kroeung-jaune/atelier-coral-v3.mp3#t=0,12">Écouter le début de la référence Coral historique (autre atelier)</a></p>'
     .'<p>Ordre de grandeur : environ '.number_format($state['estimated_seconds']/60,1,',',' ').' minutes de parole et '
     .number_format($state['estimate_microusd']/1000000,2,',',' ').' USD. Estimation selon le texte, pas une facture ni un plafond garanti. '
     .'Aucun budget de synthèse n’est autorisé par cet écran.</p>';
