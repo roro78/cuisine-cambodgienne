@@ -584,7 +584,10 @@ if($auth){
                 $checks=is_array($_POST['tts_checks']??null)?$_POST['tts_checks']:[];
                 $note=is_string($_POST['tts_note']??null)?$_POST['tts_note']:'';
                 $job=is_string($_POST['tts_job']??null)?$_POST['tts_job']:'';
-                if(in_array($action,['approve_rights','revoke_rights'],true)){
+                if(in_array($action,['approve_voice_rights','revoke_voice_rights'],true)){
+                    cmsCoralTtsDecision($private,$creation['id'],$version,'voice-rights',$action==='approve_voice_rights'?'approve':'revoke',
+                        $checks,$note,$confirm,$auth,$catalog,$canonicalById,$guides);
+                }elseif(in_array($action,['approve_rights','revoke_rights'],true)){
                     cmsCoralTtsDecision($private,$creation['id'],$version,'rights',$action==='approve_rights'?'approve':'revoke',
                         $checks,$note,$confirm,$auth,$catalog,$canonicalById,$guides);
                 }else{
@@ -595,7 +598,8 @@ if($auth){
                         $action==='approve_audio'?'approve':'revoke',$checks,$note,$confirm,$auth,$ttsSettings,$catalog,$canonicalById,$guides);
                     else throw new RuntimeException('TTS_ACTION');
                 }
-                header('Location: ?new=1&cid='.rawurlencode($creation['id']).'&'.$filtersUrl.'#cms-tts',true,303);exit;
+                header('Location: ?new=1&cid='.rawurlencode($creation['id']).'&'.$filtersUrl
+                    .(in_array($action,['approve_voice_rights','revoke_voice_rights'],true)?'#cms-real-tts':'#cms-tts'),true,303);exit;
             }catch(Throwable $e){
                 http_response_code(409);$error='Action audio refusée ou accusé incertain. Aucun renvoi automatique : vérifiez le suivi, la version, les droits et les validations. Les anciens MP3 sont conservés.';
             }
@@ -1898,7 +1902,7 @@ des sept textes complets dans cette fiche.</p>
 <?php endif; ?>
 </section>
 <?php endif; ?>
-<?php if($creation!==null&&$creation['kind']==='atelier'&&$ttsSettings!==null): ?>
+<?php if($creation!==null&&$creation['kind']==='atelier'): ?>
 <?php try{$ttsGuides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);
 echo cmsCoralTtsPanel($private,$creation,$catalog,$canonicalById,$ttsGuides,(string)$_SESSION['csrf'],$ttsSettings,$filtersUrl);
 }catch(Throwable $e){echo '<p>Audio privé indisponible : aucune génération autorisée.</p>';} ?>

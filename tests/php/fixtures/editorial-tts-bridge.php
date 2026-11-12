@@ -196,6 +196,15 @@ if($mode==='safety'){
     $passed[]='CORRECTION_REJECTION_VERSIONING_AND_VISA_INVALIDATION';
     echo json_encode(['passed'=>$passed]);exit;
 }
+if($mode==='voice-readiness'){
+    echo json_encode(cmsCoralRealTtsReadiness($private,$record,$catalog,$canonical,$guided),JSON_THROW_ON_ERROR);exit;
+}
+if($mode==='voice-rights'||$mode==='revoke-voice-rights'){
+    cmsCoralTtsDecision($private,$id,$record['version'],'voice-rights',$mode==='voice-rights'?'approve':'revoke',
+      $mode==='voice-rights'?['voice'=>'1','content'=>'1','private_audio'=>'1']:[],
+      'Décision fictive pour voix réelle proposée, aucun appel ni dépense.',true,true,$catalog,$canonical,$guided);
+    echo 'true';exit;
+}
 if($mode==='authorize'){
     $request=json_decode(stream_get_contents(STDIN),true,32,JSON_THROW_ON_ERROR);
     echo json_encode(cmsCoralTtsAuthorize($private,$request,$catalog,$canonical,$guided));exit;

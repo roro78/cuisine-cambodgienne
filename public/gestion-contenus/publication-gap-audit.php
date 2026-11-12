@@ -1220,7 +1220,8 @@ function cmsCoralFinalEvidence(mixed $sources,?callable $fetcher=null): array {
     if(count($seen)!==2)throw new RuntimeException('CORAL_FINAL_SOURCES');
     return $rows;
 }
-function cmsCoralFinalEvidenceCurrent(array $sources,bool $fresh=true): bool {
+function cmsCoralFinalEvidenceCurrent(array $sources,bool $fresh=true,?int $asOf=null): bool {
+    $reference=$asOf??time();
     try{
         if(count($sources)!==2)return false;$catalog=cmsCoralFinalSourceCatalog();$seen=[];
         foreach($sources as $row){
@@ -1234,7 +1235,7 @@ function cmsCoralFinalEvidenceCurrent(array $sources,bool $fresh=true): bool {
                 ||$e['observed_terms']!==['fish','coconut','kroeung','steam']
                 ||!is_string($e['content_sha256'])||!preg_match('/^[a-f0-9]{64}$/D',$e['content_sha256']))return false;
             $then=strtotime((string)$e['retrieved_at']);
-            if($then===false||$then>time()+30||($fresh&&$then<time()-3600))return false;
+            if($then===false||$then>$reference+30||($fresh&&$then<$reference-3600))return false;
             $seen[$e['source_id']]=true;
         }
         cmsCoralFinalSources(array_map(static fn($r)=>array_intersect_key($r,array_flip(['title','url','note'])),$sources));
@@ -1278,13 +1279,16 @@ function cmsCoralFinalStatus(string $private,array $record,array $catalog,array 
     $report=cmsCoralFinalAudit($record,$catalog,$canonical,$guided);
     $events=cmsCoralFinalJournal(cmsCreationDir($private),$record['id'])['events'];
     $last=$events?end($events):null;
+    $reviewedAt=$last===null?false:strtotime($last['reviewed_at']);
     $approved=is_array($last)&&$last['action']==='approve'
         &&$last['creation_version']===$record['version']
         &&hash_equals($report['digest'],$last['audit_digest'])
         &&$report['recipe_sha256']!==null
         &&hash_equals($report['recipe_sha256'],$last['recipe_sha256'])
         &&$report['automated_checks_pass']
-        &&cmsCoralFinalEvidenceCurrent($last['sources']);
+        // Check source freshness at the recorded human decision, not when reopening the draft.
+        &&$reviewedAt!==false&&$reviewedAt<=time()+30
+        &&cmsCoralFinalEvidenceCurrent($last['sources'],true,$reviewedAt);
     // Existing seven per-text visas and culinary attestation remain mandatory.
     try{
         $texts=cmsAtelierVisaStatus(cmsCreationDir($private),$record,$catalog);
