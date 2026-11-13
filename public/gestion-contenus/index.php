@@ -3,6 +3,8 @@ declare(strict_types=1);
 /** Private editorial CMS P0: preview and immutable drafts only, no publishing. */
 require_once __DIR__.'/lib.php';
 require_once __DIR__.'/coral-v2-ai.php';
+require_once __DIR__.'/coral-real-speech-request.php';
+require_once __DIR__.'/coral-real-speech-bridge.php';
 require_once __DIR__.'/narrations-export.php';
 require_once __DIR__.'/publication-gap-audit.php';
 ini_set('display_errors','0');
@@ -259,6 +261,7 @@ if(isset($_GET['session_status'])){
     exit;
 }
 $ttsSettings=cmsCoralTtsSettings($cfg);
+try{$realTtsSettings=cmsCoralRealSpeechSettings($cfg,$private);}catch(Throwable $e){$realTtsSettings=null;}
 // Opening a public PHP directory is not proof of private acceptance.
 $publicationsReady=($cfg['social_dashboard_received']??false)===true;
 foreach(['index.php','catalog-readonly.php','n8n-wait-readonly.php','diagnostic-cli.php','.htaccess'] as $socialFile)
@@ -327,6 +330,30 @@ if($method==='GET'&&isset($_GET['tts_file'])){
         if($code===206)header('Content-Range: bytes '.$start.'-'.$end.'/'.strlen($bytes));
         http_response_code($code);echo substr($bytes,$start,$end-$start+1);exit;
     }catch(Throwable $e){http_response_code(404);exit('Audio privé indisponible.');}
+}
+// Private authenticated MP3 proxy. Bearer is used only server-to-server.
+if($method==='GET'&&isset($_GET['tts_real_audio'])){
+    if(!$auth){http_response_code(403);exit('Connexion privée requise.');}
+    try{
+        if($realTtsSettings===null)throw new RuntimeException('REAL_TTS_DISABLED');
+        $id=cmsCreationId($_GET['cid']??null);
+        $job=is_string($_GET['tts_real_audio'])?$_GET['tts_real_audio']:'';
+        if($id===null||!preg_match('/^[a-f0-9]{48}$/D',$job))throw new RuntimeException('REAL_TTS_JOB');
+        $feed=cmsSourceList(cmsGetFeed()??[]);
+        $canon=cmsCanonicalSourceList(cmsGetEditorialIndex()??[],$feed);
+        $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canon);
+        cmsAssertGuidedCoverage($guides,$canon);
+        $bytes=cmsCoralRealSpeechAudio($private,$id,$job,$realTtsSettings,$feed,$canon,$guides);
+        $etag='"'.hash('sha256',$bytes).'"';
+        [$code,$start,$end]=cmsCoralTtsByteRange(
+          isset($_SERVER['HTTP_IF_RANGE'])&&$_SERVER['HTTP_IF_RANGE']!==$etag
+          ?null:($_SERVER['HTTP_RANGE']??null),strlen($bytes));
+        header('Accept-Ranges: bytes');header('ETag: '.$etag);
+        if($code===416){header('Content-Range: bytes */'.strlen($bytes));http_response_code(416);exit;}
+        header('Content-Type: audio/mpeg');header('Content-Length: '.($end-$start+1));
+        if($code===206)header('Content-Range: bytes '.$start.'-'.$end.'/'.strlen($bytes));
+        http_response_code($code);echo substr($bytes,$start,$end-$start+1);exit;
+    }catch(Throwable $e){http_response_code(404);exit('MP3 Coral privé indisponible.');}
 }
 // Authenticated binary reads must not rerun editor/AI intent initialization.
 if($method==='GET'&&$auth&&isset($_GET['visual_file'])){
@@ -587,6 +614,9 @@ if($auth){
                 if(in_array($action,['approve_voice_rights','revoke_voice_rights'],true)){
                     cmsCoralTtsDecision($private,$creation['id'],$version,'voice-rights',$action==='approve_voice_rights'?'approve':'revoke',
                         $checks,$note,$confirm,$auth,$catalog,$canonicalById,$guides);
+                }elseif($action==='generate_real'){
+                    if($realTtsSettings===null||!$auth||!$confirm)throw new RuntimeException('REAL_TTS_DISABLED');
+                    cmsCoralRealSpeechStart($private,$creation,$realTtsSettings,$catalog,$canonicalById,$guides);
                 }elseif(in_array($action,['approve_rights','revoke_rights'],true)){
                     cmsCoralTtsDecision($private,$creation['id'],$version,'rights',$action==='approve_rights'?'approve':'revoke',
                         $checks,$note,$confirm,$auth,$catalog,$canonicalById,$guides);
@@ -599,7 +629,7 @@ if($auth){
                     else throw new RuntimeException('TTS_ACTION');
                 }
                 header('Location: ?new=1&cid='.rawurlencode($creation['id']).'&'.$filtersUrl
-                    .(in_array($action,['approve_voice_rights','revoke_voice_rights'],true)?'#cms-real-tts':'#cms-tts'),true,303);exit;
+                    .(in_array($action,['approve_voice_rights','revoke_voice_rights','generate_real'],true)?'#cms-real-tts':'#cms-tts'),true,303);exit;
             }catch(Throwable $e){
                 http_response_code(409);$error='Action audio refusée ou accusé incertain. Aucun renvoi automatique : vérifiez le suivi, la version, les droits et les validations. Les anciens MP3 sont conservés.';
             }
@@ -1904,7 +1934,7 @@ des sept textes complets dans cette fiche.</p>
 <?php endif; ?>
 <?php if($creation!==null&&$creation['kind']==='atelier'): ?>
 <?php try{$ttsGuides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);
-echo cmsCoralTtsPanel($private,$creation,$catalog,$canonicalById,$ttsGuides,(string)$_SESSION['csrf'],$ttsSettings,$filtersUrl);
+echo cmsCoralTtsPanel($private,$creation,$catalog,$canonicalById,$ttsGuides,(string)$_SESSION['csrf'],$ttsSettings,$filtersUrl,$realTtsSettings);
 }catch(Throwable $e){echo '<p>Audio privé indisponible : aucune génération autorisée.</p>';} ?>
 <?php endif; ?>
 <?= cmsVisualPanel($creation,$visualLatest,$visualDisplay,$visualInput,$visualSettings!==null,
