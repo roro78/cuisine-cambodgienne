@@ -69,7 +69,7 @@ export function createCoralRealSpeechJobs({
   validateCoralRealSpeechRequest(r);if(id!==r.request_id)throw Error('CORAL_REAL_ID');
   const dir=directory(folder),s=await optional(join(dir,'state.json'));
   if(!s)return {id,status:'queued',completed_chapters:0};
-  if(!['queued','running','interrupted','uncertain','succeeded'].includes(s.status))throw Error('CORAL_REAL_STATE');
+  if(!['queued','running','awaiting_preview_approval','interrupted','uncertain','succeeded'].includes(s.status))throw Error('CORAL_REAL_STATE');
   if(s.status==='succeeded'){
    const m=await optional(join(dir,'manifest.json'));
    if(!m||m.request_id!==id||m.sha256!==s.manifest_sha256
@@ -86,7 +86,7 @@ export function createCoralRealSpeechJobs({
   validateCoralRealSpeechRequest(r);if(id!==r.request_id)throw Error('CORAL_REAL_ID');
   const dir=directory(folder);await secureDir(dir);
   const existing=await optional(join(dir,'state.json'));
-  if(existing?.status==='succeeded')return state(r,id,folder,true);
+  if(existing?.status==='succeeded'||existing?.status==='awaiting_preview_approval')return state(r,id,folder,true);
   const plan=parts(r);
   let inFlight=false,completed=0;
   try{
@@ -95,6 +95,18 @@ export function createCoralRealSpeechJobs({
     throw Error('CORAL_REAL_SPENDING_NOT_APPROVED');
    const saved=await inspect(r,dir,plan);
    if(saved.uncertain)throw Error('CORAL_REAL_UNCERTAIN_NO_RETRY');
+   const previewReceipt=await optional(join(dir,'00-00.receipt.json'));
+   const previewApproval=await optional(join(dir,'preview-approved.json'));
+   if(previewApproval&&(previewApproval.request_id!==id
+     ||!previewReceipt||previewApproval.preview_sha256!==previewReceipt.wav_sha256))
+    throw Error('CORAL_REAL_PREVIEW_APPROVAL_INVALID');
+   // A durable preview is NOT consent for the rest of the seven chapters.
+   // On crash/restart with a received preview, always stop here until Studio
+   // submits its separate, authenticated human approval.
+   if(previewReceipt&&!previewApproval){
+    await atomicJson(join(dir,'state.json'),{status:'awaiting_preview_approval',completed_chapters:0});
+    return state(r,id,folder,true);
+   }
    await atomicJson(join(dir,'state.json'),{status:'running',completed_chapters:0});
    // Reserve the entire job BEFORE the first potentially billed API request.
    let budget=await optional(join(dir,'reservation.json'));
@@ -154,6 +166,10 @@ export function createCoralRealSpeechJobs({
       duration_seconds:verified.duration_seconds,provider_cost_microusd:null
      }));
      inFlight=false;
+     if(global===0&&!previewApproval){
+      await atomicJson(join(dir,'state.json'),{status:'awaiting_preview_approval',completed_chapters:0});
+      return state(r,id,folder,true);
+     }
     }
     const found=await inspect(r,dir,plan);
     if(!found.complete[ci].done||found.uncertain)throw Error('CORAL_REAL_INCOMPLETE');
@@ -219,9 +235,23 @@ export function createCoralRealSpeechJobs({
  async function resume(r,id,folder,{ownerAlive=false}={}){
   await authority(validateCoralRealSpeechRequest(r));if(ownerAlive)throw Error('CORAL_REAL_RUNNING');
   const dir=directory(folder),saved=await optional(join(dir,'state.json'));
-  if(saved?.status!=='interrupted')throw Error('CORAL_REAL_RESUME_REFUSED');
+  if(!['awaiting_preview_approval','interrupted'].includes(saved?.status))
+   throw Error('CORAL_REAL_RESUME_REFUSED');
   const plan=parts(r),existing=await inspect(r,dir,plan);
   if(existing.uncertain)throw Error('CORAL_REAL_UNCERTAIN_NO_RETRY');
+  const preview=existing.complete[0].fragments[0];
+  if(!preview||preview.fragment_index!==0)throw Error('CORAL_REAL_NO_PREVIEW');
+  const previous=await optional(join(dir,'preview-approved.json'));
+  if(saved.status==='awaiting_preview_approval'){
+   if(previous)throw Error('CORAL_REAL_RESUME_REFUSED');
+   // Called ONLY by the authenticated Studio form after explicit audio approval.
+   await durableWrite(join(dir,'preview-approved.json'),JSON.stringify({
+    request_id:id,preview_sha256:preview.wav_sha256,approved_at:new Date().toISOString()
+   }));
+  }else if(!previous||previous.request_id!==id
+    ||previous.preview_sha256!==preview.wav_sha256){
+   throw Error('CORAL_REAL_RESUME_REFUSED');
+  }
   await atomicJson(join(dir,'state.json'),{status:'queued',completed_chapters:saved.completed_chapters});
   return state(r,id,folder);
  }
