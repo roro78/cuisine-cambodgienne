@@ -1,0 +1,20 @@
+# Combine with existing compose.yaml; no other service modified.
+# All real TTS flags default OFF.
+services:
+  coral-job-worker:
+    environment:
+      CDC_CORAL_REAL_TTS_ENABLED: ${CDC_CORAL_REAL_TTS_ENABLED:-false}
+      CDC_CORAL_REAL_TTS_MODEL_QUALIFIED: ${CDC_CORAL_REAL_TTS_MODEL_QUALIFIED:-false}
+      CDC_CORAL_REAL_TTS_SPEND_APPROVED: ${CDC_CORAL_REAL_TTS_SPEND_APPROVED:-false}
+      CDC_CORAL_REAL_TTS_PROJECT_BUDGET_VERIFIED: ${CDC_CORAL_REAL_TTS_PROJECT_BUDGET_VERIFIED:-false}
+      CDC_CORAL_REAL_TTS_CREATION_ID: ${CDC_CORAL_REAL_TTS_CREATION_ID:-}
+      CDC_CORAL_REAL_TTS_EXPIRES_AT: ${CDC_CORAL_REAL_TTS_EXPIRES_AT:-}
+      CDC_CORAL_REAL_TTS_AUTHORITY_ENDPOINT: https://www.cuisine-du-cambodge.com/gestion-contenus/?tts_authority=1
+      CDC_CORAL_REAL_TTS_AUTHORITY_TOKEN_FILE: /run/secrets/cdc_coral_tts_authority_token
+    secrets:
+      - cdc_coral_openai_key
+      - cdc_editorial_job_token
+      - cdc_coral_tts_authority_token
+secrets:
+  cdc_coral_tts_authority_token:
+    file: ${CDC_CORAL_TTS_AUTHORITY_SECRET_FILE:?OVH Studio authority token must be installed privately}
