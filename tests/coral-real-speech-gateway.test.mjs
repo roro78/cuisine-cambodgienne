@@ -92,7 +92,7 @@ test('real Coral worker stops after one intro preview and cannot continue withou
    })
   });
   const first=await jobs.run(r,r.request_id,root);
-  assert.equal(first.status,'awaiting_preview_approval', 'mock calls='+calls+'; files='+(await readdir(join(root,'real-tts'))).join(','));
+  assert.equal(first.status,'awaiting_preview_approval', 'mock calls='+calls+'; files='+(await readdir(join(root,'real-tts'))).join(',')+'; ledger='+(await readdir(budgetDir)).join(','));
   assert.equal(calls,1);
   const replay=await jobs.run(r,r.request_id,root);
   assert.equal(replay.status,'awaiting_preview_approval');
