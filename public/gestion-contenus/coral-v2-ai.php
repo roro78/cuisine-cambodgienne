@@ -367,7 +367,7 @@ function cmsCoralRealTtsReadiness(string $private,array $record,array $catalog,a
       'REAL_PROVIDER_NOT_QUALIFIED','PROJECT_PERMISSIONS_AND_BUDGET_UNCONFIRMED',
       'EXPLICIT_SPENDING_APPROVAL_REQUIRED','SEVEN_CHAPTER_AUDIO_DELIVERY_NOT_RECEIVED']))];
 }
-function cmsCoralRealTtsPanel(string $private,array $record,array $catalog,array $canonical,array $guided,string $csrf,string $filtersUrl=''): string {
+function cmsCoralRealTtsPanel(string $private,array $record,array $catalog,array $canonical,array $guided,string $csrf,string $filtersUrl='',?array $realSettings=null): string {
   try{$state=cmsCoralRealTtsReadiness($private,$record,$catalog,$canonical,$guided);}
   catch(Throwable $e){return '<section id="cms-real-tts"><h2>Sept MP3 parlés</h2><p>Préparation indisponible. Aucune génération ni dépense autorisée.</p></section>';}
   $id=$record['id'];$version=(int)$record['version'];$base='?new=1&amp;cid='.cmsEsc($id).($filtersUrl!==''?'&amp;'.cmsEsc($filtersUrl):'');
@@ -398,20 +398,18 @@ function cmsCoralRealTtsPanel(string $private,array $record,array $catalog,array
       .'<button name="tts_action" value="'.($state['rights_current']?'revoke_voice_rights':'approve_voice_rights').'">'
       .($state['rights_current']?'Révoquer les droits pour cette voix':'Valider les droits audio pour cette voix').'</button></form>';
   }
-  $html.='<p><strong>Génération bloquée :</strong> fournisseur réel, accès et budget OpenAI, accord explicite de dépense et livraison des sept MP3 encore non qualifiés.</p>'
-    .'<button type="button" disabled aria-disabled="true">Générer les sept MP3 parlés — indisponible</button>'
-    .'<p>Aucun MP3 parlé produit par ce parcours. Aucun fichier à écouter ou à approuver ici.</p>'
-    .'<a href="'.$base.'#cms-real-tts">Revenir à cette préparation sans relancer de génération</a>'
-    .'<details><summary>Suite de la préparation</summary><p>Depuis le téléphone : conserver le visa final, confirmer ou révoquer les droits ci-dessus, '
-    .'puis vérifier dans le projet OpenAI existant les permissions vocales, le crédit disponible et le plafond appliqué. Ne transmettez aucune clé dans le Studio ou une conversation.</p>'
-    .'<p>Une intervention technique reste nécessaire pour raccorder et qualifier le fournisseur vocal dans le worker Coral existant et servir sept chapitres accessibles individuellement, dans des fichiers distincts ou une piste continue. '
-    .'Ce panneau ne peut pas effectuer cette installation. Les autorisations de test-tone ne sont jamais reprises pour la voix Coral.</p></details>'
-    .'<p>Les six MP3 historiques restent conservés. Toute publication nécessite une décision distincte.</p></section>';
+  if($realSettings!==null){
+    try{$html.=cmsCoralRealSpeechProductionPanel($private,$record,$catalog,$canonical,$guided,$csrf,$realSettings,$filtersUrl);}
+    catch(Throwable $e){$html.='<p>Génération Coral indisponible : configuration ou validation non conforme.</p>';}
+  }else{
+    $html.='<p>Génération réelle non activée sur ce serveur.</p>'
+      .'<button type="button" disabled aria-disabled="true">Générer le MP3 Coral — activation requise</button>';
+  }
   return $html;
 }
-function cmsCoralTtsPanel(string $private,?array $record,array $catalog,array $canonical,array $guided,string $csrf,?array $settings,string $filtersUrl=''): string {
+function cmsCoralTtsPanel(string $private,?array $record,array $catalog,array $canonical,array $guided,string $csrf,?array $settings,string $filtersUrl='',?array $realSettings=null): string {
   if(!$record||($record['kind']??null)!=='atelier')return '';
-  $preparation=cmsCoralRealTtsPanel($private,$record,$catalog,$canonical,$guided,$csrf,$filtersUrl);
+  $preparation=cmsCoralRealTtsPanel($private,$record,$catalog,$canonical,$guided,$csrf,$filtersUrl,$realSettings);
   if($settings===null)return $preparation;
   $id=$record['id'];$version=$record['version'];$dir=cmsCreationDir($private);
   $base='?new=1&amp;cid='.cmsEsc($id).($filtersUrl!==''?'&amp;'.cmsEsc($filtersUrl):'');$binding=null;$ready=null;$rights=null;
