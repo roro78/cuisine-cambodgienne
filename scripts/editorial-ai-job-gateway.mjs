@@ -5,6 +5,8 @@ import {readEditorialJobToken} from './private-runtime-secret.mjs';
 import {existsSync,lstatSync,accessSync,constants} from 'node:fs';
 import {TTS_CONTRACT,validateTtsRequest,ttsSourceKey} from './coral-tts-jobs.mjs';
 import {REAL_SPEECH_REQUEST_CONTRACT,validateCoralRealSpeechRequest,coralRealSpeechSourceKey} from './coral-real-speech-request.mjs';
+import {createCoralRealSpeechJobs} from './coral-speech-real-jobs.mjs';
+import {createStudioTtsAuthority} from './coral-tts-authority.mjs';
 import {COMPLETE_WORKSHOP_CONTRACT,validateCompleteWorkshopRequest,produceCompleteWorkshop} from './coral-workshop-contract.mjs';
 import {durableWrite,audioByteRange} from './coral-tts-audio.mjs';
 /** Private orchestration for the existing C2 contract. No network or worker on import. */
@@ -363,9 +365,44 @@ export async function startEditorialJobRuntime(env=process.env){
         ||request.canonical_fingerprint!==env.CDC_CORAL_COMPLETE_WORKSHOP_SOURCE_SHA256))throw Error('JOB_WORKSHOP_SCOPE');
     return selected(request,id);
   };
+  let realTtsJobs=null;
+  // Separate paid speech activation from editorial text and simulated audio.
+  // Never enabled by a GitHub merge or by importing this module.
+  if(env.CDC_CORAL_REAL_TTS_ENABLED==='true'){
+    if(env.CDC_CORAL_REAL_TTS_MODEL_QUALIFIED!=='true'
+      ||env.CDC_CORAL_REAL_TTS_SPEND_APPROVED!=='true'
+      ||env.CDC_CORAL_REAL_TTS_PROJECT_BUDGET_VERIFIED!=='true'
+      ||!/^c-[a-f0-9]{24}$/.test(env.CDC_CORAL_REAL_TTS_CREATION_ID||'')
+      ||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(env.CDC_CORAL_REAL_TTS_EXPIRES_AT||'')
+      ||!Number.isFinite(Date.parse(env.CDC_CORAL_REAL_TTS_EXPIRES_AT))
+      ||Date.parse(env.CDC_CORAL_REAL_TTS_EXPIRES_AT)<=Date.now()
+      ||Date.parse(env.CDC_CORAL_REAL_TTS_EXPIRES_AT)>Date.now()+172800000
+      ||env.CDC_CORAL_REAL_TTS_AUTHORITY_ENDPOINT!=='https://www.cuisine-du-cambodge.com/gestion-contenus/?tts_authority=1')
+      throw Error('CORAL_REAL_TTS_NOT_APPROVED');
+    const budgetDir=env.CDC_CORAL_EXTERNAL_BUDGET_DIR;
+    if(typeof budgetDir!=='string'||!isAbsolute(budgetDir)||resolve(budgetDir)===resolve(config.root))
+      throw Error('CORAL_REAL_BUDGET_DIR');
+    const b=lstatSync(budgetDir);
+    if(!b.isDirectory()||b.isSymbolicLink()||
+      (process.platform!=='win32'&&((b.mode&0o077)!==0||b.uid!==process.geteuid())))
+      throw Error('CORAL_REAL_BUDGET_DIR');
+    const authority=createStudioTtsAuthority({
+      endpoint:env.CDC_CORAL_REAL_TTS_AUTHORITY_ENDPOINT,
+      tokenFile:env.CDC_CORAL_REAL_TTS_AUTHORITY_TOKEN_FILE,
+      timeoutMs:3000
+    });
+    const permitted=async r=>r.creation_id===env.CDC_CORAL_REAL_TTS_CREATION_ID
+      &&Date.now()<Date.parse(env.CDC_CORAL_REAL_TTS_EXPIRES_AT);
+    realTtsJobs=createCoralRealSpeechJobs({
+      authorize:async r=>await permitted(r)&&await authority(r),
+      spendingApproved:permitted,
+      externalProjectBudgetVerified:async r=>await permitted(r)&&
+        env.CDC_CORAL_REAL_TTS_PROJECT_BUDGET_VERIFIED==='true',
+      budgetDir,maxDailyUsd:0.75,maxMonthlyUsd:1
+    });
+  }
   const gateway=await createJobGateway({
-    root:config.root,token:config.token,
-    provider
+    root:config.root,token:config.token,provider,realTtsJobs
   });
   await new Promise((accept,reject)=>{
     gateway.server.once('error',reject);
