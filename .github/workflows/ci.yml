@@ -46,6 +46,8 @@ jobs:
           php --version
           php -l public/gestion-contenus/index.php
           php -l public/gestion-contenus/lib.php
+          php -l public/gestion-contenus/coral-real-speech-request.php
+          php tests/php/coral-real-speech-source-smoke.php
           php -l tests/php/editorial-calendar-smoke.php
           php -l tests/php/editorial-create-manual-smoke.php
           php tests/php/editorial-cms-drafts-smoke.php
