@@ -39,3 +39,11 @@ DirectoryIndex index.php
 <Files "narrations-export.php">
   Require all denied
 </Files>
+
+# Real Coral controls remain include-only and cannot be requested directly.
+<Files "coral-real-speech-request.php">
+  Require all denied
+</Files>
+<Files "coral-real-speech-bridge.php">
+  Require all denied
+</Files>
