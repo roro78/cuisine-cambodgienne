@@ -6,6 +6,7 @@
 import {mkdir,lstat} from 'node:fs/promises';
 import {join} from 'node:path';
 import {reserveCoralBudget} from './coral-external-job-provider.mjs';
+import {planCoralSpeechFragments} from './coral-speech-transport.mjs';
 import {validateCoralRealSpeechRequest,coralRealSpeechPlan,coralRealSpeechAssembleChapterWav} from './coral-real-speech-request.mjs';
 import {privateAudioRead,privateAudioVerifiedOpen,durableAudioCommit,durableWrite,atomicJson,audioSha} from './coral-tts-audio.mjs';
 const MAX_ATTEMPTS=1;
@@ -66,8 +67,9 @@ export function createCoralSpeechPreviewJobs({
    costUsd:0.75,maxDailyUsd,maxMonthlyUsd});
   await durableWrite(join(dir,'reservation.json'),JSON.stringify({request_id:id,
    reserved_usd:reserve.reservedUsd,day:reserve.day,model:r.provider}));
-  const first=r.chapters[0],intro=Array.from(first.text);
-  const fragment=planCoralIntroFirst(first.text,plan.preview.text_sha256);
+  const fragmentFirst=planCoralSpeechFragments(r.chapters[0].text)[0];
+  if(fragmentFirst.sha256!==plan.preview.text_sha256)throw Error('CORAL_PREVIEW_SOURCE_CHANGED');
+  const fragment={text:fragmentFirst.text,text_sha256:fragmentFirst.sha256};
   await authority(r);
   // The durable attempt is written BEFORE any potentially billable dispatch.
   await durableWrite(join(dir,'preview.attempt.json'),JSON.stringify({request_id:id,
@@ -103,12 +105,4 @@ export function createCoralSpeechPreviewJobs({
   audio:async()=>{throw Error('CORAL_REAL_MP3_NOT_GENERATED');},
   audioStream:async()=>{throw Error('CORAL_REAL_MP3_NOT_GENERATED');}
  };
-}
-function planCoralIntroFirst(text,hash){
- // Plan is deterministic and already checked against all seven approved hashes.
- const codepoints=Array.from(text);let end=Math.min(codepoints.length,320);
- if(end<codepoints.length)for(let n=end;n>160;n--)if(/[\s.!?…;]/u.test(codepoints[n-1])){end=n;break;}
- const fragment=codepoints.slice(0,end).join('');
- if(audioSha(fragment)!==hash)throw Error('CORAL_PREVIEW_SOURCE_CHANGED');
- return {text:fragment,text_sha256:hash};
 }
