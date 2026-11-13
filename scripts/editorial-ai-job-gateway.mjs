@@ -253,7 +253,12 @@ export async function createJobGateway({root,token,provider,ttsJobs=null,realTts
     if(operation!=='resume')throw Error('JOB_TTS_OPERATION');
     const lock=join(folder,'.operation.lock');await mkdir(lock,{mode:0o700});
     try{
-      let alive=false;try{alive=ownerAlive(JSON.parse(await safeRead(join(folder,'started.json'))).pid);}catch(e){if(e.code!=='ENOENT')throw e;}
+      let alive=false;try{
+        const started=JSON.parse(await safeRead(join(folder,'started.json')));
+        // A previous completed attempt has our PID until the resume endpoint
+        // rotates started.json. Process existence alone is not an active job.
+        alive=started.pid!==process.pid&&ownerAlive(started.pid);
+      }catch(e){if(e.code!=='ENOENT')throw e;}
       const s=await engine.resume(saved.request,id,folder,{ownerAlive:alive});
       try{await rename(join(folder,'started.json'),join(folder,'started-'+randomBytes(12).toString('hex')+'.json'));}
       catch(e){if(e.code!=='ENOENT')throw e;}
