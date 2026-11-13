@@ -17,7 +17,7 @@ const reservation={request_id,fragment_index:0,text_sha256:coralSpeechSha256(tex
 const fakeKey='sk-'+'x'.repeat(25);
 function harness({authorize=async()=>true,reserve=async()=>reservation,readKey=()=>fakeKey,fetcher}={}){
  return createCoralSpeechTransport({enabled:true,authorize,reserve,readKey,
-  fetcher:fetcher||async()=>new Response(wav(),{status:200,headers:{'content-type':'audio/wav'}})});
+  fetcher:fetcher||(async()=>new Response(wav(),{status:200,headers:{'content-type':'audio/wav'}}))});
 }
 test('disabled by default, historical Coral settings pinned',()=>{
  assert.equal(CORAL_SPEECH_PROFILE.enabled,false);assert.equal(CORAL_SPEECH_PROFILE.qualified,false);
