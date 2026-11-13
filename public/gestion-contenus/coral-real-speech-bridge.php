@@ -192,7 +192,7 @@ function cmsCoralRealSpeechProductionPanel(
    if($saved!==$request)throw new RuntimeException('REAL_TTS_VERSION');
    $recorded=true;
  }
- $html='<section data-real-speech-production><h3>MP3 Coral de cet atelier</h3>';
+ $html='<section id="cms-real-tts" data-real-speech-production><h3>MP3 Coral de cet atelier</h3>';
  if(!$recorded) {
    $html.='<form method="post" class="stack" action="'.$url.'#cms-real-tts">'
      .'<input type="hidden" name="csrf" value="'.cmsEsc($csrf).'">'
