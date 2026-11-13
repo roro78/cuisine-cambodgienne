@@ -26,23 +26,23 @@ function cmsCoralRealSpeechSettings(array $cfg,string $private): ?array {
 function cmsCoralRealSpeechTransport(array $settings,string $job,string $verb,?array $request=null): array|string {
   if(!preg_match('/^[a-f0-9]{48}$/D',$job)
     ||($settings['base']??null)!=='https://n8n.orvekio.com/editorial-ai/v1/jobs'
-    ||!in_array($verb,['submit','poll','audio'],true)||!function_exists('curl_init'))
+    ||!in_array($verb,['submit','poll','audio','preview','resume'],true)||!function_exists('curl_init'))
     throw new RuntimeException('REAL_TTS_GATEWAY');
   $body=$request===null?null:json_encode($request,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
   if(($verb==='submit')!==($body!==null)||($body!==null&&strlen($body)>90000))
     throw new RuntimeException('REAL_TTS_REQUEST');
-  $url=$settings['base'].'/'.$job.($verb==='audio'?'/audio':'');
+  $url=$settings['base'].'/'.$job.(in_array($verb,['audio','preview','resume'],true)?'/'.$verb:'');
   $curl=curl_init($url);if($curl===false)throw new RuntimeException('REAL_TTS_GATEWAY');
-  $raw='';$max=$verb==='audio'?32000000:150000;
+  $raw='';$max=in_array($verb,['audio','preview'],true)?32000000:150000;
   try {
     curl_setopt_array($curl,[
-      CURLOPT_CUSTOMREQUEST=>$verb==='submit'?'PUT':'GET',
+      CURLOPT_CUSTOMREQUEST=>$verb==='submit'?'PUT':($verb==='resume'?'POST':'GET'),
       CURLOPT_FOLLOWLOCATION=>false,CURLOPT_SSL_VERIFYPEER=>true,
       CURLOPT_SSL_VERIFYHOST=>2,CURLOPT_CONNECTTIMEOUT=>4,
       CURLOPT_TIMEOUT=>$verb==='audio'?40:12,
       CURLOPT_HTTPHEADER=>[
         'Authorization: Bearer '.$settings['token'],
-        'Accept: '.($verb==='audio'?'audio/mpeg':'application/json'),
+        'Accept: '.($verb==='audio'?'audio/mpeg':($verb==='preview'?'audio/wav':'application/json')),
         'Content-Type: application/json','Cache-Control: no-store'
       ],
       CURLOPT_WRITEFUNCTION=>static function($c,string $bytes)use(&$raw,$max):int{
@@ -55,10 +55,11 @@ function cmsCoralRealSpeechTransport(array $settings,string $job,string $verb,?a
     elseif(defined('CURLOPT_PROTOCOLS'))curl_setopt($curl,CURLOPT_PROTOCOLS,CURLPROTO_HTTPS);
     $ok=curl_exec($curl);$code=(int)curl_getinfo($curl,CURLINFO_RESPONSE_CODE);
     $mime=(string)curl_getinfo($curl,CURLINFO_CONTENT_TYPE);
-    if($ok!==true||!in_array($code,$verb==='submit'?[200,202]:[200],true))
+    if($ok!==true||!in_array($code,in_array($verb,['submit','resume'],true)?[200,202]:[200],true))
       throw new RuntimeException('REAL_TTS_GATEWAY_UNCERTAIN');
-    if($verb==='audio'){
-      if(strlen($raw)<1024||!preg_match('~^audio/(mpeg|mp3)(?:;|$)~i',$mime))
+    if($verb==='audio'||$verb==='preview'){
+      $mimeExpected=$verb==='preview'?'~^audio/(wav|x-wav)(?:;|$)~i':'~^audio/(mpeg|mp3)(?:;|$)~i';
+      if(strlen($raw)<48||!preg_match($mimeExpected,$mime))
         throw new RuntimeException('REAL_TTS_MP3');
       return $raw;
     }
@@ -66,7 +67,7 @@ function cmsCoralRealSpeechTransport(array $settings,string $job,string $verb,?a
       throw new RuntimeException('REAL_TTS_RESPONSE');
     $state=json_decode($raw,true,24,JSON_THROW_ON_ERROR);
     if(!is_array($state)||($state['id']??null)!==$job
-      ||!in_array($state['status']??null,['queued','running','interrupted','uncertain','succeeded'],true))
+      ||!in_array($state['status']??null,['queued','running','awaiting_preview_approval','interrupted','uncertain','succeeded'],true))
       throw new RuntimeException('REAL_TTS_RESPONSE');
     return $state;
   }finally{curl_close($curl);}
@@ -142,6 +143,40 @@ function cmsCoralRealSpeechAudio(
   return $bytes;
 }
 
+function cmsCoralRealSpeechPreview(
+ string $private,string $id,string $job,array $settings,
+ array $catalog,array $canonical,array $guided
+): string {
+  $state=cmsCoralRealSpeechObserve($private,$id,$job,$settings,$catalog,$canonical,$guided);
+  if(!in_array($state['status'],['awaiting_preview_approval','interrupted','succeeded'],true))
+    throw new RuntimeException('REAL_TTS_PREVIEW_NOT_READY');
+  $bytes=cmsCoralRealSpeechTransport($settings,$job,'preview');
+  if(!is_string($bytes)||strlen($bytes)<48
+    ||substr($bytes,0,4)!=='RIFF'||substr($bytes,8,4)!=='WAVE')
+    throw new RuntimeException('REAL_TTS_PREVIEW_WAV');
+  return $bytes;
+}
+/** Human preview approval is a separate, one-shot Studio action. */
+function cmsCoralRealSpeechApprovePreview(
+ string $private,array $record,string $job,array $settings,
+ array $catalog,array $canonical,array $guided
+): void {
+  $r=cmsCoralRealSpeechApprovedRequest($private,$record,$catalog,$canonical,$guided);
+  if($r['request_id']!==$job)throw new RuntimeException('REAL_TTS_JOB');
+  $s=cmsCoralRealSpeechObserve($private,$record['id'],$job,$settings,$catalog,$canonical,$guided);
+  if(($s['status']??'')!=='awaiting_preview_approval')
+    throw new RuntimeException('REAL_TTS_PREVIEW_NOT_READY');
+  $previous=false;
+  cmsCoralTtsLocked($private,$record['id'],static function($dir,$saved)use($record,$job,&$previous):void{
+    if($saved['version']!==$record['version'])throw new RuntimeException('REAL_TTS_STALE');
+    $file=$dir.'/real-tts-preview-approval-'.$job.'.json';
+    if(file_exists($file)){$previous=true;return;}
+    cmsCoralTtsWrite($file,['request_id'=>$job,'creation_version'=>$record['version'],'approved_at'=>gmdate('c')]);
+  });
+  if($previous)return; // Unknown POST outcome: never issue a duplicate resume.
+  cmsCoralRealSpeechTransport($settings,$job,'resume');
+}
+
 /** One-click real generation; texts and bearer never appear in browser markup. */
 function cmsCoralRealSpeechProductionPanel(
  string $private,array $record,array $catalog,array $canonical,array $guided,
@@ -164,18 +199,32 @@ function cmsCoralRealSpeechProductionPanel(
      .'<input type="hidden" name="creation_id" value="'.cmsEsc($id).'">'
      .'<input type="hidden" name="expected_version" value="'.(int)$version.'">'
      .'<label><input type="checkbox" name="tts_confirm" value="1" required> '
-     .'Je confirme la génération de cette version validée, dans la limite du budget de 0,75 USD réservé.</label>'
-     .'<button type="submit" name="tts_action" value="generate_real">Générer le MP3 Coral</button></form>';
+     .'Je confirme une seule préécoute privée Coral et la réservation maximale de 0,75 USD. La suite nécessite mon accord après écoute.</label>'
+     .'<button type="submit" name="tts_action" value="generate_real">Préparer la préécoute Coral</button></form>';
  }else{
    $html.='<p>Génération enregistrée, identifiant '.cmsEsc(substr($job,0,12)).'…</p>';
    try{
      $s=cmsCoralRealSpeechObserve($private,$id,$job,$settings,$catalog,$canonical,$guided);
      $labels=['queued'=>'En attente','running'=>'Génération audio en cours',
+       'awaiting_preview_approval'=>'Préécoute prête : écoute et accord nécessaires',
        'interrupted'=>'Interrompue : contrôle nécessaire','uncertain'=>'Résultat de dépense incertain : aucun renvoi automatique',
        'succeeded'=>'MP3 réel généré, en attente de validation et publication'];
      $html.='<p data-real-speech-status="'.cmsEsc($s['status']).'">'
        .cmsEsc($labels[$s['status']]??'Suivi indisponible').'</p>';
      $html.='<p>Chapitres terminés : '.(int)($s['completed_chapters']??0).' / 7</p>';
+     if($s['status']==='awaiting_preview_approval'){
+       $preview='?new=1&amp;cid='.cmsEsc($id).'&amp;tts_real_preview='.cmsEsc($job);
+       $html.='<p>Écoute privée du premier fragment de l’introduction :</p>'
+         .'<audio controls preload="metadata" src="'.$preview.'"></audio>'
+         .'<form method="post" class="stack" action="'.$url.'#cms-real-tts">'
+         .'<input type="hidden" name="csrf" value="'.cmsEsc($csrf).'">'
+         .'<input type="hidden" name="creation_id" value="'.cmsEsc($id).'">'
+         .'<input type="hidden" name="expected_version" value="'.(int)$version.'">'
+         .'<input type="hidden" name="tts_job" value="'.cmsEsc($job).'">'
+         .'<label><input type="checkbox" name="tts_confirm" value="1" required> '
+         .'J’ai écouté et validé la préécoute Coral ; j’autorise la suite de la génération des sept chapitres.</label>'
+         .'<button type="submit" name="tts_action" value="approve_real_preview">Valider la préécoute et poursuivre</button></form>';
+     }
      if($s['status']==='succeeded'){
        $src='?new=1&amp;cid='.cmsEsc($id).'&amp;tts_real_audio='.cmsEsc($job);
        $html.='<audio controls preload="metadata" src="'.$src.'"></audio>'
