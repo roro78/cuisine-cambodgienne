@@ -9,6 +9,7 @@ COPY scripts/editorial-ai-job-gateway.mjs scripts/private-runtime-secret.mjs \
      scripts/coral-workshop-contract.mjs \
      scripts/coral-tts-jobs.mjs scripts/coral-tts-audio.mjs \
      scripts/coral-speech-transport.mjs scripts/coral-real-speech-request.mjs \
+     scripts/coral-speech-preview-jobs.mjs \
      scripts/coral-tts-authority.mjs scripts/coral-tts-cost-plan.mjs scripts/coral-tts-realtime-contract.mjs \
      scripts/coral-state-backup.mjs ./scripts/
 RUN chmod -R 0555 /app
