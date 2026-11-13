@@ -141,3 +141,50 @@ function cmsCoralRealSpeechAudio(
     throw new RuntimeException('REAL_TTS_SHA');
   return $bytes;
 }
+
+/** One-click real generation; texts and bearer never appear in browser markup. */
+function cmsCoralRealSpeechProductionPanel(
+ string $private,array $record,array $catalog,array $canonical,array $guided,
+ string $csrf,array $settings,string $filtersUrl=''
+): string {
+ $id=$record['id'];$version=$record['version'];
+ $url='?new=1&amp;cid='.cmsEsc($id).($filtersUrl!==''?'&amp;'.cmsEsc($filtersUrl):'');
+ $request=cmsCoralRealSpeechApprovedRequest($private,$record,$catalog,$canonical,$guided);
+ $job=$request['request_id'];$recorded=false;
+ $path=cmsCreationDir($private).'/real-tts-request-'.$job.'.json';
+ if(file_exists($path)) {
+   $saved=cmsCoralRealSpeechRequestStored($private,$id,$job);
+   if($saved!==$request)throw new RuntimeException('REAL_TTS_VERSION');
+   $recorded=true;
+ }
+ $html='<section data-real-speech-production><h3>MP3 Coral — Amok Trey</h3>';
+ if(!$recorded) {
+   $html.='<form method="post" class="stack" action="'.$url.'#cms-real-tts">'
+     .'<input type="hidden" name="csrf" value="'.cmsEsc($csrf).'">'
+     .'<input type="hidden" name="creation_id" value="'.cmsEsc($id).'">'
+     .'<input type="hidden" name="expected_version" value="'.(int)$version.'">'
+     .'<label><input type="checkbox" name="tts_confirm" value="1" required> '
+     .'Je confirme la génération de cette version validée, dans la limite du budget de 0,75 USD réservé.</label>'
+     .'<button type="submit" name="tts_action" value="generate_real">Générer le MP3 Coral</button></form>';
+ }else{
+   $html.='<p>Génération enregistrée, identifiant '.cmsEsc(substr($job,0,12)).'…</p>';
+   try{
+     $s=cmsCoralRealSpeechObserve($private,$id,$job,$settings,$catalog,$canonical,$guided);
+     $labels=['queued'=>'En attente','running'=>'Génération audio en cours',
+       'interrupted'=>'Interrompue : contrôle nécessaire','uncertain'=>'Résultat de dépense incertain : aucun renvoi automatique',
+       'succeeded'=>'MP3 réel généré, en attente de validation et publication'];
+     $html.='<p data-real-speech-status="'.cmsEsc($s['status']).'">'
+       .cmsEsc($labels[$s['status']]??'Suivi indisponible').'</p>';
+     $html.='<p>Chapitres terminés : '.(int)($s['completed_chapters']??0).' / 7</p>';
+     if($s['status']==='succeeded'){
+       $src='?new=1&amp;cid='.cmsEsc($id).'&amp;tts_real_audio='.cmsEsc($job);
+       $html.='<audio controls preload="metadata" src="'.$src.'"></audio>'
+         .'<p><a href="'.$src.'">Écouter ou enregistrer le MP3 généré</a></p>'
+         .'<p>La mise en ligne publique reste distincte de la génération.</p>';
+     }
+   }catch(Throwable $e){
+     $html.='<p>Suivi indisponible ou accusé inconnu. Aucun appel facturable ne sera relancé automatiquement.</p>';
+   }
+ }
+ return $html.'</section>';
+}
