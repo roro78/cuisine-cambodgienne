@@ -237,7 +237,14 @@ function cmsCoralTtsAuthorityCheck(string $private,array $cfg,string $method,str
     if(!is_array($q)||count($q)!==3||($q['contract']??null)!=='cdc-coral-tts-authority-check-v1'
       ||!is_string($q['challenge']??null)||!preg_match('/^[a-f0-9]{64}$/D',$q['challenge'])
       ||!is_array($q['request']??null))return [422,['error'=>'TTS_AUTHORITY_REQUEST']];
-    $r=$q['request'];$allowed=false;if(!cmsCoralTtsAuthoritySelectorValid($r))return [422,['error'=>'TTS_AUTHORITY_REQUEST']];
+    $r=$q['request'];$allowed=false;
+    if(($r['contract']??null)==='cdc-coral-private-speech-request-v1'){
+      $allowed=cmsCoralRealSpeechAuthorityAllowed($private,$r,$catalog,$canonical,$guided);
+      return [200,['contract'=>'cdc-coral-tts-authority-check-v1','challenge'=>$q['challenge'],
+        'request_id'=>is_string($r['request_id']??null)?$r['request_id']:'',
+        'authorized'=>$allowed]];
+    }
+    if(!cmsCoralTtsAuthoritySelectorValid($r))return [422,['error'=>'TTS_AUTHORITY_REQUEST']];
     // The request is a selector, NEVER an authorization. Rebuild from CURRENT server journals.
     $id=cmsCreationId($r['creation_id']??null);$job=$r['request_id']??'';
     if($id!==null&&is_string($job)&&preg_match('/^[a-f0-9]{48}$/D',$job)){
