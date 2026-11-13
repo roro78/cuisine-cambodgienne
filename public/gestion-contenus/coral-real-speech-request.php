@@ -100,3 +100,24 @@ function cmsCoralRealSpeechAuthorityProjection(array $request): array {
   },$request['chapters']);
   return $out;
 }
+
+/**
+ * Validates a no-text authority challenge against the current Studio
+ * creation and the immutable human-submitted request.
+ */
+function cmsCoralRealSpeechAuthorityAllowed(
+  string $private,array $selector,array $catalog,array $canonical,array $guided
+): bool {
+  try {
+    $id=$selector['creation_id']??null;$job=$selector['request_id']??null;
+    if(!is_string($id)||!preg_match('/^c-[a-f0-9]{24}$/D',$id)
+      ||!is_string($job)||!preg_match('/^[a-f0-9]{48}$/D',$job))return false;
+    $record=cmsCreationRead(cmsCreationDir($private),$id);
+    if(!is_array($record))return false;
+    $current=cmsCoralRealSpeechApprovedRequest($private,$record,$catalog,$canonical,$guided);
+    $file=cmsCreationDir($private).'/real-tts-request-'.$job.'.json';
+    $saved=cmsCoralTtsRead($file);
+    if($saved!==$current)return false;
+    return cmsCoralRealSpeechAuthorityProjection($current)===$selector;
+  }catch(Throwable $e){return false;}
+}
