@@ -3,8 +3,10 @@ import {request as httpsRequest} from 'node:https';
 import {randomBytes} from 'node:crypto';
 import {readPrivateRuntimeSecret} from './private-runtime-secret.mjs';
 import {validateTtsRequest} from './coral-tts-jobs.mjs';
+import {REAL_SPEECH_REQUEST_CONTRACT,coralRealSpeechAuthorityProjection} from './coral-real-speech-request.mjs';
 export const AUTHORITY_CONTRACT='cdc-coral-tts-authority-check-v1';
 export function ttsAuthorityProjection(request){
+ if(request?.contract===REAL_SPEECH_REQUEST_CONTRACT)return coralRealSpeechAuthorityProjection(request);
  validateTtsRequest(request);
  return {...request,chapters:request.chapters.map(({id,sha256})=>({id,sha256}))};
 }
