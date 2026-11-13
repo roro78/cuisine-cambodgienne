@@ -41,7 +41,7 @@ export function createCoralRealSpeechJobs({
   return {chapters,count};
  }
  async function inspect(r,dir,plan){
-  const complete=[];let uncertain=false,global=0;
+  const complete=[];let uncertain=false,global=0,gap=false;
   for(let ci=0;ci<7;ci++){
    const completed=[];
    for(let pi=0;pi<plan.chapters[ci].length;pi++,global++){
@@ -49,6 +49,7 @@ export function createCoralRealSpeechJobs({
     const attempted=await optional(join(dir,stem+'.attempt.json'));
     const receipt=await optional(join(dir,stem+'.receipt.json'));
     if(receipt){
+     if(gap)throw Error('CORAL_REAL_STATE_GAP');
      if(!attempted||attempted.global_index!==global||attempted.text_sha256!==p.sha256
       ||receipt.text_sha256!==p.sha256||receipt.request_id!==r.request_id
       ||receipt.fragment_index!==global||receipt.model!=='gpt-4o-mini-tts'
@@ -58,8 +59,8 @@ export function createCoralRealSpeechJobs({
      const digest=await privateAudioDigest(join(dir,stem+'.wav'));
      if(digest.sha256!==receipt.wav_sha256)throw Error('CORAL_REAL_AUDIO_HASH');
      completed.push({stem,...receipt});
-    }else if(attempted)uncertain=true;
-    else if(uncertain||complete.some(c=>!c.done))throw Error('CORAL_REAL_STATE_GAP');
+    }else if(attempted){uncertain=true;gap=true;}
+    else gap=true; // Missing trailing fragments are normal; a later receipt is not.
    }
    complete.push({id:r.chapters[ci].id,fragments:completed,done:completed.length===plan.chapters[ci].length});
   }
