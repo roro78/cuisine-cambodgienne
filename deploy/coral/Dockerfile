@@ -2,6 +2,8 @@ FROM node:22-bookworm-slim@sha256:9f0dde62d10e7ff7a310ecaebd66225f6b46c17e6cb778
 ARG SOURCE_REVISION=unversioned
 LABEL org.opencontainers.image.source="https://github.com/roro78/cuisine-cambodgienne" \
       org.opencontainers.image.revision="${SOURCE_REVISION}"
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg \
+ && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY scripts/editorial-ai-job-gateway.mjs scripts/private-runtime-secret.mjs \
      scripts/coral-openai-secret.mjs scripts/coral-external-job-provider.mjs \
@@ -9,7 +11,7 @@ COPY scripts/editorial-ai-job-gateway.mjs scripts/private-runtime-secret.mjs \
      scripts/coral-workshop-contract.mjs \
      scripts/coral-tts-jobs.mjs scripts/coral-tts-audio.mjs \
      scripts/coral-speech-transport.mjs scripts/coral-real-speech-request.mjs \
-     scripts/coral-speech-preview-jobs.mjs \
+     scripts/coral-speech-preview-jobs.mjs scripts/coral-speech-real-jobs.mjs \
      scripts/coral-tts-authority.mjs scripts/coral-tts-cost-plan.mjs scripts/coral-tts-realtime-contract.mjs \
      scripts/coral-state-backup.mjs ./scripts/
 RUN chmod -R 0555 /app
