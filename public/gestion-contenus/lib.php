@@ -163,6 +163,28 @@ function cmsGuidedSourceList(array $payload,array $canonical): array {
             cmsValidateStructuredDraft($kind,json_encode(
                 ['schema_version'=>1]+$fields,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR));
         }catch(Throwable $e){throw new UnexpectedValueException('GUIDED_FIELDS');}
+        if(isset($item['portionContract'])){
+            $pc=$item['portionContract'];
+            if($item['model']!=='recipes'||!is_array($pc)
+                ||array_diff(array_keys($pc),['version','sourceFingerprint','steps'])
+                ||($pc['version']??null)!==1||($pc['sourceFingerprint']??null)!==$item['fingerprint']
+                ||!is_array($pc['steps']??null)||!array_is_list($pc['steps'])||count($pc['steps'])>40)
+                throw new UnexpectedValueException('GUIDED_PORTION_CONTRACT');
+            $seenSteps=[];
+            foreach($pc['steps'] as $binding){
+                $index=$binding['index']??null;
+                if(!is_array($binding)||array_diff(array_keys($binding),['index','sourceText','anchors'])
+                    ||!is_int($index)||isset($seenSteps[$index])||!isset($fields['steps'][$index])
+                    ||($binding['sourceText']??null)!==$fields['steps'][$index]['text']
+                    ||!is_array($binding['anchors']??null)||!array_is_list($binding['anchors'])||count($binding['anchors'])>8)
+                    throw new UnexpectedValueException('GUIDED_PORTION_CONTRACT');
+                $seenSteps[$index]=true;
+                foreach($binding['anchors'] as $anchor)
+                    if(!is_string($anchor)||strlen($anchor)<1||strlen($anchor)>200
+                        ||substr_count($binding['sourceText'],$anchor)!==1)
+                        throw new UnexpectedValueException('GUIDED_PORTION_CONTRACT');
+            }
+        }
         $items[$item['id']]=$item;
     }
     return $items;
