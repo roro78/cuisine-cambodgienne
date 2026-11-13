@@ -1,5 +1,7 @@
 # Coral V2 : paquet technique avant installation
 
+**Préparation permanente :** lire [`PREFLIGHT-SECRETS-ET-RESEAU.md`](PREFLIGHT-SECRETS-ET-RESEAU.md) avant toute demande d'identifiants, de raccordement Traefik, d'installation ou de qualification payante. Le projet API « Cuisine du Cambodge » existe déjà ; ne pas le recréer.
+
 Ce dossier prépare **le worker existant** `scripts/editorial-ai-job-gateway.mjs`.
 Il ne déploie rien, ne crée aucun projet OpenAI et ne constitue pas un second moteur.
 Une fusion de PR ne vaut pas autorisation d'installation, d'activation ou d'appel payant.
