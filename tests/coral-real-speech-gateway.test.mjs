@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {mkdtemp,writeFile,rm} from 'node:fs/promises';
+import {mkdtemp,writeFile,rm,readdir} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createJobGateway,validateJobRequest} from '../scripts/editorial-ai-job-gateway.mjs';
@@ -92,7 +92,7 @@ test('real Coral worker stops after one intro preview and cannot continue withou
    })
   });
   const first=await jobs.run(r,r.request_id,root);
-  assert.equal(first.status,'awaiting_preview_approval');
+  assert.equal(first.status,'awaiting_preview_approval', 'mock calls='+calls+'; files='+(await readdir(join(root,'real-tts'))).join(','));
   assert.equal(calls,1);
   const replay=await jobs.run(r,r.request_id,root);
   assert.equal(replay.status,'awaiting_preview_approval');
