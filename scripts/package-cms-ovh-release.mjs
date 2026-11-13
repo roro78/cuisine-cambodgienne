@@ -21,6 +21,8 @@ const filenames=[
  'gestion-contenus/atelier-narrations.json',
  'gestion-contenus/coral-v2-contract.json',
  'gestion-contenus/coral-v2-ai.php',
+ 'gestion-contenus/coral-real-speech-request.php',
+ 'gestion-contenus/coral-real-speech-bridge.php',
  'gestion-contenus/narrations-export.php'
 ];
 export async function packageCmsRelease({dist,out}){
@@ -56,8 +58,8 @@ export async function packageCmsRelease({dist,out}){
  await writeFile(join(destination,'CMS-OVH-MANIFEST.json'),JSON.stringify(manifest,null,2)+'\n',{mode:0o600});
  await writeFile(join(destination,'README.txt'),
   'Cuisine du Cambodge — CMS OVH scoped release (NO AUTO DEPLOY)\n'+
-  'Transfer only the 3 root JSON indexes and 8 Studio files, including the protected Coral scripts in gestion-contenus/.\n'+
-  'Before transfer, BACK UP any existing versions of these exact 11 files.\n'+
+  'Transfer only the 3 root JSON indexes and 10 Studio files, including the two private real Coral bridge modules.\n'+
+  'Before transfer, BACK UP any existing versions of these exact 13 files.\n'+
   'Require HTTPS, executable PHP and Apache denies for all private PHP helpers AND atelier-narrations.json; keep config outside webroot.\n'+
   'This package intentionally excludes optional AI adapters and never enables an AI provider.\n'+
   'Do not transfer CMS-OVH-MANIFEST.json or README.txt into the site webroot.\n'+
