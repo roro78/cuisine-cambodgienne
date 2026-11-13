@@ -10,7 +10,7 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const names=['social-feed.json','editorial-source-index.json','editorial-guided-fields.json'];
-const privateModules=['lib.php','publication-gap-audit.php','visual-provider-adapter.php','content-gateway-adapter.php','openai-brief-adapter.php','atelier-narrations.json','coral-v2-contract.json','coral-v2-ai.php','narrations-export.php'];
+const privateModules=['lib.php','publication-gap-audit.php','visual-provider-adapter.php','content-gateway-adapter.php','openai-brief-adapter.php','atelier-narrations.json','coral-v2-contract.json','coral-v2-ai.php','coral-real-speech-request.php','coral-real-speech-bridge.php','narrations-export.php'];
 const sensitiveKeys=new Set(['audioScript','sources','sourceReferences','culinaryReferences',
   'github_token','password_hash','secret','private_config','service_role','access_token']);
 function plain(x){return x!==null&&typeof x==='object'&&!Array.isArray(x);}
