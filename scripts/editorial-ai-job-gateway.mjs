@@ -257,7 +257,9 @@ export async function createJobGateway({root,token,provider,ttsJobs=null,realTts
         const started=JSON.parse(await safeRead(join(folder,'started.json')));
         // A previous completed attempt has our PID until the resume endpoint
         // rotates started.json. Process existence alone is not an active job.
-        alive=started.pid!==process.pid&&ownerAlive(started.pid);
+        alive=isRealSpeech(saved.request)
+          ?started.pid!==process.pid&&ownerAlive(started.pid)
+          :ownerAlive(started.pid);
       }catch(e){if(e.code!=='ENOENT')throw e;}
       const s=await engine.resume(saved.request,id,folder,{ownerAlive:alive});
       try{await rename(join(folder,'started.json'),join(folder,'started-'+randomBytes(12).toString('hex')+'.json'));}
