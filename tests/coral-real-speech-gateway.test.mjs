@@ -5,6 +5,7 @@ import {mkdtemp,writeFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createJobGateway,validateJobRequest} from '../scripts/editorial-ai-job-gateway.mjs';
+import {createCoralRealSpeechJobs} from '../scripts/coral-speech-real-jobs.mjs';
 import {TTS_CHAPTER_IDS,privateAudioVerifiedOpen} from '../scripts/coral-tts-audio.mjs';
 import {REAL_SPEECH_REQUEST_CONTRACT,REAL_SPEECH_PROVIDER,coralRealSpeechRequestId} from '../scripts/coral-real-speech-request.mjs';
 const sha=x=>createHash('sha256').update(x).digest('hex');
@@ -71,4 +72,43 @@ test('existing authenticated HTTPS-compatible contract accepts real request only
   assert.equal(runs.length,0);
   await g.workOnce();assert.deepEqual(runs,[r.request_id]);
  }finally{g.stopWorker();await new Promise(resolve=>g.server.close(resolve));await rm(root,{force:true,recursive:true});}
+});
+
+test('real Coral worker stops after one intro preview and cannot continue without separate approval',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'coral-real-preview-gate-'));
+ const budgetDir=await mkdtemp(join(tmpdir(),'coral-real-preview-ledger-'));
+ try{
+  const r=request();let calls=0;
+  const jobs=createCoralRealSpeechJobs({
+   budgetDir,authorize:async()=>true,spendingApproved:async()=>true,
+   externalProjectBudgetVerified:async()=>true,
+   makeTransport:({authorize,reserve})=>({
+    async synthesize(identity){
+     assert.equal(await authorize(identity),true);
+     await reserve({...identity,model:'gpt-4o-mini-tts',voice:'coral'});
+     calls++;
+     return {wav:wav(),receipt:{...identity,model:'gpt-4o-mini-tts',voice:'coral'}};
+    }
+   })
+  });
+  const first=await jobs.run(r,r.request_id,root);
+  assert.equal(first.status,'awaiting_preview_approval');
+  assert.equal(calls,1);
+  const replay=await jobs.run(r,r.request_id,root);
+  assert.equal(replay.status,'awaiting_preview_approval');
+  assert.equal(calls,1);
+  const stream=await jobs.previewStream(r,r.request_id,root);
+  try{assert.equal(stream.sha256,sha(wav()));}finally{await stream.handle.close();}
+  await assert.rejects(jobs.resume(r,r.request_id,root,{ownerAlive:true}),/RUNNING/);
+  assert.equal(calls,1);
+  const approval=await jobs.resume(r,r.request_id,root,{ownerAlive:false});
+  assert.equal(approval.status,'queued');
+  await assert.rejects(jobs.resume(r,r.request_id,root),/RESUME_REFUSED/);
+  const second=await jobs.run(r,r.request_id,root);
+  assert.ok(calls>1,'explicit human approval allows further chapters');
+  assert.notEqual(second.status,'awaiting_preview_approval');
+ }finally{
+  await rm(root,{recursive:true,force:true});
+  await rm(budgetDir,{recursive:true,force:true});
+ }
 });
