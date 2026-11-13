@@ -3,8 +3,11 @@ declare(strict_types=1);
 /** Private editorial CMS P0: preview and immutable drafts only, no publishing. */
 require_once __DIR__.'/lib.php';
 require_once __DIR__.'/coral-v2-ai.php';
-require_once __DIR__.'/coral-real-speech-request.php';
-require_once __DIR__.'/coral-real-speech-bridge.php';
+$realSpeechModulesPresent=is_file(__DIR__.'/coral-real-speech-request.php')&&is_file(__DIR__.'/coral-real-speech-bridge.php');
+if($realSpeechModulesPresent){
+    require_once __DIR__.'/coral-real-speech-request.php';
+    require_once __DIR__.'/coral-real-speech-bridge.php';
+}
 require_once __DIR__.'/narrations-export.php';
 require_once __DIR__.'/publication-gap-audit.php';
 ini_set('display_errors','0');
@@ -261,7 +264,7 @@ if(isset($_GET['session_status'])){
     exit;
 }
 $ttsSettings=cmsCoralTtsSettings($cfg);
-try{$realTtsSettings=cmsCoralRealSpeechSettings($cfg,$private);}catch(Throwable $e){$realTtsSettings=null;}
+try{$realTtsSettings=$realSpeechModulesPresent?cmsCoralRealSpeechSettings($cfg,$private):null;}catch(Throwable $e){$realTtsSettings=null;}
 // Opening a public PHP directory is not proof of private acceptance.
 $publicationsReady=($cfg['social_dashboard_received']??false)===true;
 foreach(['index.php','catalog-readonly.php','n8n-wait-readonly.php','diagnostic-cli.php','.htaccess'] as $socialFile)
