@@ -379,11 +379,6 @@ export async function startEditorialJobRuntime(env=process.env){
     if(env.CDC_CORAL_REAL_TTS_MODEL_QUALIFIED!=='true'
       ||env.CDC_CORAL_REAL_TTS_SPEND_APPROVED!=='true'
       ||env.CDC_CORAL_REAL_TTS_PROJECT_BUDGET_VERIFIED!=='true'
-      ||!/^c-[a-f0-9]{24}$/.test(env.CDC_CORAL_REAL_TTS_CREATION_ID||'')
-      ||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(env.CDC_CORAL_REAL_TTS_EXPIRES_AT||'')
-      ||!Number.isFinite(Date.parse(env.CDC_CORAL_REAL_TTS_EXPIRES_AT))
-      ||Date.parse(env.CDC_CORAL_REAL_TTS_EXPIRES_AT)<=Date.now()
-      ||Date.parse(env.CDC_CORAL_REAL_TTS_EXPIRES_AT)>Date.now()+172800000
       ||env.CDC_CORAL_REAL_TTS_AUTHORITY_ENDPOINT!=='https://www.cuisine-du-cambodge.com/gestion-contenus/?tts_authority=1')
       throw Error('CORAL_REAL_TTS_NOT_APPROVED');
     const budgetDir=env.CDC_CORAL_EXTERNAL_BUDGET_DIR;
@@ -398,10 +393,11 @@ export async function startEditorialJobRuntime(env=process.env){
       tokenFile:env.CDC_CORAL_REAL_TTS_AUTHORITY_TOKEN_FILE,
       timeoutMs:3000
     });
-    const permitted=async r=>r.creation_id===env.CDC_CORAL_REAL_TTS_CREATION_ID
-      &&Date.now()<Date.parse(env.CDC_CORAL_REAL_TTS_EXPIRES_AT);
+    // A persistent service is gated separately from EACH human-approved job.
+    // Approval is checked live on every fragment and can be revoked in Studio.
+    const permitted=async r=>{try{return await authority(r)===true;}catch{return false;}};
     realTtsJobs=createCoralRealSpeechJobs({
-      authorize:async r=>await permitted(r)&&await authority(r),
+      authorize:permitted,
       spendingApproved:permitted,
       externalProjectBudgetVerified:async r=>await permitted(r)&&
         env.CDC_CORAL_REAL_TTS_PROJECT_BUDGET_VERIFIED==='true',
