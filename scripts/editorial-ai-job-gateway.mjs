@@ -342,6 +342,12 @@ export function editorialJobRuntimeConfig(env=process.env){
   return {bindHost,root,providerKind,token};
 }
 
+/** Revocable approval for each job; never an evergreen blanket authorization. */
+export function currentStudioSpeechApproval(authority){
+  if(typeof authority!=='function')throw Error('CORAL_REAL_AUTHORITY_CONFIG');
+  return async r=>{try{return await authority(r)===true;}catch{return false;}};
+}
+
 export async function startEditorialJobRuntime(env=process.env){
   const config=editorialJobRuntimeConfig(env);
   // Never switch to paid text generation implicitly: qualification + explicit
@@ -395,7 +401,7 @@ export async function startEditorialJobRuntime(env=process.env){
     });
     // A persistent service is gated separately from EACH human-approved job.
     // Approval is checked live on every fragment and can be revoked in Studio.
-    const permitted=async r=>{try{return await authority(r)===true;}catch{return false;}};
+    const permitted=currentStudioSpeechApproval(authority);
     realTtsJobs=createCoralRealSpeechJobs({
       authorize:permitted,
       spendingApproved:permitted,
