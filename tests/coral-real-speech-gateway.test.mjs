@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 import {mkdtemp,writeFile,rm,readdir} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {createJobGateway,validateJobRequest} from '../scripts/editorial-ai-job-gateway.mjs';
+import {createJobGateway,validateJobRequest,currentStudioSpeechApproval} from '../scripts/editorial-ai-job-gateway.mjs';
 import {createCoralRealSpeechJobs} from '../scripts/coral-speech-real-jobs.mjs';
 import {TTS_CHAPTER_IDS,privateAudioVerifiedOpen} from '../scripts/coral-tts-audio.mjs';
 import {REAL_SPEECH_REQUEST_CONTRACT,REAL_SPEECH_PROVIDER,coralRealSpeechRequestId} from '../scripts/coral-real-speech-request.mjs';
@@ -111,4 +111,25 @@ test('real Coral worker stops after one intro preview and cannot continue withou
   await rm(root,{recursive:true,force:true});
   await rm(budgetDir,{recursive:true,force:true});
  }
+});
+
+test('persistent Coral feature grants each job only while current Studio says yes',async()=>{
+ const allowed=new Set();
+ const authority=async r=>{
+  if(r.request_id==='timeout')throw Error('STUDIO_UNAVAILABLE');
+  return allowed.has(r.request_id);
+ };
+ const permitted=currentStudioSpeechApproval(authority);
+ assert.equal(await permitted({request_id:'job-one'}),false);
+ allowed.add('job-one');
+ assert.equal(await permitted({request_id:'job-one'}),true);
+ assert.equal(await permitted({request_id:'job-two'}),false);
+ allowed.add('job-two');
+ assert.equal(await permitted({request_id:'job-two'}),true);
+ allowed.delete('job-one'); // Human rights revoked at Studio.
+ assert.equal(await permitted({request_id:'job-one'}),false);
+ assert.equal(await permitted({request_id:'job-two'}),true);
+ assert.equal(await permitted({request_id:'timeout'}),false);
+ assert.equal(await currentStudioSpeechApproval(async()=>undefined)({request_id:'job-three'}),false);
+ assert.throws(()=>currentStudioSpeechApproval(null),/AUTHORITY_CONFIG/);
 });
