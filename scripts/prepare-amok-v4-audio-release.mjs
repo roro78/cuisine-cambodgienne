@@ -123,7 +123,7 @@ export function releasePreflight({dir,source=null}){
     status:'candidate_private_not_published',
     creationId:AMOK_ID,creationVersion:4,voice:'coral',
     model:'gpt-4o-mini-tts',speed:0.93,
-    candidatePublicSlug:'atelier-pratique-amok-trey',
+    candidatePublicSlug:'amok-trey',
     candidateAudioUrl:'/audio/workshops/atelier-pratique-amok-trey/atelier-coral-v4.mp3',
     totalDurationSec:expected.durationSec,integral:INTEGRAL,
     archive:ARCHIVE,tracks:verified,sourceVerified,
