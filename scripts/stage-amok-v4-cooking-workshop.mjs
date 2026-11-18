@@ -10,7 +10,7 @@
  * The --listen-approved flag must be set ONLY after real full-track listening.
  * A preview-only approval is NOT sufficient for the release gate.
  */
-import {readFileSync,existsSync,mkdirSync,copyFileSync,writeFileSync,statSync} from 'node:fs';
+import {readFileSync,existsSync,mkdirSync,copyFileSync,writeFileSync,statSync,constants} from 'node:fs';
 import {resolve,dirname,join,isAbsolute} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
@@ -213,7 +213,7 @@ if([TARGET_BLUEPRINT,TARGET_MANIFEST,TARGET_MP3].some(existsSync)||js.includes('
 mkdirSync(dirname(TARGET_MP3),{recursive:true});
 writeFileSync(TARGET_BLUEPRINT,JSON.stringify(blueprint,null,2)+'\n',{flag:'wx'});
 writeFileSync(TARGET_MANIFEST,JSON.stringify(manifest,null,2)+'\n',{flag:'wx'});
-copyFileSync(join(privateDir,MP3_NAME),TARGET_MP3,'COPYFILE_EXCL' in (await import('node:fs')).constants?(await import('node:fs')).constants.COPYFILE_EXCL:0);
+copyFileSync(join(privateDir,MP3_NAME),TARGET_MP3,constants.COPYFILE_EXCL);
 writeFileSync(REGISTER,updated);
 if(statSync(TARGET_MP3).size!==timeline.bytes||
    hash(readFileSync(TARGET_MP3))!==MP3_SHA)err('STAGED_AUDIO_CHANGED');
