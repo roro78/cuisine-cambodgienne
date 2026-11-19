@@ -1,30 +1,4 @@
-function formatQuantity(value: number, unit = '') {
-  if (!Number.isFinite(value)) return '';
-
-  const rounded = Math.round(value * 100) / 100;
-  const fractions: Record<string, string> = {
-    '0.25': '¼',
-    '0.33': '⅓',
-    '0.5': '½',
-    '0.67': '⅔',
-    '0.75': '¾'
-  };
-
-  if (unit === 'g' || unit === 'ml') {
-    return String(Math.round(rounded));
-  }
-
-  const whole = Math.floor(rounded);
-  const fraction = Math.round((rounded - whole) * 100) / 100;
-  const key = Object.keys(fractions).find((candidate) => Math.abs(Number(candidate) - fraction) < .03);
-
-  if (key) {
-    return whole > 0 ? `${whole} ${fractions[key]}` : fractions[key];
-  }
-
-  if (Number.isInteger(rounded)) return String(rounded);
-  return rounded.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
-}
+import {formatQuantity,scaledQuantity,updatePortionSlots} from '../utils/recipePortions';
 
 export function initRecipeServings() {
   const root = document.querySelector<HTMLElement>('[data-recipe-servings-root]');
@@ -42,7 +16,7 @@ export function initRecipeServings() {
   let current = base;
 
   const render = () => {
-    const factor = current / base;
+    updatePortionSlots(root.closest('main') ?? document,current);
     currentEls.forEach((el) => { el.textContent = String(current); });
     if (summary) summary.textContent = `${current} personne${current > 1 ? 's' : ''}`;
     labelEls.forEach((el) => { el.textContent = `personne${current > 1 ? 's' : ''}`; });
@@ -51,7 +25,7 @@ export function initRecipeServings() {
       const original = Number(el.dataset.baseQuantity ?? 0);
       const unit = el.dataset.unit ?? '';
       const scalable = el.dataset.scalable !== 'false';
-      el.textContent = formatQuantity(scalable ? original * factor : original, unit);
+      el.textContent = formatQuantity(scaledQuantity(original,base,current,scalable), unit);
     });
 
     buttons.forEach((button) => {

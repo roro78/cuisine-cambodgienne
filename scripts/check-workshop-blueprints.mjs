@@ -168,9 +168,10 @@ export function validateWorkshopBlueprint(atelier, recipes, options = {}) {
         }) || Math.abs((asset.chapters.at(-1)?.endSec || 0) - asset.durationSec) > 0.2 ||
         Math.abs(asset.chapters[0]?.startSec || 0) > 0.03) errors.push('NO GO : manifeste audio mesuré invalide ou incomplet (7 chapitres, durée, SHA256 et URL obligatoires).');
     if (typeof asset?.audioUrl === 'string' && asset.audioUrl.startsWith('/audio/workshops/')) {
-      const audioFile = resolve('public', asset.audioUrl.slice(1));
+      const publicAudioFile = resolve('public', asset.audioUrl.slice(1));
       const publicRoot = resolve('public');
-      const rel = relative(publicRoot,audioFile);
+      const rel = relative(publicRoot,publicAudioFile);
+      const audioFile = options.audioFile ?? publicAudioFile;
       if (rel.startsWith('..') || isAbsolute(rel) || !existsSync(audioFile) || !statSync(audioFile).isFile()) {
         errors.push('NO GO : MP3 réel manquant : ' + asset.audioUrl);
       } else {

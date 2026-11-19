@@ -7,7 +7,7 @@
  * V4 on the owner machine. The seven exact narration SHA256s are verified by
  * releasePreflight BEFORE any public file write.
  *
- * The --listen-approved flag must be set ONLY after real full-track listening.
+ * The --full-audio-listened flag must be set ONLY after real full-track listening.
  * A preview-only approval is NOT sufficient for the release gate.
  */
 import {readFileSync,existsSync,mkdirSync,copyFileSync,writeFileSync,statSync,constants} from 'node:fs';
@@ -177,12 +177,20 @@ const blueprint={
    note:'Accord de mise en production du propriétaire le 18 novembre 2026 ; sept narrations, visa et revue culinaires issus du Studio V4 ; écoute intégrale distinctement confirmée via la commande.'
  }:undefined
 };
-const errors=validateWorkshopBlueprint(blueprint,recipes);
-if(errors.length) {
-  // Only public field names and validation diagnostics; never private script content.
-  const clean=errors.map(e=>e.replace(/'.*?'/g,"[champ]")).slice(0,30);
-  process.stderr.write('AMOK_BLUEPRINT_NOT_RELEASE_READY\n'+clean.join('\n')+'\n');
-  process.exit(1);
+// Validate before copying any asset into the public tree.
+if(!stage) {
+  // Validate blueprint using private file temporarily for dry-run
+  const dryRunBlueprint = JSON.parse(JSON.stringify(blueprint));
+  dryRunBlueprint.status = 'review'; // in review mode, check-workshop-blueprints does not require MP3 in public/
+  const errors=validateWorkshopBlueprint(dryRunBlueprint,recipes);
+  if(errors.length) {
+    const clean=errors.map(e=>e.replace(/'.*?'/g,"[champ]")).slice(0,30);
+    process.stderr.write('AMOK_BLUEPRINT_NOT_RELEASE_READY\n'+clean.join('\n')+'\n');
+    process.exit(1);
+  }
+  console.log('AMOK_PRIVATE_SOURCE_MP3_AND_BLUEPRINT_VALID');
+  console.log('AMOK_RELEASE_NOT_STAGED: use --stage --full-audio-listened after integral listening approval');
+  process.exit(0);
 }
 
 const manifest={
@@ -201,19 +209,21 @@ if(!js.includes(anchor)||!js.includes(list))err('REGISTRY_UNEXPECTED');
 const updated=js.replace(anchor,anchor+"\nimport amokTrey from './atelier-recette-guides/amok-trey.json';")
   .replace(list,"export const cookingWorkshopGuides=[kroeung,lokLak,samlorMachu,numBanhChok,kuyTeav,baiSachChrouk,amokTrey];");
 
-if(!stage) {
- // Safe: dry-run only; no texts written to public and no copy of MP3 to web.
- console.log('AMOK_PRIVATE_SOURCE_MP3_AND_BLUEPRINT_VALID');
- console.log('AMOK_RELEASE_NOT_STAGED: use --stage --full-audio-listened after integral listening approval');
- process.exit(0);
-}
-
 if([TARGET_BLUEPRINT,TARGET_MANIFEST,TARGET_MP3].some(existsSync)||js.includes('import amokTrey '))
  err('STAGE_ALREADY_EXISTS_USE_VERSIONED_REVIEW');
+
+const errors=validateWorkshopBlueprint(blueprint,recipes,{audioFile:join(privateDir,MP3_NAME)});
+if(errors.length) {
+  // Only public field names and validation diagnostics; never private script content.
+  const clean=errors.map(e=>e.replace(/'.*?'/g,"[champ]")).slice(0,30);
+  process.stderr.write('AMOK_BLUEPRINT_NOT_RELEASE_READY\n'+clean.join('\n')+'\n');
+  process.exit(1);
+}
+
 mkdirSync(dirname(TARGET_MP3),{recursive:true});
+copyFileSync(join(privateDir,MP3_NAME),TARGET_MP3,constants.COPYFILE_EXCL);
 writeFileSync(TARGET_BLUEPRINT,JSON.stringify(blueprint,null,2)+'\n',{flag:'wx'});
 writeFileSync(TARGET_MANIFEST,JSON.stringify(manifest,null,2)+'\n',{flag:'wx'});
-copyFileSync(join(privateDir,MP3_NAME),TARGET_MP3,constants.COPYFILE_EXCL);
 writeFileSync(REGISTER,updated);
 if(statSync(TARGET_MP3).size!==timeline.bytes||
    hash(readFileSync(TARGET_MP3))!==MP3_SHA)err('STAGED_AUDIO_CHANGED');

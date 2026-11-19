@@ -1,17 +1,23 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {build} from 'esbuild';
-import {mkdtemp,writeFile,readFile,stat,rm} from 'node:fs/promises';
+import {mkdtemp,writeFile,stat,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 
-test('the six existing Coral V2/V3 texts come from the actual approved blueprints, not the CMS form',async()=>{
+test('existing Coral texts match the approved workshop blueprints',async()=>{
   const root=await mkdtemp(join(tmpdir(),'coral-source-'));
   try{
     const bundle=await build({
-      entryPoints:[fileURLToPath(new URL('../src/pages/gestion-contenus/atelier-narrations.json.ts',import.meta.url))],
+      stdin:{
+        contents:`
+          export { GET } from './src/pages/gestion-contenus/atelier-narrations.json.ts';
+          export { releasedCookingWorkshopGuides } from './src/data/cookingWorkshopGuides.ts';
+        `,
+        resolveDir:fileURLToPath(new URL('../',import.meta.url))
+      },
       bundle:true,platform:'node',format:'esm',target:'node22',
       write:false,logLevel:'silent'
     });
@@ -21,11 +27,10 @@ test('the six existing Coral V2/V3 texts come from the actual approved blueprint
     const json=await (await mod.GET({})).json();
     assert.equal(json.contract,'cdc-workshop-existing-coral-narrations-v1');
     assert.equal(json.schemaVersion,1);
-    assert.equal(json.items.length,6);
+    assert.equal(json.items.length,mod.releasedCookingWorkshopGuides.length);
     const ids=['intro','installer','preparer','assembler','maitriser','rectifier','terminer'];
-    const expected=['lok-lak','kroeung-jaune','samlor-machu','num-banh-chok','kuy-teav','bai-sach-chrouk'];
-    for(const slug of expected){
-      const original=JSON.parse(await readFile(new URL('../src/data/atelier-recette-guides/'+slug+'.json',import.meta.url),'utf8'));
+    for(const original of mod.releasedCookingWorkshopGuides){
+      const slug=original.sourceRecipeSlug;
       const item=json.items.find(x=>x.id==='atelier:'+original.slug);
       assert.ok(item,'missing original '+slug);
       assert.equal(item.canonicalFingerprint.length,64);
