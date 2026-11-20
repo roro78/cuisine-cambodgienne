@@ -54,6 +54,9 @@ jobs:
           php -l public/gestion-contenus/coral-scoped-publisher.php
           php -l tests/php/coral-scoped-publisher-smoke.php
           php tests/php/coral-scoped-publisher-smoke.php
+          php -l public/gestion-contenus/coral-astro-review.php
+          php -l tests/php/coral-astro-review-smoke.php
+          php tests/php/coral-astro-review-smoke.php
           php -l tests/php/editorial-calendar-smoke.php
           php -l tests/php/editorial-create-manual-smoke.php
           php tests/php/editorial-cms-drafts-smoke.php
