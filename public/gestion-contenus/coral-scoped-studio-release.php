@@ -82,14 +82,49 @@ function cmsCoralStudioPublish(
 }
 /** Recovery is permitted after revocation: it only restores verified old bytes. */
 function cmsCoralStudioRecover(
-    string $private,string $webroot,string $job,
+    string $private,string $webroot,string $job,string $creationId,
     bool $authenticated,bool $confirmed,array $cfg
 ): array {
-    if(!$authenticated||!$confirmed||!cmsCoralStudioPublishEnabled($cfg)
-       ||!preg_match('/^[a-f0-9]{48}$/D',$job))
+    if(!$authenticated||!$confirmed||($cfg['coral_scoped_restore_qualified']??false)!==true
+       ||!preg_match('/^[a-f0-9]{48}$/D',$job)||!preg_match('/^c-[a-f0-9]{24}$/D',$creationId))
         throw new RuntimeException('CORAL_RECOVERY_DISABLED');
     return cmsCoralPublishRecoverInterrupted($private,$webroot,$job,
-        static fn(string $requested):bool=>$authenticated&&$confirmed&&$requested===$job);
+        static fn(string $requested):bool=>$requested===$job,$creationId);
+}
+
+function cmsCoralStudioRestorePanel(string $private,array $record,string $csrf,array $cfg): string {
+    if(($cfg['coral_scoped_restore_qualified']??false)!==true)return '';
+    $latest=null;$lastTime=0;
+    foreach(glob($private.'/coral-scoped-releases/'.str_repeat('?',48),GLOB_ONLYDIR)?:[] as $backup){
+        $job=basename($backup);
+        $journal=$backup.'/before-write.json';
+        if(!preg_match('/^[a-f0-9]{48}$/D',$job)||is_link($backup)||is_link($journal)||
+            !is_file($journal)||filesize($journal)>64000||
+            is_file($backup.'/rolled-back.json')||is_file($backup.'/recovered.json'))continue;
+        $state=json_decode((string)file_get_contents($journal),true);
+        if(($state['creationId']??null)!==$record['id']||($state['requestId']??null)!==$job)continue;
+        $time=(int)filemtime($journal);
+        if($latest!==null&&$time<$lastTime)continue;
+        $latest=$backup;$lastTime=$time;
+    }
+    if($latest===null)return '';
+    $committed=is_file($latest.'/receipt.json');
+    $id=cmsEsc($record['id']);
+    return '<section data-coral-publish="'.($committed?'local-committed':'recovery-required').'">'
+      .'<h4>'.($committed?'Fichiers installés':'Publication interrompue').'</h4>'
+      .'<p>'.($committed?'Vérifiez la page et le lecteur depuis le site public.':
+                        'Restaurez la sauvegarde avant de reprendre la publication.').'</p>'
+      .'<form method="post" action="?new=1&amp;cid='.$id.'#cms-real-tts" class="stack">'
+      .'<input type="hidden" name="csrf" value="'.cmsEsc($csrf).'">'
+      .'<input type="hidden" name="creation_id" value="'.$id.'">'
+      .'<input type="hidden" name="expected_version" value="'.(int)$record['version'].'">'
+      .'<input type="hidden" name="tts_job" value="'.cmsEsc(basename($latest)).'">'
+      .'<label><input type="checkbox" name="tts_confirm" value="1" required> '
+      .'Je demande la restauration des fichiers précédents.</label>'
+      .'<label><input type="checkbox" name="publish_restore_confirm" value="1" required> '
+      .'Je confirme le retour à la version précédente.</label>'
+      .'<button type="submit" name="tts_action" value="recover_real_publish">'
+      .'Restaurer la version précédente</button></form></section>';
 }
 
 /** Adds one guarded action to the CURRENT Studio workshop, not a new CMS. */
@@ -97,6 +132,8 @@ function cmsCoralStudioPublishPanel(
     string $private,array $record,string $csrf,array $cfg,
     ?array $settings,array $catalog,array $canonical,array $guided
 ): string {
+    $restore=cmsCoralStudioRestorePanel($private,$record,$csrf,$cfg);
+    if($restore!=='')return $restore;
     if(!cmsCoralStudioPublishEnabled($cfg)||$settings===null)
         return '';
     try{
@@ -104,30 +141,10 @@ function cmsCoralStudioPublishPanel(
             $private,$record,$catalog,$canonical,$guided);
         $job=$request['request_id'];
         $backup=$private.'/coral-scoped-releases/'.$job;
-        $receipt=$backup.'/receipt.json';
-        if(is_file($receipt)&&!is_link($receipt))
-            return '<p data-coral-publish="local-committed">Fichiers installés localement. '
-              .'La réception HTTP/audio et le contrôle sur téléphone restent à effectuer.</p>';
         if(is_dir($backup)&&!is_link($backup)){
             if(is_file($backup.'/rolled-back.json')||is_file($backup.'/recovered.json'))
                 return '<p data-coral-publish="rolled-back">Publication annulée ; '
                     .'sauvegarde restaurée. Une nouvelle livraison contrôlée est requise.</p>';
-            if(is_file($backup.'/before-write.json')){
-                $url='?new=1&amp;cid='.cmsEsc($record['id']).'#cms-real-tts';
-                return '<section data-coral-publish="recovery-required"><h4>Publication interrompue</h4>'
-                    .'<p>Retour arrière nécessaire avant toute nouvelle publication.</p>'
-                    .'<form method="post" action="'.$url.'" class="stack">'
-                    .'<input type="hidden" name="csrf" value="'.cmsEsc($csrf).'">'
-                    .'<input type="hidden" name="creation_id" value="'.cmsEsc($record['id']).'">'
-                    .'<input type="hidden" name="expected_version" value="'.(int)$record['version'].'">'
-                    .'<input type="hidden" name="tts_job" value="'.cmsEsc($job).'">'
-                    .'<label><input type="checkbox" name="tts_confirm" value="1" required> '
-                    .'Je demande la restauration des fichiers précédents.</label>'
-                    .'<label><input type="checkbox" name="publish_restore_confirm" value="1" required> '
-                    .'Je confirme le contrôle de cette récupération.</label>'
-                    .'<button type="submit" name="tts_action" value="recover_real_publish">'
-                    .'Restaurer la version précédente</button></form></section>';
-            }
             return '<p data-coral-publish="manual-recovery">Opération précédente '
                 .'incomplète, contrôle technique nécessaire.</p>';
         }

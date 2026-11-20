@@ -21,7 +21,7 @@ function recoveryDelete(string $dir): void {
 $root=sys_get_temp_dir().'/coral-crash-recovery-'.bin2hex(random_bytes(8));
 $private=$root.'/private';$web=$root.'/web';
 mkdir($root,0700);mkdir($private,0700);mkdir($web,0700);
-$job=str_repeat('7',48);$slug='crash-safe-course';$recipe='amok-trey';
+$job=str_repeat('7',48);$slug='crash-safe-course';$recipe='test-recipe';
 $mp3='ID3'.str_repeat('R',2100);$mp3Hash=hash('sha256',$mp3);
 $audio='audio/workshops/atelier-pratique-'.$slug.'/atelier-coral-'.substr($mp3Hash,0,12).'.mp3';
 $paths=[$audio,'apprendre/pratique/'.$slug.'/index.html',

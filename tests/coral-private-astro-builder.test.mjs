@@ -3,8 +3,9 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
-import {join} from 'node:path';
+import {dirname,join} from 'node:path';
 import {prepareCoralPrivateAstroOverlay,verifyHistoricalAmokV4} from '../scripts/build-coral-private-astro-release.mjs';
+import {preserveCoralSharedPages} from '../scripts/coral-preserve-published-pages.mjs';
 
 const sha=x=>createHash('sha256').update(x).digest('hex');
 async function fixture(){
@@ -44,10 +45,55 @@ test('private overlay registers one new Astro workshop and audio, without changi
   const manifest=JSON.parse(await readFile(locations.audioManifestPath,'utf8'));
   assert.equal(manifest.atelier,'test-course');
   assert.equal(manifest.sha256,f.intent.mp3_sha256);
+  assert.equal(manifest.privateTranscript,true);
   assert.equal(sha(await readFile(locations.audioPath)),f.intent.mp3_sha256);
   await assert.rejects(prepareCoralPrivateAstroOverlay({
    root:f.root,blueprint:f.blueprint,intent:f.intent,audioBytes:f.audio}),/REGISTRY|TARGET_EXISTS/);
  }finally{await rm(f.root,{recursive:true,force:true});}
+});
+
+test('scoped release keeps the bytes and links of workshops absent from the pinned checkout',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'coral-published-pages-'));
+ try{
+  const directory=join(root,'live'),dist=join(root,'dist');
+  const path='/apprendre/pratique/test-course/';
+  const link='<a href="'+path+'">Nouveau</a>';
+  const old='<a href="/apprendre/pratique/untracked-previous-course/">Publié</a>';
+  const recipeBlock='<section class="recipe-workshops" aria-label="Préparer la recette dans un atelier complet"><div>';
+  const catalogue='<section class="v16-workshop-list" aria-label="Ateliers de cuisine complets">';
+  const card='<article class="v16-workshop"><div class="v16-workshop-number">01</div>';
+  const oldLocation='<url><loc>https://www.cuisine-du-cambodge.com/apprendre/pratique/amok-trey/</loc></url>';
+  const location='<url><loc>https://www.cuisine-du-cambodge.com'+path+'</loc></url>';
+  const files=[
+    ['recettes/test-recipe/index.html',recipeBlock+old+'</div></section>',recipeBlock+link+'</div></section>'],
+    ['apprendre/index.html',catalogue+card+old+'</article></section>',catalogue+card+link+'</article></section>'],
+    ['sitemap.xml','<urlset>'+oldLocation+'</urlset>','<urlset>'+location+'</urlset>']
+  ];
+  for(const [file,live,built] of files){
+   for(const [folder,content] of [[directory,live],[dist,built]]){
+    const target=join(folder,file);
+    await mkdir(dirname(target),{recursive:true});
+    await writeFile(target,content);
+   }
+  }
+  const hash='1'.repeat(64);
+  const intent={
+   contract:'cdc-coral-studio-release-intent-v1',creation_id:'c-'+'a'.repeat(24),creation_version:1,
+   request_id:'b'.repeat(48),binding_sha256:hash,recipe_sha256:hash,recipe_slug:'test-recipe',
+   candidate_public_slug:'test-course',candidate_workshop_slug:'atelier-pratique-test-course',
+   candidate_audio_path:'audio/workshops/atelier-pratique-test-course/atelier-coral-'+hash.slice(0,12)+'.mp3',
+   mp3_sha256:hash,mp3_bytes:2048,mp3_duration_seconds:7,voice:'coral',model:'gpt-4o-mini-tts',
+   speed_milli:930,human_publication_consent:true,publication_ready:false,deployment_triggered:false,
+   chapters:['intro','installer','preparer','assembler','maitriser','rectifier','terminer']
+    .map((id,i)=>({id,startSec:i,endSec:i+1,text_sha256:hash}))
+  };
+  const baseline=await preserveCoralSharedPages({intent,directory,dist});
+  const outputs=await Promise.all(files.map(([file])=>readFile(join(dist,file),'utf8')));
+  assert.deepEqual(baseline,Object.fromEntries(files.map(([file,live])=>[file,sha(live)])));
+  assert.equal(outputs[0].replace(link,''),files[0][1]);
+  assert.equal(outputs[1].replace(card.replace('01','02')+link+'</article>',''),files[1][1]);
+  assert.equal(outputs[2].replace('  '+location+'\n',''),files[2][1]);
+ }finally{await rm(root,{recursive:true,force:true});}
 });
 test('private build overlay fails closed when a reviewed image or audio changes',async()=>{
  const f=await fixture();

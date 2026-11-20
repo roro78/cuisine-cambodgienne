@@ -751,11 +751,15 @@ if($auth){
         }
         if($method==='POST'&&isset($_POST['tts_action'])){
             try{
-                if($creation===null||!$studioSourceCurrent)throw new RuntimeException('TTS_SOURCE');
+                $action=is_string($_POST['tts_action'])?$_POST['tts_action']:'';
+                if($creation===null||(!$studioSourceCurrent&&$action!=='recover_real_publish'))
+                    throw new RuntimeException('TTS_SOURCE');
                 $version=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT);
                 if($version===false||$version!==$creation['version'])throw new RuntimeException('TTS_VERSION_STALE');
-                $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);cmsAssertGuidedCoverage($guides,$canonicalById);
-                $action=is_string($_POST['tts_action'])?$_POST['tts_action']:'';
+                if($action!=='recover_real_publish'){
+                    $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);
+                    cmsAssertGuidedCoverage($guides,$canonicalById);
+                }
                 $confirm=($_POST['tts_confirm']??null)==='1';
                 $checks=is_array($_POST['tts_checks']??null)?$_POST['tts_checks']:[];
                 $note=is_string($_POST['tts_note']??null)?$_POST['tts_note']:'';
@@ -789,7 +793,7 @@ if($auth){
                     if(!$auth||!$confirm
                         ||($_POST['publish_restore_confirm']??null)!=='1')
                         throw new RuntimeException('CORAL_RECOVERY_NOT_CONFIRMED');
-                    cmsCoralStudioRecover($private,dirname(__DIR__),$job,
+                    cmsCoralStudioRecover($private,dirname(__DIR__),$job,$creation['id'],
                         $auth,$confirm,$cfg);
                 }elseif($action==='publish_real'){
                     if($realTtsSettings===null||!$auth||!$confirm

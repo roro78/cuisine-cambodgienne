@@ -27,6 +27,7 @@ async function fixture(){
   sourceCommit:'a'.repeat(40),sourceCommitVerified:true,nativeBlueprintVerified:true,
   mediaRightsVerified:true,mediaImageSha256:'e'.repeat(64),
   requestId:'b'.repeat(48),publicSlug:slug,recipeSlug:recipe,audioSha256:mp3sha,
+  baseSha256:Object.fromEntries(paths.slice(2).map(path=>[path,'1'.repeat(64)])),
   deployable:false,published:false,files};
  await writeFile(join(root,'BUNDLE-MANIFEST-PRIVE.json'),JSON.stringify(manifest));
  return {root,manifest,paths,data};

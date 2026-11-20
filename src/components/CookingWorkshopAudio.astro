@@ -1,10 +1,10 @@
 ---
 interface Chapter { id:string; title:string; startSec:number; endSec:number }
 interface Manifest { atelier:string; status:string; audioUrl:string; durationSec:number; chapters:Chapter[]; review?:{acousticListening:boolean;mobile:boolean;desktop:boolean} }
-interface Props { manifest:Manifest; scripts:string[] }
+interface Props { manifest:Manifest; scripts?:string[] }
 const { manifest, scripts }=Astro.props;
-if(manifest.chapters.length!==7 || scripts.length!==7)throw Error('Lecteur atelier : intro et six chapitres exigés.');
-const chapters=manifest.chapters.map((chapter,i)=>({...chapter,text:scripts[i]}));
+if(manifest.chapters.length!==7 || (scripts && scripts.length!==7))throw Error('Lecteur atelier : intro et six chapitres exigés.');
+const chapters=manifest.chapters.map((chapter,i)=>({...chapter,text:scripts?.[i]??''}));
 const displayTime=(s:number)=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
 const acousticReviewComplete=manifest.review?.acousticListening===true && manifest.review?.mobile===true && manifest.review?.desktop===true;
 const acousticListeningApproved=manifest.review?.acousticListening===true;
@@ -32,10 +32,10 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
       </li>
     ))}
   </ol>
-  <details class="guided-cooking-transcript">
+  {scripts && <details class="guided-cooking-transcript">
     <summary>Lire les paroles du chapitre sélectionné</summary>
     <p data-cooking-transcript>{scripts[0]}</p>
-  </details>
+  </details>}
   <p class="guided-cooking-live" data-cooking-status aria-live="polite">Introduction sélectionnée.</p>
   <div class="guided-cooking-follow-row">
     <button type="button" data-cooking-follow aria-pressed="false" aria-label="Activer le suivi des grandes étapes de la recette">◉ Suivre la narration : désactivé</button>
@@ -64,16 +64,16 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
       <button type="button" data-cooking-sheet-play aria-label="Démarrer la narration">▶</button>
       <div><strong data-cooking-sheet-title>{chapters[0].title}</strong><small data-cooking-sheet-clock>0:00 / {displayTime(manifest.durationSec)}</small></div>
     </div>
-    <div class="guided-cooking-mobile-tabs" role="group" aria-label="Informations du guide audio">
+    {scripts && <div class="guided-cooking-mobile-tabs" role="group" aria-label="Informations du guide audio">
       <button type="button" data-cooking-mobile-tab="chapters" aria-pressed="true">Chapitres</button>
       <button type="button" data-cooking-mobile-tab="transcript" aria-pressed="false">Paroles</button>
-    </div>
+    </div>}
     <div data-cooking-mobile-view="chapters">
       <ol aria-label="Les sept chapitres disponibles">
         {chapters.map((chapter,i)=>(<li><button type="button" data-cooking-mobile-chapter={i}><span>{i===0?'Introduction':'Phase '+i+' / 6'}</span><strong>{chapter.title}</strong><small>{displayTime(chapter.startSec)}</small></button></li>))}
       </ol>
     </div>
-    <div data-cooking-mobile-view="transcript" hidden>
+    {scripts && <div data-cooking-mobile-view="transcript" hidden>
       <div class="guided-cooking-mobile-transcript-toolbar">
         <button type="button" data-cooking-mobile-transcript-follow aria-pressed="true" aria-label="Activer ou arrêter le défilement automatique du texte">Défilement du texte : activé</button>
         <small>Suivi indicatif du chapitre, sans minutage mot à mot.</small>
@@ -81,7 +81,7 @@ const acousticListeningApproved=manifest.review?.acousticListening===true;
       <div class="guided-cooking-mobile-transcript" data-cooking-mobile-transcript-scroll tabindex="0" aria-label="Texte de la narration : défilement libre possible">
         <p data-cooking-mobile-transcript>{scripts[0]}</p>
       </div>
-    </div>
+    </div>}
     <div class="guided-cooking-mobile-actions">
       <button type="button" data-cooking-mobile-follow aria-pressed="false" aria-label="Activer le suivi automatique des étapes de la recette">Suivre la narration</button>
       <button type="button" data-cooking-mobile-stop aria-label="Arrêter le guide et revenir au début">■ Arrêter</button>

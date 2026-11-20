@@ -23,6 +23,7 @@ import {pathToFileURL} from 'node:url';
 import {projectCoralStudioBlueprint} from './project-coral-studio-blueprint.mjs';
 import {loadCanonicalRecipes,validateWorkshopBlueprint} from './check-workshop-blueprints.mjs';
 import {packageCoralStudioRelease} from './package-coral-approved-release.mjs';
+import {preserveCoralSharedPages} from './coral-preserve-published-pages.mjs';
 
 const sha=x=>createHash('sha256').update(x).digest('hex');
 const safeName=/^[a-z0-9][a-z0-9-]{2,99}$/;
@@ -97,7 +98,7 @@ export async function prepareCoralPrivateAstroOverlay({root,blueprint,intent,aud
  await mkdir(dirname(audioPath),{recursive:true,mode:0o700});
  await writeFile(guidePath,JSON.stringify(blueprint,null,2)+'\n',{flag:'wx',mode:0o600});
  const manifest={atelier:slug,canonicalRecipe:intent.recipe_slug,
-  status:'audio_validated',voice:'coral',
+  status:'audio_validated',voice:'coral',privateTranscript:true,
   audioUrl:blueprint.audio.asset.audioUrl,
   durationSec:intent.mp3_duration_seconds,sha256:intent.mp3_sha256,
   chapters:blueprint.audio.asset.chapters,
@@ -130,7 +131,7 @@ export async function verifyHistoricalAmokV4({root,dist}){
  }
  return true;
 }
-export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,out,sourceSha}){
+export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,out,sourceSha,baseline}){
  const checkout=resolve(root),destination=resolve(out);
  if(destination===checkout||destination.startsWith(checkout+sep)||
    checkout.startsWith(destination+sep))fail('OUTSIDE_CHECKOUT_REQUIRED');
@@ -158,9 +159,12 @@ export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,o
  run('node',['scripts/check-workshop-blueprints.mjs',
   'src/data/atelier-recette-guides/'+packet.intent.candidate_public_slug+'.json'],checkout);
  run('npm',['run','build'],checkout);
- await verifyHistoricalAmokV4({root:checkout,dist:join(checkout,'dist')});
+ const dist=join(checkout,'dist');
+ await verifyHistoricalAmokV4({root:checkout,dist});
+ const baseSha256=baseline?await preserveCoralSharedPages({
+  intent:packet.intent,directory:baseline,dist}):null;
  const result=await packageCoralStudioRelease({
-  intent:packet.intent,dist:join(checkout,'dist'),audio:audioReal,
+  intent:packet.intent,dist,audio:audioReal,
   out:destination,sourceSha});
  // These are verified by THIS BUILD ONLY. The live OVH inventory, owner
  // authorization, out-of-webroot backup and crash recovery remain separate.
@@ -169,6 +173,7 @@ export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,o
  result.mediaRightsVerified=true;
  result.mediaImageSha256=packet.profile.visualSha256;
  result.builderContract='cdc-coral-private-verified-astro-builder-v1';
+ if(baseSha256)result.baseSha256=baseSha256;
  await writeFile(join(destination,'BUNDLE-MANIFEST-PRIVE.json'),
   JSON.stringify(result,null,2)+'\n',{flag:'w',mode:0o600});
  return result;
@@ -176,14 +181,14 @@ export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,o
 async function main(){
  const args=process.argv.slice(2),o={};
  for(let i=0;i<args.length;i+=2){
-  if(!['--packet','--audio','--source-sha','--out'].includes(args[i])||
+  if(!['--packet','--audio','--source-sha','--out','--baseline'].includes(args[i])||
      !args[i+1]||Object.hasOwn(o,args[i]))fail('ARGS');
   o[args[i]]=args[i+1];
  }
- if(Object.keys(o).length!==4)fail('ARGS');
+ if(!['--packet','--audio','--source-sha','--out'].every(key=>Object.hasOwn(o,key)))fail('ARGS');
  await buildCoralPrivateAstroRelease({
   root:process.cwd(),packetPath:o['--packet'],
-  audioPath:o['--audio'],out:o['--out'],sourceSha:o['--source-sha']});
+  audioPath:o['--audio'],out:o['--out'],sourceSha:o['--source-sha'],baseline:o['--baseline']});
  process.stdout.write('CORAL_PRIVATE_ASTRO_BUILT_STAGED_ONLY; OVH_UNCHANGED\n');
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){

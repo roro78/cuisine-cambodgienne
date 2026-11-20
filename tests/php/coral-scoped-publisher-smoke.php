@@ -19,15 +19,15 @@ $root=sys_get_temp_dir().'/cms-coral-scoped-'.bin2hex(random_bytes(8));
 $private=$root.'/private';$web=$root.'/www';
 mkdir($root,0700);mkdir($private,0700);mkdir($web,0700);
 $audio='ID3'.str_repeat('X',2045);$audioHash=hash('sha256',$audio);
-$audioPath='audio/workshops/atelier-pratique-amok-trey/atelier-coral-'.substr($audioHash,0,12).'.mp3';
-$paths=[$audioPath,'apprendre/pratique/amok-trey/index.html',
-    'recettes/amok-trey/index.html','apprendre/index.html','sitemap.xml'];
+$audioPath='audio/workshops/atelier-pratique-test-recipe/atelier-coral-'.substr($audioHash,0,12).'.mp3';
+$paths=[$audioPath,'apprendre/pratique/test-recipe/index.html',
+    'recettes/test-recipe/index.html','apprendre/index.html','sitemap.xml'];
 $data=[
     $paths[0]=>$audio,
-    $paths[1]=>'<html><audio src="/'.$audioPath.'"></audio><a href="/recettes/amok-trey/">recette</a></html>',
-    $paths[2]=>'<html><a href="/apprendre/pratique/amok-trey/">atelier</a></html>',
-    $paths[3]=>'<html><a href="/apprendre/pratique/amok-trey/">atelier</a></html>',
-    $paths[4]=>'<loc>https://www.cuisine-du-cambodge.com/apprendre/pratique/amok-trey/</loc>'
+    $paths[1]=>'<html><audio src="/'.$audioPath.'"></audio><a href="/recettes/test-recipe/">recette</a></html>',
+    $paths[2]=>'<html><a href="/apprendre/pratique/test-recipe/">atelier</a></html>',
+    $paths[3]=>'<html><a href="/apprendre/pratique/test-recipe/">atelier</a></html>',
+    $paths[4]=>'<loc>https://www.cuisine-du-cambodge.com/apprendre/pratique/test-recipe/</loc>'
 ];
 $original=[
     $paths[0]=>null,$paths[1]=>null,
@@ -55,7 +55,7 @@ function stage(string $private,string $job,array $paths,array $data,string $audi
     $manifest=[
         'contract'=>'cdc-coral-scoped-astro-bundle-v1',
         'creationId'=>'c-'.str_repeat('1',24),'creationVersion'=>4,
-        'requestId'=>$job,'recipeSlug'=>'amok-trey','publicSlug'=>'amok-trey',
+        'requestId'=>$job,'recipeSlug'=>'test-recipe','publicSlug'=>'test-recipe',
         'audioSha256'=>$audioHash,'deployable'=>false,'published'=>false,
         'sourceCommitVerified'=>true,'nativeBlueprintVerified'=>true,'mediaRightsVerified'=>true,
         'files'=>$files

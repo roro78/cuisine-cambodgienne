@@ -136,6 +136,12 @@ function cmsCoralStageOperation(string $private,string $webroot,array $request):
                 $preconditions[$entry['path']]=null;
             }
             $paths=cmsCoralPublishManifest($manifest,$preconditions);
+            $baseline=$manifest['baseSha256']??null;
+            if(!is_array($baseline)||array_keys($baseline)!==array_slice($paths,2))
+                cmsCoralStageFail('BASELINE');
+            foreach($baseline as $hash)
+                if(!is_string($hash)||!preg_match('/^[a-f0-9]{64}$/D',$hash))
+                    cmsCoralStageFail('BASELINE');
             $prior=$folder.'/stage.json';
             if(is_file($prior)) {
                 $old=cmsCoralStageLoad($folder);
@@ -143,6 +149,7 @@ function cmsCoralStageOperation(string $private,string $webroot,array $request):
                 return ['requestId'=>$job,'stage'=>$old['sealed']?'sealed':'receiving'];
             }
             $inventory=cmsCoralStageInventory($webroot,$paths);
+            if(array_slice($inventory,2)!==$baseline)cmsCoralStageFail('LIVE_CHANGED');
             $bundle=$folder.'/bundle';
             cmsCoralPublishSecureDir($bundle,true);
             $bytes=json_encode($manifest,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
@@ -181,24 +188,28 @@ function cmsCoralStageOperation(string $private,string $webroot,array $request):
             cmsCoralPublishSecureDir(dirname($target),true);
             $size=is_file($target)?filesize($target):0;
             if(!is_int($size)||$size>$entry['bytes'])cmsCoralStageFail('CHUNK_STATE');
-            if($request['offset']<$size){
-                // Same exact chunk can be replayed after a lost HTTP response.
-                if($request['offset']+strlen($chunk)>$size)
-                    cmsCoralStageFail('CHUNK_OVERLAP');
+            $offset=$request['offset'];
+            if($offset>$size)cmsCoralStageFail('CHUNK_GAP');
+            if($offset<$size){
+                // Check the complete or partial prefix already recorded before
+                // appending the remainder of a chunk interrupted during write.
+                $existing=min(strlen($chunk),$size-$offset);
                 $fp=@fopen($target,'rb');
                 if(!$fp)cmsCoralStageFail('CHUNK_REPLAY_OPEN');
-                try{if(fseek($fp,$request['offset'])!==0||
-                    fread($fp,strlen($chunk))!==$chunk)
-                    cmsCoralStageFail('CHUNK_CONFLICT');
+                try{
+                    if(fseek($fp,$offset)!==0||fread($fp,$existing)!==substr($chunk,0,$existing))
+                        cmsCoralStageFail('CHUNK_CONFLICT');
                 }finally{fclose($fp);}
-            }elseif($request['offset']===$size){
+                $remaining=substr($chunk,$existing);
+            }else $remaining=$chunk;
+            if($remaining!==''){
                 $fp=@fopen($target,'ab');
                 if(!$fp)cmsCoralStageFail('CHUNK_OPEN');
                 try{
-                    if(!@chmod($target,0600)||fwrite($fp,$chunk)!==strlen($chunk)||
+                    if(!@chmod($target,0600)||fwrite($fp,$remaining)!==strlen($remaining)||
                        !fflush($fp))cmsCoralStageFail('CHUNK_WRITE');
                 }finally{fclose($fp);}
-            }else cmsCoralStageFail('CHUNK_GAP');
+            }
             return ['requestId'=>$job,'stage'=>'receiving',
               'path'=>$name,'offset'=>$request['offset']+strlen($chunk)];
         }
@@ -206,6 +217,8 @@ function cmsCoralStageOperation(string $private,string $webroot,array $request):
             cmsCoralStageFail('SEAL_REQUEST');
         if($state['sealed'])return ['requestId'=>$job,'stage'=>'sealed'];
         $paths=cmsCoralPublishManifest($state['manifest'],$state['preconditions']);
+        if(cmsCoralStageInventory($webroot,$paths)!==$state['preconditions'])
+            cmsCoralStageFail('LIVE_CHANGED');
         foreach($paths as $name){
             $entry=$files[array_search($name,$paths,true)];
             $actual=cmsCoralPublishDigest(
@@ -225,6 +238,12 @@ function cmsCoralStageOperation(string $private,string $webroot,array $request):
            !str_contains($page,'/recettes/'.$state['manifest']['recipeSlug'].'/')||
            !str_contains($recipe,$url)||!str_contains($catalogue,$url)||
            !str_contains($sitemap,$url))cmsCoralStageFail('PUBLIC_LINKS');
+        // Only these five files will be deployed. Shared Astro assets must
+        // already exist in the active document root.
+        preg_match_all('~/_astro/[A-Za-z0-9_.-]+\.(?:css|m?js)\b~',$page.$recipe.$catalogue,$assets);
+        foreach(array_unique($assets[0]) as $asset)
+            if(!is_file(cmsCoralPublishTarget((string)realpath($webroot),substr($asset,1))))
+                cmsCoralStageFail('SHARED_ASSET_MISSING');
         $state['sealed']=true;
         cmsCoralStageStore($folder.'/stage.json',$state);
         return ['requestId'=>$job,'stage'=>'sealed'];

@@ -26,10 +26,10 @@ $audioSha=hash('sha256',$mp3);
 $slug='new-workshop';
 $mp3Path='audio/workshops/atelier-pratique-'.$slug.'/atelier-coral-'.substr($audioSha,0,12).'.mp3';
 $paths=[$mp3Path,'apprendre/pratique/'.$slug.'/index.html',
-    'recettes/amok-trey/index.html','apprendre/index.html','sitemap.xml'];
+    'recettes/test-recipe/index.html','apprendre/index.html','sitemap.xml'];
 $files=[
     $paths[0]=>$mp3,
-    $paths[1]=>'<html><audio src="/'.$mp3Path.'"></audio><a href="/recettes/amok-trey/">Recette</a></html>',
+    $paths[1]=>'<html><audio src="/'.$mp3Path.'"></audio><a href="/recettes/test-recipe/">Recette</a></html>',
     $paths[2]=>'<html><a href="/apprendre/pratique/'.$slug.'/">Atelier</a></html>',
     $paths[3]=>'<html><a href="/apprendre/pratique/'.$slug.'/">Atelier</a></html>',
     $paths[4]=>'<loc>https://www.cuisine-du-cambodge.com/apprendre/pratique/'.$slug.'/</loc>'
@@ -39,9 +39,11 @@ foreach(array_slice($paths,2) as $path){
     if(!is_dir(dirname($target)))mkdir(dirname($target),0700,true);
     file_put_contents($target,'OLD '.basename($path));
 }
-$manifest=['contract'=>'cdc-coral-scoped-astro-bundle-v1',
+$baseline=[];
+foreach(array_slice($paths,2) as $path)$baseline[$path]=hash_file('sha256',$web.'/'.$path);
+$manifest=['contract'=>'cdc-coral-scoped-astro-bundle-v1','baseSha256'=>$baseline,
     'creationId'=>'c-'.str_repeat('c',24),'creationVersion'=>4,
-    'requestId'=>$job,'recipeSlug'=>'amok-trey','publicSlug'=>$slug,
+    'requestId'=>$job,'recipeSlug'=>'test-recipe','publicSlug'=>$slug,
     'audioSha256'=>$audioSha,'sourceCommit'=>str_repeat('c',40),
     'sourceCommitVerified'=>true,'nativeBlueprintVerified'=>true,
     'mediaRightsVerified'=>true,'mediaImageSha256'=>str_repeat('b',64),
@@ -62,6 +64,9 @@ try {
     stageDenied(fn()=>cmsCoralStageAuthenticate($private,$cfg,'Bearer '.str_repeat('0',64)),
         'TOKEN_DENIED');
     $begin=$envelope+['op'=>'begin','manifest'=>$manifest];
+    file_put_contents($web.'/'.$paths[4],'Concurrent release');
+    stageDenied(fn()=>cmsCoralStageOperation($private,$web,$begin),'STALE_LIVE_BASELINE');
+    file_put_contents($web.'/'.$paths[4],'OLD '.basename($paths[4]));
     $res=cmsCoralStageOperation($private,$web,$begin);
     stageOk($res['stage']==='receiving','BEGIN');
     stageOk(cmsCoralStageOperation($private,$web,$begin)['stage']==='receiving',
@@ -70,6 +75,11 @@ try {
         ['op'=>'begin','manifest'=>array_replace($manifest,['audioSha256'=>str_repeat('f',64)])]),
         'CONFLICTING_MANIFEST');
     foreach($files as $path=>$bytes){
+        if($path===$paths[0]){
+            $partial=$private.'/coral-scoped-staging/'.$job.'/bundle/'.$path;
+            mkdir(dirname($partial),0700,true);
+            file_put_contents($partial,substr($bytes,0,500));
+        }
         $cursor=0;
         while($cursor<strlen($bytes)){
             $chunk=substr($bytes,$cursor,1024);

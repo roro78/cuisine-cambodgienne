@@ -4,8 +4,7 @@ declare(strict_types=1);
  * Same-host OVH publisher for an already approved, private Coral Astro bundle.
  * NOT a standalone HTTP endpoint. No credentials, SSH, GitHub or paid TTS.
  *
- * Deployment is deliberately not wired to the Studio UI before bundle delivery
- * and authenticated human release confirmation can be proven end-to-end.
+ * Called by the Studio under explicit publication or restoration approval.
  */
 if (isset($_SERVER['SCRIPT_FILENAME']) && realpath((string) $_SERVER['SCRIPT_FILENAME']) === __FILE__) {
     http_response_code(404);
@@ -13,6 +12,14 @@ if (isset($_SERVER['SCRIPT_FILENAME']) && realpath((string) $_SERVER['SCRIPT_FIL
 }
 function cmsCoralPublishFail(string $code): never {
     throw new RuntimeException('CORAL_PUBLISH_'.$code);
+}
+function cmsCoralPublishJournal(string $path, array $entry, string $error): void {
+    $json=json_encode($entry,JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES);
+    $temp=$path.'.'.bin2hex(random_bytes(8)).'.tmp';
+    try {
+        if (@file_put_contents($temp,$json,LOCK_EX)!==strlen($json)||
+            !@chmod($temp,0600)||!@rename($temp,$path)) cmsCoralPublishFail($error);
+    } finally { if (is_file($temp)) @unlink($temp); }
 }
 function cmsCoralPublishDigest(string $file, int $limit): array {
     if (is_link($file) || !is_file($file)) cmsCoralPublishFail('NOT_A_FILE');
@@ -67,7 +74,7 @@ function cmsCoralPublishManifest(array $manifest, array $preconditions): array {
         $paths[$name]=$entry;
     }
     $recipe=$manifest['recipeSlug']??null;$slug=$manifest['publicSlug']??null;
-    if (!is_string($recipe)||!preg_match('/^[a-z0-9][a-z0-9-]{2,99}$/D',$recipe)
+    if (!is_string($recipe)||$recipe==='amok-trey'||!preg_match('/^[a-z0-9][a-z0-9-]{2,99}$/D',$recipe)
         ||!is_string($slug)||!preg_match('/^[a-z0-9][a-z0-9-]{2,99}$/D',$slug))
         cmsCoralPublishFail('SLUG');
     $audioName='audio/workshops/atelier-pratique-'.$slug.'/atelier-coral-'.
@@ -146,11 +153,10 @@ function cmsCoralPublishBundle(
                 $backups[$name]=$before;
             } else $backups[$name]=null;
         }
-        $json=json_encode(['contract'=>'cdc-coral-ovh-before-write-v1',
-            'requestId'=>$request,'previous'=>$backups,
-            'expected'=>$manifest['files']],JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES);
-        if (@file_put_contents($backupDir.'/before-write.json',$json,LOCK_EX)!==strlen($json))
-            cmsCoralPublishFail('BACKUP_RECORD');
+        cmsCoralPublishJournal($backupDir.'/before-write.json',[
+            'contract'=>'cdc-coral-ovh-before-write-v1','requestId'=>$request,
+            'creationId'=>$manifest['creationId'],'previous'=>$backups,
+            'expected'=>$manifest['files']], 'BACKUP_RECORD');
         // Independent second authorization check under the same publish lock.
         if ($authorize($manifest)!==true) cmsCoralPublishFail('AUTHORITY_CHANGED');
         try {
@@ -181,9 +187,7 @@ function cmsCoralPublishBundle(
                 static fn($e)=>$e['sha256'],$manifest['files']),
             'backupDir'=>$backupDir,'httpReceptionVerified'=>false,
             'rollbackTestedOnLiveServer'=>false];
-        $json=json_encode($receipt,JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES);
-        if (@file_put_contents($backupDir.'/receipt.json',$json,LOCK_EX)!==strlen($json))
-            cmsCoralPublishFail('RECEIPT_WRITE');
+        cmsCoralPublishJournal($backupDir.'/receipt.json',$receipt,'RECEIPT_WRITE');
         return $receipt;
         } catch (Throwable $error) {
             $failures=[];
@@ -199,10 +203,9 @@ function cmsCoralPublishBundle(
                 }
             }
             if ($failures) cmsCoralPublishFail('ROLLBACK_FAILED');
-            $rollbackRecord=json_encode(['contract'=>'cdc-coral-ovh-rollback-v1',
-                'requestId'=>$request,'restored'=>true],JSON_THROW_ON_ERROR);
-            if (@file_put_contents($backupDir.'/rolled-back.json',$rollbackRecord,LOCK_EX)
-                !==strlen($rollbackRecord))cmsCoralPublishFail('ROLLBACK_MARKER');
+            cmsCoralPublishJournal($backupDir.'/rolled-back.json',[
+                'contract'=>'cdc-coral-ovh-rollback-v1','requestId'=>$request,'restored'=>true],
+                'ROLLBACK_MARKER');
             throw $error;
         }
     } finally {
@@ -218,7 +221,8 @@ function cmsCoralPublishBundle(
  * A foreign modification causes a hard stop BEFORE touching any file.
  */
 function cmsCoralPublishRecoverInterrupted(
-    string $private,string $webroot,string $requestId,callable $authorize
+    string $private,string $webroot,string $requestId,callable $authorize,
+    ?string $creationId=null
 ): array {
     if(!preg_match('/^[a-f0-9]{48}$/D',$requestId))
         cmsCoralPublishFail('RECOVERY_ID');
@@ -236,9 +240,8 @@ function cmsCoralPublishRecoverInterrupted(
     if(!$lock||!flock($lock,LOCK_EX))cmsCoralPublishFail('RECOVERY_LOCK');
     try{
         if($authorize($requestId)!==true)cmsCoralPublishFail('RECOVERY_AUTH');
-        if(is_file($backup.'/receipt.json'))cmsCoralPublishFail('RECOVERY_COMMITTED');
-        if(is_file($backup.'/rolled-back.json')||is_file($backup.'/recovered.json'))
-            return ['requestId'=>$requestId,'restored'=>true,'alreadyRestored'=>true];
+        if(is_file($backup.'/receipt.json')&&$creationId===null)
+            cmsCoralPublishFail('RECOVERY_COMMITTED');
         $record=$backup.'/before-write.json';
         if(is_link($record)||!is_file($record)||filesize($record)>64000)
             cmsCoralPublishFail('RECOVERY_RECORD');
@@ -247,8 +250,11 @@ function cmsCoralPublishRecoverInterrupted(
             ||($state['requestId']??null)!==$requestId
             ||!is_array($state['previous']??null)
             ||!is_array($state['expected']??null)
-            ||count($state['expected'])!==5)
+            ||count($state['expected'])!==5
+            ||($creationId!==null&&($state['creationId']??null)!==$creationId))
             cmsCoralPublishFail('RECOVERY_DATA');
+        if(is_file($backup.'/rolled-back.json')||is_file($backup.'/recovered.json'))
+            return ['requestId'=>$requestId,'restored'=>true,'alreadyRestored'=>true];
         $files=$state['expected'];
         $names=array_column($files,'path');
         if(count($names)!==5||!is_string($names[0]??null)
@@ -298,9 +304,7 @@ function cmsCoralPublishRecoverInterrupted(
         $result=['contract'=>'cdc-coral-ovh-recovery-v1',
             'requestId'=>$requestId,'restored'=>true,'alreadyRestored'=>false,
             'httpReceptionVerified'=>false];
-        $json=json_encode($result,JSON_THROW_ON_ERROR);
-        if(@file_put_contents($backup.'/recovered.json',$json,LOCK_EX)!==strlen($json))
-            cmsCoralPublishFail('RECOVERY_MARKER');
+        cmsCoralPublishJournal($backup.'/recovered.json',$result,'RECOVERY_MARKER');
         return $result;
     }finally{flock($lock,LOCK_UN);fclose($lock);}
 }

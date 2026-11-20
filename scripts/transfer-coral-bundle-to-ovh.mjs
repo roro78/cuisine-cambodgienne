@@ -49,6 +49,9 @@ export async function transferCoralBundle({bundle,send}){
  const paths=['audio/workshops/atelier-pratique-'+slug+'/atelier-coral-'+audio.slice(0,12)+'.mp3',
    'apprendre/pratique/'+slug+'/index.html',
    'recettes/'+recipe+'/index.html','apprendre/index.html','sitemap.xml'];
+ if(Object.keys(m.baseSha256??{}).join('\n')!==paths.slice(2).join('\n')||
+   Object.values(m.baseSha256).some(value=>!HASH.test(value)))
+   fail('BASELINE');
  if(m.files.some((e,i)=>e?.path!==paths[i]||!HASH.test(e.sha256??'')
    ||!Number.isInteger(e.bytes)||e.bytes<1||e.bytes>32000000||
    e.action!=='add-or-scoped-replace')||m.files[0].sha256!==audio)
@@ -96,6 +99,12 @@ function sender(token){
    return JSON.parse(data);
  };
 }
+export function transferCoralBundleToOvh({bundle,tokenFile}){
+ const token=readPrivateRuntimeSecret(tokenFile,{
+   minBytes:64,maxBytes:66,unavailable:'CORAL_STAGE_SECRET_UNAVAILABLE',
+   invalid:'CORAL_STAGE_SECRET_INVALID',validate:s=>/^[a-f0-9]{64}$/.test(s)});
+ return transferCoralBundle({bundle,send:sender(token)});
+}
 async function main(){
  const argv=process.argv.slice(2),args={};
  for(let i=0;i<argv.length;i+=2){
@@ -104,10 +113,7 @@ async function main(){
    args[argv[i]]=argv[i+1];
  }
  if(Object.keys(args).length!==2)fail('ARGS');
- const token=readPrivateRuntimeSecret(args['--token-file'],{
-   minBytes:64,maxBytes:66,unavailable:'CORAL_STAGE_SECRET_UNAVAILABLE',
-   invalid:'CORAL_STAGE_SECRET_INVALID',validate:s=>/^[a-f0-9]{64}$/.test(s)});
- const result=await transferCoralBundle({bundle:args['--bundle'],send:sender(token)});
+ const result=await transferCoralBundleToOvh({bundle:args['--bundle'],tokenFile:args['--token-file']});
  process.stdout.write('CORAL_OVH_BUNDLE_STAGED_NOT_PUBLISHED '+result.requestId.slice(0,12)+'\n');
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href)

@@ -45,7 +45,7 @@ $private=$root.'/private';$web=$root.'/public';
 mkdir($root,0700);mkdir($private,0700);mkdir($web,0700);
 $job=str_repeat('b',48);$id='c-'.str_repeat('c',24);
 $mp3='ID3'.str_repeat('S',4096);$audioSha=hash('sha256',$mp3);
-$slug='fresh-workshop';$recipe='amok-trey';
+$slug='fresh-workshop';$recipe='test-recipe';
 $audio='audio/workshops/atelier-pratique-'.$slug.'/atelier-coral-'.substr($audioSha,0,12).'.mp3';
 $paths=[$audio,'apprendre/pratique/'.$slug.'/index.html',
  'recettes/'.$recipe.'/index.html','apprendre/index.html','sitemap.xml'];
@@ -61,7 +61,9 @@ foreach(array_slice($paths,2) as $p){
  $file=$web.'/'.$p; if(!is_dir(dirname($file)))mkdir(dirname($file),0700,true);
  file_put_contents($file,'OLD '.basename($p));
 }
-$manifest=['contract'=>'cdc-coral-scoped-astro-bundle-v1',
+$baseline=[];
+foreach(array_slice($paths,2) as $path)$baseline[$path]=hash_file('sha256',$web.'/'.$path);
+$manifest=['contract'=>'cdc-coral-scoped-astro-bundle-v1','baseSha256'=>$baseline,
  'creationId'=>$id,'creationVersion'=>3,'requestId'=>$job,
  'recipeSlug'=>$recipe,'publicSlug'=>$slug,'audioSha256'=>$audioSha,
  'sourceCommit'=>str_repeat('a',40),'sourceCommitVerified'=>true,
@@ -128,6 +130,17 @@ try{
    assertPublish(file_get_contents($web.'/'.$path)===$content,'FIVE_FILES_ONLY');
  assertPublish(is_file($receipt['backupDir'].'/before-write.json'),'BACKUP');
  assertPublish($receipt['httpReceptionVerified']===false,'LIVE_HTTP_NOT_PRETENDED');
+ $restoreConfig=['coral_scoped_restore_qualified'=>true];
+ $panel=cmsCoralStudioRestorePanel($private,$current,'csrf-fixture',$restoreConfig);
+ assertPublish(str_contains($panel,'Restaurer la version précédente'),'COMMITTED_RESTORE_PANEL');
+ denyPublish(fn()=>cmsCoralStudioRecover(
+  $private,$web,$job,'c-'.str_repeat('f',24),true,true,$restoreConfig),'WRONG_CREATION');
+ $restored=cmsCoralStudioRecover(
+  $private,$web,$job,$current['id'],true,true,$restoreConfig);
+ assertPublish(($restored['restored']??false)===true,'COMMITTED_RESTORE');
+ foreach($baseline as $path=>$sha)
+  assertPublish(hash_file('sha256',$web.'/'.$path)===$sha,'RESTORED_SHA');
+ assertPublish(!file_exists($web.'/'.$paths[0])&&!file_exists($web.'/'.$paths[1]),'RESTORED_ADDITIONS');
  denyPublish(fn()=>cmsCoralStudioPublish(
    $private,$web,$current,$job,true,true,$cfg,[],[],[],[]),'NO_REPLAY');
  echo "CORAL_STUDIO_SCOPED_PUBLISH_OFFLINE_PASS\n";

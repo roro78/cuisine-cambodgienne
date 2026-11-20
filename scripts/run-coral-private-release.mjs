@@ -8,6 +8,7 @@
  *   --job-root /private/worker-jobs --job <48-hex> \
  *   --repo /private/pinned-git-repository --source-sha <40-hex> \
  *   --output-root /private/astro-releases --token-file /private/ovh-stage-token
+ * Run with --pending 1 instead of --job to process approved work from a timer.
  *
  * Provisioned host must have git, Node 22, npm, ffprobe and writable private
  * storage. The token is never printed. A fresh detached worktree is created
@@ -15,15 +16,18 @@
  * the owner later presses Publier on OVH.
  */
 import {createHash} from 'node:crypto';
-import {readFile,lstat,mkdir,realpath,writeFile} from 'node:fs/promises';
+import {readFile,lstat,mkdir,mkdtemp,realpath,writeFile,readdir,rename,rm} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 import {resolve,join,sep} from 'node:path';
 import {pathToFileURL} from 'node:url';
+import {transferCoralBundleToOvh} from './transfer-coral-bundle-to-ovh.mjs';
+import {snapshotCoralSharedPages} from './coral-preserve-published-pages.mjs';
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const fail=reason=>{throw Error('CORAL_PRIVATE_RELEASE_'+reason);};
 async function safeFile(path,max=90000){
  const info=await lstat(path);
- if(!info.isFile()||info.isSymbolicLink()||info.size<1||info.size>max)
+ if(!info.isFile()||info.isSymbolicLink()||info.size<1||info.size>max||
+   (process.platform!=='win32'&&(info.mode&0o077)!==0))
    fail('FILE');
  const b=await readFile(path);
  if(b.length!==info.size)fail('FILE_CHANGED');
@@ -40,7 +44,7 @@ export async function inspectCoralPrivateRelease({jobRoot,job}){
  if(!/^[a-f0-9]{48}$/.test(job??''))fail('JOB');
  const root=await safeDir(resolve(jobRoot)),folder=join(root,job),privateDir=join(folder,'real-tts');
  await safeDir(folder);await safeDir(privateDir);
- const request=JSON.parse((await safeFile(join(folder,'request.json'))).toString('utf8'));
+ const request=JSON.parse((await safeFile(join(folder,'request.json'),94096)).toString('utf8'));
  const packet=JSON.parse((await safeFile(join(privateDir,'private-build-inputs.json'))).toString('utf8'));
  const intent=JSON.parse((await safeFile(join(privateDir,'release-intent.json'))).toString('utf8'));
  const manifest=JSON.parse((await safeFile(join(privateDir,'manifest.json'))).toString('utf8'));
@@ -62,7 +66,8 @@ export async function inspectCoralPrivateRelease({jobRoot,job}){
  const bytes=await safeFile(audio,32000000);
  if(bytes.length!==manifest.bytes||sha(bytes)!==manifest.sha256)
    fail('AUDIO_SHA');
- return {packet:join(privateDir,'private-build-inputs.json'),audio,job};
+ return {packet:join(privateDir,'private-build-inputs.json'),audio,job,
+  audioSha256:manifest.sha256,intent};
 }
 function command(binary,args,cwd,timeout){
  try{execFileSync(binary,args,{cwd,timeout,stdio:'ignore',env:{
@@ -82,38 +87,88 @@ export async function runCoralPrivateRelease({
     worker===output||worker.startsWith(output+sep)||output.startsWith(worker+sep))
    fail('ROOT_CONFLICT');
  const dir=join(output,job);
- // Atomic exclusive directory claim means failed/uncertain runs require review;
- // no automated re-generation, re-synthesis or duplicate staging.
- await mkdir(dir,{mode:0o700});
- const checkout=join(dir,'checkout'),bundle=join(dir,'bundle');
- command('git',['worktree','add','--detach',checkout,sourceSha],git,120000);
- command('npm',['ci','--no-audit','--no-fund'],checkout,240000);
- command('node',['scripts/build-coral-private-astro-release.mjs',
-   '--packet',reviewed.packet,'--audio',reviewed.audio,
-   '--source-sha',sourceSha,'--out',bundle],checkout,240000);
- // Actual HTTPS transfer of public-only static assets to OVH private staging.
- // The target can never publish on this endpoint.
- command('node',['scripts/transfer-coral-bundle-to-ovh.mjs',
-   '--bundle',bundle,'--token-file',resolve(tokenFile)],checkout,240000);
+ await mkdir(dir,{recursive:true,mode:0o700});
+ await safeDir(dir);
+ const bundle=join(dir,'bundle');
+ let manifestBytes;
+ try{manifestBytes=await safeFile(join(bundle,'BUNDLE-MANIFEST-PRIVE.json'));}
+ catch(error){if(error.code!=='ENOENT')throw error;}
+ if(!manifestBytes){
+   const scratch=await mkdtemp(join(dir,'build-'));
+   const checkout=join(scratch,'checkout');
+   const scratchBundle=join(scratch,'bundle');
+   const baseline=join(scratch,'baseline');
+   let worktreeAdded=false;
+   try{
+     await snapshotCoralSharedPages({intent:reviewed.intent,directory:baseline});
+     command('git',['worktree','add','--detach',checkout,sourceSha],git,120000);
+     worktreeAdded=true;
+     command('npm',['ci','--no-audit','--no-fund'],checkout,240000);
+     command('node',['scripts/build-coral-private-astro-release.mjs',
+       '--packet',reviewed.packet,'--audio',reviewed.audio,
+       '--source-sha',sourceSha,'--out',scratchBundle,'--baseline',baseline],checkout,240000);
+     await rename(scratchBundle,bundle);
+   }finally{
+     if(worktreeAdded)command('git',['worktree','remove','--force',checkout],git,120000);
+     if(await safeDir(scratch)!==scratch)fail('ROOT_CONFLICT');
+     await rm(scratch,{recursive:true,force:true});
+   }
+   manifestBytes=await safeFile(join(bundle,'BUNDLE-MANIFEST-PRIVE.json'));
+ }
+ await safeDir(bundle);
+ const manifest=JSON.parse(manifestBytes.toString('utf8'));
+ if(manifest.sourceCommit!==sourceSha||manifest.requestId!==job||
+    manifest.audioSha256!==reviewed.audioSha256)
+   fail('BUNDLE_IDENTITY');
+ // The same sealed/partially received bundle may be sent again after a lost
+ // ACK. The PHP receiver compares bytes on replay and never publishes here.
+ await transferCoralBundleToOvh({bundle,tokenFile:resolve(tokenFile)});
  const receipt={contract:'cdc-coral-private-release-run-v1',
   requestId:job,sourceCommit:sourceSha,stagedOnly:true,published:false,
   completedAt:new Date().toISOString()};
- await writeFile(join(dir,'stage-receipt.json'),JSON.stringify(receipt)+'\n',
-   {flag:'wx',mode:0o600});
+ const receiptFile=join(dir,'stage-receipt.json');
+ try{await writeFile(receiptFile,JSON.stringify(receipt)+'\n',{flag:'wx',mode:0o600});}
+ catch(error){if(error.code!=='EEXIST')throw error;}
  return receipt;
+}
+export async function runPendingCoralPrivateReleases(options,{run=runCoralPrivateRelease}={}){
+ const root=await safeDir(resolve(options.jobRoot));
+ const output=await safeDir(resolve(options.outputRoot));
+ let staged=0,blocked=0;
+ for(const entry of (await readdir(root,{withFileTypes:true}))) {
+   const job=entry.name;
+   if(!entry.isDirectory()||!/^[a-f0-9]{48}$/.test(job))continue;
+   try{
+     await lstat(join(root,job,'real-tts','private-build-inputs.json'));
+   }catch(error){if(error.code==='ENOENT')continue;throw error;}
+   try{
+     await safeFile(join(output,job,'stage-receipt.json'));
+     continue;
+   }catch(error){if(error.code!=='ENOENT')throw error;}
+   try{await run({...options,job});staged++;}
+   catch(error){blocked++;}
+ }
+ return {staged,blocked};
 }
 async function main(){
  const argv=process.argv.slice(2),args={};
  for(let i=0;i<argv.length;i+=2){
-   if(!['--job-root','--job','--repo','--source-sha','--output-root','--token-file'].includes(argv[i])
+   if(!['--job-root','--job','--repo','--source-sha','--output-root','--token-file','--pending'].includes(argv[i])
      ||!argv[i+1]||Object.hasOwn(args,argv[i]))fail('ARGS');
    args[argv[i]]=argv[i+1];
  }
- if(Object.keys(args).length!==6)fail('ARGS');
- const result=await runCoralPrivateRelease({
+ if(Object.keys(args).length!==6||Boolean(args['--job'])===(args['--pending']==='1'))fail('ARGS');
+ const options={
    jobRoot:args['--job-root'],job:args['--job'],repo:args['--repo'],
    sourceSha:args['--source-sha'],outputRoot:args['--output-root'],
-   tokenFile:args['--token-file']});
+   tokenFile:args['--token-file']};
+ if(args['--pending']==='1'){
+   const result=await runPendingCoralPrivateReleases(options);
+   process.stdout.write('CORAL_PRIVATE_RELEASE_QUEUE staged='+result.staged+' blocked='+result.blocked+'\n');
+   if(result.blocked)process.exitCode=1;
+   return;
+ }
+ const result=await runCoralPrivateRelease(options);
  process.stdout.write('CORAL_PRIVATE_RELEASE_STAGED_ONLY '+result.requestId.slice(0,12)+'\n');
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href)

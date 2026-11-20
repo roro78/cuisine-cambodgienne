@@ -4,8 +4,9 @@ import {createHash} from 'node:crypto';
 import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {inspectCoralPrivateRelease} from '../scripts/run-coral-private-release.mjs';
+import {inspectCoralPrivateRelease,runPendingCoralPrivateReleases} from '../scripts/run-coral-private-release.mjs';
 const sha=data=>createHash('sha256').update(data).digest('hex');
+const privateWrite=(path,data)=>writeFile(path,data,{mode:0o600});
 async function fixture(){
  const jobRoot=await mkdtemp(join(tmpdir(),'coral-private-runner-'));
  const job='1'.repeat(48),folder=join(jobRoot,job,'real-tts');
@@ -17,15 +18,15 @@ async function fixture(){
  const intent={request_id:job,creation_id:'c-'+'2'.repeat(24),
   creation_version:3,mp3_sha256:audioHash,mp3_bytes:audio.length};
  const source={id:intent.creation_id,version:intent.creation_version,kind:'atelier'};
- await writeFile(join(jobRoot,job,'request.json'),JSON.stringify({
+ await privateWrite(join(jobRoot,job,'request.json'),JSON.stringify({
   id:job,request:{request_id:job,contract:'cdc-coral-private-speech-request-v1'}}));
- await writeFile(join(folder,'private-build-inputs.json'),JSON.stringify({
+ await privateWrite(join(folder,'private-build-inputs.json'),JSON.stringify({
   contract:'cdc-coral-studio-private-build-inputs-v1',intent,source,profile:{}}));
- await writeFile(join(folder,'release-intent.json'),JSON.stringify(intent));
- await writeFile(join(folder,'manifest.json'),JSON.stringify(manifest));
- await writeFile(join(folder,'state.json'),JSON.stringify({
+ await privateWrite(join(folder,'release-intent.json'),JSON.stringify(intent));
+ await privateWrite(join(folder,'manifest.json'),JSON.stringify(manifest));
+ await privateWrite(join(folder,'state.json'),JSON.stringify({
   status:'succeeded',manifest_sha256:audioHash}));
- await writeFile(join(folder,manifest.file),audio);
+ await privateWrite(join(folder,manifest.file),audio);
  return {jobRoot,job,folder,manifest,audio};
 }
 test('runner takes exact immutable Coral job/audio without any TTS or public write',async()=>{
@@ -37,6 +38,23 @@ test('runner takes exact immutable Coral job/audio without any TTS or public wri
   assert.match(r.packet,/private-build-inputs\.json$/);
   assert.equal((await readFile(join(f.folder,'state.json'),'utf8')).includes('succeeded'),true);
  }finally{await rm(f.jobRoot,{recursive:true,force:true});}
+});
+test('scheduled runner takes only jobs with approved build inputs and skips receipts',async()=>{
+ const f=await fixture(),outputRoot=await mkdtemp(join(tmpdir(),'coral-private-pending-'));
+ const attempted=[];
+ const run=async({job})=>{await inspectCoralPrivateRelease({jobRoot:f.jobRoot,job});attempted.push(job);};
+ const options={jobRoot:f.jobRoot,outputRoot};
+ try{
+  await mkdir(join(f.jobRoot,'2'.repeat(48),'real-tts'),{recursive:true,mode:0o700});
+  assert.deepEqual(await runPendingCoralPrivateReleases(options,{run}),{staged:1,blocked:0});
+  await mkdir(join(outputRoot,f.job),{mode:0o700});
+  await privateWrite(join(outputRoot,f.job,'stage-receipt.json'),'{}');
+  assert.deepEqual(await runPendingCoralPrivateReleases(options,{run}),{staged:0,blocked:0});
+  assert.deepEqual(attempted,[f.job]);
+ }finally{
+  await rm(f.jobRoot,{recursive:true,force:true});
+  await rm(outputRoot,{recursive:true,force:true});
+ }
 });
 test('runner refuses corrupt audio, source identity or stage contract',async()=>{
  const f=await fixture();
