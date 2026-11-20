@@ -112,3 +112,18 @@ rollback testé et la réception sur mobile physique. La publication automatique
 ne doit pas réutiliser `deploy-ovh.yml` pour contourner les dossiers PHP
 protégés. Aucun accès mutualisé ni secret n'est nécessaire aux présents
 contrôles isolés.
+
+
+## 20 novembre 2026 — Liaison de l'approbation audio à la file privée de publication
+
+**Le raccordement a été implémenté sur la PR #236, sans serveur nouveau :**
+
+1. Dans le Studio privé, une fois l'écoute **intégrale et les sept repères** approuvés, une deuxième décision explicite autorise la **préparation** de la publication. Son journal `tts-real-publication-*.json` est append-only, versionné, lié au SHA du MP3, révocable, distinct de l'écoute et des droits TTS.
+2. Le Studio forme une enveloppe `cdc-coral-studio-release-intent-v1` contenant **uniquement** l'identité et la version du brouillon, l'empreinte de liaison, les sept SHA de textes (sans textes privés), l'empreinte/taille/durée du MP3, les sept repères, et des chemins publics **candidats**. Elle contient explicitement `publication_ready:false` et `deployment_triggered:false`.
+3. Le contrôleur PHP transmet cette enveloppe via **le même** jeton serveur-à-serveur HTTPS déjà utilisé pour Coral, sur `POST /editorial-ai/v1/jobs/<id>/release`. Le worker conserve un `release-intent.json` privé, durable et idempotent, sans appel TTS. Le suivi existant renvoie `release_staged`. Si l'accusé est incertain, le Studio montre un bouton pour renvoyer **le même** contrat ; il ne rejoue jamais une génération payante.
+4. `scripts/package-coral-approved-release.mjs` lit l'intention, le MP3 privé déjà obtenu et **un build Astro ayant déjà le blueprint publié en candidat**. Il vérifie le SHA du MP3 et les liens sur les pages/recette/catalogue/sitemap, puis fabrique un lot isolé de **cinq fichiers maximum** avec manifeste de SHA. Ce script ne contacte ni GitHub ni OVH et ne modifie pas le site.
+5. Les tests synthétiques PHP et Node contrôlent la séparation des visas, la révocation, la version, le SHA, la validation de l'enveloppe, la route HTTPS authentifiée, l'idempotence de la file et l'absence de publication. Le Dockerfile du worker inclut le validateur de contrat.
+
+**Limites non masquées :** la nouvelle création n'est toujours pas convertie automatiquement en blueprint Astro natif et inscrite dans `cookingWorkshopGuides.ts` ; la qualification des droits visuels n'est pas remplacée par le visa audio ; aucune chaîne vérifiée ne sauvegarde/restaure les fichiers OVH et ne transfère de lot ciblé en production. La branche `ovh-production` ne doit pas être poussée depuis une simple intention de publication. **Le worker n'exécute aucun déploiement**, y compris quand `release_staged:true`. Le code est un candidat non installé sur le VPS ni le Studio.
+
+Pour atteindre le véritable « Publier » sans FileZilla : terminer la projection Astro depuis le CMS, choisir et qualifier une méthode de livraison OVH authentifiée, avec inventaire, sauvegarde réelle, comparaison de SHA, rollback et accusé HTTP. Cela nécessite une réception technique propre et **ne se déduit pas** d'une CI verte.
