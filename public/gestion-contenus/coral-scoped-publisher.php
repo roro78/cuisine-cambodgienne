@@ -104,11 +104,11 @@ function cmsCoralPublishBundle(
     cmsCoralPublishSecureDir($webroot,false);
     $realPrivate=realpath($private);$realWeb=realpath($webroot);
     if (!$realPrivate || !$realWeb || $realPrivate===$realWeb
-        || str_starts_with($realPrivate,$realWeb.'/'))
+        || str_starts_with($realPrivate,rtrim($realWeb,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR))
         cmsCoralPublishFail('BACKUP_MUST_BE_PRIVATE');
     $realBundle=realpath($bundle);
     if (!$realBundle || !is_dir($bundle) || is_link($bundle)
-        || !str_starts_with($realBundle,$realPrivate.'/'))
+        || !str_starts_with($realBundle,rtrim($realPrivate,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR))
         cmsCoralPublishFail('PRIVATE_BUNDLE_REQUIRED');
     $manifestPath=$realBundle.'/BUNDLE-MANIFEST-PRIVE.json';
     $raw=@file_get_contents($manifestPath);
@@ -155,7 +155,7 @@ function cmsCoralPublishBundle(
         }
         cmsCoralPublishJournal($backupDir.'/before-write.json',[
             'contract'=>'cdc-coral-ovh-before-write-v1','requestId'=>$request,
-            'creationId'=>$manifest['creationId'],'previous'=>$backups,
+            'creationId'=>$manifest['creationId'],'previous'=>$expectedLive,
             'expected'=>$manifest['files']], 'BACKUP_RECORD');
         // Independent second authorization check under the same publish lock.
         if ($authorize($manifest)!==true) cmsCoralPublishFail('AUTHORITY_CHANGED');
@@ -230,7 +230,7 @@ function cmsCoralPublishRecoverInterrupted(
     cmsCoralPublishSecureDir($webroot,false);
     $realPrivate=realpath($private);$realWeb=realpath($webroot);
     if(!$realPrivate||!$realWeb||$realPrivate===$realWeb
-        ||str_starts_with($realPrivate,$realWeb.'/'))
+        ||str_starts_with($realPrivate,rtrim($realWeb,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR))
         cmsCoralPublishFail('RECOVERY_ROOT');
     $releases=$realPrivate.'/coral-scoped-releases';
     cmsCoralPublishSecureDir($releases,false);
@@ -268,14 +268,18 @@ function cmsCoralPublishRecoverInterrupted(
             'deployable'=>false,'published'=>false,
             'sourceCommitVerified'=>true,'nativeBlueprintVerified'=>true,'mediaRightsVerified'=>true,
             'files'=>$files];
-        $names=cmsCoralPublishManifest($manifest,$state['previous']);
+        // Earlier journals stored {bytes, sha256}; newer journals store the
+        // already verified hash directly. In both cases, reread each backup.
+        $previous=array_map(static fn($entry)=>is_array($entry)?
+            ($entry['sha256']??false):$entry,$state['previous']);
+        $names=cmsCoralPublishManifest($manifest,$previous);
         if(substr($manifest['audioSha256'],0,12)!==$match[2])
             cmsCoralPublishFail('RECOVERY_AUDIO');
         $current=[];
         foreach($names as $i=>$name){
             $target=cmsCoralPublishTarget($realWeb,$name);
             $now=is_file($target)?cmsCoralPublishDigest($target,32000000)['sha256']:null;
-            $before=$state['previous'][$name];
+            $before=$previous[$name];
             if($now!==$before&&$now!==$files[$i]['sha256'])
                 cmsCoralPublishFail('RECOVERY_FOREIGN_CHANGE');
             if($before!==null){
@@ -288,9 +292,9 @@ function cmsCoralPublishRecoverInterrupted(
         // All validation above has succeeded; each step is idempotent even
         // if PHP is forcibly killed partway through this recovery.
         foreach(array_reverse($names) as $name){
-            if($current[$name]===$state['previous'][$name])continue;
+            if($current[$name]===$previous[$name])continue;
             $target=$realWeb.'/'.$name;
-            $before=$state['previous'][$name];
+            $before=$previous[$name];
             if($before===null){
                 if(!@unlink($target))cmsCoralPublishFail('RECOVERY_UNLINK');
             }else{

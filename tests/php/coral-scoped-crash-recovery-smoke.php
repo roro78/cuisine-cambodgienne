@@ -48,7 +48,8 @@ foreach($paths as $name){
     }
 }
 $previous=[];
-foreach($before as $p=>$bytes)$previous[$p]=$bytes===null?null:hash('sha256',$bytes);
+foreach($before as $p=>$bytes)$previous[$p]=$bytes===null?null:[
+ 'bytes'=>strlen($bytes),'sha256'=>hash('sha256',$bytes)];
 file_put_contents($backup.'/before-write.json',json_encode([
  'contract'=>'cdc-coral-ovh-before-write-v1','requestId'=>$job,
  'previous'=>$previous,'expected'=>$expected],JSON_THROW_ON_ERROR));
