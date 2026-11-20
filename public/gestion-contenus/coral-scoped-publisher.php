@@ -176,6 +176,15 @@ function cmsCoralPublishBundle(
                 }
                 if ($fault!==null) $fault($index,$name);
             }
+        $receipt=['contract'=>'cdc-coral-ovh-local-receipt-v1',
+            'requestId'=>$request,'fileCount'=>5,'liveSha256'=>array_map(
+                static fn($e)=>$e['sha256'],$manifest['files']),
+            'backupDir'=>$backupDir,'httpReceptionVerified'=>false,
+            'rollbackTestedOnLiveServer'=>false];
+        $json=json_encode($receipt,JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES);
+        if (@file_put_contents($backupDir.'/receipt.json',$json,LOCK_EX)!==strlen($json))
+            cmsCoralPublishFail('RECEIPT_WRITE');
+        return $receipt;
         } catch (Throwable $error) {
             $failures=[];
             foreach (array_reverse($installed) as $name) {
@@ -192,15 +201,6 @@ function cmsCoralPublishBundle(
             if ($failures) cmsCoralPublishFail('ROLLBACK_FAILED');
             throw $error;
         }
-        $receipt=['contract'=>'cdc-coral-ovh-local-receipt-v1',
-            'requestId'=>$request,'fileCount'=>5,'liveSha256'=>array_map(
-                static fn($e)=>$e['sha256'],$manifest['files']),
-            'backupDir'=>$backupDir,'httpReceptionVerified'=>false,
-            'rollbackTestedOnLiveServer'=>false];
-        $json=json_encode($receipt,JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES);
-        if (@file_put_contents($backupDir.'/receipt.json',$json,LOCK_EX)!==strlen($json))
-            cmsCoralPublishFail('RECEIPT_WRITE');
-        return $receipt;
     } finally {
         flock($lock,LOCK_UN);fclose($lock);
     }
