@@ -3,6 +3,7 @@ declare(strict_types=1);
 /** Private editorial CMS P0: preview and immutable drafts only, no publishing. */
 require_once __DIR__.'/lib.php';
 require_once __DIR__.'/coral-v2-ai.php';
+require_once __DIR__.'/coral-astro-review.php';
 $realSpeechModulesPresent=is_file(__DIR__.'/coral-real-speech-request.php')&&is_file(__DIR__.'/coral-real-speech-bridge.php');
 if($realSpeechModulesPresent){
     require_once __DIR__.'/coral-real-speech-request.php';
@@ -434,6 +435,7 @@ if($method==='POST'){
             ['csrf','export_narrations','creation_id','expected_version']))) {
         http_response_code(422);exit('Action invalide.');
     }
+    if(isset($_POST['astro_review_action'])&&count(array_intersect(['astro_review_action','tts_action','create_save','visual_action','review_action','culinary_action','final_review_action','correction_action','save','studio_transition','login','logout'],array_keys($_POST)))!==1){http_response_code(422);exit('Action invalide.');}
     if(isset($_POST['tts_action'])&&count(array_intersect(['tts_action','create_save','ai_brief_generate','ai_content_generate',
         'ai_content_discard','review_action','culinary_action','save','studio_transition','export_review','visual_action','coral_prepare','prepare_next_workshop','final_review_action','correction_action','login','logout'],array_keys($_POST)))!==1){
         http_response_code(422);exit('Action invalide.');
@@ -487,7 +489,7 @@ $filtersUrl=http_build_query($filters,'','&',PHP_QUERY_RFC3986);
 // A new editorial idea is deliberately distinct from a published source ID.
 // Both paths still use the SAME authenticated Studio and shared field renderer.
 $newMode=isset($_GET['new']) || ($method==='POST'
-    && (isset($_POST['tts_action']) || isset($_POST['visual_action']) || isset($_POST['create_save']) || isset($_POST['ai_brief_generate'])
+    && (isset($_POST['tts_action']) || isset($_POST['astro_review_action']) || isset($_POST['visual_action']) || isset($_POST['create_save']) || isset($_POST['ai_brief_generate'])
         || isset($_POST['ai_content_generate']) || isset($_POST['ai_content_discard'])
         || isset($_POST['review_action']) || isset($_POST['culinary_action']) || isset($_POST['final_review_action']) || isset($_POST['correction_action']) || isset($_POST['export_narrations'])));
 $createKind=is_string($_POST['kind']??null)?$_POST['kind']:
@@ -650,6 +652,32 @@ if($auth){
                 http_response_code(409);
                 exit('Export des narrations refusé : version modifiée, textes incomplets ou session expirée. '
                     .'Actualisez la fiche puis réessayez. Aucun texte ni MP3 modifié.');
+            }
+        }
+        if($method==='POST'&&isset($_POST['astro_review_action'])){
+            try{
+                if(!$auth||$creation===null||$createKind!=='atelier'||!$studioSourceCurrent
+                    ||$realTtsSettings===null)throw new RuntimeException('ASTRO_REVIEW_DISABLED');
+                $version=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
+                    ['options'=>['min_range'=>1,'max_range'=>9999]]);
+                if($version===false||$version!==$creation['version'])
+                    throw new RuntimeException('ASTRO_REVIEW_STALE');
+                $job=is_string($_POST['tts_job']??null)?$_POST['tts_job']:'';
+                $action=is_string($_POST['astro_review_action']??null)
+                    ?$_POST['astro_review_action']:'';
+                $form=is_array($_POST['astro_review']??null)?$_POST['astro_review']:[];
+                $note=is_string($_POST['astro_review_note']??null)
+                    ?$_POST['astro_review_note']:'';
+                $checked=($_POST['astro_review_confirm']??null)==='1';
+                $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);
+                cmsAssertGuidedCoverage($guides,$canonicalById);
+                cmsCoralAstroReviewAction($private,$creation,$job,$action,$form,$note,
+                    $checked,$auth,$realTtsSettings,$catalog,$canonicalById,$guides);
+                header('Location: ?new=1&cid='.rawurlencode($creation['id'])
+                    .'&'.$filtersUrl.'#cms-astro-review',true,303);exit;
+            }catch(Throwable $e){
+                http_response_code(409);
+                $error='Validation Astro refusée : contrôlez le visuel, les droits, les tests réels, le MP3 et la version du brouillon. Aucune publication.';
             }
         }
         if($method==='POST'&&isset($_POST['tts_action'])){
