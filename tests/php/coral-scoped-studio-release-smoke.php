@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require __DIR__.'/../../public/gestion-contenus/coral-scoped-studio-release.php';
+function cmsEsc(string $value): string {return htmlspecialchars($value,ENT_QUOTES|ENT_SUBSTITUTE,'UTF-8');}
 function cmsCreationDir(string $p): string {return $p.'/drafts';}
 function cmsCreationRead(string $p,string $id): ?array {
     return $GLOBALS['current_record']??null;
