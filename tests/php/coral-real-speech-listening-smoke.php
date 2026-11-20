@@ -79,23 +79,25 @@ try {
     $dir.'/tts-real-listening-'.$record['id'].'.0001.json'),'CHAIN_HASH');
   // Public release has an independent, revocable human authorization.
   $releaseChecks=['reviewed_page'=>'1','audio_checksum'=>'1','publish_requested'=>'1'];
+  $publicationArtifact=hash('sha256',$sha.'|'.cmsCoralTtsJournal(
+    $dir,$record['id'],'real-listening')['last_hash']);
   $releaseNote='Publication synthétique : page et voix relues sans mise en ligne.';
   check(!cmsCoralRealSpeechPublicationApproved($private,$record,$manifest,[],[],[]),'NO_PUBLICATION_CONSENT');
   refused(static fn()=>cmsCoralTtsDecision($private,$record['id'],4,'real-publication','approve',
     ['audio_checksum'=>'1','reviewed_page'=>'1','publish_requested'=>'1'],
-    $releaseNote,true,true,[],[],[],$sha),'RELEASE_CHECK_ORDER');
+    $releaseNote,true,true,[],[],[],$publicationArtifact),'RELEASE_CHECK_ORDER');
   cmsCoralTtsDecision($private,$record['id'],4,'real-publication','approve',
-    $releaseChecks,$releaseNote,true,true,[],[],[],$sha);
+    $releaseChecks,$releaseNote,true,true,[],[],[],$publicationArtifact);
   check(cmsCoralRealSpeechPublicationApproved($private,$record,$manifest,[],[],[]),'RELEASE_CONSENT');
   check(!cmsCoralRealSpeechPublicationApproved($private,$record,
     ['request_id'=>str_repeat('e',48),'sha256'=>str_repeat('b',64)],[],[],[]),'RELEASE_AUDIO_CHANGED');
   refused(static fn()=>cmsCoralTtsDecision($private,$record['id'],4,'real-publication','approve',
-    $releaseChecks,$releaseNote,true,true,[],[],[],$sha),'RELEASE_DOUBLE_CLICK');
+    $releaseChecks,$releaseNote,true,true,[],[],[],$publicationArtifact),'RELEASE_DOUBLE_CLICK');
   cmsCoralTtsDecision($private,$record['id'],4,'real-publication','revoke',
-    [],$releaseNote,true,true,[],[],[],$sha);
+    [],$releaseNote,true,true,[],[],[],$publicationArtifact);
   check(!cmsCoralRealSpeechPublicationApproved($private,$record,$manifest,[],[],[]),'RELEASE_REVOKED');
   cmsCoralTtsDecision($private,$record['id'],4,'real-publication','approve',
-    $releaseChecks,$releaseNote,true,true,[],[],[],$sha);
+    $releaseChecks,$releaseNote,true,true,[],[],[],$publicationArtifact);
   check(cmsCoralRealSpeechPublicationApproved($private,$record,$manifest,[],[],[]),'RELEASE_REAPPROVED');
   $rightsCurrent=false;
   check(!cmsCoralRealSpeechPublicationApproved($private,$record,$manifest,[],[],[]),'RELEASE_RIGHTS_REVOKED');
@@ -106,7 +108,14 @@ try {
   check(!cmsCoralRealSpeechPublicationApproved($private,$record,$manifest,[],[],[]),'RELEASE_LISTENING_REVOKED');
   cmsCoralTtsDecision($private,$record['id'],4,'real-listening','approve',
     $checks,$notes,true,true,[],[],[],$sha);
-  check(cmsCoralRealSpeechPublicationApproved($private,$record,$manifest,[],[],[]),'RELEASE_CONSENT_RESTORED');
+  check(!cmsCoralRealSpeechPublicationApproved($private,$record,$manifest,[],[],[]),
+    'OLD_RELEASE_MUST_NOT_RESURRECT_AFTER_LISTENING_REAPPROVAL');
+  $newPublicationArtifact=hash('sha256',$sha.'|'.cmsCoralTtsJournal(
+    $dir,$record['id'],'real-listening')['last_hash']);
+  cmsCoralTtsDecision($private,$record['id'],4,'real-publication','approve',
+    $releaseChecks,$releaseNote,true,true,[],[],[],$newPublicationArtifact);
+  check(cmsCoralRealSpeechPublicationApproved($private,$record,$manifest,[],[],[]),
+    'FRESH_RELEASE_APPROVAL_REQUIRED');
   // The release contract is strictly a no-text candidate; it cannot turn
   // a Studio approval into a live deploy authorization.
   $source=[
