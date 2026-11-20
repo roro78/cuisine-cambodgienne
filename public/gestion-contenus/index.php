@@ -408,6 +408,39 @@ if($method==='GET'&&isset($_GET['tts_real_release'])){
         echo $json;exit;
     }catch(Throwable $e){http_response_code(404);exit('Préparation de publication indisponible.');}
 }
+// Private read-only export of the EXACT currently approved native Astro profile.
+// A file download, not a publish or a raw public source exposure.
+if($method==='GET'&&isset($_GET['astro_review_profile'])){
+    if(!$auth){http_response_code(403);exit('Connexion privée requise.');}
+    try {
+        if($realTtsSettings===null)throw new RuntimeException('ASTRO_REVIEW_DISABLED');
+        $id=cmsCreationId($_GET['cid']??null);
+        $job=is_string($_GET['astro_review_profile'])?$_GET['astro_review_profile']:'';
+        if($id===null||!preg_match('/^[a-f0-9]{48}$/D',$job))
+            throw new RuntimeException('ASTRO_REVIEW_JOB');
+        $record=cmsCreationRead(cmsCreationDir($private),$id);
+        if(!is_array($record))throw new RuntimeException('ASTRO_REVIEW_DRAFT');
+        $feed=cmsSourceList(cmsGetFeed()??[]);
+        $canon=cmsCanonicalSourceList(cmsGetEditorialIndex()??[],$feed);
+        $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canon);
+        cmsAssertGuidedCoverage($guides,$canon);
+        $request=cmsCoralRealSpeechApprovedRequest($private,$record,$feed,$canon,$guides);
+        if(!hash_equals($request['request_id'],$job))throw new RuntimeException('ASTRO_REVIEW_STALE');
+        $state=cmsCoralRealSpeechObserve(
+            $private,$id,$job,$realTtsSettings,$feed,$canon,$guides);
+        if(($state['status']??null)!=='succeeded'||!is_array($state['manifest']??null))
+            throw new RuntimeException('ASTRO_REVIEW_AUDIO');
+        $profile=cmsCoralAstroReviewCurrent(
+            $private,$record,$state['manifest'],$feed,$canon,$guides);
+        if($profile===null)throw new RuntimeException('ASTRO_REVIEW_NOT_APPROVED');
+        $json=json_encode($profile,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+        header('Content-Type: application/json; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="coral-astro-review-'.substr($job,0,12).'.json"');
+        header('Cache-Control: no-store, private, max-age=0');
+        header('X-Content-Type-Options: nosniff');
+        echo $json;exit;
+    }catch(Throwable $e){http_response_code(404);exit('Profil Astro privé indisponible.');}
+}
 // Authenticated binary reads must not rerun editor/AI intent initialization.
 if($method==='GET'&&$auth&&isset($_GET['visual_file'])){
     try{
