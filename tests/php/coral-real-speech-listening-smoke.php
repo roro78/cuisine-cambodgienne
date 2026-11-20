@@ -18,8 +18,10 @@ function cmsCreationText($value,$max): string {
   return trim($value);
 }
 function mbLen($value): int {return mb_strlen($value);}
-function cmsCoralTtsBinding($r,$catalog,$canonical,$guided): array {
-  return ['binding_sha256'=>hash('sha256',$r['id'].'|'.$r['version'])];
+function cmsAtelierCulinaryContext($r,$catalog,$canonical,$guided): array {
+  // Fixed synthetic, verified recipe binding context for the genuine Coral
+  // journal helper. Do not override cmsCoralTtsBinding itself.
+  return ['recipe_sha256'=>str_repeat('d',64),'context'=>'fiction for offline tests'];
 }
 $rightsCurrent=true;
 function cmsCoralRealSpeechApprovedRequest($root,$draft,$cat,$can,$guid): array {
@@ -120,7 +122,7 @@ try {
   // a Studio approval into a live deploy authorization.
   $source=[
     'request_id'=>str_repeat('e',48),'creation_id'=>$record['id'],
-    'creation_version'=>4,'binding_sha256'=>hash('sha256',$record['id'].'|4'),
+    'creation_version'=>4,'binding_sha256'=>cmsCoralTtsBinding($record,[],[],[])['binding_sha256'],
     'recipe_sha256'=>str_repeat('c',64),
     'chapters'=>array_map(static fn($id)=>['id'=>$id,'text'=>str_repeat('private-text',20),
       'sha256'=>hash('sha256','synthetic-'.$id)],
