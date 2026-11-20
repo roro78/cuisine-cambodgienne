@@ -1,0 +1,4 @@
+releases/amok-trey-v4/*.html -text
+releases/amok-trey-v4/*.js -text
+releases/amok-trey-v4/*.json text eol=lf
+releases/amok-trey-v4/*.md text eol=lf

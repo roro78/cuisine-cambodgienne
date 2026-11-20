@@ -315,6 +315,14 @@ jobs:
         id: chrome
         uses: browser-actions/setup-chrome@v2
 
+      - name: Amok V4 portions and exact release reconstruction
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: |
+          node tests/amok-v4-portions-browser.mjs
+          npm run package:amok-v4
+          node --test tests/amok-v4-packaging.test.mjs
+
       - name: Browser journey and A4 print styles
         env:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
