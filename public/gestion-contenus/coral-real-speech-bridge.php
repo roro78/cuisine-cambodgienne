@@ -26,17 +26,17 @@ function cmsCoralRealSpeechSettings(array $cfg,string $private): ?array {
 function cmsCoralRealSpeechTransport(array $settings,string $job,string $verb,?array $request=null): array|string {
   if(!preg_match('/^[a-f0-9]{48}$/D',$job)
     ||($settings['base']??null)!=='https://n8n.orvekio.com/editorial-ai/v1/jobs'
-    ||!in_array($verb,['submit','poll','audio','preview','resume'],true)||!function_exists('curl_init'))
+    ||!in_array($verb,['submit','poll','audio','preview','resume','release'],true)||!function_exists('curl_init'))
     throw new RuntimeException('REAL_TTS_GATEWAY');
   $body=$request===null?null:json_encode($request,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
-  if(($verb==='submit')!==($body!==null)||($body!==null&&strlen($body)>90000))
+  if(in_array($verb,['submit','release'],true)!==($body!==null)||($body!==null&&strlen($body)>90000))
     throw new RuntimeException('REAL_TTS_REQUEST');
-  $url=$settings['base'].'/'.$job.(in_array($verb,['audio','preview','resume'],true)?'/'.$verb:'');
+  $url=$settings['base'].'/'.$job.(in_array($verb,['audio','preview','resume','release'],true)?'/'.$verb:'');
   $curl=curl_init($url);if($curl===false)throw new RuntimeException('REAL_TTS_GATEWAY');
   $raw='';$max=in_array($verb,['audio','preview'],true)?32000000:150000;
   try {
     curl_setopt_array($curl,[
-      CURLOPT_CUSTOMREQUEST=>$verb==='submit'?'PUT':($verb==='resume'?'POST':'GET'),
+      CURLOPT_CUSTOMREQUEST=>$verb==='submit'?'PUT':(in_array($verb,['resume','release'],true)?'POST':'GET'),
       CURLOPT_FOLLOWLOCATION=>false,CURLOPT_SSL_VERIFYPEER=>true,
       CURLOPT_SSL_VERIFYHOST=>2,CURLOPT_CONNECTTIMEOUT=>4,
       CURLOPT_TIMEOUT=>$verb==='audio'?40:12,
@@ -55,7 +55,7 @@ function cmsCoralRealSpeechTransport(array $settings,string $job,string $verb,?a
     elseif(defined('CURLOPT_PROTOCOLS'))curl_setopt($curl,CURLOPT_PROTOCOLS,CURLPROTO_HTTPS);
     $ok=curl_exec($curl);$code=(int)curl_getinfo($curl,CURLINFO_RESPONSE_CODE);
     $mime=(string)curl_getinfo($curl,CURLINFO_CONTENT_TYPE);
-    if($ok!==true||!in_array($code,in_array($verb,['submit','resume'],true)?[200,202]:[200],true))
+    if($ok!==true||!in_array($code,in_array($verb,['submit','resume','release'],true)?[200,202]:[200],true))
       throw new RuntimeException('REAL_TTS_GATEWAY_UNCERTAIN');
     if($verb==='audio'||$verb==='preview'){
       $mimeExpected=$verb==='preview'?'~^audio/(wav|x-wav)(?:;|$)~i':'~^audio/(mpeg|mp3)(?:;|$)~i';
@@ -336,6 +336,22 @@ function cmsCoralRealSpeechReleaseIntent(
   return cmsCoralRealSpeechReleaseEnvelope($r,$m,$ref,$record);
 }
 
+/** The Studio submits a consented, no-text release intent to its EXISTING
+ * private HTTPS worker. The worker stores it but MUST NOT publish to OVH.
+ * Replays of the same intent are idempotent, no speech is regenerated.
+ */
+function cmsCoralRealSpeechStageRelease(
+ string $private,array $record,string $job,array $settings,
+ array $catalog,array $canonical,array $guided
+): array {
+  $intent=cmsCoralRealSpeechReleaseIntent(
+    $private,$record,$job,$settings,$catalog,$canonical,$guided);
+  $state=cmsCoralRealSpeechTransport($settings,$job,'release',$intent);
+  if(!is_array($state)||($state['release_staged']??false)!==true)
+    throw new RuntimeException('CORAL_RELEASE_NOT_STAGED');
+  return $state;
+}
+
 /** One-click real generation; texts and bearer never appear in browser markup. */
 function cmsCoralRealSpeechProductionPanel(
  string $private,array $record,array $catalog,array $canonical,array $guided,
@@ -439,6 +455,19 @@ function cmsCoralRealSpeechProductionPanel(
          if($releaseApproved){
            $intentUrl='?new=1&amp;cid='.cmsEsc($id).'&amp;tts_real_release='.cmsEsc($job);
            $html.='<p><a href="'.$intentUrl.'">Exporter le contrat privé de publication (sans textes ni secrets)</a></p>';
+           if(($s['release_staged']??false)===true){
+             $html.='<p data-real-release-stage="ready">Contrat transmis à la file privée, aucun fichier public remplacé.</p>';
+           }else{
+             $html.='<p data-real-release-stage="pending">Accord enregistré, contrat pas encore reçu par la file privée.</p>'
+               .'<form method="post" class="stack" action="'.$url.'#cms-real-tts">'
+               .'<input type="hidden" name="csrf" value="'.cmsEsc($csrf).'">'
+               .'<input type="hidden" name="creation_id" value="'.cmsEsc($id).'">'
+               .'<input type="hidden" name="expected_version" value="'.(int)$version.'">'
+               .'<input type="hidden" name="tts_job" value="'.cmsEsc($job).'">'
+               .'<label><input type="checkbox" name="tts_confirm" value="1" required> '
+               .'Renvoyer le même contrat approuvé à la file privée, sans appel TTS ni publication OVH.</label>'
+               .'<button type="submit" name="tts_action" value="stage_real_release">Reprendre la mise en file privée</button></form>';
+           }
          }
        }
      }
