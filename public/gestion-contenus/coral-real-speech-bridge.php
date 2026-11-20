@@ -246,13 +246,17 @@ function cmsCoralRealSpeechPublicationApproved(
 ): bool {
   if(!cmsCoralRealSpeechListeningApproved($private,$record,$manifest,$catalog,$canonical,$guided))
     return false;
-  $events=cmsCoralTtsJournal(cmsCreationDir($private),$record['id'],'real-publication')['events'];
+  $dir=cmsCreationDir($private);
+  $listening=cmsCoralTtsJournal($dir,$record['id'],'real-listening');
+  // Audio revocation/re-approval invalidates ALL older publication approvals.
+  $consentSha=hash('sha256',(string)$manifest['sha256'].'|'.$listening['last_hash']);
+  $events=cmsCoralTtsJournal($dir,$record['id'],'real-publication')['events'];
   $last=$events?end($events):null;
   $binding=cmsCoralTtsBinding($record,$catalog,$canonical,$guided);
   return is_array($last)&&($last['action']??null)==='approve'
     &&($last['creation_version']??null)===$record['version']
     &&hash_equals($binding['binding_sha256'],(string)($last['binding_sha256']??''))
-    &&hash_equals((string)$manifest['sha256'],(string)($last['artifact_sha256']??''));
+    &&hash_equals($consentSha,(string)($last['artifact_sha256']??''));
 }
 
 /** Independent, authenticated and revocable human publication intent. */
@@ -273,9 +277,11 @@ function cmsCoralRealSpeechPublicationAction(
     throw new RuntimeException('CORAL_RELEASE_LISTENING_REQUIRED');
   // Check the actual immutable audio, not just the gateway status/manifest.
   cmsCoralRealSpeechAudio($private,$record['id'],$job,$settings,$catalog,$canonical,$guided);
+  $listenJournal=cmsCoralTtsJournal(cmsCreationDir($private),$record['id'],'real-listening');
+  $consentSha=hash('sha256',$state['manifest']['sha256'].'|'.$listenJournal['last_hash']);
   cmsCoralTtsDecision($private,$record['id'],$record['version'],'real-publication',
     $action,$checks,$note,$confirmed,$authenticated,
-    $catalog,$canonical,$guided,$state['manifest']['sha256']);
+    $catalog,$canonical,$guided,$consentSha);
 }
 
 /**
