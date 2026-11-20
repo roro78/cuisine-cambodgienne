@@ -51,6 +51,9 @@ jobs:
           php tests/php/coral-real-speech-source-smoke.php
           php -l tests/php/coral-real-speech-listening-smoke.php
           php tests/php/coral-real-speech-listening-smoke.php
+          php -l public/gestion-contenus/coral-scoped-publisher.php
+          php -l tests/php/coral-scoped-publisher-smoke.php
+          php tests/php/coral-scoped-publisher-smoke.php
           php -l tests/php/editorial-calendar-smoke.php
           php -l tests/php/editorial-create-manual-smoke.php
           php tests/php/editorial-cms-drafts-smoke.php
