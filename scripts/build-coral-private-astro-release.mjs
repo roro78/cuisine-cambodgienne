@@ -72,8 +72,8 @@ export async function prepareCoralPrivateAstroOverlay({root,blueprint,intent,aud
  const imageRoot=await realpath(resolve(root,'public/images/cuisine'));
  if(!image.startsWith(imageRoot+sep)||(await realpath(image))!==image||
    (await lstat(image)).isSymbolicLink()||
-   sha(await privateFile(image,8000000))!==intent.visualSha256 &&
-   sha(await privateFile(image,8000000))!==blueprint.visualSha256)
+   !/^[a-f0-9]{64}$/.test(intent.visualSha256??'')||
+   sha(await privateFile(image,8000000))!==intent.visualSha256)
    fail('MEDIA_SHA');
  // Intentionally check against the HUMAN profile in the caller as well.
  const reg=resolve(root,'src/data/cookingWorkshopGuides.ts');
