@@ -51,6 +51,8 @@ test('real Studio release consent builds exactly 5 verified static files, never 
     assert.equal(m.published,false);
     assert.equal(m.privateBackupVerified,false);
     assert.equal(m.sourceCommitVerified,false,'a CLI argument is not a trusted checkout');
+    assert.equal(m.nativeBlueprintVerified,false);
+    assert.equal(m.mediaRightsVerified,false);
     assert.equal(m.studioAuthorityFreshlyRechecked,false);
     const delivered=await readFile(join(f.out,f.r.candidate_audio_path));
     assert.equal(sha(delivered),f.r.mp3_sha256);
