@@ -6,6 +6,7 @@
 import {join} from 'node:path';
 import {mkdir,lstat} from 'node:fs/promises';
 import {reserveCoralBudget} from './coral-external-job-provider.mjs';
+import {validateCoralStudioReleaseIntent} from './package-coral-approved-release.mjs';
 import {createCoralSpeechTransport,planCoralSpeechFragments} from './coral-speech-transport.mjs';
 import {validateCoralRealSpeechRequest,coralRealSpeechAssembleChapterWav} from './coral-real-speech-request.mjs';
 import {audioSha,durableWrite,durableAudioCommit,atomicJson,privateAudioRead,privateAudioDigest,
@@ -78,8 +79,14 @@ export function createCoralRealSpeechJobs({
    const digest=await privateAudioDigest(join(dir,m.file));
    if(digest.sha256!==m.sha256)throw Error('CORAL_REAL_FINAL_SHA');
   }
+  const staged=await optional(join(dir,'release-intent.json'));
+  if(staged&&(!s||s.status!=='succeeded'
+     ||staged.request_id!==id||staged.binding_sha256!==r.binding_sha256
+     ||staged.mp3_sha256!==s.manifest_sha256))
+    throw Error('CORAL_REAL_RELEASE_STATE_INVALID');
   return {id,status:s.status==='running'&&!active?'interrupted':s.status,
    completed_chapters:s.completed_chapters||0,
+   release_staged:Boolean(staged),
    ...(s.error?{error:s.error}:{}),
    ...(s.status==='succeeded'?{result:JSON.stringify(await optional(join(dir,'manifest.json')))}:{})};
  }
@@ -221,6 +228,49 @@ export function createCoralRealSpeechJobs({
    return state(r,id,folder,true);
   }
  }
+ /**
+  * Separate, authenticated no-cost release staging. The request comes from
+  * the private Studio after its independent publication-approval journal;
+  * this stores ONLY hashes and references, never private narration texts.
+  * It MUST NOT deploy to OVH/GitHub or grant publication_ready.
+  */
+ async function stageRelease(r,id,folder,intent){
+  validateCoralRealSpeechRequest(r);if(id!==r.request_id)throw Error('CORAL_REAL_ID');
+  const candidate=validateCoralStudioReleaseIntent(intent);
+  await authority(r);
+  const s=await state(r,id,folder);
+  if(s.status!=='succeeded')throw Error('CORAL_REAL_RELEASE_NOT_GENERATED');
+  const dir=directory(folder),m=await optional(join(dir,'manifest.json'));
+  if(!m||candidate.creation_id!==r.creation_id
+    ||candidate.creation_version!==r.creation_version
+    ||candidate.request_id!==id
+    ||candidate.binding_sha256!==r.binding_sha256
+    ||candidate.recipe_sha256!==r.recipe_sha256
+    ||candidate.mp3_sha256!==m.sha256||candidate.mp3_bytes!==m.bytes
+    ||Math.abs(candidate.mp3_duration_seconds-m.duration)>0.002
+    ||m.chapters?.length!==7)throw Error('CORAL_REAL_RELEASE_MISMATCH');
+  for(let i=0;i<7;i++){
+   const a=candidate.chapters[i],b=m.chapters[i],c=r.chapters[i];
+   if(a.id!==b.id||a.id!==c.id||a.text_sha256!==c.sha256
+     ||Math.abs(a.startSec-b.start)>0.002||Math.abs(a.endSec-b.end)>0.002)
+    throw Error('CORAL_REAL_RELEASE_CHAPTER');
+  }
+  // Status verification above includes the full final MP3 digest. Never use
+  // an intent alone to confirm a generation succeeded.
+  const file=join(dir,'release-intent.json'),previous=await optional(file);
+  if(previous){
+   if(JSON.stringify(previous)!==JSON.stringify(candidate))throw Error('CORAL_REAL_RELEASE_CONFLICT');
+   return state(r,id,folder,true); // safe duplicate; no paid retry
+  }
+  await authority(r);
+  try{await durableWrite(file,JSON.stringify(candidate));}
+  catch(e){
+   if(e.code!=='EEXIST')throw e;
+   const existing=await optional(file);
+   if(JSON.stringify(existing)!==JSON.stringify(candidate))throw Error('CORAL_REAL_RELEASE_CONFLICT');
+  }
+  return state(r,id,folder,true);
+ }
  async function audioStream(r,id,folder){
   await authority(validateCoralRealSpeechRequest(r));
   if((await state(r,id,folder)).status!=='succeeded')throw Error('CORAL_REAL_NO_AUDIO');
@@ -256,7 +306,7 @@ export function createCoralRealSpeechJobs({
   await atomicJson(join(dir,'state.json'),{status:'queued',completed_chapters:saved.completed_chapters});
   return state(r,id,folder);
  }
- return {state,run,resume,audioStream,previewStream,
+ return {state,run,resume,stageRelease,audioStream,previewStream,
   audio:async(r,id,folder)=>{
    const f=await audioStream(r,id,folder);
    try{return await f.handle.readFile();}finally{await f.handle.close();}
