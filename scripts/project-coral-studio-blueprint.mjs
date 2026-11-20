@@ -107,7 +107,7 @@ export function projectCoralStudioBlueprint({source,intent,profile,recipes}){
  const scriptSha256=digest(JSON.stringify(voice));
  const blueprint={
    schemaVersion:1,kind:'cooking-workshop',status:'release_ready',
-   slug:r.candidate_workshop_slug,title:source.title,sourceRecipeSlug:r.recipe_slug,
+   slug:r.candidate_public_slug,title:source.title,sourceRecipeSlug:r.recipe_slug,
    finalPreparation:f.finalPreparation,learningGoal:f.learningGoal,
    difficulty:profile.difficulty,canonicalServings:recipe.baseServings,
    portionLabel:f.portionLabel,
