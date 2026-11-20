@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises';
+import {readdir,mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {inspectCoralPrivateRelease,runPendingCoralPrivateReleases} from '../scripts/run-coral-private-release.mjs';
@@ -68,4 +68,27 @@ test('runner refuses corrupt audio, source identity or stage contract',async()=>
   await writeFile(packetPath,JSON.stringify(packet));
   await assert.rejects(inspectCoralPrivateRelease({jobRoot:f.jobRoot,job:f.job}),/CORAL_PRIVATE_RELEASE_INCONSISTENT_JOB/);
  }finally{await rm(f.jobRoot,{recursive:true,force:true});}
+});
+
+test('stale stage is rebuilt from the same private job while keeping the old bundle',async()=>{
+ const f=await fixture(),outputRoot=await mkdtemp(join(tmpdir(),'coral-private-rebase-'));
+ const job=f.job,dir=join(outputRoot,job),bundle=join(dir,'bundle');
+ try{
+  await mkdir(bundle,{recursive:true,mode:0o700});
+  await privateWrite(join(bundle,'BUNDLE-MANIFEST-PRIVE.json'),'old manifest');
+  await privateWrite(join(dir,'stage-receipt.json'),'old receipt');
+  const attempted=[];
+  const counts=await runPendingCoralPrivateReleases({jobRoot:f.jobRoot,outputRoot,tokenFile:'fixture-only'},{
+   status:async request=>{assert.equal(request.job,job);return 'stale';},
+   run:async request=>{assert.equal(request.job,job);attempted.push(request.job);}
+  });
+  assert.deepEqual(counts,{staged:1,blocked:0});
+  assert.deepEqual(attempted,[job]);
+  const [archive]=await readdir(dir);
+  assert.match(archive,/^superseded-/);
+  assert.equal(await readFile(join(dir,archive,'bundle','BUNDLE-MANIFEST-PRIVE.json'),'utf8'),'old manifest');
+ }finally{
+  await rm(f.jobRoot,{recursive:true,force:true});
+  await rm(outputRoot,{recursive:true,force:true});
+ }
 });

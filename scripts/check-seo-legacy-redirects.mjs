@@ -39,7 +39,15 @@ for (const token of canonical) {
   assert.ok(idx > last, `Canonical redirection missing or out of order: ${token}`);
   last = idx;
 }
-assert.equal(lines.filter((line) => line.startsWith('RewriteRule ')).length, 7,
+const visibilityRules = [
+  'RewriteRule ^[.]coral-publication-in-progress$ - [R=404,L]',
+  'RewriteCond %{DOCUMENT_ROOT}/.coral-publication-in-progress -f',
+  'RewriteRule ^(?:recettes(?:/.*)?|apprendre(?:/.*)?|audio/workshops/.*|social-assets/.*|sitemap[.]xml|social-feed[.]json|editorial-source-index[.]json|editorial-guided-fields[.]json)$ - [R=503,L]'
+];
+assert.deepEqual(lines.slice(-visibilityRules.length), visibilityRules,
+  'Publication visibility rules must follow the canonical redirects');
+assert.equal(lines.slice(0, -visibilityRules.length)
+  .filter((line) => line.startsWith('RewriteRule ')).length, 7,
   'Exactly five historical and two canonical redirect rules expected');
 
 const culture = read('src/data/culture.ts');
