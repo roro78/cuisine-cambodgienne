@@ -1,0 +1,44 @@
+{
+  "referenceRecipeSha256": "7119fda5d8e0ee1e017195fd2b583155654022ec620783dd14e59b295125f946",
+  "referenceProvenance": "Public HTTP capture on 19 November 2026 before workshop insertion and FileZilla transfer",
+  "runtime": [
+    {
+      "file": "_slug_.astro_astro_type_script_index_0_lang.DHUCnB41.js",
+      "path": "_astro/_slug_.astro_astro_type_script_index_0_lang.DHUCnB41.js",
+      "sha256": "afb29d21c0d53077c9466c6ac4dc041e1d2de56b5a42a0c983d6e68651478bfb"
+    },
+    {
+      "file": "recipePortions.C1MUzHzM.js",
+      "path": "_astro/recipePortions.C1MUzHzM.js",
+      "sha256": "bcdfb938aca006235da19c02873f1c9eb3ff24a1d55334a7a6949ad6d82bad1b"
+    }
+  ],
+  "files": [
+    {
+      "path": "audio/workshops/atelier-pratique-amok-trey/atelier-coral-v4.mp3",
+      "bytes": 11436672,
+      "sha256": "177ccaad9b45a18c11270d9a949e8d19f55516e8e045745615d32f5c2d4bceff"
+    },
+    {
+      "path": "apprendre/pratique/amok-trey/index.html",
+      "bytes": 70034,
+      "sha256": "1d67834781edfec721fb381746bfeb5c2ae1e007fadab1f2d4ef04cb7d804770"
+    },
+    {
+      "path": "recettes/amok-trey/index.html",
+      "bytes": 33084,
+      "sha256": "e005bb368c927ffae149bec19afb134e9074428daa883f51a535d3ec271e8efe"
+    },
+    {
+      "path": "apprendre/index.html",
+      "bytes": 19924,
+      "sha256": "21fad1ca05b29bdb528e10ddd6ac8607f4b5e447f261cf77418b36d30a5525ac"
+    },
+    {
+      "path": "sitemap.xml",
+      "bytes": 4979,
+      "sha256": "cba2ee07868f36c21825455b20c23ad9428649c837084fa29a77f3b1cac6f0dc"
+    }
+  ],
+  "sourceRecipeSha256": "4a121357a614b1e245989e1623e7f62066aef48c729d01201377c22b0d7f2739"
+}

@@ -5,6 +5,7 @@ import SiteFooter from '../../components/SiteFooter.astro';
 import EditorialSectionHero from '../../components/EditorialSectionHero.astro';
 import CulinaryIcon from '../../components/CulinaryIcon.astro';
 import { workshops } from '../../data/workshops';
+import { getWorkshopPresentation } from '../../data/workshopPresentation';
 import { integratedCookingWorkshopGuides, completeCookingWorkshopCutoverReady } from '../../data/cookingWorkshopGuides';
 import { recipes } from '../../data/recipes';
 const workshopPhotos: Record<string,string> = {
@@ -74,7 +75,7 @@ const schema = {
                 <span>{guide.duration.practicalMinutes} min · {guide.difficulty}</span></div>
               <h2>{guide.title}</h2>
               <p class="v16-workshop-objective">{guide.finalPreparation}</p>
-              <a href={guide.sourceRecipeSlug==='kroeung-jaune' ? '/apprendre/pratique/kroeung-jaune/' : '/apprendre/pratique/'+guide.slug+'/'}>Réaliser cet atelier →</a>
+              <a href={'/apprendre/pratique/'+getWorkshopPresentation(guide).publicSlug+'/'}>Réaliser cet atelier →</a>
             </div>
             {recipe?.image && <figure class="v19-workshop-shot"><img src={guide.media.finishedPreparationImage || recipe.image} alt={guide.finalPreparation} loading="lazy" width={recipe.imageWidth??1200} height={recipe.imageHeight??800}/></figure>}
           </article>;

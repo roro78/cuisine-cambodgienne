@@ -25,7 +25,7 @@ export function existingWorkshopNarrations() {
       throw new Error('APPROVED_WORKSHOP_NARRATION_INCOMPLETE:'+guide.slug);
     const asset=guide.audio.asset;
     if(!asset || typeof asset.audioUrl!=='string'
-       || !/^\/audio\/workshops\/[a-z0-9-]+\/atelier-coral-v[23]\.mp3$/.test(asset.audioUrl)
+       || !/^\/audio\/workshops\/[a-z0-9-]+\/atelier-coral-v[234]\.mp3$/.test(asset.audioUrl)
        || typeof asset.sha256!=='string'||!/^[a-f0-9]{64}$/.test(asset.sha256)
        || typeof asset.scriptSha256!=='string'||!/^[a-f0-9]{64}$/.test(asset.scriptSha256))
       throw new Error('WORKSHOP_AUDIO_ASSET_INVALID:'+guide.slug);

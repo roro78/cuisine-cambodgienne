@@ -1,0 +1,24 @@
+{
+  "sourceSha256": "4a121357a614b1e245989e1623e7f62066aef48c729d01201377c22b0d7f2739",
+  "publishedSha256": "e005bb368c927ffae149bec19afb134e9074428daa883f51a535d3ec271e8efe",
+  "sourceWhitespace": {
+    "offset": 22117,
+    "length": 2,
+    "hex": "2020"
+  },
+  "publishedWhitespace": {
+    "offset": 22117,
+    "length": 3,
+    "hex": "202020"
+  },
+  "sourceModule": {
+    "offset": 28053,
+    "bytes": 3010
+  },
+  "publishedModule": {
+    "offset": 28054,
+    "bytes": 101,
+    "html": "<script type=\"module\" src=\"/_astro/_slug_.astro_astro_type_script_index_0_lang.DHUCnB41.js\"></script>"
+  },
+  "onlyTheseTwoDifferences": true
+}

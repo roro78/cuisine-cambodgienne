@@ -168,9 +168,10 @@ export function validateWorkshopBlueprint(atelier, recipes, options = {}) {
         }) || Math.abs((asset.chapters.at(-1)?.endSec || 0) - asset.durationSec) > 0.2 ||
         Math.abs(asset.chapters[0]?.startSec || 0) > 0.03) errors.push('NO GO : manifeste audio mesuré invalide ou incomplet (7 chapitres, durée, SHA256 et URL obligatoires).');
     if (typeof asset?.audioUrl === 'string' && asset.audioUrl.startsWith('/audio/workshops/')) {
-      const audioFile = resolve('public', asset.audioUrl.slice(1));
+      const publicAudioFile = resolve('public', asset.audioUrl.slice(1));
       const publicRoot = resolve('public');
-      const rel = relative(publicRoot,audioFile);
+      const rel = relative(publicRoot,publicAudioFile);
+      const audioFile = options.audioFile ?? publicAudioFile;
       if (rel.startsWith('..') || isAbsolute(rel) || !existsSync(audioFile) || !statSync(audioFile).isFile()) {
         errors.push('NO GO : MP3 réel manquant : ' + asset.audioUrl);
       } else {
@@ -201,7 +202,27 @@ export function validateWorkshopBlueprint(atelier, recipes, options = {}) {
     const fullyReviewed=audio.status==='validated' && Boolean(media.finishedPreparationImage) &&
       media.imageValidated===true && media.rightsValidated===true &&
       Object.values(review).every(value=>value===true);
-    if (!fullyReviewed && !ownerApproved) errors.push('NO GO : accord de publication explicite absent et gate complet non valide.');
+    // Amok V4 has its OWN owner permission and requires a complete human
+    // listening approval; never reuse the October six-workshop waiver/date.
+    const amokV4Authorized=atelier.slug==='atelier-pratique-amok-trey'
+      &&atelier.sourceRecipeSlug==='amok-trey'
+      &&consent?.ownerApproved===true
+      &&consent?.approvedOn==='2026-11-18'
+      &&consent?.scope==='amok-trey-v4'
+      &&consent?.sourceBasedRecipeReviewAccepted===true
+      &&consent?.acceptsPendingPhysicalDeviceQA===true
+      &&consent?.authorizesExistingIllustrations===true
+      &&review.productionApproved===true
+      &&review.editorialValidated===true
+      &&review.recipeValidated===true
+      &&review.audioListeningValidated===true
+      &&audio.status==='validated'
+      &&media.imageValidated===true
+      &&media.finishedPreparationImage==='/images/cuisine/v19-amok-trey-1440.webp'
+      &&audio.asset?.audioUrl==='/audio/workshops/atelier-pratique-amok-trey/atelier-coral-v4.mp3'
+      &&audio.asset?.sha256==='177ccaad9b45a18c11270d9a949e8d19f55516e8e045745615d32f5c2d4bceff';
+    if (!fullyReviewed && !ownerApproved && !amokV4Authorized)
+      errors.push('NO GO : accord de publication explicite absent et gate complet non valide.');
   }
   if ((atelier.status === 'release_ready' || options.checkMediaFiles) && media.finishedPreparationImage) {
     const root = resolve('public');

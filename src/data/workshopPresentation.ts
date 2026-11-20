@@ -30,6 +30,14 @@ const presentation: Record<string,Presentation> = {
   },
   'samlor-machu':{portionKind:'bol'},
   'kuy-teav':{portionKind:'bol'},
+  'amok-trey':{
+    // The internal blueprint slug is atelier-pratique-amok-trey, but the
+    // public URL follows the same short canonical form as Kroeung.
+    publicSlug:'amok-trey',
+    heroCaption:'Amok Trey au poisson et au lait de coco, cuit doucement à la vapeur.',
+    finishLink:'/recettes/amok-trey/',
+    finishLabel:'Retrouver la recette Amok Trey'
+  },
   'num-banh-chok':{portionKind:'bol'}
 };
 export function getWorkshopPresentation(guide:{sourceRecipeSlug:string;slug:string}) {

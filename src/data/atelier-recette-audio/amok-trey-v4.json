@@ -1,0 +1,60 @@
+{
+  "atelier": "atelier-pratique-amok-trey",
+  "canonicalRecipe": "amok-trey",
+  "status": "audio_generated_review_pending",
+  "voice": "coral",
+  "audioUrl": "/audio/workshops/atelier-pratique-amok-trey/atelier-coral-v4.mp3",
+  "durationSec": 714.792,
+  "sha256": "177ccaad9b45a18c11270d9a949e8d19f55516e8e045745615d32f5c2d4bceff",
+  "chapters": [
+    {
+      "id": "intro",
+      "title": "Bienvenue et mise en place",
+      "startSec": 0,
+      "endSec": 67.68
+    },
+    {
+      "id": "installer",
+      "title": "S’installer et préparer le matériel vapeur",
+      "startSec": 67.68,
+      "endSec": 198.6
+    },
+    {
+      "id": "preparer",
+      "title": "Préparer les feuilles puis le poisson",
+      "startSec": 198.6,
+      "endSec": 298.272
+    },
+    {
+      "id": "assembler",
+      "title": "Assaisonner puis incorporer les œufs et le poisson",
+      "startSec": 298.272,
+      "endSec": 417.936
+    },
+    {
+      "id": "maitriser",
+      "title": "Maîtriser la cuisson vapeur",
+      "startSec": 417.936,
+      "endSec": 533.52
+    },
+    {
+      "id": "rectifier",
+      "title": "Contrôler et ajuster la cuisson",
+      "startSec": 533.52,
+      "endSec": 635.064
+    },
+    {
+      "id": "terminer",
+      "title": "Finir et servir",
+      "startSec": 635.064,
+      "endSec": 714.792
+    }
+  ],
+  "scriptSha256": "8d5e023b06b9a9d43d8df68516828ae7465ac92112e6e4b15587d5b321bf92b3",
+  "review": {
+    "acousticListening": true,
+    "mobile": false,
+    "desktop": false
+  },
+  "sourceBackend": "Orvekio/OpenAI Speech"
+}
