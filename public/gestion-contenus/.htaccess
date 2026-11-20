@@ -53,3 +53,7 @@ DirectoryIndex index.php
 <Files "coral-astro-review.php">
   Require all denied
 </Files>
+
+<Files "coral-scoped-staging.php">
+  Require all denied
+</Files>
