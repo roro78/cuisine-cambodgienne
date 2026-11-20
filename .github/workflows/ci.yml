@@ -54,6 +54,8 @@ jobs:
           php -l public/gestion-contenus/coral-scoped-publisher.php
           php -l tests/php/coral-scoped-publisher-smoke.php
           php tests/php/coral-scoped-publisher-smoke.php
+          php -l tests/php/coral-scoped-crash-recovery-smoke.php
+          php tests/php/coral-scoped-crash-recovery-smoke.php
           php -l public/gestion-contenus/coral-scoped-staging.php
           php -l tests/php/coral-scoped-staging-smoke.php
           php tests/php/coral-scoped-staging-smoke.php
