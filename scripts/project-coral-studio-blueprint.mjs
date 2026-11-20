@@ -15,11 +15,14 @@
  */
 import {readFile,writeFile,lstat} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
+import {readFileSync,lstatSync,realpathSync} from 'node:fs';
+import {resolve,sep} from 'node:path';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {loadCanonicalRecipes,validateWorkshopBlueprint} from './check-workshop-blueprints.mjs';
 import {validateCoralStudioReleaseIntent} from './package-coral-approved-release.mjs';
 const digest=text=>createHash('sha256').update(text).digest('hex');
+const shaFile=path=>createHash('sha256').update(readFileSync(path)).digest('hex');
 const ids=['intro','installer','preparer','assembler','maitriser','rectifier','terminer'];
 const fail=msg=>{throw Error('CORAL_BLUEPRINT_'+msg);};
 const validText=(s,n=20)=>typeof s==='string'&&s.trim().length>=n;
@@ -50,8 +53,16 @@ export function projectCoralStudioBlueprint({source,intent,profile,recipes}){
    !profile.media||!/^\/images\/cuisine\/[a-z0-9-]+\.webp$/.test(profile.media.finishedPreparationImage??'')||
    profile.media.imageValidated!==true||profile.media.rightsValidated!==true||
    !Array.isArray(profile.media.stepImagePaths)||profile.media.stepImagePaths.length!==0||
-   !validText(profile.artworkRightsEvidence,20))
+   !validText(profile.artworkRightsEvidence,20)||
+   !/^[a-f0-9]{64}$/.test(profile.visualSha256??''))
    fail('HUMAN_MEDIA_AND_SAFETY');
+ // The Studio approval was for exact image bytes, not just a reusable URL.
+ // A local build must use the same existing public image and fingerprint.
+ const imagePath=resolve('public',profile.media.finishedPreparationImage.slice(1));
+ const mediaRoot=realpathSync(resolve('public/images/cuisine'));
+ if(!realpathSync(imagePath).startsWith(mediaRoot+sep)||
+    lstatSync(imagePath).isSymbolicLink()||
+    shaFile(imagePath)!==profile.visualSha256)fail('VISUAL_SHA_STALE');
  const verified=profile.review;
  if(!verified||['recipeValidated','editorialValidated','audioListeningValidated',
    'mobileValidated','desktopValidated','productionApproved'].some(key=>verified[key]!==true)||
