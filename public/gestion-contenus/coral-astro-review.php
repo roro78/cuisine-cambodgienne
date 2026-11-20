@@ -81,6 +81,7 @@ function cmsCoralAstroReviewProfile(
       'allergens'=>['status'=>$allergenStatus,'items'=>$allergens],
       'media'=>['finishedPreparationImage'=>$img,'imageValidated'=>true,
           'rightsValidated'=>true,'stepImagePaths'=>[]],
+      'visualSha256'=>hash_file('sha256',$webroot.$img),
       'artworkRightsEvidence'=>$rights,'deviceQaEvidence'=>'Mobile : '.$mobile.' ; Ordinateur : '.$desktop,
       'culinaryApprovalEvidence'=>$culinary,'editorialApprovalEvidence'=>$editorial,
       'approvedDate'=>gmdate('Y-m-d'),
@@ -153,7 +154,11 @@ function cmsCoralAstroReviewCurrent(
        ||($profile['review']['productionApproved']??false)!==true)
         cmsCoralAstroReviewFail('PROFILE_CORRUPT');
     // Existing public images cannot be silently replaced or removed.
-    cmsCoralAstroReviewImage($webroot??dirname(__DIR__),$profile['media']['finishedPreparationImage']??null);
+    $webroot=$webroot??dirname(__DIR__);
+    $image=cmsCoralAstroReviewImage($webroot,$profile['media']['finishedPreparationImage']??null);
+    $visualSha=hash_file('sha256',$webroot.$image);
+    if(!is_string($visualSha)||!is_string($profile['visualSha256']??null)
+       ||!hash_equals($profile['visualSha256'],$visualSha))return null;
     return $profile;
 }
 function cmsCoralAstroReviewAction(
@@ -226,7 +231,7 @@ function cmsCoralAstroReviewPanel(
         $download='?new=1&amp;cid='.$id.'&amp;astro_review_profile='.$job;
         $image=cmsEsc($profile['media']['finishedPreparationImage']);
         $html.='<p data-astro-review-status="approved">Revue humaine enregistrée pour cette version et ce MP3.</p>'
-          .'<p><img src="'.$image.'" loading="lazy" alt="Illustration approuvée de l’atelier" style="max-width:240px;height:auto"></p>'
+          .'<p><img src="'.$image.'" loading="lazy" alt="Illustration approuvée de l’atelier" width="240"></p>'
           .'<p><a href="'.$download.'">Exporter le profil Astro validé (.json, privé)</a></p>';
     }
     $html.='<form method="post" class="stack" action="'.$url.'#cms-astro-review">'
