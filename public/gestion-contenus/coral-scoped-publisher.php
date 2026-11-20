@@ -49,6 +49,9 @@ function cmsCoralPublishManifest(array $manifest, array $preconditions): array {
         || !preg_match('/^[a-f0-9]{64}$/D',(string)($manifest['audioSha256']??''))
         || ($manifest['deployable']??true)!==false
         || ($manifest['published']??true)!==false
+        || ($manifest['sourceCommitVerified']??false)!==true
+        || ($manifest['nativeBlueprintVerified']??false)!==true
+        || ($manifest['mediaRightsVerified']??false)!==true
         || !is_array($manifest['files']??null)
         || count($manifest['files'])!==5) cmsCoralPublishFail('MANIFEST');
     $paths=[];$files=$manifest['files'];
