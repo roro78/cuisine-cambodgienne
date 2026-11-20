@@ -235,6 +235,92 @@ function cmsCoralRealSpeechListeningAction(
     $state['manifest']['sha256']);
 }
 
+/**
+ * Separate release intent. This is NOT an OVH deployment command: no remote
+ * backup channel is proven, and this private creation has not yet been
+ * projected into a reviewed native Astro blueprint.
+ * Consent stays revocable, bound to the latest Studio authority and MP3 SHA.
+ */
+function cmsCoralRealSpeechPublicationApproved(
+ string $private,array $record,array $manifest,array $catalog,array $canonical,array $guided
+): bool {
+  if(!cmsCoralRealSpeechListeningApproved($private,$record,$manifest,$catalog,$canonical,$guided))
+    return false;
+  $events=cmsCoralTtsJournal(cmsCreationDir($private),$record['id'],'real-publication')['events'];
+  $last=$events?end($events):null;
+  $binding=cmsCoralTtsBinding($record,$catalog,$canonical,$guided);
+  return is_array($last)&&($last['action']??null)==='approve'
+    &&($last['creation_version']??null)===$record['version']
+    &&hash_equals($binding['binding_sha256'],(string)($last['binding_sha256']??''))
+    &&hash_equals((string)$manifest['sha256'],(string)($last['artifact_sha256']??''));
+}
+
+/** Independent, authenticated and revocable human publication intent. */
+function cmsCoralRealSpeechPublicationAction(
+ string $private,array $record,string $job,string $action,array $checks,string $note,
+ bool $confirmed,bool $authenticated,array $settings,
+ array $catalog,array $canonical,array $guided
+): void {
+  if(!$authenticated||!$confirmed||!in_array($action,['approve','revoke'],true))
+    throw new RuntimeException('CORAL_RELEASE_CONFIRM');
+  $request=cmsCoralRealSpeechApprovedRequest($private,$record,$catalog,$canonical,$guided);
+  if(!hash_equals($request['request_id'],$job))throw new RuntimeException('CORAL_RELEASE_JOB');
+  $state=cmsCoralRealSpeechObserve($private,$record['id'],$job,$settings,$catalog,$canonical,$guided);
+  if(($state['status']??null)!=='succeeded'||!is_array($state['manifest']??null))
+    throw new RuntimeException('CORAL_RELEASE_AUDIO_NOT_READY');
+  if($action==='approve'&&!cmsCoralRealSpeechListeningApproved(
+    $private,$record,$state['manifest'],$catalog,$canonical,$guided))
+    throw new RuntimeException('CORAL_RELEASE_LISTENING_REQUIRED');
+  // Check the actual immutable audio, not just the gateway status/manifest.
+  cmsCoralRealSpeechAudio($private,$record['id'],$job,$settings,$catalog,$canonical,$guided);
+  cmsCoralTtsDecision($private,$record['id'],$record['version'],'real-publication',
+    $action,$checks,$note,$confirmed,$authenticated,
+    $catalog,$canonical,$guided,$state['manifest']['sha256']);
+}
+
+/**
+ * No-text, no-secret machine envelope for a future scoped Astro publisher.
+ * This only describes an approved source, never sets publication_ready=true.
+ * An executor MUST separately prove the Astro blueprint, production backup,
+ * target mapping, live SHA preconditions, rollback and current Studio consent.
+ */
+function cmsCoralRealSpeechReleaseIntent(
+ string $private,array $record,string $job,array $settings,
+ array $catalog,array $canonical,array $guided
+): array {
+  $r=cmsCoralRealSpeechApprovedRequest($private,$record,$catalog,$canonical,$guided);
+  if(!hash_equals($r['request_id'],$job))throw new RuntimeException('CORAL_RELEASE_JOB');
+  $state=cmsCoralRealSpeechObserve($private,$record['id'],$job,$settings,$catalog,$canonical,$guided);
+  $m=$state['manifest']??null;
+  if(($state['status']??null)!=='succeeded'||!is_array($m)
+    ||!cmsCoralRealSpeechPublicationApproved($private,$record,$m,$catalog,$canonical,$guided))
+    throw new RuntimeException('CORAL_RELEASE_NOT_AUTHORIZED');
+  $ref=cmsAtelierReferenceClean($record['atelier_reference']??null,$catalog);
+  if(!is_array($ref)||!is_string($ref['recipeSlug']??null)
+    ||!preg_match('/^[a-z0-9-]{3,100}$/D',$ref['recipeSlug']))
+    throw new RuntimeException('CORAL_RELEASE_RECIPE');
+  $chapters=[];
+  foreach($r['chapters'] as $i=>$chapter){
+    if(($m['chapters'][$i]['id']??null)!==$chapter['id'])
+      throw new RuntimeException('CORAL_RELEASE_CHAPTER');
+    $chapters[]=['id'=>$chapter['id'],'text_sha256'=>$chapter['sha256'],
+      'startSec'=>$m['chapters'][$i]['start'],'endSec'=>$m['chapters'][$i]['end']];
+  }
+  // No private narration text and no bearer token in this export.
+  return ['contract'=>'cdc-coral-studio-release-intent-v1',
+    'creation_id'=>$r['creation_id'],'creation_version'=>$r['creation_version'],
+    'request_id'=>$job,'binding_sha256'=>$r['binding_sha256'],
+    'recipe_sha256'=>$r['recipe_sha256'],'recipe_slug'=>$ref['recipeSlug'],
+    'voice'=>'coral','model'=>'gpt-4o-mini-tts','speed_milli'=>930,
+    'mp3_sha256'=>$m['sha256'],'mp3_bytes'=>$m['bytes'],
+    'mp3_duration_seconds'=>$m['duration'],
+    'chapters'=>$chapters,
+    'human_publication_consent'=>true,
+    'publication_ready'=>false,'deployment_triggered'=>false,
+    'pending'=>['native_astro_blueprint','approved_media_rights',
+      'targeted_public_bundle','live_backup_and_rollback','authenticated_deploy_channel']];
+}
+
 /** One-click real generation; texts and bearer never appear in browser markup. */
 function cmsCoralRealSpeechProductionPanel(
  string $private,array $record,array $catalog,array $canonical,array $guided,
@@ -307,6 +393,39 @@ function cmsCoralRealSpeechProductionPanel(
          .($approved?'revoke_real_audio':'approve_real_audio').'">'
          .($approved?'Révoquer l’approbation audio':'Approuver le MP3 écouté').'</button></form>'
          .'<p>La publication reste désactivée : le visa audio n’est pas un ordre de publication.</p>';
+       if($approved){
+         $releaseApproved=cmsCoralRealSpeechPublicationApproved(
+           $private,$record,$s['manifest'],$catalog,$canonical,$guided);
+         $html.='<h4>Autorisation de publication distincte</h4>'
+           .'<p>'.($releaseApproved
+             ?'Accord éditorial enregistré ; publication technique non déclenchée.'
+             :'Une autorisation séparée est requise avant de préparer une livraison publique.').'</p>'
+           .'<form method="post" class="stack" action="'.$url.'#cms-real-tts">'
+           .'<input type="hidden" name="csrf" value="'.cmsEsc($csrf).'">'
+           .'<input type="hidden" name="creation_id" value="'.cmsEsc($id).'">'
+           .'<input type="hidden" name="expected_version" value="'.(int)$version.'">'
+           .'<input type="hidden" name="tts_job" value="'.cmsEsc($job).'">';
+         if(!$releaseApproved){
+           $html.='<label><input type="checkbox" name="tts_checks[reviewed_page]" value="1" required> '
+             .'J’ai relu le contenu public et ses informations culinaires.</label>'
+             .'<label><input type="checkbox" name="tts_checks[audio_checksum]" value="1" required> '
+             .'Je confirme l’empreinte et les sept chapitres du MP3 validé.</label>'
+             .'<label><input type="checkbox" name="tts_checks[publish_requested]" value="1" required> '
+             .'Je demande distinctement la préparation d’une publication publique.</label>';
+         }
+         $html.='<label>Justification de la décision (minimum 20 caractères)'
+           .'<textarea name="tts_note" minlength="20" maxlength="900" required></textarea></label>'
+           .'<label><input type="checkbox" name="tts_confirm" value="1" required>'
+           .($releaseApproved?' Je révoque l’autorisation de préparer la publication.'
+             :' J’autorise la préparation du dossier de publication, sans transfert OVH.').'</label>'
+           .'<button type="submit" name="tts_action" value="'
+           .($releaseApproved?'revoke_real_publication':'approve_real_publication').'">'
+           .($releaseApproved?'Révoquer l’autorisation':'Valider la préparation de publication').'</button></form>';
+         if($releaseApproved){
+           $intentUrl='?new=1&amp;cid='.cmsEsc($id).'&amp;tts_real_release='.cmsEsc($job);
+           $html.='<p><a href="'.$intentUrl.'">Exporter le contrat privé de publication (sans textes ni secrets)</a></p>';
+         }
+       }
      }
    }catch(Throwable $e){
      $html.='<p>Suivi indisponible ou accusé inconnu. Aucun appel facturable ne sera relancé automatiquement.</p>';
