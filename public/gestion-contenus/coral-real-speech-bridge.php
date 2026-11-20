@@ -244,7 +244,10 @@ function cmsCoralRealSpeechListeningAction(
 function cmsCoralRealSpeechPublicationApproved(
  string $private,array $record,array $manifest,array $catalog,array $canonical,array $guided
 ): bool {
-  if(!cmsCoralRealSpeechListeningApproved($private,$record,$manifest,$catalog,$canonical,$guided))
+  if(!cmsCoralRealSpeechListeningApproved($private,$record,$manifest,$catalog,$canonical,$guided)
+     ||!function_exists('cmsCoralAstroReviewCurrent')
+     ||!is_array(cmsCoralAstroReviewCurrent(
+         $private,$record,$manifest,$catalog,$canonical,$guided)))
     return false;
   $dir=cmsCreationDir($private);
   $listening=cmsCoralTtsJournal($dir,$record['id'],'real-listening');
@@ -275,6 +278,10 @@ function cmsCoralRealSpeechPublicationAction(
   if($action==='approve'&&!cmsCoralRealSpeechListeningApproved(
     $private,$record,$state['manifest'],$catalog,$canonical,$guided))
     throw new RuntimeException('CORAL_RELEASE_LISTENING_REQUIRED');
+  if($action==='approve'&&(!function_exists('cmsCoralAstroReviewCurrent')
+     ||!is_array(cmsCoralAstroReviewCurrent(
+       $private,$record,$state['manifest'],$catalog,$canonical,$guided))))
+    throw new RuntimeException('CORAL_RELEASE_NATIVE_REVIEW_REQUIRED');
   // Check the actual immutable audio, not just the gateway status/manifest.
   cmsCoralRealSpeechAudio($private,$record['id'],$job,$settings,$catalog,$canonical,$guided);
   $listenJournal=cmsCoralTtsJournal(cmsCreationDir($private),$record['id'],'real-listening');
@@ -431,6 +438,16 @@ function cmsCoralRealSpeechProductionPanel(
          .($approved?'Révoquer l’approbation audio':'Approuver le MP3 écouté').'</button></form>'
          .'<p>La publication reste désactivée : le visa audio n’est pas un ordre de publication.</p>';
        if($approved){
+         $html.=cmsCoralAstroReviewPanel(
+           $private,$record,$request,$s['manifest'],
+           $catalog,$canonical,$guided,$csrf,$url);
+         $nativeReview=cmsCoralAstroReviewCurrent(
+           $private,$record,$s['manifest'],$catalog,$canonical,$guided);
+         if($nativeReview===null){
+           $html.='<p data-astro-review-gate="blocked">Terminez la validation '
+             .'du visuel, de ses droits et des essais sur appareils avant de '
+             .'demander la préparation de publication.</p>';
+         }else{
          $releaseApproved=cmsCoralRealSpeechPublicationApproved(
            $private,$record,$s['manifest'],$catalog,$canonical,$guided);
          $html.='<h4>Autorisation de publication distincte</h4>'
@@ -475,6 +492,7 @@ function cmsCoralRealSpeechProductionPanel(
                .'<button type="submit" name="tts_action" value="stage_real_release">Reprendre la mise en file privée</button></form>';
            }
          }
+         } // human Astro review must be current
        }
      }
    }catch(Throwable $e){
