@@ -58,7 +58,7 @@ test('convert existing real seven-chapter culinary structure into native Astro b
  const p=fixture(await loadCanonicalRecipes());
  const r=projectCoralStudioBlueprint(p);
  assert.equal(r.kind,'cooking-workshop');
- assert.equal(r.slug,p.intent.candidate_workshop_slug);
+ assert.equal(r.slug,p.intent.candidate_public_slug);
  assert.equal(r.phases.length,6);
  assert.equal(r.audio.asset.chapters.length,7);
  assert.equal(r.audio.asset.sha256,p.intent.mp3_sha256);
