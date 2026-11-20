@@ -381,6 +381,32 @@ if($method==='GET'&&isset($_GET['tts_real_audio'])){
         http_response_code($code);echo substr($bytes,$start,$end-$start+1);exit;
     }catch(Throwable $e){http_response_code(404);exit('MP3 Coral privé indisponible.');}
 }
+// Authenticated, read-only and revocation-aware release-intent export.
+// This does NOT enqueue, publish or modify any public Astro/OVH file.
+if($method==='GET'&&isset($_GET['tts_real_release'])){
+    if(!$auth){http_response_code(403);exit('Connexion privée requise.');}
+    try{
+        if($realTtsSettings===null)throw new RuntimeException('CORAL_RELEASE_DISABLED');
+        $id=cmsCreationId($_GET['cid']??null);
+        $job=is_string($_GET['tts_real_release'])?$_GET['tts_real_release']:'';
+        if($id===null||!preg_match('/^[a-f0-9]{48}$/D',$job))
+            throw new RuntimeException('CORAL_RELEASE_JOB');
+        $record=cmsCreationRead(cmsCreationDir($private),$id);
+        if(!is_array($record))throw new RuntimeException('CORAL_RELEASE_DRAFT');
+        $feed=cmsSourceList(cmsGetFeed()??[]);
+        $canon=cmsCanonicalSourceList(cmsGetEditorialIndex()??[],$feed);
+        $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canon);
+        cmsAssertGuidedCoverage($guides,$canon);
+        $intent=cmsCoralRealSpeechReleaseIntent(
+            $private,$record,$job,$realTtsSettings,$feed,$canon,$guides);
+        $json=json_encode($intent,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+        header('Content-Type: application/json; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="coral-publication-intent-'.substr($job,0,12).'.json"');
+        header('Cache-Control: no-store, private, max-age=0');
+        header('X-Content-Type-Options: nosniff');
+        echo $json;exit;
+    }catch(Throwable $e){http_response_code(404);exit('Préparation de publication indisponible.');}
+}
 // Authenticated binary reads must not rerun editor/AI intent initialization.
 if($method==='GET'&&$auth&&isset($_GET['visual_file'])){
     try{
@@ -651,6 +677,12 @@ if($auth){
                     cmsCoralRealSpeechListeningAction($private,$creation,$job,
                         $action==='approve_real_audio'?'approve':'revoke',$checks,$note,$confirm,$auth,
                         $realTtsSettings,$catalog,$canonicalById,$guides);
+                }elseif(in_array($action,['approve_real_publication','revoke_real_publication'],true)){
+                    if($realTtsSettings===null||!$auth||!$confirm)throw new RuntimeException('CORAL_RELEASE_DISABLED');
+                    cmsCoralRealSpeechPublicationAction($private,$creation,$job,
+                        $action==='approve_real_publication'?'approve':'revoke',
+                        $checks,$note,$confirm,$auth,
+                        $realTtsSettings,$catalog,$canonicalById,$guides);
                 }elseif(in_array($action,['approve_rights','revoke_rights'],true)){
                     cmsCoralTtsDecision($private,$creation['id'],$version,'rights',$action==='approve_rights'?'approve':'revoke',
                         $checks,$note,$confirm,$auth,$catalog,$canonicalById,$guides);
@@ -663,7 +695,7 @@ if($auth){
                     else throw new RuntimeException('TTS_ACTION');
                 }
                 header('Location: ?new=1&cid='.rawurlencode($creation['id']).'&'.$filtersUrl
-                    .(in_array($action,['approve_voice_rights','revoke_voice_rights','generate_real','approve_real_preview','approve_real_audio','revoke_real_audio'],true)?'#cms-real-tts':'#cms-tts'),true,303);exit;
+                    .(in_array($action,['approve_voice_rights','revoke_voice_rights','generate_real','approve_real_preview','approve_real_audio','revoke_real_audio','approve_real_publication','revoke_real_publication'],true)?'#cms-real-tts':'#cms-tts'),true,303);exit;
             }catch(Throwable $e){
                 http_response_code(409);$error='Action audio refusée ou accusé incertain. Aucun renvoi automatique : vérifiez le suivi, la version, les droits et les validations. Les anciens MP3 sont conservés.';
             }
