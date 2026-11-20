@@ -129,7 +129,7 @@ function cmsCoralAstroReviewJournal(string $dir,string $id): array {
  */
 function cmsCoralAstroReviewCurrent(
     string $private,array $record,array $manifest,
-    array $catalog,array $canonical,array $guided
+    array $catalog,array $canonical,array $guided,?string $webroot=null
 ): ?array {
     $request=cmsCoralRealSpeechApprovedRequest($private,$record,$catalog,$canonical,$guided);
     if(!cmsCoralRealSpeechListeningApproved(
@@ -153,13 +153,13 @@ function cmsCoralAstroReviewCurrent(
        ||($profile['review']['productionApproved']??false)!==true)
         cmsCoralAstroReviewFail('PROFILE_CORRUPT');
     // Existing public images cannot be silently replaced or removed.
-    cmsCoralAstroReviewImage(dirname(__DIR__),$profile['media']['finishedPreparationImage']??null);
+    cmsCoralAstroReviewImage($webroot??dirname(__DIR__),$profile['media']['finishedPreparationImage']??null);
     return $profile;
 }
 function cmsCoralAstroReviewAction(
     string $private,array $record,string $job,string $action,array $form,string $note,
     bool $confirmed,bool $authenticated,array $settings,
-    array $catalog,array $canonical,array $guided
+    array $catalog,array $canonical,array $guided,?string $webroot=null
 ): array {
     if(!$authenticated||!$confirmed||!in_array($action,['approve','revoke'],true))
         cmsCoralAstroReviewFail('AUTHENTICATION');
@@ -179,7 +179,7 @@ function cmsCoralAstroReviewAction(
          cmsCoralAstroReviewFail('LISTENING_REQUIRED');
     return cmsCoralTtsLocked($private,$record['id'],
       static function($dir,$latest)use($private,$record,$request,$job,$action,$form,
-                                    $note,$catalog,$canonical,$guided,$manifest) {
+                                    $note,$catalog,$canonical,$guided,$manifest,$webroot) {
         if($latest!==$record)cmsCoralAstroReviewFail('VERSION_STALE');
         $current=cmsCoralRealSpeechApprovedRequest(
           $private,$latest,$catalog,$canonical,$guided);
@@ -193,7 +193,7 @@ function cmsCoralAstroReviewAction(
         $listen=cmsCoralTtsJournal($dir,$latest['id'],'real-listening');
         $profile=$action==='approve'
           ?cmsCoralAstroReviewProfile(
-              $latest,$request,$manifest,$form,dirname(__DIR__)):null;
+              $latest,$request,$manifest,$form,$webroot??dirname(__DIR__)):null;
         $n=count($journal['events'])+1;
         if($n>9998)cmsCoralAstroReviewFail('CAPACITY');
         $row=['contract'=>'cdc-coral-astro-human-review-v1',
