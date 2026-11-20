@@ -98,6 +98,12 @@ try{
    $form,$note,true,true,[],[],[],[],$webroot);
  ok($approved['event']===1,'APPROVAL');
  ok(cmsCoralAstroReviewCurrent($private,$record,$manifest,[],[],[],$webroot)!==null,'CURRENT');
+ file_put_contents($webroot.$image,str_repeat('EDITED',32));
+ ok(cmsCoralAstroReviewCurrent($private,$record,$manifest,[],[],[],$webroot)===null,
+     'VISUAL_IMAGE_CONTENT_CHANGED');
+ file_put_contents($webroot.$image,str_repeat('WEBP',48));
+ ok(cmsCoralAstroReviewCurrent($private,$record,$manifest,[],[],[],$webroot)!==null,
+     'SAME_IMAGE_RESTORED');
  refused(fn()=>cmsCoralAstroReviewAction($private,$record,$request['request_id'],'approve',
    $form,$note,true,true,[],[],[],[],$webroot),'DUPLICATE');
  ok(cmsCoralAstroReviewCurrent($private,$record,
