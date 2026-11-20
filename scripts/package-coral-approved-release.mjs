@@ -139,6 +139,7 @@ export async function packageCoralStudioRelease({intent,dist,audio,out,sourceSha
   }
   const manifest={contract:'cdc-coral-scoped-astro-bundle-v1',
     sourceCommit:sourceSha,sourceCommitVerified:false,
+    nativeBlueprintVerified:false,mediaRightsVerified:false,
     recipeSlug:r.recipe_slug,publicSlug:r.candidate_public_slug,
     creationId:r.creation_id,creationVersion:r.creation_version,
     requestId:r.request_id,bindingSha256:r.binding_sha256,
