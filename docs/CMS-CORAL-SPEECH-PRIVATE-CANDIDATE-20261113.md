@@ -127,3 +127,34 @@ contrôles isolés.
 **Limites non masquées :** la nouvelle création n'est toujours pas convertie automatiquement en blueprint Astro natif et inscrite dans `cookingWorkshopGuides.ts` ; la qualification des droits visuels n'est pas remplacée par le visa audio ; aucune chaîne vérifiée ne sauvegarde/restaure les fichiers OVH et ne transfère de lot ciblé en production. La branche `ovh-production` ne doit pas être poussée depuis une simple intention de publication. **Le worker n'exécute aucun déploiement**, y compris quand `release_staged:true`. Le code est un candidat non installé sur le VPS ni le Studio.
 
 Pour atteindre le véritable « Publier » sans FileZilla : terminer la projection Astro depuis le CMS, choisir et qualifier une méthode de livraison OVH authentifiée, avec inventaire, sauvegarde réelle, comparaison de SHA, rollback et accusé HTTP. Cela nécessite une réception technique propre et **ne se déduit pas** d'une CI verte.
+
+
+## 20 novembre 2026 — Projections Astro + sauvegarde/rollback mutualisé (nouveau code)
+
+Les deux modules suivants ont été **ajoutés à la PR #236 et testés hors production**.
+
+### Fiche Astro native depuis le Studio
+
+`scripts/project-coral-studio-blueprint.mjs` convertit les six phases, sept scripts exacts et données d'atelier *déjà approuvés* en fiche `cooking-workshop` utilisable par le gabarit Astro partagé, en vérifiant chaque empreinte de script, l'identité du brouillon, la recette canonique, les minutes et le manifeste audio.
+
+Il **ne peut pas inventer les données absentes du formulaire initial**. Un profil éditorial explicitement revu par un humain (`cdc-coral-studio-reviewed-blueprint-v1`) est requis pour la sécurité, les allergènes, l'image et ses droits, la QA mobile/ordinateur et les visas. Ce profil **n'est pas encore fourni automatiquement par l'interface Studio** : le script de conversion est donc un composant validable, pas encore un flux 100 % autonome sur OVH. Le script écrit seulement un JSON privé, sans appel IA, sans écriture dans le dépôt, sans publication.
+
+### Publication ciblée exécutée sur le même hébergement OVH
+
+`public/gestion-contenus/coral-scoped-publisher.php` exploite le fait que le **Studio PHP se trouve déjà sur le mutualisé qui sert le site** : un futur appel authentifié pourra y déployer les fichiers approuvés sans ouvrir de canal SSH/SFTP depuis Chat ou Orvekio.
+
+Le module est **include-only, protégé en HTTP par `.htaccess`**, et n'est pour l'instant invoqué par aucune route publique. Il vérifie : manifeste limité exactement aux cinq chemins autorisés, SHA-256 des fichiers sources, versions actuellement servies, absence de liens symboliques, décision du Studio réexaminée avant écriture, copie vérifiée des originaux hors webroot, remplacements locaux par renommages et vérification de chaque SHA final. Une exception provoque une restauration des originaux ; les tests injectent une panne après le troisième fichier pour prouver le retour arrière des cinq cibles. Un reçu privé est émis, avec `httpReceptionVerified:false` : il ne prétend pas qu'une recette fonctionne dans un vrai navigateur.
+
+Les nouveaux champs de preuve sont **bloquants** : `sourceCommitVerified`, `nativeBlueprintVerified`, `mediaRightsVerified` doivent tous être vrais pour entrer dans la transaction. Le paquet préparatoire généré côté Node les laisse à **false** : personne ne peut transformer une simple CI verte en publication OVH sans contrôles réellement effectués.
+
+Le paquet Studio CMS-only inclut désormais le module protégé, dans un périmètre de **14 fichiers** ; il faut encore installer cette version sur OVH pour en bénéficier, après sauvegarde vérifiée des fichiers Studio actuels. Aucun transfert OVH n'a été initié par cette PR.
+
+### NO-GO persistants — ce qui manque encore au bouton final
+
+- Raccorder le formulaire de revue/médias du Studio au profil natif (actuellement requis par l'adaptateur, mais pas disponible en formulaire).
+- Construire Astro sur un environnement contrôlé à partir du blueprint approuvé, lier les fichiers de sortie et vérifier le SHA du commit source exact.
+- Transférer automatiquement le lot de cinq fichiers de la file privée du worker vers un **dossier de staging privé sur OVH** ; le publisher local ne peut pas lire les fichiers situés seulement sur Orvekio.
+- Créer dans le contrôleur Studio l'action de publication réelle, avec session/CSRF, double vérification des droits et préconditions HTTP, et qualifier sa réception sur **le vrai hébergement**.
+- Vérifier la restauration après interruption brutale en plus des exceptions simulées, puis réception HTTP/mobile physique.
+
+Le statut correct est **CODE CANDIDAT / CI uniquement, PROD NON MODIFIÉE**. Aucune clé OpenAI, nouveau fournisseur, MP3 historique ou environnement OVH n'est changé.
