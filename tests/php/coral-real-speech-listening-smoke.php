@@ -4,7 +4,7 @@ declare(strict_types=1);
 $private=sys_get_temp_dir().'/cdc-real-listening-'.bin2hex(random_bytes(8));
 $dir=$private.'/creations';
 if(!mkdir($dir,0700,true))throw new RuntimeException('TEST_DIRECTORY');
-$record=['id'=>'c-'.str_repeat('3',24),'version'=>4];
+$record=['id'=>'c-'.str_repeat('3',24),'version'=>4,'slug'=>'amok-trey','title'=>'Amok Trey'];
 function cmsCreationId($id): ?string {
   return is_string($id)&&preg_match('/^c-[a-f0-9]{24}$/D',$id)?$id:null;
 }
@@ -12,6 +12,7 @@ function cmsCreationDir($root): string {return $root.'/creations';}
 function cmsCreationRead($folder,$id): ?array {
   global $record;return $record['id']===$id?$record:null;
 }
+function cmsCreationSlug(string $title): string {return $title==='Amok Trey'?'amok-trey':'unknown';}
 function cmsCreationText($value,$max): string {
   if(!is_string($value)||mb_strlen($value)>$max)throw new InvalidArgumentException('TEXT');
   return trim($value);
@@ -106,6 +107,27 @@ try {
   cmsCoralTtsDecision($private,$record['id'],4,'real-listening','approve',
     $checks,$notes,true,true,[],[],[],$sha);
   check(cmsCoralRealSpeechPublicationApproved($private,$record,$manifest,[],[],[]),'RELEASE_CONSENT_RESTORED');
+  // The release contract is strictly a no-text candidate; it cannot turn
+  // a Studio approval into a live deploy authorization.
+  $source=[
+    'request_id'=>str_repeat('e',48),'creation_id'=>$record['id'],
+    'creation_version'=>4,'binding_sha256'=>hash('sha256',$record['id'].'|4'),
+    'recipe_sha256'=>str_repeat('c',64),
+    'chapters'=>array_map(static fn($id)=>['id'=>$id,'text'=>str_repeat('private-text',20),
+      'sha256'=>hash('sha256','synthetic-'.$id)],
+      ['intro','installer','preparer','assembler','maitriser','rectifier','terminer'])
+  ];
+  $audioManifest=['sha256'=>$sha,'bytes'=>2048,'duration'=>70,
+    'chapters'=>array_map(static fn($i,$id)=>['id'=>$id,'start'=>$i*10,'end'=>($i+1)*10],
+      range(0,6),['intro','installer','preparer','assembler','maitriser','rectifier','terminer'])];
+  $intent=cmsCoralRealSpeechReleaseEnvelope($source,$audioManifest,['recipeSlug'=>'amok-trey'],$record);
+  check($intent['contract']==='cdc-coral-studio-release-intent-v1','RELEASE_CONTRACT');
+  check($intent['candidate_public_slug']==='amok-trey'&&count($intent['chapters'])===7,'RELEASE_ROUTE');
+  check($intent['publication_ready']===false&&$intent['deployment_triggered']===false,'NO_DEPLOY');
+  check(!str_contains(json_encode($intent,JSON_THROW_ON_ERROR),'private-text'),'NO_TEXT_IN_RELEASE_INTENT');
+  $wrongAudio=$audioManifest;$wrongAudio['chapters'][3]['id']='terminer';
+  refused(static fn()=>cmsCoralRealSpeechReleaseEnvelope(
+    $source,$wrongAudio,['recipeSlug'=>'amok-trey'],$record),'RELEASE_WRONG_CHAPTER');
   // Fail closed on a corrupt journal rather than falling back to a previous approval.
   file_put_contents($dir.'/tts-real-listening-'.$record['id'].'.0002.json','{}');
   refused(static fn()=>cmsCoralRealSpeechListeningApproved($private,$record,$manifest,[],[],[]),'CORRUPTED_CHAIN');
