@@ -57,3 +57,7 @@ DirectoryIndex index.php
 <Files "coral-scoped-staging.php">
   Require all denied
 </Files>
+
+<Files "coral-scoped-studio-release.php">
+  Require all denied
+</Files>
