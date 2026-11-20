@@ -26,17 +26,17 @@ function cmsCoralRealSpeechSettings(array $cfg,string $private): ?array {
 function cmsCoralRealSpeechTransport(array $settings,string $job,string $verb,?array $request=null): array|string {
   if(!preg_match('/^[a-f0-9]{48}$/D',$job)
     ||($settings['base']??null)!=='https://n8n.orvekio.com/editorial-ai/v1/jobs'
-    ||!in_array($verb,['submit','poll','audio','preview','resume','release'],true)||!function_exists('curl_init'))
+    ||!in_array($verb,['submit','poll','audio','preview','resume','release','build-inputs'],true)||!function_exists('curl_init'))
     throw new RuntimeException('REAL_TTS_GATEWAY');
   $body=$request===null?null:json_encode($request,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
-  if(in_array($verb,['submit','release'],true)!==($body!==null)||($body!==null&&strlen($body)>90000))
+  if(in_array($verb,['submit','release','build-inputs'],true)!==($body!==null)||($body!==null&&strlen($body)>90000))
     throw new RuntimeException('REAL_TTS_REQUEST');
-  $url=$settings['base'].'/'.$job.(in_array($verb,['audio','preview','resume','release'],true)?'/'.$verb:'');
+  $url=$settings['base'].'/'.$job.(in_array($verb,['audio','preview','resume','release','build-inputs'],true)?'/'.$verb:'');
   $curl=curl_init($url);if($curl===false)throw new RuntimeException('REAL_TTS_GATEWAY');
   $raw='';$max=in_array($verb,['audio','preview'],true)?32000000:150000;
   try {
     curl_setopt_array($curl,[
-      CURLOPT_CUSTOMREQUEST=>$verb==='submit'?'PUT':(in_array($verb,['resume','release'],true)?'POST':'GET'),
+      CURLOPT_CUSTOMREQUEST=>$verb==='submit'?'PUT':(in_array($verb,['resume','release','build-inputs'],true)?'POST':'GET'),
       CURLOPT_FOLLOWLOCATION=>false,CURLOPT_SSL_VERIFYPEER=>true,
       CURLOPT_SSL_VERIFYHOST=>2,CURLOPT_CONNECTTIMEOUT=>4,
       CURLOPT_TIMEOUT=>$verb==='audio'?40:12,
@@ -55,7 +55,7 @@ function cmsCoralRealSpeechTransport(array $settings,string $job,string $verb,?a
     elseif(defined('CURLOPT_PROTOCOLS'))curl_setopt($curl,CURLOPT_PROTOCOLS,CURLPROTO_HTTPS);
     $ok=curl_exec($curl);$code=(int)curl_getinfo($curl,CURLINFO_RESPONSE_CODE);
     $mime=(string)curl_getinfo($curl,CURLINFO_CONTENT_TYPE);
-    if($ok!==true||!in_array($code,in_array($verb,['submit','resume','release'],true)?[200,202]:[200],true))
+    if($ok!==true||!in_array($code,in_array($verb,['submit','resume','release','build-inputs'],true)?[200,202]:[200],true))
       throw new RuntimeException('REAL_TTS_GATEWAY_UNCERTAIN');
     if($verb==='audio'||$verb==='preview'){
       $mimeExpected=$verb==='preview'?'~^audio/(wav|x-wav)(?:;|$)~i':'~^audio/(mpeg|mp3)(?:;|$)~i';
@@ -349,6 +349,38 @@ function cmsCoralRealSpeechReleaseIntent(
   return cmsCoralRealSpeechReleaseEnvelope($r,$m,$ref,$record);
 }
 
+/** Exact PRIVATE workshop and human Astro review for the existing Coral worker.
+ * Never writes to public Git, static assets or a browser URL.
+ * The worker merely stores immutable inputs for a separately verified build.
+ */
+function cmsCoralRealSpeechBuildInputs(
+ string $private,array $record,string $job,array $intent,array $settings,
+ array $catalog,array $canonical,array $guided
+): array {
+  $fresh=cmsCreationRead(cmsCreationDir($private),$record['id']);
+  if(!is_array($fresh)||$fresh!==$record)
+    throw new RuntimeException('CORAL_BUILD_SOURCE_STALE');
+  $state=cmsCoralRealSpeechObserve(
+    $private,$record['id'],$job,$settings,$catalog,$canonical,$guided);
+  if(($state['status']??null)!=='succeeded'||!is_array($state['manifest']??null))
+    throw new RuntimeException('CORAL_BUILD_AUDIO_NOT_READY');
+  $profile=cmsCoralAstroReviewCurrent(
+    $private,$record,$state['manifest'],$catalog,$canonical,$guided);
+  if(!is_array($profile)
+    ||!cmsCoralRealSpeechPublicationApproved(
+      $private,$record,$state['manifest'],$catalog,$canonical,$guided))
+    throw new RuntimeException('CORAL_BUILD_REVIEW_STALE');
+  $source=array_intersect_key($record,array_flip([
+    'id','version','kind','slug','title','fields',
+    'atelier_reference','atelier_phase_details','atelier_scripts'
+  ]));
+  if(count($source)!==9||!is_array($source['atelier_scripts']['chapters']??null)
+    ||count($source['atelier_scripts']['chapters'])!==7)
+    throw new RuntimeException('CORAL_BUILD_SOURCE_INCOMPLETE');
+  return ['contract'=>'cdc-coral-studio-private-build-inputs-v1',
+    'intent'=>$intent,'profile'=>$profile,'source'=>$source];
+}
+
 /** The Studio submits a consented, no-text release intent to its EXISTING
  * private HTTPS worker. The worker stores it but MUST NOT publish to OVH.
  * Replays of the same intent are idempotent, no speech is regenerated.
@@ -362,7 +394,14 @@ function cmsCoralRealSpeechStageRelease(
   $state=cmsCoralRealSpeechTransport($settings,$job,'release',$intent);
   if(!is_array($state)||($state['release_staged']??false)!==true)
     throw new RuntimeException('CORAL_RELEASE_NOT_STAGED');
-  return $state;
+  // Transmit the exact private source only after the no-text intent is staged.
+  // Same job, same token, no Speech rerun or automatic publication.
+  $packet=cmsCoralRealSpeechBuildInputs(
+    $private,$record,$job,$intent,$settings,$catalog,$canonical,$guided);
+  $staged=cmsCoralRealSpeechTransport($settings,$job,'build-inputs',$packet);
+  if(!is_array($staged)||($staged['build_inputs_staged']??false)!==true)
+    throw new RuntimeException('CORAL_BUILD_INPUTS_NOT_STAGED');
+  return $staged;
 }
 
 /** One-click real generation; texts and bearer never appear in browser markup. */
