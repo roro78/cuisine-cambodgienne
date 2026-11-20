@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {prepareCoralPrivateAstroOverlay} from '../scripts/build-coral-private-astro-release.mjs';
+import {prepareCoralPrivateAstroOverlay,verifyHistoricalAmokV4} from '../scripts/build-coral-private-astro-release.mjs';
 
 const sha=x=>createHash('sha256').update(x).digest('hex');
 async function fixture(){
@@ -60,4 +60,37 @@ test('private build overlay fails closed when a reviewed image or audio changes'
    audioBytes:Buffer.alloc(2048,7)}),/OVERLAY_IDENTITY/);
   assert.equal(await readFile(join(f.root,'src/data/cookingWorkshopGuides.ts'),'utf8'),f.registry);
  }finally{await rm(f.root,{recursive:true,force:true});}
+});
+
+test('pinned build refuses any loss of Amok Trey V4 audio, page or catalogue',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'coral-amok-preservation-'));
+ try{
+  const dist=join(root,'dist');
+  const mp3Path='audio/workshops/atelier-pratique-amok-trey/atelier-coral-v4.mp3';
+  const pagePath='apprendre/pratique/amok-trey/index.html';
+  const mp3=Buffer.from('ID3-SYNTHETIC-AMOK'),page=Buffer.from('<html>Amok V4 original</html>');
+  const manifest={files:[
+   {path:mp3Path,sha256:sha(mp3)},
+   {path:pagePath,sha256:sha(page)},
+   {path:'other-one',sha256:'a'.repeat(64)},
+   {path:'other-two',sha256:'b'.repeat(64)},
+   {path:'other-three',sha256:'c'.repeat(64)}
+  ]};
+  await mkdir(join(root,'releases/amok-trey-v4'),{recursive:true});
+  await writeFile(join(root,'releases/amok-trey-v4/manifest.json'),JSON.stringify(manifest));
+  for(const [path,bytes] of [
+   [mp3Path,mp3],[pagePath,page],
+   ['apprendre/index.html',Buffer.from('Atelier /apprendre/pratique/amok-trey/')],
+   ['sitemap.xml',Buffer.from('<loc>/apprendre/pratique/amok-trey/</loc>')]
+  ]){
+   const target=join(dist,path);await mkdir(dirname(target),{recursive:true});
+   await writeFile(target,bytes);
+  }
+  assert.equal(await verifyHistoricalAmokV4({root,dist}),true);
+  await writeFile(join(dist,pagePath),Buffer.from('regressed page'));
+  await assert.rejects(verifyHistoricalAmokV4({root,dist}),/AMOK_REGRESSION/);
+  await writeFile(join(dist,pagePath),page);
+  await writeFile(join(dist,'sitemap.xml'),Buffer.from('<xml>missing atelier</xml>'));
+  await assert.rejects(verifyHistoricalAmokV4({root,dist}),/AMOK_CATALOGUE_REGRESSION/);
+ }finally{await rm(root,{recursive:true,force:true});}
 });
