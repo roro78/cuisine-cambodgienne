@@ -57,6 +57,7 @@ function stage(string $private,string $job,array $paths,array $data,string $audi
         'creationId'=>'c-'.str_repeat('1',24),'creationVersion'=>4,
         'requestId'=>$job,'recipeSlug'=>'amok-trey','publicSlug'=>'amok-trey',
         'audioSha256'=>$audioHash,'deployable'=>false,'published'=>false,
+        'sourceCommitVerified'=>true,'nativeBlueprintVerified'=>true,'mediaRightsVerified'=>true,
         'files'=>$files
     ];
     file_put_contents($dir.'/BUNDLE-MANIFEST-PRIVE.json',json_encode($manifest,JSON_THROW_ON_ERROR));
