@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {dirname,join} from 'node:path';
-import {prepareCoralPrivateAstroOverlay,verifyHistoricalAmokV4} from '../scripts/build-coral-private-astro-release.mjs';
+import {prepareCoralPrivateAstroOverlay,verifyHistoricalAmokV4,verifyCoralBuiltIndexes} from '../scripts/build-coral-private-astro-release.mjs';
 import {preserveCoralSharedPages} from '../scripts/coral-preserve-published-pages.mjs';
 
 const sha=x=>createHash('sha256').update(x).digest('hex');
@@ -139,4 +139,21 @@ test('pinned build refuses any loss of Amok Trey V4 audio, page or catalogue',as
   await writeFile(join(dist,'sitemap.xml'),Buffer.from('<xml>missing atelier</xml>'));
   await assert.rejects(verifyHistoricalAmokV4({root,dist}),/AMOK_CATALOGUE_REGRESSION/);
  }finally{await rm(root,{recursive:true,force:true});}
+});
+
+test('built indexes bind the workshop to the exact approved canonical recipe',async()=>{
+ const dist=await mkdtemp(join(tmpdir(),'coral-index-binding-'));
+ try{
+  const workshop={id:'atelier:test-course',model:'cookingWorkshopGuides',fingerprint:'a'.repeat(64)};
+  const recipe={id:'recette:test-recipe',fingerprint:'b'.repeat(64)};
+  const intent={candidate_public_slug:'test-course',recipe_slug:'test-recipe',recipe_sha256:recipe.fingerprint};
+  const save=(path,items)=>writeFile(join(dist,path),JSON.stringify({items}));
+  await save('social-feed.json',[{id:workshop.id,url:'https://www.cuisine-du-cambodge.com/apprendre/pratique/test-course/'}]);
+  await save('editorial-source-index.json',[workshop,recipe]);
+  await save('editorial-guided-fields.json',[workshop]);
+  assert.equal(await verifyCoralBuiltIndexes({dist,intent}),workshop.fingerprint);
+  await assert.rejects(verifyCoralBuiltIndexes({dist,intent:{...intent,recipe_sha256:'c'.repeat(64)}}),/RECIPE_SHA_STALE/);
+  await save('editorial-guided-fields.json',[]);
+  await assert.rejects(verifyCoralBuiltIndexes({dist,intent}),/WORKSHOP_INDEX_MISMATCH/);
+ }finally{await rm(dist,{recursive:true,force:true});}
 });

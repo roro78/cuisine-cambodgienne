@@ -69,6 +69,7 @@ $manifest=['contract'=>'cdc-coral-scoped-astro-bundle-v1','baseSha256'=>$baselin
  'sourceCommit'=>str_repeat('a',40),'sourceCommitVerified'=>true,
  'nativeBlueprintVerified'=>true,'mediaRightsVerified'=>true,
  'mediaImageSha256'=>str_repeat('d',64),
+ 'workshopSourceSha256'=>str_repeat('b',64),
  'bindingSha256'=>str_repeat('e',64),
  'builderContract'=>'cdc-coral-private-verified-astro-builder-v1',
  'deployable'=>false,'published'=>false,
@@ -85,22 +86,28 @@ $GLOBALS['approved_intent']=['creation_id'=>$id,'creation_version'=>3,
 $GLOBALS['worker_state']=['status'=>'succeeded','release_staged'=>true,
  'build_inputs_staged'=>true,'manifest'=>['sha256'=>$audioSha]];
 $GLOBALS['review_profile']=['visualSha256'=>$manifest['mediaImageSha256']];
+$publicId='atelier:'.$slug;
+$catalog=[$publicId=>['url'=>'https://www.cuisine-du-cambodge.com'.$publicUrl]];
+$canonical=$guided=[$publicId=>['model'=>'cookingWorkshopGuides',
+  'fingerprint'=>$manifest['workshopSourceSha256']]];
 try{
  assertPublish(!cmsCoralStudioPublishEnabled([]),'DEFAULT_NO_PUBLISH');
  assertPublish(cmsCoralStudioPublishEnabled($cfg),'EXPLICIT_FLAGS');
  assertPublish(cmsCoralStudioPublishAssert(
-  $private,$current,$job,$manifest,$cfg,[],[],[],[]),'CURRENT_APPROVAL');
+  $private,$current,$job,$manifest,$cfg,[],$catalog,$canonical,$guided),'CURRENT_APPROVAL');
+ assertPublish(!cmsCoralStudioPublishAssert(
+  $private,$current,$job,$manifest,$cfg,[],$catalog,$canonical,[]),'MISSING_GUIDED_INDEX');
  $bad=$manifest;$bad['mediaImageSha256']=str_repeat('f',64);
  assertPublish(!cmsCoralStudioPublishAssert(
-  $private,$current,$job,$bad,$cfg,[],[],[],[]),'IMAGE_SHA_GATE');
+  $private,$current,$job,$bad,$cfg,[],$catalog,$canonical,$guided),'IMAGE_SHA_GATE');
  $bad=$manifest;$bad['sourceCommit']=str_repeat('f',40);
  assertPublish(!cmsCoralStudioPublishAssert(
-  $private,$current,$job,$bad,$cfg,[],[],[],[]),'SOURCE_COMMIT_GATE');
+  $private,$current,$job,$bad,$cfg,[],$catalog,$canonical,$guided),'SOURCE_COMMIT_GATE');
  $GLOBALS['revoked']=true;
  denyPublish(fn()=>cmsCoralStudioPublish(
-   $private,$web,$current,$job,true,true,$cfg,[],[],[],[]),'NO_BUNDLE_OR_REVOKED');
+   $private,$web,$current,$job,true,true,$cfg,[],$catalog,$canonical,$guided),'NO_BUNDLE_OR_REVOKED');
  assertPublish(!cmsCoralStudioPublishAssert(
-  $private,$current,$job,$manifest,$cfg,[],[],[],[]),'REVOKED');
+  $private,$current,$job,$manifest,$cfg,[],$catalog,$canonical,$guided),'REVOKED');
  $GLOBALS['revoked']=false;
  // Build a legitimate staged bundle through the same bounded intake.
  $base=['contract'=>'cdc-coral-ovh-staging-v1','requestId'=>$job];
@@ -114,17 +121,17 @@ try{
  cmsCoralStageOperation($private,$web,$base+['op'=>'seal']);
  $GLOBALS['revoked']=true;
  denyPublish(fn()=>cmsCoralStudioPublish(
-   $private,$web,$current,$job,true,true,$cfg,[],[],[],[]),'REVOKED_BEFORE_WRITE');
+   $private,$web,$current,$job,true,true,$cfg,[],$catalog,$canonical,$guided),'REVOKED_BEFORE_WRITE');
  foreach(array_slice($paths,2) as $path)
    assertPublish(file_get_contents($web.'/'.$path)==='OLD '.basename($path),
      'REVOCATION_PRESERVES_EXISTING');
  $GLOBALS['revoked']=false;
  denyPublish(fn()=>cmsCoralStudioPublish(
-   $private,$web,$current,$job,false,true,$cfg,[],[],[],[]),'NO_SESSION');
+   $private,$web,$current,$job,false,true,$cfg,[],$catalog,$canonical,$guided),'NO_SESSION');
  denyPublish(fn()=>cmsCoralStudioPublish(
-   $private,$web,$current,$job,true,false,$cfg,[],[],[],[]),'NO_CONFIRMATION');
+   $private,$web,$current,$job,true,false,$cfg,[],$catalog,$canonical,$guided),'NO_CONFIRMATION');
  $receipt=cmsCoralStudioPublish(
-   $private,$web,$current,$job,true,true,$cfg,[],[],[],[]);
+   $private,$web,$current,$job,true,true,$cfg,[],$catalog,$canonical,$guided);
  assertPublish($receipt['fileCount']===5,'SCOPE');
  foreach($data as $path=>$content)
    assertPublish(file_get_contents($web.'/'.$path)===$content,'FIVE_FILES_ONLY');
@@ -142,6 +149,6 @@ try{
   assertPublish(hash_file('sha256',$web.'/'.$path)===$sha,'RESTORED_SHA');
  assertPublish(!file_exists($web.'/'.$paths[0])&&!file_exists($web.'/'.$paths[1]),'RESTORED_ADDITIONS');
  denyPublish(fn()=>cmsCoralStudioPublish(
-   $private,$web,$current,$job,true,true,$cfg,[],[],[],[]),'NO_REPLAY');
+   $private,$web,$current,$job,true,true,$cfg,[],$catalog,$canonical,$guided),'NO_REPLAY');
  echo "CORAL_STUDIO_SCOPED_PUBLISH_OFFLINE_PASS\n";
 } finally {removePublishDir($root);}

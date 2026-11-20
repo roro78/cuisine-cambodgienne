@@ -125,7 +125,8 @@ function cmsCoralStageOperation(string $private,string $webroot,array $request):
             if (($manifest['requestId']??null)!==$job||
                 ($manifest['builderContract']??null)!=='cdc-coral-private-verified-astro-builder-v1'||
                 !preg_match('/^[a-f0-9]{40}$/D',(string)($manifest['sourceCommit']??''))||
-                !preg_match('/^[a-f0-9]{64}$/D',(string)($manifest['mediaImageSha256']??'')))
+                !preg_match('/^[a-f0-9]{64}$/D',(string)($manifest['mediaImageSha256']??''))||
+                !preg_match('/^[a-f0-9]{64}$/D',(string)($manifest['workshopSourceSha256']??'')))
                 cmsCoralStageFail('BUILD_PROVENANCE');
             $files=$manifest['files']??null;
             if(!is_array($files))cmsCoralStageFail('FILES');

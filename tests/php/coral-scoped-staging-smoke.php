@@ -47,6 +47,7 @@ $manifest=['contract'=>'cdc-coral-scoped-astro-bundle-v1','baseSha256'=>$baselin
     'audioSha256'=>$audioSha,'sourceCommit'=>str_repeat('c',40),
     'sourceCommitVerified'=>true,'nativeBlueprintVerified'=>true,
     'mediaRightsVerified'=>true,'mediaImageSha256'=>str_repeat('b',64),
+    'workshopSourceSha256'=>str_repeat('a',64),
     'builderContract'=>'cdc-coral-private-verified-astro-builder-v1',
     'deployable'=>false,'published'=>false,
     'files'=>array_map(static fn($p)=>[

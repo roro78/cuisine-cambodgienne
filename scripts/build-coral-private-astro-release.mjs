@@ -131,6 +131,27 @@ export async function verifyHistoricalAmokV4({root,dist}){
  }
  return true;
 }
+
+export async function verifyCoralBuiltIndexes({dist,intent}){
+ const [social,canonical,guided]=await Promise.all([
+  'social-feed.json','editorial-source-index.json','editorial-guided-fields.json'
+ ].map(async file=>{
+  const payload=JSON.parse((await privateFile(join(dist,file),500000)).toString('utf8'));
+  if(!Array.isArray(payload.items))fail('INDEX');
+  return payload.items;
+ }));
+ const recipe=canonical.find(record=>record.id==='recette:'+intent.recipe_slug);
+ if(!recipe||recipe.fingerprint!==intent.recipe_sha256)fail('RECIPE_SHA_STALE');
+ const id='atelier:'+intent.candidate_public_slug;
+ const workshop=canonical.find(record=>record.id===id);
+ const guide=guided.find(record=>record.id===id);
+ const link='https://www.cuisine-du-cambodge.com/apprendre/pratique/'+intent.candidate_public_slug+'/';
+ if(!workshop||workshop.model!=='cookingWorkshopGuides'||!guide||
+   guide.model!==workshop.model||guide.fingerprint!==workshop.fingerprint||
+   !/^[a-f0-9]{64}$/.test(workshop.fingerprint)||!social.some(record=>record.id===id&&record.url===link))
+   fail('WORKSHOP_INDEX_MISMATCH');
+ return workshop.fingerprint;
+}
 export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,out,sourceSha,baseline}){
  const checkout=resolve(root),destination=resolve(out);
  if(destination===checkout||destination.startsWith(checkout+sep)||
@@ -161,6 +182,7 @@ export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,o
  run('npm',['run','build'],checkout);
  const dist=join(checkout,'dist');
  await verifyHistoricalAmokV4({root:checkout,dist});
+ const workshopSourceSha256=await verifyCoralBuiltIndexes({dist,intent:packet.intent});
  const baseSha256=baseline?await preserveCoralSharedPages({
   intent:packet.intent,directory:baseline,dist}):null;
  const result=await packageCoralStudioRelease({
@@ -172,6 +194,7 @@ export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,o
  result.nativeBlueprintVerified=true;
  result.mediaRightsVerified=true;
  result.mediaImageSha256=packet.profile.visualSha256;
+ result.workshopSourceSha256=workshopSourceSha256;
  result.builderContract='cdc-coral-private-verified-astro-builder-v1';
  if(baseSha256)result.baseSha256=baseSha256;
  await writeFile(join(destination,'BUNDLE-MANIFEST-PRIVE.json'),

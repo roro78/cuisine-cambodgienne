@@ -35,17 +35,30 @@ function cmsCoralStudioPublishAssert(
     if(!is_array($current)||$current!==$record)return false;
     // Recheck the existing HTTPS worker and current append-only human journals
     // each time the publisher asks for authority. This does NOT invoke TTS.
-    $intent=cmsCoralRealSpeechReleaseIntent(
-      $private,$current,$job,$settings,$catalog,$canonical,$guided);
-    $state=cmsCoralRealSpeechObserve(
-      $private,$current['id'],$job,$settings,$catalog,$canonical,$guided);
-    if(($state['status']??null)!=='succeeded'||
-       ($state['release_staged']??false)!==true||
-       ($state['build_inputs_staged']??false)!==true||
-       !is_array($state['manifest']??null))return false;
-    $profile=cmsCoralAstroReviewCurrent(
-      $private,$current,$state['manifest'],$catalog,$canonical,$guided);
+    try{
+        $intent=cmsCoralRealSpeechReleaseIntent(
+          $private,$current,$job,$settings,$catalog,$canonical,$guided);
+        $state=cmsCoralRealSpeechObserve(
+          $private,$current['id'],$job,$settings,$catalog,$canonical,$guided);
+        if(($state['status']??null)!=='succeeded'||
+           ($state['release_staged']??false)!==true||
+           ($state['build_inputs_staged']??false)!==true||
+           !is_array($state['manifest']??null))return false;
+        $profile=cmsCoralAstroReviewCurrent(
+          $private,$current,$state['manifest'],$catalog,$canonical,$guided);
+    }catch(Throwable $e){return false;}
     if(!is_array($profile)||!is_string($profile['visualSha256']??null))return false;
+    $slug=$intent['candidate_public_slug'];
+    $id='atelier:'.$slug;
+    $fingerprint=$manifest['workshopSourceSha256']??null;
+    // The live Studio, canonical catalogue and social index must expose the
+    // same public workshop identity before enabling the last public write.
+    if(!is_string($fingerprint)||!preg_match('/^[a-f0-9]{64}$/D',$fingerprint)||
+        ($catalog[$id]['url']??null)!=='https://www.cuisine-du-cambodge.com/apprendre/pratique/'.$slug.'/'||
+        ($canonical[$id]['model']??null)!=='cookingWorkshopGuides'||
+        ($guided[$id]['model']??null)!=='cookingWorkshopGuides'||
+        ($canonical[$id]['fingerprint']??null)!==$fingerprint||
+        ($guided[$id]['fingerprint']??null)!==$fingerprint)return false;
     // Compare exact SHA, source, audio, route and profile, not merely a job ID.
     return ($manifest['bindingSha256']??null)===$intent['binding_sha256']
         && ($manifest['audioSha256']??null)===$intent['mp3_sha256']
@@ -152,7 +165,7 @@ function cmsCoralStudioPublishPanel(
         if(!cmsCoralStudioPublishAssert(
             $private,$record,$job,$ready['manifest'],$cfg,
             $settings,$catalog,$canonical,$guided))
-            return '<p data-coral-publish="blocked">Publication bloquée : validations ou lot périmés.</p>';
+            return '<p data-coral-publish="blocked">Vérifiez les validations, le lot privé et la présence de cet atelier dans les trois index éditoriaux.</p>';
         $id=cmsEsc($record['id']);$jobHtml=cmsEsc($job);
         $url='?new=1&amp;cid='.$id.'#cms-real-tts';
         return '<section id="cms-coral-scoped-publish" data-coral-publish="ready">'

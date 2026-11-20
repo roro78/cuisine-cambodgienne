@@ -87,8 +87,9 @@ export async function preserveCoralSharedPages({ intent, directory, dist }) {
         next = insertAt(text, old.index + old[0].lastIndexOf('</div>'), a);
       } else {
         const anchor = '<aside class="glossary-strip" aria-labelledby="glossary-title"';
-        if (text.split(anchor).length !== 2) fail();
-        next = insertAt(text, text.indexOf(anchor), block + ' ');
+        const insertion = text.includes(anchor) ? anchor : '</main>';
+        if (text.split(insertion).length !== 2) fail();
+        next = insertAt(text, text.indexOf(insertion), block + ' ');
       }
     }
     baseline[path] = sha(bytes);

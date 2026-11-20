@@ -40,7 +40,7 @@ export async function transferCoralBundle({bundle,send}){
    ||m.mediaRightsVerified!==true||m.deployable!==false||m.published!==false
    ||!/^[a-f0-9]{40}$/.test(m.sourceCommit??'')
    ||!/^[a-f0-9]{48}$/.test(m.requestId??'')
-   ||!HASH.test(m.mediaImageSha256??'')
+   ||!HASH.test(m.mediaImageSha256??'')||!HASH.test(m.workshopSourceSha256??'')
    ||!Array.isArray(m.files)||m.files.length!==5)fail('MANIFEST');
  const slug=m.publicSlug,recipe=m.recipeSlug,audio=m.audioSha256;
  if(!/^[a-z0-9][a-z0-9-]{2,99}$/.test(slug??'')

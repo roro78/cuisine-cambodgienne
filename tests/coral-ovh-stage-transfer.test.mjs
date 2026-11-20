@@ -25,7 +25,7 @@ async function fixture(){
  const manifest={contract:'cdc-coral-scoped-astro-bundle-v1',
   builderContract:'cdc-coral-private-verified-astro-builder-v1',
   sourceCommit:'a'.repeat(40),sourceCommitVerified:true,nativeBlueprintVerified:true,
-  mediaRightsVerified:true,mediaImageSha256:'e'.repeat(64),
+  mediaRightsVerified:true,mediaImageSha256:'e'.repeat(64),workshopSourceSha256:'f'.repeat(64),
   requestId:'b'.repeat(48),publicSlug:slug,recipeSlug:recipe,audioSha256:mp3sha,
   baseSha256:Object.fromEntries(paths.slice(2).map(path=>[path,'1'.repeat(64)])),
   deployable:false,published:false,files};
