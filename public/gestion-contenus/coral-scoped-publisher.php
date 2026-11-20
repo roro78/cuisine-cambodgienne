@@ -199,9 +199,108 @@ function cmsCoralPublishBundle(
                 }
             }
             if ($failures) cmsCoralPublishFail('ROLLBACK_FAILED');
+            $rollbackRecord=json_encode(['contract'=>'cdc-coral-ovh-rollback-v1',
+                'requestId'=>$request,'restored'=>true],JSON_THROW_ON_ERROR);
+            if (@file_put_contents($backupDir.'/rolled-back.json',$rollbackRecord,LOCK_EX)
+                !==strlen($rollbackRecord))cmsCoralPublishFail('ROLLBACK_MARKER');
             throw $error;
         }
     } finally {
         flock($lock,LOCK_UN);fclose($lock);
     }
+}
+
+/**
+ * Explicit crash recovery (never called automatically on ordinary GET).
+ * Only a fresh authenticated Studio action may invoke this operation.
+ * Restores PREVIOUS exact bytes from an off-webroot backup if, and only if,
+ * every current file is still the previous or the intended released SHA.
+ * A foreign modification causes a hard stop BEFORE touching any file.
+ */
+function cmsCoralPublishRecoverInterrupted(
+    string $private,string $webroot,string $requestId,callable $authorize
+): array {
+    if(!preg_match('/^[a-f0-9]{48}$/D',$requestId))
+        cmsCoralPublishFail('RECOVERY_ID');
+    cmsCoralPublishSecureDir($private,false);
+    cmsCoralPublishSecureDir($webroot,false);
+    $realPrivate=realpath($private);$realWeb=realpath($webroot);
+    if(!$realPrivate||!$realWeb||$realPrivate===$realWeb
+        ||str_starts_with($realPrivate,$realWeb.'/'))
+        cmsCoralPublishFail('RECOVERY_ROOT');
+    $releases=$realPrivate.'/coral-scoped-releases';
+    cmsCoralPublishSecureDir($releases,false);
+    $backup=$releases.'/'.$requestId;
+    cmsCoralPublishSecureDir($backup,false);
+    $lock=@fopen($releases.'/publish.lock','c');
+    if(!$lock||!flock($lock,LOCK_EX))cmsCoralPublishFail('RECOVERY_LOCK');
+    try{
+        if($authorize($requestId)!==true)cmsCoralPublishFail('RECOVERY_AUTH');
+        if(is_file($backup.'/receipt.json'))cmsCoralPublishFail('RECOVERY_COMMITTED');
+        if(is_file($backup.'/rolled-back.json')||is_file($backup.'/recovered.json'))
+            return ['requestId'=>$requestId,'restored'=>true,'alreadyRestored'=>true];
+        $record=$backup.'/before-write.json';
+        if(is_link($record)||!is_file($record)||filesize($record)>64000)
+            cmsCoralPublishFail('RECOVERY_RECORD');
+        $state=json_decode((string)file_get_contents($record),true,24,JSON_THROW_ON_ERROR);
+        if(!is_array($state)||($state['contract']??null)!=='cdc-coral-ovh-before-write-v1'
+            ||($state['requestId']??null)!==$requestId
+            ||!is_array($state['previous']??null)
+            ||!is_array($state['expected']??null)
+            ||count($state['expected'])!==5)
+            cmsCoralPublishFail('RECOVERY_DATA');
+        $files=$state['expected'];
+        $names=array_column($files,'path');
+        if(count($names)!==5||!is_string($names[0]??null)
+           ||!preg_match('~^audio/workshops/atelier-pratique-([a-z0-9-]+)/atelier-coral-([a-f0-9]{12})\\.mp3$~D',$names[0],$match)
+           ||!preg_match('~^recettes/([a-z0-9-]+)/index\\.html$~D',(string)($names[2]??''),$recipeMatch))
+            cmsCoralPublishFail('RECOVERY_PATHS');
+        $manifest=['contract'=>'cdc-coral-scoped-astro-bundle-v1',
+            'requestId'=>$requestId,'creationId'=>'c-'.str_repeat('0',24),
+            'audioSha256'=>$files[0]['sha256']??null,
+            'recipeSlug'=>$recipeMatch[1],'publicSlug'=>$match[1],
+            'deployable'=>false,'published'=>false,
+            'sourceCommitVerified'=>true,'nativeBlueprintVerified'=>true,'mediaRightsVerified'=>true,
+            'files'=>$files];
+        $names=cmsCoralPublishManifest($manifest,$state['previous']);
+        if(substr($manifest['audioSha256'],0,12)!==$match[2])
+            cmsCoralPublishFail('RECOVERY_AUDIO');
+        $current=[];
+        foreach($names as $i=>$name){
+            $target=cmsCoralPublishTarget($realWeb,$name);
+            $now=is_file($target)?cmsCoralPublishDigest($target,32000000)['sha256']:null;
+            $before=$state['previous'][$name];
+            if($now!==$before&&$now!==$files[$i]['sha256'])
+                cmsCoralPublishFail('RECOVERY_FOREIGN_CHANGE');
+            if($before!==null){
+                $saved=cmsCoralPublishTarget($backup,$name);
+                if(cmsCoralPublishDigest($saved,32000000)['sha256']!==$before)
+                    cmsCoralPublishFail('RECOVERY_BACKUP_CHANGED');
+            }
+            $current[$name]=$now;
+        }
+        // All validation above has succeeded; each step is idempotent even
+        // if PHP is forcibly killed partway through this recovery.
+        foreach(array_reverse($names) as $name){
+            if($current[$name]===$state['previous'][$name])continue;
+            $target=$realWeb.'/'.$name;
+            $before=$state['previous'][$name];
+            if($before===null){
+                if(!@unlink($target))cmsCoralPublishFail('RECOVERY_UNLINK');
+            }else{
+                $temp=$target.'.coral-recover-'.bin2hex(random_bytes(8));
+                if(!@copy($backup.'/'.$name,$temp)||!@rename($temp,$target))
+                    cmsCoralPublishFail('RECOVERY_RENAME');
+            }
+            if((is_file($target)?cmsCoralPublishDigest($target,32000000)['sha256']:null)
+                !==$before)cmsCoralPublishFail('RECOVERY_SHA');
+        }
+        $result=['contract'=>'cdc-coral-ovh-recovery-v1',
+            'requestId'=>$requestId,'restored'=>true,'alreadyRestored'=>false,
+            'httpReceptionVerified'=>false];
+        $json=json_encode($result,JSON_THROW_ON_ERROR);
+        if(@file_put_contents($backup.'/recovered.json',$json,LOCK_EX)!==strlen($json))
+            cmsCoralPublishFail('RECOVERY_MARKER');
+        return $result;
+    }finally{flock($lock,LOCK_UN);fclose($lock);}
 }
