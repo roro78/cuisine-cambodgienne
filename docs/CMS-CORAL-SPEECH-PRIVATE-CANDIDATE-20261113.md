@@ -224,3 +224,22 @@ Le code candidat dispose désormais du circuit suivant :
 4. Vérifier la présence de `sealed` et la version courante dans le Studio, puis réaliser les vérifications réelles de restauration et du site cible **avant** d'activer les indicateurs de publication. Une fois reçu, publier avec le bouton du Studio et effectuer immédiatement la réception HTTP/mobile. Une sauvegarde et un reçu privés doivent être conservés.
 
 **État attestable en CI seulement :** flux de validation PHP, simulateur de transfert, publication locale et restauration sur répertoires synthétiques, gardes de provenance Amok V4. Aucun essai sur le VPS Orvekio ou sur le mutualisé OVH n'est inféré des tests.
+
+
+### Exécuteur Orvekio privé (candidat, non installé)
+
+Le fichier `scripts/run-coral-private-release.mjs` évite toute réexportation manuelle des textes. Il lit directement le job **déjà réussi** du worker Coral, son manifeste MP3 `final-<sha>.mp3`, l'intention et le brouillon/profil approuvés dans `private-build-inputs.json`. Il refuse les divergences d'identité/version, les contenus incomplets ou une empreinte différente.
+
+L'opérateur peut l'appeler une fois le job approuvé, ou le planifier **sur son propre serveur** avec un ordonnanceur existant, sans nouveau backend HTTP :
+
+```text
+node scripts/run-coral-private-release.mjs
+  --job-root /CHEMIN_PRIVE_ORVEKIO/worker-jobs
+  --job <identifiant-job-valide>
+  --repo /CHEMIN_PRIVE_ORVEKIO/depot-git
+  --source-sha <SHA_GIT_APPROUVE>
+  --output-root /CHEMIN_PRIVE_ORVEKIO/livraisons
+  --token-file /CHEMIN_PRIVE_ORVEKIO/secret-staging
+```
+
+La commande est présentée ici sur plusieurs lignes pour la lisibilité ; l'appel réel doit utiliser la syntaxe appropriée au shell. Elle crée un worktree Git détaché, utilise `npm ci`, réalise la projection Astro puis le transfert vers le seul endpoint de staging. Chaque job est réservé exclusivement dans `output-root` : une tentative partiellement réussie n'est jamais réinitialisée automatiquement. **Aucun ordonnanceur, accès serveur ni secret n'a été installé ou configuré depuis GitHub** ; le bouton final sur OVH reste conditionné aux drapeaux privés et à la réception réelle de l'hébergement.
