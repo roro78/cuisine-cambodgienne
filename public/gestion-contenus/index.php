@@ -683,6 +683,16 @@ if($auth){
                         $action==='approve_real_publication'?'approve':'revoke',
                         $checks,$note,$confirm,$auth,
                         $realTtsSettings,$catalog,$canonicalById,$guides);
+                    // The only network dispatch sends the approved no-text
+                    // intent to the EXISTING private gateway; it cannot deploy.
+                    if($action==='approve_real_publication')
+                        cmsCoralRealSpeechStageRelease($private,$creation,$job,
+                            $realTtsSettings,$catalog,$canonicalById,$guides);
+                }elseif($action==='stage_real_release'){
+                    if($realTtsSettings===null||!$auth||!$confirm)
+                        throw new RuntimeException('CORAL_RELEASE_DISABLED');
+                    cmsCoralRealSpeechStageRelease($private,$creation,$job,
+                        $realTtsSettings,$catalog,$canonicalById,$guides);
                 }elseif(in_array($action,['approve_rights','revoke_rights'],true)){
                     cmsCoralTtsDecision($private,$creation['id'],$version,'rights',$action==='approve_rights'?'approve':'revoke',
                         $checks,$note,$confirm,$auth,$catalog,$canonicalById,$guides);
@@ -695,7 +705,7 @@ if($auth){
                     else throw new RuntimeException('TTS_ACTION');
                 }
                 header('Location: ?new=1&cid='.rawurlencode($creation['id']).'&'.$filtersUrl
-                    .(in_array($action,['approve_voice_rights','revoke_voice_rights','generate_real','approve_real_preview','approve_real_audio','revoke_real_audio','approve_real_publication','revoke_real_publication'],true)?'#cms-real-tts':'#cms-tts'),true,303);exit;
+                    .(in_array($action,['approve_voice_rights','revoke_voice_rights','generate_real','approve_real_preview','approve_real_audio','revoke_real_audio','approve_real_publication','revoke_real_publication','stage_real_release'],true)?'#cms-real-tts':'#cms-tts'),true,303);exit;
             }catch(Throwable $e){
                 http_response_code(409);$error='Action audio refusée ou accusé incertain. Aucun renvoi automatique : vérifiez le suivi, la version, les droits et les validations. Les anciens MP3 sont conservés.';
             }
