@@ -176,6 +176,31 @@ test('private worker stages exact no-text publication consent only after complet
   const saved=JSON.parse(await readFile(join(dir,'release-intent.json'),'utf8'));
   assert.equal(saved.mp3_sha256,digest);
   assert.ok(!JSON.stringify(saved).includes(r.chapters[0].text),'no private narrations in release');
+
+  const privateSource={id:r.creation_id,version:r.creation_version,
+   kind:'atelier',slug:'amok-trey',title:'Atelier cuisine khmère de démonstration',
+   atelier_reference:{recipeSlug:'amok-trey'},
+   atelier_scripts:{chapters:r.chapters.map((ch,index)=>({id:ch.id,index,text:ch.text}))}};
+  const review={contract:'cdc-coral-studio-reviewed-blueprint-v1',
+   creationId:r.creation_id,creationVersion:r.creation_version,
+   requestId:r.request_id,bindingSha256:r.binding_sha256,
+   visualSha256:'e'.repeat(64),media:{imageValidated:true,rightsValidated:true},
+   review:{recipeValidated:true,editorialValidated:true,audioListeningValidated:true,
+    mobileValidated:true,desktopValidated:true,productionApproved:true}};
+  const packet={contract:'cdc-coral-studio-private-build-inputs-v1',
+   intent:proposal,source:privateSource,profile:review};
+  const staged=await jobs.stageBuildInputs(r,r.request_id,root,packet);
+  assert.equal(staged.build_inputs_staged,true);
+  assert.equal((await jobs.stageBuildInputs(r,r.request_id,root,packet)).build_inputs_staged,true,
+   'identical approved private inputs replay safely');
+  const held=JSON.parse(await readFile(join(dir,'private-build-inputs.json'),'utf8'));
+  assert.equal(held.source.atelier_scripts.chapters[0].text,r.chapters[0].text);
+  await assert.rejects(jobs.stageBuildInputs(r,r.request_id,root,{
+   ...packet,source:{...privateSource,atelier_scripts:{chapters:privateSource.atelier_scripts.chapters.map(
+    (ch,i)=>i===0?{...ch,text:'modified narration'}:ch)}}}),/BUILD_INPUTS_NARRATION/);
+  await assert.rejects(jobs.stageBuildInputs(r,r.request_id,root,{
+   ...packet,profile:{...review,visualSha256:'f'.repeat(64)}}),/BUILD_INPUTS_CONFLICT/);
+
   await assert.rejects(jobs.stageRelease(r,r.request_id,root,{
    ...proposal,candidate_public_slug:'other',candidate_workshop_slug:'atelier-pratique-other',
    candidate_audio_path:'audio/workshops/atelier-pratique-other/atelier-coral-'+digest.slice(0,12)+'.mp3'
@@ -191,6 +216,11 @@ test('existing job HTTPS gateway accepts only authenticated POST release staging
  const runner={
   state:async(q,id)=>({id,status:'succeeded',completed_chapters:7}),
   run:async(q,id)=>({id,status:'succeeded'}),
+  stageBuildInputs:async(q,id,folder,payload)=>{
+    assert.equal(id,r.request_id);
+    assert.equal(payload.contract,'cdc-coral-studio-private-build-inputs-v1');
+    calls++;return {id,status:'succeeded',build_inputs_staged:true};
+  },
   stageRelease:async(q,id,folder,payload)=>{
     assert.equal(id,r.request_id);assert.equal(payload.contract,'cdc-coral-studio-release-intent-v1');
     calls++;return {id,status:'succeeded',release_staged:true};
@@ -213,6 +243,19 @@ test('existing job HTTPS gateway accepts only authenticated POST release staging
   assert.equal(accepted.status,202);
   assert.equal((await accepted.json()).release_staged,true);
   assert.equal(calls,1);
+  const secretPacket={contract:'cdc-coral-studio-private-build-inputs-v1',
+   source:{kind:'atelier'},profile:{review:true},intent:{request_id:r.request_id}};
+  const privateEndpoint=endpoint.replace(/\\/release$/,'/build-inputs');
+  assert.equal((await fetch(privateEndpoint,{method:'POST',
+   body:JSON.stringify(secretPacket)})).status,401);
+  assert.equal((await fetch(privateEndpoint,{method:'GET',headers:{
+   Authorization:'Bearer '+token}})).status,404);
+  const stage=await fetch(privateEndpoint,{method:'POST',headers:{
+   Authorization:'Bearer '+token,'Content-Type':'application/json'
+  },body:JSON.stringify(secretPacket)});
+  assert.equal(stage.status,202);
+  assert.equal((await stage.json()).build_inputs_staged,true);
+  assert.equal(calls,2);
  }finally{
   g.stopWorker();await new Promise(resolve=>g.server.close(resolve));
   await rm(root,{recursive:true,force:true});
