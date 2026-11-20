@@ -29,6 +29,10 @@ function cmsCoralRealSpeechApprovedRequest($root,$draft,$cat,$can,$guid): array 
   if(!$rightsCurrent||$draft!==$record)throw new RuntimeException('RIGHTS_REVOKED_OR_STALE');
   return ['request_id'=>str_repeat('e',48)];
 }
+function cmsCoralAstroReviewCurrent($p,$r,$m,$c,$ca,$g): ?array {
+  global $rightsCurrent;
+  return $rightsCurrent?['synthetic_review_approved'=>true]:null;
+}
 require __DIR__.'/../../public/gestion-contenus/coral-v2-ai.php';
 require __DIR__.'/../../public/gestion-contenus/coral-real-speech-bridge.php';
 function check($bool,$label): void {if(!$bool)throw new RuntimeException($label);}
