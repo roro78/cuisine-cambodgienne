@@ -5,6 +5,7 @@ require_once __DIR__.'/lib.php';
 require_once __DIR__.'/coral-v2-ai.php';
 require_once __DIR__.'/coral-astro-review.php';
 require_once __DIR__.'/coral-scoped-staging.php';
+require_once __DIR__.'/coral-scoped-studio-release.php';
 $realSpeechModulesPresent=is_file(__DIR__.'/coral-real-speech-request.php')&&is_file(__DIR__.'/coral-real-speech-bridge.php');
 if($realSpeechModulesPresent){
     require_once __DIR__.'/coral-real-speech-request.php';
@@ -784,6 +785,16 @@ if($auth){
                     if($action==='approve_real_publication')
                         cmsCoralRealSpeechStageRelease($private,$creation,$job,
                             $realTtsSettings,$catalog,$canonicalById,$guides);
+                }elseif($action==='publish_real'){
+                    if($realTtsSettings===null||!$auth||!$confirm
+                        ||($_POST['publish_confirm']??null)!=='1')
+                        throw new RuntimeException('CORAL_PUBLISH_NOT_CONFIRMED');
+                    $receipt=cmsCoralStudioPublish(
+                        $private,dirname(__DIR__),$creation,$job,$auth,$confirm,
+                        $cfg,$realTtsSettings,$catalog,$canonicalById,$guides);
+                    if(($receipt['fileCount']??null)!==5)
+                        throw new RuntimeException('CORAL_PUBLISH_RECEIPT');
+                    $_SESSION['coral_published_local']=$job;
                 }elseif($action==='stage_real_release'){
                     if($realTtsSettings===null||!$auth||!$confirm)
                         throw new RuntimeException('CORAL_RELEASE_DISABLED');
@@ -801,7 +812,7 @@ if($auth){
                     else throw new RuntimeException('TTS_ACTION');
                 }
                 header('Location: ?new=1&cid='.rawurlencode($creation['id']).'&'.$filtersUrl
-                    .(in_array($action,['approve_voice_rights','revoke_voice_rights','generate_real','approve_real_preview','approve_real_audio','revoke_real_audio','approve_real_publication','revoke_real_publication','stage_real_release'],true)?'#cms-real-tts':'#cms-tts'),true,303);exit;
+                    .(in_array($action,['approve_voice_rights','revoke_voice_rights','generate_real','approve_real_preview','approve_real_audio','revoke_real_audio','approve_real_publication','revoke_real_publication','stage_real_release','publish_real'],true)?'#cms-real-tts':'#cms-tts'),true,303);exit;
             }catch(Throwable $e){
                 http_response_code(409);$error='Action audio refusée ou accusé incertain. Aucun renvoi automatique : vérifiez le suivi, la version, les droits et les validations. Les anciens MP3 sont conservés.';
             }
@@ -2107,6 +2118,8 @@ des sept textes complets dans cette fiche.</p>
 <?php if($creation!==null&&$creation['kind']==='atelier'): ?>
 <?php try{$ttsGuides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);
 echo cmsCoralTtsPanel($private,$creation,$catalog,$canonicalById,$ttsGuides,(string)$_SESSION['csrf'],$ttsSettings,$filtersUrl,$realTtsSettings);
+echo cmsCoralStudioPublishPanel($private,$creation,(string)$_SESSION['csrf'],$cfg,
+    $realTtsSettings,$catalog,$canonicalById,$ttsGuides);
 }catch(Throwable $e){echo '<p>Audio privé indisponible : aucune génération autorisée.</p>';} ?>
 <?php endif; ?>
 <?= cmsVisualPanel($creation,$visualLatest,$visualDisplay,$visualInput,$visualSettings!==null,
