@@ -167,7 +167,18 @@ test('two successive releases add their own index rows without changing live fin
   const base={id:'recette:test-recipe',fingerprint:hash,model:'recipes'};
   const names=['social-feed.json','editorial-source-index.json','editorial-guided-fields.json'];
   const initial={product:'cuisine-du-cambodge',schemaVersion:1,items:[base]};
-  for(const name of names)await writeFile(join(directory,name),JSON.stringify(initial));
+  // OVH's live Amok recipe contains a validated optional portionContract
+  // omitted by a fresh Astro build. Future releases must keep those exact
+  // existing canonical row bytes/fields, not silently replace them.
+  const protectedRecipe={...base,portionContract:{
+    version:1,sourceFingerprint:hash,
+    steps:[{index:0,sourceText:'Verser la pâte',anchors:['la pâte']}]}
+  };
+  const originalRows=Object.fromEntries(names.map(name=>[
+    name,name==='editorial-guided-fields.json'?protectedRecipe:base]));
+  for(const name of names)await writeFile(join(directory,name),JSON.stringify({
+    ...initial,items:[originalRows[name]]
+  }));
   for(const slug of ['first-course','second-course']){
    const addition={id:'atelier:'+slug,model:'cookingWorkshopGuides',fingerprint:hash};
    for(const name of names)await writeFile(join(dist,name),JSON.stringify({
@@ -181,7 +192,7 @@ test('two successive releases add their own index rows without changing live fin
   for(const name of names){
    const {items}=JSON.parse(await readFile(join(directory,name),'utf8'));
    assert.deepEqual(items.map(item=>item.id),[base.id,'atelier:first-course','atelier:second-course']);
-   assert.deepEqual(items[0],base);
+   assert.deepEqual(items[0],originalRows[name]);
   }
  }finally{await rm(root,{recursive:true,force:true});}
 });
