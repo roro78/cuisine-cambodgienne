@@ -73,3 +73,42 @@ contraintes de budget durable, d'approbation de préécoute, de stockage
 privé, de raccordement worker, du lecteur en production et de publication
 restent des gates séparés. Ne surtout pas activer le fournisseur en
 réduisant ces vérifications à des flags de configuration.
+
+
+## Mise à jour du 20 novembre 2026 — Studio déjà partiellement raccordé
+
+La description initiale du 13 novembre ci-dessus est historique : la PR #236
+inclut désormais le pont `coral-real-speech-bridge.php`, le formulaire du
+Studio, le contrat privé validé, la file HTTPS existante, le moteur réel
+conditionnel dans `editorial-ai-job-gateway.mjs`, la préécoute et
+`coral-speech-real-jobs.mjs` (sept chapitres + assemblage MP3). La chaîne reste
+**désactivée en production** : les flags, les droits du projet, la qualification
+du fournisseur et les preuves de dépenses ne sont pas établis par la CI.
+
+Nouveau garde-fou côté Studio :
+
+- Une fois le MP3 privé `succeeded`, le panneau permet de confirmer
+  **séparément** l'écoute intégrale et l'ordre des sept chapitres.
+- L'approbation et sa révocation utilisent le journal privé append-only
+  `tts-real-listening-*.json`, séparé du journal audio simulé.
+- Avant l'inscription du visa, le Studio revérifie l'identité de la
+  création/version, le consentement et les droits courants, les sept repères
+  ordonnés du manifeste, puis **télécharge et contrôle le SHA du MP3 exact**.
+- Le visa porte le SHA-256 du média ; changer le fichier, le brouillon ou
+  révoquer l'écoute rend le visa inopérant. CSRF, session admin, note humaine
+  et déclaration explicite sont exigés par le contrôleur et le journal.
+- Aucun visa d'écoute ne déclenche une publication ni un appel OpenAI.
+- Les tests PHP 8.3 et 8.4 couvrent l'intégrité du journal, les refus,
+  la révocation et l'invalidation par un changement de SHA ou de version.
+- La reconnaissance des MP3 `-v4` dans la bibliothèque privée a été
+  harmonisée avec la source Astro déjà déployée : six ateliers historiques
+  plus Amok Trey V4. Aucun des sept médias existants n'est remplacé.
+
+**Restent non résolus :** une recette complète du moteur sur un runtime
+authentifié avec qualification réelle du budget et d'OpenAI Speech, la
+commande de publication **explicite et distincte**, la préparation ciblée
+d'une release Astro reproductible, la sauvegarde distante vérifiée, le
+rollback testé et la réception sur mobile physique. La publication automatique
+ne doit pas réutiliser `deploy-ovh.yml` pour contourner les dossiers PHP
+protégés. Aucun accès mutualisé ni secret n'est nécessaire aux présents
+contrôles isolés.
