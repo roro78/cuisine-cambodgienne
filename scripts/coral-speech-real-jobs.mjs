@@ -80,13 +80,17 @@ export function createCoralRealSpeechJobs({
    if(digest.sha256!==m.sha256)throw Error('CORAL_REAL_FINAL_SHA');
   }
   const staged=await optional(join(dir,'release-intent.json'));
+  const buildInputs=await optional(join(dir,'private-build-inputs.json'),90000);
+  if(buildInputs&&(!staged||buildInputs.intent?.request_id!==id||
+     JSON.stringify(buildInputs.intent)!==JSON.stringify(staged)))
+    throw Error('CORAL_REAL_BUILD_INPUTS_STATE_INVALID');
   if(staged&&(!s||s.status!=='succeeded'
      ||staged.request_id!==id||staged.binding_sha256!==r.binding_sha256
      ||staged.mp3_sha256!==s.manifest_sha256))
     throw Error('CORAL_REAL_RELEASE_STATE_INVALID');
   return {id,status:s.status==='running'&&!active?'interrupted':s.status,
    completed_chapters:s.completed_chapters||0,
-   release_staged:Boolean(staged),
+   release_staged:Boolean(staged),build_inputs_staged:Boolean(buildInputs),
    ...(s.error?{error:s.error}:{}),
    ...(s.status==='succeeded'?{result:JSON.stringify(await optional(join(dir,'manifest.json')))}:{})};
  }
@@ -271,6 +275,64 @@ export function createCoralRealSpeechJobs({
   }
   return state(r,id,folder,true);
  }
+ /**
+  * The existing authenticated Coral gateway accepts the exact PRIVATE Studio
+  * source and the current human review. No GitHub content, public URL or
+  * Astro deployment is created by this operation. A future builder must
+  * revalidate Git provenance, the current Studio consent and local image bytes.
+  */
+ async function stageBuildInputs(r,id,folder,packet){
+  validateCoralRealSpeechRequest(r);
+  if(id!==r.request_id||!packet||typeof packet!=='object'||Array.isArray(packet)
+    ||Object.keys(packet).sort().join(',')!=='contract,intent,profile,source'
+    ||packet.contract!=='cdc-coral-studio-private-build-inputs-v1')
+    throw Error('CORAL_REAL_BUILD_INPUTS_CONTRACT');
+  const dir=directory(folder),staged=await optional(join(dir,'release-intent.json'));
+  if(!staged||JSON.stringify(packet.intent)!==JSON.stringify(staged))
+    throw Error('CORAL_REAL_BUILD_INPUTS_RELEASE_STALE');
+  const source=packet.source,profile=packet.profile;
+  if(!source||typeof source!=='object'||Array.isArray(source)||
+    !profile||typeof profile!=='object'||Array.isArray(profile)
+    ||source.kind!=='atelier'||source.id!==r.creation_id||
+    source.version!==r.creation_version||source.slug!==staged.candidate_public_slug||
+    source.atelier_reference?.recipeSlug!==staged.recipe_slug||
+    typeof source.title!=='string'||source.title.trim().length<18||
+    !Array.isArray(source.atelier_scripts?.chapters)||
+    source.atelier_scripts.chapters.length!==7||
+    profile.contract!=='cdc-coral-studio-reviewed-blueprint-v1'||
+    profile.creationId!==r.creation_id||profile.creationVersion!==r.creation_version||
+    profile.requestId!==id||profile.bindingSha256!==r.binding_sha256||
+    profile.media?.imageValidated!==true||profile.media?.rightsValidated!==true||
+    !/^[a-f0-9]{64}$/.test(profile.visualSha256??'')||
+    !profile.review||['recipeValidated','editorialValidated','audioListeningValidated',
+    'mobileValidated','desktopValidated','productionApproved'].some(k=>profile.review[k]!==true))
+    throw Error('CORAL_REAL_BUILD_INPUTS_REVIEW');
+  for(let i=0;i<7;i++){
+    const chapter=source.atelier_scripts.chapters[i],approved=r.chapters[i];
+    if(chapter?.id!==approved.id||chapter.index!==i||
+      typeof chapter.text!=='string'||digest(chapter.text)!==approved.sha256||
+      staged.chapters[i]?.text_sha256!==approved.sha256)
+      throw Error('CORAL_REAL_BUILD_INPUTS_NARRATION');
+  }
+  const bytes=JSON.stringify(packet);
+  if(Buffer.byteLength(bytes,'utf8')>85000)throw Error('CORAL_REAL_BUILD_INPUTS_SIZE');
+  await authority(r);
+  if((await state(r,id,folder)).status!=='succeeded')
+    throw Error('CORAL_REAL_BUILD_INPUTS_AUDIO');
+  const path=join(dir,'private-build-inputs.json'),previous=await optional(path,90000);
+  if(previous){
+    if(JSON.stringify(previous)!==bytes)throw Error('CORAL_REAL_BUILD_INPUTS_CONFLICT');
+    return state(r,id,folder,true);
+  }
+  await authority(r);
+  try{await durableWrite(path,bytes);}
+  catch(e){
+    if(e.code!=='EEXIST')throw e;
+    const existing=await optional(path,90000);
+    if(JSON.stringify(existing)!==bytes)throw Error('CORAL_REAL_BUILD_INPUTS_CONFLICT');
+  }
+  return state(r,id,folder,true);
+ }
  async function audioStream(r,id,folder){
   await authority(validateCoralRealSpeechRequest(r));
   if((await state(r,id,folder)).status!=='succeeded')throw Error('CORAL_REAL_NO_AUDIO');
@@ -306,7 +368,7 @@ export function createCoralRealSpeechJobs({
   await atomicJson(join(dir,'state.json'),{status:'queued',completed_chapters:saved.completed_chapters});
   return state(r,id,folder);
  }
- return {state,run,resume,stageRelease,audioStream,previewStream,
+ return {state,run,resume,stageRelease,stageBuildInputs,audioStream,previewStream,
   audio:async(r,id,folder)=>{
    const f=await audioStream(r,id,folder);
    try{return await f.handle.readFile();}finally{await f.handle.close();}
