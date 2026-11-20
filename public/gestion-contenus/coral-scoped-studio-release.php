@@ -91,6 +91,10 @@ function cmsCoralStudioPublishPanel(
         $request=cmsCoralRealSpeechApprovedRequest(
             $private,$record,$catalog,$canonical,$guided);
         $job=$request['request_id'];
+        $receipt=$private.'/coral-scoped-releases/'.$job.'/receipt.json';
+        if(is_file($receipt)&&!is_link($receipt))
+            return '<p data-coral-publish="local-committed">Fichiers installés localement. '
+              .'La réception HTTP/audio et le contrôle sur téléphone restent à effectuer.</p>';
         $ready=cmsCoralStageReady($private,$job);
         if(!cmsCoralStudioPublishAssert(
             $private,$record,$job,$ready['manifest'],$cfg,
