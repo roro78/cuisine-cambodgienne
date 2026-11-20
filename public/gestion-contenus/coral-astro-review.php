@@ -18,12 +18,12 @@ function cmsCoralAstroReviewText(mixed $value,int $min=20,int $max=900): string 
     if(mbLen($text)<$min)cmsCoralAstroReviewFail('TEXT');
     return $text;
 }
-function cmsCoralAstroReviewLines(mixed $raw,int $min=1,int $max=12): array {
+function cmsCoralAstroReviewLines(mixed $raw,int $min=1,int $max=12,int $minLength=12): array {
     if(!is_string($raw)||mbLen($raw)>2400)cmsCoralAstroReviewFail('LIST');
     $out=array_values(array_filter(array_map('trim',preg_split('/\r\n|\r|\n/u',$raw)?:[]),
         static fn($x)=>$x!==''));
     if(count($out)<$min||count($out)>$max)cmsCoralAstroReviewFail('LIST');
-    foreach($out as $line)cmsCoralAstroReviewText($line,12,200);
+    foreach($out as $line)cmsCoralAstroReviewText($line,$minLength,200);
     return $out;
 }
 function cmsCoralAstroReviewImage(string $webroot,mixed $url): string {
@@ -33,7 +33,7 @@ function cmsCoralAstroReviewImage(string $webroot,mixed $url): string {
     $dir=realpath($webroot.'/images/cuisine');
     if($dir===false||!is_dir($dir))cmsCoralAstroReviewFail('IMAGE_DIRECTORY');
     $file=$webroot.$url;
-    if(is_link($file)||!is_file($file)||realpath($file)!==$dir.'/'.basename($file))
+    if(is_link($file)||!is_file($file)||realpath($file)!==$dir.DIRECTORY_SEPARATOR.basename($file))
         cmsCoralAstroReviewFail('IMAGE_MISSING');
     $size=filesize($file);
     if(!is_int($size)||$size<100||$size>8000000)cmsCoralAstroReviewFail('IMAGE_SIZE');
@@ -59,7 +59,7 @@ function cmsCoralAstroReviewProfile(
         cmsCoralAstroReviewFail('ALLERGENS');
     $allergenText=$form['allergens']??'';
     $allergens=$allergenStatus==='declared'
-        ?cmsCoralAstroReviewLines($allergenText,1,12):[];
+        ?cmsCoralAstroReviewLines($allergenText,1,12,3):[];
     if($allergenStatus==='none'&&trim((string)$allergenText)!=='')
         cmsCoralAstroReviewFail('ALLERGENS');
     $img=cmsCoralAstroReviewImage($webroot,$form['finished_image']??null);

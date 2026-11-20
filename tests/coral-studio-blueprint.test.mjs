@@ -56,6 +56,7 @@ function fixture(recipes){
 }
 test('convert existing real seven-chapter culinary structure into native Astro blueprint with provenance',async()=>{
  const p=fixture(await loadCanonicalRecipes());
+ p.profile.allergens={status:'declared',items:['Poisson']};
  const r=projectCoralStudioBlueprint(p);
  assert.equal(r.kind,'cooking-workshop');
  assert.equal(r.slug,p.intent.candidate_public_slug);
@@ -65,6 +66,7 @@ test('convert existing real seven-chapter culinary structure into native Astro b
  assert.equal(r.audio.asset.scriptSha256,sha(JSON.stringify([
   guide.audio.intro,...guide.phases.map(x=>x.audioScript)])));
  assert.equal(r.media.rightsValidated,true);
+ assert.deepEqual(r.allergens.items,['Poisson']);
  assert.equal(r.sources.recipeSource,'/recettes/'+guide.sourceRecipeSlug+'/');
  assert.equal(r.review.productionApproved,true);
  assert.equal(validateWorkshopBlueprint({...r,status:'review'},p.recipes).length,0);

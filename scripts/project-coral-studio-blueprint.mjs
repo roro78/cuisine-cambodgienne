@@ -25,8 +25,8 @@ const shaFile=path=>createHash('sha256').update(readFileSync(path)).digest('hex'
 const ids=['intro','installer','preparer','assembler','maitriser','rectifier','terminer'];
 const fail=msg=>{throw Error('CORAL_BLUEPRINT_'+msg);};
 const validText=(s,n=20)=>typeof s==='string'&&s.trim().length>=n;
-const validList=(arr,minimum=1)=>Array.isArray(arr)&&arr.length>=minimum&&
-  arr.every(item=>validText(item,12));
+const validList=(arr,minimum=1,minLength=12)=>Array.isArray(arr)&&arr.length>=minimum&&
+  arr.every(item=>validText(item,minLength));
 
 export function projectCoralStudioBlueprint({source,intent,profile,recipes}){
  const r=validateCoralStudioReleaseIntent(intent);
@@ -47,7 +47,7 @@ export function projectCoralStudioBlueprint({source,intent,profile,recipes}){
    !validList(profile.safety,1)||
    !profile.allergens||!['declared','none'].includes(profile.allergens.status)||
    !Array.isArray(profile.allergens.items)||
-   (profile.allergens.status==='declared'&&!validList(profile.allergens.items,1))||
+   (profile.allergens.status==='declared'&&!validList(profile.allergens.items,1,3))||
    (profile.allergens.status==='none'&&profile.allergens.items.length>0)||
    !profile.media||!/^\/images\/cuisine\/[a-z0-9-]+\.webp$/.test(profile.media.finishedPreparationImage??'')||
    profile.media.imageValidated!==true||profile.media.rightsValidated!==true||
