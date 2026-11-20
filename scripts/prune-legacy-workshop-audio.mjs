@@ -2,7 +2,7 @@
 // are built, routed, indexed and redirected. Source assets stay untouched.
 import assert from 'node:assert/strict';
 import { existsSync, readdirSync, readFileSync, unlinkSync, statSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join, resolve, sep } from 'node:path';
 import { retiredWorkshopAudioPaths, legacyWorkshopRedirects, workshopCutoverApproved, workshopRedirectRule } from './workshop-cutover-seo.mjs';
 
 if (!workshopCutoverApproved()) {
@@ -29,7 +29,7 @@ for(const [slug,target] of legacyWorkshopRedirects){
 const files=scan(DIST);
 for(const media of retiredWorkshopAudioPaths){
   const oldAsset=resolve(DIST,media.slice(1));
-  assert.ok(oldAsset.startsWith(DIST+'/'),'Unexpected audio path');
+  assert.ok(oldAsset.startsWith(DIST+sep),'Unexpected audio path');
   for(const file of files){
     if(readFileSync(file,'utf8').includes(media))
       throw Error('Refusing to remove still-referenced MP3 '+media+' referenced by '+file);

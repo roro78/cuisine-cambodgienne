@@ -4,6 +4,7 @@ import samlorMachu from './atelier-recette-guides/samlor-machu.json';
 import numBanhChok from './atelier-recette-guides/num-banh-chok.json';
 import kuyTeav from './atelier-recette-guides/kuy-teav.json';
 import baiSachChrouk from './atelier-recette-guides/bai-sach-chrouk.json';
+import amokTrey from './atelier-recette-guides/amok-trey.json';
 
 /**
  * Blueprints registered once here, rendered by the SINGLE dynamic Astro page.
@@ -11,7 +12,7 @@ import baiSachChrouk from './atelier-recette-guides/bai-sach-chrouk.json';
  * Explicit imports remain compatible with Astro AND standalone Node/esbuild
  * editorial index tests (unlike import.meta.glob in a shared data module).
  */
-export const cookingWorkshopGuides=[kroeung,lokLak,samlorMachu,numBanhChok,kuyTeav,baiSachChrouk];
+export const cookingWorkshopGuides=[kroeung,lokLak,samlorMachu,numBanhChok,kuyTeav,baiSachChrouk,amokTrey];
 export const releasedCookingWorkshopGuides=cookingWorkshopGuides.filter(guide=>guide.status==='release_ready');
 
 // Preserve the historical six-way cutover if a new private/review workshop is

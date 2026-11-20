@@ -7,9 +7,9 @@
     "check": "astro check",
     "build": "astro build",
     "test:motion": "node scripts/check-motion-contract.mjs",
-    "test:editorial": "node scripts/check-editorial-contract.mjs && node scripts/check-culinary-lexicon.mjs && node tests/atelier-coral-quota-safety.test.mjs && node tests/editorial-source-visibility.test.mjs && node tests/carnets-c02-contract.test.mjs && node tests/carnets-c05-contract.test.mjs && node tests/carnets-c03-contract.test.mjs && node tests/carnets-c04-contract.test.mjs && node tests/carnets-c06-contract.test.mjs && node tests/carnets-c07-contract.test.mjs && node tests/carnets-c01-contract.test.mjs",
+    "test:editorial": "node scripts/check-editorial-contract.mjs && node scripts/check-culinary-lexicon.mjs && node tests/atelier-coral-quota-safety.test.mjs && node tests/editorial-source-visibility.test.mjs && node tests/carnets-c02-contract.test.mjs && node tests/carnets-c05-contract.test.mjs && node tests/carnets-c03-contract.test.mjs && node tests/carnets-c04-contract.test.mjs && node tests/carnets-c06-contract.test.mjs && node tests/carnets-c07-contract.test.mjs && node tests/carnets-c01-contract.test.mjs && node --test tests/amok-v4-release-preflight.test.mjs && node --check scripts/stage-amok-v4-cooking-workshop.mjs",
     "preview": "astro preview",
-    "test:recipes": "node scripts/check-recipe-contract.mjs",
+    "test:recipes": "node scripts/check-recipe-contract.mjs && node scripts/check-amok-v4-publication.mjs",
     "test:experiences": "node scripts/check-experiences-contract.mjs",
     "test:dinner": "node --test tests/dinner-preview.test.mjs",
     "test:timeline": "node --test tests/dinner-timeline.test.mjs",
@@ -19,24 +19,28 @@
     "test:built-experiences": "node scripts/check-experiences-build.mjs",
     "test:browser-experiences": "node tests/experiences-browser-smoke.mjs",
     "prebuild": "node scripts/v17-responsive-images.mjs && node scripts/build-social-assets.mjs",
-    "predev": "node scripts/v17-responsive-images.mjs && node scripts/build-social-assets.mjs"
+    "predev": "node scripts/v17-responsive-images.mjs && node scripts/build-social-assets.mjs",
+    "package:amok-v4": "node scripts/package-amok-v4-release.mjs",
+    "build:amok-v4": "npm run build && npm run package:amok-v4"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.4",
-    "astro": "^5.13.5",
-    "gsap": "^3.13.0",
-    "typescript": "^5.9.2",
-    "sharp": "^0.34.4"
+    "@astrojs/check": "0.9.11",
+    "astro": "5.18.2",
+    "gsap": "3.15.0",
+    "typescript": "5.9.3",
+    "sharp": "0.34.5"
   },
   "devDependencies": {
-    "@types/node": "^24.10.1",
-    "esbuild": "^0.25.10",
-    "playwright-core": "^1.56.1"
+    "@types/node": "24.19.2",
+    "esbuild": "0.25.12",
+    "playwright-core": "1.64.1"
   },
   "overrides": {
     "@volar/language-service": "2.4.28",
     "@volar/language-core": "2.4.28",
     "@volar/typescript": "2.4.28",
-    "@volar/language-server": "2.4.28"
+    "@volar/language-server": "2.4.28",
+    "vite": "6.4.4",
+    "rollup": "4.64.12"
   }
 }

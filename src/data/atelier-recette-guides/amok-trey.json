@@ -1,0 +1,306 @@
+{
+  "schemaVersion": 1,
+  "kind": "cooking-workshop",
+  "status": "release_ready",
+  "slug": "atelier-pratique-amok-trey",
+  "title": "Amok Trey — Réussir un poisson au lait de coco à la vapeur",
+  "sourceRecipeSlug": "amok-trey",
+  "finalPreparation": "Amok Trey chaud, au centre pris mais souple, avec poisson et œufs complètement cuits, servi avec du riz jasmin préparé séparément.",
+  "learningGoal": "Savoir préparer et assaisonner la base avant les ingrédients crus, découper le poisson en morceaux réguliers et vérifier la cuisson complète sans dessécher l’amok.",
+  "difficulty": "Intermédiaire",
+  "canonicalServings": 4,
+  "portionLabel": "Selon la fiche recette adaptée aux convives ; référence canonique : 4 portions.",
+  "duration": {
+    "preparationMinutes": 0,
+    "practicalMinutes": 58,
+    "waitingMinutes": 0,
+    "waitingNote": "Les six phases comprennent la préparation et la cuisson ; arrêtez ou prolongez la lecture selon les gestes réels."
+  },
+  "recipeIngredients": {
+    "mode": "canonical-recipe",
+    "additionalTrialIngredients": []
+  },
+  "equipment": [
+    "Un grand saladier adapté au mélange",
+    "Un couteau et une planche propres",
+    "Un fouet ou une fourchette pour battre les œufs",
+    "Une cuillère à mesurer",
+    "Ramequins adaptés aux portions et à la capacité du panier",
+    "Un panier vapeur ou une grande casserole avec grille et couvercle",
+    "Un thermomètre alimentaire",
+    "Protections adaptées pour manipuler les récipients et le panier chauds"
+  ],
+  "beforeStarting": [
+    "Niveau proposé : Intermédiaire. Kroeung jaune déjà préparé selon sa fiche ou son atelier ; riz d’accompagnement préparé séparément.",
+    "Recette canonique : 30 min de préparation + 25 min de cuisson = 55 min. Atelier : enveloppe pédagogique estimée de 58 min, dont 3 min de finition et service après ces 55 min. Aucun chronométrage culinaire réel.",
+    "Répartition pédagogique : 5 min installer + 10 min préparer + 15 min assembler = 30 min de préparation ; 18 min de vapeur initiale + enveloppe de 7 min de contrôle/prolongation = 25 min de cuisson au format de référence ; 3 min terminer. Les 7 min ne s’ajoutent pas aux 25 min.",
+    "Les pauses, les fournées supplémentaires et la préparation séparée du kroeung et du riz peuvent allonger la durée. Les 18 à 25 min de vapeur sont indicatives : adapter aux contenants et vérifier la cuisson complète.",
+    "Allergènes de cette version : poisson (dont sauce de poisson) et œufs. Vérifier les étiquettes du kroeung et des sauces achetés pour les autres allergènes ; aucune substitution automatique.",
+    "Prélever la réserve de finition sur le lait de coco mesuré, sans ajout : base canonique 15 ml sur 250 ml, soit 6 % du volume pour les portions choisies. Le reste va dans la base. Garder la réserve séparée des ingrédients crus, couverte et au frais.",
+    "Mesurer les ingrédients sur la fiche adaptée aux convives ; ne pas recopier des quantités fixes dans la narration. Les feuilles de finition sont marquées non redimensionnables dans la recette canonique : choix existant à confirmer humainement, sans modification de la source.",
+    "Laver et égoutter les herbes ; retirer la nervure du combava et émincer finement. Ne pas laver le poisson cru. Séparer la préparation crue et le matériel de finition ; laver mains et ustensiles après contact.",
+    "Rectifier l’assaisonnement avant les œufs et le poisson crus ; ne plus goûter ensuite. Maintenir les ingrédients périssables au réfrigérateur pendant une attente.",
+    "Prévoir des ramequins adaptés aux portions, sans bloquer la vapeur. Attention aux brûlures ; suivre les consignes du matériel et ne pas chauffer à sec.",
+    "Contrôler au thermomètre propre la partie centrale épaisse de la préparation et du poisson, sans toucher la céramique, dans les différents ramequins. Objectif pratique proposé : au moins 72 °C à cœur (arrondi supérieur du seuil 71,1 °C des plats aux œufs). Texture prise et poisson entièrement cuit ; poursuivre si nécessaire, même au-delà du temps indicatif.",
+    "Finir et servir sans attendre avec des ustensiles propres après vérification de la cuisson. Aucun essai culinaire ni visa humain n’est déclaré."
+  ],
+  "safety": [
+    "Se laver les mains et nettoyer le plan de travail ; garder le poisson cru séparé des éléments prêts à servir.",
+    "Séparer les feuilles lavées du poisson cru ; ne pas laver le poisson. Nettoyer mains et ustensiles après contact.",
+    "Ne pas goûter après ajout des œufs ou du poisson crus ; nettoyer le matériel avant réutilisation.",
+    "Protéger les mains ; ouvrir le couvercle loin du visage. Ne pas laisser chauffer à sec et ne pas goûter la préparation encore crue.",
+    "Attention aux brûlures ; nettoyer la sonde entre les contrôles. Ne pas goûter avant cuisson complète.",
+    "Utiliser des ustensiles propres et une réserve de coco restée séparée du cru ; servir sans attendre après cuisson complète."
+  ],
+  "allergens": {
+    "status": "declared",
+    "items": [
+      "poisson (poisson blanc et sauce de poisson)",
+      "œufs"
+    ]
+  },
+  "sources": {
+    "recipeSource": "/recettes/amok-trey/",
+    "culturalNote": "L’amok varie selon les familles. Ici, on cherche surtout une texture souple et crémeuse, avec un poisson qui reste tendre et bien parfumé.",
+    "pedagogicalAdaptation": "Apprenez à préparer une base crémeuse au kroeung jaune, à enrober le poisson et à cuire l’Amok Trey à la vapeur. Les quantités sont celles de la recette adaptée à vos convives. Le kroeung doit être prêt avant de commencer."
+  },
+  "phases": [
+    {
+      "id": "installer",
+      "title": "S’installer et préparer le matériel vapeur",
+      "minutes": 5,
+      "ingredientNames": [
+        "poisson blanc ferme",
+        "lait de coco",
+        "kroeung jaune",
+        "œufs",
+        "sauce de poisson",
+        "sucre de palme",
+        "feuilles de combava, sans nervure, finement émincées",
+        "feuilles de basilic thaï ou asiatique"
+      ],
+      "actions": [
+        "Réunir et mesurer tous les ingrédients selon la recette.",
+        "Prélever sur le lait de coco mesuré la réserve de finition adaptée aux portions (6 % du volume), puis la garder à part au frais.",
+        "Installer le saladier, les ustensiles propres, les ramequins adaptés aux portions et le matériel vapeur.",
+        "Dégager le plan de travail et séparer la planche et les ustensiles destinés au poisson cru des éléments de finition.",
+        "Vérifier que le kroeung est prêt et organiser séparément le riz d’accompagnement.",
+        "Vérifier les allergènes et les étiquettes des sauces et de la pâte achetées."
+      ],
+      "observe": "Les quatre ramequins tiennent dans le panier vapeur ou sur la grille, couvercle fermé.",
+      "check": "Ingrédients mesurés pour les portions choisies ; kroeung prêt ; réserve de coco séparée ; matériel et thermomètre accessibles.",
+      "mistake": "Commencer à mélanger avant d’avoir préparé le panier vapeur ou réserver le lait de coco trop tard.",
+      "recovery": "Mettre le mélange de côté avant l’ajout des œufs et du poisson, puis préparer les ramequins et le panier.",
+      "learning": "Mesurer selon la fiche, préparer le kroeung à l’avance et séparer cru et finition.",
+      "safety": "Se laver les mains et nettoyer le plan de travail ; garder le poisson cru séparé des éléments prêts à servir.",
+      "pausePrompt": "Mettre en pause pour terminer la mise en place ou préparer le kroeung avant de poursuivre.",
+      "audioScript": "Installez-vous tranquillement : on va préparer un Amok Trey tendre, au cœur pris mais encore souple. Prenez le saladier, de quoi battre les œufs, une cuillère pour mélanger, une planche et un couteau propres, vos ramequins, le panier vapeur avec son couvercle, un thermomètre alimentaire et de quoi manipuler les plats chauds. Vérifiez que les ramequins tiennent dans le panier sans bloquer le passage de la vapeur, que le couvercle ferme et que l’eau restera sous les récipients. Si votre matériel ne permet pas de tout cuire correctement, prévoyez plusieurs fournées, sans changer les quantités de la fiche.\n\nMesurez les ingrédients pour vos convives. Prélevez sur le lait de coco mesuré la part de finition indiquée sur la fiche adaptée aux portions, puis gardez-la à part, couverte et au frais jusqu’au service. Elle ne s’ajoute pas à la quantité totale de lait de coco. Le kroeung jaune doit déjà être prêt : c’est la pâte de citronnelle, galanga, curcuma, ail, échalote et combava de la recette liée. Si vous devez encore le préparer, mettez cet atelier en pause et suivez cette sous-préparation avant de continuer.\n\nVérifiez les allergies : cette version contient du poisson, notamment dans la sauce de poisson, et des œufs. Lisez aussi les étiquettes du kroeung et des sauces achetés : leur composition peut ajouter d’autres allergènes. Ne remplacez pas les ingrédients sans vérifier la recette choisie.\n\nLavez-vous les mains et nettoyez le plan de travail. Gardez le poisson et les œufs crus à l’écart des herbes et du matériel de finition ; après leur contact, lavez les mains, la planche et les ustensiles avant de les réutiliser. Gardez les ingrédients périssables au réfrigérateur pendant une attente. Le riz d’accompagnement se prépare séparément : son temps de cuisson n’est pas compris dans celui de l’amok. Prenez le temps de tout disposer, puis passons aux découpes."
+    },
+    {
+      "id": "preparer",
+      "title": "Préparer les feuilles puis le poisson",
+      "minutes": 10,
+      "ingredientNames": [
+        "poisson blanc ferme",
+        "feuilles de combava, sans nervure, finement émincées",
+        "feuilles de basilic thaï ou asiatique"
+      ],
+      "actions": [
+        "Laver les feuilles de finition sous l’eau courante et égoutter ; retirer la nervure du combava puis l’émincer très finement.",
+        "Garder les feuilles de basilic entières à part pour la finition.",
+        "Avec une planche et un couteau réservés au cru, tailler le poisson en morceaux réguliers ; ne pas le rincer.",
+        "Laver mains, couteau et planche après contact avec le poisson cru ; garder le poisson au frais pendant une attente."
+      ],
+      "observe": "Les morceaux de poisson sont de taille régulière ; les feuilles de combava sont finement émincées, sans nervure.",
+      "check": "Les morceaux restent distincts et les feuilles de finition sont prêtes à être ajoutées après cuisson.",
+      "mistake": "Faire des morceaux très inégaux, qui risquent de cuire de façon différente.",
+      "recovery": "Recouper les morceaux les plus gros avant de les incorporer à la base.",
+      "learning": "Laver les herbes, émincer le combava sans nervure, puis tailler le poisson régulièrement avec le matériel réservé au cru.",
+      "safety": "Séparer les feuilles lavées du poisson cru ; ne pas laver le poisson. Nettoyer mains et ustensiles après contact.",
+      "pausePrompt": "Terminez la découpe et la préparation des feuilles, puis faites une pause si vous en avez besoin.",
+      "audioScript": "Lavez les feuilles de finition sous l’eau courante et égouttez-les. Préparez les feuilles de combava sur une planche propre : retirez la nervure centrale si ce n’est pas déjà fait, puis émincez les feuilles très finement. La nervure est coriace ; l’enlever et couper fin améliore la texture en bouche. Gardez les feuilles de basilic à part : elles seront ajoutées après la cuisson, pour préserver leur fraîcheur.\n\nPrenez ensuite le poisson blanc ferme et posez-le sur la planche réservée aux ingrédients crus. Coupez-le en morceaux aussi réguliers que possible : ainsi, ils cuiront à un rythme proche. Gardez-les distincts, sans les écraser. Si quelques morceaux sont nettement plus gros que les autres, recoupez-les maintenant ; c’est plus facile avant de les enrober de base. Ne rincez pas le poisson cru : les éclaboussures peuvent contaminer le plan de travail.\n\nAprès le poisson, lavez-vous les mains et nettoyez le couteau et la planche. On évite ainsi de reporter le jus cru sur les ingrédients de finition. Le repère est simple : des morceaux de poisson de taille proche et des lamelles de combava fines, sans nervure. Prenez le temps de terminer ces préparations ; vous pouvez mettre le guide en pause et garder le poisson au frais si vous devez attendre.\n\nOn va maintenant mélanger le lait de coco, le kroeung jaune et l’assaisonnement, puis vérifier la base avant d’y incorporer les œufs et le poisson cru."
+    },
+    {
+      "id": "assembler",
+      "title": "Assaisonner puis incorporer les œufs et le poisson",
+      "minutes": 15,
+      "ingredientNames": [
+        "lait de coco",
+        "kroeung jaune",
+        "sauce de poisson",
+        "sucre de palme",
+        "œufs",
+        "poisson blanc ferme"
+      ],
+      "actions": [
+        "Mélanger le lait de coco restant et le kroeung prévu sur la fiche jusqu’à obtenir une base homogène.",
+        "Ajouter sauce de poisson et sucre de palme selon la fiche ; mélanger et goûter avant les œufs et le poisson crus avec une cuillère propre.",
+        "Battre les œufs dans un récipient propre, puis les incorporer à la base assaisonnée.",
+        "Ajouter le poisson et l’enrober délicatement sans briser les morceaux.",
+        "Répartir dans les ramequins avec une profondeur comparable, sans tasser.",
+        "Ne plus goûter ; laver mains et ustensiles ayant touché les ingrédients crus."
+      ],
+      "observe": "Base homogène, morceaux de poisson entiers et enrobés, remplissage comparable.",
+      "check": "Assaisonnement vérifié avant le cru ; œufs et poisson incorporés sans nouvelle dégustation.",
+      "mistake": "Goûter après le cru ou fouetter vivement et briser le poisson.",
+      "recovery": "Arrêter de remuer dès l’enrobage obtenu ; réserver les ajustements gustatifs à une préparation dont la cuisson complète est vérifiée.",
+      "learning": "Goûter la base avant les ingrédients crus, incorporer délicatement et répartir dans les ramequins.",
+      "safety": "Ne pas goûter après ajout des œufs ou du poisson crus ; nettoyer le matériel avant réutilisation.",
+      "pausePrompt": "Terminer le remplissage avant de lancer la vapeur ; garder les ingrédients au frais en cas d’attente.",
+      "audioScript": "Maintenant, on prépare la base crémeuse qui va parfumer le poisson. Dans le saladier, mélangez le lait de coco restant avec le kroeung jaune : prenez le temps de bien défaire la pâte pour répartir les aromates. Vous cherchez une préparation homogène, parfumée, sans gros morceaux fibreux. Si le kroeung reste en paquets, écrasez-les contre la paroi du saladier avec le dos de la cuillère, puis remuez encore.\n\nAjoutez la sauce de poisson et le sucre de palme, dans les quantités de votre fiche, puis mélangez. C’est le bon moment pour goûter et rectifier l’équilibre : après, les œufs et le poisson crus entreront dans la préparation, et on ne goûtera plus. Utilisez une cuillère propre pour cette vérification, sans la replonger après l’avoir portée à la bouche. La part de lait de coco destinée à la finition reste à part.\n\nBattez les œufs dans un récipient propre, juste assez pour les rendre homogènes, puis versez-les dans la base déjà assaisonnée. Mélangez doucement jusqu’à ce qu’il n’y ait plus de traînées d’œuf : ils aideront l’amok à prendre à la vapeur tout en gardant une texture souple.\n\nAjoutez le poisson découpé en morceaux réguliers. Avec une cuillère, soulevez et retournez délicatement la préparation plutôt que de la fouetter. Chaque morceau doit être enrobé, mais rester entier. Si vous remuez vivement, le poisson se défait ; arrêtez dès que l’enrobage est uniforme.\n\nRépartissez le mélange dans vos ramequins, sans tasser et en gardant une profondeur de remplissage comparable. Vérifiez que les morceaux sont distribués et que la base les entoure bien. Après l’ajout des œufs et du poisson crus, ne goûtez plus. Lavez-vous les mains et nettoyez les ustensiles qui les ont touchés. Prenez le temps de remplir les ramequins ; on passera ensuite à la cuisson vapeur."
+    },
+    {
+      "id": "maitriser",
+      "title": "Maîtriser la cuisson vapeur",
+      "minutes": 18,
+      "ingredientNames": [
+        "œufs",
+        "poisson blanc ferme"
+      ],
+      "actions": [
+        "Amener l’eau au frémissement puis placer les ramequins dans le panier au-dessus de l’eau, sans les empiler ; couvrir.",
+        "Maintenir une vapeur régulière, sans ébullition violente, en respectant les consignes du matériel et le niveau d’eau.",
+        "Pour le format de référence, commencer les contrôles autour de 18 min ; la plage 18–25 min reste indicative. Adapter à la profondeur, aux contenants et aux fournées."
+      ],
+      "observe": "Vapeur présente et régulière ; ramequins stables, non immergés ; couvercle fermé entre les contrôles.",
+      "check": "La cuisson à la vapeur est lancée et surveillée ; elle sera validée au thermomètre dans la phase rectifier.",
+      "mistake": "Chauffer trop fort, laisser l’eau disparaître ou croire qu’une durée identique garantit toutes les portions.",
+      "recovery": "Ajuster la chauffe pour garder le frémissement ; suivre les consignes du matériel pour l’eau et contrôler chaque fournée.",
+      "learning": "Maintenir une vapeur régulière et lancer la cuisson selon le format des contenants, sans garantie fondée sur la seule durée.",
+      "safety": "Protéger les mains ; ouvrir le couvercle loin du visage. Ne pas laisser chauffer à sec et ne pas goûter la préparation encore crue.",
+      "pausePrompt": "Mettre la narration en pause pendant la cuisson et rester à proximité ; contrôler selon le format réel, pas au seul chronomètre.",
+      "audioScript": "On passe au geste principal de l’atelier : cuire l’amok à la vapeur sans dessécher le poisson. Amenez l’eau du matériel vapeur au frémissement, puis placez les ramequins dans le panier, au-dessus de l’eau, sans les empiler. Utilisez des protections adaptées pour manipuler le panier chaud et gardez assez d’espace pour que la vapeur circule. Fermez le couvercle.\n\nMaintenez un frémissement régulier qui produit de la vapeur : inutile de faire bouillir violemment, mais il ne faut pas non plus laisser la vapeur disparaître. Une chauffe excessive ou trop prolongée peut resserrer les œufs et dessécher le poisson. Si l’eau bout trop fort, baissez la chauffe ; si elle ne frémit plus, remontez-la progressivement. Surveillez le niveau d’eau selon les consignes de votre matériel, sans laisser chauffer à sec.\n\nLa recette de référence indique dix-huit à vingt-cinq minutes. Cette plage concerne son format de ramequins ; le remplissage, leur taille, leur température de départ et la charge du panier changent la durée réelle. Pour un format comparable, commencez les contrôles autour de dix-huit minutes ; des contenants plus petits peuvent demander un contrôle plus tôt. Si vous cuisez en plusieurs fournées, contrôlez chacune : un temps identique ne garantit pas une cuisson identique.\n\nÉvitez d’ouvrir sans cesse le couvercle : la vapeur s’échapperait et la cuisson serait moins régulière. Mettez le guide en pause pendant l’attente et restez à proximité. Lorsque vient le moment de vérifier, ouvrez le couvercle en dirigeant la vapeur loin du visage et des mains. On va maintenant contrôler le centre, sans se fier au seul chronomètre."
+    },
+    {
+      "id": "rectifier",
+      "title": "Contrôler et ajuster la cuisson",
+      "minutes": 7,
+      "ingredientNames": [
+        "poisson blanc ferme",
+        "œufs"
+      ],
+      "actions": [
+        "Vérifier la prise et le poisson avec un thermomètre propre dans la partie centrale épaisse, sans toucher le récipient ; contrôler les différents ramequins.",
+        "Objectif pratique proposé : au moins 72 °C à cœur, arrondi supérieur de 71,1 °C pour les plats aux œufs ; texture prise et poisson complètement cuit.",
+        "Poursuivre sous couvercle puis recontrôler si nécessaire, même au-delà de la plage indicative. Les 7 min du planning représentent la fin de l’enveloppe de 25 min, pas un temps garanti.",
+        "Retirer prudemment les portions prêtes et poursuivre les autres ; ne pas ajouter d’œuf ni de poisson cru pour rattraper une texture sèche."
+      ],
+      "observe": "Centre pris mais souple, poisson entièrement cuit, température vérifiée dans les ramequins.",
+      "check": "Cuisson complète et objectif de température atteints avant finition ; aucun contrôle par dégustation crue.",
+      "mistake": "Se fier à la couleur ou au temps seul, ne mesurer qu’un récipient, ou prolonger une préparation déjà sèche.",
+      "recovery": "Prolonger seulement les portions insuffisamment cuites ; arrêter lorsque les critères sont atteints. Une texture déjà sèche ne se réhydrate pas par surcuisson.",
+      "learning": "Vérifier les différents ramequins au thermomètre et poursuivre si nécessaire ; ne jamais goûter une préparation insuffisamment cuite.",
+      "safety": "Attention aux brûlures ; nettoyer la sonde entre les contrôles. Ne pas goûter avant cuisson complète.",
+      "pausePrompt": "Prendre le temps de contrôler chaque portion et poursuivre si nécessaire avant de finir.",
+      "audioScript": "On contrôle la cuisson avec un thermomètre alimentaire propre. Mesurez au centre d’un ramequin, dans la partie épaisse de la préparation et du poisson, sans toucher la céramique. Vérifiez aussi les autres ramequins : ils ne chauffent pas nécessairement tous au même rythme. Nettoyez la sonde entre les contrôles pour ne pas reporter une préparation encore crue sur une portion cuite.\n\nVisez au moins soixante-douze degrés Celsius au cœur de la préparation. La texture doit aussi être prise mais encore souple, et le poisson entièrement cuit : l’aspect et la durée ne remplacent pas la mesure.\n\nSi le centre reste liquide, si le poisson n’est pas complètement cuit ou si la température est insuffisante, remettez le couvercle et poursuivez la cuisson, puis vérifiez de nouveau. Il peut être nécessaire de dépasser la plage indicative de la recette. Ne goûtez pas pour décider si la préparation est assez cuite. Si certains ramequins sont prêts avant les autres, retirez-les prudemment et poursuivez la cuisson des autres.\n\nUne texture déjà sèche ne redeviendra pas crémeuse en prolongeant la cuisson : arrêtez dès que les critères de cuisson sont atteints. Pour la prochaine préparation, surveillez la chauffe et la régularité du remplissage. Ne rajoutez pas de poisson ni d’œufs crus pour tenter de rattraper une portion cuite. Une fois tous les contrôles terminés, passons à la finition, hors du feu."
+    },
+    {
+      "id": "terminer",
+      "title": "Finir et servir",
+      "minutes": 3,
+      "ingredientNames": [
+        "feuilles de combava, sans nervure, finement émincées",
+        "feuilles de basilic thaï ou asiatique",
+        "lait de coco"
+      ],
+      "actions": [
+        "Hors du feu, répartir les feuilles de combava finement émincées et les feuilles de basilic sur les ramequins.",
+        "Napper délicatement chaque ramequin avec la réserve de lait de coco.",
+        "Servir immédiatement bien chaud avec du riz jasmin cuit séparément."
+      ],
+      "observe": "Les feuilles sont ajoutées après cuisson et le centre de l’amok reste pris mais souple.",
+      "check": "La préparation a été contrôlée comme complètement cuite avant la finition et le service.",
+      "mistake": "Ajouter les herbes avant de contrôler la cuisson ou oublier la réserve de finition.",
+      "recovery": "Vérifier d’abord la cuisson complète, puis ajouter hors du feu les feuilles et le lait de coco réservé.",
+      "learning": "Après cuisson complète, ajouter les feuilles et la réserve de lait de coco, puis servir avec le riz préparé séparément.",
+      "safety": "Utiliser des ustensiles propres et une réserve de coco restée séparée du cru ; servir sans attendre après cuisson complète.",
+      "pausePrompt": "Ajoutez la finition juste avant de servir ; gardez les ramequins chauds et accompagnez-les de riz jasmin.",
+      "audioScript": "Lorsque le poisson et les œufs sont complètement cuits et que la température a été vérifiée, sortez les ramequins avec précaution. On termine hors du feu pour préserver la fraîcheur des herbes. Répartissez les feuilles de combava finement émincées, sans nervure, puis les feuilles de basilic sur les ramequins. Ajoutez le lait de coco réservé, dans la quantité de finition prévue pour vos portions : il apporte une touche crémeuse à la surface.\n\nLes herbes ajoutées trop tôt perdraient de leur fraîcheur ; si vous avez sauté cette finition, faites-la maintenant avec des ustensiles propres. La réserve de coco doit être restée séparée des ingrédients crus. Servez sans attendre avec le riz jasmin préparé à part.\n\nGardez en tête les acquis de cet atelier : assaisonner avant les œufs et le poisson crus, enrober sans briser les morceaux, maintenir une vapeur régulière et contrôler la cuisson à cœur. Les quantités se règlent sur la fiche ; les gestes restent réutilisables pour vos convives. Merci d’avoir cuisiné avec moi. Régalez-vous !"
+    }
+  ],
+  "audio": {
+    "mode": "guided-cooking",
+    "status": "validated",
+    "voice": "coral",
+    "intro": "Bonjour et bienvenue ! Aujourd’hui, on prépare un Amok Trey : du poisson tendre, enrobé d’une base crémeuse au lait de coco et au kroeung jaune, puis cuit doucement à la vapeur. Vous allez apprendre à garder les morceaux réguliers, à assaisonner au bon moment et à contrôler une cuisson complète sans dessécher l’amok.\n\nChoisissez le nombre de convives sur la fiche et préparez les quantités indiquées. Le kroeung jaune doit être prêt avant de commencer : suivez sa fiche ou son atelier si vous le préparez vous-même. Installez vos ramequins et votre panier vapeur. On goûtera la base pour rectifier l’assaisonnement avant d’ajouter les œufs et le poisson ; ensuite, on ne goûte plus la préparation crue. La recette indique dix-huit à vingt-cinq minutes de vapeur pour son format de référence : c’est un repère, pas une garantie pour tous les contenants. Vous pourrez mettre le guide en pause pendant les préparations et la cuisson, puis reprendre tranquillement lorsque vous serez prêt. Quand tout est prêt, on commence !",
+    "storyboardVersion": 2,
+    "publicProviderMention": false,
+    "asset": {
+      "audioUrl": "/audio/workshops/atelier-pratique-amok-trey/atelier-coral-v4.mp3",
+      "durationSec": 714.792,
+      "sha256": "177ccaad9b45a18c11270d9a949e8d19f55516e8e045745615d32f5c2d4bceff",
+      "chapters": [
+        {
+          "id": "intro",
+          "title": "Bienvenue et mise en place",
+          "startSec": 0,
+          "endSec": 67.68
+        },
+        {
+          "id": "installer",
+          "title": "S’installer et préparer le matériel vapeur",
+          "startSec": 67.68,
+          "endSec": 198.6
+        },
+        {
+          "id": "preparer",
+          "title": "Préparer les feuilles puis le poisson",
+          "startSec": 198.6,
+          "endSec": 298.272
+        },
+        {
+          "id": "assembler",
+          "title": "Assaisonner puis incorporer les œufs et le poisson",
+          "startSec": 298.272,
+          "endSec": 417.936
+        },
+        {
+          "id": "maitriser",
+          "title": "Maîtriser la cuisson vapeur",
+          "startSec": 417.936,
+          "endSec": 533.52
+        },
+        {
+          "id": "rectifier",
+          "title": "Contrôler et ajuster la cuisson",
+          "startSec": 533.52,
+          "endSec": 635.064
+        },
+        {
+          "id": "terminer",
+          "title": "Finir et servir",
+          "startSec": 635.064,
+          "endSec": 714.792
+        }
+      ],
+      "scriptSha256": "8d5e023b06b9a9d43d8df68516828ae7465ac92112e6e4b15587d5b321bf92b3"
+    },
+    "editorialTextApproved": true,
+    "approvedScriptSha256": "8d5e023b06b9a9d43d8df68516828ae7465ac92112e6e4b15587d5b321bf92b3",
+    "editorialApprovalScope": "sept narrations exactes de l’atelier Amok Trey V4",
+    "editorialApprovalDate": "2026-11-09"
+  },
+  "media": {
+    "finishedPreparationImage": "/images/cuisine/v19-amok-trey-1440.webp",
+    "imageValidated": true,
+    "rightsValidated": false,
+    "stepImagePaths": []
+  },
+  "review": {
+    "recipeValidated": true,
+    "editorialValidated": true,
+    "audioListeningValidated": true,
+    "mobileValidated": false,
+    "desktopValidated": false,
+    "productionApproved": true
+  },
+  "releaseAuthorization": {
+    "ownerApproved": true,
+    "approvedOn": "2026-11-18",
+    "scope": "amok-trey-v4",
+    "sourceBasedRecipeReviewAccepted": true,
+    "acceptsPendingPhysicalDeviceQA": true,
+    "authorizesExistingIllustrations": true,
+    "note": "Accord de mise en production du propriétaire le 18 novembre 2026 ; sept narrations, visa et revue culinaires issus du Studio V4 ; écoute intégrale distinctement confirmée via la commande."
+  }
+}

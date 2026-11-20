@@ -1,3 +1,4 @@
+import { getWorkshopPresentation } from './workshopPresentation';
 import { createHash } from 'node:crypto';
 import { recipes } from './recipes';
 import { restoredRecipes } from './restoredRecipes';
@@ -103,9 +104,7 @@ export function getSocialCatalog(): SocialSource[] {
     ...(completeCookingWorkshopCutoverReady
       ? releasedCookingWorkshopGuides.map(guide => create(
           'atelier', guide.slug, guide.title,
-          guide.sourceRecipeSlug === 'kroeung-jaune'
-            ? '/apprendre/pratique/kroeung-jaune/'
-            : `/apprendre/pratique/${guide.slug}/`,
+          `/apprendre/pratique/${getWorkshopPresentation(guide).publicSlug}/`,
           guide.learningGoal,
           [guide.finalPreparation, ...guide.phases.slice(0, 3).map(phase => phase.learning)],
           guide.media.finishedPreparationImage || undefined,

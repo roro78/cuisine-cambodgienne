@@ -4,6 +4,7 @@ import { restoredRecipes } from '../data/restoredRecipes';
 import { ingredientGuides } from '../data/ingredients';
 import { cultureArticles } from '../data/culture';
 import { workshops } from '../data/workshops';
+import { getWorkshopPresentation } from '../data/workshopPresentation';
 import { releasedCookingWorkshopGuides, completeCookingWorkshopCutoverReady } from '../data/cookingWorkshopGuides';
 import { recipeTechniqueGuides } from '../data/recipeTechniques';
 
@@ -18,7 +19,7 @@ export const GET: APIRoute = ({ site }) => {
     ...ingredientGuides.map((ingredient) => `/ingredients/${ingredient.slug}/`),
     ...cultureArticles.map((article) => `/culture/${article.slug}/`),
     ...(!completeCookingWorkshopCutoverReady ? workshops.map((workshop) => `/apprendre/${workshop.slug}/`) : []),
-    ...releasedCookingWorkshopGuides.map((guide) => guide.sourceRecipeSlug==='kroeung-jaune' ? '/apprendre/pratique/kroeung-jaune/' : `/apprendre/pratique/${guide.slug}/`),
+    ...releasedCookingWorkshopGuides.map((guide) => `/apprendre/pratique/${getWorkshopPresentation(guide).publicSlug}/`),
     ...recipeTechniqueGuides.map((guide) => `/techniques/${guide.slug}/`)
   ];
 
