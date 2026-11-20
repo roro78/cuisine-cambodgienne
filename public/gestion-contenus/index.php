@@ -646,6 +646,11 @@ if($auth){
                 }elseif($action==='approve_real_preview'){
                     if($realTtsSettings===null||!$auth||!$confirm)throw new RuntimeException('REAL_TTS_DISABLED');
                     cmsCoralRealSpeechApprovePreview($private,$creation,$job,$realTtsSettings,$catalog,$canonicalById,$guides);
+                }elseif(in_array($action,['approve_real_audio','revoke_real_audio'],true)){
+                    if($realTtsSettings===null||!$auth||!$confirm)throw new RuntimeException('REAL_TTS_DISABLED');
+                    cmsCoralRealSpeechListeningAction($private,$creation,$job,
+                        $action==='approve_real_audio'?'approve':'revoke',$checks,$note,$confirm,$auth,
+                        $realTtsSettings,$catalog,$canonicalById,$guides);
                 }elseif(in_array($action,['approve_rights','revoke_rights'],true)){
                     cmsCoralTtsDecision($private,$creation['id'],$version,'rights',$action==='approve_rights'?'approve':'revoke',
                         $checks,$note,$confirm,$auth,$catalog,$canonicalById,$guides);
@@ -658,7 +663,7 @@ if($auth){
                     else throw new RuntimeException('TTS_ACTION');
                 }
                 header('Location: ?new=1&cid='.rawurlencode($creation['id']).'&'.$filtersUrl
-                    .(in_array($action,['approve_voice_rights','revoke_voice_rights','generate_real','approve_real_preview'],true)?'#cms-real-tts':'#cms-tts'),true,303);exit;
+                    .(in_array($action,['approve_voice_rights','revoke_voice_rights','generate_real','approve_real_preview','approve_real_audio','revoke_real_audio'],true)?'#cms-real-tts':'#cms-tts'),true,303);exit;
             }catch(Throwable $e){
                 http_response_code(409);$error='Action audio refusée ou accusé incertain. Aucun renvoi automatique : vérifiez le suivi, la version, les droits et les validations. Les anciens MP3 sont conservés.';
             }
