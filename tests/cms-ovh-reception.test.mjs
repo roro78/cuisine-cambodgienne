@@ -38,6 +38,26 @@ test('reject missing, stale and leaked public indexes',()=>{
  feeds['editorial-guided-fields.json'].items[0].fields={baseServings:4};
  assert.throws(()=>verifyCmsIndexes(feeds),/UNEXPECTED_KEYS/);
 });
+test('existing Amok V4 portion binding is accepted only when it matches published recipe text',()=>{
+ const feeds=fixture(),guided=feeds['editorial-guided-fields.json'].items[0];
+ const binding={index:0,sourceText:'Mélanger',anchors:['Mélanger']};
+ guided.portionContract={version:1,sourceFingerprint:sha,steps:[binding]};
+ assert.deepEqual(verifyCmsIndexes(feeds),{social:1,canonical:1,guided:1});
+
+ guided.portionContract={...guided.portionContract,sourceFingerprint:'c'.repeat(64)};
+ assert.throws(()=>verifyCmsIndexes(feeds),/GUIDED_PORTION_CONTRACT/);
+ guided.portionContract={version:1,sourceFingerprint:sha,steps:[{...binding,sourceText:'Texte privé'}]};
+ assert.throws(()=>verifyCmsIndexes(feeds),/GUIDED_PORTION_CONTRACT/);
+ guided.portionContract={version:1,sourceFingerprint:sha,steps:[{...binding,anchors:['mot absent']}]};
+ assert.throws(()=>verifyCmsIndexes(feeds),/GUIDED_PORTION_CONTRACT/);
+ guided.portionContract={version:1,sourceFingerprint:sha,steps:[binding,binding]};
+ assert.throws(()=>verifyCmsIndexes(feeds),/GUIDED_PORTION_CONTRACT/);
+ guided.portionContract={version:1,sourceFingerprint:sha,steps:[binding],privateSecret:'no'};
+ assert.throws(()=>verifyCmsIndexes(feeds),/UNEXPECTED_KEYS/);
+ guided.portionContract={version:1,sourceFingerprint:sha,steps:[binding]};
+ guided.model='culture';
+ assert.throws(()=>verifyCmsIndexes(feeds),/GUIDED_PORTION_CONTRACT|GUIDED_DIGEST_MISMATCH/);
+});
 test('a future page inherits the same V2 form, and an unregistered page blocks release',()=>{
  const feeds=fixture();
  const contentId='recette:future-recipe';
