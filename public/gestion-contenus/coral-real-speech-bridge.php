@@ -299,6 +299,12 @@ function cmsCoralRealSpeechReleaseIntent(
   if(!is_array($ref)||!is_string($ref['recipeSlug']??null)
     ||!preg_match('/^[a-z0-9-]{3,100}$/D',$ref['recipeSlug']))
     throw new RuntimeException('CORAL_RELEASE_RECIPE');
+  $publicSlug=$record['slug']??null;
+  if(!is_string($publicSlug)||!preg_match('/^[a-z0-9][a-z0-9-]{2,99}$/D',$publicSlug)
+    ||cmsCreationSlug((string)($record['title']??''))!==$publicSlug)
+    throw new RuntimeException('CORAL_RELEASE_SLUG');
+  $workshopSlug='atelier-pratique-'.$publicSlug;
+  $audioPath='audio/workshops/'.$workshopSlug.'/atelier-coral-'.substr($m['sha256'],0,12).'.mp3';
   $chapters=[];
   foreach($r['chapters'] as $i=>$chapter){
     if(($m['chapters'][$i]['id']??null)!==$chapter['id'])
@@ -311,6 +317,9 @@ function cmsCoralRealSpeechReleaseIntent(
     'creation_id'=>$r['creation_id'],'creation_version'=>$r['creation_version'],
     'request_id'=>$job,'binding_sha256'=>$r['binding_sha256'],
     'recipe_sha256'=>$r['recipe_sha256'],'recipe_slug'=>$ref['recipeSlug'],
+    'candidate_public_slug'=>$publicSlug,
+    'candidate_workshop_slug'=>$workshopSlug,
+    'candidate_audio_path'=>$audioPath,
     'voice'=>'coral','model'=>'gpt-4o-mini-tts','speed_milli'=>930,
     'mp3_sha256'=>$m['sha256'],'mp3_bytes'=>$m['bytes'],
     'mp3_duration_seconds'=>$m['duration'],
