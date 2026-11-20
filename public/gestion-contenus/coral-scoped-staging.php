@@ -70,11 +70,17 @@ function cmsCoralStageInventory(string $webroot,array $paths): array {
         $existing=is_file($file);
         // Publishing a new workshop must never overwrite a previous workshop
         // or its immutable audio. Shared recipe/catalogue/sitemap must exist.
-        if (($i<2&&$existing)||($i>=2&&!$existing))
+        $new=$i<2||(count($paths)===9&&$i===5);
+        if ($new===$existing)
             cmsCoralStageFail('TARGET_INVENTORY');
         $result[$path]=$existing?cmsCoralPublishDigest($file,32000000)['sha256']:null;
     }
     return $result;
+}
+function cmsCoralStageBundle(string $folder,array $state): string {
+    $name=$state['bundleDir']??'bundle';
+    if(!is_string($name)||!preg_match('/^bundle(?:-[a-f0-9]{24})?$/D',$name))cmsCoralStageFail('BUNDLE_ID');
+    return $folder.'/'.$name;
 }
 function cmsCoralStageReady(string $private,string $job): array {
     if (!preg_match('/^[a-f0-9]{48}$/D',$job))cmsCoralStageFail('REQUEST_ID');
@@ -83,7 +89,7 @@ function cmsCoralStageReady(string $private,string $job): array {
     $state=cmsCoralStageLoad($folder);
     if (!$state['sealed']||($state['manifest']['requestId']??null)!==$job)
         cmsCoralStageFail('NOT_SEALED');
-    $bundle=$folder.'/bundle';
+    $bundle=cmsCoralStageBundle($folder,$state);
     if (is_link($bundle)||!is_dir($bundle))cmsCoralStageFail('BUNDLE');
     $actual=cmsCoralPublishDigest($bundle.'/BUNDLE-MANIFEST-PRIVE.json',64000);
     if ($actual['sha256']!==($state['manifestSha256']??null))
@@ -101,7 +107,7 @@ function cmsCoralStageReady(string $private,string $job): array {
 /** Idempotent begin/chunk/seal: no upload can silently change a sealed lot. */
 function cmsCoralStageOperation(string $private,string $webroot,array $request): array {
     if (($request['contract']??null)!=='cdc-coral-ovh-staging-v1'||
-        !in_array($request['op']??null,['begin','append','seal'],true)||
+        !in_array($request['op']??null,['begin','append','seal','status'],true)||
         !preg_match('/^[a-f0-9]{48}$/D',(string)($request['requestId']??'')))
         cmsCoralStageFail('REQUEST');
     $job=$request['requestId'];$op=$request['op'];
@@ -109,14 +115,24 @@ function cmsCoralStageOperation(string $private,string $webroot,array $request):
     $folder=$root.'/'.$job;
     if (is_link($folder))cmsCoralStageFail('SYMLINK');
     if (!is_dir($folder)) {
+        if($op==='status')return ['requestId'=>$job,'stage'=>'missing'];
         if($op!=='begin')cmsCoralStageFail('UNKNOWN_JOB');
-        $existing=glob($root.'/'.str_repeat('?',48),GLOB_ONLYDIR);
-        if(is_array($existing)&&count($existing)>=24)cmsCoralStageFail('CAPACITY');
         cmsCoralPublishSecureDir($folder,true);
     }
     $lock=@fopen($folder.'/lock','c');
     if (!$lock||!flock($lock,LOCK_EX))cmsCoralStageFail('LOCK');
     try {
+        $journal=$private.'/coral-scoped-releases/'.$job;
+        $prior=$folder.'/stage.json';
+        if($op==='status'){
+            if(is_file($journal.'/before-write.json'))return ['requestId'=>$job,'stage'=>'closed'];
+            if(is_file($webroot.'/.coral-publication-in-progress'))return ['requestId'=>$job,'stage'=>'busy'];
+            if(!is_file($prior))return ['requestId'=>$job,'stage'=>'missing'];
+            $state=cmsCoralStageLoad($folder);
+            $inventory=cmsCoralStageInventory($webroot,array_keys($state['preconditions']));
+            return ['requestId'=>$job,'stage'=>$inventory!==$state['preconditions']?'stale':
+                ($state['sealed']?'sealed':'receiving')];
+        }
         if ($op==='begin') {
             if (!is_array($request['manifest']??null)||
                 count(array_diff(array_keys($request),['contract','op','requestId','manifest']))>0)
@@ -138,20 +154,25 @@ function cmsCoralStageOperation(string $private,string $webroot,array $request):
             }
             $paths=cmsCoralPublishManifest($manifest,$preconditions);
             $baseline=$manifest['baseSha256']??null;
-            if(!is_array($baseline)||array_keys($baseline)!==array_slice($paths,2))
+            if(!is_array($baseline)||array_keys($baseline)!==array_values(array_filter($paths,static fn($p,$i)=>$i>=2&&(count($paths)===5||$i!==5),ARRAY_FILTER_USE_BOTH)))
                 cmsCoralStageFail('BASELINE');
             foreach($baseline as $hash)
                 if(!is_string($hash)||!preg_match('/^[a-f0-9]{64}$/D',$hash))
                     cmsCoralStageFail('BASELINE');
-            $prior=$folder.'/stage.json';
-            if(is_file($prior)) {
-                $old=cmsCoralStageLoad($folder);
-                if($old['manifest']!==$manifest)cmsCoralStageFail('CONFLICT');
-                return ['requestId'=>$job,'stage'=>$old['sealed']?'sealed':'receiving'];
-            }
             $inventory=cmsCoralStageInventory($webroot,$paths);
-            if(array_slice($inventory,2)!==$baseline)cmsCoralStageFail('LIVE_CHANGED');
-            $bundle=$folder.'/bundle';
+            if(array_intersect_key($inventory,$baseline)!==$baseline)cmsCoralStageFail('LIVE_CHANGED');
+            $bundleDir='bundle';
+            if(is_file($prior)){
+                $old=cmsCoralStageLoad($folder);
+                if($old['manifest']===$manifest)
+                    return ['requestId'=>$job,'stage'=>$old['sealed']?'sealed':'receiving'];
+                if(count($paths)!==9||$old['preconditions']===$inventory
+                    ||is_file($journal.'/before-write.json'))cmsCoralStageFail('CONFLICT');
+                foreach(['creationId','creationVersion','bindingSha256','recipeSlug','publicSlug','audioSha256','workshopSourceSha256'] as $field)
+                    if(($old['manifest'][$field]??null)!==($manifest[$field]??null))cmsCoralStageFail('CONFLICT');
+                $bundleDir='bundle-'.bin2hex(random_bytes(12));
+            }
+            $bundle=$folder.'/'.$bundleDir;
             cmsCoralPublishSecureDir($bundle,true);
             $bytes=json_encode($manifest,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
             if(strlen($bytes)>64000)cmsCoralStageFail('MANIFEST_SIZE');
@@ -160,13 +181,14 @@ function cmsCoralStageOperation(string $private,string $webroot,array $request):
                 !@chmod($manifestPath,0600))cmsCoralStageFail('MANIFEST_WRITE');
             cmsCoralStageStore($prior,['contract'=>'cdc-coral-ovh-staging-state-v1',
               'manifest'=>$manifest,'manifestSha256'=>hash('sha256',$bytes),
-              'preconditions'=>$inventory,'sealed'=>false]);
+              'preconditions'=>$inventory,'bundleDir'=>$bundleDir,'sealed'=>false]);
             return ['requestId'=>$job,'stage'=>'receiving'];
         }
         $state=cmsCoralStageLoad($folder);
         if (($state['manifest']['requestId']??null)!==$job)
             cmsCoralStageFail('STATE_JOB');
         $files=$state['manifest']['files'];
+        $bundle=cmsCoralStageBundle($folder,$state);
         if($op==='append') {
             if($state['sealed'])cmsCoralStageFail('SEALED');
             $name=$request['path']??null;
@@ -185,7 +207,7 @@ function cmsCoralStageOperation(string $private,string $webroot,array $request):
                 !preg_match('/^[a-f0-9]{64}$/D',$request['chunkSha256'])||
                 !hash_equals($request['chunkSha256'],hash('sha256',$chunk)))
                 cmsCoralStageFail('CHUNK_SHA');
-            $target=cmsCoralPublishTarget($folder.'/bundle',$name);
+            $target=cmsCoralPublishTarget($bundle,$name);
             cmsCoralPublishSecureDir(dirname($target),true);
             $size=is_file($target)?filesize($target):0;
             if(!is_int($size)||$size>$entry['bytes'])cmsCoralStageFail('CHUNK_STATE');
@@ -223,17 +245,17 @@ function cmsCoralStageOperation(string $private,string $webroot,array $request):
         foreach($paths as $name){
             $entry=$files[array_search($name,$paths,true)];
             $actual=cmsCoralPublishDigest(
-                cmsCoralPublishTarget($folder.'/bundle',$name),32000000);
+                cmsCoralPublishTarget($bundle,$name),32000000);
             if($actual['bytes']!==$entry['bytes']||$actual['sha256']!==$entry['sha256'])
                 cmsCoralStageFail('INCOMPLETE');
         }
-        $mp3=$folder.'/bundle/'.$paths[0];
+        $mp3=$bundle.'/'.$paths[0];
         $header=@file_get_contents($mp3,false,null,0,3);
         if($header!=='ID3')cmsCoralStageFail('MP3_HEADER');
-        $page=(string)file_get_contents($folder.'/bundle/'.$paths[1]);
-        $recipe=(string)file_get_contents($folder.'/bundle/'.$paths[2]);
-        $catalogue=(string)file_get_contents($folder.'/bundle/'.$paths[3]);
-        $sitemap=(string)file_get_contents($folder.'/bundle/'.$paths[4]);
+        $page=(string)file_get_contents($bundle.'/'.$paths[1]);
+        $recipe=(string)file_get_contents($bundle.'/'.$paths[2]);
+        $catalogue=(string)file_get_contents($bundle.'/'.$paths[3]);
+        $sitemap=(string)file_get_contents($bundle.'/'.$paths[4]);
         $url='/apprendre/pratique/'.$state['manifest']['publicSlug'].'/';
         if(!str_contains($page,'/'.$paths[0])||
            !str_contains($page,'/recettes/'.$state['manifest']['recipeSlug'].'/')||
@@ -245,8 +267,48 @@ function cmsCoralStageOperation(string $private,string $webroot,array $request):
         foreach(array_unique($assets[0]) as $asset)
             if(!is_file(cmsCoralPublishTarget((string)realpath($webroot),substr($asset,1))))
                 cmsCoralStageFail('SHARED_ASSET_MISSING');
+        if(count($paths)===9){
+            $jpeg=cmsCoralPublishTarget($bundle,$paths[5]);
+            if(file_get_contents($jpeg,false,null,0,2)!=="\xff\xd8")cmsCoralStageFail('JPEG');
+            cmsCoralStageVerifyIndexes($webroot,$bundle,$state['manifest'],$paths);
+        }
         $state['sealed']=true;
         cmsCoralStageStore($folder.'/stage.json',$state);
         return ['requestId'=>$job,'stage'=>'sealed'];
     } finally {flock($lock,LOCK_UN);fclose($lock);}
+}
+
+/** Verify the staged projections are strictly additive against the live catalogue. */
+function cmsCoralStageVerifyIndexes(string $webroot,string $bundle,array $manifest,array $paths): void {
+    $id='atelier:'.$manifest['publicSlug'];
+    $expectedHash=$manifest['workshopSourceSha256'];
+    $catalogues=[];
+    foreach(array_slice($paths,6) as $i=>$name){
+        $before=cmsCoralStageReadIndex($webroot,$name);
+        $after=cmsCoralStageReadIndex($bundle,$name);
+        $added=array_pop($after['items']);
+        if($before!==$after||($added['id']??null)!==$id)
+            cmsCoralStageFail('INDEX_DELTA');
+        foreach($after['items'] as $row)if(($row['id']??null)===$id)cmsCoralStageFail('INDEX_DUPLICATE');
+        $after['items'][]=$added;
+        $catalogues[]=$after;
+        if($i===0){
+            if(($added['url']??null)!=='https://www.cuisine-du-cambodge.com/apprendre/pratique/'.$manifest['publicSlug'].'/'
+                ||($added['imageUrl']??null)!=='https://www.cuisine-du-cambodge.com/'.$paths[5])
+                cmsCoralStageFail('INDEX_SOCIAL');
+        }elseif(($added['model']??null)!=='cookingWorkshopGuides'||($added['fingerprint']??null)!==$expectedHash)
+            cmsCoralStageFail('INDEX_FINGERPRINT');
+    }
+    $catalog=cmsSourceList($catalogues[0]);
+    $canonical=cmsCanonicalSourceList($catalogues[1],$catalog);
+    $guided=cmsGuidedSourceList($catalogues[2],$canonical);
+    cmsAssertGuidedCoverage($guided,$canonical);
+}
+function cmsCoralStageReadIndex(string $root,string $name): array {
+    $file=cmsCoralPublishTarget($root,$name);
+    cmsCoralPublishDigest($file,524288);
+    $document=json_decode((string)file_get_contents($file),true,32,JSON_THROW_ON_ERROR);
+    if(!is_array($document)||!is_array($document['items']??null)||!array_is_list($document['items']))
+        cmsCoralStageFail('INDEX_FORMAT');
+    return $document;
 }

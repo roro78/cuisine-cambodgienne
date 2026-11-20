@@ -5,7 +5,7 @@ import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {dirname,join} from 'node:path';
 import {prepareCoralPrivateAstroOverlay,verifyHistoricalAmokV4,verifyCoralBuiltIndexes} from '../scripts/build-coral-private-astro-release.mjs';
-import {preserveCoralSharedPages} from '../scripts/coral-preserve-published-pages.mjs';
+import {preserveCoralSharedPages,preserveCoralIndexes} from '../scripts/coral-preserve-published-pages.mjs';
 
 const sha=x=>createHash('sha256').update(x).digest('hex');
 async function fixture(){
@@ -156,4 +156,32 @@ test('built indexes bind the workshop to the exact approved canonical recipe',as
   await save('editorial-guided-fields.json',[]);
   await assert.rejects(verifyCoralBuiltIndexes({dist,intent}),/WORKSHOP_INDEX_MISMATCH/);
  }finally{await rm(dist,{recursive:true,force:true});}
+});
+
+test('two successive releases add their own index rows without changing live fingerprints',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'coral-index-sequence-'));
+ try{
+  const directory=join(root,'live'),dist=join(root,'dist');
+  await mkdir(directory);await mkdir(dist);
+  const hash='f'.repeat(64);
+  const base={id:'recette:test-recipe',fingerprint:hash,model:'recipes'};
+  const names=['social-feed.json','editorial-source-index.json','editorial-guided-fields.json'];
+  const initial={product:'cuisine-du-cambodge',schemaVersion:1,items:[base]};
+  for(const name of names)await writeFile(join(directory,name),JSON.stringify(initial));
+  for(const slug of ['first-course','second-course']){
+   const addition={id:'atelier:'+slug,model:'cookingWorkshopGuides',fingerprint:hash};
+   for(const name of names)await writeFile(join(dist,name),JSON.stringify({
+     ...initial,items:[{...base,fingerprint:'a'.repeat(64)},addition]
+   }));
+   const hashes=await preserveCoralIndexes({directory,dist,intent:{
+     candidate_public_slug:slug,recipe_slug:'test-recipe',recipe_sha256:hash}});
+   assert.deepEqual(Object.keys(hashes),names);
+   for(const name of names)await writeFile(join(directory,name),await readFile(join(dist,name)));
+  }
+  for(const name of names){
+   const {items}=JSON.parse(await readFile(join(directory,name),'utf8'));
+   assert.deepEqual(items.map(item=>item.id),[base.id,'atelier:first-course','atelier:second-course']);
+   assert.deepEqual(items[0],base);
+  }
+ }finally{await rm(root,{recursive:true,force:true});}
 });

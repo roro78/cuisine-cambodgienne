@@ -361,6 +361,11 @@ export function editorialJobRuntimeConfig(env=process.env){
   if(existsSync(join(root,'.restore-review-required')))throw Error('JOB_RESTORE_REVIEW_REQUIRED');
   const providerKind=env.CDC_EDITORIAL_JOB_PROVIDER||'ollama';
   if(!['ollama','openai-coral'].includes(providerKind))throw Error('JOB_PROVIDER_KIND');
+  const permanentWorkshop=env.CDC_CORAL_PERMANENT_WORKSHOP_ENABLED==='true';
+  if(permanentWorkshop&&(env.CDC_CORAL_COMPLETE_WORKSHOP_ENABLED==='true'
+    ||env.CDC_CORAL_COMPLETE_WORKSHOP_QUALIFIED!=='true'||providerKind!=='openai-coral'
+    ||env.CDC_CORAL_EXTERNAL_MODEL!=='gpt-6-luna'
+    ||Number(env.CDC_CORAL_EXTERNAL_MONTHLY_USD)!==.75))throw Error('JOB_WORKSHOP_NOT_QUALIFIED');
   if(env.CDC_CORAL_COMPLETE_WORKSHOP_ENABLED==='true'&&(env.CDC_CORAL_COMPLETE_WORKSHOP_QUALIFIED!=='true'
     ||providerKind!=='openai-coral'||env.CDC_CORAL_EXTERNAL_MODEL!=='gpt-6-luna'
     ||!/^c-[a-f0-9]{24}$/.test(env.CDC_CORAL_COMPLETE_WORKSHOP_CREATION_ID||'')
@@ -383,7 +388,7 @@ export function editorialJobRuntimeConfig(env=process.env){
     accessSync(budget,constants.R_OK|constants.W_OK|constants.X_OK);
   }
   const token=readEditorialJobToken(env,bindHost);
-  return {bindHost,root,providerKind,token};
+  return {bindHost,root,providerKind,token,permanentWorkshop};
 }
 
 /** Revocable approval for each job; never an evergreen blanket authorization. */
@@ -415,7 +420,7 @@ export async function startEditorialJobRuntime(env=process.env){
   }
   const selected=provider;
   provider=(request,id)=>{
-    if(request.contract===COMPLETE_WORKSHOP_CONTRACT&&(env.CDC_CORAL_COMPLETE_WORKSHOP_ENABLED!=='true'
+    if(request.contract===COMPLETE_WORKSHOP_CONTRACT&&!config.permanentWorkshop&&(env.CDC_CORAL_COMPLETE_WORKSHOP_ENABLED!=='true'
       ||env.CDC_CORAL_COMPLETE_WORKSHOP_QUALIFIED!=='true'))throw Error('JOB_WORKSHOP_NOT_QUALIFIED');
     if(env.CDC_CORAL_COMPLETE_WORKSHOP_ENABLED==='true'&&[COMPLETE_WORKSHOP_CONTRACT,'cdc-coral-v2-script-request-v1'].includes(request.contract)
       &&(request.creation_id!==env.CDC_CORAL_COMPLETE_WORKSHOP_CREATION_ID

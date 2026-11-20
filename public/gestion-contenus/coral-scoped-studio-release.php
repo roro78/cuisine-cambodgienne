@@ -53,12 +53,16 @@ function cmsCoralStudioPublishAssert(
     $fingerprint=$manifest['workshopSourceSha256']??null;
     // The live Studio, canonical catalogue and social index must expose the
     // same public workshop identity before enabling the last public write.
-    if(!is_string($fingerprint)||!preg_match('/^[a-f0-9]{64}$/D',$fingerprint)||
-        ($catalog[$id]['url']??null)!=='https://www.cuisine-du-cambodge.com/apprendre/pratique/'.$slug.'/'||
-        ($canonical[$id]['model']??null)!=='cookingWorkshopGuides'||
-        ($guided[$id]['model']??null)!=='cookingWorkshopGuides'||
-        ($canonical[$id]['fingerprint']??null)!==$fingerprint||
-        ($guided[$id]['fingerprint']??null)!==$fingerprint)return false;
+    if(!is_string($fingerprint)||!preg_match('/^[a-f0-9]{64}$/D',$fingerprint))return false;
+    if(count($manifest['files']??[])===9){
+        // Sealing verified the candidate indexes; live hashes are checked under
+        // the publication lock. Existing identity still forbids overwriting it.
+        if(isset($catalog[$id])||isset($canonical[$id])||isset($guided[$id]))return false;
+    }elseif(($catalog[$id]['url']??null)!=='https://www.cuisine-du-cambodge.com/apprendre/pratique/'.$slug.'/'
+        ||($canonical[$id]['model']??null)!=='cookingWorkshopGuides'
+        ||($guided[$id]['model']??null)!=='cookingWorkshopGuides'
+        ||($canonical[$id]['fingerprint']??null)!==$fingerprint
+        ||($guided[$id]['fingerprint']??null)!==$fingerprint)return false;
     // Compare exact SHA, source, audio, route and profile, not merely a job ID.
     return ($manifest['bindingSha256']??null)===$intent['binding_sha256']
         && ($manifest['audioSha256']??null)===$intent['mp3_sha256']
@@ -113,7 +117,8 @@ function cmsCoralStudioRestorePanel(string $private,array $record,string $csrf,a
         $journal=$backup.'/before-write.json';
         if(!preg_match('/^[a-f0-9]{48}$/D',$job)||is_link($backup)||is_link($journal)||
             !is_file($journal)||filesize($journal)>64000||
-            is_file($backup.'/rolled-back.json')||is_file($backup.'/recovered.json'))continue;
+            ((is_file($backup.'/rolled-back.json')||is_file($backup.'/recovered.json'))
+              &&@file_get_contents(dirname(__DIR__).'/.coral-publication-in-progress',false,null,0,49)!==$job))continue;
         $state=json_decode((string)file_get_contents($journal),true);
         if(($state['creationId']??null)!==$record['id']||($state['requestId']??null)!==$job)continue;
         $time=(int)filemtime($journal);
@@ -165,12 +170,12 @@ function cmsCoralStudioPublishPanel(
         if(!cmsCoralStudioPublishAssert(
             $private,$record,$job,$ready['manifest'],$cfg,
             $settings,$catalog,$canonical,$guided))
-            return '<p data-coral-publish="blocked">Vérifiez les validations, le lot privé et la présence de cet atelier dans les trois index éditoriaux.</p>';
+            return '<p data-coral-publish="blocked">Vérifiez les validations, le lot privé et la cohérence des index éditoriaux.</p>';
         $id=cmsEsc($record['id']);$jobHtml=cmsEsc($job);
         $url='?new=1&amp;cid='.$id.'#cms-real-tts';
         return '<section id="cms-coral-scoped-publish" data-coral-publish="ready">'
           .'<h4>Publication ciblée de cet atelier</h4>'
-          .'<p>Lot privé vérifié : un MP3 et quatre fichiers Astro. '
+          .'<p>Lot privé vérifié : fichiers publics, audio et catalogue de cet atelier. '
           .'La sauvegarde sera réalisée hors du dossier public avant remplacement.</p>'
           .'<form method="post" action="'.$url.'" class="stack">'
           .'<input type="hidden" name="csrf" value="'.cmsEsc($csrf).'">'

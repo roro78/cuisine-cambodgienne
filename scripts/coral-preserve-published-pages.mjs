@@ -4,7 +4,8 @@ import { dirname, join } from 'node:path';
 import { validateCoralStudioReleaseIntent } from './package-coral-approved-release.mjs';
 
 const ORIGIN = 'https://www.cuisine-du-cambodge.com';
-const LIMIT = 400000;
+const LIMIT = 524288;
+export const CORAL_INDEX_FILES = ['social-feed.json','editorial-source-index.json','editorial-guided-fields.json'];
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const fail = () => { throw new Error('CORAL_PUBLISHED_PAGE_BASELINE'); };
 
@@ -18,7 +19,7 @@ function sharedPages(intent) {
 }
 
 export async function snapshotCoralSharedPages({ intent, directory, fetchPage = fetch }) {
-  for (const [path, url] of sharedPages(intent)) {
+  for (const [path, url] of [...sharedPages(intent), ...CORAL_INDEX_FILES.map(name => [name, `/${name}`])]) {
     const response = await fetchPage(ORIGIN + url, {
       cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(15000)
     });
@@ -97,4 +98,36 @@ export async function preserveCoralSharedPages({ intent, directory, dist }) {
   }
   for (const [target, bytes] of writes) await writeFile(target, bytes);
   return baseline;
+}
+
+/** Keep every live record and add exactly the reviewed identity from the build. */
+export async function preserveCoralIndexes({directory,dist,intent}) {
+  const id='atelier:'+intent.candidate_public_slug;
+  const recipeId='recette:'+intent.recipe_slug;
+  const outputs=[];
+  let liveIds,canonical;
+  for(const [i,name] of CORAL_INDEX_FILES.entries()){
+    const bytes=await readFile(join(directory,name));
+    const live=JSON.parse(bytes),built=JSON.parse(await readFile(join(dist,name),'utf8'));
+    if(live.product!=='cuisine-du-cambodge'||live.schemaVersion!==1||
+       !Array.isArray(live.items)||!Array.isArray(built.items))fail();
+    const rows=new Map(live.items.map(row=>[row.id,row]));
+    if(rows.size!==live.items.length||rows.has(id)||live.items.length>=250)fail();
+    if(i===0)liveIds=new Set(rows.keys());
+    else if(rows.size!==liveIds.size||[...rows.keys()].some(key=>!liveIds.has(key)))fail();
+    if(i===1){
+      canonical=rows;
+      if(rows.get(recipeId)?.fingerprint!==intent.recipe_sha256)fail();
+    }
+    if(i===2&&[...rows].some(([key,row])=>
+      row.fingerprint!==canonical.get(key)?.fingerprint||row.model!==canonical.get(key)?.model))fail();
+    const addition=built.items.filter(row=>row.id===id);
+    if(addition.length!==1)fail();
+    live.items.push(addition[0]);
+    const output=JSON.stringify(live);
+    if(Buffer.byteLength(output)>LIMIT)fail();
+    outputs.push([name,sha(bytes),output]);
+  }
+  for(const [name,,output] of outputs)await writeFile(join(dist,name),output);
+  return Object.fromEntries(outputs.map(([name,hash])=>[name,hash]));
 }

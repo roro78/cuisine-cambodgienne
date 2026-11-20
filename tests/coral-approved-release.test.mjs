@@ -104,3 +104,19 @@ test('refuse a symbolic link to build HTML',async()=>{
       intent:f.r,dist:f.dist,audio:f.audioFile,out:f.out,sourceSha:f.sourceSha}),/CORAL_SCOPED_RELEASE_(ASTRO_INPUT_LINK|INPUT_FILE)/);
   }finally{await rm(f.root,{recursive:true,force:true});}
 });
+
+test('coordinated release includes the three index files and exact social JPEG',async()=>{
+  const f=await fixture();
+  try{
+    const photo='social-assets/atelier-amok-trey.jpg';
+    await mkdir(join(f.dist,'social-assets'));
+    await writeFile(join(f.dist,photo),Buffer.from([255,216,1,2,255,217]));
+    const indexes=['social-feed.json','editorial-source-index.json','editorial-guided-fields.json'];
+    for(const name of indexes)await writeFile(join(f.dist,name),JSON.stringify({items:[]}));
+    const manifest=await packageCoralStudioRelease({
+      intent:f.r,dist:f.dist,audio:f.audioFile,out:f.out,sourceSha:f.sourceSha,includeIndexes:true});
+    assert.equal(manifest.files.length,9);
+    assert.deepEqual(manifest.files.slice(5).map(entry=>entry.path),[photo,...indexes]);
+    for(const entry of manifest.files)assert.equal(sha(await readFile(join(f.out,entry.path))),entry.sha256);
+  }finally{await rm(f.root,{recursive:true,force:true});}
+});

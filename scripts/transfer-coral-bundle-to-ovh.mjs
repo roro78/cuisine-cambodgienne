@@ -41,7 +41,7 @@ export async function transferCoralBundle({bundle,send}){
    ||!/^[a-f0-9]{40}$/.test(m.sourceCommit??'')
    ||!/^[a-f0-9]{48}$/.test(m.requestId??'')
    ||!HASH.test(m.mediaImageSha256??'')||!HASH.test(m.workshopSourceSha256??'')
-   ||!Array.isArray(m.files)||m.files.length!==5)fail('MANIFEST');
+   ||!Array.isArray(m.files)||![5,9].includes(m.files.length))fail('MANIFEST');
  const slug=m.publicSlug,recipe=m.recipeSlug,audio=m.audioSha256;
  if(!/^[a-z0-9][a-z0-9-]{2,99}$/.test(slug??'')
    ||!/^[a-z0-9][a-z0-9-]{2,99}$/.test(recipe??'')
@@ -49,10 +49,13 @@ export async function transferCoralBundle({bundle,send}){
  const paths=['audio/workshops/atelier-pratique-'+slug+'/atelier-coral-'+audio.slice(0,12)+'.mp3',
    'apprendre/pratique/'+slug+'/index.html',
    'recettes/'+recipe+'/index.html','apprendre/index.html','sitemap.xml'];
- if(Object.keys(m.baseSha256??{}).join('\n')!==paths.slice(2).join('\n')||
+ if(m.files.length===9)paths.push('social-assets/atelier-'+slug+'.jpg',
+   'social-feed.json','editorial-source-index.json','editorial-guided-fields.json');
+ const shared=paths.filter((_,index)=>index>=2&&(paths.length===5||index!==5));
+ if(Object.keys(m.baseSha256??{}).join('\n')!==shared.join('\n')||
    Object.values(m.baseSha256).some(value=>!HASH.test(value)))
    fail('BASELINE');
- if(m.files.some((e,i)=>e?.path!==paths[i]||!HASH.test(e.sha256??'')
+ if(m.files.length!==paths.length||m.files.some((e,i)=>e?.path!==paths[i]||!HASH.test(e.sha256??'')
    ||!Number.isInteger(e.bytes)||e.bytes<1||e.bytes>32000000||
    e.action!=='add-or-scoped-replace')||m.files[0].sha256!==audio)
    fail('FILE_SET');
@@ -99,11 +102,21 @@ function sender(token){
    return JSON.parse(data);
  };
 }
-export function transferCoralBundleToOvh({bundle,tokenFile}){
+function authenticatedSender(tokenFile){
  const token=readPrivateRuntimeSecret(tokenFile,{
    minBytes:64,maxBytes:66,unavailable:'CORAL_STAGE_SECRET_UNAVAILABLE',
    invalid:'CORAL_STAGE_SECRET_INVALID',validate:s=>/^[a-f0-9]{64}$/.test(s)});
- return transferCoralBundle({bundle,send:sender(token)});
+ return sender(token);
+}
+export function transferCoralBundleToOvh({bundle,tokenFile}){
+ return transferCoralBundle({bundle,send:authenticatedSender(tokenFile)});
+}
+export async function coralOvhStageStatus({job,tokenFile}){
+ if(!/^[a-f0-9]{48}$/.test(job))fail('IDENTITY');
+ const result=await authenticatedSender(tokenFile)({...envelope,op:'status',requestId:job});
+ if(result.requestId!==job||!['stale','sealed','receiving','closed','missing','busy'].includes(result.stage))
+   fail('STATUS_ACK');
+ return result.stage;
 }
 async function main(){
  const argv=process.argv.slice(2),args={};

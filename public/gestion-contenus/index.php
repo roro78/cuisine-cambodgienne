@@ -625,7 +625,8 @@ if($auth){
         }catch(Throwable $ignored){$calendarWorkshopSettings=null;$calendarWorkshop=null;}
         if($method==='POST'&&isset($_POST['prepare_next_workshop'])){
             try{
-                if($calendarWorkshopSettings===null||$calendarWorkshop===null||count($_SESSION['coral_jobs']??[])>=2)
+                if($calendarWorkshopSettings===null||$calendarWorkshop===null
+                    ||($calendarWorkshopSettings['workshop_permanent']??false)||count($_SESSION['coral_jobs']??[])>=2)
                     throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
                 $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);cmsAssertGuidedCoverage($guides,$canonicalById);
                 $job=cmsCoralStart($calendarWorkshop,$catalog,$canonicalById,$guides,$private,$calendarWorkshopSettings);
@@ -802,7 +803,7 @@ if($auth){
                     $receipt=cmsCoralStudioPublish(
                         $private,dirname(__DIR__),$creation,$job,$auth,$confirm,
                         $cfg,$realTtsSettings,$catalog,$canonicalById,$guides);
-                    if(($receipt['fileCount']??null)!==5)
+                    if(!in_array($receipt['fileCount']??null,[5,9],true))
                         throw new RuntimeException('CORAL_PUBLISH_RECEIPT');
                     $_SESSION['coral_published_local']=$job;
                 }elseif($action==='stage_real_release'){
@@ -853,11 +854,10 @@ if($auth){
         if($method==='GET' && isset($_GET['coral_job'])){
             try{
                 $coralJobToken=is_string($_GET['coral_job'])?$_GET['coral_job']:'';
-                $coralJob=$_SESSION['coral_jobs'][$coralJobToken]??null;
-                if($creation===null||$coralSettings===null||!is_array($coralJob)
+                if($creation===null||$coralSettings===null
                    ||!preg_match('/^[0-9a-f]{48}$/D',$coralJobToken))
                     throw new RuntimeException('CORAL_JOB_MISSING');
-                $proposal=cmsCoralPoll($coralJob,$creation,$coralSettings,$canonicalById,$catalog);
+                [$coralJob,$proposal]=cmsCoralObserveSaved($private,$coralJobToken,$creation,$coralSettings,$canonicalById,$catalog);
                 $_SESSION['coral_jobs'][$coralJobToken]=$coralJob;
                 if($proposal!==null){
                     $token=bin2hex(random_bytes(24));
@@ -971,7 +971,7 @@ if($auth){
                 $guides=cmsGuidedSourceList($feed,$canonicalById);
                 cmsAssertGuidedCoverage($guides,$canonicalById);
                 $job=cmsCoralStart($creation,$catalog,$canonicalById,$guides,
-                    $private,$coralSettings);
+                    $private,$coralSettings,is_array($_POST['coral_sources']??null)?$_POST['coral_sources']:null);
                 $_SESSION['coral_jobs'][$job['token']]=$job;
                 header('Location: ?new=1&cid='.rawurlencode($creation['id'])
                     .'&coral_job='.$job['token'].'#cms-audio',true,303);exit;
@@ -1720,7 +1720,9 @@ La création de contenus et le calendrier restent disponibles.</p>
 <h2>Calendrier éditorial — <?= cmsEsc($calendarMonth) ?></h2>
 <p class="small muted">Dates cibles des projets de nouvelles pages.
 Elles ne déclenchent aucune publication sur le site, Facebook ou Instagram.</p>
-<?php if($calendarWorkshopSettings!==null&&$calendarWorkshop!==null): ?>
+<?php if(($calendarWorkshopSettings['workshop_permanent']??false)&&$calendarWorkshop!==null): ?>
+<p>Prochain atelier à préparer : <a href="?new=1&amp;cid=<?= cmsEsc($calendarWorkshop['id']) ?>#atelier-audio-draft"><?= cmsEsc($calendarWorkshop['title']) ?></a>.</p>
+<?php elseif($calendarWorkshopSettings!==null&&$calendarWorkshop!==null): ?>
 <form method="post" class="stack">
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <p>Prochain atelier éligible : <strong><?= cmsEsc($calendarWorkshop['title']) ?></strong>.
@@ -2039,7 +2041,30 @@ Le bouton ci-dessous produit uniquement des textes privés : il ne lance aucune 
 <?php if($coralSettings!==null): ?>
 <?php $prepareComplete=($coralSettings['workshop_complete_qualified']??false)===true
     &&!cmsAtelierPhaseDetailsComplete($creation['atelier_phase_details']??null); ?>
+<?php
+$permanentJob=null;
+if($prepareComplete&&($coralSettings['workshop_permanent']??false)){
+    try{$permanentJob=cmsCoralPermanentJobSummary($private,$creation);}
+    catch(Throwable $ignored){}
+}
+?>
+<?php if($permanentJob!==null): ?>
+<p role="status"><?= cmsEsc($permanentJob['status']) ?> ·
+<a href="?new=1&amp;cid=<?= cmsEsc($creation['id']) ?>&amp;coral_job=<?= cmsEsc($permanentJob['token']) ?>#atelier-audio-draft">Reprendre le suivi de cette version</a></p>
+<?php else: ?>
+<?php if($prepareComplete&&($coralSettings['workshop_permanent']??false)): ?>
+<fieldset><legend>Deux sources culinaires consultées pour cette recette</legend>
+<?php for($sourceNumber=0;$sourceNumber<2;$sourceNumber++): ?>
+<div class="stack">
+<label>Titre <input name="coral_sources[<?= $sourceNumber ?>][title]" maxlength="180"></label>
+<label>Lien HTTPS <input type="url" name="coral_sources[<?= $sourceNumber ?>][url]" maxlength="500"></label>
+<label>Points vérifiés <textarea name="coral_sources[<?= $sourceNumber ?>][note]" maxlength="2000"></textarea></label>
+</div>
+<?php endfor; ?>
+</fieldset>
+<?php endif; ?>
 <button name="coral_prepare" value="1" formnovalidate data-coral-prepare><?= $prepareComplete?'Préparer l’atelier et ses 7 textes':'Préparer les 7 narrations' ?></button>
+<?php endif; ?>
 <?php if($prepareComplete): ?><p class="small muted">Proposition complète depuis la recette choisie : contenu, six phases détaillées et sept textes à relire. Vérifiez puis enregistrez explicitement le brouillon privé. Aucun visa, MP3 ou publication.</p><?php endif; ?>
 <p class="small muted">Un seul clic prépare sept propositions de textes parlés depuis l’atelier enregistré,
 sa recette de référence et les deux référentiels Coral V2. Relisez les textes,

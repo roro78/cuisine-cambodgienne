@@ -9,7 +9,10 @@ function cmsCoralSettings(array $cfg): ?array {
   $s=cmsAiContentSettings($cfg);
   if($s===null||$s['mode']!=='async'||($cfg['editorial_ai_content']['coral_v2_qualified']??false)!==true)return null;
   $s['workshop_complete_qualified']=($cfg['editorial_ai_content']['workshop_complete_qualified']??false)===true;
-  if($s['workshop_complete_qualified']){
+  $s['workshop_permanent']=($cfg['editorial_ai_content']['workshop_permanent']??false)===true;
+  if($s['workshop_permanent']){
+    if(!$s['workshop_complete_qualified'])throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
+  }elseif($s['workshop_complete_qualified']){
     $s['workshop_creation_id']=$cfg['editorial_ai_content']['workshop_creation_id']??null;
     $s['workshop_recipe_sha256']=$cfg['editorial_ai_content']['workshop_recipe_sha256']??null;
     $expires=$cfg['editorial_ai_content']['workshop_expires_at']??null;
@@ -518,12 +521,20 @@ function cmsCoralNextWorkshop(array $creations,array $catalog,array $settings): 
   cmsCalendarPlan($creations,gmdate('Y-m'));$eligible=[];$dated=[];
   $excluded=$settings['workshop_excluded_creation_ids']??[];
   foreach($creations as $r){
+    if(($settings['workshop_permanent']??false)===true
+      &&(cmsAtelierPhaseDetailsComplete($r['atelier_phase_details']??null)
+        ||array_filter($r['atelier_scripts']['chapters']??[],static fn($c)=>trim(($c['text']??'').($c['editorNote']??''))!=='')))continue;
     if($r['kind']!=='atelier'||isset($r['source_binding'])||in_array($r['id'],$excluded,true))continue;
     try{cmsCreationDuplicateCheck('atelier',$r['slug'],$catalog,[],$r['id']);}
     catch(InvalidArgumentException $e){if($e->getMessage()==='CREATION_DUPLICATE')continue;throw $e;}
     $eligible[$r['id']]=$r;if(($r['target_date']??null)!==null)$dated[]=$r;
   }
   usort($dated,static fn(array $a,array $b):int=>strcmp($a['target_date'],$b['target_date'])?:strcmp($a['id'],$b['id']));
+  if(($settings['workshop_permanent']??false)===true){
+    $next=$dated[0]??reset($eligible);
+    if(!is_array($next))throw new RuntimeException('CORAL_WORKSHOP_PRIORITY_NOT_AUTHORIZED');
+    return $next;
+  }
   $r=$dated[0]??($eligible[$settings['workshop_creation_id']??'']??null);
   if(!is_array($r)||$r['id']!==($settings['workshop_creation_id']??null))throw new RuntimeException('CORAL_WORKSHOP_PRIORITY_NOT_AUTHORIZED');
   foreach($r['atelier_scripts']['chapters']??[] as $chapter)
@@ -534,6 +545,10 @@ function cmsCoralNextWorkshop(array $creations,array $catalog,array $settings): 
     throw new RuntimeException('CORAL_WORKSHOP_DUPLICATE_SOURCE');
   cmsCreationDuplicateCheck('atelier',$r['slug'],$catalog,$eligible,$r['id']);
   return $r; // Selection only; no save, provider, scheduling or approval.
+}
+function cmsCoralPermanentJobToken(array $draft): string {
+  return substr(hash('sha256',json_encode(
+    ['coral-workshop-revision-v1',$draft['id'],$draft['version']],JSON_THROW_ON_ERROR)),0,48);
 }
 function cmsCoralWorkshopInputDigest(array $draft): string {
   return hash('sha256',json_encode([$draft['id']??null,$draft['version']??null,$draft['title']??null,
@@ -750,18 +765,25 @@ function cmsCoralCandidate(array $request,mixed $wire): array {
 /** Existing C2 asynchronous submit/poll endpoint, same quota and token,
  * separate typed contract. No second model service; never auto-retry. */
 function cmsCoralStart(array $draft,array $catalog,array $canonical,array $guided,
-  string $private,array $settings): array {
+  string $private,array $settings,?array $sources=null): array {
   if(($settings['mode']??null)!=='async'||!is_callable($settings['submit']??null))
     throw new RuntimeException('CORAL_DISABLED');
   $complete=($settings['workshop_complete_qualified']??false)===true
     &&!cmsAtelierPhaseDetailsComplete($draft['atelier_phase_details']??null);
   $continuation=$settings['workshop_continuation']??null;
   if($continuation!==null&&!$complete)throw new RuntimeException('CORAL_WORKSHOP_CONTINUATION');
-  $request=$complete?cmsCoralWorkshopRequest($draft,$catalog,$canonical,$guided,$settings['workshop_research']??[]):cmsCoralRequest($draft,$catalog,$canonical,$guided);
+  $permanent=($settings['workshop_permanent']??false)===true;
+  $research=$settings['workshop_research']??[];
+  if($permanent&&$complete){
+    $recipeId='recette:'.($draft['atelier_reference']['recipeSlug']??'');
+    $research=['recipe_sha256'=>$canonical[$recipeId]['fingerprint']??'',
+      'verified_at'=>gmdate('Y-m-d'),'sources'=>$sources,'cooking_test_performed'=>false];
+  }
+  $request=$complete?cmsCoralWorkshopRequest($draft,$catalog,$canonical,$guided,$research):cmsCoralRequest($draft,$catalog,$canonical,$guided);
   if(($settings['workshop_complete_qualified']??false)===true){
-    if(($settings['workshop_creation_id']??null)!==$draft['id']
+    if(!$permanent&&(($settings['workshop_creation_id']??null)!==$draft['id']
       ||($settings['workshop_recipe_sha256']??null)!==$request['canonical_fingerprint']
-      ||($settings['workshop_expires_at']??0)<=time())throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
+      ||($settings['workshop_expires_at']??0)<=time()))throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
     cmsAiContentPreflight($private,'atelier',$draft['title'],$catalog,$draft['id'],$draft['version']);
   }
   $provider=$settings['provider_label']??'';$model=$settings['model_label']??'';
@@ -777,7 +799,8 @@ function cmsCoralStart(array $draft,array $catalog,array $canonical,array $guide
     $request['continuation']=$continuation;
   }
   $key=hash('sha256',json_encode([$request,$draft['id'],$draft['version'],$provider,$model],JSON_THROW_ON_ERROR));
-  $token=substr($key,0,48);
+  // A change to research notes must not spend twice for the same saved revision.
+  $token=$permanent&&$complete?cmsCoralPermanentJobToken($draft):substr($key,0,48);
   return cmsAiContentJobLocked($private,$token,static function(?array $entry,string $path)use($private,$settings,$request,$draft,$provider,$model,$key,$token,$continuation):array{
     if($entry!==null){
       $j=$entry['job'];
@@ -828,10 +851,11 @@ function cmsCoralPoll(array &$job,array $draft,array $settings,array $canonical,
   if(($settings['mode']??null)!=='async'||!is_callable($settings['poll']??null))
     throw new RuntimeException('CORAL_DISABLED');
   if($complete&&($settings['workshop_complete_qualified']??false)!==true)throw new RuntimeException('CORAL_DISABLED');
-  if(($settings['workshop_complete_qualified']??false)===true&&(($settings['workshop_creation_id']??null)!==$draft['id']
+  $permanent=($settings['workshop_permanent']??false)===true;
+  if(!$permanent&&($settings['workshop_complete_qualified']??false)===true&&(($settings['workshop_creation_id']??null)!==$draft['id']
     ||($settings['workshop_recipe_sha256']??null)!==($job['request']['canonical_fingerprint']??null)
     ||($settings['workshop_expires_at']??0)<=time()))throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
-  if($complete&&cmsCoralWorkshopResearch($settings['workshop_research']??null,$job['request']['canonical_fingerprint'])!==$job['request']['culinary_evidence'])throw new RuntimeException('CORAL_WORKSHOP_RESEARCH');
+  if($complete&&!$permanent&&cmsCoralWorkshopResearch($settings['workshop_research']??null,$job['request']['canonical_fingerprint'])!==$job['request']['culinary_evidence'])throw new RuntimeException('CORAL_WORKSHOP_RESEARCH');
   foreach(['provider_label','model_label'] as $k)
     if(isset($job[$k])&&$job[$k]!==($settings[$k]??''))throw new RuntimeException('CORAL_PROVIDER_CHANGED');
   try{$answer=($settings['poll'])($job['token']);}
@@ -846,4 +870,38 @@ function cmsCoralPoll(array &$job,array $draft,array $settings,array $canonical,
   }
   try{return $complete?cmsCoralWorkshopCandidate($job['request'],$answer['result']??null,$settings,$catalog):cmsCoralCandidate($job['request'],$answer['result']??null);}
   catch(Throwable $e){$job['status']='failed';throw $e;}
+}
+
+/** Observe the existing durable submission after reconnecting. Never resubmit. */
+function cmsCoralObserveSaved(string $private,string $token,array $draft,array $settings,
+    array $canonical,array $catalog): array {
+  return cmsAiContentJobLocked($private,$token,static function(?array $entry,string $path)
+      use($draft,$settings,$canonical,$catalog):array{
+    $job=$entry['job']??null;
+    if(!is_array($job)||isset($entry['save_attempt']))
+      throw new RuntimeException('CORAL_JOB_MISSING');
+    $job['expires_at']=time()+1800;
+    $before=$job['status'];
+    try{
+      $proposal=cmsCoralPoll($job,$draft,$settings,$canonical,$catalog);
+      if($proposal!==null)$job['status']='succeeded';
+    }
+    finally{
+      if($job['status']!==$before){
+        $entry['job']=$job;
+        cmsAiContentJobWrite($path,$entry);
+      }
+    }
+    return [$job,$proposal];
+  });
+}
+
+function cmsCoralPermanentJobSummary(string $private,array $draft): ?array {
+  $token=cmsCoralPermanentJobToken($draft);
+  $path=cmsDraftDir($private).'/ai-content-jobs/'.$token.'.json';
+  if(!is_file($path)||is_link($path))return null;
+  return cmsAiContentJobLocked($private,$token,static function(?array $entry)use($token):?array{
+    if($entry===null||isset($entry['save_attempt']))return null;
+    return ['token'=>$token,'status'=>$entry['job']['status']];
+  });
 }

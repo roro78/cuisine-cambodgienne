@@ -17,13 +17,13 @@
  */
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
-import {readFile,writeFile,stat,lstat,realpath,mkdir} from 'node:fs/promises';
+import {readFile,writeFile,stat,lstat,realpath,mkdir,readdir} from 'node:fs/promises';
 import {resolve,join,dirname,sep} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {projectCoralStudioBlueprint} from './project-coral-studio-blueprint.mjs';
 import {loadCanonicalRecipes,validateWorkshopBlueprint} from './check-workshop-blueprints.mjs';
 import {packageCoralStudioRelease} from './package-coral-approved-release.mjs';
-import {preserveCoralSharedPages} from './coral-preserve-published-pages.mjs';
+import {preserveCoralSharedPages,preserveCoralIndexes} from './coral-preserve-published-pages.mjs';
 
 const sha=x=>createHash('sha256').update(x).digest('hex');
 const safeName=/^[a-z0-9][a-z0-9-]{2,99}$/;
@@ -57,7 +57,7 @@ export function verifyPrivateBuildCheckout(root,sourceSha){
  * Only touches the isolated checkout, with JSON imports like the six originals.
  * The published site and the existing six blueprints/MP3 are never modified.
  */
-export async function prepareCoralPrivateAstroOverlay({root,blueprint,intent,audioBytes}){
+export async function prepareCoralPrivateAstroOverlay({root,blueprint,intent,audioBytes,importName='coralStudioPrivate'}){
  const slug=intent.candidate_public_slug;
  if(!safeName.test(slug)||blueprint.slug!==slug||
    blueprint.sourceRecipeSlug!==intent.recipe_slug||
@@ -86,9 +86,9 @@ export async function prepareCoralPrivateAstroOverlay({root,blueprint,intent,aud
  const reg=resolve(root,'src/data/cookingWorkshopGuides.ts');
  const text=(await privateFile(reg,20000)).toString('utf8');
  const line=text.match(/^export const cookingWorkshopGuides=\[([^\n;]+)\];$/m);
- if(!line||text.includes("import coralStudioPrivate from "))fail('REGISTRY');
- const edit="import coralStudioPrivate from './atelier-recette-guides/"+slug+".json';\n"+
-  text.replace(line[0],"export const cookingWorkshopGuides=["+line[1]+",coralStudioPrivate];");
+ if(!line||!/^coralStudioPrivate[0-9]*$/.test(importName)||text.includes("import "+importName+" from "))fail('REGISTRY');
+ const edit="import "+importName+" from './atelier-recette-guides/"+slug+".json';\n"+
+  text.replace(line[0],"export const cookingWorkshopGuides=["+line[1]+","+importName+"];");
  // Missing files are mandatory: collision with a previously published guide
  // or an older audio version must never overwrite anything.
  for(const path of [guidePath,audioManifestPath,audioPath]){
@@ -152,7 +152,36 @@ export async function verifyCoralBuiltIndexes({dist,intent}){
    fail('WORKSHOP_INDEX_MISMATCH');
  return workshop.fingerprint;
 }
-export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,out,sourceSha,baseline}){
+// The archived approved job remains private. Only reapply records confirmed in
+// the live canonical index, so a staged or rolled back workshop is excluded.
+async function restorePublishedOverlays({root,history,baseline,recipes}){
+ const live=JSON.parse(await privateFile(join(baseline,'editorial-source-index.json'),524288));
+ const confirmed=new Map(live.items.map(row=>[row.id,row]));
+ const restored=[];
+ let count=0;
+ for(const job of (await readdir(history,{withFileTypes:true})).sort((a,b)=>a.name.localeCompare(b.name))){
+  if(!job.isDirectory()||! /^[a-f0-9]{48}$/.test(job.name))continue;
+  const dir=join(history,job.name);
+  let manifest;
+  try{manifest=JSON.parse(await privateFile(join(dir,'bundle','BUNDLE-MANIFEST-PRIVE.json'),64000));}
+  catch(e){if(e.code==='ENOENT')continue;throw e;}
+  const id='atelier:'+manifest.publicSlug;
+  if(!confirmed.has(id))continue;
+  if(manifest.requestId!==job.name||confirmed.get(id).fingerprint!==manifest.workshopSourceSha256)
+    fail('PUBLISHED_HISTORY_CHANGED');
+  const prior=JSON.parse(await privateFile(join(dir,'canonical-inputs.json'),90000));
+  if(prior.intent?.request_id!==job.name||prior.intent?.mp3_sha256!==manifest.audioSha256)
+    fail('PUBLISHED_HISTORY_ID');
+  const blueprint=projectCoralStudioBlueprint({...prior,recipes});
+  await prepareCoralPrivateAstroOverlay({root,blueprint,intent:{
+    ...prior.intent,visualSha256:prior.profile.visualSha256},
+    audioBytes:await privateFile(join(dir,'canonical-audio.mp3'),32000000),
+    importName:'coralStudioPrivate'+ ++count});
+  restored.push([id,manifest.workshopSourceSha256]);
+ }
+ return restored;
+}
+export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,out,sourceSha,baseline,history}){
  const checkout=resolve(root),destination=resolve(out);
  if(destination===checkout||destination.startsWith(checkout+sep)||
    checkout.startsWith(destination+sep))fail('OUTSIDE_CHECKOUT_REQUIRED');
@@ -173,6 +202,7 @@ export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,o
  if(packet.intent.recipe_slug==='amok-trey')fail('AMOK_V4_RECIPE_REVIEW_REQUIRED');
  const check=validateWorkshopBlueprint({...blueprint,status:'review'},recipes);
  if(check.length)fail('BLUEPRINT');
+ const restored=history?await restorePublishedOverlays({root:checkout,history,baseline,recipes}):[];
  // The scratch checkout is now the ONLY mutable tree. Caller destroys it on
  // failure or success; source commit + historical main tree stay unchanged.
  await prepareCoralPrivateAstroOverlay({root:checkout,blueprint,intent:{
@@ -182,12 +212,19 @@ export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,o
  run('npm',['run','build'],checkout);
  const dist=join(checkout,'dist');
  await verifyHistoricalAmokV4({root:checkout,dist});
+ if(restored.length){
+  const index=JSON.parse(await privateFile(join(dist,'editorial-source-index.json'),524288));
+  const built=new Map(index.items.map(row=>[row.id,row.fingerprint]));
+  if(restored.some(([id,hash])=>built.get(id)!==hash))fail('PUBLISHED_HISTORY_REBUILD');
+ }
  const workshopSourceSha256=await verifyCoralBuiltIndexes({dist,intent:packet.intent});
- const baseSha256=baseline?await preserveCoralSharedPages({
-  intent:packet.intent,directory:baseline,dist}):null;
+ const baseSha256=baseline?{
+  ...await preserveCoralSharedPages({intent:packet.intent,directory:baseline,dist}),
+  ...await preserveCoralIndexes({intent:packet.intent,directory:baseline,dist})
+ }:null;
  const result=await packageCoralStudioRelease({
   intent:packet.intent,dist,audio:audioReal,
-  out:destination,sourceSha});
+  out:destination,sourceSha,includeIndexes:baseline!==null&&baseline!==undefined});
  // These are verified by THIS BUILD ONLY. The live OVH inventory, owner
  // authorization, out-of-webroot backup and crash recovery remain separate.
  result.sourceCommitVerified=true;
@@ -204,14 +241,14 @@ export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,o
 async function main(){
  const args=process.argv.slice(2),o={};
  for(let i=0;i<args.length;i+=2){
-  if(!['--packet','--audio','--source-sha','--out','--baseline'].includes(args[i])||
+  if(!['--packet','--audio','--source-sha','--out','--baseline','--history'].includes(args[i])||
      !args[i+1]||Object.hasOwn(o,args[i]))fail('ARGS');
   o[args[i]]=args[i+1];
  }
  if(!['--packet','--audio','--source-sha','--out'].every(key=>Object.hasOwn(o,key)))fail('ARGS');
  await buildCoralPrivateAstroRelease({
   root:process.cwd(),packetPath:o['--packet'],
-  audioPath:o['--audio'],out:o['--out'],sourceSha:o['--source-sha'],baseline:o['--baseline']});
+  audioPath:o['--audio'],out:o['--out'],sourceSha:o['--source-sha'],baseline:o['--baseline'],history:o['--history']});
  process.stdout.write('CORAL_PRIVATE_ASTRO_BUILT_STAGED_ONLY; OVH_UNCHANGED\n');
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){

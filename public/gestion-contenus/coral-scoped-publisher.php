@@ -60,7 +60,7 @@ function cmsCoralPublishManifest(array $manifest, array $preconditions): array {
         || ($manifest['nativeBlueprintVerified']??false)!==true
         || ($manifest['mediaRightsVerified']??false)!==true
         || !is_array($manifest['files']??null)
-        || count($manifest['files'])!==5) cmsCoralPublishFail('MANIFEST');
+        || !in_array(count($manifest['files']),[5,9],true)) cmsCoralPublishFail('MANIFEST');
     $paths=[];$files=$manifest['files'];
     foreach ($files as $entry) {
         if (!is_array($entry) || !is_string($entry['path']??null)
@@ -81,6 +81,8 @@ function cmsCoralPublishManifest(array $manifest, array $preconditions): array {
         substr($manifest['audioSha256'],0,12).'.mp3';
     $expected=[$audioName,'apprendre/pratique/'.$slug.'/index.html',
         'recettes/'.$recipe.'/index.html','apprendre/index.html','sitemap.xml'];
+    if(count($files)===9)array_push($expected,'social-assets/atelier-'.$slug.'.jpg',
+        'social-feed.json','editorial-source-index.json','editorial-guided-fields.json');
     if (array_keys($paths)!==$expected || $files[0]['sha256']!==$manifest['audioSha256'])
         cmsCoralPublishFail('SCOPE');
     if (array_keys($preconditions)!==$expected) cmsCoralPublishFail('PRECONDITION_NAMES');
@@ -88,6 +90,29 @@ function cmsCoralPublishManifest(array $manifest, array $preconditions): array {
         && (!is_string($value)||!preg_match('/^[a-f0-9]{64}$/D',$value)))
         cmsCoralPublishFail('PRECONDITION_HASH');
     return $expected;
+}
+function cmsCoralPublishVisibilityGate(string $webroot,string $request,bool $recover): string {
+    $rules=$webroot.'/.htaccess';
+    cmsCoralPublishDigest($rules,65536);
+    if(!str_contains((string)file_get_contents($rules),'# CORAL_PUBLICATION_GATE_V1'))
+        cmsCoralPublishFail('VISIBILITY_GATE_NOT_INSTALLED');
+    $marker=$webroot.'/.coral-publication-in-progress';
+    if(is_link($marker))cmsCoralPublishFail('VISIBILITY_GATE');
+    if(is_file($marker)){
+        if(!$recover||filesize($marker)!==48||file_get_contents($marker)!==$request)
+            cmsCoralPublishFail('VISIBILITY_GATE_BUSY');
+        return $marker;
+    }
+    // Atomically install a complete marker before any target can change.
+    $temp=$webroot.'/.coral-gate-'.bin2hex(random_bytes(12));
+    try{
+        if(file_put_contents($temp,$request,LOCK_EX)!==48||!rename($temp,$marker))
+            cmsCoralPublishFail('VISIBILITY_GATE');
+    }finally{if(is_file($temp))@unlink($temp);}
+    return $marker;
+}
+function cmsCoralPublishOpenVisibility(string $marker): void {
+    if(!unlink($marker))cmsCoralPublishFail('VISIBILITY_GATE_RELEASE');
 }
 /**
  * Pure same-host operation: stages must already exist OFF the webroot.
@@ -159,6 +184,7 @@ function cmsCoralPublishBundle(
             'expected'=>$manifest['files']], 'BACKUP_RECORD');
         // Independent second authorization check under the same publish lock.
         if ($authorize($manifest)!==true) cmsCoralPublishFail('AUTHORITY_CHANGED');
+        $gate=count($names)===9?cmsCoralPublishVisibilityGate($realWeb,$request,false):null;
         try {
             foreach ($names as $index=>$name) {
                 $dest=cmsCoralPublishTarget($realWeb,$name);
@@ -183,12 +209,11 @@ function cmsCoralPublishBundle(
                 if ($fault!==null) $fault($index,$name);
             }
         $receipt=['contract'=>'cdc-coral-ovh-local-receipt-v1',
-            'requestId'=>$request,'fileCount'=>5,'liveSha256'=>array_map(
+            'requestId'=>$request,'fileCount'=>count($names),'liveSha256'=>array_map(
                 static fn($e)=>$e['sha256'],$manifest['files']),
             'backupDir'=>$backupDir,'httpReceptionVerified'=>false,
             'rollbackTestedOnLiveServer'=>false];
         cmsCoralPublishJournal($backupDir.'/receipt.json',$receipt,'RECEIPT_WRITE');
-        return $receipt;
         } catch (Throwable $error) {
             $failures=[];
             foreach (array_reverse($installed) as $name) {
@@ -206,8 +231,11 @@ function cmsCoralPublishBundle(
             cmsCoralPublishJournal($backupDir.'/rolled-back.json',[
                 'contract'=>'cdc-coral-ovh-rollback-v1','requestId'=>$request,'restored'=>true],
                 'ROLLBACK_MARKER');
+            if($gate!==null)cmsCoralPublishOpenVisibility($gate);
             throw $error;
         }
+        if($gate!==null)cmsCoralPublishOpenVisibility($gate);
+        return $receipt;
     } finally {
         flock($lock,LOCK_UN);fclose($lock);
     }
@@ -250,14 +278,19 @@ function cmsCoralPublishRecoverInterrupted(
             ||($state['requestId']??null)!==$requestId
             ||!is_array($state['previous']??null)
             ||!is_array($state['expected']??null)
-            ||count($state['expected'])!==5
+            ||!in_array(count($state['expected']),[5,9],true)
             ||($creationId!==null&&($state['creationId']??null)!==$creationId))
             cmsCoralPublishFail('RECOVERY_DATA');
-        if(is_file($backup.'/rolled-back.json')||is_file($backup.'/recovered.json'))
+        if(is_file($backup.'/rolled-back.json')||is_file($backup.'/recovered.json')){
+            $marker=$realWeb.'/.coral-publication-in-progress';
+            if(count($state['expected'])===9&&is_file($marker)&&!is_link($marker)
+                &&filesize($marker)===48&&file_get_contents($marker)===$requestId)
+                cmsCoralPublishOpenVisibility($marker);
             return ['requestId'=>$requestId,'restored'=>true,'alreadyRestored'=>true];
+        }
         $files=$state['expected'];
         $names=array_column($files,'path');
-        if(count($names)!==5||!is_string($names[0]??null)
+        if(!in_array(count($names),[5,9],true)||!is_string($names[0]??null)
            ||!preg_match('~^audio/workshops/atelier-pratique-([a-z0-9-]+)/atelier-coral-([a-f0-9]{12})\\.mp3$~D',$names[0],$match)
            ||!preg_match('~^recettes/([a-z0-9-]+)/index\\.html$~D',(string)($names[2]??''),$recipeMatch))
             cmsCoralPublishFail('RECOVERY_PATHS');
@@ -291,6 +324,7 @@ function cmsCoralPublishRecoverInterrupted(
         }
         // All validation above has succeeded; each step is idempotent even
         // if PHP is forcibly killed partway through this recovery.
+        $gate=count($names)===9?cmsCoralPublishVisibilityGate($realWeb,$requestId,true):null;
         foreach(array_reverse($names) as $name){
             if($current[$name]===$previous[$name])continue;
             $target=$realWeb.'/'.$name;
@@ -309,6 +343,7 @@ function cmsCoralPublishRecoverInterrupted(
             'requestId'=>$requestId,'restored'=>true,'alreadyRestored'=>false,
             'httpReceptionVerified'=>false];
         cmsCoralPublishJournal($backup.'/recovered.json',$result,'RECOVERY_MARKER');
+        if($gate!==null)cmsCoralPublishOpenVisibility($gate);
         return $result;
     }finally{flock($lock,LOCK_UN);fclose($lock);}
 }

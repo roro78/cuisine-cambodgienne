@@ -32,6 +32,13 @@ $after=[$audio=>$mp3,$paths[1]=>'<html>new course</html>',
 $before=[$audio=>null,$paths[1]=>null,
  $paths[2]=>'<html>old recipe</html>',$paths[3]=>'<html>old index</html>',
  $paths[4]=>'<xml>old sitemap</xml>'];
+$paths[]='social-assets/atelier-'.$slug.'.jpg';
+$after[$paths[5]]="\xff\xd8fixture";$before[$paths[5]]=null;
+foreach(['social-feed.json','editorial-source-index.json','editorial-guided-fields.json'] as $index){
+    $paths[]=$index;$after[$index]='{"items":[1,2]}';$before[$index]='{"items":[1]}';
+}
+file_put_contents($web.'/.htaccess',"# CORAL_PUBLICATION_GATE_V1\n");
+$marker=cmsCoralPublishVisibilityGate($web,$job,false);
 $release=$private.'/coral-scoped-releases';$backup=$release.'/'.$job;
 mkdir($backup,0700,true);
 $expected=[];
@@ -55,7 +62,7 @@ file_put_contents($backup.'/before-write.json',json_encode([
  'previous'=>$previous,'expected'=>$expected],JSON_THROW_ON_ERROR));
 try{
  // Simulate a hard process crash after replacing only the first three paths.
- foreach(array_slice($paths,0,3) as $path){
+ foreach(array_slice($paths,0,8) as $path){
     $target=$web.'/'.$path;
     if(!is_dir(dirname($target)))mkdir(dirname($target),0700,true);
     file_put_contents($target,$after[$path]);
@@ -75,6 +82,7 @@ try{
    recoveryOk($before[$path]===null?!file_exists($target):
      file_get_contents($target)===$before[$path],'EXACT_RESTORE');
  }
+ recoveryOk(!file_exists($marker),'VISIBILITY_RESTORED');
  recoveryOk(is_file($backup.'/recovered.json'),'RECOVERY_MARKER');
  recoveryOk(cmsCoralPublishRecoverInterrupted(
     $private,$web,$job,static fn()=>true)['alreadyRestored']===true,'IDEMPOTENT');

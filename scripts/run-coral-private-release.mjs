@@ -20,7 +20,7 @@ import {readFile,lstat,mkdir,mkdtemp,realpath,writeFile,readdir,rename,rm} from 
 import {execFileSync} from 'node:child_process';
 import {resolve,join,sep} from 'node:path';
 import {pathToFileURL} from 'node:url';
-import {transferCoralBundleToOvh} from './transfer-coral-bundle-to-ovh.mjs';
+import {transferCoralBundleToOvh,coralOvhStageStatus} from './transfer-coral-bundle-to-ovh.mjs';
 import {snapshotCoralSharedPages} from './coral-preserve-published-pages.mjs';
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const fail=reason=>{throw Error('CORAL_PRIVATE_RELEASE_'+reason);};
@@ -89,6 +89,23 @@ export async function runCoralPrivateRelease({
  const dir=join(output,job);
  await mkdir(dir,{recursive:true,mode:0o700});
  await safeDir(dir);
+ // Keep immutable, private canonical inputs with each output release.
+ for(const [source,name,max] of [[reviewed.packet,'canonical-inputs.json',90000],
+   [reviewed.audio,'canonical-audio.mp3',32000000]]){
+   const bytes=await safeFile(source,max);
+   const target=join(dir,name);
+   try{await safeFile(target,max);}
+   catch(e){
+     if(e.code!=='ENOENT')throw e;
+     const scratch=await mkdtemp(join(dir,'archive-'));
+     try{
+       const copy=join(scratch,name);
+       await writeFile(copy,bytes,{flag:'wx',mode:0o600});
+       await rename(copy,target);
+     }finally{await rm(scratch,{recursive:true,force:true});}
+   }
+   if(!bytes.equals(await safeFile(target,max)))fail('CANONICAL_ARCHIVE_CHANGED');
+ }
  const bundle=join(dir,'bundle');
  let manifestBytes;
  try{manifestBytes=await safeFile(join(bundle,'BUNDLE-MANIFEST-PRIVE.json'));}
@@ -106,7 +123,7 @@ export async function runCoralPrivateRelease({
      command('npm',['ci','--no-audit','--no-fund'],checkout,240000);
      command('node',['scripts/build-coral-private-astro-release.mjs',
        '--packet',reviewed.packet,'--audio',reviewed.audio,
-       '--source-sha',sourceSha,'--out',scratchBundle,'--baseline',baseline],checkout,240000);
+       '--source-sha',sourceSha,'--out',scratchBundle,'--baseline',baseline,'--history',output],checkout,240000);
      await rename(scratchBundle,bundle);
    }finally{
      if(worktreeAdded)command('git',['worktree','remove','--force',checkout],git,120000);
@@ -131,7 +148,7 @@ export async function runCoralPrivateRelease({
  catch(error){if(error.code!=='EEXIST')throw error;}
  return receipt;
 }
-export async function runPendingCoralPrivateReleases(options,{run=runCoralPrivateRelease}={}){
+export async function runPendingCoralPrivateReleases(options,{run=runCoralPrivateRelease,status=coralOvhStageStatus}={}){
  const root=await safeDir(resolve(options.jobRoot));
  const output=await safeDir(resolve(options.outputRoot));
  let staged=0,blocked=0;
@@ -142,11 +159,28 @@ export async function runPendingCoralPrivateReleases(options,{run=runCoralPrivat
      await lstat(join(root,job,'real-tts','private-build-inputs.json'));
    }catch(error){if(error.code==='ENOENT')continue;throw error;}
    try{
-     await safeFile(join(output,job,'stage-receipt.json'));
-     continue;
-   }catch(error){if(error.code!=='ENOENT')throw error;}
-   try{await run({...options,job});staged++;}
-   catch(error){blocked++;}
+     const dir=join(output,job);
+     if(options.tokenFile){
+       let bundled=false;
+       try{await safeFile(join(dir,'bundle','BUNDLE-MANIFEST-PRIVE.json'));bundled=true;}
+       catch(e){if(e.code!=='ENOENT')throw e;}
+       if(bundled){
+         const state=await status({job,tokenFile:options.tokenFile});
+         if(['sealed','closed','busy'].includes(state))continue;
+         if(state==='stale'){
+           const previous=await mkdtemp(join(dir,'superseded-'));
+           await rename(join(dir,'bundle'),join(previous,'bundle'));
+           try{await rename(join(dir,'stage-receipt.json'),join(previous,'stage-receipt.json'));}
+           catch(e){if(e.code!=='ENOENT')throw e;}
+         }
+       }
+     }else{
+       try{await safeFile(join(dir,'stage-receipt.json'));continue;}
+       catch(e){if(e.code!=='ENOENT')throw e;}
+     }
+     await run({...options,job});staged++;
+   }catch(error){blocked++;}
+
  }
  return {staged,blocked};
 }

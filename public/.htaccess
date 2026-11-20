@@ -27,3 +27,11 @@ RewriteRule ^(.*)$ https://www.cuisine-du-cambodge.com/$1 [R=301,L,NE]
 RewriteCond %{HTTP_HOST} ^www[.]cuisine-du-cambodge[.]com$ [NC]
 RewriteCond %{HTTPS} !=on
 RewriteRule ^(.*)$ https://www.cuisine-du-cambodge.com/$1 [R=301,L,NE]
+
+
+# CORAL_PUBLICATION_GATE_V1
+# A crashed publish keeps the affected routes closed until Studio restores them.
+# The marker contains only the release identifier.
+RewriteRule ^[.]coral-publication-in-progress$ - [R=404,L]
+RewriteCond %{DOCUMENT_ROOT}/.coral-publication-in-progress -f
+RewriteRule ^(?:recettes(?:/.*)?|apprendre(?:/.*)?|audio/workshops/.*|social-assets/.*|sitemap[.]xml|social-feed[.]json|editorial-source-index[.]json|editorial-guided-fields[.]json)$ - [R=503,L]

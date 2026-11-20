@@ -247,3 +247,34 @@ node scripts/run-coral-private-release.mjs
 ```
 
 La commande est présentée ici sur plusieurs lignes pour la lisibilité ; l'appel réel doit utiliser la syntaxe appropriée au shell. Elle crée un worktree Git détaché, utilise `npm ci`, réalise la projection Astro puis le transfert vers le seul endpoint de staging. Chaque job est réservé exclusivement dans `output-root` : une tentative partiellement réussie n'est jamais réinitialisée automatiquement. **Aucun ordonnanceur, accès serveur ni secret n'a été installé ou configuré depuis GitHub** ; le bouton final sur OVH reste conditionné aux drapeaux privés et à la réception réelle de l'hébergement.
+
+## Mode permanent et publication coordonnée
+
+Le mode permanent requiert `editorial_ai_content.workshop_permanent=true` et
+`workshop_complete_qualified=true` côté Studio, ainsi que
+`CDC_CORAL_PERMANENT_WORKSHOP_APPROVED=true` et
+`CDC_CORAL_WORKSHOP_QUALIFIED=true` côté Compose. Ces réglages restent à recevoir.
+Le mode pilote limité à une fiche est incompatible avec le mode permanent côté
+worker. Le modèle texte qualifié et le plafond du sous-registre sont conservés.
+Le Studio demande les références culinaires pour la recette choisie et enregistre
+la demande sur la version exacte. L'observation après reconnexion ne la rejoue pas.
+
+Le runner conserve les entrées canoniques sous son répertoire de sortie privé.
+Inclure ce répertoire dans la sauvegarde Orvekio. Le build réintègre les archives
+dont l'identité et l'empreinte concordent avec l'index canonique servi. Il ajoute
+au lot le JPEG social et les trois index, en préservant les fiches et empreintes
+déjà servies. Un lot dont le point de départ a changé est reconstruit à partir
+des entrées conservées, sans nouvel appel fournisseur.
+
+En plus du paquet Studio, préparer une insertion contrôlée du bloc
+`CORAL_PUBLICATION_GATE_V1` dans le .htaccess racine réellement servi, en conservant
+les règles OVH existantes. Vérifier en environnement isolé sur la cible que le
+marqueur produit HTTP 503 sur les routes couvertes et ne bloque pas le Studio.
+Le verrou reste en place après un arrêt brutal jusqu'à restauration depuis
+le journal privé. Ne pas qualifier la protection sans vérifier également le
+comportement des caches. Le module de réception refuse les ressources Astro
+partagées manquantes.
+
+Le rattrapage Amok doit être préparé séparément à partir des sources validées,
+avec ajout ciblé des trois entrées et du JPEG, en conservant la version de la
+recette et les empreintes sur lesquelles reposent les validations privées.

@@ -76,7 +76,7 @@ export function validateCoralStudioReleaseIntent(value){
   if(Math.abs(end-value.mp3_duration_seconds)>0.2)fail('DURATION');
   return value;
 }
-export async function packageCoralStudioRelease({intent,dist,audio,out,sourceSha}){
+export async function packageCoralStudioRelease({intent,dist,audio,out,sourceSha,includeIndexes=false}){
   const r=validateCoralStudioReleaseIntent(intent);
   if(!SHA40.test(sourceSha??''))fail('SOURCE_COMMIT');
   const src=resolve(dist),target=resolve(out),audioPath=resolve(audio);
@@ -89,6 +89,8 @@ export async function packageCoralStudioRelease({intent,dist,audio,out,sourceSha
   const index='apprendre/index.html';
   const sitemap='sitemap.xml';
   const files=[r.candidate_audio_path,page,recipe,index,sitemap];
+  const extra=includeIndexes?['social-assets/atelier-'+r.candidate_public_slug+'.jpg',
+    'social-feed.json','editorial-source-index.json','editorial-guided-fields.json']:[];
   if(new Set(files).size!==5)fail('TARGET_COLLISION');
   // Don't let a text-only "intent" authorize modifications to CMS/PHP, the
   // social index or any previous workshop media.
@@ -126,6 +128,13 @@ export async function packageCoralStudioRelease({intent,dist,audio,out,sourceSha
     if(sha(built)!==r.mp3_sha256)fail('DIST_AUDIO_CHANGED');
   }catch(error){if(error?.code!=='ENOENT')throw error;}
   // Check EVERY input before attempting any output write.
+  for(const name of extra){
+    const input=checkPath(src,name);
+    if(await realpath(input)!==input)fail('ASTRO_INPUT_LINK');
+    const bytes=await bytesAt(input,name.endsWith('.json')?524288:8000000);
+    if(name.endsWith('.jpg')&&(bytes[0]!==255||bytes[1]!==216))fail('SOCIAL_JPEG');
+    files.push(name);payload.set(name,bytes);
+  }
   const entries=files.map(path=>({path,bytes:payload.get(path).length,
     sha256:sha(payload.get(path)),action:'add-or-scoped-replace'}));
   if(entries[0].sha256!==r.mp3_sha256)fail('AUDIO_CHANGED');
