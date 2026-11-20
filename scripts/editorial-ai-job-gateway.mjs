@@ -267,14 +267,36 @@ export async function createJobGateway({root,token,provider,ttsJobs=null,realTts
       return s;
     }finally{await rmdir(lock);}
   }
+  async function stageRealRelease(id,intent){
+    if(active.has(id))throw Error('JOB_TTS_BUSY_OR_DISABLED');
+    const folder=path(id),saved=JSON.parse(await safeRead(join(folder,'request.json')));
+    if(!isRealSpeech(saved.request))throw Error('JOB_REAL_RELEASE_CONTRACT');
+    const engine=ttsFor(saved.request);
+    if(!engine||typeof engine.stageRelease!=='function')
+      throw Error('JOB_REAL_RELEASE_DISABLED');
+    const lock=join(folder,'.release-operation.lock');
+    await mkdir(lock,{mode:0o700});
+    try{return await engine.stageRelease(saved.request,id,folder,intent);}
+    finally{await rmdir(lock);}
+  }
   const server=createServer(async(req,res)=>{
     res.setHeader('Cache-Control','no-store');res.setHeader('Content-Type','application/json');
     const send=(status,body)=>{res.writeHead(status);res.end(JSON.stringify(body));};
     const supplied=typeof req.headers.authorization==='string'?req.headers.authorization:'';
     if(!timingSafeEqual(Buffer.from(digest(supplied)),Buffer.from(digest('Bearer '+token))))return send(401,{error:'UNAUTHORIZED'});
-    const match=/^\/editorial-ai\/v1\/jobs\/([a-f0-9]{48})(?:\/(resume|audio|preview))?$/.exec(req.url??'');
-    if(!match||!(match[2]==='resume'?req.method==='POST':['audio','preview'].includes(match[2])?req.method==='GET':['GET','PUT'].includes(req.method)))return send(404,{error:'NOT_FOUND'});
+    const match=/^\/editorial-ai\/v1\/jobs\/([a-f0-9]{48})(?:\/(resume|audio|preview|release))?$/.exec(req.url??'');
+    if(!match||!(match[2]==='resume'||match[2]==='release'?req.method==='POST':['audio','preview'].includes(match[2])?req.method==='GET':['GET','PUT'].includes(req.method)))return send(404,{error:'NOT_FOUND'});
     try{
+      if(match[2]==='release'){
+        let bytes=0;const chunks=[];
+        for await(const chunk of req){
+          bytes+=chunk.length;
+          if(bytes>16000)return send(413,{error:'REQUEST_SIZE'});
+          chunks.push(chunk);
+        }
+        const candidate=JSON.parse(Buffer.concat(chunks).toString('utf8'));
+        return send(202,await stageRealRelease(match[1],candidate));
+      }
       if(match[2]){
         const audioRoute=['audio','preview'].includes(match[2]);
         const result=await ttsOperation(match[1],match[2],{stream:audioRoute});
