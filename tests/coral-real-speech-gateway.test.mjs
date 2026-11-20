@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {mkdtemp,writeFile,rm,readdir} from 'node:fs/promises';
+import {mkdtemp,mkdir,writeFile,rm,readdir,readFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createJobGateway,validateJobRequest,currentStudioSpeechApproval} from '../scripts/editorial-ai-job-gateway.mjs';
@@ -132,4 +132,89 @@ test('persistent Coral feature grants each job only while current Studio says ye
  assert.equal(await permitted({request_id:'timeout'}),false);
  assert.equal(await currentStudioSpeechApproval(async()=>undefined)({request_id:'job-three'}),false);
  assert.throws(()=>currentStudioSpeechApproval(null),/AUTHORITY_CONFIG/);
+});
+
+function releaseCandidate(r,m){
+ const v=m.sha256;
+ return {contract:'cdc-coral-studio-release-intent-v1',
+  creation_id:r.creation_id,creation_version:r.creation_version,
+  request_id:r.request_id,binding_sha256:r.binding_sha256,
+  recipe_sha256:r.recipe_sha256,recipe_slug:'amok-trey',
+  candidate_public_slug:'amok-trey',candidate_workshop_slug:'atelier-pratique-amok-trey',
+  candidate_audio_path:'audio/workshops/atelier-pratique-amok-trey/atelier-coral-'+v.slice(0,12)+'.mp3',
+  voice:'coral',model:'gpt-4o-mini-tts',speed_milli:930,
+  mp3_sha256:v,mp3_bytes:m.bytes,mp3_duration_seconds:m.duration,
+  chapters:r.chapters.map((x,i)=>({id:x.id,text_sha256:x.sha256,
+    startSec:i*10,endSec:(i+1)*10})),
+  human_publication_consent:true,publication_ready:false,deployment_triggered:false};
+}
+
+test('private worker stages exact no-text publication consent only after completed audio',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'coral-stage-real-'));
+ const budgetDir=await mkdtemp(join(tmpdir(),'coral-stage-budget-'));
+ const r=request(),bytes=Buffer.alloc(2048,47),digest=sha(bytes);
+ const m={contract:'cdc-coral-real-speech-result-v1',
+  request_id:r.request_id,creation_id:r.creation_id,creation_version:r.creation_version,
+  binding_sha256:r.binding_sha256,sha256:digest,bytes:bytes.length,
+  file:'final-'+digest+'.mp3',duration:70,
+  chapters:r.chapters.map((x,i)=>({id:x.id,start:i*10,end:(i+1)*10}))};
+ let authority=true;
+ const jobs=createCoralRealSpeechJobs({budgetDir,authorize:async()=>authority,
+  spendingApproved:async()=>true,externalProjectBudgetVerified:async()=>true});
+ try{
+  const dir=join(root,'real-tts');await mkdir(dir,{mode:0o700});
+  const proposal=releaseCandidate(r,m);
+  await assert.rejects(jobs.stageRelease(r,r.request_id,root,proposal),/NOT_GENERATED/);
+  await writeFile(join(dir,m.file),bytes,{mode:0o600});
+  await writeFile(join(dir,'manifest.json'),JSON.stringify(m),{mode:0o600});
+  await writeFile(join(dir,'state.json'),JSON.stringify({
+   status:'succeeded',completed_chapters:7,manifest_sha256:digest}),{mode:0o600});
+  const first=await jobs.stageRelease(r,r.request_id,root,proposal);
+  assert.equal(first.release_staged,true);
+  const second=await jobs.stageRelease(r,r.request_id,root,proposal);
+  assert.equal(second.release_staged,true,'idempotent same intent');
+  const saved=JSON.parse(await readFile(join(dir,'release-intent.json'),'utf8'));
+  assert.equal(saved.mp3_sha256,digest);
+  assert.ok(!JSON.stringify(saved).includes(r.chapters[0].text),'no private narrations in release');
+  await assert.rejects(jobs.stageRelease(r,r.request_id,root,{
+   ...proposal,candidate_public_slug:'other',candidate_workshop_slug:'atelier-pratique-other',
+   candidate_audio_path:'audio/workshops/atelier-pratique-other/atelier-coral-'+digest.slice(0,12)+'.mp3'
+  }),/RELEASE_CONFLICT/);
+  authority=false;
+  await assert.rejects(jobs.stageRelease(r,r.request_id,root,proposal),/STUDIO_AUTHORITY/);
+ }finally{await rm(root,{recursive:true,force:true});await rm(budgetDir,{recursive:true,force:true});}
+});
+
+test('existing job HTTPS gateway accepts only authenticated POST release staging',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'coral-stage-gateway-'));
+ const r=request();let calls=0;
+ const runner={
+  state:async(q,id)=>({id,status:'succeeded',completed_chapters:7}),
+  run:async(q,id)=>({id,status:'succeeded'}),
+  stageRelease:async(q,id,folder,payload)=>{
+    assert.equal(id,r.request_id);assert.equal(payload.contract,'cdc-coral-studio-release-intent-v1');
+    calls++;return {id,status:'succeeded',release_staged:true};
+  }
+ };
+ const g=await createJobGateway({root,token,provider:async()=>'',realTtsJobs:runner});
+ await new Promise(resolve=>g.server.listen(0,'127.0.0.1',resolve));
+ try{
+  await g.submit(r.request_id,r);
+  const endpoint='http://127.0.0.1:'+g.server.address().port+
+    '/editorial-ai/v1/jobs/'+r.request_id+'/release';
+  const payload={contract:'cdc-coral-studio-release-intent-v1'};
+  const denied=await fetch(endpoint,{method:'POST',body:JSON.stringify(payload)});
+  assert.equal(denied.status,401);
+  const wrong=await fetch(endpoint,{method:'GET',headers:{Authorization:'Bearer '+token}});
+  assert.equal(wrong.status,404);
+  const accepted=await fetch(endpoint,{method:'POST',headers:{
+   Authorization:'Bearer '+token,'Content-Type':'application/json'
+  },body:JSON.stringify(payload)});
+  assert.equal(accepted.status,202);
+  assert.equal((await accepted.json()).release_staged,true);
+  assert.equal(calls,1);
+ }finally{
+  g.stopWorker();await new Promise(resolve=>g.server.close(resolve));
+  await rm(root,{recursive:true,force:true});
+ }
 });
