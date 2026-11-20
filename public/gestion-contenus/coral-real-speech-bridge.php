@@ -29,7 +29,7 @@ function cmsCoralRealSpeechTransport(array $settings,string $job,string $verb,?a
     ||!in_array($verb,['submit','poll','audio','preview','resume','release','build-inputs'],true)||!function_exists('curl_init'))
     throw new RuntimeException('REAL_TTS_GATEWAY');
   $body=$request===null?null:json_encode($request,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
-  if(in_array($verb,['submit','release','build-inputs'],true)!==($body!==null)||($body!==null&&strlen($body)>90000))
+  if(in_array($verb,['submit','release','build-inputs'],true)!==($body!==null)||($body!==null&&strlen($body)>($verb==='build-inputs'?1500000:90000)))
     throw new RuntimeException('REAL_TTS_REQUEST');
   $url=$settings['base'].'/'.$job.(in_array($verb,['audio','preview','resume','release','build-inputs'],true)?'/'.$verb:'');
   $curl=curl_init($url);if($curl===false)throw new RuntimeException('REAL_TTS_GATEWAY');
@@ -377,8 +377,17 @@ function cmsCoralRealSpeechBuildInputs(
   if(count($source)!==9||!is_array($source['atelier_scripts']['chapters']??null)
     ||count($source['atelier_scripts']['chapters'])!==7)
     throw new RuntimeException('CORAL_BUILD_SOURCE_INCOMPLETE');
-  return ['contract'=>'cdc-coral-studio-private-build-inputs-v1',
+  $packet=['contract'=>'cdc-coral-studio-private-build-inputs-v1',
     'intent'=>$intent,'profile'=>$profile,'source'=>$source];
+  if(isset($profile['privateVisualVersion'])){
+    $asset=cmsCoralAstroSelectedVisual($private,$record);
+    if($asset===null||$asset['version']!==$profile['privateVisualVersion']
+        ||$asset['url']!==$profile['media']['finishedPreparationImage']
+        ||$asset['sha']!==$profile['visualSha256'])
+      throw new RuntimeException('CORAL_BUILD_REVIEW_STALE');
+    $packet['visual']=base64_encode($asset['bytes']);
+  }
+  return $packet;
 }
 
 /** The Studio submits a consented, no-text release intent to its EXISTING

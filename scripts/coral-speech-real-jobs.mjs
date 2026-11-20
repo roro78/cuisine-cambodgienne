@@ -7,7 +7,7 @@ import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {mkdir,lstat} from 'node:fs/promises';
 import {reserveCoralBudget} from './coral-external-job-provider.mjs';
-import {validateCoralStudioReleaseIntent} from './package-coral-approved-release.mjs';
+import {validateCoralStudioReleaseIntent,validateCoralPrivateVisual,CORAL_BUILD_PACKET_MAX} from './package-coral-approved-release.mjs';
 import {createCoralSpeechTransport,planCoralSpeechFragments} from './coral-speech-transport.mjs';
 import {validateCoralRealSpeechRequest,coralRealSpeechAssembleChapterWav} from './coral-real-speech-request.mjs';
 import {audioSha,durableWrite,durableAudioCommit,atomicJson,privateAudioRead,privateAudioDigest,
@@ -82,7 +82,7 @@ export function createCoralRealSpeechJobs({
    if(digest.sha256!==m.sha256)throw Error('CORAL_REAL_FINAL_SHA');
   }
   const staged=await optional(join(dir,'release-intent.json'));
-  const buildInputs=await optional(join(dir,'private-build-inputs.json'),90000);
+  const buildInputs=await optional(join(dir,'private-build-inputs.json'),CORAL_BUILD_PACKET_MAX);
   if(buildInputs&&(!staged||buildInputs.intent?.request_id!==id||
      JSON.stringify(buildInputs.intent)!==JSON.stringify(staged)))
     throw Error('CORAL_REAL_BUILD_INPUTS_STATE_INVALID');
@@ -286,7 +286,7 @@ export function createCoralRealSpeechJobs({
  async function stageBuildInputs(r,id,folder,packet){
   validateCoralRealSpeechRequest(r);
   if(id!==r.request_id||!packet||typeof packet!=='object'||Array.isArray(packet)
-    ||Object.keys(packet).sort().join(',')!=='contract,intent,profile,source'
+    ||!['contract,intent,profile,source','contract,intent,profile,source,visual'].includes(Object.keys(packet).sort().join(','))
     ||packet.contract!=='cdc-coral-studio-private-build-inputs-v1')
     throw Error('CORAL_REAL_BUILD_INPUTS_CONTRACT');
   const dir=directory(folder),staged=await optional(join(dir,'release-intent.json'));
@@ -316,12 +316,14 @@ export function createCoralRealSpeechJobs({
       staged.chapters[i]?.text_sha256!==approved.sha256)
       throw Error('CORAL_REAL_BUILD_INPUTS_NARRATION');
   }
+  validateCoralPrivateVisual(packet);
   const bytes=JSON.stringify(packet);
-  if(Buffer.byteLength(bytes,'utf8')>85000)throw Error('CORAL_REAL_BUILD_INPUTS_SIZE');
+  const {visual,...metadata}=packet;
+  if(Buffer.byteLength(bytes,'utf8')>CORAL_BUILD_PACKET_MAX||Buffer.byteLength(JSON.stringify(metadata))>85000)throw Error('CORAL_REAL_BUILD_INPUTS_SIZE');
   await authority(r);
   if((await state(r,id,folder)).status!=='succeeded')
     throw Error('CORAL_REAL_BUILD_INPUTS_AUDIO');
-  const path=join(dir,'private-build-inputs.json'),previous=await optional(path,90000);
+  const path=join(dir,'private-build-inputs.json'),previous=await optional(path,CORAL_BUILD_PACKET_MAX);
   if(previous){
     if(JSON.stringify(previous)!==bytes)throw Error('CORAL_REAL_BUILD_INPUTS_CONFLICT');
     return state(r,id,folder,true);
@@ -330,7 +332,7 @@ export function createCoralRealSpeechJobs({
   try{await durableWrite(path,bytes);}
   catch(e){
     if(e.code!=='EEXIST')throw e;
-    const existing=await optional(path,90000);
+    const existing=await optional(path,CORAL_BUILD_PACKET_MAX);
     if(JSON.stringify(existing)!==bytes)throw Error('CORAL_REAL_BUILD_INPUTS_CONFLICT');
   }
   return state(r,id,folder,true);

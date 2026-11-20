@@ -278,3 +278,23 @@ partagées manquantes.
 Le rattrapage Amok doit être préparé séparément à partir des sources validées,
 avec ajout ciblé des trois entrées et du JPEG, en conservant la version de la
 recette et les empreintes sur lesquelles reposent les validations privées.
+
+## Publication du visuel privé sélectionné
+
+Dans le Studio, approuver les droits du visuel, sélectionner sa version, puis
+choisir ce visuel dans la revue de publication de l’atelier. La revue fixe la
+version et le SHA-256 du WebP `site1200`. Une sélection différente invalide
+la revue. La prévisualisation utilise la route privée existante du Studio.
+
+Le worker reçoit le WebP de 1 Mio maximum dans le paquet privé de construction.
+Le build ajoute le WebP dans son checkout temporaire et utilise le générateur de
+JPEG existant. Le lot public de dix fichiers comprend ce WebP, le JPEG et les
+trois index. Le publisher refuse d’écraser un WebP existant. Les archives
+canoniques privées permettent de reconstruire les publications précédentes.
+Les lots utilisant une image déjà publique gardent leur format.
+
+Avant mise en service, rapprocher la règle Apache racine avec les règles
+existantes. La protection doit couvrir les WebP Coral et les fichiers
+temporaires de transaction. Valider sur la cible le passage temporaire en
+HTTP 503 et le retour arrière, ainsi que le passage d’un paquet de construction
+de 1,5 Mo vers le worker via la route privée existante.

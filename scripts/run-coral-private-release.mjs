@@ -21,6 +21,7 @@ import {execFileSync} from 'node:child_process';
 import {resolve,join,sep} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {transferCoralBundleToOvh,coralOvhStageStatus} from './transfer-coral-bundle-to-ovh.mjs';
+import {CORAL_BUILD_PACKET_MAX} from './package-coral-approved-release.mjs';
 import {snapshotCoralSharedPages} from './coral-preserve-published-pages.mjs';
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const fail=reason=>{throw Error('CORAL_PRIVATE_RELEASE_'+reason);};
@@ -45,7 +46,7 @@ export async function inspectCoralPrivateRelease({jobRoot,job}){
  const root=await safeDir(resolve(jobRoot)),folder=join(root,job),privateDir=join(folder,'real-tts');
  await safeDir(folder);await safeDir(privateDir);
  const request=JSON.parse((await safeFile(join(folder,'request.json'),94096)).toString('utf8'));
- const packet=JSON.parse((await safeFile(join(privateDir,'private-build-inputs.json'))).toString('utf8'));
+ const packet=JSON.parse((await safeFile(join(privateDir,'private-build-inputs.json'),CORAL_BUILD_PACKET_MAX)).toString('utf8'));
  const intent=JSON.parse((await safeFile(join(privateDir,'release-intent.json'))).toString('utf8'));
  const manifest=JSON.parse((await safeFile(join(privateDir,'manifest.json'))).toString('utf8'));
  const state=JSON.parse((await safeFile(join(privateDir,'state.json'))).toString('utf8'));
@@ -90,7 +91,7 @@ export async function runCoralPrivateRelease({
  await mkdir(dir,{recursive:true,mode:0o700});
  await safeDir(dir);
  // Keep immutable, private canonical inputs with each output release.
- for(const [source,name,max] of [[reviewed.packet,'canonical-inputs.json',90000],
+ for(const [source,name,max] of [[reviewed.packet,'canonical-inputs.json',CORAL_BUILD_PACKET_MAX],
    [reviewed.audio,'canonical-audio.mp3',32000000]]){
    const bytes=await safeFile(source,max);
    const target=join(dir,name);

@@ -187,8 +187,15 @@ test('private worker stages exact no-text publication consent only after complet
    visualSha256:'e'.repeat(64),media:{imageValidated:true,rightsValidated:true},
    review:{recipeValidated:true,editorialValidated:true,audioListeningValidated:true,
     mobileValidated:true,desktopValidated:true,productionApproved:true}};
+  const webp=Buffer.from('524946461000000057454250565038580000000000000000','hex');
+  const assetHash=createHash('sha256').update(webp).digest('hex');
+  review.privateVisualVersion=3;
+  review.visualSha256=assetHash;
+  review.media.finishedPreparationImage='/images/cuisine/coral-'+r.creation_id+'-'+assetHash+'.webp';
   const packet={contract:'cdc-coral-studio-private-build-inputs-v1',
-   intent:proposal,source:privateSource,profile:review};
+   intent:proposal,source:privateSource,profile:review,visual:webp.toString('base64')};
+  await assert.rejects(jobs.stageBuildInputs(r,r.request_id,root,{
+   ...packet,visual:'c2NyYW1ibGVk'}),/PRIVATE_VISUAL_SHA/);
   const staged=await jobs.stageBuildInputs(r,r.request_id,root,packet);
   assert.equal(staged.build_inputs_staged,true);
   assert.equal((await jobs.stageBuildInputs(r,r.request_id,root,packet)).build_inputs_staged,true,
@@ -199,7 +206,7 @@ test('private worker stages exact no-text publication consent only after complet
    ...packet,source:{...privateSource,atelier_scripts:{chapters:privateSource.atelier_scripts.chapters.map(
     (ch,i)=>i===0?{...ch,text:'modified narration'}:ch)}}}),/BUILD_INPUTS_NARRATION/);
   await assert.rejects(jobs.stageBuildInputs(r,r.request_id,root,{
-   ...packet,profile:{...review,visualSha256:'f'.repeat(64)}}),/BUILD_INPUTS_CONFLICT/);
+   ...packet,profile:{...review,privateVisualVersion:4}}),/BUILD_INPUTS_CONFLICT/);
 
   await assert.rejects(jobs.stageRelease(r,r.request_id,root,{
    ...proposal,candidate_public_slug:'other',candidate_workshop_slug:'atelier-pratique-other',

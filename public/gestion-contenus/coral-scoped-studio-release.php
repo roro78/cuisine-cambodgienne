@@ -54,7 +54,8 @@ function cmsCoralStudioPublishAssert(
     // The live Studio, canonical catalogue and social index must expose the
     // same public workshop identity before enabling the last public write.
     if(!is_string($fingerprint)||!preg_match('/^[a-f0-9]{64}$/D',$fingerprint))return false;
-    if(count($manifest['files']??[])===9){
+    if((count($manifest['files']??[])===10)!==isset($profile['privateVisualVersion']))return false;
+    if(count($manifest['files']??[])>=9){
         // Sealing verified the candidate indexes; live hashes are checked under
         // the publication lock. Existing identity still forbids overwriting it.
         if(isset($catalog[$id])||isset($canonical[$id])||isset($guided[$id]))return false;

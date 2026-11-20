@@ -14,6 +14,7 @@ import {createHash} from 'node:crypto';
 import {readFile,lstat,realpath} from 'node:fs/promises';
 import {resolve,sep,join} from 'node:path';
 import {pathToFileURL} from 'node:url';
+import {coralPrivateVisualPath} from './package-coral-approved-release.mjs';
 import {readPrivateRuntimeSecret} from './private-runtime-secret.mjs';
 const ENDPOINT='https://www.cuisine-du-cambodge.com/gestion-contenus/?coral_stage=1';
 const HASH=/^[a-f0-9]{64}$/;
@@ -41,7 +42,7 @@ export async function transferCoralBundle({bundle,send}){
    ||!/^[a-f0-9]{40}$/.test(m.sourceCommit??'')
    ||!/^[a-f0-9]{48}$/.test(m.requestId??'')
    ||!HASH.test(m.mediaImageSha256??'')||!HASH.test(m.workshopSourceSha256??'')
-   ||!Array.isArray(m.files)||![5,9].includes(m.files.length))fail('MANIFEST');
+   ||!Array.isArray(m.files)||![5,9,10].includes(m.files.length))fail('MANIFEST');
  const slug=m.publicSlug,recipe=m.recipeSlug,audio=m.audioSha256;
  if(!/^[a-z0-9][a-z0-9-]{2,99}$/.test(slug??'')
    ||!/^[a-z0-9][a-z0-9-]{2,99}$/.test(recipe??'')
@@ -49,9 +50,13 @@ export async function transferCoralBundle({bundle,send}){
  const paths=['audio/workshops/atelier-pratique-'+slug+'/atelier-coral-'+audio.slice(0,12)+'.mp3',
    'apprendre/pratique/'+slug+'/index.html',
    'recettes/'+recipe+'/index.html','apprendre/index.html','sitemap.xml'];
- if(m.files.length===9)paths.push('social-assets/atelier-'+slug+'.jpg',
+ if(m.files.length>=9)paths.push('social-assets/atelier-'+slug+'.jpg',
    'social-feed.json','editorial-source-index.json','editorial-guided-fields.json');
- const shared=paths.filter((_,index)=>index>=2&&(paths.length===5||index!==5));
+ if(m.files.length===10){
+   paths.push(coralPrivateVisualPath(m.creationId,m.mediaImageSha256));
+   if(m.files[9]?.sha256!==m.mediaImageSha256||m.files[9]?.bytes>1048576)fail('VISUAL_SHA');
+ }
+ const shared=paths.filter((_,index)=>index>=2&&(paths.length===5||index!==5)&&index!==9);
  if(Object.keys(m.baseSha256??{}).join('\n')!==shared.join('\n')||
    Object.values(m.baseSha256).some(value=>!HASH.test(value)))
    fail('BASELINE');

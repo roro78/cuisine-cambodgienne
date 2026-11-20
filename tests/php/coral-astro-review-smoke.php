@@ -18,6 +18,14 @@ function cmsCreationId(mixed $value): ?string {
 function cmsCreationDir(string $private): string {return $private.'/creations';}
 function mbLen(string $s): int {return mb_strlen($s);}
 function cmsEsc(string $s): string {return htmlspecialchars($s,ENT_QUOTES,'UTF-8');}
+$selectedVersion=null;
+function cmsVisualDirectory(string $private,string $id): string {return $private.'/visuals/'.$id;}
+function cmsVisualSelected(string $dir,array $record): ?int {return $GLOBALS['selectedVersion'];}
+function cmsVisualAsset(string $dir,string $id,int $version,string $variant): array {
+ // Synthetic WebP extended header. Production bytes are checked by cmsVisualAsset.
+ $header='VP8X'.pack('V',10).str_repeat("\0",4).substr(pack('V',1199),0,3).substr(pack('V',799),0,3);
+ return ['bytes'=>'RIFF'.pack('V',strlen($header)+4).'WEBP'.$header,'mime'=>'image/webp'];
+}
 function cmsCoralRealSpeechApprovedRequest($private,$record,$catalog,$canonical,$guided):array {
  global $request,$authority;
  if(!$authority)throw new RuntimeException('STUDIO_RIGHTS_REVOKED');
@@ -138,8 +146,20 @@ try{
  cmsCoralAstroReviewAction($private,$record,$request['request_id'],'approve',
    $form,$note,true,true,[],[],[],[],$webroot);
  ok(cmsCoralAstroReviewCurrent($private,$record,$manifest,[],[],[],$webroot)!==null,'REAPPROVED');
+ cmsCoralAstroReviewAction($private,$record,$request['request_id'],'revoke',
+   [],$note,true,true,[],[],[],[],$webroot);
+ $privateForm=$form;$privateForm['image_source']='private';unset($privateForm['finished_image']);
+ refused(fn()=>cmsCoralAstroReviewProfile($record,$request,$manifest,$privateForm,$webroot,$private),'NO_PRIVATE_SELECTION');
+ $selectedVersion=2;
+ $privateApproval=cmsCoralAstroReviewAction($private,$record,$request['request_id'],'approve',
+   $privateForm,$note,true,true,[],[],[],[],$webroot);
+ $profile=$privateApproval['profile'];
+ ok($profile['privateVisualVersion']===2&&!file_exists($webroot.$profile['media']['finishedPreparationImage']),'STILL_PRIVATE');
+ ok(cmsCoralAstroReviewCurrent($private,$record,$manifest,[],[],[],$webroot)===$profile,'PRIVATE_APPROVAL_VALID');
+ $selectedVersion=3;
+ ok(cmsCoralAstroReviewCurrent($private,$record,$manifest,[],[],[],$webroot)===null,'REPLACEMENT_REQUIRES_REAPPROVAL');
  $events=cmsCoralAstroReviewJournal(cmsCreationDir($private),$record['id'])['events'];
- ok(count($events)===3,'APPEND_ONLY');
+ ok(count($events)===5,'APPEND_ONLY');
  ok($events[1]['previous_event_sha256']===hash_file('sha256',
    cmsCreationDir($private).'/coral-astro-review-'.$record['id'].'.0001.json'),'CHAIN');
  file_put_contents(cmsCreationDir($private).'/coral-astro-review-'.$record['id'].'.0002.json','{}');

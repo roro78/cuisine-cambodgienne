@@ -39,10 +39,22 @@ function cmsCoralAstroReviewImage(string $webroot,mixed $url): string {
     if(!is_int($size)||$size<100||$size>8000000)cmsCoralAstroReviewFail('IMAGE_SIZE');
     return $url;
 }
+function cmsCoralAstroSelectedVisual(string $private,array $record): ?array {
+    $dir=cmsVisualDirectory($private,$record['id']);
+    $version=cmsVisualSelected($dir,$record);
+    if($version===null)return null;
+    $asset=cmsVisualAsset($dir,$record['id'],$version,'site1200');
+    $info=@getimagesizefromstring($asset['bytes']);
+    if(strlen($asset['bytes'])>1048576||($info[2]??null)!==IMAGETYPE_WEBP
+        ||$info[0]!==1200||$info[1]!==800)cmsCoralAstroReviewFail('PRIVATE_VISUAL_FORMAT');
+    $sha=hash('sha256',$asset['bytes']);
+    return ['version'=>$version,'sha'=>$sha,
+        'url'=>'/images/cuisine/coral-'.$record['id'].'-'.$sha.'.webp','bytes'=>$asset['bytes']];
+}
 function cmsCoralAstroReviewProfile(
-    array $record,array $request,array $manifest,array $form,string $webroot
+    array $record,array $request,array $manifest,array $form,string $webroot,?string $private=null
 ): array {
-    $keys=['difficulty','safety','allergen_status','allergens','finished_image',
+    $keys=['difficulty','safety','allergen_status','allergens','finished_image','image_source',
        'artwork_evidence','device_mobile','device_desktop',
        'culinary_evidence','editorial_evidence','checks'];
     if(array_diff(array_keys($form),$keys))cmsCoralAstroReviewFail('FORM_KEYS');
@@ -62,7 +74,14 @@ function cmsCoralAstroReviewProfile(
         ?cmsCoralAstroReviewLines($allergenText,1,12,3):[];
     if($allergenStatus==='none'&&trim((string)$allergenText)!=='')
         cmsCoralAstroReviewFail('ALLERGENS');
-    $img=cmsCoralAstroReviewImage($webroot,$form['finished_image']??null);
+    $selected=null;
+    $imageSource=$form['image_source']??'public';
+    if(!in_array($imageSource,['public','private'],true))cmsCoralAstroReviewFail('IMAGE_SOURCE');
+    if($imageSource==='private'){
+        $selected=$private===null?null:cmsCoralAstroSelectedVisual($private,$record);
+        if($selected===null)cmsCoralAstroReviewFail('PRIVATE_VISUAL_REQUIRED');
+    }
+    $img=$selected['url']??cmsCoralAstroReviewImage($webroot,$form['finished_image']??null);
     $mobile=cmsCoralAstroReviewText($form['device_mobile']??null,24);
     $desktop=cmsCoralAstroReviewText($form['device_desktop']??null,24);
     $culinary=cmsCoralAstroReviewText($form['culinary_evidence']??null,24);
@@ -81,7 +100,8 @@ function cmsCoralAstroReviewProfile(
       'allergens'=>['status'=>$allergenStatus,'items'=>$allergens],
       'media'=>['finishedPreparationImage'=>$img,'imageValidated'=>true,
           'rightsValidated'=>true,'stepImagePaths'=>[]],
-      'visualSha256'=>hash_file('sha256',$webroot.$img),
+      'visualSha256'=>$selected['sha']??hash_file('sha256',$webroot.$img),
+      ...($selected===null?[]:['privateVisualVersion'=>$selected['version']]),
       'artworkRightsEvidence'=>$rights,'deviceQaEvidence'=>'Mobile : '.$mobile.' ; Ordinateur : '.$desktop,
       'culinaryApprovalEvidence'=>$culinary,'editorialApprovalEvidence'=>$editorial,
       'approvedDate'=>gmdate('Y-m-d'),
@@ -153,6 +173,13 @@ function cmsCoralAstroReviewCurrent(
        ||($profile['media']['rightsValidated']??false)!==true
        ||($profile['review']['productionApproved']??false)!==true)
         cmsCoralAstroReviewFail('PROFILE_CORRUPT');
+    if(isset($profile['privateVisualVersion'])){
+        $asset=cmsCoralAstroSelectedVisual($private,$record);
+        if($asset===null||$asset['version']!==$profile['privateVisualVersion']
+            ||$asset['url']!==$profile['media']['finishedPreparationImage']
+            ||$asset['sha']!==$profile['visualSha256'])return null;
+        return $profile;
+    }
     // Existing public images cannot be silently replaced or removed.
     $webroot=$webroot??dirname(__DIR__);
     $image=cmsCoralAstroReviewImage($webroot,$profile['media']['finishedPreparationImage']??null);
@@ -198,7 +225,7 @@ function cmsCoralAstroReviewAction(
         $listen=cmsCoralTtsJournal($dir,$latest['id'],'real-listening');
         $profile=$action==='approve'
           ?cmsCoralAstroReviewProfile(
-              $latest,$request,$manifest,$form,$webroot??dirname(__DIR__)):null;
+              $latest,$request,$manifest,$form,$webroot??dirname(__DIR__),$private):null;
         $n=count($journal['events'])+1;
         if($n>9998)cmsCoralAstroReviewFail('CAPACITY');
         $row=['contract'=>'cdc-coral-astro-human-review-v1',
@@ -230,7 +257,9 @@ function cmsCoralAstroReviewPanel(
       .'Aucune génération ni publication n’en résulte.</p>';
     if($profile!==null){
         $download='?new=1&amp;cid='.$id.'&amp;astro_review_profile='.$job;
-        $image=cmsEsc($profile['media']['finishedPreparationImage']);
+        $image=isset($profile['privateVisualVersion'])
+            ? '?new=1&amp;cid='.$id.'&amp;visual_version='.$profile['privateVisualVersion'].'&amp;visual_file=site1200'
+            : cmsEsc($profile['media']['finishedPreparationImage']);
         $html.='<p data-astro-review-status="approved">Revue humaine enregistrée pour cette version et ce MP3.</p>'
           .'<p><img src="'.$image.'" loading="lazy" alt="Illustration approuvée de l’atelier" width="240"></p>'
           .'<p><a href="'.$download.'">Exporter le profil Astro validé (.json, privé)</a></p>';
@@ -241,6 +270,15 @@ function cmsCoralAstroReviewPanel(
       .'<input type="hidden" name="expected_version" value="'.(int)$record['version'].'">'
       .'<input type="hidden" name="tts_job" value="'.$job.'">';
     if($profile===null){
+      $selected=cmsCoralAstroSelectedVisual($private,$record);
+      $imageField=$selected===null
+        ? '<label>Illustration publique autorisée <input name="astro_review[finished_image]" required placeholder="/images/cuisine/exemple.webp"></label>'
+        : '<p><img width="240" alt="Visuel privé sélectionné" src="?new=1&amp;cid='.$id
+          .'&amp;visual_version='.$selected['version'].'&amp;visual_file=site1200"></p>'
+          .'<label>Illustration finale <select name="astro_review[image_source]">'
+          .'<option value="private">Visuel privé sélectionné</option>'
+          .'<option value="public">Image déjà publique</option></select></label>'
+          .'<label>Chemin de l’image publique, si choisie <input name="astro_review[finished_image]" placeholder="/images/cuisine/exemple.webp"></label>';
       $html.='<label>Difficulté<select name="astro_review[difficulty]" required>'
         .'<option value="">Choisir</option><option>Facile</option>'
         .'<option>Intermédiaire</option><option>Avancé</option></select></label>'
@@ -249,8 +287,7 @@ function cmsCoralAstroReviewPanel(
         .'<option value="">Choisir</option><option value="declared">Allergènes déclarés</option>'
         .'<option value="none">Aucun allergène identifié après contrôle</option></select></label>'
         .'<label>Allergènes (un par ligne si déclarés)<textarea name="astro_review[allergens]" maxlength="2400"></textarea></label>'
-        .'<label>Illustration publique déjà autorisée (.webp, /images/cuisine/)'
-        .'<input name="astro_review[finished_image]" required placeholder="/images/cuisine/exemple.webp"></label>'
+        .$imageField
         .'<label>Justificatif des droits d’utilisation du visuel'
         .'<textarea name="astro_review[artwork_evidence]" minlength="24" maxlength="900" required></textarea></label>'
         .'<label>Compte rendu du test sur téléphone physique (lecture, pause, chapitres)'

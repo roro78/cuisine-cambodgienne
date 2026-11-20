@@ -76,7 +76,29 @@ export function validateCoralStudioReleaseIntent(value){
   if(Math.abs(end-value.mp3_duration_seconds)>0.2)fail('DURATION');
   return value;
 }
-export async function packageCoralStudioRelease({intent,dist,audio,out,sourceSha,includeIndexes=false}){
+export const CORAL_BUILD_PACKET_MAX=1500000;
+export function coralPrivateVisualPath(id,sha256){
+  if(!/^c-[a-f0-9]{24}$/.test(id??'')||!SHA.test(sha256??''))fail('PRIVATE_VISUAL_ID');
+  return 'images/cuisine/coral-'+id+'-'+sha256+'.webp';
+}
+export function validateCoralPrivateVisual(packet){
+  const profile=packet.profile;
+  if(profile?.privateVisualVersion===undefined){
+    if(Object.hasOwn(packet,'visual'))fail('PRIVATE_VISUAL_UNEXPECTED');
+    return null;
+  }
+  const version=profile.privateVisualVersion, encoded=packet.visual, hash=profile.visualSha256;
+  const path=coralPrivateVisualPath(packet.intent?.creation_id,hash);
+  if(!Number.isInteger(version)||version<1||version>9999||
+     profile.media?.finishedPreparationImage!=='/'+path||
+     typeof encoded!=='string'||encoded.length>1398104)fail('PRIVATE_VISUAL_CONTRACT');
+  const bytes=Buffer.from(encoded,'base64');
+  if(bytes.length>1048576||bytes.length<12||bytes.toString('base64')!==encoded||
+     bytes.toString('ascii',0,4)!=='RIFF'||bytes.toString('ascii',8,12)!=='WEBP'||
+     bytes.readUInt32LE(4)+8!==bytes.length||sha(bytes)!==hash)fail('PRIVATE_VISUAL_SHA');
+  return {path,bytes,hash};
+}
+export async function packageCoralStudioRelease({intent,dist,audio,out,sourceSha,includeIndexes=false,privateVisualSha=null}){
   const r=validateCoralStudioReleaseIntent(intent);
   if(!SHA40.test(sourceSha??''))fail('SOURCE_COMMIT');
   const src=resolve(dist),target=resolve(out),audioPath=resolve(audio);
@@ -91,6 +113,10 @@ export async function packageCoralStudioRelease({intent,dist,audio,out,sourceSha
   const files=[r.candidate_audio_path,page,recipe,index,sitemap];
   const extra=includeIndexes?['social-assets/atelier-'+r.candidate_public_slug+'.jpg',
     'social-feed.json','editorial-source-index.json','editorial-guided-fields.json']:[];
+  if(privateVisualSha!==null){
+    if(!includeIndexes)fail('PRIVATE_VISUAL_INDEXES_REQUIRED');
+    extra.push(coralPrivateVisualPath(r.creation_id,privateVisualSha));
+  }
   if(new Set(files).size!==5)fail('TARGET_COLLISION');
   // Don't let a text-only "intent" authorize modifications to CMS/PHP, the
   // social index or any previous workshop media.
@@ -133,6 +159,8 @@ export async function packageCoralStudioRelease({intent,dist,audio,out,sourceSha
     if(await realpath(input)!==input)fail('ASTRO_INPUT_LINK');
     const bytes=await bytesAt(input,name.endsWith('.json')?524288:8000000);
     if(name.endsWith('.jpg')&&(bytes[0]!==255||bytes[1]!==216))fail('SOCIAL_JPEG');
+    if(name.endsWith('.webp')&&(sha(bytes)!==privateVisualSha||!pageText.includes('/'+name)))
+      fail('PRIVATE_VISUAL_OUTPUT');
     files.push(name);payload.set(name,bytes);
   }
   const entries=files.map(path=>({path,bytes:payload.get(path).length,

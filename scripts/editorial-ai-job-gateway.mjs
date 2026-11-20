@@ -1,3 +1,4 @@
+import {CORAL_BUILD_PACKET_MAX} from './package-coral-approved-release.mjs';
 import {coralChapterVoiceProblems} from './coral-chapter-voice-checks.mjs';
 import {createExternalCoralJobProvider} from './coral-external-job-provider.mjs';
 import {readCoralOpenAISecret} from './coral-openai-secret.mjs';
@@ -303,7 +304,7 @@ export async function createJobGateway({root,token,provider,ttsJobs=null,realTts
         let bytes=0;const chunks=[];
         for await(const chunk of req){
           bytes+=chunk.length;
-          if(bytes>90000)return send(413,{error:'REQUEST_SIZE'});
+          if(bytes>CORAL_BUILD_PACKET_MAX)return send(413,{error:'REQUEST_SIZE'});
           chunks.push(chunk);
         }
         const packet=JSON.parse(Buffer.concat(chunks).toString('utf8'));

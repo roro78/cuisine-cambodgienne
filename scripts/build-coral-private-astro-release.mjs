@@ -22,7 +22,7 @@ import {resolve,join,dirname,sep} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {projectCoralStudioBlueprint} from './project-coral-studio-blueprint.mjs';
 import {loadCanonicalRecipes,validateWorkshopBlueprint} from './check-workshop-blueprints.mjs';
-import {packageCoralStudioRelease} from './package-coral-approved-release.mjs';
+import {packageCoralStudioRelease,validateCoralPrivateVisual,CORAL_BUILD_PACKET_MAX} from './package-coral-approved-release.mjs';
 import {preserveCoralSharedPages,preserveCoralIndexes} from './coral-preserve-published-pages.mjs';
 
 const sha=x=>createHash('sha256').update(x).digest('hex');
@@ -169,9 +169,11 @@ async function restorePublishedOverlays({root,history,baseline,recipes}){
   if(!confirmed.has(id))continue;
   if(manifest.requestId!==job.name||confirmed.get(id).fingerprint!==manifest.workshopSourceSha256)
     fail('PUBLISHED_HISTORY_CHANGED');
-  const prior=JSON.parse(await privateFile(join(dir,'canonical-inputs.json'),90000));
+  const prior=JSON.parse(await privateFile(join(dir,'canonical-inputs.json'),CORAL_BUILD_PACKET_MAX));
   if(prior.intent?.request_id!==job.name||prior.intent?.mp3_sha256!==manifest.audioSha256)
     fail('PUBLISHED_HISTORY_ID');
+  const visual=validateCoralPrivateVisual(prior);
+  if(visual)await writeFile(join(root,'public',visual.path),visual.bytes,{flag:'wx'});
   const blueprint=projectCoralStudioBlueprint({...prior,recipes});
   await prepareCoralPrivateAstroOverlay({root,blueprint,intent:{
     ...prior.intent,visualSha256:prior.profile.visualSha256},
@@ -189,11 +191,14 @@ export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,o
  if(packetReal.startsWith(checkout+sep)||audioReal.startsWith(checkout+sep))
    fail('INPUTS_MUST_BE_PRIVATE');
  verifyPrivateBuildCheckout(checkout,sourceSha);
- const packet=JSON.parse((await privateFile(packetReal,85000)).toString('utf8'));
+ const packet=JSON.parse((await privateFile(packetReal,CORAL_BUILD_PACKET_MAX)).toString('utf8'));
  if(packet?.contract!=='cdc-coral-studio-private-build-inputs-v1'||
    !packet.source||!packet.profile||!packet.intent)fail('PACKET');
  const bytes=await privateFile(audioReal,32000000);
  const recipes=await loadCanonicalRecipes();
+ const visual=validateCoralPrivateVisual(packet);
+ if(visual&&!baseline)fail('PRIVATE_VISUAL_BASELINE_REQUIRED');
+ if(visual)await writeFile(join(checkout,'public',visual.path),visual.bytes,{flag:'wx'});
  const blueprint=projectCoralStudioBlueprint({
   source:packet.source,intent:packet.intent,profile:packet.profile,recipes});
  if(blueprint.media.finishedPreparationImage!==packet.profile.media.finishedPreparationImage)
@@ -224,7 +229,7 @@ export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,o
  }:null;
  const result=await packageCoralStudioRelease({
   intent:packet.intent,dist,audio:audioReal,
-  out:destination,sourceSha,includeIndexes:baseline!==null&&baseline!==undefined});
+  out:destination,sourceSha,includeIndexes:baseline!==null&&baseline!==undefined,privateVisualSha:visual?.hash??null});
  // These are verified by THIS BUILD ONLY. The live OVH inventory, owner
  // authorization, out-of-webroot backup and crash recovery remain separate.
  result.sourceCommitVerified=true;

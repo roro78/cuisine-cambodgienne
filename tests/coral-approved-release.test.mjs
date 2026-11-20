@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 import {mkdtemp,mkdir,writeFile,readFile,rm,stat,symlink} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join,dirname} from 'node:path';
-import {packageCoralStudioRelease,validateCoralStudioReleaseIntent} from '../scripts/package-coral-approved-release.mjs';
+import {packageCoralStudioRelease,validateCoralStudioReleaseIntent,coralPrivateVisualPath,validateCoralPrivateVisual} from '../scripts/package-coral-approved-release.mjs';
 
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const ids=['intro','installer','preparer','assembler','maitriser','rectifier','terminer'];
@@ -118,5 +118,31 @@ test('coordinated release includes the three index files and exact social JPEG',
     assert.equal(manifest.files.length,9);
     assert.deepEqual(manifest.files.slice(5).map(entry=>entry.path),[photo,...indexes]);
     for(const entry of manifest.files)assert.equal(sha(await readFile(join(f.out,entry.path))),entry.sha256);
+  }finally{await rm(f.root,{recursive:true,force:true});}
+});
+
+test('only the exact reviewed WebP reaches the coordinated public bundle',async()=>{
+  const f=await fixture();
+  try{
+    const webp=Buffer.from('524946461000000057454250565038580000000000000000','hex');
+    const path=coralPrivateVisualPath(f.r.creation_id,sha(webp));
+    const packet={intent:f.r,profile:{privateVisualVersion:2,visualSha256:sha(webp),
+      media:{finishedPreparationImage:'/'+path}},visual:webp.toString('base64')};
+    assert.deepEqual(validateCoralPrivateVisual(packet).bytes,webp);
+    assert.throws(()=>validateCoralPrivateVisual({...packet,visual:webp.toString('base64').replace(/^U/,'A')}),/PRIVATE_VISUAL_SHA/);
+    assert.throws(()=>validateCoralPrivateVisual({...packet,profile:{}}),/PRIVATE_VISUAL_UNEXPECTED/);
+    const jpeg='social-assets/atelier-amok-trey.jpg';
+    for(const [name,bytes] of [[path,webp],[jpeg,Buffer.from([255,216,255,217])]]){
+      await mkdir(dirname(join(f.dist,name)),{recursive:true});
+      await writeFile(join(f.dist,name),bytes);
+    }
+    for(const name of ['social-feed.json','editorial-source-index.json','editorial-guided-fields.json'])
+      await writeFile(join(f.dist,name),'{"items":[]}');
+    const page='apprendre/pratique/amok-trey/index.html';
+    await writeFile(join(f.dist,page),f.files[page]+'<img src="/'+path+'">');
+    const result=await packageCoralStudioRelease({intent:f.r,dist:f.dist,audio:f.audioFile,
+      out:f.out,sourceSha:f.sourceSha,includeIndexes:true,privateVisualSha:sha(webp)});
+    assert.equal(result.files.length,10);
+    assert.deepEqual(await readFile(join(f.out,path)),webp);
   }finally{await rm(f.root,{recursive:true,force:true});}
 });

@@ -41,8 +41,9 @@ for (const token of canonical) {
 }
 const visibilityRules = [
   'RewriteRule ^[.]coral-publication-in-progress$ - [R=404,L]',
+  'RewriteRule (?:^|/)[^/]+[.]coral-[a-f0-9]{24}[.]pending$ - [R=404,L]',
   'RewriteCond %{DOCUMENT_ROOT}/.coral-publication-in-progress -f',
-  'RewriteRule ^(?:recettes(?:/.*)?|apprendre(?:/.*)?|audio/workshops/.*|social-assets/.*|sitemap[.]xml|social-feed[.]json|editorial-source-index[.]json|editorial-guided-fields[.]json)$ - [R=503,L]'
+  'RewriteRule ^(?:recettes(?:/.*)?|apprendre(?:/.*)?|audio/workshops/.*|social-assets/.*|images/cuisine/coral-c-[a-f0-9]{24}-[a-f0-9]{64}[.]webp|sitemap[.]xml|social-feed[.]json|editorial-source-index[.]json|editorial-guided-fields[.]json)$ - [R=503,L]'
 ];
 assert.deepEqual(lines.slice(-visibilityRules.length), visibilityRules,
   'Publication visibility rules must follow the canonical redirects');

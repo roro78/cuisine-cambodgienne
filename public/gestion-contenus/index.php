@@ -803,7 +803,7 @@ if($auth){
                     $receipt=cmsCoralStudioPublish(
                         $private,dirname(__DIR__),$creation,$job,$auth,$confirm,
                         $cfg,$realTtsSettings,$catalog,$canonicalById,$guides);
-                    if(!in_array($receipt['fileCount']??null,[5,9],true))
+                    if(!in_array($receipt['fileCount']??null,[5,9,10],true))
                         throw new RuntimeException('CORAL_PUBLISH_RECEIPT');
                     $_SESSION['coral_published_local']=$job;
                 }elseif($action==='stage_real_release'){

@@ -33,5 +33,6 @@ RewriteRule ^(.*)$ https://www.cuisine-du-cambodge.com/$1 [R=301,L,NE]
 # A crashed publish keeps the affected routes closed until Studio restores them.
 # The marker contains only the release identifier.
 RewriteRule ^[.]coral-publication-in-progress$ - [R=404,L]
+RewriteRule (?:^|/)[^/]+[.]coral-[a-f0-9]{24}[.]pending$ - [R=404,L]
 RewriteCond %{DOCUMENT_ROOT}/.coral-publication-in-progress -f
-RewriteRule ^(?:recettes(?:/.*)?|apprendre(?:/.*)?|audio/workshops/.*|social-assets/.*|sitemap[.]xml|social-feed[.]json|editorial-source-index[.]json|editorial-guided-fields[.]json)$ - [R=503,L]
+RewriteRule ^(?:recettes(?:/.*)?|apprendre(?:/.*)?|audio/workshops/.*|social-assets/.*|images/cuisine/coral-c-[a-f0-9]{24}-[a-f0-9]{64}[.]webp|sitemap[.]xml|social-feed[.]json|editorial-source-index[.]json|editorial-guided-fields[.]json)$ - [R=503,L]

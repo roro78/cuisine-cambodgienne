@@ -37,8 +37,12 @@ $after[$paths[5]]="\xff\xd8fixture";$before[$paths[5]]=null;
 foreach(['social-feed.json','editorial-source-index.json','editorial-guided-fields.json'] as $index){
     $paths[]=$index;$after[$index]='{"items":[1,2]}';$before[$index]='{"items":[1]}';
 }
-file_put_contents($web.'/.htaccess',"# CORAL_PUBLICATION_GATE_V1\n");
-$marker=cmsCoralPublishVisibilityGate($web,$job,false);
+$creation='c-'.str_repeat('3',24);
+$visual='test visual';
+$path='images/cuisine/coral-'.$creation.'-'.hash('sha256',$visual).'.webp';
+$paths[]=$path;$after[$path]=$visual;$before[$path]=null;
+file_put_contents($web.'/.htaccess',file_get_contents(__DIR__.'/../../public/.htaccess'));
+$marker=cmsCoralPublishVisibilityGate($web,$job,false,true);
 $release=$private.'/coral-scoped-releases';$backup=$release.'/'.$job;
 mkdir($backup,0700,true);
 $expected=[];
@@ -59,10 +63,10 @@ foreach($before as $p=>$bytes)$previous[$p]=$bytes===null?null:[
  'bytes'=>strlen($bytes),'sha256'=>hash('sha256',$bytes)];
 file_put_contents($backup.'/before-write.json',json_encode([
  'contract'=>'cdc-coral-ovh-before-write-v1','requestId'=>$job,
- 'previous'=>$previous,'expected'=>$expected],JSON_THROW_ON_ERROR));
+ 'creationId'=>$creation,'previous'=>$previous,'expected'=>$expected],JSON_THROW_ON_ERROR));
 try{
- // Simulate a hard process crash after replacing only the first three paths.
- foreach(array_slice($paths,0,8) as $path){
+ // Simulate a hard process crash with the new image already written and one index unchanged.
+ foreach(array_filter($paths,static fn($p)=>$p!=='editorial-guided-fields.json') as $path){
     $target=$web.'/'.$path;
     if(!is_dir(dirname($target)))mkdir(dirname($target),0700,true);
     file_put_contents($target,$after[$path]);

@@ -60,7 +60,7 @@ function cmsCoralPublishManifest(array $manifest, array $preconditions): array {
         || ($manifest['nativeBlueprintVerified']??false)!==true
         || ($manifest['mediaRightsVerified']??false)!==true
         || !is_array($manifest['files']??null)
-        || !in_array(count($manifest['files']),[5,9],true)) cmsCoralPublishFail('MANIFEST');
+        || !in_array(count($manifest['files']),[5,9,10],true)) cmsCoralPublishFail('MANIFEST');
     $paths=[];$files=$manifest['files'];
     foreach ($files as $entry) {
         if (!is_array($entry) || !is_string($entry['path']??null)
@@ -81,8 +81,17 @@ function cmsCoralPublishManifest(array $manifest, array $preconditions): array {
         substr($manifest['audioSha256'],0,12).'.mp3';
     $expected=[$audioName,'apprendre/pratique/'.$slug.'/index.html',
         'recettes/'.$recipe.'/index.html','apprendre/index.html','sitemap.xml'];
-    if(count($files)===9)array_push($expected,'social-assets/atelier-'.$slug.'.jpg',
+    if(count($files)>=9)array_push($expected,'social-assets/atelier-'.$slug.'.jpg',
         'social-feed.json','editorial-source-index.json','editorial-guided-fields.json');
+    if(count($files)===10){
+        $hash=$manifest['mediaImageSha256']??null;
+        if(!is_string($hash)||!preg_match('/^[a-f0-9]{64}$/D',$hash)
+            ||$files[9]['sha256']!==$hash||$files[9]['bytes']>1048576)
+            cmsCoralPublishFail('VISUAL_MANIFEST');
+        $expected[]='images/cuisine/coral-'.$manifest['creationId'].'-'.$hash.'.webp';
+        if(!array_key_exists($expected[9],$preconditions)||$preconditions[$expected[9]]!==null)
+            cmsCoralPublishFail('VISUAL_ALREADY_EXISTS');
+    }
     if (array_keys($paths)!==$expected || $files[0]['sha256']!==$manifest['audioSha256'])
         cmsCoralPublishFail('SCOPE');
     if (array_keys($preconditions)!==$expected) cmsCoralPublishFail('PRECONDITION_NAMES');
@@ -91,10 +100,14 @@ function cmsCoralPublishManifest(array $manifest, array $preconditions): array {
         cmsCoralPublishFail('PRECONDITION_HASH');
     return $expected;
 }
-function cmsCoralPublishVisibilityGate(string $webroot,string $request,bool $recover): string {
+function cmsCoralPublishVisibilityGate(string $webroot,string $request,bool $recover,bool $privateVisual=false): string {
     $rules=$webroot.'/.htaccess';
     cmsCoralPublishDigest($rules,65536);
-    if(!str_contains((string)file_get_contents($rules),'# CORAL_PUBLICATION_GATE_V1'))
+    $config=(string)file_get_contents($rules);
+    if(!str_contains($config,'# CORAL_PUBLICATION_GATE_V1')
+        ||($privateVisual&&(!str_contains($config,'images/cuisine/coral-c-[a-f0-9]{24}-[a-f0-9]{64}[.]webp')
+            ||!str_contains($config,'[.]coral-[a-f0-9]{24}[.]pending$ - [R=404,L]'))))
+
         cmsCoralPublishFail('VISIBILITY_GATE_NOT_INSTALLED');
     $marker=$webroot.'/.coral-publication-in-progress';
     if(is_link($marker))cmsCoralPublishFail('VISIBILITY_GATE');
@@ -184,7 +197,7 @@ function cmsCoralPublishBundle(
             'expected'=>$manifest['files']], 'BACKUP_RECORD');
         // Independent second authorization check under the same publish lock.
         if ($authorize($manifest)!==true) cmsCoralPublishFail('AUTHORITY_CHANGED');
-        $gate=count($names)===9?cmsCoralPublishVisibilityGate($realWeb,$request,false):null;
+        $gate=count($names)>=9?cmsCoralPublishVisibilityGate($realWeb,$request,false,count($names)===10):null;
         try {
             foreach ($names as $index=>$name) {
                 $dest=cmsCoralPublishTarget($realWeb,$name);
@@ -278,24 +291,25 @@ function cmsCoralPublishRecoverInterrupted(
             ||($state['requestId']??null)!==$requestId
             ||!is_array($state['previous']??null)
             ||!is_array($state['expected']??null)
-            ||!in_array(count($state['expected']),[5,9],true)
+            ||!in_array(count($state['expected']),[5,9,10],true)
             ||($creationId!==null&&($state['creationId']??null)!==$creationId))
             cmsCoralPublishFail('RECOVERY_DATA');
         if(is_file($backup.'/rolled-back.json')||is_file($backup.'/recovered.json')){
             $marker=$realWeb.'/.coral-publication-in-progress';
-            if(count($state['expected'])===9&&is_file($marker)&&!is_link($marker)
+            if(count($state['expected'])>=9&&is_file($marker)&&!is_link($marker)
                 &&filesize($marker)===48&&file_get_contents($marker)===$requestId)
                 cmsCoralPublishOpenVisibility($marker);
             return ['requestId'=>$requestId,'restored'=>true,'alreadyRestored'=>true];
         }
         $files=$state['expected'];
         $names=array_column($files,'path');
-        if(!in_array(count($names),[5,9],true)||!is_string($names[0]??null)
+        if(!in_array(count($names),[5,9,10],true)||!is_string($names[0]??null)
            ||!preg_match('~^audio/workshops/atelier-pratique-([a-z0-9-]+)/atelier-coral-([a-f0-9]{12})\\.mp3$~D',$names[0],$match)
            ||!preg_match('~^recettes/([a-z0-9-]+)/index\\.html$~D',(string)($names[2]??''),$recipeMatch))
             cmsCoralPublishFail('RECOVERY_PATHS');
         $manifest=['contract'=>'cdc-coral-scoped-astro-bundle-v1',
-            'requestId'=>$requestId,'creationId'=>'c-'.str_repeat('0',24),
+            'requestId'=>$requestId,'creationId'=>$state['creationId']??'c-'.str_repeat('0',24),
+            'mediaImageSha256'=>$files[9]['sha256']??null,
             'audioSha256'=>$files[0]['sha256']??null,
             'recipeSlug'=>$recipeMatch[1],'publicSlug'=>$match[1],
             'deployable'=>false,'published'=>false,
@@ -324,7 +338,7 @@ function cmsCoralPublishRecoverInterrupted(
         }
         // All validation above has succeeded; each step is idempotent even
         // if PHP is forcibly killed partway through this recovery.
-        $gate=count($names)===9?cmsCoralPublishVisibilityGate($realWeb,$requestId,true):null;
+        $gate=count($names)>=9?cmsCoralPublishVisibilityGate($realWeb,$requestId,true,count($names)===10):null;
         foreach(array_reverse($names) as $name){
             if($current[$name]===$previous[$name])continue;
             $target=$realWeb.'/'.$name;

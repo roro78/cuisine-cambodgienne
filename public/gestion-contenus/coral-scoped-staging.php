@@ -70,7 +70,7 @@ function cmsCoralStageInventory(string $webroot,array $paths): array {
         $existing=is_file($file);
         // Publishing a new workshop must never overwrite a previous workshop
         // or its immutable audio. Shared recipe/catalogue/sitemap must exist.
-        $new=$i<2||(count($paths)===9&&$i===5);
+        $new=$i<2||(count($paths)>=9&&$i===5)||$i===9;
         if ($new===$existing)
             cmsCoralStageFail('TARGET_INVENTORY');
         $result[$path]=$existing?cmsCoralPublishDigest($file,32000000)['sha256']:null;
@@ -154,7 +154,7 @@ function cmsCoralStageOperation(string $private,string $webroot,array $request):
             }
             $paths=cmsCoralPublishManifest($manifest,$preconditions);
             $baseline=$manifest['baseSha256']??null;
-            if(!is_array($baseline)||array_keys($baseline)!==array_values(array_filter($paths,static fn($p,$i)=>$i>=2&&(count($paths)===5||$i!==5),ARRAY_FILTER_USE_BOTH)))
+            if(!is_array($baseline)||array_keys($baseline)!==array_values(array_filter($paths,static fn($p,$i)=>$i>=2&&(count($paths)===5||$i!==5)&&$i!==9,ARRAY_FILTER_USE_BOTH)))
                 cmsCoralStageFail('BASELINE');
             foreach($baseline as $hash)
                 if(!is_string($hash)||!preg_match('/^[a-f0-9]{64}$/D',$hash))
@@ -166,7 +166,7 @@ function cmsCoralStageOperation(string $private,string $webroot,array $request):
                 $old=cmsCoralStageLoad($folder);
                 if($old['manifest']===$manifest)
                     return ['requestId'=>$job,'stage'=>$old['sealed']?'sealed':'receiving'];
-                if(count($paths)!==9||$old['preconditions']===$inventory
+                if(count($paths)<9||$old['preconditions']===$inventory
                     ||is_file($journal.'/before-write.json'))cmsCoralStageFail('CONFLICT');
                 foreach(['creationId','creationVersion','bindingSha256','recipeSlug','publicSlug','audioSha256','workshopSourceSha256'] as $field)
                     if(($old['manifest'][$field]??null)!==($manifest[$field]??null))cmsCoralStageFail('CONFLICT');
@@ -267,10 +267,17 @@ function cmsCoralStageOperation(string $private,string $webroot,array $request):
         foreach(array_unique($assets[0]) as $asset)
             if(!is_file(cmsCoralPublishTarget((string)realpath($webroot),substr($asset,1))))
                 cmsCoralStageFail('SHARED_ASSET_MISSING');
-        if(count($paths)===9){
+        if(count($paths)>=9){
             $jpeg=cmsCoralPublishTarget($bundle,$paths[5]);
             if(file_get_contents($jpeg,false,null,0,2)!=="\xff\xd8")cmsCoralStageFail('JPEG');
             cmsCoralStageVerifyIndexes($webroot,$bundle,$state['manifest'],$paths);
+        }
+        if(count($paths)===10){
+            $visual=cmsCoralPublishTarget($bundle,$paths[9]);
+            $info=@getimagesize($visual);
+            if(($info[2]??null)!==IMAGETYPE_WEBP||$info[0]!==1200||$info[1]!==800
+                ||!str_contains($page,'/'.$paths[9]))
+                cmsCoralStageFail('VISUAL_CONTENT');
         }
         $state['sealed']=true;
         cmsCoralStageStore($folder.'/stage.json',$state);
@@ -283,7 +290,7 @@ function cmsCoralStageVerifyIndexes(string $webroot,string $bundle,array $manife
     $id='atelier:'.$manifest['publicSlug'];
     $expectedHash=$manifest['workshopSourceSha256'];
     $catalogues=[];
-    foreach(array_slice($paths,6) as $i=>$name){
+    foreach(array_slice($paths,6,3) as $i=>$name){
         $before=cmsCoralStageReadIndex($webroot,$name);
         $after=cmsCoralStageReadIndex($bundle,$name);
         $added=array_pop($after['items']);
@@ -294,7 +301,8 @@ function cmsCoralStageVerifyIndexes(string $webroot,string $bundle,array $manife
         $catalogues[]=$after;
         if($i===0){
             if(($added['url']??null)!=='https://www.cuisine-du-cambodge.com/apprendre/pratique/'.$manifest['publicSlug'].'/'
-                ||($added['imageUrl']??null)!=='https://www.cuisine-du-cambodge.com/'.$paths[5])
+                ||($added['imageUrl']??null)!=='https://www.cuisine-du-cambodge.com/'.$paths[5]
+                ||(count($paths)===10&&($added['originalImageUrl']??null)!=='https://www.cuisine-du-cambodge.com/'.$paths[9]))
                 cmsCoralStageFail('INDEX_SOCIAL');
         }elseif(($added['model']??null)!=='cookingWorkshopGuides'||($added['fingerprint']??null)!==$expectedHash)
             cmsCoralStageFail('INDEX_FINGERPRINT');
