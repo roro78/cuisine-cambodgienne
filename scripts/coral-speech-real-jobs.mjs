@@ -4,6 +4,7 @@
  * no retry after an uncertain paid call, no automatic publish.
  */
 import {join} from 'node:path';
+import {createHash} from 'node:crypto';
 import {mkdir,lstat} from 'node:fs/promises';
 import {reserveCoralBudget} from './coral-external-job-provider.mjs';
 import {validateCoralStudioReleaseIntent} from './package-coral-approved-release.mjs';
@@ -13,6 +14,7 @@ import {audioSha,durableWrite,durableAudioCommit,atomicJson,privateAudioRead,pri
   privateAudioVerifiedOpen,probeAudio,assemblePrivateMp3} from './coral-tts-audio.mjs';
 
 const BUDGET_USD=0.75,MAX_PARTS=50;
+const digest=text=>createHash('sha256').update(text).digest('hex');
 async function optional(file,max=120000){
  try{return JSON.parse((await privateAudioRead(file,max)).toString('utf8'));}
  catch(e){if(e.code==='ENOENT')return null;throw e;}
