@@ -222,7 +222,13 @@ function cmsCoralAstroReviewPanel(
       .'<p>Ce formulaire complète la fiche Astro native. '
       .'Les validations sont humaines, liées au MP3 exact et à cette version du brouillon. '
       .'Aucune génération ni publication n’en résulte.</p>';
-    if($profile!==null)$html.='<p data-astro-review-status="approved">Revue enregistrée pour cette version.</p>';
+    if($profile!==null){
+        $download='?new=1&amp;cid='.$id.'&amp;astro_review_profile='.$job;
+        $image=cmsEsc($profile['media']['finishedPreparationImage']);
+        $html.='<p data-astro-review-status="approved">Revue humaine enregistrée pour cette version et ce MP3.</p>'
+          .'<p><img src="'.$image.'" loading="lazy" alt="Illustration approuvée de l’atelier" style="max-width:240px;height:auto"></p>'
+          .'<p><a href="'.$download.'">Exporter le profil Astro validé (.json, privé)</a></p>';
+    }
     $html.='<form method="post" class="stack" action="'.$url.'#cms-astro-review">'
       .'<input type="hidden" name="csrf" value="'.cmsEsc($csrf).'">'
       .'<input type="hidden" name="creation_id" value="'.$id.'">'
