@@ -138,7 +138,8 @@ export async function packageCoralStudioRelease({intent,dist,audio,out,sourceSha
     if(sha(await bytesAt(path,32000000))!==entry.sha256)fail('BUNDLE_SHA');
   }
   const manifest={contract:'cdc-coral-scoped-astro-bundle-v1',
-    sourceCommit:sourceSha,creationId:r.creation_id,creationVersion:r.creation_version,
+    sourceCommit:sourceSha,sourceCommitVerified:false,
+    creationId:r.creation_id,creationVersion:r.creation_version,
     requestId:r.request_id,bindingSha256:r.binding_sha256,
     audioSha256:r.mp3_sha256,files:entries,
     // Trust boundary: current private authorizations and live OVH state must
@@ -146,7 +147,7 @@ export async function packageCoralStudioRelease({intent,dist,audio,out,sourceSha
     deployable:false,published:false,studioAuthorityFreshlyRechecked:false,
     privateBackupVerified:false,rollbackRehearsed:false,
     liveTargetHashesVerified:false,sharedAssetsVerified:false,
-    requires:['fresh_authenticated_studio_authority','native_blueprint_review',
+    requires:['fresh_authenticated_studio_authority','pinned_git_checkout','native_blueprint_review',
       'media_rights','live_inventory_and_sha_preconditions',
       'off_webroot_backup_and_restore_test','scoped_ovh_publish_and_receipt']};
   await writeFile(join(target,'BUNDLE-MANIFEST-PRIVE.json'),JSON.stringify(manifest,null,2)+'\n',{flag:'wx',mode:0o600});
