@@ -124,8 +124,23 @@ function cmsCoralRealSpeechObserve(
       ||($m['speed']??null)!==0.93||($m['simulated']??true)!==false
       ||($m['format']??null)!=='mp3'||!preg_match('/^[a-f0-9]{64}$/D',$m['sha256']??'')
       ||!is_int($m['bytes']??null)||$m['bytes']<1024||$m['bytes']>32000000
-      ||!is_array($m['chapters']??null)||count($m['chapters'])!==7)
+      ||!is_array($m['chapters']??null)||count($m['chapters'])!==7
+      ||!is_numeric($m['duration']??null)||$m['duration']<=0)
       throw new RuntimeException('REAL_TTS_RESULT');
+    // Do not accept a complete MP3 without seven strictly ordered chapter
+    // boundaries matching the approved Studio scripts.
+    $lastEnd=0.0;
+    foreach(cmsAtelierScriptIds() as $i=>$chapterId){
+      $chapter=$m['chapters'][$i]??null;
+      if(!is_array($chapter)||($chapter['id']??null)!==$chapterId
+        ||!is_numeric($chapter['start']??null)||!is_numeric($chapter['end']??null)
+        ||abs((float)$chapter['start']-$lastEnd)>0.02
+        ||(float)$chapter['end']<=(float)$chapter['start'])
+        throw new RuntimeException('REAL_TTS_CHAPTER_ORDER');
+      $lastEnd=(float)$chapter['end'];
+    }
+    if(abs((float)$m['duration']-$lastEnd)>0.2)
+      throw new RuntimeException('REAL_TTS_DURATION');
     $state['manifest']=$m;
   }
   return $state;
@@ -175,6 +190,42 @@ function cmsCoralRealSpeechApprovePreview(
   });
   if($previous)return; // Unknown POST outcome: never issue a duplicate resume.
   cmsCoralRealSpeechTransport($settings,$job,'resume');
+}
+
+/** The real Coral listening journal is distinct from simulated-tone approvals.
+ * It binds a human decision to the current creation version AND final MP3 SHA.
+ * A new version, different MP3 or later revocation invalidates the approval.
+ */
+function cmsCoralRealSpeechListeningApproved(
+ string $private,array $record,array $manifest,array $catalog,array $canonical,array $guided
+): bool {
+  $journal=cmsCoralTtsJournal(cmsCreationDir($private),$record['id'],'real-listening');
+  $last=$journal['events']?end($journal['events']):null;
+  $binding=cmsCoralTtsBinding($record,$catalog,$canonical,$guided);
+  return is_array($last)&&($last['action']??null)==='approve'
+    &&($last['creation_version']??null)===$record['version']
+    &&hash_equals($binding['binding_sha256'],(string)($last['binding_sha256']??''))
+    &&hash_equals((string)$manifest['sha256'],(string)($last['artifact_sha256']??''));
+}
+
+/** Explicit authenticated full-MP3 listening/revocation; never publishes. */
+function cmsCoralRealSpeechListeningAction(
+ string $private,array $record,string $job,string $action,array $checks,string $note,
+ bool $confirmed,bool $authenticated,array $settings,
+ array $catalog,array $canonical,array $guided
+): void {
+  if(!$authenticated||!$confirmed||!in_array($action,['approve','revoke'],true))
+    throw new RuntimeException('REAL_TTS_LISTENING_CONFIRM');
+  $r=cmsCoralRealSpeechApprovedRequest($private,$record,$catalog,$canonical,$guided);
+  if(!hash_equals($r['request_id'],$job))throw new RuntimeException('REAL_TTS_LISTENING_JOB');
+  $state=cmsCoralRealSpeechObserve($private,$record['id'],$job,$settings,$catalog,$canonical,$guided);
+  if(($state['status']??null)!=='succeeded'||!is_array($state['manifest']??null))
+    throw new RuntimeException('REAL_TTS_LISTENING_NOT_READY');
+  // Do not approve a manifest alone: read and SHA-verify the entire private MP3.
+  cmsCoralRealSpeechAudio($private,$record['id'],$job,$settings,$catalog,$canonical,$guided);
+  cmsCoralTtsDecision($private,$record['id'],$record['version'],'real-listening',$action,
+    $checks,$note,$confirmed,$authenticated,$catalog,$canonical,$guided,
+    $state['manifest']['sha256']);
 }
 
 /** One-click real generation; texts and bearer never appear in browser markup. */
@@ -228,8 +279,27 @@ function cmsCoralRealSpeechProductionPanel(
      if($s['status']==='succeeded'){
        $src='?new=1&amp;cid='.cmsEsc($id).'&amp;tts_real_audio='.cmsEsc($job);
        $html.='<audio controls preload="metadata" src="'.$src.'"></audio>'
-         .'<p><a href="'.$src.'">Écouter ou enregistrer le MP3 généré</a></p>'
-         .'<p>La mise en ligne publique reste distincte de la génération.</p>';
+         .'<p><a href="'.$src.'">Écouter ou enregistrer le MP3 généré</a></p>';
+       $approved=cmsCoralRealSpeechListeningApproved(
+         $private,$record,$s['manifest'],$catalog,$canonical,$guided);
+       $html.='<p>'.($approved?'Écoute intégrale du MP3 exact approuvée.':'Écoute intégrale et ordre des sept chapitres à approuver.').'</p>'
+         .'<form method="post" class="stack" action="'.$url.'#cms-real-tts">'
+         .'<input type="hidden" name="csrf" value="'.cmsEsc($csrf).'">'
+         .'<input type="hidden" name="creation_id" value="'.cmsEsc($id).'">'
+         .'<input type="hidden" name="expected_version" value="'.(int)$version.'">'
+         .'<input type="hidden" name="tts_job" value="'.cmsEsc($job).'">';
+       if(!$approved){
+         $html.='<label><input type="checkbox" name="tts_checks[full_listening]" value="1" required> J’ai écouté intégralement ce MP3.</label>'
+           .'<label><input type="checkbox" name="tts_checks[chapter_order]" value="1" required> J’ai vérifié les sept chapitres dans l’ordre.</label>';
+       }
+       $html.='<label>Compte rendu de contrôle (20 caractères minimum)'
+         .'<textarea name="tts_note" minlength="20" maxlength="900" required></textarea></label>'
+         .'<label><input type="checkbox" name="tts_confirm" value="1" required> '
+         .($approved?'Je confirme la révocation du visa d’écoute.':'Je valide précisément cet audio après écoute humaine.').'</label>'
+         .'<button type="submit" name="tts_action" value="'
+         .($approved?'revoke_real_audio':'approve_real_audio').'">'
+         .($approved?'Révoquer l’approbation audio':'Approuver le MP3 écouté').'</button></form>'
+         .'<p>La publication reste désactivée : le visa audio n’est pas un ordre de publication.</p>';
      }
    }catch(Throwable $e){
      $html.='<p>Suivi indisponible ou accusé inconnu. Aucun appel facturable ne sera relancé automatiquement.</p>';
