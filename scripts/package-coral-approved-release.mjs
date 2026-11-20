@@ -16,8 +16,8 @@
  * No HTTP, OpenAI, GitHub or OVH calls. No input files are modified.
  */
 import {createHash} from 'node:crypto';
-import {readFile,writeFile,mkdir,lstat,stat} from 'node:fs/promises';
-import {resolve,join,dirname,relative,sep} from 'node:path';
+import {readFile,writeFile,mkdir,lstat,realpath} from 'node:fs/promises';
+import {resolve,join,dirname,sep} from 'node:path';
 import {pathToFileURL} from 'node:url';
 
 const IDS=Object.freeze(['intro','installer','preparer','assembler','maitriser','rectifier','terminer']);
@@ -96,10 +96,18 @@ export async function packageCoralStudioRelease({intent,dist,audio,out,sourceSha
     if(!/^(?:audio\/workshops\/[a-z0-9-]+\/atelier-coral-[a-f0-9]{12}\.mp3|apprendre\/pratique\/[a-z0-9-]+\/index\.html|recettes\/[a-z0-9-]+\/index\.html|apprendre\/index\.html|sitemap\.xml)$/.test(path))
       fail('SCOPE');
   }
+  // Refuse symlinked parents or a private audio outside its expected tree.
+  const realDist=await realpath(src);
+  if(realDist!==src)fail('ASTRO_SYMLINK_PARENT');
   const audioBytes=await bytesAt(audioPath,32000000);
   if(audioBytes.length!==r.mp3_bytes||sha(audioBytes)!==r.mp3_sha256)fail('AUDIO_SHA');
   const payload=new Map([[r.candidate_audio_path,audioBytes]]);
-  for(const name of [page,recipe,index,sitemap])payload.set(name,await bytesAt(checkPath(src,name),400000));
+  for(const name of [page,recipe,index,sitemap]){
+    const input=checkPath(src,name);
+    const realInput=await realpath(input);
+    if(!realInput.startsWith(realDist+sep))fail('ASTRO_INPUT_LINK');
+    payload.set(name,await bytesAt(input,400000));
+  }
   // The blueprint and the public pages must ALREADY be compiled in Astro.
   // No string insertion into existing production HTML is allowed here.
   const url='/apprendre/pratique/'+r.candidate_public_slug+'/';
@@ -112,7 +120,9 @@ export async function packageCoralStudioRelease({intent,dist,audio,out,sourceSha
   if(!payload.get(sitemap).toString('utf8').includes(url))fail('SITEMAP');
   // If Astro already has an audio at the target path, require identical bytes.
   try{
-    const built=await bytesAt(checkPath(src,r.candidate_audio_path),32000000);
+    const dest=checkPath(src,r.candidate_audio_path);
+    if(!(await realpath(dest)).startsWith(realDist+sep))fail('DIST_AUDIO_LINK');
+    const built=await bytesAt(dest,32000000);
     if(sha(built)!==r.mp3_sha256)fail('DIST_AUDIO_CHANGED');
   }catch(error){if(error?.code!=='ENOENT')throw error;}
   // Check EVERY input before attempting any output write.
