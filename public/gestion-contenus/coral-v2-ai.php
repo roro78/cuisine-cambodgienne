@@ -90,8 +90,8 @@ function cmsCoralTtsBinding(array $record,array $catalog,array $canonical,array 
 }
 /** Compatible append-only human journal, never imported into content drafts. */
 function cmsCoralTtsJournal(string $dir,string $id,string $kind): array {
-  if(!cmsCreationId($id)||!in_array($kind,['rights','listening','voice-rights','real-listening'],true))throw new RuntimeException('TTS_JOURNAL_ID');
-  $rightsKind=in_array($kind,['rights','voice-rights'],true);$real=in_array($kind,['voice-rights','real-listening'],true);
+  if(!cmsCreationId($id)||!in_array($kind,['rights','listening','voice-rights','real-listening','real-publication'],true))throw new RuntimeException('TTS_JOURNAL_ID');
+  $rightsKind=in_array($kind,['rights','voice-rights'],true);$real=in_array($kind,['voice-rights','real-listening','real-publication'],true);
   $events=[];$previous='';$files=glob($dir.'/tts-'.$kind.'-'.$id.'.*.json');
   if(!is_array($files)||count($files)>9998)throw new RuntimeException('TTS_JOURNAL_STORE');
   foreach($files as $file){
@@ -103,7 +103,7 @@ function cmsCoralTtsJournal(string $dir,string $id,string $kind): array {
       ||basename($file)!=='tts-'.$kind.'-'.$id.'.'.sprintf('%04d',$r['event']).'.json'
       ||!in_array($r['action'],['approve','revoke'],true)||!preg_match('/^[a-f0-9]{64}$/D',$r['binding_sha256'])
       ||$r['voice']!==($real?'coral':'test-tone')||$r['provider']!==($real?'openai-speech-coral-093-v1':'simulated-tone-v1')||!is_array($r['checks'])
-      ||$r['checks']!==($r['action']==='approve'?($rightsKind?['voice','content','private_audio']:['full_listening','chapter_order']):[])
+      ||$r['checks']!==($r['action']==='approve'?($rightsKind?['voice','content','private_audio']:($kind==='real-publication'?['reviewed_page','audio_checksum','publish_requested']:['full_listening','chapter_order'])):[])
       ||!is_string($r['artifact_sha256'])||($rightsKind?$r['artifact_sha256']!=='':!preg_match('/^[a-f0-9]{64}$/D',$r['artifact_sha256']))
       ||!is_string($r['note'])||mbLen($r['note'])<20||mbLen($r['note'])>900
       ||$r['reviewer']!=='authenticated-cms-owner'
@@ -118,8 +118,8 @@ function cmsCoralTtsDecision(string $private,string $id,int $expected,string $ki
   string $artifactSha=''): array {
   if(!$authenticated||!$confirmed)throw new RuntimeException('TTS_HUMAN_CONFIRM_REQUIRED');
   $rightsKind=in_array($kind,['rights','voice-rights'],true);
-  $required=$rightsKind?['voice','content','private_audio']:['full_listening','chapter_order'];
-  if(!in_array($kind,['rights','listening','voice-rights','real-listening'],true)||!in_array($action,['approve','revoke'],true)
+  $required=$rightsKind?['voice','content','private_audio']:($kind==='real-publication'?['reviewed_page','audio_checksum','publish_requested']:['full_listening','chapter_order']);
+  if(!in_array($kind,['rights','listening','voice-rights','real-listening','real-publication'],true)||!in_array($action,['approve','revoke'],true)
     ||($action==='approve'?(array_keys($checks)!==$required||array_values($checks)!==array_fill(0,count($required),'1')):$checks!==[]))
     throw new InvalidArgumentException('TTS_RIGHTS_CHECKS');
   $note=cmsCreationText($note,900);if(mbLen($note)<20)throw new InvalidArgumentException('TTS_HUMAN_NOTE');
@@ -127,7 +127,7 @@ function cmsCoralTtsDecision(string $private,string $id,int $expected,string $ki
   return cmsCoralTtsLocked($private,$id,static function($dir,$record)use($private,$id,$expected,$kind,$action,$checks,$note,$catalog,$canonical,$guided,$artifactSha){
     if($record['version']!==$expected)throw new RuntimeException('TTS_VERSION_STALE');
     $binding=cmsCoralTtsBinding($record,$catalog,$canonical,$guided);$j=cmsCoralTtsJournal($dir,$id,$kind);$n=count($j['events'])+1;
-    $real=in_array($kind,['voice-rights','real-listening'],true);
+    $real=in_array($kind,['voice-rights','real-listening','real-publication'],true);
     if($kind==='voice-rights'){
       if($action==='approve'&&time()>=strtotime('2027-01-06T00:00:00Z'))throw new RuntimeException('TTS_PROFILE_EXPIRED');
       if($action==='approve'&&!cmsCoralFinalStatus($private,$record,$catalog,$canonical,$guided)['approved'])
@@ -136,7 +136,7 @@ function cmsCoralTtsDecision(string $private,string $id,int $expected,string $ki
       if($last&&$last['action']===$action&&$last['creation_version']===$expected
         &&$last['binding_sha256']===$binding['binding_sha256'])throw new RuntimeException('TTS_DECISION_ALREADY_SET');
     }
-    if($kind==='real-listening'){
+    if($kind==='real-listening'||$kind==='real-publication'){
       $last=$j['events']?end($j['events']):null;
       if($last&&$last['action']===$action&&$last['creation_version']===$expected
         &&$last['binding_sha256']===$binding['binding_sha256']
