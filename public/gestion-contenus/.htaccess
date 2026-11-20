@@ -47,3 +47,6 @@ DirectoryIndex index.php
 <Files "coral-real-speech-bridge.php">
   Require all denied
 </Files>
+<Files "coral-scoped-publisher.php">
+  Require all denied
+</Files>
