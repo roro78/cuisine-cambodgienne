@@ -4,6 +4,7 @@ declare(strict_types=1);
 require_once __DIR__.'/lib.php';
 require_once __DIR__.'/coral-v2-ai.php';
 require_once __DIR__.'/coral-astro-review.php';
+require_once __DIR__.'/coral-scoped-staging.php';
 $realSpeechModulesPresent=is_file(__DIR__.'/coral-real-speech-request.php')&&is_file(__DIR__.'/coral-real-speech-bridge.php');
 if($realSpeechModulesPresent){
     require_once __DIR__.'/coral-real-speech-request.php';
@@ -33,6 +34,40 @@ if(!is_array($cfg) || !is_string($cfg['admin_user']??null)
     || !is_string($cfg['password_hash']??null)
     || !(str_starts_with($cfg['password_hash'],'$2')
         || str_starts_with($cfg['password_hash'],'$argon')))cmsUnavailable();
+// Separate MACHINE-ONLY POST for prebuilt five-file bundles. Does not open an
+// owner session and has no path to cmsCoralPublishBundle or the TTS provider.
+if(isset($_GET['coral_stage'])){
+    header('Content-Type: application/json; charset=UTF-8');
+    header('Cache-Control: no-store, private, max-age=0');
+    try{
+        if(count($_GET)!==1||$_GET['coral_stage']!=='1'
+            ||(string)($_SERVER['REQUEST_METHOD']??'')!=='POST'
+            ||isset($_SERVER['HTTP_ORIGIN'])
+            ||!preg_match('~^application/json(?:;\\s*charset=utf-8)?$~i',
+                trim((string)($_SERVER['CONTENT_TYPE']??'')))
+            ||isset($_SERVER['HTTP_CONTENT_ENCODING']))
+            throw new RuntimeException('CORAL_STAGE_ROUTE');
+        cmsCoralStageAuthenticate($private,$cfg,
+            (string)($_SERVER['HTTP_AUTHORIZATION']??''));
+        $raw=file_get_contents('php://input',false,null,0,380001);
+        if(!is_string($raw)||$raw===''||strlen($raw)>380000)
+            throw new RuntimeException('CORAL_STAGE_BODY');
+        $request=json_decode($raw,true,32,JSON_THROW_ON_ERROR);
+        if(!is_array($request))throw new RuntimeException('CORAL_STAGE_JSON');
+        if(($request['op']??null)==='begin'){
+            $pinned=$cfg['coral_scoped_source_commit']??null;
+            if(!is_string($pinned)||!preg_match('/^[a-f0-9]{40}$/D',$pinned)
+                ||!is_string($request['manifest']['sourceCommit']??null)
+                ||!hash_equals($pinned,$request['manifest']['sourceCommit']))
+                throw new RuntimeException('CORAL_STAGE_SOURCE_PIN');
+        }
+        $result=cmsCoralStageOperation($private,dirname(__DIR__),$request);
+        echo json_encode($result,JSON_THROW_ON_ERROR);exit;
+    }catch(Throwable $e){
+        // No token, private path, manifest or error detail is ever reflected.
+        http_response_code(404);exit('{"error":"CORAL_STAGING_UNAVAILABLE"}');
+    }
+}
 // Separate machine READ only; disabled by default. Never creates an admin session.
 if(isset($_GET['tts_authority'])){
     header('Content-Type: application/json; charset=UTF-8');
