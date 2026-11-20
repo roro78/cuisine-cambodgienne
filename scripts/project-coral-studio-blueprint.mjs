@@ -17,7 +17,6 @@ import {readFile,writeFile,lstat} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {readFileSync,lstatSync,realpathSync} from 'node:fs';
 import {resolve,sep} from 'node:path';
-import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {loadCanonicalRecipes,validateWorkshopBlueprint} from './check-workshop-blueprints.mjs';
 import {validateCoralStudioReleaseIntent} from './package-coral-approved-release.mjs';
