@@ -76,6 +76,36 @@ try {
   check(count($events)===3,'APPEND_ONLY');
   check($events[1]['previous_event_sha256']===hash_file('sha256',
     $dir.'/tts-real-listening-'.$record['id'].'.0001.json'),'CHAIN_HASH');
+  // Public release has an independent, revocable human authorization.
+  $releaseChecks=['reviewed_page'=>'1','audio_checksum'=>'1','publish_requested'=>'1'];
+  $releaseNote='Publication synthétique : page et voix relues sans mise en ligne.';
+  check(!cmsCoralRealSpeechPublicationApproved($private,$record,$manifest,[],[],[]),'NO_PUBLICATION_CONSENT');
+  refused(static fn()=>cmsCoralTtsDecision($private,$record['id'],4,'real-publication','approve',
+    ['audio_checksum'=>'1','reviewed_page'=>'1','publish_requested'=>'1'],
+    $releaseNote,true,true,[],[],[],$sha),'RELEASE_CHECK_ORDER');
+  cmsCoralTtsDecision($private,$record['id'],4,'real-publication','approve',
+    $releaseChecks,$releaseNote,true,true,[],[],[],$sha);
+  check(cmsCoralRealSpeechPublicationApproved($private,$record,$manifest,[],[],[]),'RELEASE_CONSENT');
+  check(!cmsCoralRealSpeechPublicationApproved($private,$record,
+    ['request_id'=>str_repeat('e',48),'sha256'=>str_repeat('b',64)],[],[],[]),'RELEASE_AUDIO_CHANGED');
+  refused(static fn()=>cmsCoralTtsDecision($private,$record['id'],4,'real-publication','approve',
+    $releaseChecks,$releaseNote,true,true,[],[],[],$sha),'RELEASE_DOUBLE_CLICK');
+  cmsCoralTtsDecision($private,$record['id'],4,'real-publication','revoke',
+    [],$releaseNote,true,true,[],[],[],$sha);
+  check(!cmsCoralRealSpeechPublicationApproved($private,$record,$manifest,[],[],[]),'RELEASE_REVOKED');
+  cmsCoralTtsDecision($private,$record['id'],4,'real-publication','approve',
+    $releaseChecks,$releaseNote,true,true,[],[],[],$sha);
+  check(cmsCoralRealSpeechPublicationApproved($private,$record,$manifest,[],[],[]),'RELEASE_REAPPROVED');
+  $rightsCurrent=false;
+  check(!cmsCoralRealSpeechPublicationApproved($private,$record,$manifest,[],[],[]),'RELEASE_RIGHTS_REVOKED');
+  $rightsCurrent=true;
+  // Revoking full listening also invalidates independently approved publication.
+  cmsCoralTtsDecision($private,$record['id'],4,'real-listening','revoke',
+    [],$notes,true,true,[],[],[],$sha);
+  check(!cmsCoralRealSpeechPublicationApproved($private,$record,$manifest,[],[],[]),'RELEASE_LISTENING_REVOKED');
+  cmsCoralTtsDecision($private,$record['id'],4,'real-listening','approve',
+    $checks,$notes,true,true,[],[],[],$sha);
+  check(cmsCoralRealSpeechPublicationApproved($private,$record,$manifest,[],[],[]),'RELEASE_CONSENT_RESTORED');
   // Fail closed on a corrupt journal rather than falling back to a previous approval.
   file_put_contents($dir.'/tts-real-listening-'.$record['id'].'.0002.json','{}');
   refused(static fn()=>cmsCoralRealSpeechListeningApproved($private,$record,$manifest,[],[],[]),'CORRUPTED_CHAIN');
