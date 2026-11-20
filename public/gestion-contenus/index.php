@@ -785,6 +785,12 @@ if($auth){
                     if($action==='approve_real_publication')
                         cmsCoralRealSpeechStageRelease($private,$creation,$job,
                             $realTtsSettings,$catalog,$canonicalById,$guides);
+                }elseif($action==='recover_real_publish'){
+                    if(!$auth||!$confirm
+                        ||($_POST['publish_restore_confirm']??null)!=='1')
+                        throw new RuntimeException('CORAL_RECOVERY_NOT_CONFIRMED');
+                    cmsCoralStudioRecover($private,dirname(__DIR__),$job,
+                        $auth,$confirm,$cfg);
                 }elseif($action==='publish_real'){
                     if($realTtsSettings===null||!$auth||!$confirm
                         ||($_POST['publish_confirm']??null)!=='1')
@@ -812,7 +818,7 @@ if($auth){
                     else throw new RuntimeException('TTS_ACTION');
                 }
                 header('Location: ?new=1&cid='.rawurlencode($creation['id']).'&'.$filtersUrl
-                    .(in_array($action,['approve_voice_rights','revoke_voice_rights','generate_real','approve_real_preview','approve_real_audio','revoke_real_audio','approve_real_publication','revoke_real_publication','stage_real_release','publish_real'],true)?'#cms-real-tts':'#cms-tts'),true,303);exit;
+                    .(in_array($action,['approve_voice_rights','revoke_voice_rights','generate_real','approve_real_preview','approve_real_audio','revoke_real_audio','approve_real_publication','revoke_real_publication','stage_real_release','publish_real','recover_real_publish'],true)?'#cms-real-tts':'#cms-tts'),true,303);exit;
             }catch(Throwable $e){
                 http_response_code(409);$error='Action audio refusée ou accusé incertain. Aucun renvoi automatique : vérifiez le suivi, la version, les droits et les validations. Les anciens MP3 sont conservés.';
             }
