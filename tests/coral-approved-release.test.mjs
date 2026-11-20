@@ -98,6 +98,6 @@ test('refuse a symbolic link to build HTML',async()=>{
     const file=join(f.dist,'apprendre/index.html');
     await rm(file);await symlink(join(f.dist,'sitemap.xml'),file);
     await assert.rejects(packageCoralStudioRelease({
-      intent:f.r,dist:f.dist,audio:f.audioFile,out:f.out,sourceSha:f.sourceSha}),/CORAL_SCOPED_RELEASE_INPUT_FILE/);
+      intent:f.r,dist:f.dist,audio:f.audioFile,out:f.out,sourceSha:f.sourceSha}),/CORAL_SCOPED_RELEASE_ASTRO_INPUT_LINK/);
   }finally{await rm(f.root,{recursive:true,force:true});}
 });
