@@ -77,6 +77,12 @@ try{
    'audio'=>'1','mobile'=>'1','desktop'=>'1','owner'=>'1'
  ]
  ];
+ $formHtml=cmsCoralAstroReviewPanel($private,$record,$request,$manifest,
+      [],[],[],'synthetic-csrf','?new=1&amp;cid='.$record['id'],$webroot);
+ ok(str_contains($formHtml,'name="astro_review_action"')
+      &&str_contains($formHtml,'name="astro_review[finished_image]"')
+      &&str_contains($formHtml,'name="astro_review[checks][mobile]"')
+      &&str_contains($formHtml,'synthetic-csrf'),'REVIEW_FORM_RENDERED');
  $profile=cmsCoralAstroReviewProfile($record,$request,$manifest,$form,$webroot);
  ok($profile['contract']==='cdc-coral-studio-reviewed-blueprint-v1','CONTRACT');
  ok($profile['media']['finishedPreparationImage']===$image,'IMAGE');
@@ -98,6 +104,13 @@ try{
    $form,$note,true,true,[],[],[],[],$webroot);
  ok($approved['event']===1,'APPROVAL');
  ok(cmsCoralAstroReviewCurrent($private,$record,$manifest,[],[],[],$webroot)!==null,'CURRENT');
+ $approvedHtml=cmsCoralAstroReviewPanel($private,$record,$request,$manifest,
+       [],[],[],'synthetic-csrf','?new=1&amp;cid='.$record['id'],$webroot);
+ ok(str_contains($approvedHtml,'data-astro-review-status="approved"')
+      &&str_contains($approvedHtml,'astro_review_profile=')
+      &&str_contains($approvedHtml,'value="revoke"')
+      &&!str_contains($approvedHtml,'name="astro_review[finished_image]"'),
+      'REVIEW_REVOKE_AND_PRIVATE_EXPORT_RENDERED');
  file_put_contents($webroot.$image,str_repeat('EDITED',32));
  ok(cmsCoralAstroReviewCurrent($private,$record,$manifest,[],[],[],$webroot)===null,
      'VISUAL_IMAGE_CONTENT_CHANGED');
