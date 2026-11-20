@@ -128,7 +128,7 @@ function cmsCoralPublishBundle(
             $target=cmsCoralPublishTarget($realWeb,$name);
             $present=is_file($target);
             $current=$present?cmsCoralPublishDigest($target,32000000):null;
-            if ($current['sha256']??null !== $expectedLive[$name]) cmsCoralPublishFail('LIVE_CHANGED');
+            if (($current['sha256']??null) !== $expectedLive[$name]) cmsCoralPublishFail('LIVE_CHANGED');
             $payload[$name]=$source;$previous[$name]=$current;
         }
         cmsCoralPublishSecureDir($backupDir,true);
