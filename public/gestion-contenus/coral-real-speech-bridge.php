@@ -284,18 +284,9 @@ function cmsCoralRealSpeechPublicationAction(
  * An executor MUST separately prove the Astro blueprint, production backup,
  * target mapping, live SHA preconditions, rollback and current Studio consent.
  */
-function cmsCoralRealSpeechReleaseIntent(
- string $private,array $record,string $job,array $settings,
- array $catalog,array $canonical,array $guided
-): array {
-  $r=cmsCoralRealSpeechApprovedRequest($private,$record,$catalog,$canonical,$guided);
-  if(!hash_equals($r['request_id'],$job))throw new RuntimeException('CORAL_RELEASE_JOB');
-  $state=cmsCoralRealSpeechObserve($private,$record['id'],$job,$settings,$catalog,$canonical,$guided);
-  $m=$state['manifest']??null;
-  if(($state['status']??null)!=='succeeded'||!is_array($m)
-    ||!cmsCoralRealSpeechPublicationApproved($private,$record,$m,$catalog,$canonical,$guided))
-    throw new RuntimeException('CORAL_RELEASE_NOT_AUTHORIZED');
-  $ref=cmsAtelierReferenceClean($record['atelier_reference']??null,$catalog);
+/** Pure projection: never include private text, a bearer or publication authority. */
+function cmsCoralRealSpeechReleaseEnvelope(array $r,array $m,mixed $ref,array $record): array {
+  $job=$r['request_id'];
   if(!is_array($ref)||!is_string($ref['recipeSlug']??null)
     ||!preg_match('/^[a-z0-9-]{3,100}$/D',$ref['recipeSlug']))
     throw new RuntimeException('CORAL_RELEASE_RECIPE');
@@ -328,6 +319,21 @@ function cmsCoralRealSpeechReleaseIntent(
     'publication_ready'=>false,'deployment_triggered'=>false,
     'pending'=>['native_astro_blueprint','approved_media_rights',
       'targeted_public_bundle','live_backup_and_rollback','authenticated_deploy_channel']];
+}
+
+function cmsCoralRealSpeechReleaseIntent(
+ string $private,array $record,string $job,array $settings,
+ array $catalog,array $canonical,array $guided
+): array {
+  $r=cmsCoralRealSpeechApprovedRequest($private,$record,$catalog,$canonical,$guided);
+  if(!hash_equals($r['request_id'],$job))throw new RuntimeException('CORAL_RELEASE_JOB');
+  $state=cmsCoralRealSpeechObserve($private,$record['id'],$job,$settings,$catalog,$canonical,$guided);
+  $m=$state['manifest']??null;
+  if(($state['status']??null)!=='succeeded'||!is_array($m)
+    ||!cmsCoralRealSpeechPublicationApproved($private,$record,$m,$catalog,$canonical,$guided))
+    throw new RuntimeException('CORAL_RELEASE_NOT_AUTHORIZED');
+  $ref=cmsAtelierReferenceClean($record['atelier_reference']??null,$catalog);
+  return cmsCoralRealSpeechReleaseEnvelope($r,$m,$ref,$record);
 }
 
 /** One-click real generation; texts and bearer never appear in browser markup. */
