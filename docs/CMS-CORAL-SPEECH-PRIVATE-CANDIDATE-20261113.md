@@ -158,3 +158,32 @@ Le paquet Studio CMS-only inclut désormais le module protégé, dans un périm�
 - Vérifier la restauration après interruption brutale en plus des exceptions simulées, puis réception HTTP/mobile physique.
 
 Le statut correct est **CODE CANDIDAT / CI uniquement, PROD NON MODIFIÉE**. Aucune clé OpenAI, nouveau fournisseur, MP3 historique ou environnement OVH n'est changé.
+
+
+## 20 novembre 2026 — Formulaire de revue Astro natif, médias et appareils
+
+Le composant **`public/gestion-contenus/coral-astro-review.php`** est maintenant branché sur le formulaire **du Studio existant**, exclusivement pour un atelier avec MP3 réel `succeeded` et écoute intégrale déjà approuvée. Aucune nouvelle application ni base de données n'a été créée.
+
+### Champs réellement raccordés
+
+- Difficulté pédagogique et consignes de sécurité.
+- Déclaration des allergènes (liste explicite ou décision humaine « aucun identifié »).
+- Choix d'une image **déjà présente dans `/images/cuisine/`**, WebP vérifié, avec justificatif des droits de diffusion.
+- Compte rendu du contrôle de la recette, des quantités, des six phases et des sept narrations.
+- Compte rendu **réel** des essais sur téléphone physique et sur ordinateur ; ces contrôles ne sont pas cochés automatiquement.
+- Neuf cases de confirmation humaine explicite et commentaire de validation/retrait.
+
+### Sécurité et liens avec la chaîne existante
+
+- Le POST `astro_review_action` utilise la **session et le CSRF existants**, la dernière version enregistrée et le même identifiant du job Speech.
+- La revue humaine produit le contrat `cdc-coral-studio-reviewed-blueprint-v1` attendu par `scripts/project-coral-studio-blueprint.mjs`. Elle est conservée dans un **journal privé append-only**, vérifié événement par événement, et révocable.
+- La décision est liée au **SHA du MP3, au dernier événement de consentement d'écoute, à la version et au binding du brouillon**. Une nouvelle version ou une révocation invalide le visa.
+- Le SHA-256 **des octets de l'image WebP approuvée** est inscrit dans le profil ; son remplacement, même avec une URL identique, bloque la revue. Le convertisseur Astro vérifie à nouveau cette empreinte dans le checkout public.
+- L'URL `?astro_review_profile=<job>&cid=<id>` donne au propriétaire connecté un **export JSON privé** du profil exact (sans secret) pour sa projection Astro ; pas de publication ni de synthèse TTS.
+- La décision distincte `approve_real_publication` du Studio est désormais **refusée** tant que le profil natif n'est pas actuel. Le visa de diffusion ne contourne donc pas les droits des médias ni les contrôles du lecteur.
+- Le module PHP est inaccessible en HTTP direct via `.htaccess`, ajouté au paquet CMS-only (maintenant **15 fichiers**), et couvert par les tests PHP 8.3/8.4 ainsi que le paquet OVH.
+- La fixture du test navigateur copie désormais ce module, sans accès à des médias personnels ou à un fournisseur payant.
+
+**Restriction explicite :** le profil garde une **attestation humaine**, ce n'est pas une licence vérifiée automatiquement par un tiers. L'interface demande une image déjà publiée ; elle ne publie pas encore de nouveau visuel privé. La transformation native Astro reste un script préparatoire, non un serveur de build sur OVH.
+
+**Pour le véritable bouton final**, il faut encore : expédier sans exposition du texte privé la source du brouillon et le profil au builder Astro authentifié, installer le nouveau Studio PHP sur OVH avec sauvegarde vérifiée, mettre le bundle ciblé en staging privé sur OVH, puis qualifier un chemin de publication `CSRF → session → autorité courante → sauvegarde réelle → 5 SHA → rollback → réception HTTP/mobile`. Le module same-host publisher est codé, mais sa route d'exécution de production reste volontairement désactivée.
