@@ -49,6 +49,8 @@ jobs:
           php -l public/gestion-contenus/coral-real-speech-request.php
           php -l public/gestion-contenus/coral-real-speech-bridge.php
           php tests/php/coral-real-speech-source-smoke.php
+          php -l tests/php/coral-real-speech-listening-smoke.php
+          php tests/php/coral-real-speech-listening-smoke.php
           php -l tests/php/editorial-calendar-smoke.php
           php -l tests/php/editorial-create-manual-smoke.php
           php tests/php/editorial-cms-drafts-smoke.php
