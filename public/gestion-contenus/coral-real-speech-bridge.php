@@ -199,6 +199,13 @@ function cmsCoralRealSpeechApprovePreview(
 function cmsCoralRealSpeechListeningApproved(
  string $private,array $record,array $manifest,array $catalog,array $canonical,array $guided
 ): bool {
+  // A previous listening visa is never enough: the private Studio must still
+  // authorize precisely the same current seven-text request and human rights.
+  try {
+    $request=cmsCoralRealSpeechApprovedRequest($private,$record,$catalog,$canonical,$guided);
+    if(!is_string($manifest['request_id']??null)
+      ||!hash_equals($request['request_id'],$manifest['request_id']))return false;
+  }catch(Throwable $e){return false;}
   $journal=cmsCoralTtsJournal(cmsCreationDir($private),$record['id'],'real-listening');
   $last=$journal['events']?end($journal['events']):null;
   $binding=cmsCoralTtsBinding($record,$catalog,$canonical,$guided);
