@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {resolve} from 'node:path';
 import {createHash} from 'node:crypto';
 import {projectCoralStudioBlueprint} from '../scripts/project-coral-studio-blueprint.mjs';
 import {loadCanonicalRecipes,validateWorkshopBlueprint} from '../scripts/check-workshop-blueprints.mjs';
@@ -41,7 +42,9 @@ function fixture(recipes){
  const profile={contract:'cdc-coral-studio-reviewed-blueprint-v1',
   creationId:creation,creationVersion:5,requestId:job,bindingSha256:intent.binding_sha256,
   difficulty:guide.difficulty,safety:guide.safety,allergens:guide.allergens,
-  media:{...guide.media,rightsValidated:true},approvedDate:'2026-11-20',
+  media:{...guide.media,rightsValidated:true},
+  visualSha256:sha(readFileSync(resolve('public',guide.media.finishedPreparationImage.slice(1)))),
+  approvedDate:'2026-11-20',
   artworkRightsEvidence:'Fiction de contrôle : licence et image approuvées.',
   deviceQaEvidence:'Fiction de contrôle : essai de lecture tactile et bureau.',
   culinaryApprovalEvidence:'Fiction de contrôle : recette vérifiée avant publication.',
@@ -73,6 +76,7 @@ test('never invent editorial, device, allergen or media approval',async()=>{
   {profile:{...f.profile,review:{...f.profile.review,mobileValidated:false}}},
   {profile:{...f.profile,artworkRightsEvidence:''}},
   {profile:{...f.profile,media:{...f.profile.media,rightsValidated:false}}},
+  {profile:{...f.profile,visualSha256:'f'.repeat(64)}},
   {profile:{...f.profile,allergens:{status:'none',items:[]}}},
   {intent:{...f.intent,recipe_slug:'different-recipe'}},
   {source:{...f.source,version:6}},
