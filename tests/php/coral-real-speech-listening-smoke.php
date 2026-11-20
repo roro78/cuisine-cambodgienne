@@ -20,6 +20,12 @@ function mbLen($value): int {return mb_strlen($value);}
 function cmsCoralTtsBinding($r,$catalog,$canonical,$guided): array {
   return ['binding_sha256'=>hash('sha256',$r['id'].'|'.$r['version'])];
 }
+$rightsCurrent=true;
+function cmsCoralRealSpeechApprovedRequest($root,$draft,$cat,$can,$guid): array {
+  global $rightsCurrent,$record;
+  if(!$rightsCurrent||$draft!==$record)throw new RuntimeException('RIGHTS_REVOKED_OR_STALE');
+  return ['request_id'=>str_repeat('e',48)];
+}
 require __DIR__.'/../../public/gestion-contenus/coral-v2-ai.php';
 require __DIR__.'/../../public/gestion-contenus/coral-real-speech-bridge.php';
 function check($bool,$label): void {if(!$bool)throw new RuntimeException($label);}
@@ -35,7 +41,7 @@ function cleanup($dir): void {
 }
 try {
   $sha=str_repeat('a',64);
-  $manifest=['sha256'=>$sha];
+  $manifest=['sha256'=>$sha,'request_id'=>str_repeat('e',48)];
   $notes='Écoute synthétique complète : sept repères confirmés.';
   $checks=['full_listening'=>'1','chapter_order'=>'1'];
   check(!cmsCoralRealSpeechListeningApproved($private,$record,$manifest,[],[],[]),'UNAPPROVED');
@@ -49,6 +55,11 @@ try {
     $checks,$notes,true,true,[],[],[],$sha);
   check($approved['voice']==='coral'&&$approved['provider']==='openai-speech-coral-093-v1','HISTORICAL_PROFILE');
   check(cmsCoralRealSpeechListeningApproved($private,$record,$manifest,[],[],[]),'APPROVED');
+  check(!cmsCoralRealSpeechListeningApproved($private,$record,
+    ['sha256'=>$sha,'request_id'=>str_repeat('f',48)],[],[],[]),'OTHER_JOB');
+  $rightsCurrent=false;
+  check(!cmsCoralRealSpeechListeningApproved($private,$record,$manifest,[],[],[]),'RIGHTS_REVOKED');
+  $rightsCurrent=true;
   check(!cmsCoralRealSpeechListeningApproved($private,$record,['sha256'=>str_repeat('b',64)],[],[],[]),'AUDIO_CHANGED');
   $stale=$record;$stale['version']=5;
   check(!cmsCoralRealSpeechListeningApproved($private,$stale,$manifest,[],[],[]),'VERSION_STALE');
