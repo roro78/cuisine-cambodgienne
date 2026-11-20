@@ -26,6 +26,9 @@ import {packageCoralStudioRelease} from './package-coral-approved-release.mjs';
 
 const sha=x=>createHash('sha256').update(x).digest('hex');
 const safeName=/^[a-z0-9][a-z0-9-]{2,99}$/;
+const AMOK_V4_SYNC_SHA='c0eb5d2e2597d42ea2e6f2553a18c257417b9b93';
+const AMOK_MP3='audio/workshops/atelier-pratique-amok-trey/atelier-coral-v4.mp3';
+const AMOK_PAGE='apprendre/pratique/amok-trey/index.html';
 const fail=code=>{throw Error('CORAL_PRIVATE_BUILD_'+code);};
 async function privateFile(path,max){
  const s=await lstat(path);
@@ -42,6 +45,9 @@ export function verifyPrivateBuildCheckout(root,sourceSha){
  const original=run('git',['rev-parse','--show-toplevel'],root);
  if(resolve(original)!==resolve(root))fail('CHECKOUT_ROOT');
  if(run('git',['rev-parse','HEAD'],root)!==sourceSha)fail('WRONG_COMMIT');
+ // PR #237 was merged after the Coral branch was opened. Never replace the
+ // live catalogue/sitemap using a checkout that predates Amok Trey V4.
+ run('git',['merge-base','--is-ancestor',AMOK_V4_SYNC_SHA,sourceSha],root);
  if(run('git',['status','--porcelain','--untracked-files=all'],root)!=='')
   fail('CHECKOUT_NOT_CLEAN');
  return sourceSha;
@@ -103,6 +109,27 @@ export async function prepareCoralPrivateAstroOverlay({root,blueprint,intent,aud
  await writeFile(reg,edit,{flag:'w',mode:0o600});
  return {guidePath,audioManifestPath,audioPath,registryPath:reg};
 }
+/** Prevent a new scoped release from silently dropping the published Amok V4.
+ * Its exact original audio/page must survive an unrelated Astro rebuild.
+ */
+export async function verifyHistoricalAmokV4({root,dist}){
+ const release=JSON.parse((await privateFile(
+   resolve(root,'releases/amok-trey-v4/manifest.json'),64000)).toString('utf8'));
+ if(!Array.isArray(release.files)||release.files.length!==5)fail('AMOK_MANIFEST');
+ for(const path of [AMOK_MP3,AMOK_PAGE]){
+   const entry=release.files.find(f=>f.path===path);
+   if(!entry||!/^([a-f0-9]{64})$/.test(entry.sha256??''))
+     fail('AMOK_ENTRY');
+   const bytes=await privateFile(resolve(dist,path),32000000);
+   if(sha(bytes)!==entry.sha256)fail('AMOK_REGRESSION');
+ }
+ for(const file of ['apprendre/index.html','sitemap.xml']){
+   const text=(await privateFile(resolve(dist,file),500000)).toString('utf8');
+   if(!text.includes('/apprendre/pratique/amok-trey/'))
+     fail('AMOK_CATALOGUE_REGRESSION');
+ }
+ return true;
+}
 export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,out,sourceSha}){
  const checkout=resolve(root),destination=resolve(out);
  if(destination===checkout||destination.startsWith(checkout+sep)||
@@ -121,6 +148,7 @@ export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,o
  if(blueprint.media.finishedPreparationImage!==packet.profile.media.finishedPreparationImage)
    fail('MEDIA_PROFILE');
  if(blueprint.review.productionApproved!==true)fail('HUMAN_APPROVAL');
+ if(packet.intent.recipe_slug==='amok-trey')fail('AMOK_V4_RECIPE_REVIEW_REQUIRED');
  const check=validateWorkshopBlueprint({...blueprint,status:'review'},recipes);
  if(check.length)fail('BLUEPRINT');
  // The scratch checkout is now the ONLY mutable tree. Caller destroys it on
@@ -130,6 +158,7 @@ export async function buildCoralPrivateAstroRelease({root,packetPath,audioPath,o
  run('node',['scripts/check-workshop-blueprints.mjs',
   'src/data/atelier-recette-guides/'+packet.intent.candidate_public_slug+'.json'],checkout);
  run('npm',['run','build'],checkout);
+ await verifyHistoricalAmokV4({root:checkout,dist:join(checkout,'dist')});
  const result=await packageCoralStudioRelease({
   intent:packet.intent,dist:join(checkout,'dist'),audio:audioReal,
   out:destination,sourceSha});
