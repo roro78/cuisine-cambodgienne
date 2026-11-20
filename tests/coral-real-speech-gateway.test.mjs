@@ -245,7 +245,7 @@ test('existing job HTTPS gateway accepts only authenticated POST release staging
   assert.equal(calls,1);
   const secretPacket={contract:'cdc-coral-studio-private-build-inputs-v1',
    source:{kind:'atelier'},profile:{review:true},intent:{request_id:r.request_id}};
-  const privateEndpoint=endpoint.replace(/\\/release$/,'/build-inputs');
+  const privateEndpoint=endpoint.slice(0,-'/release'.length)+'/build-inputs';
   assert.equal((await fetch(privateEndpoint,{method:'POST',
    body:JSON.stringify(secretPacket)})).status,401);
   assert.equal((await fetch(privateEndpoint,{method:'GET',headers:{
