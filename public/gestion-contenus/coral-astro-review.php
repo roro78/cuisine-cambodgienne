@@ -218,10 +218,11 @@ function cmsCoralAstroReviewAction(
 /** Only render while the current completed MP3 is available for inspection. */
 function cmsCoralAstroReviewPanel(
     string $private,array $record,array $request,array $manifest,
-    array $catalog,array $canonical,array $guided,string $csrf,string $url
+    array $catalog,array $canonical,array $guided,string $csrf,string $url,
+    ?string $webroot=null
 ): string {
     $profile=cmsCoralAstroReviewCurrent(
-        $private,$record,$manifest,$catalog,$canonical,$guided);
+        $private,$record,$manifest,$catalog,$canonical,$guided,$webroot);
     $id=cmsEsc($record['id']);$job=cmsEsc($request['request_id']);
     $html='<section id="cms-astro-review" data-astro-review><h4>Visuel, droits et contrôles avant publication</h4>'
       .'<p>Ce formulaire complète la fiche Astro native. '
