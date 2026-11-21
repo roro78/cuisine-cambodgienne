@@ -28,11 +28,13 @@ async function secureDir(path){
 const filename=(chapter,part)=>String(chapter).padStart(2,'0')+'-'+String(part).padStart(2,'0');
 export function createCoralRealSpeechJobs({
  authorize,budgetDir,spendingApproved,externalProjectBudgetVerified,
- maxDailyUsd=0.75,maxMonthlyUsd=1,makeTransport=createCoralSpeechTransport,audioTools={}
+ maxDailyUsd=0.75,maxMonthlyUsd=1,makeTransport=createCoralSpeechTransport,audioTools={},
+ stagingOnly=false
 }={}){
- if(typeof authorize!=='function'||typeof spendingApproved!=='function'||
-  typeof externalProjectBudgetVerified!=='function'||!budgetDir||
-  typeof makeTransport!=='function'||maxDailyUsd!==0.75||maxMonthlyUsd!==1)
+ if(typeof authorize!=='function'||typeof makeTransport!=='function'||
+  (stagingOnly!==true && (typeof spendingApproved!=='function'||
+    typeof externalProjectBudgetVerified!=='function'||!budgetDir))||
+  maxDailyUsd!==0.75||maxMonthlyUsd!==1)
   throw Error('CORAL_REAL_DISABLED');
  const directory=folder=>join(folder,'real-tts');
  const authority=async r=>{let ok=false;try{ok=await authorize(r);}catch{}
@@ -372,9 +374,18 @@ export function createCoralRealSpeechJobs({
   await atomicJson(join(dir,'state.json'),{status:'queued',completed_chapters:saved.completed_chapters});
   return state(r,id,folder);
  }
+ // A staging-only instance cannot submit, synthesize, resume or even serve
+ // audio. It can only inspect finished files and persist authenticated,
+ // validated release/build-input receipts for an ALREADY completed job.
+ if(stagingOnly)return Object.freeze({state,stageRelease,stageBuildInputs});
  return {state,run,resume,stageRelease,stageBuildInputs,audioStream,previewStream,
   audio:async(r,id,folder)=>{
    const f=await audioStream(r,id,folder);
    try{return await f.handle.readFile();}finally{await f.handle.close();}
   }};
+}
+
+/** Non-billable facade for already approved, completed Coral audio. */
+export function createCoralRealSpeechStagingJobs({authorize}={}){
+ return createCoralRealSpeechJobs({authorize,stagingOnly:true});
 }
