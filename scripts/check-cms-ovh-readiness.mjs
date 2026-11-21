@@ -10,7 +10,7 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const names=['social-feed.json','editorial-source-index.json','editorial-guided-fields.json'];
-const privateModules=['lib.php','publication-gap-audit.php','visual-provider-adapter.php','content-gateway-adapter.php','openai-brief-adapter.php','atelier-narrations.json','coral-v2-contract.json','coral-v2-ai.php','narrations-export.php'];
+const privateModules=['lib.php','publication-gap-audit.php','visual-provider-adapter.php','content-gateway-adapter.php','openai-brief-adapter.php','atelier-narrations.json','coral-v2-contract.json','coral-v2-ai.php','coral-real-speech-request.php','coral-real-speech-bridge.php','coral-scoped-publisher.php','coral-scoped-staging.php','coral-scoped-studio-release.php','coral-astro-review.php','narrations-export.php'];
 const sensitiveKeys=new Set(['audioScript','sources','sourceReferences','culinaryReferences',
   'github_token','password_hash','secret','private_config','service_role','access_token']);
 function plain(x){return x!==null&&typeof x==='object'&&!Array.isArray(x);}
@@ -18,6 +18,38 @@ function fail(reason){throw new Error(reason);}
 function requireKeys(item,allowed,required=allowed){
   if(!plain(item) || Object.keys(item).some(k=>!allowed.includes(k))
     || required.some(k=>!(k in item)))fail('UNEXPECTED_KEYS');
+}
+/**
+ * The existing PHP Studio accepts an optional portionContract for recipes.
+ * It pins protected quantities to already-public step text and the exact
+ * canonical fingerprint; ignoring it during reception rejects valid Amok V4.
+ * Keep the SAME fail-closed constraints here, never accept arbitrary extras.
+ */
+function verifyPortionContract(item) {
+  if(!Object.hasOwn(item,'portionContract'))return;
+  const pc=item.portionContract;
+  if(item.model!=='recipes'||!plain(pc))fail('GUIDED_PORTION_CONTRACT');
+  requireKeys(pc,['version','sourceFingerprint','steps']);
+  if(pc.version!==1||pc.sourceFingerprint!==item.fingerprint||
+     !Array.isArray(pc.steps)||pc.steps.length>40)
+    fail('GUIDED_PORTION_CONTRACT');
+  const seen=new Set();
+  for(const binding of pc.steps){
+    requireKeys(binding,['index','sourceText','anchors']);
+    const index=binding.index;
+    const step=Array.isArray(item.fields.steps)?item.fields.steps[index]:null;
+    if(!Number.isInteger(index)||seen.has(index)||!plain(step)||
+       binding.sourceText!==step.text||!Array.isArray(binding.anchors)||
+       binding.anchors.length>8)
+      fail('GUIDED_PORTION_CONTRACT');
+    seen.add(index);
+    for(const anchor of binding.anchors){
+      if(typeof anchor!=='string'||Buffer.byteLength(anchor,'utf8')<1||
+         Buffer.byteLength(anchor,'utf8')>200||
+         binding.sourceText.split(anchor).length!==2)
+        fail('GUIDED_PORTION_CONTRACT');
+    }
+  }
 }
 export function verifyCmsIndexes(feeds) {
   const [social,canonical,guided]=names.map(n=>feeds[n]);
@@ -52,7 +84,8 @@ export function verifyCmsIndexes(feeds) {
   if(canonicalById.size!==socialIds.size)fail('CANONICAL_MISSING_ID');
   const guidedIds=new Set;
   for(const item of guided.items){
-    requireKeys(item,['id','model','fingerprint','editable','fields']);
+    requireKeys(item,['id','model','fingerprint','editable','fields','portionContract'],
+      ['id','model','fingerprint','editable','fields']);
     const base=canonicalById.get(item.id);
     if(!base || guidedIds.has(item.id) || item.model!==base.model
        || item.fingerprint!==base.fingerprint || typeof item.editable!=='boolean'
@@ -87,6 +120,7 @@ export function verifyCmsIndexes(feeds) {
       cookingWorkshopGuides:['finalPreparation','learningGoal','phases']
     };
     requireKeys(item.fields,allowed[item.model],required[item.model]);
+    verifyPortionContract(item);
     const fields=JSON.stringify(item.fields);
     for(const key of sensitiveKeys)if(fields.includes('"'+key+'":'))fail('GUIDED_PRIVATE_FIELDS');
   }

@@ -98,3 +98,17 @@ test('CLI startup errors do not disclose paths, file contents or environment val
   assert.equal(result.status,1);assert.equal(result.stderr,'JOB_STARTUP_REFUSED\n');
   assert.equal(result.stdout,'');assert.ok(!result.stderr.includes(secret));assert.ok(!result.stderr.includes(token));
 });
+
+test('permanent workshop mode needs qualified provider and budget but no recipe or expiry',async t=>{
+ const {env,root}=await fixture(t),budget=join(root,'budget');
+ await mkdir(budget,{mode:0o700});
+ const permanent={...env,CDC_EDITORIAL_JOB_PROVIDER:'openai-coral',
+  CDC_CORAL_EXTERNAL_QUALIFIED:'true',CDC_CORAL_EXTERNAL_ENABLED:'true',
+  CDC_CORAL_EXTERNAL_BUDGET_DIR:budget,CDC_CORAL_EXTERNAL_MODEL:'gpt-6-luna',
+  CDC_CORAL_EXTERNAL_MONTHLY_USD:'.75',CDC_CORAL_PERMANENT_WORKSHOP_ENABLED:'true',
+  CDC_CORAL_COMPLETE_WORKSHOP_QUALIFIED:'true'};
+ assert.equal(editorialJobRuntimeConfig(permanent).permanentWorkshop,true);
+ for(const override of [{CDC_CORAL_COMPLETE_WORKSHOP_ENABLED:'true'},
+  {CDC_CORAL_COMPLETE_WORKSHOP_QUALIFIED:'false'},{CDC_CORAL_EXTERNAL_MONTHLY_USD:'1'}])
+  assert.throws(()=>editorialJobRuntimeConfig({...permanent,...override}),/WORKSHOP_NOT_QUALIFIED/);
+});

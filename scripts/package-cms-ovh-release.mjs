@@ -21,6 +21,12 @@ const filenames=[
  'gestion-contenus/atelier-narrations.json',
  'gestion-contenus/coral-v2-contract.json',
  'gestion-contenus/coral-v2-ai.php',
+ 'gestion-contenus/coral-real-speech-request.php',
+ 'gestion-contenus/coral-real-speech-bridge.php',
+ 'gestion-contenus/coral-scoped-publisher.php',
+ 'gestion-contenus/coral-scoped-staging.php',
+ 'gestion-contenus/coral-scoped-studio-release.php',
+ 'gestion-contenus/coral-astro-review.php',
  'gestion-contenus/narrations-export.php'
 ];
 export async function packageCmsRelease({dist,out}){
@@ -49,6 +55,7 @@ export async function packageCmsRelease({dist,out}){
    credentialFile:'~/.cuisine-asset-portal/config.php',
    protectedDrafts:'~/.cuisine-asset-portal/editorial-drafts/',
    manualUpload:true,
+   liveIndexReconciliationRequired:true,
    existingContentUntouched:true
   },
   note:'No website-wide upload or automatic publication. Restore these exact files on failure.'
@@ -56,8 +63,10 @@ export async function packageCmsRelease({dist,out}){
  await writeFile(join(destination,'CMS-OVH-MANIFEST.json'),JSON.stringify(manifest,null,2)+'\n',{mode:0o600});
  await writeFile(join(destination,'README.txt'),
   'Cuisine du Cambodge — CMS OVH scoped release (NO AUTO DEPLOY)\n'+
-  'Transfer only the 3 root JSON indexes and 8 Studio files, including the protected Coral scripts in gestion-contenus/.\n'+
-  'Before transfer, BACK UP any existing versions of these exact 11 files.\n'+
+  'Contains 3 generated JSON indexes and 14 Studio files. These indexes are NOT automatically safe to replace on OVH.\n'+
+  'Do not upload raw JSON indexes over the live Amok V4 portionContract. Compare current live fingerprints and private approvals first.\n'+
+  'For the one-time missing Amok V4 index/JPEG, use the separately tested additive catch-up candidate, which preserves all live rows.\n'+
+  'Before transfer, BACK UP any existing versions of these exact 17 files.\n'+
   'Require HTTPS, executable PHP and Apache denies for all private PHP helpers AND atelier-narrations.json; keep config outside webroot.\n'+
   'This package intentionally excludes optional AI adapters and never enables an AI provider.\n'+
   'Do not transfer CMS-OVH-MANIFEST.json or README.txt into the site webroot.\n'+

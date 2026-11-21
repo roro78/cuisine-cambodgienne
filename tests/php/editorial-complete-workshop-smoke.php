@@ -68,5 +68,17 @@ try{
  completeReject(fn()=>cmsCoralWorkshopCandidate($job['request'],json_encode([...$bad,'chapters'=>$chapters]),$settings,$catalog),'CORAL_WORKSHOP_INGREDIENTS');
  $bad=$proposal['metadata'];$bad['approved']=true;
  completeReject(fn()=>cmsAiContentMetadata($bad),'AI_CONTENT_PROVENANCE');
+ $second=cmsCreationSave($private,['kind'=>'atelier','title'=>'Deuxième proposition guidée',
+  'angle'=>$draft['angle'],'state'=>'draft','fields'=>[],'atelier_reference'=>$draft['atelier_reference']],$catalog,0);
+ $permanent=$settings;
+ unset($permanent['workshop_creation_id'],$permanent['workshop_recipe_sha256'],$permanent['workshop_expires_at']);
+ $permanent['workshop_permanent']=true;
+ completeReject(fn()=>cmsCoralStart($second,$catalog,$canonical,$guided,$private,$permanent,$research['sources']),'AI_BRIEF_LIMIT');
+ // Simulate a minute passing without changing the production rolling-day quota.
+ file_put_contents(cmsDraftDir($private).'/ai-brief-attempts.json',json_encode([time()-61]));
+ $otherJob=cmsCoralStart($second,$catalog,$canonical,$guided,$private,$permanent,$research['sources']);
+ completeCheck($otherJob['creation_id']===$second['id']&&$otherJob['token']!==$job['token']&&$calls===3,'SECOND_CREATION_WITHOUT_SERVER_GRANT');
+ [$restored,$otherProposal]=cmsCoralObserveSaved($private,$otherJob['token'],$second,$permanent,$canonical,$catalog);
+ completeCheck($restored['token']===$otherJob['token']&&is_array($otherProposal)&&$calls===3,'PERSISTENT_OBSERVATION');
  echo "COMPLETE_WORKSHOP_OFFLINE_PASS common private form/save, source-bound 6 phases + 7 texts, 1 source + 1 explicit continuation, no approval, realProviderCalls=0\n";
 }finally{$remove($private);}

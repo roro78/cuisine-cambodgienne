@@ -3,6 +3,14 @@ declare(strict_types=1);
 /** Private editorial CMS P0: preview and immutable drafts only, no publishing. */
 require_once __DIR__.'/lib.php';
 require_once __DIR__.'/coral-v2-ai.php';
+require_once __DIR__.'/coral-astro-review.php';
+require_once __DIR__.'/coral-scoped-staging.php';
+require_once __DIR__.'/coral-scoped-studio-release.php';
+$realSpeechModulesPresent=is_file(__DIR__.'/coral-real-speech-request.php')&&is_file(__DIR__.'/coral-real-speech-bridge.php');
+if($realSpeechModulesPresent){
+    require_once __DIR__.'/coral-real-speech-request.php';
+    require_once __DIR__.'/coral-real-speech-bridge.php';
+}
 require_once __DIR__.'/narrations-export.php';
 require_once __DIR__.'/publication-gap-audit.php';
 ini_set('display_errors','0');
@@ -13,7 +21,7 @@ header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('Referrer-Policy: no-referrer');
 $nonce=base64_encode(random_bytes(18));
-header("Content-Security-Policy: default-src 'none'; style-src 'nonce-{$nonce}'; script-src 'nonce-{$nonce}'; img-src 'self' https://www.cuisine-du-cambodge.com; media-src 'self'; frame-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
+header("Content-Security-Policy: default-src 'none'; style-src 'nonce-{$nonce}'; script-src 'nonce-{$nonce}'; connect-src 'self'; img-src 'self' https://www.cuisine-du-cambodge.com; media-src 'self'; frame-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
 function cmsUnavailable(): never { http_response_code(503);exit('Espace CMS privé indisponible.'); }
 $https=(!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS'])!=='off')
     || (string)($_SERVER['SERVER_PORT']??'')==='443';
@@ -27,6 +35,40 @@ if(!is_array($cfg) || !is_string($cfg['admin_user']??null)
     || !is_string($cfg['password_hash']??null)
     || !(str_starts_with($cfg['password_hash'],'$2')
         || str_starts_with($cfg['password_hash'],'$argon')))cmsUnavailable();
+// Separate MACHINE-ONLY POST for prebuilt five-file bundles. Does not open an
+// owner session and has no path to cmsCoralPublishBundle or the TTS provider.
+if(isset($_GET['coral_stage'])){
+    header('Content-Type: application/json; charset=UTF-8');
+    header('Cache-Control: no-store, private, max-age=0');
+    try{
+        if(count($_GET)!==1||$_GET['coral_stage']!=='1'
+            ||(string)($_SERVER['REQUEST_METHOD']??'')!=='POST'
+            ||isset($_SERVER['HTTP_ORIGIN'])
+            ||!preg_match('~^application/json(?:;\\s*charset=utf-8)?$~i',
+                trim((string)($_SERVER['CONTENT_TYPE']??'')))
+            ||isset($_SERVER['HTTP_CONTENT_ENCODING']))
+            throw new RuntimeException('CORAL_STAGE_ROUTE');
+        cmsCoralStageAuthenticate($private,$cfg,
+            (string)($_SERVER['HTTP_AUTHORIZATION']??''));
+        $raw=file_get_contents('php://input',false,null,0,380001);
+        if(!is_string($raw)||$raw===''||strlen($raw)>380000)
+            throw new RuntimeException('CORAL_STAGE_BODY');
+        $request=json_decode($raw,true,32,JSON_THROW_ON_ERROR);
+        if(!is_array($request))throw new RuntimeException('CORAL_STAGE_JSON');
+        if(($request['op']??null)==='begin'){
+            $pinned=$cfg['coral_scoped_source_commit']??null;
+            if(!is_string($pinned)||!preg_match('/^[a-f0-9]{40}$/D',$pinned)
+                ||!is_string($request['manifest']['sourceCommit']??null)
+                ||!hash_equals($pinned,$request['manifest']['sourceCommit']))
+                throw new RuntimeException('CORAL_STAGE_SOURCE_PIN');
+        }
+        $result=cmsCoralStageOperation($private,dirname(__DIR__),$request);
+        echo json_encode($result,JSON_THROW_ON_ERROR);exit;
+    }catch(Throwable $e){
+        // No token, private path, manifest or error detail is ever reflected.
+        http_response_code(404);exit('{"error":"CORAL_STAGING_UNAVAILABLE"}');
+    }
+}
 // Separate machine READ only; disabled by default. Never creates an admin session.
 if(isset($_GET['tts_authority'])){
     header('Content-Type: application/json; charset=UTF-8');
@@ -47,19 +89,219 @@ if(isset($_GET['tts_authority'])){
         http_response_code($code);echo json_encode($reply,JSON_THROW_ON_ERROR);exit;
     }catch(Throwable $e){http_response_code(404);exit('{"error":"TTS_AUTHORITY_UNAVAILABLE"}');}
 }
+// Configure the PHP Web handler directly, BEFORE session_start(). A .user.ini
+// can be cached/ignored on OVH. The existing private root is already required
+// and writable by the editorial CMS; never use shared /tmp for auth sessions.
+// OVH's system-only session.force_path can silently redirect the native files
+// handler despite a successful session_save_path(). Keep PHP's session engine,
+// strict IDs, cookies and regeneration; only its private file I/O is adapted.
+final class CmsPrivateSessionFiles implements SessionHandlerInterface, SessionUpdateTimestampHandlerInterface {
+    private mixed $stream=null;
+    private string $lockedId='';
+    private string $mutex='';
+    public function __construct(private readonly string $directory) {}
+    private function path(string $id): string|false {
+        return preg_match('/\A[a-zA-Z0-9,-]{22,256}\z/D',$id)===1
+            ? $this->directory.'/sess_'.$id : false;
+    }
+    private function safeStat(string $path): array|false {
+        clearstatcache(true,$path);
+        $st=@lstat($path);
+        return is_array($st)&&($st['mode']&0170000)===0100000
+            &&(PHP_OS_FAMILY==='Windows'||($st['mode']&0077)===0) ? $st : false;
+    }
+    private function sameFile(string $path,mixed $stream): bool {
+        $disk=$this->safeStat($path);$opened=fstat($stream);
+        return $disk!==false&&is_array($opened)
+            &&$disk['dev']===$opened['dev']&&$disk['ino']===$opened['ino'];
+    }
+    public function open(string $path,string $name): bool {
+        clearstatcache(true,$this->directory);
+        return $path===$this->directory&&!is_link($path)&&is_dir($path)
+            &&is_writable($path)
+            &&(PHP_OS_FAMILY==='Windows'||(fileperms($path)&0077)===0);
+    }
+    public function close(): bool {
+        $ok=true;
+        if(is_resource($this->stream)){
+            $ok=flock($this->stream,LOCK_UN);$ok=fclose($this->stream)&&$ok;
+        }
+        $this->stream=null;$this->lockedId='';
+        if($this->mutex!==''){$ok=@rmdir($this->mutex)&&$ok;$this->mutex='';}
+        return $ok;
+    }
+    public function __destruct() {$this->close();}
+    private function acquire(string $id): bool {
+        // flock() can report success to simultaneous OVH processes. mkdir is
+        // atomic on the shared filesystem. Timeout fails closed, never steals
+        // another request's lock. PHP close/shutdown releases our own lock.
+        $lock=$this->directory.'/.lock_'.$id;$deadline=microtime(true)+10;
+        do{
+            if(@mkdir($lock,0700)){$this->mutex=$lock;return true;}
+            usleep(100000);
+        }while(microtime(true)<$deadline);
+        return false;
+    }
+    public function validateId(string $id): bool {
+        $path=$this->path($id);return $path!==false&&$this->safeStat($path)!==false;
+    }
+    public function read(string $id): string|false {
+        $path=$this->path($id);if($path===false)return false;
+        if(!is_resource($this->stream)||$this->lockedId!==$id){
+            if(!$this->close()||!$this->acquire($id))return false;
+            // The directory is private (0700); reject links and unsafe existing
+            // files before opening, then compare the locked inode once opened.
+            clearstatcache(true,$path);
+            if(@lstat($path)!==false&&$this->safeStat($path)===false){$this->close();return false;}
+            $mask=umask(0077);
+            try{$stream=@fopen($path,'c+b');}finally{umask($mask);}
+            if($stream===false){$this->close();return false;}
+            if(!flock($stream,LOCK_EX)||!$this->sameFile($path,$stream)){
+                fclose($stream);$this->close();return false;
+            }
+            $this->stream=$stream;$this->lockedId=$id;
+        }
+        $st=fstat($this->stream);
+        if(!is_array($st)||$st['size']>65536||!rewind($this->stream))return false;
+        return stream_get_contents($this->stream,65537);
+    }
+    public function write(string $id,string $data): bool {
+        $path=$this->path($id);
+        if($path===false||strlen($data)>65536||!is_resource($this->stream)
+            ||$this->lockedId!==$id||!$this->sameFile($path,$this->stream)
+            ||!rewind($this->stream)||!ftruncate($this->stream,0))return false;
+        $offset=0;
+        while($offset<strlen($data)){
+            $n=fwrite($this->stream,substr($data,$offset));
+            if($n===false||$n===0)return false;$offset+=$n;
+        }
+        return fflush($this->stream);
+    }
+    public function updateTimestamp(string $id,string $data): bool {
+        $path=$this->path($id);
+        return $path!==false&&is_resource($this->stream)&&$this->lockedId===$id
+            &&$this->sameFile($path,$this->stream)&&touch($path);
+    }
+    public function destroy(string $id): bool {
+        $path=$this->path($id);if($path===false)return false;
+        if(!is_resource($this->stream)||$this->lockedId!==$id){
+            if(!$this->validateId($id))return true;
+            if($this->read($id)===false)return false;
+        }
+        $ok=$this->sameFile($path,$this->stream)&&unlink($path);
+        return $this->close()&&$ok;
+    }
+    public function gc(int $max_lifetime): int|false {
+        $files=glob($this->directory.'/sess_*');if($files===false)return false;
+        $deleted=0;
+        foreach($files as $path){
+            // Some network filesystems treat locks as process-owned. Never
+            // collect this handler's active file, even in that case.
+            if($this->lockedId!==''&&$path===$this->path($this->lockedId))continue;
+            $st=$this->safeStat($path);
+            if($st===false||$st['mtime']>=time()-$max_lifetime)continue;
+            $id=substr(basename($path),5);if($this->path($id)===false)continue;
+            $lock=$this->directory.'/.lock_'.$id;
+            if(!@mkdir($lock,0700))continue;
+            $stream=null;
+            try{
+                $stream=@fopen($path,'r+b');if($stream===false)continue;
+                if(!flock($stream,LOCK_EX|LOCK_NB)||!$this->sameFile($path,$stream))continue;
+                $st=fstat($stream);
+                if(is_array($st)&&$st['mtime']<time()-$max_lifetime&&unlink($path))$deleted++;
+            }finally{if(is_resource($stream))fclose($stream);@rmdir($lock);}
+        }
+        return $deleted;
+    }
+}
+$studioSessionDir=$private.'/cms-editorial-session-files';
+if(is_link($studioSessionDir))cmsUnavailable();
+if(!is_dir($studioSessionDir)
+    && (!@mkdir($studioSessionDir,0700)||!is_dir($studioSessionDir)))cmsUnavailable();
+clearstatcache(true,$studioSessionDir);
+if(is_link($studioSessionDir)||!is_dir($studioSessionDir)
+    ||!is_writable($studioSessionDir)
+    ||(PHP_OS_FAMILY!=='Windows' && ((fileperms($studioSessionDir)&0077)!==0)))
+    cmsUnavailable();
+if(ini_set('session.save_handler','files')===false
+    ||ini_set('session.gc_maxlifetime','43200')===false
+    ||ini_set('session.gc_probability','1')===false
+    ||ini_set('session.gc_divisor','100')===false
+    ||ini_set('session.use_strict_mode','1')===false
+    ||ini_set('session.use_only_cookies','1')===false)cmsUnavailable();
+if(session_save_path($studioSessionDir)===false
+    ||session_save_path()!==$studioSessionDir
+    ||ini_get('session.save_handler')!=='files'
+    ||(int)ini_get('session.gc_maxlifetime')!==43200)cmsUnavailable();
+// Keep the standard native handler everywhere it honours the private path.
+if(ini_get('session.force_path')==='1'){
+    if(!session_set_save_handler(new CmsPrivateSessionFiles($studioSessionDir),true))cmsUnavailable();
+}
 session_name('CDC_EDITORIAL_CMS');
-ini_set('session.use_strict_mode','1');
-ini_set('session.use_only_cookies','1');
 session_set_cookie_params([
     'lifetime'=>0,'path'=>'/gestion-contenus/',
     'secure'=>true,'httponly'=>true,'samesite'=>'Strict'
 ]);
-session_start();
+if(session_start()!==true)cmsUnavailable();
 if(!is_string($_SESSION['csrf']??null))$_SESSION['csrf']=bin2hex(random_bytes(24));
-if(isset($_SESSION['authenticated_at']) && time()-(int)$_SESSION['authenticated_at']>1800)
-    unset($_SESSION['authenticated_at']);
+// Read-only acceptance evidence via two anonymous GET requests sharing the
+// cookie. Return only booleans; no path, SID, token, session data or secrets.
+// No authorisation/visa follows from a successful probe.
+if(isset($_GET['session_storage_probe'])){
+    header('Content-Type: application/json; charset=UTF-8');
+    header('Vary: Cookie');
+    if(count($_GET)!==1||$_GET['session_storage_probe']!=='1'){
+        http_response_code(400);exit('{"error":"INVALID_STORAGE_PROBE"}');
+    }
+    $wasSeen=($_SESSION['cms_storage_probe_seen']??false)===true;
+    $_SESSION['cms_storage_probe_seen']=true;
+    $probeSid=session_id();
+    if(!session_write_close())cmsUnavailable();
+    $sessionFile=$studioSessionDir.'/sess_'.$probeSid;
+    clearstatcache(true,$sessionFile);
+    $stored=is_file($sessionFile)&&!is_link($sessionFile);
+    if(!$stored){http_response_code(503);exit('{"storage_ready":false}');}
+    echo json_encode(['storage_ready'=>true,'cookie_persisted'=>$wasSeen],
+        JSON_THROW_ON_ERROR);exit;
+}
+// Sliding expiration is based on authenticated server activity, not the time
+// the owner first signed in. Retain a separate 12-hour absolute safety bound.
+// Old sessions without last_activity are migrated conservatively at login time.
+$sessionNow=time();
+$sessionIdleSeconds=1800;
+$sessionAbsoluteSeconds=43200;
+$sessionExpiresAt=0;
+if(isset($_SESSION['authenticated_at'])){
+    $signedAt=$_SESSION['authenticated_at'];
+    $lastAt=$_SESSION['auth_last_activity_at']??$signedAt;
+    if(!is_int($signedAt)||!is_int($lastAt)||$signedAt<1||$lastAt<$signedAt
+        ||$signedAt>$sessionNow||$lastAt>$sessionNow
+        ||$sessionNow-$lastAt>=$sessionIdleSeconds
+        ||$sessionNow-$signedAt>=$sessionAbsoluteSeconds){
+        unset($_SESSION['authenticated_at'],$_SESSION['auth_last_activity_at']);
+    }else{
+        $_SESSION['auth_last_activity_at']=$sessionNow;
+        $sessionExpiresAt=min($sessionNow+$sessionIdleSeconds,
+            $signedAt+$sessionAbsoluteSeconds);
+    }
+}
 $auth=isset($_SESSION['authenticated_at']);
+// Same-origin read-only freshness probe. An old tab can contain a CSRF token
+// from a previous PHP session after reauthentication in another tab.
+// The actual POST remains CSRF-protected and never grants a visa automatically.
+if(isset($_GET['session_status'])){
+    header('Content-Type: application/json; charset=UTF-8');
+    header('Vary: Cookie');
+    if(count($_GET)!==1 || $_GET['session_status']!=='1'){
+        http_response_code(400);exit('{"error":"INVALID_SESSION_PROBE"}');
+    }
+    if(!$auth){http_response_code(401);exit('{"authenticated":false}');}
+    echo json_encode(['authenticated'=>true,'csrf'=>$_SESSION['csrf'],
+        'expires_in'=>max(0,$sessionExpiresAt-time())],JSON_THROW_ON_ERROR);
+    exit;
+}
 $ttsSettings=cmsCoralTtsSettings($cfg);
+try{$realTtsSettings=$realSpeechModulesPresent?cmsCoralRealSpeechSettings($cfg,$private):null;}catch(Throwable $e){$realTtsSettings=null;}
 // Opening a public PHP directory is not proof of private acceptance.
 $publicationsReady=($cfg['social_dashboard_received']??false)===true;
 foreach(['index.php','catalog-readonly.php','n8n-wait-readonly.php','diagnostic-cli.php','.htaccess'] as $socialFile)
@@ -91,6 +333,24 @@ function cmsLoginAttempt(string $dir,string $ip,bool $failed=false): bool {
     } finally{flock($f,LOCK_UN);fclose($f);}
 }
 $method=(string)($_SERVER['REQUEST_METHOD']??'GET');
+// A strict same-path return route is preserved across login without trusting
+// an arbitrary URL or a redirect target supplied by the browser.
+$studioReturnKeys=['new','cid','final_audit','recipe_audit','library',
+    'calendar','publications','kind','status','q','month','calendar_kind',
+    'calendar_status','visa_saved','visa_chapter','culinary_saved','final_saved'];
+$studioReturnFields=[];
+foreach($studioReturnKeys as $studioReturnKey){
+    $studioReturnValue=$_GET[$studioReturnKey]??null;
+    if(is_string($studioReturnValue)&&strlen($studioReturnValue)<=100
+        &&!preg_match('/[\\x00-\\x1f\\x7f]/',$studioReturnValue)){
+        $studioReturnFields[$studioReturnKey]=$studioReturnValue;
+    }
+}
+if(isset($studioReturnFields['cid'])
+    &&cmsCreationId($studioReturnFields['cid'])===null)unset($studioReturnFields['cid']);
+$studioReturnUrl='?'.http_build_query($studioReturnFields,'','&',PHP_QUERY_RFC3986);
+if(isset($studioReturnFields['final_audit']))$studioReturnUrl.='#final-review';
+elseif(isset($studioReturnFields['recipe_audit']))$studioReturnUrl.='#canonical-review';
 // Same session and source gates as the shared Studio; no public audio URL.
 if($method==='GET'&&isset($_GET['tts_file'])){
     if(!$auth){http_response_code(403);exit('Connexion privée requise.');}
@@ -111,6 +371,112 @@ if($method==='GET'&&isset($_GET['tts_file'])){
         http_response_code($code);echo substr($bytes,$start,$end-$start+1);exit;
     }catch(Throwable $e){http_response_code(404);exit('Audio privé indisponible.');}
 }
+// Private authenticated WAV intro preview; HTTP Range supports Android playback.
+if($method==='GET'&&isset($_GET['tts_real_preview'])){
+    if(!$auth){http_response_code(403);exit('Connexion privée requise.');}
+    try{
+        if($realTtsSettings===null)throw new RuntimeException('REAL_TTS_DISABLED');
+        $id=cmsCreationId($_GET['cid']??null);
+        $job=is_string($_GET['tts_real_preview'])?$_GET['tts_real_preview']:'';
+        if($id===null||!preg_match('/^[a-f0-9]{48}$/D',$job))throw new RuntimeException('REAL_TTS_JOB');
+        $feed=cmsSourceList(cmsGetFeed()??[]);
+        $canon=cmsCanonicalSourceList(cmsGetEditorialIndex()??[],$feed);
+        $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canon);cmsAssertGuidedCoverage($guides,$canon);
+        $bytes=cmsCoralRealSpeechPreview($private,$id,$job,$realTtsSettings,$feed,$canon,$guides);
+        $etag='"'.hash('sha256',$bytes).'"';
+        [$code,$start,$end]=cmsCoralTtsByteRange(
+          isset($_SERVER['HTTP_IF_RANGE'])&&$_SERVER['HTTP_IF_RANGE']!==$etag
+          ?null:($_SERVER['HTTP_RANGE']??null),strlen($bytes));
+        header('Accept-Ranges: bytes');header('ETag: '.$etag);
+        if($code===416){header('Content-Range: bytes */'.strlen($bytes));http_response_code(416);exit;}
+        header('Content-Type: audio/wav');header('Content-Length: '.($end-$start+1));
+        if($code===206)header('Content-Range: bytes '.$start.'-'.$end.'/'.strlen($bytes));
+        http_response_code($code);echo substr($bytes,$start,$end-$start+1);exit;
+    }catch(Throwable $e){http_response_code(404);exit('Préécoute Coral privée indisponible.');}
+}
+// Private authenticated MP3 proxy. Bearer is used only server-to-server.
+if($method==='GET'&&isset($_GET['tts_real_audio'])){
+    if(!$auth){http_response_code(403);exit('Connexion privée requise.');}
+    try{
+        if($realTtsSettings===null)throw new RuntimeException('REAL_TTS_DISABLED');
+        $id=cmsCreationId($_GET['cid']??null);
+        $job=is_string($_GET['tts_real_audio'])?$_GET['tts_real_audio']:'';
+        if($id===null||!preg_match('/^[a-f0-9]{48}$/D',$job))throw new RuntimeException('REAL_TTS_JOB');
+        $feed=cmsSourceList(cmsGetFeed()??[]);
+        $canon=cmsCanonicalSourceList(cmsGetEditorialIndex()??[],$feed);
+        $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canon);
+        cmsAssertGuidedCoverage($guides,$canon);
+        $bytes=cmsCoralRealSpeechAudio($private,$id,$job,$realTtsSettings,$feed,$canon,$guides);
+        $etag='"'.hash('sha256',$bytes).'"';
+        [$code,$start,$end]=cmsCoralTtsByteRange(
+          isset($_SERVER['HTTP_IF_RANGE'])&&$_SERVER['HTTP_IF_RANGE']!==$etag
+          ?null:($_SERVER['HTTP_RANGE']??null),strlen($bytes));
+        header('Accept-Ranges: bytes');header('ETag: '.$etag);
+        if($code===416){header('Content-Range: bytes */'.strlen($bytes));http_response_code(416);exit;}
+        header('Content-Type: audio/mpeg');header('Content-Length: '.($end-$start+1));
+        if($code===206)header('Content-Range: bytes '.$start.'-'.$end.'/'.strlen($bytes));
+        http_response_code($code);echo substr($bytes,$start,$end-$start+1);exit;
+    }catch(Throwable $e){http_response_code(404);exit('MP3 Coral privé indisponible.');}
+}
+// Authenticated, read-only and revocation-aware release-intent export.
+// This does NOT enqueue, publish or modify any public Astro/OVH file.
+if($method==='GET'&&isset($_GET['tts_real_release'])){
+    if(!$auth){http_response_code(403);exit('Connexion privée requise.');}
+    try{
+        if($realTtsSettings===null)throw new RuntimeException('CORAL_RELEASE_DISABLED');
+        $id=cmsCreationId($_GET['cid']??null);
+        $job=is_string($_GET['tts_real_release'])?$_GET['tts_real_release']:'';
+        if($id===null||!preg_match('/^[a-f0-9]{48}$/D',$job))
+            throw new RuntimeException('CORAL_RELEASE_JOB');
+        $record=cmsCreationRead(cmsCreationDir($private),$id);
+        if(!is_array($record))throw new RuntimeException('CORAL_RELEASE_DRAFT');
+        $feed=cmsSourceList(cmsGetFeed()??[]);
+        $canon=cmsCanonicalSourceList(cmsGetEditorialIndex()??[],$feed);
+        $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canon);
+        cmsAssertGuidedCoverage($guides,$canon);
+        $intent=cmsCoralRealSpeechReleaseIntent(
+            $private,$record,$job,$realTtsSettings,$feed,$canon,$guides);
+        $json=json_encode($intent,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+        header('Content-Type: application/json; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="coral-publication-intent-'.substr($job,0,12).'.json"');
+        header('Cache-Control: no-store, private, max-age=0');
+        header('X-Content-Type-Options: nosniff');
+        echo $json;exit;
+    }catch(Throwable $e){http_response_code(404);exit('Préparation de publication indisponible.');}
+}
+// Private read-only export of the EXACT currently approved native Astro profile.
+// A file download, not a publish or a raw public source exposure.
+if($method==='GET'&&isset($_GET['astro_review_profile'])){
+    if(!$auth){http_response_code(403);exit('Connexion privée requise.');}
+    try {
+        if($realTtsSettings===null)throw new RuntimeException('ASTRO_REVIEW_DISABLED');
+        $id=cmsCreationId($_GET['cid']??null);
+        $job=is_string($_GET['astro_review_profile'])?$_GET['astro_review_profile']:'';
+        if($id===null||!preg_match('/^[a-f0-9]{48}$/D',$job))
+            throw new RuntimeException('ASTRO_REVIEW_JOB');
+        $record=cmsCreationRead(cmsCreationDir($private),$id);
+        if(!is_array($record))throw new RuntimeException('ASTRO_REVIEW_DRAFT');
+        $feed=cmsSourceList(cmsGetFeed()??[]);
+        $canon=cmsCanonicalSourceList(cmsGetEditorialIndex()??[],$feed);
+        $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canon);
+        cmsAssertGuidedCoverage($guides,$canon);
+        $request=cmsCoralRealSpeechApprovedRequest($private,$record,$feed,$canon,$guides);
+        if(!hash_equals($request['request_id'],$job))throw new RuntimeException('ASTRO_REVIEW_STALE');
+        $state=cmsCoralRealSpeechObserve(
+            $private,$id,$job,$realTtsSettings,$feed,$canon,$guides);
+        if(($state['status']??null)!=='succeeded'||!is_array($state['manifest']??null))
+            throw new RuntimeException('ASTRO_REVIEW_AUDIO');
+        $profile=cmsCoralAstroReviewCurrent(
+            $private,$record,$state['manifest'],$feed,$canon,$guides);
+        if($profile===null)throw new RuntimeException('ASTRO_REVIEW_NOT_APPROVED');
+        $json=json_encode($profile,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+        header('Content-Type: application/json; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="coral-astro-review-'.substr($job,0,12).'.json"');
+        header('Cache-Control: no-store, private, max-age=0');
+        header('X-Content-Type-Options: nosniff');
+        echo $json;exit;
+    }catch(Throwable $e){http_response_code(404);exit('Profil Astro privé indisponible.');}
+}
 // Authenticated binary reads must not rerun editor/AI intent initialization.
 if($method==='GET'&&$auth&&isset($_GET['visual_file'])){
     try{
@@ -126,12 +492,19 @@ if($method==='GET'&&$auth&&isset($_GET['visual_file'])){
 }
 
 if($method==='POST'){
+    // A download request must never fall through to the HTML login/editor.
+    // In particular, an expired login can still have a valid session CSRF.
+    if(isset($_POST['export_narrations'])){
+        header('Content-Type: text/plain; charset=UTF-8');
+        if(!$auth){http_response_code(403);exit('Connexion privée requise. Rechargez le Studio et reconnectez-vous.');}
+    }
     // Export is intentionally READ ONLY: accept no other form action or fields.
     if(isset($_POST['export_narrations']) &&
         (count($_POST)!==4 || array_diff(array_keys($_POST),
             ['csrf','export_narrations','creation_id','expected_version']))) {
         http_response_code(422);exit('Action invalide.');
     }
+    if(isset($_POST['astro_review_action'])&&count(array_intersect(['astro_review_action','tts_action','create_save','visual_action','review_action','culinary_action','final_review_action','correction_action','save','studio_transition','login','logout'],array_keys($_POST)))!==1){http_response_code(422);exit('Action invalide.');}
     if(isset($_POST['tts_action'])&&count(array_intersect(['tts_action','create_save','ai_brief_generate','ai_content_generate',
         'ai_content_discard','review_action','culinary_action','save','studio_transition','export_review','visual_action','coral_prepare','prepare_next_workshop','final_review_action','correction_action','login','logout'],array_keys($_POST)))!==1){
         http_response_code(422);exit('Action invalide.');
@@ -139,11 +512,19 @@ if($method==='POST'){
     if(isset($_POST['visual_action']) && count(array_intersect(['visual_action','create_save','ai_brief_generate','ai_content_generate','ai_content_discard','review_action','culinary_action','final_review_action','correction_action','save','studio_transition','export_review','login','logout'],array_keys($_POST)))!==1){http_response_code(422);exit('Action invalide.');}
     if(!is_string($_POST['csrf']??null)
         || !hash_equals((string)$_SESSION['csrf'],$_POST['csrf'])){
-        http_response_code(403);exit('Session expirée. Rechargez.');
+        // Only booleans in logs: NEVER session IDs, CSRF values or form content.
+        if(isset($_POST['review_action'])){
+            error_log('CDC_STUDIO_VISA_CSRF_REJECT '.json_encode([
+                'authenticated'=>$auth,'session_cookie_present'=>isset($_COOKIE[session_name()]),
+                'csrf_field_present'=>isset($_POST['csrf'])
+            ],JSON_THROW_ON_ERROR));
+        }
+        http_response_code(403);exit('Session non synchronisée. Rechargez et reconnectez-vous avant de réessayer.');
     }
     if(isset($_POST['logout']) && $auth){
         $_SESSION=[];session_regenerate_id(true);
-        $_SESSION['csrf']=bin2hex(random_bytes(24));$auth=false;
+        $_SESSION['csrf']=bin2hex(random_bytes(24));
+        $sessionExpiresAt=0;$auth=false;
     }elseif(isset($_POST['login']) && !$auth){
         if(!is_writable($private))cmsUnavailable();
         $ip=(string)($_SERVER['REMOTE_ADDR']??'unknown');
@@ -154,7 +535,13 @@ if($method==='POST'){
             && hash_equals($cfg['admin_user'],$_POST['username'])
             && password_verify($_POST['password'],$cfg['password_hash'])){
             session_regenerate_id(true);
-            $_SESSION['authenticated_at']=time();$auth=true;
+            $_SESSION['authenticated_at']=time();
+            $_SESSION['auth_last_activity_at']=$_SESSION['authenticated_at'];
+            $sessionExpiresAt=min($_SESSION['authenticated_at']+$sessionIdleSeconds,
+                $_SESSION['authenticated_at']+$sessionAbsoluteSeconds);
+            $auth=true;
+            // Render the requested audit in this same response. Existing Studio
+            // login clients rely on HTTP 200 (no POST redirect).
         }else{
             cmsLoginAttempt($private,$ip,true);$error='Identifiants incorrects.';
         }
@@ -171,7 +558,7 @@ $filtersUrl=http_build_query($filters,'','&',PHP_QUERY_RFC3986);
 // A new editorial idea is deliberately distinct from a published source ID.
 // Both paths still use the SAME authenticated Studio and shared field renderer.
 $newMode=isset($_GET['new']) || ($method==='POST'
-    && (isset($_POST['tts_action']) || isset($_POST['visual_action']) || isset($_POST['create_save']) || isset($_POST['ai_brief_generate'])
+    && (isset($_POST['tts_action']) || isset($_POST['astro_review_action']) || isset($_POST['visual_action']) || isset($_POST['create_save']) || isset($_POST['ai_brief_generate'])
         || isset($_POST['ai_content_generate']) || isset($_POST['ai_content_discard'])
         || isset($_POST['review_action']) || isset($_POST['culinary_action']) || isset($_POST['final_review_action']) || isset($_POST['correction_action']) || isset($_POST['export_narrations'])));
 $createKind=is_string($_POST['kind']??null)?$_POST['kind']:
@@ -238,7 +625,8 @@ if($auth){
         }catch(Throwable $ignored){$calendarWorkshopSettings=null;$calendarWorkshop=null;}
         if($method==='POST'&&isset($_POST['prepare_next_workshop'])){
             try{
-                if($calendarWorkshopSettings===null||$calendarWorkshop===null||count($_SESSION['coral_jobs']??[])>=2)
+                if($calendarWorkshopSettings===null||$calendarWorkshop===null
+                    ||($calendarWorkshopSettings['workshop_permanent']??false)||count($_SESSION['coral_jobs']??[])>=2)
                     throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
                 $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);cmsAssertGuidedCoverage($guides,$canonicalById);
                 $job=cmsCoralStart($calendarWorkshop,$catalog,$canonicalById,$guides,$private,$calendarWorkshopSettings);
@@ -332,22 +720,98 @@ if($auth){
                 exit;
             }catch(Throwable $e){
                 http_response_code(409);
-                $error='Export des narrations refusé : version modifiée, textes incomplets ou session expirée. '
-                    .'Actualisez la fiche puis réessayez. Aucun texte ni MP3 modifié.';
+                exit('Export des narrations refusé : version modifiée, textes incomplets ou session expirée. '
+                    .'Actualisez la fiche puis réessayez. Aucun texte ni MP3 modifié.');
+            }
+        }
+        if($method==='POST'&&isset($_POST['astro_review_action'])){
+            try{
+                if(!$auth||$creation===null||$createKind!=='atelier'||!$studioSourceCurrent
+                    ||$realTtsSettings===null)throw new RuntimeException('ASTRO_REVIEW_DISABLED');
+                $version=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT,
+                    ['options'=>['min_range'=>1,'max_range'=>9999]]);
+                if($version===false||$version!==$creation['version'])
+                    throw new RuntimeException('ASTRO_REVIEW_STALE');
+                $job=is_string($_POST['tts_job']??null)?$_POST['tts_job']:'';
+                $action=is_string($_POST['astro_review_action']??null)
+                    ?$_POST['astro_review_action']:'';
+                $form=is_array($_POST['astro_review']??null)?$_POST['astro_review']:[];
+                $note=is_string($_POST['astro_review_note']??null)
+                    ?$_POST['astro_review_note']:'';
+                $checked=($_POST['astro_review_confirm']??null)==='1';
+                $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);
+                cmsAssertGuidedCoverage($guides,$canonicalById);
+                cmsCoralAstroReviewAction($private,$creation,$job,$action,$form,$note,
+                    $checked,$auth,$realTtsSettings,$catalog,$canonicalById,$guides);
+                header('Location: ?new=1&cid='.rawurlencode($creation['id'])
+                    .'&'.$filtersUrl.'#cms-astro-review',true,303);exit;
+            }catch(Throwable $e){
+                http_response_code(409);
+                $error='Validation Astro refusée : contrôlez le visuel, les droits, les tests réels, le MP3 et la version du brouillon. Aucune publication.';
             }
         }
         if($method==='POST'&&isset($_POST['tts_action'])){
             try{
-                if($creation===null||!$studioSourceCurrent)throw new RuntimeException('TTS_SOURCE');
+                $action=is_string($_POST['tts_action'])?$_POST['tts_action']:'';
+                if($creation===null||(!$studioSourceCurrent&&$action!=='recover_real_publish'))
+                    throw new RuntimeException('TTS_SOURCE');
                 $version=filter_var($_POST['expected_version']??null,FILTER_VALIDATE_INT);
                 if($version===false||$version!==$creation['version'])throw new RuntimeException('TTS_VERSION_STALE');
-                $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);cmsAssertGuidedCoverage($guides,$canonicalById);
-                $action=is_string($_POST['tts_action'])?$_POST['tts_action']:'';
+                if($action!=='recover_real_publish'){
+                    $guides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);
+                    cmsAssertGuidedCoverage($guides,$canonicalById);
+                }
                 $confirm=($_POST['tts_confirm']??null)==='1';
                 $checks=is_array($_POST['tts_checks']??null)?$_POST['tts_checks']:[];
                 $note=is_string($_POST['tts_note']??null)?$_POST['tts_note']:'';
                 $job=is_string($_POST['tts_job']??null)?$_POST['tts_job']:'';
-                if(in_array($action,['approve_rights','revoke_rights'],true)){
+                if(in_array($action,['approve_voice_rights','revoke_voice_rights'],true)){
+                    cmsCoralTtsDecision($private,$creation['id'],$version,'voice-rights',$action==='approve_voice_rights'?'approve':'revoke',
+                        $checks,$note,$confirm,$auth,$catalog,$canonicalById,$guides);
+                }elseif($action==='generate_real'){
+                    if($realTtsSettings===null||!$auth||!$confirm)throw new RuntimeException('REAL_TTS_DISABLED');
+                    cmsCoralRealSpeechStart($private,$creation,$realTtsSettings,$catalog,$canonicalById,$guides);
+                }elseif($action==='approve_real_preview'){
+                    if($realTtsSettings===null||!$auth||!$confirm)throw new RuntimeException('REAL_TTS_DISABLED');
+                    cmsCoralRealSpeechApprovePreview($private,$creation,$job,$realTtsSettings,$catalog,$canonicalById,$guides);
+                }elseif(in_array($action,['approve_real_audio','revoke_real_audio'],true)){
+                    if($realTtsSettings===null||!$auth||!$confirm)throw new RuntimeException('REAL_TTS_DISABLED');
+                    cmsCoralRealSpeechListeningAction($private,$creation,$job,
+                        $action==='approve_real_audio'?'approve':'revoke',$checks,$note,$confirm,$auth,
+                        $realTtsSettings,$catalog,$canonicalById,$guides);
+                }elseif(in_array($action,['approve_real_publication','revoke_real_publication'],true)){
+                    if($realTtsSettings===null||!$auth||!$confirm)throw new RuntimeException('CORAL_RELEASE_DISABLED');
+                    cmsCoralRealSpeechPublicationAction($private,$creation,$job,
+                        $action==='approve_real_publication'?'approve':'revoke',
+                        $checks,$note,$confirm,$auth,
+                        $realTtsSettings,$catalog,$canonicalById,$guides);
+                    // The only network dispatch sends the approved no-text
+                    // intent to the EXISTING private gateway; it cannot deploy.
+                    if($action==='approve_real_publication')
+                        cmsCoralRealSpeechStageRelease($private,$creation,$job,
+                            $realTtsSettings,$catalog,$canonicalById,$guides);
+                }elseif($action==='recover_real_publish'){
+                    if(!$auth||!$confirm
+                        ||($_POST['publish_restore_confirm']??null)!=='1')
+                        throw new RuntimeException('CORAL_RECOVERY_NOT_CONFIRMED');
+                    cmsCoralStudioRecover($private,dirname(__DIR__),$job,$creation['id'],
+                        $auth,$confirm,$cfg);
+                }elseif($action==='publish_real'){
+                    if($realTtsSettings===null||!$auth||!$confirm
+                        ||($_POST['publish_confirm']??null)!=='1')
+                        throw new RuntimeException('CORAL_PUBLISH_NOT_CONFIRMED');
+                    $receipt=cmsCoralStudioPublish(
+                        $private,dirname(__DIR__),$creation,$job,$auth,$confirm,
+                        $cfg,$realTtsSettings,$catalog,$canonicalById,$guides);
+                    if(!in_array($receipt['fileCount']??null,[5,9,10],true))
+                        throw new RuntimeException('CORAL_PUBLISH_RECEIPT');
+                    $_SESSION['coral_published_local']=$job;
+                }elseif($action==='stage_real_release'){
+                    if($realTtsSettings===null||!$auth||!$confirm)
+                        throw new RuntimeException('CORAL_RELEASE_DISABLED');
+                    cmsCoralRealSpeechStageRelease($private,$creation,$job,
+                        $realTtsSettings,$catalog,$canonicalById,$guides);
+                }elseif(in_array($action,['approve_rights','revoke_rights'],true)){
                     cmsCoralTtsDecision($private,$creation['id'],$version,'rights',$action==='approve_rights'?'approve':'revoke',
                         $checks,$note,$confirm,$auth,$catalog,$canonicalById,$guides);
                 }else{
@@ -358,7 +822,8 @@ if($auth){
                         $action==='approve_audio'?'approve':'revoke',$checks,$note,$confirm,$auth,$ttsSettings,$catalog,$canonicalById,$guides);
                     else throw new RuntimeException('TTS_ACTION');
                 }
-                header('Location: ?new=1&cid='.rawurlencode($creation['id']).'&'.$filtersUrl.'#cms-tts',true,303);exit;
+                header('Location: ?new=1&cid='.rawurlencode($creation['id']).'&'.$filtersUrl
+                    .(in_array($action,['approve_voice_rights','revoke_voice_rights','generate_real','approve_real_preview','approve_real_audio','revoke_real_audio','approve_real_publication','revoke_real_publication','stage_real_release','publish_real','recover_real_publish'],true)?'#cms-real-tts':'#cms-tts'),true,303);exit;
             }catch(Throwable $e){
                 http_response_code(409);$error='Action audio refusée ou accusé incertain. Aucun renvoi automatique : vérifiez le suivi, la version, les droits et les validations. Les anciens MP3 sont conservés.';
             }
@@ -389,11 +854,10 @@ if($auth){
         if($method==='GET' && isset($_GET['coral_job'])){
             try{
                 $coralJobToken=is_string($_GET['coral_job'])?$_GET['coral_job']:'';
-                $coralJob=$_SESSION['coral_jobs'][$coralJobToken]??null;
-                if($creation===null||$coralSettings===null||!is_array($coralJob)
+                if($creation===null||$coralSettings===null
                    ||!preg_match('/^[0-9a-f]{48}$/D',$coralJobToken))
                     throw new RuntimeException('CORAL_JOB_MISSING');
-                $proposal=cmsCoralPoll($coralJob,$creation,$coralSettings,$canonicalById,$catalog);
+                [$coralJob,$proposal]=cmsCoralObserveSaved($private,$coralJobToken,$creation,$coralSettings,$canonicalById,$catalog);
                 $_SESSION['coral_jobs'][$coralJobToken]=$coralJob;
                 if($proposal!==null){
                     $token=bin2hex(random_bytes(24));
@@ -507,7 +971,7 @@ if($auth){
                 $guides=cmsGuidedSourceList($feed,$canonicalById);
                 cmsAssertGuidedCoverage($guides,$canonicalById);
                 $job=cmsCoralStart($creation,$catalog,$canonicalById,$guides,
-                    $private,$coralSettings);
+                    $private,$coralSettings,is_array($_POST['coral_sources']??null)?$_POST['coral_sources']:null);
                 $_SESSION['coral_jobs'][$job['token']]=$job;
                 header('Location: ?new=1&cid='.rawurlencode($creation['id'])
                     .'&coral_job='.$job['token'].'#cms-audio',true,303);exit;
@@ -630,7 +1094,7 @@ if($auth){
                     is_string($_POST['review_action']??null)?$_POST['review_action']:'',
                     ($_POST['review_confirm']??null)==='1',$auth,$catalog);
                 header('Location: ?new=1&cid='.rawurlencode($creation['id'])
-                    .'&'.$filtersUrl.'&visa_saved=1',true,303);
+                    .'&'.$filtersUrl.'&visa_saved=1&visa_chapter='.rawurlencode((string)$_POST['review_chapter']).'#cms-human-visas',true,303);
                 exit;
             }catch(Throwable $e){
                 $conflict=in_array($e->getMessage(),
@@ -1194,11 +1658,19 @@ section,fieldset,.stack,.grid>*{min-width:0}code,pre{overflow-wrap:anywhere;whit
 <h1>Studio éditorial</h1>
 <p class="note">Version de préparation : <strong>les brouillons ne modifient pas le site publié</strong>.
 Aucun déclenchement n8n, Facebook, Instagram ou e-mail depuis cet espace.</p>
+<?php if($auth): ?>
+<section id="cms-session-warning" class="notice" role="status" hidden
+ data-session-remaining="<?= max(0,$sessionExpiresAt-time()) ?>">
+<span data-session-message>Votre connexion va expirer après 30 minutes sans activité.</span>
+<button type="button" data-session-continue>Continuer ma session</button>
+<a data-session-login href="<?= cmsEsc($studioReturnUrl) ?>" hidden>Me reconnecter sur cette page</a>
+</section>
+<?php endif; ?>
 <?php if($error!==''): ?><p class="notice" role="alert"><?= cmsEsc($error) ?></p><?php endif; ?>
 <?php if($notice!==''): ?><p class="notice" role="status"><?= cmsEsc($notice) ?></p><?php endif; ?>
 <?php if(!$auth): ?>
 <section><h2>Connexion administrateur</h2>
-<form method="post" class="stack">
+<form method="post" class="stack" action="<?= cmsEsc($studioReturnUrl) ?>">
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <label>Identifiant<input name="username" autocomplete="username" required maxlength="100"></label>
 <label>Mot de passe<input type="password" name="password" autocomplete="current-password" required></label>
@@ -1248,7 +1720,9 @@ La création de contenus et le calendrier restent disponibles.</p>
 <h2>Calendrier éditorial — <?= cmsEsc($calendarMonth) ?></h2>
 <p class="small muted">Dates cibles des projets de nouvelles pages.
 Elles ne déclenchent aucune publication sur le site, Facebook ou Instagram.</p>
-<?php if($calendarWorkshopSettings!==null&&$calendarWorkshop!==null): ?>
+<?php if(($calendarWorkshopSettings['workshop_permanent']??false)&&$calendarWorkshop!==null): ?>
+<p>Prochain atelier à préparer : <a href="?new=1&amp;cid=<?= cmsEsc($calendarWorkshop['id']) ?>#atelier-audio-draft"><?= cmsEsc($calendarWorkshop['title']) ?></a>.</p>
+<?php elseif($calendarWorkshopSettings!==null&&$calendarWorkshop!==null): ?>
 <form method="post" class="stack">
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <p>Prochain atelier éligible : <strong><?= cmsEsc($calendarWorkshop['title']) ?></strong>.
@@ -1567,7 +2041,30 @@ Le bouton ci-dessous produit uniquement des textes privés : il ne lance aucune 
 <?php if($coralSettings!==null): ?>
 <?php $prepareComplete=($coralSettings['workshop_complete_qualified']??false)===true
     &&!cmsAtelierPhaseDetailsComplete($creation['atelier_phase_details']??null); ?>
+<?php
+$permanentJob=null;
+if($prepareComplete&&($coralSettings['workshop_permanent']??false)){
+    try{$permanentJob=cmsCoralPermanentJobSummary($private,$creation);}
+    catch(Throwable $ignored){}
+}
+?>
+<?php if($permanentJob!==null): ?>
+<p role="status"><?= cmsEsc($permanentJob['status']) ?> ·
+<a href="?new=1&amp;cid=<?= cmsEsc($creation['id']) ?>&amp;coral_job=<?= cmsEsc($permanentJob['token']) ?>#atelier-audio-draft">Reprendre le suivi de cette version</a></p>
+<?php else: ?>
+<?php if($prepareComplete&&($coralSettings['workshop_permanent']??false)): ?>
+<fieldset><legend>Deux sources culinaires consultées pour cette recette</legend>
+<?php for($sourceNumber=0;$sourceNumber<2;$sourceNumber++): ?>
+<div class="stack">
+<label>Titre <input name="coral_sources[<?= $sourceNumber ?>][title]" maxlength="180"></label>
+<label>Lien HTTPS <input type="url" name="coral_sources[<?= $sourceNumber ?>][url]" maxlength="500"></label>
+<label>Points vérifiés <textarea name="coral_sources[<?= $sourceNumber ?>][note]" maxlength="2000"></textarea></label>
+</div>
+<?php endfor; ?>
+</fieldset>
+<?php endif; ?>
 <button name="coral_prepare" value="1" formnovalidate data-coral-prepare><?= $prepareComplete?'Préparer l’atelier et ses 7 textes':'Préparer les 7 narrations' ?></button>
+<?php endif; ?>
 <?php if($prepareComplete): ?><p class="small muted">Proposition complète depuis la recette choisie : contenu, six phases détaillées et sept textes à relire. Vérifiez puis enregistrez explicitement le brouillon privé. Aucun visa, MP3 ou publication.</p><?php endif; ?>
 <p class="small muted">Un seul clic prépare sept propositions de textes parlés depuis l’atelier enregistré,
 sa recette de référence et les deux référentiels Coral V2. Relisez les textes,
@@ -1653,9 +2150,11 @@ des sept textes complets dans cette fiche.</p>
 <?php endif; ?>
 </section>
 <?php endif; ?>
-<?php if($creation!==null&&$creation['kind']==='atelier'&&$ttsSettings!==null): ?>
+<?php if($creation!==null&&$creation['kind']==='atelier'): ?>
 <?php try{$ttsGuides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);
-echo cmsCoralTtsPanel($private,$creation,$catalog,$canonicalById,$ttsGuides,(string)$_SESSION['csrf'],$ttsSettings,$filtersUrl);
+echo cmsCoralTtsPanel($private,$creation,$catalog,$canonicalById,$ttsGuides,(string)$_SESSION['csrf'],$ttsSettings,$filtersUrl,$realTtsSettings);
+echo cmsCoralStudioPublishPanel($private,$creation,(string)$_SESSION['csrf'],$cfg,
+    $realTtsSettings,$catalog,$canonicalById,$ttsGuides);
 }catch(Throwable $e){echo '<p>Audio privé indisponible : aucune génération autorisée.</p>';} ?>
 <?php endif; ?>
 <?= cmsVisualPanel($creation,$visualLatest,$visualDisplay,$visualInput,$visualSettings!==null,
@@ -1684,6 +2183,7 @@ echo cmsCoralTtsPanel($private,$creation,$catalog,$canonicalById,$ttsGuides,(str
 <?= cmsGuidedPreviewHtml('fiche',$creation['fields']) ?>
 </section><section id="cms-quality" class="studio-quality">
 <h2>Ce qu’il reste à faire</h2>
+<?php if($createKind==='recette')echo cmsCulinaryAutomaticHtml(cmsCulinaryAutomaticAudit(['kind'=>'recette','fields'=>$createForm['fields']??[]])); ?>
 <p>Relisez le contenu et enregistrez vos changements. Retrouvez ensuite cette version dans la bibliothèque.</p>
 <?php if($creation['kind']==='atelier'): ?>
 <p>Le guide audio est facultatif. Ces préparatifs audio ne bloquent pas l’enregistrement d’un brouillon sans narration.</p>
@@ -1695,7 +2195,7 @@ echo cmsCoralTtsPanel($private,$creation,$catalog,$canonicalById,$ttsGuides,(str
 </ul>
 <?php endif; ?>
 <?php if($creation['similar_titles']): ?><p class="note">Des sujets proches existent : examinez-les dans les contrôles ci-dessous avant de poursuivre.</p><?php endif; ?>
-<details class="guided-group" data-studio-advanced <?= isset($_GET['final_audit'])?'open':'' ?>><summary>Contrôles avancés — vérifications et validations complètes</summary>
+<details class="guided-group" data-studio-advanced <?= isset($_GET['final_audit'])||isset($_GET['visa_saved'])?'open':'' ?>><summary>Contrôles avancés — vérifications et validations complètes</summary>
 <p class="small muted">Les contrôles concernent la version enregistrée. Enregistrez vos modifications avant de les évaluer.</p>
 <?php if(!$studioSourceCurrent): ?>
 <p class="note" role="alert">Contrôles et visas indisponibles : la source publiée ne correspond plus à ce brouillon.</p>
@@ -1725,7 +2225,7 @@ de publication n’est déduit de ce contrôle.</p>
 <?php $visaStatus=null;
 try{$visaStatus=cmsAtelierVisaStatus($creationDir,$creation,$catalog);}
 catch(Throwable $ignored){$visaStatus=null;} ?>
-<details class="guided-group" data-coral-human-visas>
+<details class="guided-group" id="cms-human-visas" data-coral-human-visas <?= isset($_GET['visa_saved'])?'open':'' ?>>
 <summary>Visa humain des sept textes — privé, sans génération audio</summary>
 <p class="small muted">Validation explicite par chapitre et par version enregistrée.
 Chaque visa est révocable. Toute nouvelle version de la fiche invalide les
@@ -1747,7 +2247,7 @@ foreach(cmsAtelierScriptIds() as $i=>$chapterId):
 $chapter=$creation['atelier_scripts']['chapters'][$i]??null;
 $text=is_array($chapter)&&is_string($chapter['text']??null)?$chapter['text']:'';
 $approved=($visaStatus['by_chapter'][$chapterId]??false)===true; ?>
-<details class="guided-group">
+<details class="guided-group" <?= ($_GET['visa_chapter']??'')===$chapterId?'open':'' ?>>
 <summary><?= cmsEsc($i===0?'Introduction':('Phase '.$i.' · '.$chapterId)) ?>
  — <?= $approved?'texte visé':'visa absent ou périmé' ?></summary>
 <div class="coral-script-text"><?= cmsEsc($text!==''?$text:'Texte non rédigé.') ?></div>
@@ -1894,7 +2394,7 @@ restent désactivés.</p>
 <?php endif; ?>
 </details>
 <?php $finalStatus=null;$finalUnavailable=false;$finalSourcesPreview=[];$finalSourceError=false;
-if(isset($_GET['final_audit'])){
+if($creation!==null){
     try{
         if($canonicalById===[])throw new RuntimeException('FINAL_SOURCE_UNAVAILABLE');
         $feed=cmsGetGuidedFields();
@@ -1902,7 +2402,7 @@ if(isset($_GET['final_audit'])){
         $finalGuides=cmsGuidedSourceList($feed,$canonicalById);
         cmsAssertGuidedCoverage($finalGuides,$canonicalById);
         $finalStatus=cmsCoralFinalStatus($private,$creation,$catalog,$canonicalById,$finalGuides);
-        if(!$finalStatus['approved']){
+        if(isset($_GET['final_audit'])&&!$finalStatus['approved']){
             $sourceCatalog=cmsCoralFinalSourceCatalog();$previewInput=[];
             foreach($sourceCatalog as $url=>$item)$previewInput[]=[
                 'title'=>$item['title'],'url'=>$url,
@@ -1926,6 +2426,7 @@ Aucune correction automatique de recette et aucun MP3 ne sont déclenchés.</p>
 <p role="alert">Contrôle indisponible : génération audio bloquée.</p>
 <?php elseif($finalStatus!==null): ?>
 <?php $finalReport=$finalStatus['report'];$finalApproved=$finalStatus['approved']; ?>
+<?= cmsCulinaryAutomaticHtml($finalReport['automatic_details']) ?>
 <p>Résultat : <strong><?= $finalApproved?'Visa final actif':($finalReport['automated_checks_pass']?'Contrôle technique sans blocage ; validation humaine nécessaire':'Incohérences bloquantes à corriger') ?></strong>.
 Revue enregistrée : <?= (int)$finalStatus['review_event_count'] ?> décision(s).</p>
 <?php if($finalReport['blocking']!==[]): ?>
@@ -2400,6 +2901,7 @@ Télécharger la demande de modification (JSON)</button>
 </div>
 <section id="cms-quality" class="studio-quality">
 <h2>Ce qu’il reste à faire — <?= cmsEsc($kindLabels[$selected['kind']]) ?></h2>
+<?php if($selected['kind']==='recette')echo cmsCulinaryAutomaticHtml(cmsCulinaryAutomaticAudit(['kind'=>'recette','fields'=>$guidedValues],$guidedSelected['fields']??[],$guidedSelected['portionContract']??null)); ?>
 <?php if($selected['kind']==='atelier'): ?>
 <?php if($studioLinked!==null): ?>
 <p class="note">Les modifications et le guide audio facultatif sont réunis dans le brouillon lié. Cet écran conserve les versions antérieures en lecture seule.</p>
@@ -2474,6 +2976,106 @@ document.addEventListener('input',event=>{
   event.target.closest('[data-create-row]').querySelector('summary strong').textContent=event.target.value.trim()||'Sans titre';
 });
 let studioDirty=false;
+// Recheck the active PHP session immediately before a human visa submission.
+// The browser may retain a pre-login tab with an obsolete hidden token.
+// Never suppress the server's CSRF validation or silently retry a rejected POST.
+document.querySelectorAll('[data-coral-human-visas] form').forEach(form=>{
+  let pending=false;
+  form.addEventListener('submit',async event=>{
+    if(form.dataset.csrfFresh==='1'){delete form.dataset.csrfFresh;return;}
+    event.preventDefault();
+    if(pending)return;
+    pending=true;
+    const submitter=event.submitter;
+    let status=form.querySelector('[data-visa-session-status]');
+    if(!status){
+      status=document.createElement('p');
+      status.setAttribute('role','alert');
+      status.setAttribute('data-visa-session-status','');
+      form.append(status);
+    }
+    status.textContent='Vérification de la session…';
+    try{
+      const response=await fetch('?session_status=1',{
+        credentials:'same-origin',cache:'no-store',headers:{Accept:'application/json'}
+      });
+      if(!response.ok){
+        status.textContent='Connexion non confirmée. Ouvrez le Studio dans un nouvel onglet et reconnectez-vous, puis réessayez.';
+        return;
+      }
+      const fresh=await response.json();
+      const field=form.querySelector('input[name="csrf"]');
+      if(fresh.authenticated!==true||typeof fresh.csrf!=='string'
+          ||!/^([a-f0-9]{48})$/i.test(fresh.csrf)||!field){
+        status.textContent='Session indisponible. Rechargez le Studio avant de valider.';
+        return;
+      }
+      field.value=fresh.csrf;
+      status.textContent='';
+      form.dataset.csrfFresh='1';
+      form.requestSubmit(submitter||undefined);
+    }catch{
+      status.textContent='Impossible de vérifier la session. Aucun visa envoyé ; réessayez après reconnexion.';
+    }finally{
+      pending=false;
+    }
+  });
+});
+// Activity-based renewal only: user clicks, typing and scrolling can refresh
+// a real authenticated server session. No background keepalive while idle.
+const studioSessionWarning=document.querySelector('#cms-session-warning');
+if(studioSessionWarning){
+  const sessionMessage=studioSessionWarning.querySelector('[data-session-message]');
+  const sessionContinue=studioSessionWarning.querySelector('[data-session-continue]');
+  const sessionLogin=studioSessionWarning.querySelector('[data-session-login]');
+  let sessionDeadline=Date.now()+Number(studioSessionWarning.dataset.sessionRemaining||0)*1000;
+  let lastActivityProbe=Date.now();
+  let activityProbePending=false;
+  let sessionEnded=false;
+  const sessionDisplay=()=>{
+    const remaining=Math.ceil((sessionDeadline-Date.now())/1000);
+    if(sessionEnded||remaining<=0){
+      studioSessionWarning.hidden=false;
+      sessionMessage.textContent='Votre session est terminée. Reconnectez-vous pour retrouver cet écran.';
+      sessionContinue.hidden=true;sessionLogin.hidden=false;
+    }else if(remaining<=120){
+      studioSessionWarning.hidden=false;
+      sessionMessage.textContent='Connexion bientôt expirée : '+Math.max(1,Math.ceil(remaining/60))+' min restante(s) sans activité.';
+      sessionContinue.hidden=false;sessionLogin.hidden=true;
+    }else{
+      studioSessionWarning.hidden=true;
+    }
+  };
+  const sessionRefresh=async force=>{
+    if(sessionEnded||activityProbePending||document.hidden)return;
+    if(!force&&Date.now()-lastActivityProbe<240000)return;
+    activityProbePending=true;lastActivityProbe=Date.now();
+    try{
+      const response=await fetch('?session_status=1',{
+        credentials:'same-origin',cache:'no-store',headers:{Accept:'application/json'}
+      });
+      if(response.status===401){sessionEnded=true;return;}
+      if(!response.ok)throw new Error('SESSION_PROBE_FAILED');
+      const result=await response.json();
+      if(result.authenticated!==true||!Number.isInteger(result.expires_in)
+          ||result.expires_in<0||result.expires_in>1800)throw new Error('SESSION_PROBE_INVALID');
+      sessionDeadline=Date.now()+result.expires_in*1000;
+    }catch{
+      studioSessionWarning.hidden=false;
+      sessionMessage.textContent='Session non vérifiée. Reconnectez-vous si nécessaire ; aucune validation n’a été envoyée.';
+      sessionLogin.hidden=false;
+    }finally{
+      activityProbePending=false;sessionDisplay();
+    }
+  };
+  sessionContinue.addEventListener('click',()=>sessionRefresh(true));
+  document.addEventListener('pointerdown',()=>sessionRefresh(false),{passive:true});
+  document.addEventListener('keydown',()=>sessionRefresh(false));
+  document.addEventListener('scroll',()=>sessionRefresh(false),{passive:true,capture:true});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)sessionRefresh(false);});
+  setInterval(sessionDisplay,15000);
+  sessionDisplay();
+}
 document.querySelectorAll('[data-studio-edit]').forEach(form=>{
   form.addEventListener('input',()=>{studioDirty=true;});
   form.addEventListener('change',()=>{studioDirty=true;});
