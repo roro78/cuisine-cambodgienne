@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 import {mkdtemp,mkdir,writeFile,rm,readdir,readFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {createJobGateway,validateJobRequest,currentStudioSpeechApproval} from '../scripts/editorial-ai-job-gateway.mjs';
+import {createJobGateway,validateJobRequest,currentStudioSpeechApproval,startEditorialJobRuntime} from '../scripts/editorial-ai-job-gateway.mjs';
 import {createCoralRealSpeechJobs} from '../scripts/coral-speech-real-jobs.mjs';
 import {TTS_CHAPTER_IDS,privateAudioVerifiedOpen} from '../scripts/coral-tts-audio.mjs';
 import {REAL_SPEECH_REQUEST_CONTRACT,REAL_SPEECH_PROVIDER,coralRealSpeechRequestId} from '../scripts/coral-real-speech-request.mjs';
@@ -265,6 +265,117 @@ test('existing job HTTPS gateway accepts only authenticated POST release staging
   assert.equal(calls,2);
  }finally{
   g.stopWorker();await new Promise(resolve=>g.server.close(resolve));
+  await rm(root,{recursive:true,force:true});
+ }
+});
+
+
+test('actual Coral runtime stages already-finished private audio with paid TTS OFF',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'coral-runtime-stage-no-pay-'));
+ const r=request(),bytes=Buffer.alloc(2048,47),digest=sha(bytes);
+ const folder=join(root,r.request_id),privateDir=join(folder,'real-tts');
+ const m={contract:'cdc-coral-real-speech-result-v1',
+  request_id:r.request_id,creation_id:r.creation_id,creation_version:r.creation_version,
+  binding_sha256:r.binding_sha256,sha256:digest,bytes:bytes.length,
+  file:'final-'+digest+'.mp3',duration:70,
+  chapters:r.chapters.map((x,i)=>({id:x.id,start:i*10,end:(i+1)*10}))};
+ let allowed=true,authorityCalls=0;
+ const env={
+  CDC_EDITORIAL_JOB_SERVICE_ENABLED:'true',CDC_EDITORIAL_JOB_DIR:root,
+  CDC_EDITORIAL_JOB_BIND_HOST:'127.0.0.1',CDC_EDITORIAL_JOB_TOKEN:token,
+  CDC_EDITORIAL_JOB_PROVIDER:'ollama',
+  CDC_CORAL_REAL_TTS_ENABLED:'false',CDC_CORAL_RELEASE_STAGING_ENABLED:'true',
+  CDC_CORAL_REAL_TTS_AUTHORITY_ENDPOINT:'https://www.cuisine-du-cambodge.com/gestion-contenus/?tts_authority=1',
+  CDC_CORAL_REAL_TTS_AUTHORITY_TOKEN_FILE:'/private/never-read-in-isolated-test'
+ };
+ await mkdir(privateDir,{recursive:true,mode:0o700});
+ await writeFile(join(folder,'request.json'),JSON.stringify({
+  id:r.request_id,fingerprint:sha(JSON.stringify(r)),created_at:Date.now(),request:r
+ }),{mode:0o600});
+ await writeFile(join(privateDir,m.file),bytes,{mode:0o600});
+ await writeFile(join(privateDir,'manifest.json'),JSON.stringify(m),{mode:0o600});
+ await writeFile(join(privateDir,'state.json'),JSON.stringify({
+  status:'succeeded',completed_chapters:7,manifest_sha256:digest
+ }),{mode:0o600});
+ const gateway=await startEditorialJobRuntime(env,{
+  listenPort:0,authorityFactory:()=>async()=>{authorityCalls++;return allowed;}
+ });
+ try{
+  const base='http://127.0.0.1:'+gateway.server.address().port+
+   '/editorial-ai/v1/jobs/'+r.request_id;
+  const headers={Authorization:'Bearer '+token,'Content-Type':'application/json'};
+  const candidate=releaseCandidate(r,m);
+  const denied=await fetch(base+'/release',{method:'POST',body:JSON.stringify(candidate)});
+  assert.equal(denied.status,401,'staging is never public');
+  const get=await fetch(base,{headers});assert.equal(get.status,200);
+  assert.equal((await get.json()).status,'succeeded','existing completed result remains visible');
+  const newPaid=await fetch(base,{method:'PUT',headers,body:JSON.stringify(r)});
+  assert.equal(newPaid.status,422,'disabled paid engine rejects even duplicate submissions');
+  assert.equal((await fetch(base+'/resume',{method:'POST',headers,body:'{}'})).status,422,
+   'disabled paid engine cannot resume synthesis');
+  const first=await fetch(base+'/release',{method:'POST',headers,body:JSON.stringify(candidate)});
+  assert.equal(first.status,202);
+  assert.equal((await first.json()).release_staged,true);
+  assert.equal((await fetch(base+'/release',{method:'POST',headers,body:JSON.stringify(candidate)})).status,202,
+   'idempotent approved release intent');
+  const review={contract:'cdc-coral-studio-reviewed-blueprint-v1',
+   creationId:r.creation_id,creationVersion:r.creation_version,requestId:r.request_id,
+   bindingSha256:r.binding_sha256,media:{imageValidated:true,rightsValidated:true},
+   review:{recipeValidated:true,editorialValidated:true,audioListeningValidated:true,
+    mobileValidated:true,desktopValidated:true,productionApproved:true}};
+  const webp=Buffer.from('524946461000000057454250565038580000000000000000','hex');
+  const assetHash=sha(webp);
+  review.visualSha256=assetHash;review.privateVisualVersion=3;
+  review.media.finishedPreparationImage='/images/cuisine/coral-'+r.creation_id+'-'+assetHash+'.webp';
+  const packet={contract:'cdc-coral-studio-private-build-inputs-v1',intent:candidate,
+   source:{id:r.creation_id,version:r.creation_version,kind:'atelier',
+    slug:'amok-trey',title:'Atelier cuisine khmère de démonstration',
+    atelier_reference:{recipeSlug:'amok-trey'},
+    atelier_scripts:{chapters:r.chapters.map((ch,index)=>({id:ch.id,index,text:ch.text}))}},
+   profile:review,visual:webp.toString('base64')};
+  assert.equal((await fetch(base+'/build-inputs',{
+   method:'POST',body:JSON.stringify(packet)})).status,401);
+  const accepted=await fetch(base+'/build-inputs',{method:'POST',headers,body:JSON.stringify(packet)});
+  assert.equal(accepted.status,202);
+  assert.equal((await accepted.json()).build_inputs_staged,true);
+  assert.ok(authorityCalls>=4,'live, revocable authority checked for every staging operation');
+  assert.equal((await readFile(join(privateDir,'release-intent.json'),'utf8')).includes(r.chapters[0].text),
+   false,'no private narration is leaked to the release intent');
+  allowed=false;
+  assert.equal((await fetch(base+'/release',{method:'POST',headers,
+   body:JSON.stringify(candidate)})).status,422,'revoked authority blocks even an idempotent replay');
+  assert.equal((await fetch(base+'/build-inputs',{method:'POST',headers,
+   body:JSON.stringify(packet)})).status,422,'revoked authority blocks private build input replay');
+  assert.equal((await readdir(privateDir)).filter(x=>x.endsWith('.attempt.json')).length,0,
+   'no paid synthesis attempt created');
+ }finally{
+  gateway.stopWorker();
+  await new Promise(resolve=>gateway.server.close(resolve));
+  await rm(root,{recursive:true,force:true});
+ }
+});
+
+test('actual Coral runtime keeps private staging OFF by default',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'coral-runtime-stage-default-off-'));
+ const r=request(),folder=join(root,r.request_id);
+ await mkdir(folder,{mode:0o700});
+ await writeFile(join(folder,'request.json'),JSON.stringify({
+  id:r.request_id,fingerprint:sha(JSON.stringify(r)),created_at:Date.now(),request:r
+ }),{mode:0o600});
+ const env={CDC_EDITORIAL_JOB_SERVICE_ENABLED:'true',CDC_EDITORIAL_JOB_DIR:root,
+  CDC_EDITORIAL_JOB_TOKEN:token,CDC_EDITORIAL_JOB_BIND_HOST:'127.0.0.1',
+  CDC_CORAL_REAL_TTS_ENABLED:'false'};
+ const gateway=await startEditorialJobRuntime(env,{listenPort:0});
+ try{
+  const base='http://127.0.0.1:'+gateway.server.address().port+
+   '/editorial-ai/v1/jobs/'+r.request_id;
+  const denied=await fetch(base+'/release',{method:'POST',headers:{
+   Authorization:'Bearer '+token,'Content-Type':'application/json'
+  },body:'{}'});
+  assert.equal(denied.status,422,'no staging without explicit operator opt-in');
+ }finally{
+  gateway.stopWorker();
+  await new Promise(resolve=>gateway.server.close(resolve));
   await rm(root,{recursive:true,force:true});
  }
 });
