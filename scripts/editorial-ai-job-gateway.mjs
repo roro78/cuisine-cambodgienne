@@ -6,7 +6,7 @@ import {readEditorialJobToken} from './private-runtime-secret.mjs';
 import {existsSync,lstatSync,accessSync,constants} from 'node:fs';
 import {TTS_CONTRACT,validateTtsRequest,ttsSourceKey} from './coral-tts-jobs.mjs';
 import {REAL_SPEECH_REQUEST_CONTRACT,validateCoralRealSpeechRequest,coralRealSpeechSourceKey} from './coral-real-speech-request.mjs';
-import {createCoralRealSpeechJobs} from './coral-speech-real-jobs.mjs';
+import {createCoralRealSpeechJobs,createCoralRealSpeechStagingJobs} from './coral-speech-real-jobs.mjs';
 import {createStudioTtsAuthority} from './coral-tts-authority.mjs';
 import {COMPLETE_WORKSHOP_CONTRACT,validateCompleteWorkshopRequest,produceCompleteWorkshop} from './coral-workshop-contract.mjs';
 import {durableWrite,audioByteRange} from './coral-tts-audio.mjs';
@@ -144,12 +144,15 @@ export function routeEditorialJobProviders({editorialProvider,coralProvider}){
       ?coralProvider:editorialProvider)(request,id);
   };
 }
-export async function createJobGateway({root,token,provider,ttsJobs=null,realTtsJobs=null}){
+export async function createJobGateway({root,token,provider,ttsJobs=null,realTtsJobs=null,realStagingJobs=null}){
   if(typeof token!=='string'||token.length<32||token.length>512||!provider||!root)throw Error('JOB_CONFIG');
   const dir=resolve(root);await mkdir(dir,{mode:0o700,recursive:true});const info=await lstat(dir);
   if(!info.isDirectory()||info.isSymbolicLink()||(process.platform!=='win32'&&(info.mode&0o077)))throw Error('JOB_STORE');
   const active=new Set();let working=false,timer=null;
-  const ttsFor=r=>isRealSpeech(r)?realTtsJobs:r?.contract===TTS_CONTRACT?ttsJobs:null;
+  const ttsFor=r=>isRealSpeech(r)?(realTtsJobs??realStagingJobs):r?.contract===TTS_CONTRACT?ttsJobs:null;
+  // A saved completed Coral job may be staged with TTS disabled. New audio
+  // requests still require the separately approved PAID engine.
+  const submissionEngine=r=>isRealSpeech(r)?realTtsJobs:ttsFor(r);
   const ownerAlive=pid=>{if(!Number.isSafeInteger(pid)||pid<1)return false;try{process.kill(pid,0);return true;}catch(e){return e.code!=='ESRCH';}};
   const path=id=>{if(!idPattern.test(id))throw Error('JOB_ID');return join(dir,id);};
   async function state(id){
@@ -178,7 +181,7 @@ export async function createJobGateway({root,token,provider,ttsJobs=null,realTts
   }
   async function submit(id,request){
     validateJobRequest(request);const folder=path(id);const fingerprint=digest(JSON.stringify(request));
-    if(isTtsContract(request)&&(!ttsFor(request)||id!==request.request_id))throw Error('JOB_TTS_DISABLED_OR_ID');
+    if(isTtsContract(request)&&(!submissionEngine(request)||id!==request.request_id))throw Error('JOB_TTS_DISABLED_OR_ID');
     if(isTtsContract(request)){
       // One synthesis per exact version/text/voice, even after renewed rights.
       const source=isRealSpeech(request)?coralRealSpeechSourceKey(request):ttsSourceKey(request);
@@ -211,6 +214,12 @@ export async function createJobGateway({root,token,provider,ttsJobs=null,realTts
       for(const id of (await readdir(dir)).filter(x=>idPattern.test(x)).sort()){
         if((await state(id)).status!=='queued')continue;
         const folder=path(id);
+        // Never claim or execute an unfinished real Speech job when paid TTS
+        // is disabled, even if a previous deployment left it queued.
+        if(!realTtsJobs){
+          const pending=JSON.parse(await safeRead(join(folder,'request.json')));
+          if(isRealSpeech(pending.request))continue;
+        }
         const control=join(folder,'.operation.lock');
         try{await mkdir(control,{mode:0o700});}catch(e){if(e.code==='EEXIST')continue;throw e;}
         let claimed=false;
@@ -245,6 +254,7 @@ export async function createJobGateway({root,token,provider,ttsJobs=null,realTts
     if(active.has(id))throw Error('JOB_TTS_BUSY_OR_DISABLED');
     const folder=path(id),saved=JSON.parse(await safeRead(join(folder,'request.json')));
     if(!isTtsContract(saved.request))throw Error('JOB_TTS_CONTRACT');
+    if(isRealSpeech(saved.request)&&!realTtsJobs)throw Error('JOB_TTS_DISABLED');
     const engine=ttsFor(saved.request);if(!engine)throw Error('JOB_TTS_DISABLED');
     if(operation==='audio')return stream?engine.audioStream(saved.request,id,folder):engine.audio(saved.request,id,folder);
     if(operation==='preview'){
@@ -272,7 +282,7 @@ export async function createJobGateway({root,token,provider,ttsJobs=null,realTts
     if(active.has(id))throw Error('JOB_TTS_BUSY_OR_DISABLED');
     const folder=path(id),saved=JSON.parse(await safeRead(join(folder,'request.json')));
     if(!isRealSpeech(saved.request))throw Error('JOB_REAL_RELEASE_CONTRACT');
-    const engine=ttsFor(saved.request);
+    const engine=isRealSpeech(saved.request)?(realStagingJobs??realTtsJobs):null;
     if(!engine||typeof engine.stageRelease!=='function')
       throw Error('JOB_REAL_RELEASE_DISABLED');
     const lock=join(folder,'.release-operation.lock');
@@ -284,7 +294,7 @@ export async function createJobGateway({root,token,provider,ttsJobs=null,realTts
     if(active.has(id))throw Error('JOB_TTS_BUSY_OR_DISABLED');
     const folder=path(id),saved=JSON.parse(await safeRead(join(folder,'request.json')));
     if(!isRealSpeech(saved.request))throw Error('JOB_REAL_BUILD_INPUTS_CONTRACT');
-    const engine=ttsFor(saved.request);
+    const engine=isRealSpeech(saved.request)?(realStagingJobs??realTtsJobs):null;
     if(!engine||typeof engine.stageBuildInputs!=='function')
       throw Error('JOB_REAL_BUILD_INPUTS_DISABLED');
     const lock=join(folder,'.build-inputs-operation.lock');
@@ -398,7 +408,7 @@ export function currentStudioSpeechApproval(authority){
   return async r=>{try{return await authority(r)===true;}catch{return false;}};
 }
 
-export async function startEditorialJobRuntime(env=process.env){
+export async function startEditorialJobRuntime(env=process.env,{authorityFactory=createStudioTtsAuthority,listenPort=18678}={}){
   const config=editorialJobRuntimeConfig(env);
   // Never switch to paid text generation implicitly: qualification + explicit
   // operator go-live gate + authenticated secret + private spending ledger.
@@ -428,44 +438,50 @@ export async function startEditorialJobRuntime(env=process.env){
         ||request.canonical_fingerprint!==env.CDC_CORAL_COMPLETE_WORKSHOP_SOURCE_SHA256))throw Error('JOB_WORKSHOP_SCOPE');
     return selected(request,id);
   };
-  let realTtsJobs=null;
-  // Separate paid speech activation from editorial text and simulated audio.
-  // Never enabled by a GitHub merge or by importing this module.
-  if(env.CDC_CORAL_REAL_TTS_ENABLED==='true'){
-    if(env.CDC_CORAL_REAL_TTS_MODEL_QUALIFIED!=='true'
-      ||env.CDC_CORAL_REAL_TTS_SPEND_APPROVED!=='true'
-      ||env.CDC_CORAL_REAL_TTS_PROJECT_BUDGET_VERIFIED!=='true'
-      ||env.CDC_CORAL_REAL_TTS_AUTHORITY_ENDPOINT!=='https://www.cuisine-du-cambodge.com/gestion-contenus/?tts_authority=1')
-      throw Error('CORAL_REAL_TTS_NOT_APPROVED');
-    const budgetDir=env.CDC_CORAL_EXTERNAL_BUDGET_DIR;
-    if(typeof budgetDir!=='string'||!isAbsolute(budgetDir)||resolve(budgetDir)===resolve(config.root))
-      throw Error('CORAL_REAL_BUDGET_DIR');
-    const b=lstatSync(budgetDir);
-    if(!b.isDirectory()||b.isSymbolicLink()||
-      (process.platform!=='win32'&&((b.mode&0o077)!==0||b.uid!==process.geteuid())))
-      throw Error('CORAL_REAL_BUDGET_DIR');
-    const authority=createStudioTtsAuthority({
+  let realTtsJobs=null,realStagingJobs=null;
+  const paidSpeechEnabled=env.CDC_CORAL_REAL_TTS_ENABLED==='true';
+  const privateStagingEnabled=env.CDC_CORAL_RELEASE_STAGING_ENABLED==='true';
+  // Staging existing, completed audio never grants the right to synthesize.
+  // It has an independent opt-in and the SAME live, revocable Studio authority.
+  if(paidSpeechEnabled||privateStagingEnabled){
+    if(env.CDC_CORAL_REAL_TTS_AUTHORITY_ENDPOINT!=='https://www.cuisine-du-cambodge.com/gestion-contenus/?tts_authority=1')
+      throw Error('CORAL_REAL_STAGING_AUTHORITY_CONFIG');
+    const authority=authorityFactory({
       endpoint:env.CDC_CORAL_REAL_TTS_AUTHORITY_ENDPOINT,
       tokenFile:env.CDC_CORAL_REAL_TTS_AUTHORITY_TOKEN_FILE,
       timeoutMs:3000
     });
-    // A persistent service is gated separately from EACH human-approved job.
-    // Approval is checked live on every fragment and can be revoked in Studio.
     const permitted=currentStudioSpeechApproval(authority);
-    realTtsJobs=createCoralRealSpeechJobs({
-      authorize:permitted,
-      spendingApproved:permitted,
-      externalProjectBudgetVerified:async r=>await permitted(r)&&
-        env.CDC_CORAL_REAL_TTS_PROJECT_BUDGET_VERIFIED==='true',
-      budgetDir,maxDailyUsd:0.75,maxMonthlyUsd:1
-    });
+    realStagingJobs=createCoralRealSpeechStagingJobs({authorize:permitted});
+    // Separate paid speech activation from editorial text and simulated audio.
+    // Never enabled by staging, a GitHub merge or by importing this module.
+    if(paidSpeechEnabled){
+      if(env.CDC_CORAL_REAL_TTS_MODEL_QUALIFIED!=='true'
+        ||env.CDC_CORAL_REAL_TTS_SPEND_APPROVED!=='true'
+        ||env.CDC_CORAL_REAL_TTS_PROJECT_BUDGET_VERIFIED!=='true')
+        throw Error('CORAL_REAL_TTS_NOT_APPROVED');
+      const budgetDir=env.CDC_CORAL_EXTERNAL_BUDGET_DIR;
+      if(typeof budgetDir!=='string'||!isAbsolute(budgetDir)||resolve(budgetDir)===resolve(config.root))
+        throw Error('CORAL_REAL_BUDGET_DIR');
+      const b=lstatSync(budgetDir);
+      if(!b.isDirectory()||b.isSymbolicLink()||
+        (process.platform!=='win32'&&((b.mode&0o077)!==0||b.uid!==process.geteuid())))
+        throw Error('CORAL_REAL_BUDGET_DIR');
+      realTtsJobs=createCoralRealSpeechJobs({
+        authorize:permitted,
+        spendingApproved:permitted,
+        externalProjectBudgetVerified:async r=>await permitted(r)&&
+          env.CDC_CORAL_REAL_TTS_PROJECT_BUDGET_VERIFIED==='true',
+        budgetDir,maxDailyUsd:0.75,maxMonthlyUsd:1
+      });
+    }
   }
   const gateway=await createJobGateway({
-    root:config.root,token:config.token,provider,realTtsJobs
+    root:config.root,token:config.token,provider,realTtsJobs,realStagingJobs
   });
   await new Promise((accept,reject)=>{
     gateway.server.once('error',reject);
-    gateway.server.listen(18678,config.bindHost,()=>{gateway.startWorker();accept();});
+    gateway.server.listen(listenPort,config.bindHost,()=>{gateway.startWorker();accept();});
   });
   const stop=()=>{gateway.stopWorker();gateway.server.close(()=>process.exit(0));};
   process.once('SIGTERM',stop);process.once('SIGINT',stop);
