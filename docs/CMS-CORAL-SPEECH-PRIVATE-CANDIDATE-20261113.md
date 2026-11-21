@@ -298,3 +298,19 @@ existantes. La protection doit couvrir les WebP Coral et les fichiers
 temporaires de transaction. Valider sur la cible le passage temporaire en
 HTTP 503 et le retour arrière, ainsi que le passage d’un paquet de construction
 de 1,5 Mo vers le worker via la route privée existante.
+
+
+## Correctif 21 novembre 2026 — Staging de livrables sans synthèse payante
+
+Le runtime \`scripts/editorial-ai-job-gateway.mjs\` découple désormais :
+- **TTS payant** : \`CDC_CORAL_REAL_TTS_ENABLED=true\` avec toutes les qualifications préexistantes, nécessaire pour soumettre une nouvelle requête Speech, poursuivre une synthèse ou écrire un nouveau WAV/MP3.
+- **Dépôt privé non facturable** : \`CDC_CORAL_RELEASE_STAGING_ENABLED=true\` (défaut \`false\` dans \`deploy/coral/compose.real-speech.yaml\`), autorisant uniquement l'inspection d'un job Speech **déjà terminé** et les POST Bearer \`/release\` et \`/build-inputs\`. Aucun runner \`run\`/\`resume\`, transport Speech, réservation budgétaire ni fournisseur OpenAI n'est disponible via cette façade.
+
+Le staging exige impérativement la liaison privée Studio :
+\`CDC_CORAL_REAL_TTS_AUTHORITY_ENDPOINT=https://www.cuisine-du-cambodge.com/gestion-contenus/?tts_authority=1\` et \`CDC_CORAL_REAL_TTS_AUTHORITY_TOKEN_FILE\` pointant vers le **secret existant** monté en lecture seule. L'autorité distante est recontrôlée et révocable à chaque opération. En cas de refus, secret absent, job incomplet, empreinte incompatible ou contrat invalide, l'opération échoue fermée.
+
+Les requêtes anonymes gardent \`401\`. Sans l'activation explicite du staging, l'opération reste indisponible (\`422 JOB_UNAVAILABLE\`). Même avec staging activé, \`PUT\` nouveau Speech et \`POST /resume\` demeurent interdits si \`CDC_CORAL_REAL_TTS_ENABLED=false\`. Les autres routes historiques restent inchangées.
+
+**Préflight exigé avant basculement Orvekio :** point d'entrée réel de la nouvelle révision sur boucle locale et données privées **fictives déjà terminées**, \`CDC_CORAL_REAL_TTS_ENABLED=false\`, \`CDC_CORAL_RELEASE_STAGING_ENABLED=true\`, jeton/autorité de test isolés ; observer les deux \`202\` authentifiés, refus \`401\` anonymes, refus des requêtes de synthèse, contrôles de révocation et conservation des historiques. Les nouveaux tests d'intégration démarrent la vraie fonction \`startEditorialJobRuntime\` plutôt qu'un \`realTtsJobs\` injecté manuellement. Une CI verte ne suffit pas à prouver le préflight sur le VPS réel.
+
+Ne pas démarrer le timer ou le service permanent, ni installer le Studio OVH, ni publier de lot sur la base de ce correctif seul. La passerelle historique reste en production jusqu'à sauvegarde ciblée, restauration isolée et basculement réversible approuvé sur le **nouveau SHA**.
