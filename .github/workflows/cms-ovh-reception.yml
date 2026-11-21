@@ -10,6 +10,8 @@ on:
       - 'public/gestion-contenus/**'
       - 'scripts/check-cms-ovh-readiness.mjs'
       - 'scripts/package-cms-ovh-release.mjs'
+      - 'scripts/prepare-amok-index-catchup.mjs'
+      - 'tests/cms-amok-index-catchup.test.mjs'
       - 'tests/cms-ovh-reception.test.mjs'
       - '.github/workflows/cms-ovh-reception.yml'
   workflow_dispatch:
@@ -40,7 +42,7 @@ jobs:
 
       - name: Test CMS reception invariants
         run: |
-          node --test tests/cms-ovh-reception.test.mjs tests/editorial-existing-coral-narrations.test.mjs tests/editorial-coral-v2-gateway.test.mjs
+          node --test tests/cms-ovh-reception.test.mjs tests/cms-amok-index-catchup.test.mjs tests/editorial-existing-coral-narrations.test.mjs tests/editorial-coral-v2-gateway.test.mjs
           php -l public/gestion-contenus/lib.php
           php -l public/gestion-contenus/index.php
           php tests/php/editorial-cms-drafts-smoke.php
@@ -73,6 +75,38 @@ jobs:
             CMS-OVH-MANIFEST.json
           retention-days: 14
           if-no-files-found: error
+
+      - name: Prepare additive Amok V4 index catch-up candidate (read-only)
+        id: amok
+        continue-on-error: true
+        run: |
+          node scripts/prepare-amok-index-catchup.mjs --dist dist --out /tmp/cdc-amok-index-catchup
+          tar -czf amok-v4-index-catchup-CANDIDATE.tar.gz -C /tmp/cdc-amok-index-catchup .
+          sha256sum amok-v4-index-catchup-CANDIDATE.tar.gz > amok-v4-index-catchup-CANDIDATE.sha256
+
+      - name: Upload additive Amok V4 candidate (NOT a deployment)
+        if: steps.amok.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: amok-v4-additive-catchup-CANDIDATE
+          path: |
+            amok-v4-index-catchup-CANDIDATE.tar.gz
+            amok-v4-index-catchup-CANDIDATE.sha256
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: Report public Amok catch-up candidate only
+        if: always()
+        env:
+          AMOK_CATCHUP: ${{ steps.amok.outcome }}
+        run: |
+          if [ "$AMOK_CATCHUP" = success ]; then
+            echo '### AMOK V4: additive index/JPEG candidate built, NOT deployed' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Existing live index rows preserved. Private approval hashes, backups, restore and operator authorization remain mandatory.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo '### AMOK V4: NO additive candidate; public state changed or preflight failed' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Do not upload the general CMS JSON bundle over live indexes without provenance reconciliation.' >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Check live OVH anonymously without credentials or mutation
         id: ovh
