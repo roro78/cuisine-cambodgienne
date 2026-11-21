@@ -173,6 +173,8 @@ test('release package includes exactly seventeen scoped files and private rollba
   assert.ok(packageInfo.files.some(item=>item.path==='gestion-contenus/publication-gap-audit.php'));
   assert.ok(packageInfo.files.some(item=>item.path==='gestion-contenus/narrations-export.php'));
   assert.equal(packageInfo.requires.manualUpload,true);
+  assert.equal(packageInfo.requires.liveIndexReconciliationRequired,true);
+  assert.match(await readFile(join(out,'README.txt'),'utf8'),/Do not upload raw JSON indexes/);
   assert.equal((await cmsReception({dir:out})).social,1);
   const manifest=JSON.parse(await readFile(join(out,'CMS-OVH-MANIFEST.json'),'utf8'));
   assert.equal(manifest.contract,'cdc-ovh-cms-bundle-v1');
