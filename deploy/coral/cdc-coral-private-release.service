@@ -1,0 +1,19 @@
+[Unit]
+Description=Prepare approved Coral Studio releases for private OVH staging
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=1000
+Group=1000
+WorkingDirectory=/srv/cdc-coral-release
+EnvironmentFile=/etc/cdc-coral/release-runner.env
+Environment=npm_config_cache=/srv/cdc-coral-release/npm-cache
+UMask=0077
+ExecStart=/usr/bin/node /srv/cdc-coral-release/runner/scripts/run-coral-private-release.mjs --pending 1 --job-root ${CORAL_RELEASE_JOB_ROOT} --repo /srv/cdc-coral-release/source --source-sha ${CORAL_RELEASE_SOURCE_SHA} --output-root /srv/cdc-coral-release/output --token-file ${CORAL_RELEASE_TOKEN_FILE}
+TimeoutStartSec=30min
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/srv/cdc-coral-release

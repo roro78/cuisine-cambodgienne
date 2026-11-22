@@ -9,7 +9,10 @@ function cmsCoralSettings(array $cfg): ?array {
   $s=cmsAiContentSettings($cfg);
   if($s===null||$s['mode']!=='async'||($cfg['editorial_ai_content']['coral_v2_qualified']??false)!==true)return null;
   $s['workshop_complete_qualified']=($cfg['editorial_ai_content']['workshop_complete_qualified']??false)===true;
-  if($s['workshop_complete_qualified']){
+  $s['workshop_permanent']=($cfg['editorial_ai_content']['workshop_permanent']??false)===true;
+  if($s['workshop_permanent']){
+    if(!$s['workshop_complete_qualified'])throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
+  }elseif($s['workshop_complete_qualified']){
     $s['workshop_creation_id']=$cfg['editorial_ai_content']['workshop_creation_id']??null;
     $s['workshop_recipe_sha256']=$cfg['editorial_ai_content']['workshop_recipe_sha256']??null;
     $expires=$cfg['editorial_ai_content']['workshop_expires_at']??null;
@@ -61,18 +64,24 @@ function cmsCoralTtsWrite(string $file,array $r): void {
   if($tmp===false)throw new RuntimeException('TTS_PRIVATE_STORE');
   try{
     if(!chmod($tmp,0600)||file_put_contents($tmp,$json,LOCK_EX)!==strlen($json)
-      ||!rename($tmp,$file))throw new RuntimeException('TTS_PRIVATE_STORE');
+      ||!link($tmp,$file))throw new RuntimeException('TTS_PRIVATE_STORE');
   }finally{if(is_file($tmp))unlink($tmp);}
 }
 function cmsCoralTtsLocked(string $private,string $id,callable $op): mixed {
   if(!cmsCreationId($id))throw new InvalidArgumentException('TTS_CREATION_ID');
   $dir=cmsCreationDir($private);$file=$dir.'/catalog.lock';
+  // OVH flock alone does not exclude concurrent processes. Never steal a lock.
+  $mutex=$dir.'/tts-operation-'.$id.'.lock';
+  if(!@mkdir($mutex,0700))throw new RuntimeException('TTS_LOCK');
+  $h=null;
+  try{
   if(is_link($file))throw new RuntimeException('TTS_LOCK');
   $h=fopen($file,'c');if(!$h||!flock($h,LOCK_EX))throw new RuntimeException('TTS_LOCK');
   try{if(!chmod($file,0600))throw new RuntimeException('TTS_LOCK');
     $record=cmsCreationRead($dir,$id);if(!$record)throw new RuntimeException('TTS_DRAFT_MISSING');
     return $op($dir,$record);
-  }finally{flock($h,LOCK_UN);fclose($h);}
+  }finally{flock($h,LOCK_UN);fclose($h);$h=null;}
+  }finally{if(is_resource($h))fclose($h);@rmdir($mutex);}
 }
 function cmsCoralTtsBinding(array $record,array $catalog,array $canonical,array $guided): array {
   if(isset($record['source_binding'])&&!cmsStudioBindingCurrent($record['source_binding'],$catalog,$canonical))
@@ -84,7 +93,8 @@ function cmsCoralTtsBinding(array $record,array $catalog,array $canonical,array 
 }
 /** Compatible append-only human journal, never imported into content drafts. */
 function cmsCoralTtsJournal(string $dir,string $id,string $kind): array {
-  if(!cmsCreationId($id)||!in_array($kind,['rights','listening'],true))throw new RuntimeException('TTS_JOURNAL_ID');
+  if(!cmsCreationId($id)||!in_array($kind,['rights','listening','voice-rights','real-listening','real-publication'],true))throw new RuntimeException('TTS_JOURNAL_ID');
+  $rightsKind=in_array($kind,['rights','voice-rights'],true);$real=in_array($kind,['voice-rights','real-listening','real-publication'],true);
   $events=[];$previous='';$files=glob($dir.'/tts-'.$kind.'-'.$id.'.*.json');
   if(!is_array($files)||count($files)>9998)throw new RuntimeException('TTS_JOURNAL_STORE');
   foreach($files as $file){
@@ -95,9 +105,9 @@ function cmsCoralTtsJournal(string $dir,string $id,string $kind): array {
       ||$r['event']!==count($events)+1||!is_int($r['creation_version'])||$r['creation_version']<1
       ||basename($file)!=='tts-'.$kind.'-'.$id.'.'.sprintf('%04d',$r['event']).'.json'
       ||!in_array($r['action'],['approve','revoke'],true)||!preg_match('/^[a-f0-9]{64}$/D',$r['binding_sha256'])
-      ||$r['voice']!=='test-tone'||$r['provider']!=='simulated-tone-v1'||!is_array($r['checks'])
-      ||$r['checks']!==($r['action']==='approve'?($kind==='rights'?['voice','content','private_audio']:['full_listening','chapter_order']):[])
-      ||!is_string($r['artifact_sha256'])||($kind==='rights'?$r['artifact_sha256']!=='':!preg_match('/^[a-f0-9]{64}$/D',$r['artifact_sha256']))
+      ||$r['voice']!==($real?'coral':'test-tone')||$r['provider']!==($real?'openai-speech-coral-093-v1':'simulated-tone-v1')||!is_array($r['checks'])
+      ||$r['checks']!==($r['action']==='approve'?($rightsKind?['voice','content','private_audio']:($kind==='real-publication'?['reviewed_page','audio_checksum','publish_requested']:['full_listening','chapter_order'])):[])
+      ||!is_string($r['artifact_sha256'])||($rightsKind?$r['artifact_sha256']!=='':!preg_match('/^[a-f0-9]{64}$/D',$r['artifact_sha256']))
       ||!is_string($r['note'])||mbLen($r['note'])<20||mbLen($r['note'])>900
       ||$r['reviewer']!=='authenticated-cms-owner'
       ||!is_string($r['reviewed_at'])||!preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/D',$r['reviewed_at'])
@@ -110,18 +120,34 @@ function cmsCoralTtsDecision(string $private,string $id,int $expected,string $ki
   array $checks,string $note,bool $confirmed,bool $authenticated,array $catalog,array $canonical,array $guided,
   string $artifactSha=''): array {
   if(!$authenticated||!$confirmed)throw new RuntimeException('TTS_HUMAN_CONFIRM_REQUIRED');
-  $required=$kind==='rights'?['voice','content','private_audio']:['full_listening','chapter_order'];
-  if(!in_array($kind,['rights','listening'],true)||!in_array($action,['approve','revoke'],true)
+  $rightsKind=in_array($kind,['rights','voice-rights'],true);
+  $required=$rightsKind?['voice','content','private_audio']:($kind==='real-publication'?['reviewed_page','audio_checksum','publish_requested']:['full_listening','chapter_order']);
+  if(!in_array($kind,['rights','listening','voice-rights','real-listening','real-publication'],true)||!in_array($action,['approve','revoke'],true)
     ||($action==='approve'?(array_keys($checks)!==$required||array_values($checks)!==array_fill(0,count($required),'1')):$checks!==[]))
     throw new InvalidArgumentException('TTS_RIGHTS_CHECKS');
   $note=cmsCreationText($note,900);if(mbLen($note)<20)throw new InvalidArgumentException('TTS_HUMAN_NOTE');
-  if(($kind==='rights'&&$artifactSha!=='')||($kind==='listening'&&!preg_match('/^[a-f0-9]{64}$/D',$artifactSha)))throw new InvalidArgumentException('TTS_ARTIFACT');
-  return cmsCoralTtsLocked($private,$id,static function($dir,$record)use($id,$expected,$kind,$action,$checks,$note,$catalog,$canonical,$guided,$artifactSha){
+  if(($rightsKind&&$artifactSha!=='')||(!$rightsKind&&!preg_match('/^[a-f0-9]{64}$/D',$artifactSha)))throw new InvalidArgumentException('TTS_ARTIFACT');
+  return cmsCoralTtsLocked($private,$id,static function($dir,$record)use($private,$id,$expected,$kind,$action,$checks,$note,$catalog,$canonical,$guided,$artifactSha){
     if($record['version']!==$expected)throw new RuntimeException('TTS_VERSION_STALE');
     $binding=cmsCoralTtsBinding($record,$catalog,$canonical,$guided);$j=cmsCoralTtsJournal($dir,$id,$kind);$n=count($j['events'])+1;
+    $real=in_array($kind,['voice-rights','real-listening','real-publication'],true);
+    if($kind==='voice-rights'){
+      if($action==='approve'&&time()>=strtotime('2027-01-06T00:00:00Z'))throw new RuntimeException('TTS_PROFILE_EXPIRED');
+      if($action==='approve'&&!cmsCoralFinalStatus($private,$record,$catalog,$canonical,$guided)['approved'])
+        throw new RuntimeException('TTS_FINAL_REVIEW_REQUIRED');
+      $last=$j['events']?end($j['events']):null;
+      if($last&&$last['action']===$action&&$last['creation_version']===$expected
+        &&$last['binding_sha256']===$binding['binding_sha256'])throw new RuntimeException('TTS_DECISION_ALREADY_SET');
+    }
+    if($kind==='real-listening'||$kind==='real-publication'){
+      $last=$j['events']?end($j['events']):null;
+      if($last&&$last['action']===$action&&$last['creation_version']===$expected
+        &&$last['binding_sha256']===$binding['binding_sha256']
+        &&$last['artifact_sha256']===$artifactSha)throw new RuntimeException('TTS_DECISION_ALREADY_SET');
+    }
     if($n>9998)throw new RuntimeException('TTS_JOURNAL_CAPACITY');
     $r=['contract'=>'cdc-coral-tts-'.$kind.'-v1','creation_id'=>$id,'creation_version'=>$expected,
-      'event'=>$n,'action'=>$action,'binding_sha256'=>$binding['binding_sha256'],'voice'=>'test-tone','provider'=>'simulated-tone-v1',
+      'event'=>$n,'action'=>$action,'binding_sha256'=>$binding['binding_sha256'],'voice'=>$real?'coral':'test-tone','provider'=>$real?'openai-speech-coral-093-v1':'simulated-tone-v1',
       'checks'=>$action==='approve'?array_keys($checks):[],'artifact_sha256'=>$artifactSha,
       'note'=>$note,'reviewer'=>'authenticated-cms-owner','reviewed_at'=>gmdate('Y-m-d\TH:i:s\Z'),'previous_event_sha256'=>$j['last_hash']];
     cmsCoralTtsWrite($dir.'/tts-'.$kind.'-'.$id.'.'.sprintf('%04d',$n).'.json',$r);return $r;
@@ -220,7 +246,14 @@ function cmsCoralTtsAuthorityCheck(string $private,array $cfg,string $method,str
     if(!is_array($q)||count($q)!==3||($q['contract']??null)!=='cdc-coral-tts-authority-check-v1'
       ||!is_string($q['challenge']??null)||!preg_match('/^[a-f0-9]{64}$/D',$q['challenge'])
       ||!is_array($q['request']??null))return [422,['error'=>'TTS_AUTHORITY_REQUEST']];
-    $r=$q['request'];$allowed=false;if(!cmsCoralTtsAuthoritySelectorValid($r))return [422,['error'=>'TTS_AUTHORITY_REQUEST']];
+    $r=$q['request'];$allowed=false;
+    if(($r['contract']??null)==='cdc-coral-private-speech-request-v1'){
+      $allowed=cmsCoralRealSpeechAuthorityAllowed($private,$r,$catalog,$canonical,$guided);
+      return [200,['contract'=>'cdc-coral-tts-authority-check-v1','challenge'=>$q['challenge'],
+        'request_id'=>is_string($r['request_id']??null)?$r['request_id']:'',
+        'authorized'=>$allowed]];
+    }
+    if(!cmsCoralTtsAuthoritySelectorValid($r))return [422,['error'=>'TTS_AUTHORITY_REQUEST']];
     // The request is a selector, NEVER an authorization. Rebuild from CURRENT server journals.
     $id=cmsCreationId($r['creation_id']??null);$job=$r['request_id']??'';
     if($id!==null&&is_string($job)&&preg_match('/^[a-f0-9]{48}$/D',$job)){
@@ -313,8 +346,80 @@ function cmsCoralTtsListeningAction(string $private,string $id,int $version,stri
   cmsCoralTtsDecision($private,$id,$version,'listening',$action,$checks,$note,$confirmed,$authenticated,
     $catalog,$canonical,$guided,$s['manifest']['sha256']);
 }
-function cmsCoralTtsPanel(string $private,?array $record,array $catalog,array $canonical,array $guided,string $csrf,?array $settings,string $filtersUrl=''): string {
-  if(!$record||($record['kind']??null)!=='atelier'||$settings===null)return '';
+/** Permanent phone preparation. Deliberately has NO paid provider or generation method. */
+function cmsCoralRealTtsReadiness(string $private,array $record,array $catalog,array $canonical,array $guided): array {
+  $binding=cmsCoralTtsBinding($record,$catalog,$canonical,$guided);
+  $final=cmsCoralFinalStatus($private,$record,$catalog,$canonical,$guided);
+  $journal=cmsCoralTtsJournal(cmsCreationDir($private),$record['id'],'voice-rights');
+  $last=$journal['events']?end($journal['events']):null;
+  $rights=$last&&$last['action']==='approve'&&$last['creation_version']===$record['version']
+    &&hash_equals($binding['binding_sha256'],$last['binding_sha256']);
+  $visas=cmsAtelierVisaStatus(cmsCreationDir($private),$record,$catalog);
+  $culinary=cmsAtelierCulinaryStatus(cmsCreationDir($private),$record,$catalog,$canonical,$guided);
+  $words=0;$characters=0;
+  foreach($record['atelier_scripts']['chapters']??[] as $chapter){
+    $characters+=mbLen($chapter['text']);$words+=count(preg_split('/\s+/u',trim($chapter['text'])));
+  }
+  // Planning estimate only: 140 words/minute at speed 0.93, 20 audio tokens/second.
+  // Historical Speech rates: 0.60 USD/M text input, 12 USD/M audio output.
+  // Neither timing nor token heuristics establish a billing ceiling.
+  $seconds=$words/140*60/0.93;$textTokens=(int)ceil($characters/3);
+  $estimate=(int)ceil($seconds*240+$textTokens*0.6+4200);
+  return ['contract'=>'cdc-coral-real-tts-readiness-v1','text_visas_count'=>$visas['approved_text_count'],
+    'culinary_review_current'=>$culinary['human_culinary_review_recorded'],'final_review_current'=>$final['approved'],
+    'rights_current'=>(bool)$rights,'voice'=>'coral','model'=>'gpt-4o-mini-tts','speed'=>0.93,
+    'provider'=>'openai-speech-coral-093-v1','characters'=>$characters,'words'=>$words,
+    'estimated_seconds'=>$seconds,'estimate_microusd'=>$estimate,'approved_budget_microusd'=>null,
+    'profile_retirement_utc'=>'2027-01-06T00:00:00Z','provider_qualified'=>false,'generation_available'=>false,'paid_calls'=>0,'completed_mp3'=>0,
+    'blocking'=>array_values(array_filter([
+      !$final['approved']?'FINAL_REVIEW_REQUIRED':null,!$rights?'VOICE_RIGHTS_REQUIRED':null,
+      'REAL_PROVIDER_NOT_QUALIFIED','PROJECT_PERMISSIONS_AND_BUDGET_UNCONFIRMED',
+      'EXPLICIT_SPENDING_APPROVAL_REQUIRED','SEVEN_CHAPTER_AUDIO_DELIVERY_NOT_RECEIVED']))];
+}
+function cmsCoralRealTtsPanel(string $private,array $record,array $catalog,array $canonical,array $guided,string $csrf,string $filtersUrl='',?array $realSettings=null): string {
+  try{$state=cmsCoralRealTtsReadiness($private,$record,$catalog,$canonical,$guided);}
+  catch(Throwable $e){return '<section id="cms-real-tts"><h2>Sept MP3 parlés</h2><p>Préparation indisponible. Aucune génération ni dépense autorisée.</p></section>';}
+  $id=$record['id'];$version=(int)$record['version'];$base='?new=1&amp;cid='.cmsEsc($id).($filtersUrl!==''?'&amp;'.cmsEsc($filtersUrl):'');
+  $html='<section id="cms-real-tts" data-coral-real-tts-preparation><h2>Préparer les sept MP3 parlés</h2>'
+    .'<p><strong>Préparation uniquement — voix réelle indisponible.</strong> Aucun signal de test ne sera présenté comme une narration. Aucun appel payant.</p>'
+    .'<p>Textes approuvés : '.(int)$state['text_visas_count'].'/7. Revue culinaire : '.($state['culinary_review_current']?'validée':'absente ou périmée').'.</p>'
+    .'<p>Visa final de la version '.$version.' : '.($state['final_review_current']?'enregistré et courant':'absent ou périmé').'. '
+    .'Droits pour la voix proposée : '.($state['rights_current']?'enregistrés pour cette version':'à confirmer personnellement').'.</p>'
+    .'<ol><li>Valider les droits audio de cette version.</li><li>Générer les sept MP3 après qualification et accord de dépense.</li>'
+    .'<li>Suivre les fichiers sans relancer un chapitre déjà vérifié.</li><li>Écouter les sept narrations intégralement.</li><li>Approuver personnellement les fichiers privés.</li></ol>'
+    .'<p>Voix standard proposée : Coral, en français, synthétique et non clonée. Modèle de référence historique : '.cmsEsc($state['model']).'. '
+    .'Vitesse historique : 0,93. L’accès à ce modèle et le budget du projet OpenAI restent à confirmer. Ce modèle est annoncé en retrait au 6 janvier 2027 ; aucun remplacement de modèle ne sera déclaré identique sans comparaison d’écoute.</p>'
+    .'<p><a href="/audio/workshops/atelier-pratique-kroeung-jaune/atelier-coral-v3.mp3#t=0,12">Écouter le début de la référence Coral historique (autre atelier)</a></p>'
+    .'<p>Ordre de grandeur : environ '.number_format($state['estimated_seconds']/60,1,',',' ').' minutes de parole et '
+    .number_format($state['estimate_microusd']/1000000,2,',',' ').' USD. Estimation selon le texte, pas une facture ni un plafond garanti. '
+    .'Aucun budget de synthèse n’est autorisé par cet écran.</p>';
+  if($state['rights_current']||$state['final_review_current']){
+    $html.='<form method="post" class="stack" action="'.$base.'#cms-real-tts">'
+      .'<input type="hidden" name="csrf" value="'.cmsEsc($csrf).'">'
+      .'<input type="hidden" name="creation_id" value="'.cmsEsc($id).'">'
+      .'<input type="hidden" name="expected_version" value="'.$version.'">';
+    if(!$state['rights_current'])foreach(['voice'=>'Je peux utiliser la voix synthétique standard Coral proposée ; ce choix ne concerne pas une voix clonée.',
+      'content'=>'Je dispose des droits nécessaires sur les sept textes enregistrés.',
+      'private_audio'=>'J’autorise une future version audio privée de ces textes et je signalerai son origine synthétique.'] as $key=>$label)
+      $html.='<label><input type="checkbox" name="tts_checks['.$key.']" value="1" required> '.cmsEsc($label).'</label>';
+    $html.='<label>Note sur les droits audio<textarea name="tts_note" minlength="20" maxlength="900" required></textarea></label>'
+      .'<label><input type="checkbox" name="tts_confirm" value="1" required> Je confirme personnellement cette décision. Elle ne déclenche ni génération ni dépense.</label>'
+      .'<button name="tts_action" value="'.($state['rights_current']?'revoke_voice_rights':'approve_voice_rights').'">'
+      .($state['rights_current']?'Révoquer les droits pour cette voix':'Valider les droits audio pour cette voix').'</button></form>';
+  }
+  if($realSettings!==null){
+    try{$html.=cmsCoralRealSpeechProductionPanel($private,$record,$catalog,$canonical,$guided,$csrf,$realSettings,$filtersUrl);}
+    catch(Throwable $e){$html.='<p>Génération Coral indisponible : configuration ou validation non conforme.</p>';}
+  }else{
+    $html.='<p>Génération réelle non activée sur ce serveur.</p>'
+      .'<button type="button" disabled aria-disabled="true">Générer le MP3 Coral — activation requise</button>';
+  }
+  return $html;
+}
+function cmsCoralTtsPanel(string $private,?array $record,array $catalog,array $canonical,array $guided,string $csrf,?array $settings,string $filtersUrl='',?array $realSettings=null): string {
+  if(!$record||($record['kind']??null)!=='atelier')return '';
+  $preparation=cmsCoralRealTtsPanel($private,$record,$catalog,$canonical,$guided,$csrf,$filtersUrl,$realSettings);
+  if($settings===null)return $preparation;
   $id=$record['id'];$version=$record['version'];$dir=cmsCreationDir($private);
   $base='?new=1&amp;cid='.cmsEsc($id).($filtersUrl!==''?'&amp;'.cmsEsc($filtersUrl):'');$binding=null;$ready=null;$rights=null;
   try{$binding=cmsCoralTtsBinding($record,$catalog,$canonical,$guided);$rights=cmsCoralTtsJournal($dir,$id,'rights');}catch(Throwable $e){}
@@ -384,7 +489,7 @@ function cmsCoralTtsPanel(string $private,?array $record,array $catalog,array $c
     $html.='<p data-tts-readiness>'.($ready===null?'Autorisations incomplètes.':'Prêt pour génération — confirmation requise.').'</p>';
     if($ready===null)$html.='<p>Manquent les sept visas actifs, la revue culinaire, les droits ou une source complète et courante.</p>';
   }
-  return $html.'<p>Publication non autorisée. Aucun remplacement des anciens MP3. La publication reste une décision distincte et indisponible ici.</p></section>';
+  return $preparation.$html.'<p>Publication non autorisée. Aucun remplacement des anciens MP3. La publication reste une décision distincte et indisponible ici.</p></section>';
 }
 function cmsCoralPolicy(): array {
   $path=__DIR__.'/coral-v2-contract.json';
@@ -416,12 +521,20 @@ function cmsCoralNextWorkshop(array $creations,array $catalog,array $settings): 
   cmsCalendarPlan($creations,gmdate('Y-m'));$eligible=[];$dated=[];
   $excluded=$settings['workshop_excluded_creation_ids']??[];
   foreach($creations as $r){
+    if(($settings['workshop_permanent']??false)===true
+      &&(cmsAtelierPhaseDetailsComplete($r['atelier_phase_details']??null)
+        ||array_filter($r['atelier_scripts']['chapters']??[],static fn($c)=>trim(($c['text']??'').($c['editorNote']??''))!=='')))continue;
     if($r['kind']!=='atelier'||isset($r['source_binding'])||in_array($r['id'],$excluded,true))continue;
     try{cmsCreationDuplicateCheck('atelier',$r['slug'],$catalog,[],$r['id']);}
     catch(InvalidArgumentException $e){if($e->getMessage()==='CREATION_DUPLICATE')continue;throw $e;}
     $eligible[$r['id']]=$r;if(($r['target_date']??null)!==null)$dated[]=$r;
   }
   usort($dated,static fn(array $a,array $b):int=>strcmp($a['target_date'],$b['target_date'])?:strcmp($a['id'],$b['id']));
+  if(($settings['workshop_permanent']??false)===true){
+    $next=$dated[0]??reset($eligible);
+    if(!is_array($next))throw new RuntimeException('CORAL_WORKSHOP_PRIORITY_NOT_AUTHORIZED');
+    return $next;
+  }
   $r=$dated[0]??($eligible[$settings['workshop_creation_id']??'']??null);
   if(!is_array($r)||$r['id']!==($settings['workshop_creation_id']??null))throw new RuntimeException('CORAL_WORKSHOP_PRIORITY_NOT_AUTHORIZED');
   foreach($r['atelier_scripts']['chapters']??[] as $chapter)
@@ -432,6 +545,10 @@ function cmsCoralNextWorkshop(array $creations,array $catalog,array $settings): 
     throw new RuntimeException('CORAL_WORKSHOP_DUPLICATE_SOURCE');
   cmsCreationDuplicateCheck('atelier',$r['slug'],$catalog,$eligible,$r['id']);
   return $r; // Selection only; no save, provider, scheduling or approval.
+}
+function cmsCoralPermanentJobToken(array $draft): string {
+  return substr(hash('sha256',json_encode(
+    ['coral-workshop-revision-v1',$draft['id'],$draft['version']],JSON_THROW_ON_ERROR)),0,48);
 }
 function cmsCoralWorkshopInputDigest(array $draft): string {
   return hash('sha256',json_encode([$draft['id']??null,$draft['version']??null,$draft['title']??null,
@@ -648,18 +765,25 @@ function cmsCoralCandidate(array $request,mixed $wire): array {
 /** Existing C2 asynchronous submit/poll endpoint, same quota and token,
  * separate typed contract. No second model service; never auto-retry. */
 function cmsCoralStart(array $draft,array $catalog,array $canonical,array $guided,
-  string $private,array $settings): array {
+  string $private,array $settings,?array $sources=null): array {
   if(($settings['mode']??null)!=='async'||!is_callable($settings['submit']??null))
     throw new RuntimeException('CORAL_DISABLED');
   $complete=($settings['workshop_complete_qualified']??false)===true
     &&!cmsAtelierPhaseDetailsComplete($draft['atelier_phase_details']??null);
   $continuation=$settings['workshop_continuation']??null;
   if($continuation!==null&&!$complete)throw new RuntimeException('CORAL_WORKSHOP_CONTINUATION');
-  $request=$complete?cmsCoralWorkshopRequest($draft,$catalog,$canonical,$guided,$settings['workshop_research']??[]):cmsCoralRequest($draft,$catalog,$canonical,$guided);
+  $permanent=($settings['workshop_permanent']??false)===true;
+  $research=$settings['workshop_research']??[];
+  if($permanent&&$complete){
+    $recipeId='recette:'.($draft['atelier_reference']['recipeSlug']??'');
+    $research=['recipe_sha256'=>$canonical[$recipeId]['fingerprint']??'',
+      'verified_at'=>gmdate('Y-m-d'),'sources'=>$sources,'cooking_test_performed'=>false];
+  }
+  $request=$complete?cmsCoralWorkshopRequest($draft,$catalog,$canonical,$guided,$research):cmsCoralRequest($draft,$catalog,$canonical,$guided);
   if(($settings['workshop_complete_qualified']??false)===true){
-    if(($settings['workshop_creation_id']??null)!==$draft['id']
+    if(!$permanent&&(($settings['workshop_creation_id']??null)!==$draft['id']
       ||($settings['workshop_recipe_sha256']??null)!==$request['canonical_fingerprint']
-      ||($settings['workshop_expires_at']??0)<=time())throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
+      ||($settings['workshop_expires_at']??0)<=time()))throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
     cmsAiContentPreflight($private,'atelier',$draft['title'],$catalog,$draft['id'],$draft['version']);
   }
   $provider=$settings['provider_label']??'';$model=$settings['model_label']??'';
@@ -675,7 +799,8 @@ function cmsCoralStart(array $draft,array $catalog,array $canonical,array $guide
     $request['continuation']=$continuation;
   }
   $key=hash('sha256',json_encode([$request,$draft['id'],$draft['version'],$provider,$model],JSON_THROW_ON_ERROR));
-  $token=substr($key,0,48);
+  // A change to research notes must not spend twice for the same saved revision.
+  $token=$permanent&&$complete?cmsCoralPermanentJobToken($draft):substr($key,0,48);
   return cmsAiContentJobLocked($private,$token,static function(?array $entry,string $path)use($private,$settings,$request,$draft,$provider,$model,$key,$token,$continuation):array{
     if($entry!==null){
       $j=$entry['job'];
@@ -726,10 +851,11 @@ function cmsCoralPoll(array &$job,array $draft,array $settings,array $canonical,
   if(($settings['mode']??null)!=='async'||!is_callable($settings['poll']??null))
     throw new RuntimeException('CORAL_DISABLED');
   if($complete&&($settings['workshop_complete_qualified']??false)!==true)throw new RuntimeException('CORAL_DISABLED');
-  if(($settings['workshop_complete_qualified']??false)===true&&(($settings['workshop_creation_id']??null)!==$draft['id']
+  $permanent=($settings['workshop_permanent']??false)===true;
+  if(!$permanent&&($settings['workshop_complete_qualified']??false)===true&&(($settings['workshop_creation_id']??null)!==$draft['id']
     ||($settings['workshop_recipe_sha256']??null)!==($job['request']['canonical_fingerprint']??null)
     ||($settings['workshop_expires_at']??0)<=time()))throw new RuntimeException('CORAL_WORKSHOP_SCOPE');
-  if($complete&&cmsCoralWorkshopResearch($settings['workshop_research']??null,$job['request']['canonical_fingerprint'])!==$job['request']['culinary_evidence'])throw new RuntimeException('CORAL_WORKSHOP_RESEARCH');
+  if($complete&&!$permanent&&cmsCoralWorkshopResearch($settings['workshop_research']??null,$job['request']['canonical_fingerprint'])!==$job['request']['culinary_evidence'])throw new RuntimeException('CORAL_WORKSHOP_RESEARCH');
   foreach(['provider_label','model_label'] as $k)
     if(isset($job[$k])&&$job[$k]!==($settings[$k]??''))throw new RuntimeException('CORAL_PROVIDER_CHANGED');
   try{$answer=($settings['poll'])($job['token']);}
@@ -744,4 +870,38 @@ function cmsCoralPoll(array &$job,array $draft,array $settings,array $canonical,
   }
   try{return $complete?cmsCoralWorkshopCandidate($job['request'],$answer['result']??null,$settings,$catalog):cmsCoralCandidate($job['request'],$answer['result']??null);}
   catch(Throwable $e){$job['status']='failed';throw $e;}
+}
+
+/** Observe the existing durable submission after reconnecting. Never resubmit. */
+function cmsCoralObserveSaved(string $private,string $token,array $draft,array $settings,
+    array $canonical,array $catalog): array {
+  return cmsAiContentJobLocked($private,$token,static function(?array $entry,string $path)
+      use($draft,$settings,$canonical,$catalog):array{
+    $job=$entry['job']??null;
+    if(!is_array($job)||isset($entry['save_attempt']))
+      throw new RuntimeException('CORAL_JOB_MISSING');
+    $job['expires_at']=time()+1800;
+    $before=$job['status'];
+    try{
+      $proposal=cmsCoralPoll($job,$draft,$settings,$canonical,$catalog);
+      if($proposal!==null)$job['status']='succeeded';
+    }
+    finally{
+      if($job['status']!==$before){
+        $entry['job']=$job;
+        cmsAiContentJobWrite($path,$entry);
+      }
+    }
+    return [$job,$proposal];
+  });
+}
+
+function cmsCoralPermanentJobSummary(string $private,array $draft): ?array {
+  $token=cmsCoralPermanentJobToken($draft);
+  $path=cmsDraftDir($private).'/ai-content-jobs/'.$token.'.json';
+  if(!is_file($path)||is_link($path))return null;
+  return cmsAiContentJobLocked($private,$token,static function(?array $entry)use($token):?array{
+    if($entry===null||isset($entry['save_attempt']))return null;
+    return ['token'=>$token,'status'=>$entry['job']['status']];
+  });
 }

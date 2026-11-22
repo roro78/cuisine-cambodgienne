@@ -24,15 +24,12 @@ try{
     foreach(['social-feed.json','editorial-source-index.json','editorial-guided-fields.json'] as $name)
         copy($dist.'/'.$name,$base.'/'.$name);
     copy(__DIR__.'/fixtures/editorial-ai-content.php',$base.'/fixture.php');
-    copy(__DIR__.'/../../public/gestion-contenus/index.php',$public.'/index.php');
-    copy(__DIR__.'/../../public/gestion-contenus/coral-v2-ai.php',
-        $public.'/coral-v2-ai.php');
-    // The controller also requires this shared read-only Astro gap helper.
-    copy(__DIR__.'/../../public/gestion-contenus/publication-gap-audit.php',
-        $public.'/publication-gap-audit.php');
-    copy(__DIR__.'/../../public/gestion-contenus/narrations-export.php',
-        $public.'/narrations-export.php');
-    $lib=file_get_contents(__DIR__.'/../../public/gestion-contenus/lib.php');
+    $source=__DIR__.'/../../public/gestion-contenus';
+    $helpers=glob($source.'/coral-*.php')?:[];
+    foreach(array_merge([$source.'/index.php',$source.'/publication-gap-audit.php',
+        $source.'/narrations-export.php'],$helpers) as $file)
+        httpCheck(copy($file,$public.'/'.basename($file)),'CONTROLLER_FIXTURE_COPY');
+    $lib=file_get_contents($source.'/lib.php');
     foreach(['cmsGetFeed','cmsGetEditorialIndex','cmsGetGuidedFields'] as $fn)
         $lib=str_replace('function '.$fn.'(','function fixtureOriginal'.$fn.'(',$lib);
     file_put_contents($public.'/lib.php',$lib);

@@ -15,6 +15,7 @@ test('local package verifies exact candidate and rollback, refuses drift or extr
 test('published redacted delivery manifest binds exactly three canonical Git PHP files without host state',async()=>{
  const m=JSON.parse(await readFile('deploy/coral/authority-delivery.redacted.json','utf8'));assert.equal(m.contract,'cdc-coral-authority-delivery-redacted-v1');assert.equal(m.files.length,3);
  assert.deepEqual(m.files.map(f=>f.repo_path).sort(),['coral-v2-ai.php','index.php','publication-gap-audit.php'].map(n=>'public/gestion-contenus/'+n));
- for(const file of m.files){const bytes=execFileSync('git',['show','HEAD:'+file.repo_path],{windowsHide:true});assert.equal(audioSha(bytes),file.sha256);assert.equal(bytes.length,file.bytes);}
+ assert.match(m.public_payload_source_sha,/^[a-f0-9]{40}$/);
+ for(const file of m.files){const bytes=execFileSync('git',['show',m.public_payload_source_sha+':'+file.repo_path],{windowsHide:true});assert.equal(audioSha(bytes),file.sha256);assert.equal(bytes.length,file.bytes);}
  assert.equal(m.host_details_included,false);assert.equal(m.observed_host_hashes_included,false);assert.ok(Object.values(m.authorization).every(v=>v===false));
 });

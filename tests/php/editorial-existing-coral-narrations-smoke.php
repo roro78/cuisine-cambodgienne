@@ -6,7 +6,14 @@ if(!is_string($dist)||!is_file($dist.'/gestion-contenus/atelier-narrations.json'
 require_once $dist.'/gestion-contenus/lib.php';
 $raw=file_get_contents($dist.'/gestion-contenus/atelier-narrations.json');
 $data=json_decode((string)$raw,true,32,JSON_THROW_ON_ERROR);
-if(count($data['items']??[])!==6)throw new RuntimeException('CORAL_SNAPSHOT_COUNT');
+// Six historic workshops plus the already released Amok Trey V4. This
+// contract tests the merged PR against current main, not the 2026-11-06 snapshot.
+if(count($data['items']??[])!==7)throw new RuntimeException('CORAL_SNAPSHOT_COUNT');
+$historical=['kroeung-jaune','lok-lak','samlor-machu','num-banh-chok','kuy-teav','bai-sach-chrouk'];
+$slugs=array_column($data['items'],'recipeSlug');
+foreach([...$historical,'amok-trey'] as $slug)
+    if(count(array_filter($slugs,static fn($x)=>$x===$slug))!==1)
+        throw new RuntimeException('CORAL_SNAPSHOT_MISSING_RECIPE');
 $canonical=[];
 foreach($data['items'] as $item)
     $canonical[$item['id']]=['fingerprint'=>$item['canonicalFingerprint']];
@@ -30,4 +37,4 @@ foreach($data['items'] as $item){
 }
 if(cmsStudioExistingCoralNarrations(null,$canonical)!==null)
     throw new RuntimeException('CORAL_NO_BINDING_ACCEPTED');
-echo "CMS_EXISTING_CORAL_NARRATIONS_PASS 6 source workshops, 7 chapters each, no TTS\n";
+echo "CMS_EXISTING_CORAL_NARRATIONS_PASS 7 released workshops (6 historic + Amok), 7 chapters each, no TTS\n";

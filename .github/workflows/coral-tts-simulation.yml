@@ -48,6 +48,7 @@ jobs:
           TTS_EVIDENCE_DIR: artifacts/tts-simulated
         run: |
           node --test --test-concurrency=1 tests/coral-tts-jobs.test.mjs tests/coral-tts-studio-e2e.test.mjs tests/coral-external-job-provider.test.mjs tests/editorial-ai-job-gateway.test.mjs
+          node --test --test-concurrency=1 tests/coral-real-speech-gateway.test.mjs
       - name: Synthetic evidence only, never secrets or production drafts
         if: always()
         uses: actions/upload-artifact@v4
