@@ -158,7 +158,16 @@ project=$(docker inspect -f '{{index .Config.Labels "com.docker.compose.project"
 workdir=$(docker inspect -f '{{index .Config.Labels "com.docker.compose.project.working_dir"}}' "$worker")
 current_files=$(docker inspect -f '{{index .Config.Labels "com.docker.compose.project.config_files"}}' "$worker")
 [[ "$project" == cdc-coral && "$workdir" == "$HOME"/.local/share/cdc-coral/releases/* && -d "$workdir" ]] || die PROJET_COMPOSE_INATTENDU
-[[ -n "$current_files" && "$current_files" == "$(paste -sd, "$back/compose-paths")" ]] || die COMPOSE_CHEMINS_MODIFIES
+# The previous successful C2 rollout appended one image-only overlay to
+# the six historical Compose files. The live Docker Compose label therefore
+# records SEVEN paths, not six. Accept exactly that known, immutable overlay.
+source_overlay="$source_back/image-candidate.yaml"
+[[ -f "$source_overlay" && ! -L "$source_overlay" ]] || die ANCIEN_OVERLAY_ABSENT
+printf 'services:\n  %s:\n    image: %s\n' "$service" "$previous" |
+  cmp -s - "$source_overlay" || die ANCIEN_OVERLAY_IMAGE_INATTENDUE
+expected_files="$(paste -sd, "$back/compose-paths"),$source_overlay"
+[[ -n "$current_files" && "$current_files" == "$expected_files" ]] ||
+  die COMPOSE_CHEMINS_MODIFIES
 mapfile -t paths < "$back/compose-paths"
 [[ "${#paths[@]}" == 6 ]] || die NOMBRE_COMPOSE_INATTENDU
 compose=(docker compose --project-directory "$workdir" -p "$project" --profile runtime)
