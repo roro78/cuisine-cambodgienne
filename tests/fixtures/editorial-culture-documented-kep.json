@@ -1,0 +1,21 @@
+{
+  "id": "culture-kep-psar-kdam-documented-20261122",
+  "kind": "culture",
+  "title": "À Kep, le marché aux crabes dans le paysage alimentaire côtier",
+  "angle": "Un cas local documenté : Psar Kdam et le crabe au poivre de Kampot, sans généralisation à tous les marchés cambodgiens",
+  "objective": "Évaluer un Carnet culturel dont les informations sont limitées à une source institutionnelle identifiée, sans reportage inventé ni redites",
+  "sources": [
+    "https://www.mpsez.gov.kh/coastal-industries/coastal-tourisim/tourisim-at-kep-province"
+  ],
+  "verified_facts": [
+    "La page consacrée à Kep sur le portail MPSEZ nomme Psar Kdam et le décrit comme un marché aux crabes.",
+    "Cette même page présente les produits de la mer parmi les attraits culinaires de Kep.",
+    "La page rapproche la gastronomie locale du crabe au poivre de Kampot."
+  ],
+  "checks": [
+    "Il s'agit d'une présentation territoriale à portée touristique, non d'un reportage sur les commerçants et leurs revenus.",
+    "Aucune observation de terrain, statistique, origine des prises ou témoignage de vendeur n'a été vérifié pour cet essai.",
+    "Ne pas extrapoler les habitudes de Kep à tous les marchés du Cambodge.",
+    "Construire des sections distinctes ; ne pas transformer le dossier de vérification en article public."
+  ]
+}
