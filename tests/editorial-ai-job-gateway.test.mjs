@@ -83,6 +83,34 @@ test('HTTP requires bearer, fixed route and valid contract, and never starts gen
   const invalid={...request,timeout_seconds:120};
   assert.equal((await fetch(url,{method:'PUT',headers,body:JSON.stringify(invalid)})).status,422);
 });
+test('C2 cultural instructions separate reader copy from private research and keep source paths honest',async()=>{
+  const requests=[];
+  const provider=ollamaJobProvider({fetcher:async(url,options)=>{
+    assert.equal(url,'http://ollama:11434/api/chat');
+    requests.push(JSON.parse(options.body));
+    return new Response(JSON.stringify({done:true,message:{content:'{}'}}));
+  }});
+  const culture={...request,brief:{...request.brief,kind:'culture',
+    context:'TEST SYNTHÉTIQUE. Faits autorisés : aucun fait historique établi.'},
+    references:['docs/carnets/PLAN-REFONTE-CARNETS.md']};
+  assert.equal(await provider(culture),'{}');
+  const [system,user]=requests[0].messages.map(x=>x.content);
+  assert.match(system,/Ne recopie ni ne paraphrase/);
+  assert.match(system,/rubrique eyebrow/);
+  assert.match(system,/temps de lecture/);
+  assert.match(system,/Cambodge entier/);
+  assert.match(system,/La présence d’un chemin/);
+  assert.match(user,/TEST SYNTHÉTIQUE/,'test constraints stay data, not instructions');
+  assert.ok(!user.includes('PLAN-REFONTE-CARNETS.md'),
+    'path-only references must not masquerade missing document text');
+  assert.deepEqual(requests[0].format,culture.response_schema);
+  assert.equal(requests[0].stream,false);
+  const recipe={...request,brief:{...request.brief,kind:'recette'}};
+  assert.equal(await provider(recipe),'{}');
+  assert.ok(!requests[1].messages[0].content.includes('rubrique eyebrow'),
+    'culture guidance cannot alter other editorial families');
+});
+
 test('Ollama stays internal, bounded, and rejects truncated or oversized output',async()=>{
   assert.throws(()=>ollamaJobProvider({url:'https://example.com'}),/CONFIG/);
   let options;
