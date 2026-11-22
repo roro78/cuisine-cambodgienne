@@ -15,7 +15,10 @@ require_once __DIR__.'/../public/gestion-contenus/lib.php';
 $mode=$argv[1]??'';
 $kind=$argv[2]??'';
 $arg=$argv[3]??'';
-if(PHP_SAPI!=='cli'||count($argv)!==4||!isset(cmsCreationKinds()[$kind])
+$documented=(count($argv)===5&&($argv[4]??null)==='documented');
+if(PHP_SAPI!=='cli'||(count($argv)!==4&&!$documented)
+    ||($documented&&($mode!=='request'||$kind!=='culture'))
+    ||!isset(cmsCreationKinds()[$kind])
     || !in_array($mode,['request','validate'],true)||!is_string($arg)||$arg===''){
     fwrite(STDERR,"BENCH_USAGE\n");
     exit(2);
@@ -68,6 +71,19 @@ try {
     foreach($fixtures as $item){
         if(($item['kind']??null)===$kind){$fixture=$item;break;}
     }
+    if($documented){
+        // A second, explicitly sourced benchmark; the original five S1
+        // fixtures remain immutable for before/after comparison.
+        $fixture=json_decode((string)file_get_contents(
+            __DIR__.'/../tests/fixtures/editorial-culture-documented-kep.json'),
+            true,16,JSON_THROW_ON_ERROR);
+        if(($fixture['kind']??null)!=='culture'
+            ||!is_array($fixture['sources']??null)
+            ||count($fixture['sources'])!==2
+            ||($fixture['sources'][0]??null)!=='https://www.mpsez.gov.kh/coastal-industries/coastal-tourisim/tourisim-at-kep-province'
+            ||($fixture['sources'][1]??null)!=='https://www.wipo.int/fr/web/lisbon-system/w/news/2021/news_0001')
+            throw new RuntimeException('DOCUMENTED_FIXTURE_INVALID');
+    }
     if(!is_array($fixture)||!is_array($fixture['verified_facts']??null)
         || !is_array($fixture['checks']??null))
         throw new RuntimeException('FIXTURES_INVALID');
@@ -79,8 +95,11 @@ try {
         }
         if($reference==='')throw new RuntimeException('RECIPE_MISSING');
     }
-    $context="TEST SYNTHÉTIQUE UNIQUEMENT. Aucun fait supplémentaire établi.\n"
-        ."Faits autorisés : ".implode(' ; ',$fixture['verified_facts'])."\n"
+    $context=$documented
+        ?"ESSAI DOCUMENTÉ PRIVÉ, NON PUBLIABLE. Les sources ci-dessous sont des communications territoriales, pas des enquêtes ethnographiques. Ne pas généraliser hors de Kep.\n"
+          ."Source consultée le 22/11/2026 : ".implode(' ; ',$fixture['sources'])."\n"
+        :"TEST SYNTHÉTIQUE UNIQUEMENT. Aucun fait supplémentaire établi.\n";
+    $context.="Faits autorisés : ".implode(' ; ',$fixture['verified_facts'])."\n"
         ."Points à vérifier : ".implode(' ; ',$fixture['checks']);
     $request=cmsAiContentRequest([
         'kind'=>$kind,'title'=>$fixture['title'],'angle'=>$fixture['angle'],

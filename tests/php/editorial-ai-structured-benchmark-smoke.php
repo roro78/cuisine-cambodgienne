@@ -53,6 +53,21 @@ try{
             && $validation['human_review_required']===true
             && $validation['publication_ready']===false,'VALID_'.$kind);
     }
+    // Opt-in documented case: baseline stays the same across all five kinds.
+    [$code,$out,$err]=$run(['request','culture',$dist,'documented']);
+    s1Assert($code===0&&$err===''&&strlen($out)<90000,'DOCUMENTED_REQUEST');
+    $documented=json_decode($out,true,32,JSON_THROW_ON_ERROR);
+    s1Assert(($documented['brief']['kind']??null)==='culture'
+        && str_contains($documented['brief']['context']??'','Psar Kdam')
+        && str_contains($documented['brief']['context']??'','https://www.mpsez.gov.kh/')
+        && str_contains($documented['brief']['context']??'','https://www.wipo.int/')
+        && !str_contains($documented['brief']['context']??'','Aucun fait supplémentaire établi')
+        && ($documented['response_max_bytes']??null)===30000
+        && ($documented['reference']??null)===null,
+        'DOCUMENTED_CONTEXT');
+    [$code,$out,$err]=$run(['request','recette',$dist,'documented']);
+    s1Assert($code===2&&$out===''&&str_contains($err,'BENCH_USAGE'),
+        'DOCUMENTED_KIND_REJECTED');
     $bad=contentFixture('recette');
     $bad['publication_ready']=true;
     file_put_contents($file,json_encode($bad,JSON_THROW_ON_ERROR));
