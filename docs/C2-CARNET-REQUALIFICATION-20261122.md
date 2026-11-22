@@ -16,7 +16,7 @@ Le contrat PHP `cmsAiContentRequest` fournit une liste `references` de **chemins
 
 ## Dossier de preuves du cas Kep (référence publique, pas reportage)
 
-**Source utilisée :** [MPSEZ — tourisme à Kep](https://www.mpsez.gov.kh/coastal-industries/coastal-tourisim/tourisim-at-kep-province), consultée le 22/11/2026. La page présente explicitement Psar Kdam comme « Crab Market », mentionne les produits de la mer et associe le crabe au poivre de Kampot à l’offre culinaire locale. Ce constat recoupe le registre interne `docs/carnets/REGISTRE-SOURCES-DECISIONS-M2-2026-10-22.md`, rubrique C05.
+**Sources utilisées :** [MPSEZ — tourisme à Kep](https://www.mpsez.gov.kh/coastal-industries/coastal-tourisim/tourisim-at-kep-province) (consultée le 22/11/2026) présente Psar Kdam comme « Crab Market », les produits de la mer et le crabe au poivre de Kampot. L’[OMPI — 18 janvier 2021](https://www.wipo.int/fr/web/lisbon-system/w/news/2021/news_0001) documente la première indication géographique enregistrée au titre de l’Acte de Genève pour le poivre de Kampot. Ces faits recoupent le registre interne `docs/carnets/REGISTRE-SOURCES-DECISIONS-M2-2026-10-22.md`, rubrique C05. **La protection du poivre ne prouve pas l'économie du marché de Kep.**
 
 **Limites indispensables :** communication territoriale touristique, pas enquête ethnographique ni preuve des conditions économiques des vendeurs ; aucune statistique, observation de terrain, citation de commerçant, origine des prises ni analyse nationale vérifiée. Un exemple à Kep ne démontre rien sur **tous** les marchés cambodgiens. Éviter tout doublon avec le Carnet historique C05 : **ce candidat n’est qu’un essai isolé**, non une nouvelle page à publier.
 
