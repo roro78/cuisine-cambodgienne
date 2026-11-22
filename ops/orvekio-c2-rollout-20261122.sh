@@ -105,6 +105,70 @@ printf 'services:\n  %s:\n    image: %s\n' "$service" "$previous" > "$back/image
 printf 'services:\n  %s:\n    image: %s\n' "$service" "$candidate" > "$back/image-candidate.yaml"
 chmod 600 "$back/image-previous.yaml" "$back/image-candidate.yaml"
 
+# Reconstruct Compose interpolation from the *running* worker, never by
+# inventing another key, nor by printing/reading secret contents.
+# The original launch used temporary shell variables not stored in Git.
+# This private replay file stores configuration PATHS, not secret bytes.
+[[ ! -e "$back/compose-replay.env" ]] || die REPLAY_ENV_EXISTANT
+python3 - "$worker" "$workdir" "$back/compose-replay.env" "${paths[@]}" <<'PY'
+import json,os,re,shlex,stat,subprocess,sys
+worker,workdir,out,*paths=sys.argv[1:]
+try:
+    live=json.loads(subprocess.check_output(['docker','inspect',worker]))[0]
+    values=dict(item.split('=',1) for item in live['Config']['Env'] if '=' in item)
+    mounts={m['Destination']:m['Source'] for m in live['Mounts']}
+    required={
+        'CDC_CORAL_WORKER_IMAGE':live['Image'],
+        'CDC_CORAL_STATE_DIR':os.path.dirname(mounts['/var/lib/cdc/jobs']),
+        'CDC_CORAL_MODEL':values['CDC_CORAL_EXTERNAL_MODEL'],
+        'CDC_CORAL_DAILY_USD':values['CDC_CORAL_EXTERNAL_DAILY_USD'],
+        'CDC_CORAL_OPENAI_SECRET_FILE':mounts['/run/secrets/cdc_coral_openai_key'],
+        'CDC_CORAL_JOB_TOKEN_FILE':mounts['/run/secrets/cdc_editorial_job_token'],
+    }
+    for dest,key in [
+        ('/run/secrets/cdc_coral_tts_authority_token','CDC_CORAL_REAL_TTS_AUTHORITY_TOKEN_FILE'),
+        ('/run/secrets/cdc_coral_release_token','CDC_CORAL_RELEASE_TOKEN_FILE'),
+    ]:
+        if dest in mounts:
+            required[key]=mounts[dest]
+    for key,source in [
+        ('CDC_CORAL_START_APPROVED','CDC_EDITORIAL_JOB_SERVICE_ENABLED'),
+        ('CDC_CORAL_MODEL_QUALIFIED','CDC_CORAL_EXTERNAL_QUALIFIED'),
+        ('CDC_CORAL_ACTIVATION_APPROVED','CDC_CORAL_EXTERNAL_ENABLED'),
+        ('CDC_CORAL_WORKSHOP_APPROVED','CDC_CORAL_COMPLETE_WORKSHOP_ENABLED'),
+        ('CDC_CORAL_WORKSHOP_QUALIFIED','CDC_CORAL_COMPLETE_WORKSHOP_QUALIFIED'),
+    ]:
+        if source in values:required[key]=values[source]
+    requested=set()
+    for path in paths:
+        with open(path,encoding='utf-8') as f: data=f.read()
+        requested.update(re.findall(r'\$\{(CDC_[A-Z0-9_]+)',data))
+    config={k:v for k,v in values.items() if k in requested}
+    config.update({k:v for k,v in required.items() if k in requested})
+    # Original shell may already have explicitly authorized non-secret settings.
+    for k in requested:
+        if k in os.environ and k not in config and not re.search('KEY|SECRET|TOKEN',k):
+            config[k]=os.environ[k]
+    # A setting absent in the original environment might be defaulted by
+    # Compose; never synthesize values for unknown required variables.
+    for k,v in config.items():
+        if not re.fullmatch(r'CDC_[A-Z0-9_]+',k) or '\x00' in v:
+            raise ValueError('INVALID_CONFIGURATION')
+        if k.endswith('_FILE'):
+            if not os.path.isabs(v) or not os.path.isfile(v) or os.path.islink(v):
+                raise ValueError('SECRET_PATH_UNAVAILABLE_'+k)
+    fd=os.open(out,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+    with os.fdopen(fd,'w') as f:
+        for k,v in sorted(config.items()):f.write('export '+k+'='+shlex.quote(v)+'\n')
+    print('PARAMETRES_COMPOSE_RECUPERES_SANS_LECTURE_DE_SECRET')
+except Exception:
+    print('ARRET_PARAMETRES_COMPOSE_INCOMPLETS',file=sys.stderr)
+    sys.exit(1)
+PY
+# These exports are automatically obtained from the existing service and are
+# used by BOTH upgrade and rollback. No hard-coded IP, credential or provider.
+source "$back/compose-replay.env"
+
 python3 - "$worker" "$previous" "$candidate" "$back/image-previous.yaml" "$back/image-candidate.yaml" "${compose[@]}" <<'PY'
 import copy,json,subprocess,sys
 worker,old,new,old_overlay,new_overlay,*cmd=sys.argv[1:]
