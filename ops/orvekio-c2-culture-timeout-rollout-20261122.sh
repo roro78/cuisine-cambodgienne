@@ -55,7 +55,7 @@ trap rollback EXIT
 [[ "$(docker inspect -f '{{.Image}}' "$worker")" == "$previous" ]] || die IMAGE_ACTIVE_DIFFERENTE
 [[ "$(docker inspect -f '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$worker")" == "$base_rev" ]] || die REVISION_ACTIVE_DIFFERENTE
 [[ -d "$source_back" && -f "$source_back/compose-paths" ]] || die SAUVEGARDE_COMPOSE_HISTORIQUE_ABSENTE
-[[ -d "$checkout/.git" ]] || die CHECKOUT_GIT_ABSENT
+git -C "$checkout" rev-parse --is-inside-work-tree >/dev/null 2>&1 || die CHECKOUT_GIT_ABSENT
 git -C "$checkout" cat-file -e "$base_rev^{commit}" || die BASE_ABSENTE
 git -C "$checkout" cat-file -e "$next_rev^{commit}" || die CORRECTIF_NON_RECUPERE
 git -C "$checkout" merge-base --is-ancestor "$base_rev" "$next_rev" || die BASE_NON_COMPATIBLE
