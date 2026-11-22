@@ -79,8 +79,9 @@ try {
             true,16,JSON_THROW_ON_ERROR);
         if(($fixture['kind']??null)!=='culture'
             ||!is_array($fixture['sources']??null)
-            ||count($fixture['sources'])!==1
-            ||($fixture['sources'][0]??null)!=='https://www.mpsez.gov.kh/coastal-industries/coastal-tourisim/tourisim-at-kep-province')
+            ||count($fixture['sources'])!==2
+            ||($fixture['sources'][0]??null)!=='https://www.mpsez.gov.kh/coastal-industries/coastal-tourisim/tourisim-at-kep-province'
+            ||($fixture['sources'][1]??null)!=='https://www.wipo.int/fr/web/lisbon-system/w/news/2021/news_0001')
             throw new RuntimeException('DOCUMENTED_FIXTURE_INVALID');
     }
     if(!is_array($fixture)||!is_array($fixture['verified_facts']??null)
