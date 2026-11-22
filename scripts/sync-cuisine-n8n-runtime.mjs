@@ -28,6 +28,7 @@ export const approvedPredecessorHashes = Object.freeze({
   validatorCode: '41bacec56ac8987a4afb65305bd9adc30ed7c766007ea10ce254f997d276ca6f',
   validatorCodeIntermediate: 'f60c925bc7752bb3e4f842ed5eed439eef94bdd7c9fdbc6bcd9cb18547967f9c',
   editorialPromptPrevious: '4a5b94ea6e0335d52212ee0f58ebc24f7e45e3ab9e0fda2a84fa68052799c46b',
+  editorialPromptSyntaxRepair: 'b3221459894c8b2fab620d95fce46f1adcb99dde682126a2c8f54857dce1681a',
   editorialValidatorPrevious: '7d77b62fecff17a9cdae33c6053fc1e6ca457badfc21f3f0a3aa7fa793a48189',
   insertGuardExpression: '3ba19c03fc1213967bb285126dc60d7fbd4b5af4280afa663daee862e301007a',
   decisionIntermediate: '0b8a0a7fb3141e0fe6cee4a23a18423ae2c530e747532efa5eb2d08894f2e4a5',
@@ -198,10 +199,18 @@ export function planWorkflow(live, reviewed, index) {
     const prompt = find(update, promptName, 'n8n-nodes-base.httpRequest');
     const reviewedPrompt = find(reviewed, promptName, 'n8n-nodes-base.httpRequest');
     const currentEditorialPrompt = "={{JSON.stringify({model:'llama3.2:latest',temperature:0.2,stream:false,response_format:{type:'json_object'},messages:[{role:'system',content:'Tu rédiges en français des légendes courtes et naturelles pour la cuisine cambodgienne. Choisis pour chaque réseau uniquement une ouverture et une conclusion dans les listes autorisées; au milieu, recopie exactement un ou deux faits du catalogue, sans modification, pour rester vérifiable. Sépare chaque bloc par une ligne vide. Aucun autre texte, invention, URL, anecdote supposée, hashtag non sourcé ni affirmation personnelle. Réponds uniquement en JSON avec facebookCaption, instagramCaption et claimsUsed (union exacte des faits présents). Les liens vers le site seront ajoutés après validation.'},{role:'user',content:JSON.stringify({title:$json.source.title,kind:$json.source.kind,facts:$json.source.facts,captionContract:{separator:'blank line',facebook:{openers:($json.source.kind==='recette'?['Envie de cuisiner '+$json.source.title+' ?',$json.source.title+' : on passe en cuisine.']:$json.source.kind==='ingredient'?['Et si on parlait de '+$json.source.title+' ?',$json.source.title+' : des saveurs à découvrir.']:$json.source.kind==='culture'?['Derrière '+$json.source.title+', il y a des histoires à découvrir.','Parlons de '+$json.source.title+'.']:$json.source.kind==='atelier'?[$json.source.title+' : place à la pratique.','On explore ensemble '+$json.source.title+'.']:$json.source.kind==='technique'?[$json.source.title+' : tout est dans le geste.','On parle technique : '+$json.source.title+'.']:['Et si on parlait de '+$json.source.title+' ?']),closers:['À lire sur notre site :','Pour aller plus loin :']},instagram:{openers:($json.source.kind==='recette'?[$json.source.title+', à cuisiner et à partager.','Au menu : '+$json.source.title+'.']:$json.source.kind==='ingredient'?['Les parfums de '+$json.source.title+'.','À la découverte de '+$json.source.title+'.']:$json.source.kind==='culture'?['Une histoire autour de '+$json.source.title+'.','À découvrir : '+$json.source.title+'.']:$json.source.kind==='atelier'?['Le geste du jour : '+$json.source.title+'.','En cuisine avec '+$json.source.title+'.']:$json.source.kind==='technique'?['Un geste à connaître : '+$json.source.title+'.','Zoom sur '+$json.source.title+'.']:['À découvrir : '+$json.source.title+'.']),closers:['Pour en savoir plus, rendez-vous sur notre site.','La suite est à découvrir sur notre site.']}},rules:['Every middle block is one exact fact','No URL or domain','No free text or paraphrase','claimsUsed equals facts present in both captions','No publication without human approval']})}]})}}";
-    const promptPredecessor = prompt.parameters.body === currentEditorialPrompt
-      ? sha256(currentEditorialPrompt)
-      : sha256(prompt.parameters.body) === approvedPredecessorHashes.editorialPromptPrevious
-        ? approvedPredecessorHashes.editorialPromptPrevious : approvedPredecessorHashes.promptBody;
+    // Exact predecessor expressions only, including the syntax-only Orvekio repair.
+    const previousReviewedPrompt = reviewedPrompt.parameters.body.replace(']} },rules:', ']}},rules:');
+    const promptHash = sha256(prompt.parameters.body);
+    const allowedPromptPredecessors = [
+      approvedPredecessorHashes.promptBody,
+      approvedPredecessorHashes.editorialPromptPrevious,
+      approvedPredecessorHashes.editorialPromptSyntaxRepair,
+      sha256(currentEditorialPrompt),
+      sha256(previousReviewedPrompt),
+    ];
+    const promptPredecessor = allowedPromptPredecessors.includes(promptHash)
+      ? promptHash : approvedPredecessorHashes.promptBody;
     const promptResult = hashGuarded(prompt.parameters.body, reviewedPrompt.parameters.body,
       promptPredecessor, promptName);
     if (promptResult.changed) {
