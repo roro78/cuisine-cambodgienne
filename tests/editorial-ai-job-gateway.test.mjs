@@ -120,7 +120,7 @@ test('Ollama stays internal, bounded, and rejects truncated or oversized output'
   let options;
   const provider=ollamaJobProvider({fetcher:async(url,o)=>{assert.equal(url,'http://ollama:11434/api/chat');options=o;
     return new Response(JSON.stringify({done:true,message:{content:'{}'}}));}});
-  assert.equal(await provider(request),'{}');assert.equal(JSON.parse(options.body).options.num_predict,6000);
+  assert.equal(await provider(request),'{}');assert.equal(JSON.parse(options.body).options.num_predict,2600);
   assert.equal(request.timeout_seconds,20,'synchronous contract is unchanged');
   const bad=ollamaJobProvider({fetcher:async()=>new Response(JSON.stringify({done:true,done_reason:'length',message:{content:'{}'}}))});
   await assert.rejects(bad(request),/JOB_RESPONSE/);
