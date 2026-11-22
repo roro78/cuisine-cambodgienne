@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdtemp,rm,writeFile,mkdir,symlink} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {createJobGateway,ollamaJobProvider,routeEditorialJobProviders} from '../scripts/editorial-ai-job-gateway.mjs';
+import {createJobGateway,ollamaJobProvider,routeEditorialJobProviders,cultureEvidenceFromBrief} from '../scripts/editorial-ai-job-gateway.mjs';
 import {createHash} from 'node:crypto';
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
@@ -126,6 +126,87 @@ test('Ollama stays internal, bounded, and rejects truncated or oversized output'
   await assert.rejects(bad(request),/JOB_RESPONSE/);
   const failed=ollamaJobProvider({fetcher:async()=>new Response('',{status:500})});
   await assert.rejects(failed(request),/JOB_PROVIDER_HTTP_500/);
+});
+
+test('C2 cultural dossier uses three small, isolated calls and retains exact supplied facts',async()=>{
+  const sources=['https://www.mpsez.gov.kh/coastal-industries/coastal-tourisim/tourisim-at-kep-province',
+    'https://www.wipo.int/fr/web/lisbon-system/w/news/2021/news_0001'];
+  const facts=[
+    'La présentation touristique de Kep identifie Psar Kdam comme un marché aux crabes.',
+    'La même présentation décrit les produits de la mer parmi les attraits culinaires de Kep.',
+    'La page évoque le crabe accompagné du poivre de Kampot dans la cuisine locale.',
+    'La note institutionnelle de l’OMPI date au 18 janvier 2021 une protection du poivre de Kampot.'
+  ];
+  const context='Source consultée le 22/11/2026 : '+sources.join(' ; ')+'\n'
+    +'Faits autorisés : '+facts.join(' ; ')+'\n'
+    +'Points à vérifier : Ne pas inventer de témoignages ; Ne pas étendre ce cas à tous les marchés';
+  const documented={...request,brief:{
+    kind:'culture',title:'Kep et Psar Kdam',angle:'Un cas local sans extrapolation',
+    objective:'Proposition courte à relire',context}};
+  const pack=cultureEvidenceFromBrief(documented.brief);
+  assert.deepEqual(pack.sources,sources);
+  assert.deepEqual(pack.facts,facts);
+  const replies=[
+    {eyebrow:'Carnet du Cambodge',
+      intro:'À Kep, deux sources documentaires permettent de présenter plusieurs repères sur Psar Kdam sans inventer de reportage.',
+      seoDescription:'Découvrez les repères documentaires disponibles à propos de Psar Kdam et du poivre de Kampot.',
+      summary:'Un bref aperçu du marché aux crabes de Kep fondé sur les informations fournies pour relecture.',
+      section_titles:['Le marché aux crabes de Kep','Un lien documentaire avec le poivre de Kampot']},
+    {link:'Ces éléments permettent de distinguer la présentation de Kep des récits qui restent à vérifier.'},
+    {link:'Ces repères décrivent une situation locale et ne suffisent pas à expliquer tous les marchés.'}
+  ];
+  const calls=[];
+  const provider=ollamaJobProvider({fetcher:async(url,o)=>{
+    assert.equal(url,'http://ollama:11434/api/chat');
+    calls.push(JSON.parse(o.body));
+    return new Response(JSON.stringify({done:true,message:{content:JSON.stringify(replies[calls.length-1])}}));
+  }});
+  const response=JSON.parse(await provider(documented));
+  assert.equal(calls.length,3);
+  assert.deepEqual(calls.map(x=>x.options.num_predict),[450,180,180]);
+  assert.deepEqual(calls.map(x=>x.options.num_ctx),[4096,2048,2048]);
+  assert.deepEqual(calls[0].messages[1].content.includes('docs/carnets/PLAN-REFONTE-CARNETS.md'),false);
+  assert.deepEqual(response.fields.sections.map(x=>x.title),replies[0].section_titles);
+  assert.deepEqual(response.fields.sections[0].paragraphs.slice(0,2),facts.slice(0,2));
+  assert.deepEqual(response.fields.sections[1].paragraphs.slice(0,2),facts.slice(2));
+  assert.equal(response.fields.readingTime,'1 min');
+  assert.equal(response.title,documented.brief.title);
+  assert.equal(response.angle,documented.brief.angle);
+  assert.match(response.research_note,/non consultées automatiquement/);
+  assert.match(response.research_note,/relecture humaine obligatoire/i);
+  assert.equal('publication_ready' in response,false,'the model never approves publication');
+});
+
+test('partial, duplicate or unsafe culture evidence rejects before the first model call',async()=>{
+  let calls=0;
+  const provider=ollamaJobProvider({fetcher:async()=>{calls++;throw Error('SHOULD_NOT_REACH_PROVIDER');}});
+  const basic={...request,brief:{kind:'culture',title:'Kep',angle:'Documentaire',
+    context:'Faits autorisés : Le marché mentionné dans cette source est situé à Kep ; Le poivre local y est cité.'}};
+  await assert.rejects(provider(basic),/CULTURE_EVIDENCE_REQUIRED/);
+  await assert.rejects(provider({...basic,brief:{...basic.brief,
+    context:'Sources : https://localhost/private\nFaits autorisés : Le marché mentionné dans cette source est situé à Kep ; Le poivre local y est cité.'}}),/CULTURE_EVIDENCE_REQUIRED/);
+  await assert.rejects(provider({...basic,brief:{...basic.brief,
+    context:'Sources : https://example.org/guide\nFaits autorisés : La source mentionne le marché aux crabes dans la région de Kep ; La source mentionne le marché aux crabes dans la région de Kep'}}),/CULTURE_EVIDENCE_REQUIRED/);
+  assert.equal(calls,0);
+});
+
+test('a failing cultural stage does not run later stages or produce a partial draft',async()=>{
+  const brief={kind:'culture',title:'Kep',angle:'Un marché local',objective:'Une proposition privée',
+    context:'Sources : https://example.org/kep\nFaits autorisés : Le document identifie un marché aux crabes dans la ville côtière de Kep ; Une autre phrase rappelle le rôle du poivre dans le repas présenté sur la page'};
+  const staged={...request,brief};
+  let calls=0;
+  const provider=ollamaJobProvider({fetcher:async()=>{
+    calls++;
+    const response=calls===1?
+      {eyebrow:'Culture',intro:'Un article court documenté qui évite de raconter une visite qui n’a pas eu lieu.',
+      seoDescription:'Les repères culturels déclarés par le contributeur pour le Carnet consacré à Kep.',
+      summary:'Une présentation strictement locale qui nécessite une relecture humaine avant tout usage public.',
+      section_titles:['Le marché local','Un repère culinaire']} :
+      {link:''};
+    return new Response(JSON.stringify({done:true,message:{content:JSON.stringify(response)}}));
+  }});
+  await assert.rejects(provider(staged),/CULTURE_STAGE_SCHEMA/);
+  assert.equal(calls,2,'no third model call or fallback after a broken section');
 });
 
 test('external Coral and all five C2 families succeed in the same durable queue',async t=>{
