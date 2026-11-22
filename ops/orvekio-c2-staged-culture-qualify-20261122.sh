@@ -10,7 +10,6 @@ base=ba41ea3618822fcc950608a6f0b2348e2534f83c
 sha=16f3717429058983f32fcb805839ff23ee10eadb
 worker=cdc-coral-coral-job-worker-1
 network=cdc-coral-provider
-source=/home/debian/cdc-c2-kep-reel.kFG0l1OH/request.json
 root="$HOME/.local/state/cdc-c2-qualifications"
 run="$root/culture-kep-pr245-$sha"
 
@@ -36,11 +35,9 @@ git -C "$repo" diff --check "$base" "$sha" ||
   stop WORKER_REVISION_INATTENDUE
 docker network inspect "$network" >/dev/null || stop RESEAU_PRIVE_ABSENT
 
-[[ -f "$source" && ! -L "$source" ]] || stop REQUETE_HISTORIQUE_ABSENTE
-[[ "$(stat -c %u "$source")" == "$(id -u)" ]] || stop REQUETE_PROPRIETAIRE_INATTENDU
-[[ "$(stat -c %a "$source")" == 600 ]] || stop REQUETE_PERMISSIONS_INATTENDUES
-[[ $(stat -c %s "$source") -lt 90000 ]] || stop REQUETE_TROP_LONGUE
-
+# The prior one-shot run may have deleted its temporary request.
+# Reconstruct ONLY the versioned, public Kep fixture through the same
+# existing PHP C2 request builder. Do not read any previous job or private draft.
 # No other unfinished C2 job: no overlapping Ollama load due to this worker.
 docker exec "$worker" node --input-type=module -e '
 import {readdir} from "node:fs/promises";
@@ -55,17 +52,22 @@ for (const entry of await readdir("/var/lib/cdc/jobs",{withFileTypes:true})){
 }
 ' >/dev/null || stop FILE_NON_LIBRE
 
-# Verify an available PHP CLI before the one-time qualification is claimed.
+# Verify a PHP CLI (host or pre-existing image) before claiming an attempt.
 if command -v php >/dev/null 2>&1; then
-  phpcli(){ (cd "$run" && php "$@"); }
+  phpbuild(){ (cd "$build" && php "$@"); }
+  phpvalidate(){ (cd "$run" && php "$@"); }
 else
   phpimage=$(docker image ls --format '{{.Repository}}:{{.Tag}}' |
     awk '/(^|\/)php:8\.[3-9]([.-][a-zA-Z0-9.]+)*-cli(-[a-zA-Z0-9.]+)*$/ && !found++ {print}')
   [[ -n "$phpimage" ]] || stop PHP_CLI_NON_DISPONIBLE
-  phpcli(){ docker run --rm --pull=never --network none --read-only \
-    --user "$(id -u):$(id -g)" --cap-drop ALL --security-opt no-new-privileges \
-    --mount "type=bind,src=$run,dst=/bench,readonly" -w /bench \
-    --entrypoint php "$phpimage" "$@"; }
+  phpdir(){ local folder="$1"; shift
+    docker run --rm --pull=never --network none --read-only \
+      --user "$(id -u):$(id -g)" --cap-drop ALL --security-opt no-new-privileges \
+      --mount "type=bind,src=$folder,dst=/bench,readonly" -w /bench \
+      --entrypoint php "$phpimage" "$@"
+  }
+  phpbuild(){ phpdir "$build" "$@"; }
+  phpvalidate(){ phpdir "$run" "$@"; }
 fi
 
 [[ ! -e "$run" && ! -L "$run" ]] || stop ESSAI_DEJA_CONSIGNE
@@ -73,7 +75,9 @@ mkdir -p -m 700 "$root"
 [[ "$(stat -c %a "$root")" == 700 ]] || stop ETAT_QUALIFICATION_PERMISSIONS
 
 build=$(mktemp -d "$HOME/cdc-c2-staged-build.XXXXXXXX")
-git -C "$repo" archive "$sha" scripts deploy/coral/Dockerfile |
+git -C "$repo" archive "$sha" scripts deploy/coral/Dockerfile \
+  public/gestion-contenus/lib.php \
+  tests/fixtures/editorial-culture-documented-kep.json |
   tar -xf - -C "$build"
 echo "CONSTRUCTION_CANDIDAT_ISOLE"
 if ! docker build --pull=false --build-arg "SOURCE_REVISION=$sha" \
@@ -88,11 +92,47 @@ image=$(cat "$build/image-id")
 [[ "$(docker inspect -f '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$worker")" == "$base" ]] ||
   stop IMAGE_ACTIVE_MODIFIEE
 
-# One private request, same *documented* Kep case. The model receives public
-# facts supplied by the owner; we make no claim that URLs were crawled.
-# No Gateway token, no private volume, no Docker socket or port inside the test.
+# Generate the same documented Kep case from the immutable Git fixture,
+# using the installed CMS request schema. No network and no private historical
+# request involved. This is done BEFORE claiming the one-use run directory.
+if ! phpbuild -r '
+require_once "public/gestion-contenus/lib.php";
+$f=json_decode((string)file_get_contents(
+  "tests/fixtures/editorial-culture-documented-kep.json"),
+  true,16,JSON_THROW_ON_ERROR);
+$sources=$f["sources"]??[];
+$facts=$f["verified_facts"]??[];
+$checks=$f["checks"]??[];
+if(($f["kind"]??null)!=="culture"||count($sources)!==2
+  ||count($facts)!==4||count($checks)!==5
+  ||$sources[0]!=="https://www.mpsez.gov.kh/coastal-industries/coastal-tourisim/tourisim-at-kep-province"
+  ||$sources[1]!=="https://www.wipo.int/fr/web/lisbon-system/w/news/2021/news_0001")
+  throw new RuntimeException("DOCUMENTED_FIXTURE_INVALID");
+$context="Sources : ".implode(" ; ",$sources)."\n"
+  ."Faits autorisés : ".implode(" ; ",$facts)."\n"
+  ."Points à vérifier : ".implode(" ; ",$checks);
+$request=cmsAiContentRequest([
+  "kind"=>"culture","title"=>$f["title"],"angle"=>$f["angle"],
+  "objective"=>$f["objective"],"context"=>$context,
+  "reference_id"=>"","semantic_review"=>"1"
+],[],[],[]);
+$request["timeout_seconds"]=20;
+$request["max_output_tokens"]=6000;
+$request["response_max_bytes"]=30000;
+echo json_encode($request,JSON_UNESCAPED_UNICODE|
+  JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR)."\n";
+' > "$build/request.json"; then
+  stop REQUETE_DOCUMENTEE_NON_RECONSTRUITE
+fi
+[[ -s "$build/request.json" && $(stat -c %s "$build/request.json") -lt 30000 ]] ||
+  stop REQUETE_DOCUMENTEE_INVALIDE
+chmod 600 "$build/request.json"
+echo "REQUETE_KEP_RECONSTRUITE_SANS_HISTORIQUE"
+
+# Exactly one isolated attempt, no Gateway token, private volumes, sockets or
+# ports. This directory records the attempt BEFORE calling the model.
 mkdir -m 700 "$run" || stop ESSAI_DEJA_CONSIGNE
-cp -- "$source" "$run/request.json"
+cp -- "$build/request.json" "$run/request.json"
 chmod 600 "$run/request.json"
 git -C "$repo" archive "$sha" scripts/editorial-ai-structured-benchmark.php \
   public/gestion-contenus/lib.php |
@@ -151,7 +191,7 @@ if ((rc!=0)); then
   echo "DOSSIER_PRIVE=$run"
   exit "$rc"
 fi
-if ! phpcli scripts/editorial-ai-structured-benchmark.php validate culture candidat.json; then
+if ! phpvalidate scripts/editorial-ai-structured-benchmark.php validate culture candidat.json; then
   echo "NO_GO_SCHEMA"
   echo "REESSAI_INTERDIT"
   echo "DOSSIER_PRIVE=$run"
