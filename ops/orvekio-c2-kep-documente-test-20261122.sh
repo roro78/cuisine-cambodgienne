@@ -80,7 +80,7 @@ try{
 
   console.error("JOB_ID="+id);
   let probe=await api(id);
-  if(probe.status===200)stop("JOB_DEJA_UTILISE_AUCUNE_RESOUmission");
+  if(probe.status===200)stop("JOB_DEJA_UTILISE_AUCUNE_RESOUMISSION");
   if(probe.status!==404)stop("SONDE_HTTP_"+probe.status);
 
   for(const item of await readdir("/var/lib/cdc/jobs",{withFileTypes:true})){
