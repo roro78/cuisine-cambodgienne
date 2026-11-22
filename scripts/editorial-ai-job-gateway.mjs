@@ -371,7 +371,9 @@ export async function createJobGateway({root,token,provider,ttsJobs=null,realTts
           // credentials or model output. Persisted terminal schema stays unchanged.
           const code=error?.name==='TimeoutError'?'PROVIDER_TIMEOUT':
             /^JOB_PROVIDER_HTTP_[0-9]{3}$/.test(error?.message||'')?error.message:
-            ['JOB_PROVIDER','JOB_RESPONSE','JOB_RESPONSE_SIZE'].includes(error?.message)?error.message:
+            ['JOB_PROVIDER','JOB_RESPONSE','JOB_RESPONSE_SIZE',
+              'CULTURE_EVIDENCE_REQUIRED','CULTURE_STAGE_JSON',
+              'CULTURE_STAGE_SCHEMA','CULTURE_STAGE_DUPLICATE'].includes(error?.message)?error.message:
             'PROVIDER_FAILURE';
           console.error('CDC_C2_JOB_FAILED_REASON='+code);
           terminal={status:'failed'};
