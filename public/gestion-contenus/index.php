@@ -1992,6 +1992,13 @@ les notes privées ne sont pas transmis. Le résultat restera à relire et à en
 <input type="hidden" name="ai_content_request_token" value="<?= cmsEsc($_SESSION['ai_content_intent']) ?>">
 <label>Objectif pour le lecteur<textarea name="objective" maxlength="700" rows="3"><?= cmsEsc($aiContentInputForm['objective']??'') ?></textarea></label>
 <label>Contexte à transmettre pour cette demande uniquement<textarea name="context" maxlength="2000" rows="3"><?= cmsEsc($aiContentInputForm['context']??'') ?></textarea></label>
+<?php if($createKind==='culture'): ?>
+<p class="small muted">Pour le mode Carnet progressif, indiquez dans ce contexte deux lignes :
+<strong>Sources :</strong> des URL HTTPS publiques séparées par « ; », puis
+<strong>Faits autorisés :</strong> de deux à quatre faits précis, également séparés par « ; ».
+Les liens ne sont pas consultés automatiquement par l’IA : vérifiez vous-même les faits et les droits de transmission.
+Sans ce dossier structuré, la génération progressive n’est pas qualifiée.</p>
+<?php endif; ?>
 <label>Référence publique<?= $createKind==='atelier'?' : recette structurée obligatoire':' (facultative)' ?>
 <select name="reference_id"><option value="">Choisir une référence</option>
 <?php foreach($catalog as $reference): ?>
