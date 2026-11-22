@@ -124,7 +124,13 @@ try:
         'CDC_CORAL_DAILY_USD':values['CDC_CORAL_EXTERNAL_DAILY_USD'],
         'CDC_CORAL_OPENAI_SECRET_FILE':mounts['/run/secrets/cdc_coral_openai_key'],
         'CDC_CORAL_JOB_TOKEN_FILE':mounts['/run/secrets/cdc_editorial_job_token'],
+        # Existing protection and staging authority, never guessed or widened.
+        'CDC_CORAL_TTS_AUTHORITY_SECRET_FILE':mounts['/run/secrets/cdc_coral_tts_authority_token'],
+        'CDC_CORAL_ALLOWED_SOURCE_CIDRS':live['Config']['Labels']['traefik.http.middlewares.cdc-coral-allow.ipallowlist.sourcerange'],
     }
+    assert required['CDC_CORAL_ALLOWED_SOURCE_CIDRS'].strip()
+    assert '0.0.0.0/0' not in required['CDC_CORAL_ALLOWED_SOURCE_CIDRS']
+    assert '::/0' not in required['CDC_CORAL_ALLOWED_SOURCE_CIDRS']
     for dest,key in [
         ('/run/secrets/cdc_coral_tts_authority_token','CDC_CORAL_REAL_TTS_AUTHORITY_TOKEN_FILE'),
         ('/run/secrets/cdc_coral_release_token','CDC_CORAL_RELEASE_TOKEN_FILE'),
@@ -137,6 +143,11 @@ try:
         ('CDC_CORAL_ACTIVATION_APPROVED','CDC_CORAL_EXTERNAL_ENABLED'),
         ('CDC_CORAL_WORKSHOP_APPROVED','CDC_CORAL_COMPLETE_WORKSHOP_ENABLED'),
         ('CDC_CORAL_WORKSHOP_QUALIFIED','CDC_CORAL_COMPLETE_WORKSHOP_QUALIFIED'),
+        ('CDC_CORAL_PERMANENT_WORKSHOP_APPROVED','CDC_CORAL_PERMANENT_WORKSHOP_ENABLED'),
+        ('CDC_CORAL_MONTHLY_USD','CDC_CORAL_EXTERNAL_MONTHLY_USD'),
+        ('CDC_CORAL_WORKSHOP_CREATION_ID','CDC_CORAL_COMPLETE_WORKSHOP_CREATION_ID'),
+        ('CDC_CORAL_WORKSHOP_SOURCE_SHA256','CDC_CORAL_COMPLETE_WORKSHOP_SOURCE_SHA256'),
+        ('CDC_CORAL_WORKSHOP_EXPIRES_AT','CDC_CORAL_COMPLETE_WORKSHOP_EXPIRES_AT'),
     ]:
         if source in values:required[key]=values[source]
     requested=set()
