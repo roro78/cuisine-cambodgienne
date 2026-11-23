@@ -2642,6 +2642,36 @@ function cmsAiContentEdits(array $proposal,array $record): array {
         if($value!==($record['fields'][$key]??null))$paths[]='fields.'.$key;
     return $paths;
 }
+/** A culture-only request must satisfy the worker's documentary gate before quota. */
+function cmsAiContentRequireCultureDossier(string $context): void {
+    $invalid=static function(): never {throw new RuntimeException('AI_CONTENT_EVIDENCE_REQUIRED');};
+    if(!preg_match('/^Sources?(?:[^\r\n:]{0,45})[ \t]*:[ \t]*(\S[^\r\n]*)$/miu',$context,$sourceLine)
+        || !preg_match('/^Faits (?:autorisés|documentés|vérifiés)[ \t]*:[ \t]*(\S[^\r\n]*)$/miu',$context,$factLine))
+        $invalid();
+
+    $split=static fn(string $line):array=>array_values(array_filter(
+        array_map('trim',explode(';',$line)),static fn(string $item):bool=>$item!==''));
+    $sources=$split($sourceLine[1]);
+    $facts=$split($factLine[1]);
+    if(count($sources)<1||count($sources)>3||count(array_unique($sources))!==count($sources)
+        ||count($facts)<2||count($facts)>4||count(array_unique($facts))!==count($facts))
+        $invalid();
+
+    foreach($sources as $source){
+        $url=parse_url($source);
+        $host=strtolower($url['host']??'');
+        if(mbLen($source)>260||filter_var($source,FILTER_VALIDATE_URL)===false
+            ||strtolower($url['scheme']??'')!=='https'||isset($url['user'])||isset($url['pass'])
+            ||isset($url['fragment'])||!str_contains($host,'.')||str_ends_with($host,'.local')
+            ||filter_var($host,FILTER_VALIDATE_IP)!==false||preg_match('/^[0-9.]+$/D',$host))
+            $invalid();
+    }
+    foreach($facts as $fact){
+        if(mbLen($fact)<35||mbLen($fact)>450||preg_match('/[\x00-\x1f\x7f]/',$fact))
+            $invalid();
+    }
+}
+
 /** Generate once, validate, and return a session candidate. NO draft is saved. */
 function cmsAiContentPrepare(string $private,array $raw,array $catalog,array $cfg,
     array $canonical,array $guided,?string $id=null,int $expected=0,bool $reserve=true): array {
@@ -2657,12 +2687,7 @@ function cmsAiContentPrepare(string $private,array $raw,array $catalog,array $cf
     // The opt-in culture-only pilot must not silently fall back to the legacy
     // single giant Ollama call for a context without a documentary dossier.
     // Reject before reserving a quota or sending anything to the worker.
-    if($settings['allowed_kinds']===['culture'] && $input['kind']==='culture'){
-        $context=$input['context'];
-        if(!preg_match('/^Sources?(?:[^\r\n:]{0,45})[ \t]*:[ \t]*https:\/\//mi',$context)
-            || !preg_match('/^Faits (?:autorisés|documentés|vérifiés)[ \t]*:[ \t]*\S/mi',$context))
-            throw new RuntimeException('AI_CONTENT_EVIDENCE_REQUIRED');
-    }
+    if($settings['allowed_kinds']===['culture'])cmsAiContentRequireCultureDossier($input['context']);
     cmsAiContentPreflight($private,$input['kind'],$input['title'],$catalog,$id,$expected);
     // Same persistent global ledger/cooldown/lock as briefs, strictest active limit.
     if($reserve)cmsAiBriefReserve($private,$settings['max_attempts_per_day']);

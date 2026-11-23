@@ -75,6 +75,25 @@ try{
     asyncCheck($gateCalls===0
         && !file_exists(cmsDraftDir($gate).'/ai-brief-attempts.json'),
         'MISSING_DOSSIER_NO_CALL_NO_QUOTA');
+    $factOne='Le marché aux crabes est décrit dans la publication.';
+    $factTwo='Le poivre est mentionné dans la documentation.';
+    foreach([
+        "Sources : https://example.org/kep\nFaits autorisés : $factOne",
+        "Sources : https://example.org/kep\nFaits autorisés : $factOne ; $factOne",
+        "Sources : https://example.org/kep\nFaits autorisés : $factOne ; Trop court",
+        "Sources : https://example.org/kep ; https://example.org/kep\nFaits autorisés : $factOne ; $factTwo",
+        "Sources : https://example.org/kep ; http://example.org/ref\nFaits autorisés : $factOne ; $factTwo",
+        "Sources : https://127.0.0.1/kep\nFaits autorisés : $factOne ; $factTwo",
+        "Sources : https://example.org/kep#fragment\nFaits autorisés : $factOne ; $factTwo",
+    ] as $context){
+        $incomplete=$missingDossier;
+        $incomplete['context']=$context;
+        asyncReject(fn()=>cmsAiContentAsyncStart($gate,$incomplete,$catalog,$gateCfg,$canonical,$guided),
+            'AI_CONTENT_EVIDENCE_REQUIRED');
+    }
+    asyncCheck($gateCalls===0 && !file_exists(cmsDraftDir($gate).'/ai-brief-attempts.json'),
+        'INVALID_DOSSIER_NO_CALL_NO_QUOTA');
+
     // A documented cultural request can cross the kind gate exactly once.
     $documented=$missingDossier;
     $documented['context']="Sources : https://example.org/kep\n"
