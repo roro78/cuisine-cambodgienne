@@ -2020,7 +2020,7 @@ J’ai contrôlé les doublons, variantes de noms et intentions dans les pages e
 J’ai le droit de transmettre les seules informations de ce brief et la référence publique choisie.</label>
 <p class="small muted">Un échec compte dans le quota commun aux briefs. Aucune relance automatique.
 Un atelier reçoit ici un plan de six phases ; la narration Coral reste une étape distincte.</p>
-<button name="ai_content_generate" value="1">Générer une proposition à relire</button>
+<button name="ai_content_generate" value="1"><?= $createKind==='culture'?'Préparer une trame de Carnet à relire':'Générer une proposition à relire' ?></button>
 <p class="small" data-ai-content-status role="status" aria-live="polite"></p>
 <?php else: ?>
 <p class="small muted">La génération structurée est indisponible. Vous pouvez rédiger et enregistrer manuellement.</p>
