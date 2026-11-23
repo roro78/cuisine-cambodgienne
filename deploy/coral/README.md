@@ -187,3 +187,36 @@ le contrôle Bearer côté worker. Le validateur `validateCoralTraefikRoute`
 doit recevoir la sortie normalisée de Compose avant tout raccordement.
 Ceci ne teste pas encore le provider Docker/ACME réel ni l'IP publique
 de sortie. Aucune activation automatique.
+
+## Démarrage de recette, sans activation OpenAI ni route publique
+
+**Après autorisation explicite d'installation sur le VPS uniquement**, associer
+`compose.yaml` et `compose.staging.yaml` au même projet Compose pour un premier
+démarrage contrôlé. Le second fichier remplace le fournisseur `openai-coral` par
+`ollama`, active le processus de file pour le *healthcheck*, mais maintient
+`CDC_CORAL_EXTERNAL_QUALIFIED=false`, `CDC_CORAL_EXTERNAL_ENABLED=false`,
+`traefik.enable=false` et `restart=no`. **Ne pas lui associer
+`compose.traefik.yaml` ni `compose.orvekio-attachments.yaml`.**
+
+Cette option démarre le moteur de file existant sur ses réseaux Coral dédiés,
+avec le même jeton et ses volumes, **mais aucun routage depuis le Studio**.
+Aucun service Ollama de production n'est raccordé à son réseau `provider` :
+une requête C2 interne non prévue ne doit pas pouvoir déclencher d'inférence.
+La configuration doit impérativement passer `validateCoralStagingCompose`
+après normalisation Compose. Pas de port hôte publié. Les fichiers secrets du
+manifest de base restent montés par Compose, mais le fournisseur OpenAI n'est
+ni instancié ni interrogé dans ce mode.
+
+**ATTENTION :** le manifeste de base, utilisé seul avec ses valeurs par défaut,
+refuse volontairement de démarrer. Ceci explique qu'« installer en gardant les
+trois flags false » ne soit pas un démarrage viable. Le staging décrit ici est
+une **installation réelle**, non une simulation : inventaire, sauvegarde préalable
+des chemins modifiés, contrôle des conteneurs et rollback, puis approbation
+spécifique du propriétaire sont exigés avant toute commande `up`.
+
+Le test OneDrive du 5 novembre a déjà validé, avec des **données fictives**,
+l'aller-retour d'une archive AES-256-GCM et sa restauration isolée (ticket #205).
+Aucun état de travail Coral réel n'existe à sauvegarder tant que le worker n'a
+pas accepté de tâches. Pour la production, programmer les archives réelles
+chiffrées *hors ligne*, copiées et récupérables via OneDrive, avec la clé AES
+conservée séparément ; ce contrôle précède toute génération facturable.

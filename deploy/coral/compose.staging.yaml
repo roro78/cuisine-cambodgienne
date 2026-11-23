@@ -1,0 +1,12 @@
+# Optional first-install staging only. NEVER apply with compose.traefik.yaml.
+# Requires a separate owner-approved VPS installation. Not an API activation.
+# Existing C2 provider, but provider network remains detached from production Ollama.
+services:
+  coral-job-worker:
+    environment:
+      CDC_EDITORIAL_JOB_SERVICE_ENABLED: "true"
+      CDC_EDITORIAL_JOB_PROVIDER: ollama
+      CDC_CORAL_EXTERNAL_QUALIFIED: "false"
+      CDC_CORAL_EXTERNAL_ENABLED: "false"
+    labels:
+      traefik.enable: "false"

@@ -26,7 +26,23 @@ export function validateCoralCompose(c){
   if(s.environment?.CDC_EDITORIAL_JOB_TOKEN_FILE!=='/run/secrets/cdc_editorial_job_token'
     ||s.environment?.CDC_EDITORIAL_JOB_BIND_HOST!=='0.0.0.0')throw Error('CORAL_COMPOSE_RUNTIME');
   if((s.volumes||[]).some(v=>v.bind?.create_host_path!==false))throw Error('CORAL_COMPOSE_IMPLICIT_DIRECTORY');
+  if(JSON.stringify(s.tmpfs)!==JSON.stringify(['/tmp:rw,noexec,nosuid,size=16m,uid=1000,gid=1000,mode=0700']))
+    throw Error('CORAL_COMPOSE_TMPFS');
   return {status:'PASS',services:1,publishedPorts:0};
+}
+/** A live but unexposed staging worker: only existing Ollama routing, NEVER OpenAI. */
+export function validateCoralStagingCompose(c){
+  validateCoralCompose(c);
+  const s=c.services['coral-job-worker'],env=s.environment||{},labels=s.labels||{};
+  if(env.CDC_EDITORIAL_JOB_SERVICE_ENABLED!=='true'
+    ||env.CDC_EDITORIAL_JOB_PROVIDER!=='ollama'
+    ||env.CDC_CORAL_EXTERNAL_QUALIFIED!=='false'
+    ||env.CDC_CORAL_EXTERNAL_ENABLED!=='false'
+    ||s.restart!=='no'
+    ||Object.keys(labels).join()!=='traefik.enable'
+    ||labels['traefik.enable']!=='false')
+    throw Error('CORAL_STAGING_REFUSED');
+  return {status:'PASS',routeEnabled:false,externalProviderEnabled:false,publishedPorts:0};
 }
 /** Validate the OPTIONAL exposed route after Compose has resolved its labels. */
 export function validateCoralTraefikRoute(c){
