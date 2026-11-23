@@ -704,6 +704,7 @@ if($auth){
                     'AI_BRIEF_LIMIT'=>'Limite de demandes atteinte. Votre saisie est conservée ; aucun nouvel appel automatique.',
                     'CREATION_CONFLICT'=>'Le brief a changé pendant la préparation. Votre saisie est conservée ; comparez les versions.',
                     'AI_CONTENT_RIGHTS_REQUIRED'=>'Confirmez le droit de transmettre les seules informations du brief.',
+                    'AI_CONTENT_EVIDENCE_REQUIRED'=>'Pour ce Carnet, renseignez les lignes Sources : et Faits autorisés : dans le contexte avant de générer.',
                     'AI_BRIEF_REVIEW_REQUIRED'=>'Vérifiez les doublons, variantes et intentions avant la génération.',
                     'AI_CONTENT_SESSION_FULL'=>'Trois propositions sont déjà en attente. Enregistrez ou écartez-en une avant de générer.',
                     default=>'Proposition indisponible ou demande invalide. Votre saisie est conservée. Aucun nouvel appel automatique ; la création manuelle reste disponible.'
@@ -1437,6 +1438,14 @@ qui restent à vérifier avant tout enregistrement.</p>
 <p>Relisez et corrigez les champs ci-dessous, puis enregistrez explicitement un brouillon.
 Cette proposition temporaire est valable au plus 30 minutes, tant que cette session reste ouverte.
 Elle reste à compléter et à vérifier avant toute publication.</p>
+<?php if(($pendingContent['candidate']['kind']??'')==='culture'
+    && count($pendingContent['candidate']['fields']['sections']??[])<5): ?>
+<p class="small" role="note"><strong>Trame documentaire courte — pas un Carnet complet.</strong>
+La proposition contient <?= count($pendingContent['candidate']['fields']['sections']??[]) ?> sections.
+Le référentiel Carnets recommande généralement 5 à 7 sections utiles, lorsque les sources le permettent.
+Enrichissez le texte et utilisez le dossier documentaire privé du formulaire pour contrôler les faits
+et leurs sources. L'enregistrement reste un brouillon, sans validation ni publication.</p>
+<?php endif; ?>
 <p class="small"><?= cmsEsc($pendingContent['metadata']['provider_label']) ?> ·
 <?= cmsEsc($pendingContent['metadata']['model_label']) ?> ·
 <?= cmsEsc($pendingContent['metadata']['generated_at']) ?></p>
@@ -1512,12 +1521,20 @@ Un Carnet culturel peut traiter l'histoire d'un plat sans répéter sa recette.<
 <?php if($pendingContent===null && $candidateToken==='' && !isset($creation['source_binding'])): ?>
 <details class="guided-group"<?= $aiContentInputForm?' open':'' ?>>
 <summary>Générer une proposition structurée avec l’IA</summary>
-<?php if($aiContentSettings!==null): ?>
+<?php if($aiContentSettings!==null
+    && in_array($createKind,$aiContentSettings['allowed_kinds'],true)): ?>
 <p class="small">Le titre et l’angle ci-dessus servent de brief. Les champs déjà saisis et
 les notes privées ne sont pas transmis. Le résultat restera à relire et à enregistrer.</p>
 <input type="hidden" name="ai_content_request_token" value="<?= cmsEsc($_SESSION['ai_content_intent']) ?>">
 <label>Objectif pour le lecteur<textarea name="objective" maxlength="700" rows="3"><?= cmsEsc($aiContentInputForm['objective']??'') ?></textarea></label>
 <label>Contexte à transmettre pour cette demande uniquement<textarea name="context" maxlength="2000" rows="3"><?= cmsEsc($aiContentInputForm['context']??'') ?></textarea></label>
+<?php if($createKind==='culture'): ?>
+<p class="small muted">Pour le mode Carnet progressif, indiquez dans ce contexte deux lignes :
+<strong>Sources :</strong> des URL HTTPS publiques séparées par « ; », puis
+<strong>Faits autorisés :</strong> de deux à quatre faits précis, également séparés par « ; ».
+Les liens ne sont pas consultés automatiquement par l’IA : vérifiez vous-même les faits et les droits de transmission.
+Sans ce dossier structuré, la génération progressive n’est pas qualifiée.</p>
+<?php endif; ?>
 <label>Référence publique<?= $createKind==='atelier'?' : recette structurée obligatoire':' (facultative)' ?>
 <select name="reference_id"><option value="">Choisir une référence</option>
 <?php foreach($catalog as $reference): ?>
@@ -1530,7 +1547,7 @@ J’ai contrôlé les doublons, variantes de noms et intentions dans les pages e
 J’ai le droit de transmettre les seules informations de ce brief et la référence publique choisie.</label>
 <p class="small muted">Un échec compte dans le quota commun aux briefs. Aucune relance automatique.
 Un atelier reçoit ici un plan de six phases ; la narration Coral reste une étape distincte.</p>
-<button name="ai_content_generate" value="1">Générer une proposition à relire</button>
+<button name="ai_content_generate" value="1"><?= $createKind==='culture'?'Préparer une trame de Carnet à relire':'Générer une proposition à relire' ?></button>
 <p class="small" data-ai-content-status role="status" aria-live="polite"></p>
 <?php else: ?>
 <p class="small muted">La génération structurée est indisponible. Vous pouvez rédiger et enregistrer manuellement.</p>

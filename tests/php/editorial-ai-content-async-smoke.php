@@ -44,6 +44,70 @@ try{
     asyncCheck($tokens[0]===$tokens[1],'CROSS_PROCESS_SAME_ID');
     asyncCheck(count(file($concurrent.'/calls.txt',FILE_IGNORE_NEW_LINES))===1,'CROSS_PROCESS_ONE_CALL');
     asyncCheck(count(json_decode((string)file_get_contents(cmsDraftDir($concurrent).'/ai-brief-attempts.json'),true))===1,'CROSS_PROCESS_ONE_QUOTA');
+    // The initial culture-only rollout must reject all other families
+    // before quota consumption or a call to the shared worker.
+    $gate=$base.'/culture-only';mkdir($gate,0700);
+    $gateCalls=0;
+    $gateCfg=['editorial_ai_content'=>['enabled'=>true,'qualified'=>true,
+        'mode'=>'async','provider_label'=>'local-ollama',
+        'model_label'=>'llama3.2','max_attempts_per_day'=>2,
+        'allowed_kinds'=>['culture'],
+        'submit'=>static function()use(&$gateCalls):array{
+            ++$gateCalls;throw new RuntimeException('GATE_WAS_BYPASSED');
+        },
+        'poll'=>static function():array{throw new RuntimeException('GATE_WAS_BYPASSED');}]];
+    asyncCheck(cmsAiContentSettings($gateCfg)['allowed_kinds']===['culture'],
+        'CULTURE_ONLY_CFG');
+    $blocked=['kind'=>'recette','title'=>'Catégorie désactivée',
+        'angle'=>'Ne doit pas atteindre le fournisseur',
+        'objective'=>'Test de sécurité isolé','context'=>'Données de test',
+        'reference_id'=>'','semantic_review'=>'1','transmission_review'=>'1'];
+    asyncReject(fn()=>cmsAiContentAsyncStart($gate,$blocked,$catalog,$gateCfg,$canonical,$guided),
+        'AI_CONTENT_UNAVAILABLE');
+    asyncCheck($gateCalls===0
+        && !file_exists(cmsDraftDir($gate).'/ai-brief-attempts.json'),
+        'BLOCKED_KIND_NO_CALL_NO_QUOTA');
+    $missingDossier=$blocked;
+    $missingDossier['kind']='culture';
+    $missingDossier['title']='Carnet de test sans faits';
+    asyncReject(fn()=>cmsAiContentAsyncStart($gate,$missingDossier,$catalog,$gateCfg,$canonical,$guided),
+        'AI_CONTENT_EVIDENCE_REQUIRED');
+    asyncCheck($gateCalls===0
+        && !file_exists(cmsDraftDir($gate).'/ai-brief-attempts.json'),
+        'MISSING_DOSSIER_NO_CALL_NO_QUOTA');
+    $factOne='Le marché aux crabes est décrit dans la publication.';
+    $factTwo='Le poivre est mentionné dans la documentation.';
+    foreach([
+        "Sources : https://example.org/kep\nFaits autorisés : $factOne",
+        "Sources : https://example.org/kep\nFaits autorisés : $factOne ; $factOne",
+        "Sources : https://example.org/kep\nFaits autorisés : $factOne ; Trop court",
+        "Sources : https://example.org/kep ; https://example.org/kep\nFaits autorisés : $factOne ; $factTwo",
+        "Sources : https://example.org/kep ; http://example.org/ref\nFaits autorisés : $factOne ; $factTwo",
+        "Sources : https://127.0.0.1/kep\nFaits autorisés : $factOne ; $factTwo",
+        "Sources : https://example.org/kep#fragment\nFaits autorisés : $factOne ; $factTwo",
+    ] as $context){
+        $incomplete=$missingDossier;
+        $incomplete['context']=$context;
+        asyncReject(fn()=>cmsAiContentAsyncStart($gate,$incomplete,$catalog,$gateCfg,$canonical,$guided),
+            'AI_CONTENT_EVIDENCE_REQUIRED');
+    }
+    asyncCheck($gateCalls===0 && !file_exists(cmsDraftDir($gate).'/ai-brief-attempts.json'),
+        'INVALID_DOSSIER_NO_CALL_NO_QUOTA');
+
+    // A documented cultural request can cross the kind gate exactly once.
+    $documented=$missingDossier;
+    $documented['context']="Sources : https://example.org/kep\n"
+        ."Faits autorisés : Le marché aux crabes est décrit dans la publication ; Le poivre est mentionné dans la documentation.";
+    $one=cmsAiContentAsyncStart($gate,$documented,$catalog,$gateCfg,$canonical,$guided);
+    asyncCheck($one['status']==='submission_unknown'&&$gateCalls===1
+        && file_exists(cmsDraftDir($gate).'/ai-brief-attempts.json'),
+        'CULTURE_DOCUMENTED_ONE_INTENT');
+
+    foreach([[],['culture','culture'],['culture','unknown']] as $badKinds){
+        $bad=$gateCfg;$bad['editorial_ai_content']['allowed_kinds']=$badKinds;
+        asyncReject(fn()=>cmsAiContentSettings($bad),'AI_CONTENT_UNAVAILABLE');
+    }
+
     $submits=0;$polls=0;
     foreach(array_keys(cmsCreationKinds()) as $kind){
         $private=$base.'/'.$kind;mkdir($private,0700);$phase='running';$sent=[];
