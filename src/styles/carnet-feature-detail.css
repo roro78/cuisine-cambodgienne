@@ -203,20 +203,6 @@
 .carnet-geography dd::before { content: ''; width: .42rem; height: .42rem; border-radius: 50%; flex: 0 0 auto; background: #697946; }
 .carnet-feature-detail .culture-copy .carnet-geography p { margin: 0 0 .3rem; font-size: .92rem; line-height: 1.55; }
 .carnet-geography a { font-size: .88rem; }
-.carnet-recipes { display: flex; flex-wrap: wrap; gap: .65rem; margin-top: 1.4rem; }
-.carnet-recipes a {
-  display: inline-flex;
-  align-items: center;
-  gap: .7rem;
-  min-height: 2.75rem;
-  padding: .42rem .78rem;
-  border: 1px solid #8b815e;
-  color: var(--carnet-green);
-  border-radius: .25rem;
-  background: #f8f0df;
-  font-weight: 600;
-}
-.carnet-recipes a:hover { background: #fffaf1; }
 .carnet-feature-detail > .text-link { display: block; max-width: var(--carnet-wide); margin: 0 auto; }
 .carnet-feature-detail a:focus-visible { outline: 2px solid currentColor; }
 @media (max-width: 1020px) {
@@ -278,4 +264,39 @@
 }
 @media (max-width: 540px) {
   .carnet-flow li .carnet-flow-number { grid-row: span 2; margin:0; }
+}
+
+.carnet-feature-detail .carnet-media-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(.75rem, 2vw, 1.6rem);
+  max-width: 55rem;
+  margin-top: clamp(1.25rem, 3vw, 2.4rem);
+  align-items: start;
+}
+.carnet-feature-detail .carnet-media-pair > figure {
+  width: 100%;
+  max-width: none;
+}
+.carnet-media-pair .carnet-dessert img {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+.carnet-media-pair + .carnet-flow {
+  margin-top: clamp(1.25rem, 3vw, 2.4rem);
+}
+.carnet-feature figcaption .carnet-recipe-link {
+  display: inline-flex;
+  gap: .45rem;
+  align-items: center;
+  min-height: 2.75rem;
+  margin-top: .45rem;
+  font-weight: 600;
+}
+.carnet-feature figcaption .carnet-recipe-link span { margin: 0; }
+@media (max-width: 540px) {
+  .carnet-feature-detail .carnet-media-pair {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 27rem;
+  }
 }

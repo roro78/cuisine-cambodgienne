@@ -30,19 +30,20 @@ if (!feature || feature.sections.length !== article.sections.length) {
 <article class="culture-copy">
   <p class="carnet-intro">{article.intro}</p>
   {article.sections.map((section, index) => {
-    const { id, photo, process, districts, recipes } = feature.sections[index];
+    const { id, media = [], process, districts } = feature.sections[index];
+    const [single] = media;
     return (
-      <section id={id} class:list={['carnet-section', { 'carnet-section--feature': photo || districts }]} aria-labelledby={`titre-${id}`}>
+      <section id={id} class:list={['carnet-section', { 'carnet-section--feature': media.length === 1 || districts }]} aria-labelledby={`titre-${id}`}>
         <div class="carnet-body">
           <h2 id={`titre-${id}`}>{section.title}</h2>
           {section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
-          {recipes && (
-            <nav class="carnet-recipes" aria-label="Recettes du Carnet">
-              {recipes.map(({ label, href }) => <a href={href}>{label} <span aria-hidden="true">→</span></a>)}
-            </nav>
-          )}
         </div>
-        {photo && <CultureFeaturePhoto photo={photo} class={`carnet-${photo.placement}`} sizes={photo.sizes} />}
+        {media.length === 1 && <CultureFeaturePhoto photo={single} class={`carnet-${single.placement}`} sizes={single.sizes} />}
+        {media.length > 1 && (
+          <div class="carnet-media-pair">
+            {media.map((asset) => <CultureFeaturePhoto photo={asset} class={`carnet-${asset.placement}`} sizes={asset.sizes} />)}
+          </div>
+        )}
         {process && (
           <figure class="carnet-flow">
             <figcaption>{process.title}</figcaption>

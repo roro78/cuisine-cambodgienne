@@ -88,7 +88,7 @@ async function inspect(view) {
       assert.deepEqual(links, isPalmSugar ? ['/recettes/chek-ktis/', '/recettes/num-plae-ai/'] : [], 'Related recipes: '+slug);
       if (isPalmSugar) {
         const photographs = page.locator('main.culture-article .carnet-feature');
-        assert.equal(await photographs.count(),4,'Four documentary photographs');
+        assert.equal(await photographs.count(),7,'Five credited photographs and two illustrations');
         for (const figure of await photographs.all()) {
           const photo = figure.locator('img');
           await photo.scrollIntoViewIfNeeded();
@@ -96,8 +96,17 @@ async function inspect(view) {
           const caption = await figure.locator('figcaption').boundingBox();
           const bounds = await figure.boundingBox();
           assert.ok(caption && bounds && caption.x >= bounds.x && caption.x + caption.width <= bounds.x + bounds.width, 'Credit fits within figure');
-          assert.ok((await figure.locator('figcaption').textContent()).includes('Wikimedia Commons'));
+          const credit = await figure.locator('figcaption').textContent();
+          const isIllustration = (await figure.getAttribute('class')).match(/carnet-(harvest|collection)/);
+          assert.match(credit, isIllustration ? /Illustration éditoriale générée par IA/ : /Wikimedia Commons.*CC BY/s);
+          assert.ok(Boolean(await photo.getAttribute('alt')), 'Image alt is required');
         }
+        const narrative = await page.locator('main.culture-article .culture-copy').textContent();
+        assert.doesNotMatch(narrative, /Chin Choeun|Chin Ith/);
+        assert.match(narrative, /Associated Press a suivi un foyer à Trapang Ampel/);
+        assert.equal(await page.locator('#producteurs h2').textContent(), 'De la récolte dans les palmiers à la cuisson du sucre');
+        assert.equal(await page.locator('#recolte .carnet-feature').count(),2);
+        assert.deepEqual(await page.locator('#cuisine figure a.carnet-recipe-link').evaluateAll(links => links.map(link => link.pathname)), ['/recettes/chek-ktis/','/recettes/num-plae-ai/']);
         assert.equal(await page.locator('.carnet-nav a').count(),6);
         assert.equal(await page.locator('.carnet-flow li').count(),7);
         assert.deepEqual(await page.locator('.carnet-geography dd').allTextContents(),['Oudong','Samrong Torng','Ang Snuol']);
@@ -143,7 +152,7 @@ async function main(){
   browser=await chromium.launch({executablePath:process.env.CHROME_BIN||undefined,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
   for(const viewport of viewports) await inspect(viewport);
   assert.deepEqual(errors,[],'Browser JS exceptions must be absent');
-  console.log('CARNETS_QA_PASS 7/7 x 2 viewports, 14 article hero images decoded.');
+  console.log(`CARNETS_QA_PASS ${slugs.length}/${slugs.length} x ${viewports.length} viewports, ${assertions.length} article hero images decoded.`);
   console.log(JSON.stringify(assertions));
 }
 try { await main(); }
