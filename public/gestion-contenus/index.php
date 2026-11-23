@@ -1168,6 +1168,7 @@ if($auth){
                     'AI_BRIEF_LIMIT'=>'Limite de demandes atteinte. Votre saisie est conservée ; aucun nouvel appel automatique.',
                     'CREATION_CONFLICT'=>'Le brief a changé pendant la préparation. Votre saisie est conservée ; comparez les versions.',
                     'AI_CONTENT_RIGHTS_REQUIRED'=>'Confirmez le droit de transmettre les seules informations du brief.',
+                    'AI_CONTENT_EVIDENCE_REQUIRED'=>'Pour ce Carnet, renseignez les lignes Sources : et Faits autorisés : dans le contexte avant de générer.',
                     'AI_BRIEF_REVIEW_REQUIRED'=>'Vérifiez les doublons, variantes et intentions avant la génération.',
                     'AI_CONTENT_SESSION_FULL'=>'Trois propositions sont déjà en attente. Enregistrez ou écartez-en une avant de générer.',
                     default=>'Proposition indisponible ou demande invalide. Votre saisie est conservée. Aucun nouvel appel automatique ; la création manuelle reste disponible.'
