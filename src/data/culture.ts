@@ -1,4 +1,44 @@
+import { kampongSpeuPalmSugar } from './culture-kampong-speu';
+
+export interface CultureFeatureLink {
+  label: string;
+  href: string;
+}
+
+export interface CultureFeaturePhoto {
+  image: string;
+  alt: string;
+  width: number;
+  height: number;
+  widths: number[];
+  caption: string;
+  detail: string;
+  credit: string;
+  coCredit?: CultureFeatureLink;
+  source: string;
+  license: CultureFeatureLink;
+}
+
+interface CultureFeature {
+  summary: string;
+  cover: CultureFeaturePhoto;
+  sections: {
+    id: string;
+    label: string;
+    photo?: CultureFeaturePhoto & { placement: 'botanical' | 'cooking' | 'dessert'; sizes: string };
+    process?: { title: string; steps: { name: string; detail: string }[] };
+    districts?: {
+      title: string;
+      provinces: { name: string; places: string[] }[];
+      description: string;
+      source: CultureFeatureLink;
+    };
+    recipes?: CultureFeatureLink[];
+  }[];
+}
+
 export interface CultureArticle {
+  feature?: CultureFeature;
   slug: string;
   title: string;
   eyebrow: string;
@@ -557,5 +597,6 @@ export const cultureArticles: CultureArticle[] = [
       { label: 'Environment and Urbanization (2019) — entraide alimentaire entre voisins en situation urbaine précaire', url: 'https://journals.sagepub.com/doi/10.1177/0956247819863246' },
       { label: 'Étude méthodologique — quantification des plats partagés et des portions', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9545030/' }
     ]
-  }
+  },
+  kampongSpeuPalmSugar,
 ];

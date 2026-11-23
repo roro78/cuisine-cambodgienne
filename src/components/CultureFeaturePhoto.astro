@@ -1,0 +1,23 @@
+---
+import type { CultureFeaturePhoto } from '../data/culture';
+import { imageSrcSet } from '../utils/images';
+
+interface Props {
+  photo: CultureFeaturePhoto;
+  class: string;
+  sizes: string;
+  eager?: boolean;
+}
+const { photo, class: className, sizes, eager = false } = Astro.props;
+---
+
+<figure class:list={['carnet-feature', className]}>
+  <img src={photo.image} srcset={imageSrcSet(photo.image, photo.widths)} sizes={sizes}
+       alt={photo.alt} width={photo.width} height={photo.height}
+       loading={eager ? 'eager' : 'lazy'} fetchpriority={eager ? 'high' : undefined} decoding="async" />
+  <figcaption>
+    <strong>{photo.caption}</strong>
+    <span>{photo.detail}</span>
+    <small>{photo.credit}{photo.coCredit && <> / <a href={photo.coCredit.href}>{photo.coCredit.label}</a></>}, via <a href={photo.source}>Wikimedia Commons</a> · <a href={photo.license.href}>{photo.license.label}</a> · WebP redimensionné, cadrage intégral.</small>
+  </figcaption>
+</figure>

@@ -1,0 +1,71 @@
+---
+import CultureFeaturePhoto from './CultureFeaturePhoto.astro';
+import CulinaryIcon from './CulinaryIcon.astro';
+import type { CultureArticle } from '../data/culture';
+import '../styles/carnet-feature-detail.css';
+
+interface Props { article: CultureArticle }
+const { article } = Astro.props;
+const feature = article.feature;
+if (!feature || feature.sections.length !== article.sections.length) {
+  throw new Error(`Configuration des sections incomplète pour ${article.slug}`);
+}
+---
+
+<section class="detail-hero-shell detail-hero-shell--culture">
+  <header class="culture-article-hero">
+    <p class="eyebrow"><CulinaryIcon name="story" size={17} /> {article.eyebrow} · {article.readingTime}</p>
+    <h1>{article.title}</h1>
+    <p>{feature.summary}</p>
+  </header>
+  <CultureFeaturePhoto photo={feature.cover} class="carnet-hero" eager sizes="(max-width: 820px) 92vw, (max-width: 1320px) 49vw, 650px" />
+</section>
+
+<nav class="carnet-nav" aria-label="Sommaire du Carnet">
+  <ol>
+    {feature.sections.map(({ id, label }) => <li><a href={`#${id}`}>{label}</a></li>)}
+  </ol>
+</nav>
+
+<article class="culture-copy">
+  <p class="carnet-intro">{article.intro}</p>
+  {article.sections.map((section, index) => {
+    const { id, photo, process, districts, recipes } = feature.sections[index];
+    return (
+      <section id={id} class:list={['carnet-section', { 'carnet-section--feature': photo || districts }]} aria-labelledby={`titre-${id}`}>
+        <div class="carnet-body">
+          <h2 id={`titre-${id}`}>{section.title}</h2>
+          {section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+          {recipes && (
+            <nav class="carnet-recipes" aria-label="Recettes du Carnet">
+              {recipes.map(({ label, href }) => <a href={href}>{label} <span aria-hidden="true">→</span></a>)}
+            </nav>
+          )}
+        </div>
+        {photo && <CultureFeaturePhoto photo={photo} class={`carnet-${photo.placement}`} sizes={photo.sizes} />}
+        {process && (
+          <figure class="carnet-flow">
+            <figcaption>{process.title}</figcaption>
+            <ol role="list">
+              {process.steps.map(({ name, detail }, step) => (
+                <li><span class="carnet-flow-number" aria-hidden="true">{step + 1}</span><strong>{name}</strong><span>{detail}</span></li>
+              ))}
+            </ol>
+          </figure>
+        )}
+        {districts && (
+          <figure class="carnet-geography">
+            <figcaption>{districts.title}</figcaption>
+            <dl>
+              {districts.provinces.map(({ name, places }) => (
+                <div><dt>{name}</dt>{places.map((place) => <dd>{place}</dd>)}</div>
+              ))}
+            </dl>
+            <p>{districts.description}</p>
+            <a href={districts.source.href}>{districts.source.label}</a>
+          </figure>
+        )}
+      </section>
+    );
+  })}
+</article>
