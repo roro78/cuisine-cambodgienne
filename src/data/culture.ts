@@ -5,7 +5,7 @@ export interface CultureFeatureLink {
   href: string;
 }
 
-export interface CultureFeaturePhoto {
+interface CultureFeatureImageBase {
   image: string;
   alt: string;
   width: number;
@@ -14,10 +14,20 @@ export interface CultureFeaturePhoto {
   caption: string;
   detail: string;
   credit: string;
+  recipe?: CultureFeatureLink;
+}
+
+type CultureFeaturePhoto = CultureFeatureImageBase & {
+  generated?: false;
   coCredit?: CultureFeatureLink;
   source: string;
   license: CultureFeatureLink;
-}
+  assetNote?: string;
+};
+
+export type CultureFeatureImage = CultureFeaturePhoto | (CultureFeatureImageBase & {
+  generated: true;
+});
 
 interface CultureFeature {
   summary: string;
@@ -25,7 +35,7 @@ interface CultureFeature {
   sections: {
     id: string;
     label: string;
-    photo?: CultureFeaturePhoto & { placement: 'botanical' | 'cooking' | 'dessert'; sizes: string };
+    media?: (CultureFeatureImage & { placement: 'harvest' | 'collection' | 'botanical' | 'cooking' | 'dessert'; sizes: string })[];
     process?: { title: string; steps: { name: string; detail: string }[] };
     districts?: {
       title: string;
@@ -33,7 +43,6 @@ interface CultureFeature {
       description: string;
       source: CultureFeatureLink;
     };
-    recipes?: CultureFeatureLink[];
   }[];
 }
 
