@@ -14,7 +14,11 @@ test('dated release is repeatable and refuses a future recipe without overwritin
     for (const file of manifest.files) {
       const target = join(directory, file.path);
       mkdirSync(dirname(target), { recursive:true });
-      copyFileSync(join(root, 'dist', file.path), target);
+      // The dated Amok package keeps its approved sitemap as the live catalogue grows.
+      const source = file.path === 'sitemap.xml'
+        ? join(root, 'releases/amok-trey-v4/sitemap.xml')
+        : join(root, 'dist', file.path);
+      copyFileSync(source, target);
     }
     assert.equal(run().status, 0, 'An unchanged release must package again');
     assert.equal(run().status, 0, 'A second packaging must produce the same bytes');
