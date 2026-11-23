@@ -145,6 +145,11 @@ export async function stagedCultureCandidate(request,call,evidence){
       format:cultureLinkSchema,numPredict:180,timeoutMs:90000,numCtx:2048});
     const part=cultureStageObject(raw,['link']);
     const link=cultureStageText(part.link,25,320);
+    // A real isolated run emitted the same raw MPSEZ URL instead of prose in
+    // both sections. The Studio S1 schema accepts strings, not editorial quality.
+    // Keep reference URLs only in the private research_note, never as body text.
+    if(/https?:\/\/|www\.|\b[a-z0-9-]+\.(?:com|fr|org|net|gov|kh|int)\b/i.test(link))
+      throw Error('CULTURE_STAGE_SCHEMA');
     // Facts are preserved byte-for-byte; LLM connective text still requires
     // human checking and is never granted editorial approval automatically.
     sections.push({title:titles[i],paragraphs:[...groups[i],link]});
