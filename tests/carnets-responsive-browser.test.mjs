@@ -104,6 +104,10 @@ async function inspect(view) {
         const narrative = await page.locator('main.culture-article .culture-copy').textContent();
         assert.doesNotMatch(narrative, /Chin Choeun|Chin Ith/);
         assert.match(narrative, /Associated Press a suivi un foyer à Trapang Ampel/);
+        const summary = page.locator('.culture-article-hero p').last();
+        assert.match(await summary.textContent(), /palmiers à sucre, appelés thnot en khmer/);
+        assert.equal(await summary.locator('em[lang="la"]').textContent(), 'Borassus flabellifer');
+        assert.doesNotMatch(narrative, /Borassus flabellifer|palmier de Palmyre/);
         assert.equal(await page.locator('#producteurs h2').textContent(), 'De la récolte dans les palmiers à la cuisson du sucre');
         assert.equal(await page.locator('#recolte .carnet-feature').count(),2);
         assert.deepEqual(await page.locator('#cuisine figure a.carnet-recipe-link').evaluateAll(links => links.map(link => link.pathname)), ['/recettes/chek-ktis/','/recettes/num-plae-ai/']);

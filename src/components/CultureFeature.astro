@@ -10,13 +10,14 @@ const feature = article.feature;
 if (!feature || feature.sections.length !== article.sections.length) {
   throw new Error(`Configuration des sections incomplète pour ${article.slug}`);
 }
+const summaryParts = feature.summary.split(/(\([A-Z][a-z]+ [a-z]+\))/);
 ---
 
 <section class="detail-hero-shell detail-hero-shell--culture">
   <header class="culture-article-hero">
     <p class="eyebrow"><CulinaryIcon name="story" size={17} /> {article.eyebrow} · {article.readingTime}</p>
     <h1>{article.title}</h1>
-    <p>{feature.summary}</p>
+    <p>{summaryParts.map((part, index) => index % 2 === 0 ? part : <>(<em lang="la">{part.slice(1, -1)}</em>)</>)}</p>
   </header>
   <CultureFeaturePhoto photo={feature.cover} class="carnet-hero" eager sizes="(max-width: 820px) 92vw, (max-width: 1320px) 49vw, 650px" />
 </section>

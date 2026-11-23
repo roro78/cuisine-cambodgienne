@@ -14,7 +14,7 @@ export const kampongSpeuPalmSugar: CultureArticle = {
   "title": "Sucre de palme au Cambodge, les gestes des producteurs de Kampong Speu",
   "eyebrow": "Terroirs et marchés",
   "intro": "Sur la photographie d’ouverture, prise à Angkor, le sucre encore souple est réparti dans de petits moules ronds. Ce geste donne sa forme à une matière déjà concentrée par la cuisson. À Kampong Speu, le cahier des charges du sucre protégé encadre le travail depuis le choix des palmiers jusqu’à la traçabilité du produit.",
-  "seoDescription": "Du palmier de Palmyre aux desserts cambodgiens, suivez la récolte, la cuisson de la sève et les gestes qui façonnent le sucre de palme. Découvrez ce que protège l’IGP de Kampong Speu.",
+  "seoDescription": "Du palmier à sucre aux desserts cambodgiens, suivez la récolte de la sève et sa transformation. Découvrez ce que protège l’IGP du sucre de palme de Kampong Speu.",
   "readingTime": "5 min",
   "sections": [
     {
@@ -27,7 +27,7 @@ export const kampongSpeuPalmSugar: CultureArticle = {
     {
       "title": "Suspendre un récipient et revenir chercher la sève",
       "paragraphs": [
-        "En haut d’un palmier de Palmyre, le producteur travaille près des bouquets de fleurs. Pour le sucre protégé de Kampong Speu, le cahier des charges décrit la pression exercée sur ces bouquets, puis la coupe qui laisse couler la sève. Sous l’extrémité préparée, le producteur suspend un bampong en bambou ou en plastique pour recueillir les gouttes.",
+        "En haut d’un palmier à sucre, le producteur travaille près des bouquets de fleurs. Pour le sucre protégé de Kampong Speu, le cahier des charges décrit la pression exercée sur ces bouquets, puis la coupe qui laisse couler la sève. Sous l’extrémité préparée, le producteur suspend un bampong en bambou ou en plastique pour recueillir les gouttes.",
         "Le document cambodgien décrit aussi un petit morceau de bois de popel ou de koki placé dans le bampong pour ralentir la fermentation. Le récipient doit être récupéré dans les quinze heures qui suivent sa pose. Une fois la sève récoltée, la transformation doit commencer dans les deux heures. À la descente de l’arbre, il faut donc que tout soit prêt au sol pour filtrer et chauffer le liquide."
       ]
     },
@@ -62,7 +62,7 @@ export const kampongSpeuPalmSugar: CultureArticle = {
     }
   ],
   "feature": {
-    "summary": "Au Cambodge, les producteurs grimpent jusqu’aux fleurs des palmiers de Palmyre pour recueillir une sève naturellement sucrée. Après la collecte, elle est filtrée puis chauffée. De la marmite sortent, selon la préparation, du sirop, de la pâte, des blocs ou des grains.",
+    "summary": "Au Cambodge, les producteurs grimpent dans les palmiers à sucre, appelés thnot en khmer, pour recueillir la sève naturellement sucrée de leurs fleurs. Il s’agit du palmier de Palmyre (Borassus flabellifer), reconnaissable à ses grandes feuilles en éventail. Après la collecte, la sève est filtrée puis chauffée pour donner, selon la préparation, du sirop, de la pâte, des blocs ou des grains.",
     "cover": {
       "image": "/images/carnets/kampong-speu/moulage-angkor-1920.webp",
       "alt": "Deux personnes répartissent le sucre de palme dans de petits moules ronds, près d’une grande marmite.",
@@ -88,7 +88,7 @@ export const kampongSpeuPalmSugar: CultureArticle = {
         "media": [
           {
             "image": "/images/carnets/kampong-speu/recolte-illustree-960.webp",
-            "alt": "Une personne atteint un récipient suspendu près des fleurs d’un palmier de Palmyre, debout sur des appuis fixés au tronc.",
+            "alt": "Illustration d’une personne qui récupère un récipient près des fleurs d’un palmier à sucre, depuis des appuis fixés au tronc.",
             "width": 960,
             "height": 1280,
             "widths": [
@@ -143,7 +143,7 @@ export const kampongSpeuPalmSugar: CultureArticle = {
         "media": [
           {
             "image": "/images/carnets/kampong-speu/bampong-illustre-960.webp",
-            "alt": "Un bampong en bambou est suspendu sous une extrémité florale du palmier de Palmyre.",
+            "alt": "Illustration d’un bampong en bambou suspendu sous l’extrémité coupée d’une tige florale de palmier à sucre.",
             "width": 960,
             "height": 1440,
             "widths": [
@@ -151,7 +151,7 @@ export const kampongSpeuPalmSugar: CultureArticle = {
               960
             ],
             "caption": "Le bampong recueille la sève",
-            "detail": "Schéma de principe du récipient ouvert, suspendu sous la partie coupée de l’inflorescence.",
+            "detail": "Le récipient ouvert est suspendu sous l’extrémité coupée de la tige florale.",
             "credit": "Illustration éditoriale générée par IA · OpenAI ImageGen",
             "generated": true,
             "placement": "collection",
@@ -159,14 +159,14 @@ export const kampongSpeuPalmSugar: CultureArticle = {
           },
           {
             "image": "/images/carnets/kampong-speu/palmier-angkor-960.webp",
-            "alt": "Tronc et base des grandes feuilles en éventail d’un palmier de Palmyre, vus d’en dessous.",
+            "alt": "Tronc et base des grandes feuilles en éventail d’un palmier à sucre, vus d’en dessous.",
             "width": 960,
             "height": 1443,
             "widths": [
               480,
               960
             ],
-            "caption": "Palmier de Palmyre",
+            "caption": "Palmier à sucre",
             "detail": "Angkor Wat, Siem Reap · juillet 2013",
             "credit": "Photo Michael Hermann",
             "source": "https://commons.wikimedia.org/wiki/File:Cambodian_Sugar_Palm_(Borassus_flabellifer)_at_Angkor_Wat.JPG",
