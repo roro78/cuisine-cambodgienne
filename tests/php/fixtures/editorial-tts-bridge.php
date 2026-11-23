@@ -127,6 +127,20 @@ if($mode==='safety'){
     foreach(cmsCoralFinalAudit($generic,$catalog,$canonical,$guided)['blocking'] as $item)
       if($item['code']==='FIXED_SERVINGS')throw new RuntimeException('GENERIC_SINGULAR_FALSE_POSITIVE');
     $passed[]='GENERIC_SINGULAR_CONTAINER_NOT_FIXED_SERVINGS';
+    foreach(['Réservez 1 c. à soupe de lait de coco.',
+        'Réservez 1/2 litre de lait de coco.',
+        'Réservez ½ litre de lait de coco.',
+        'Réservez la cuillerée prévue pour la finition.'] as $sentence){
+      $quantity=$record;
+      $quantity['atelier_scripts']['chapters'][1]['text']=$sentence.' '.$quantity['atelier_scripts']['chapters'][1]['text'];
+      if(!in_array('FIXED_INGREDIENT_QUANTITY',array_column(cmsCoralFinalAudit($quantity,$catalog,$canonical,$guided)['blocking'],'code'),true))
+        throw new RuntimeException('FIXED_VOICE_QUANTITY_NOT_BLOCKED');
+    }
+    $technical=$record;
+    $technical['atelier_scripts']['chapters'][5]['text']='Contrôlez au centre d’un ramequin : au moins 72 °C. La cuisson indicative dure 18 à 25 minutes. '.$technical['atelier_scripts']['chapters'][5]['text'];
+    foreach(cmsCoralFinalAudit($technical,$catalog,$canonical,$guided)['blocking'] as $item)
+      if(in_array($item['code'],['FIXED_SERVINGS','FIXED_INGREDIENT_QUANTITY'],true))throw new RuntimeException('TECHNICAL_REFERENCE_FALSE_POSITIVE');
+    $passed[]='VOICE_QUANTITIES_AND_INVARIANT_TECHNIQUE_DISTINGUISHED';
     $singlePerson=$record;
     $singlePerson['atelier_scripts']['chapters'][5]['text']='Cette recette est pour une personne. '
       .$singlePerson['atelier_scripts']['chapters'][5]['text'];
