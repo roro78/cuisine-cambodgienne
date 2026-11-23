@@ -86,6 +86,7 @@ jobs:
           php -l public/gestion-contenus/lib.php
           php -l public/gestion-contenus/publication-gap-audit.php
           php tests/php/editorial-cms-drafts-smoke.php
+          php tests/php/editorial-studio-culture-binding-smoke.php
       - name: Astro check and build
         run: |
           npm run check

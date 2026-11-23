@@ -52,6 +52,7 @@ jobs:
           php tests/php/editorial-all-guided-smoke.php dist
           php -l tests/php/editorial-studio-unified-smoke.php
           php tests/php/editorial-studio-unified-smoke.php dist
+          php tests/php/editorial-studio-culture-binding-smoke.php
           php -l public/gestion-contenus/visual-provider-adapter.php
           php tests/php/editorial-private-visuals-smoke.php dist
           php tests/php/editorial-create-manual-smoke.php dist
