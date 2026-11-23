@@ -44,6 +44,34 @@ try{
     asyncCheck($tokens[0]===$tokens[1],'CROSS_PROCESS_SAME_ID');
     asyncCheck(count(file($concurrent.'/calls.txt',FILE_IGNORE_NEW_LINES))===1,'CROSS_PROCESS_ONE_CALL');
     asyncCheck(count(json_decode((string)file_get_contents(cmsDraftDir($concurrent).'/ai-brief-attempts.json'),true))===1,'CROSS_PROCESS_ONE_QUOTA');
+    // The initial culture-only rollout must reject all other families
+    // before quota consumption or a call to the shared worker.
+    $gate=$base.'/culture-only';mkdir($gate,0700);
+    $gateCalls=0;
+    $gateCfg=['editorial_ai_content'=>['enabled'=>true,'qualified'=>true,
+        'mode'=>'async','provider_label'=>'local-ollama',
+        'model_label'=>'llama3.2','max_attempts_per_day'=>2,
+        'allowed_kinds'=>['culture'],
+        'submit'=>static function()use(&$gateCalls):array{
+            ++$gateCalls;throw new RuntimeException('GATE_WAS_BYPASSED');
+        },
+        'poll'=>static function():array{throw new RuntimeException('GATE_WAS_BYPASSED');}]];
+    asyncCheck(cmsAiContentSettings($gateCfg)['allowed_kinds']===['culture'],
+        'CULTURE_ONLY_CFG');
+    $blocked=['kind'=>'recette','title'=>'Catégorie désactivée',
+        'angle'=>'Ne doit pas atteindre le fournisseur',
+        'objective'=>'Test de sécurité isolé','context'=>'Données de test',
+        'reference_id'=>'','semantic_review'=>'1','transmission_review'=>'1'];
+    asyncReject(fn()=>cmsAiContentAsyncStart($gate,$blocked,$catalog,$gateCfg,$canonical,$guided),
+        'AI_CONTENT_UNAVAILABLE');
+    asyncCheck($gateCalls===0
+        && !file_exists(cmsDraftDir($gate).'/ai-brief-attempts.json'),
+        'BLOCKED_KIND_NO_CALL_NO_QUOTA');
+    foreach([[],['culture','culture'],['culture','unknown']] as $badKinds){
+        $bad=$gateCfg;$bad['editorial_ai_content']['allowed_kinds']=$badKinds;
+        asyncReject(fn()=>cmsAiContentSettings($bad),'AI_CONTENT_UNAVAILABLE');
+    }
+
     $submits=0;$polls=0;
     foreach(array_keys(cmsCreationKinds()) as $kind){
         $private=$base.'/'.$kind;mkdir($private,0700);$phase='running';$sent=[];
