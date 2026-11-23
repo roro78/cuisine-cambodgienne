@@ -1499,7 +1499,7 @@ function cmsStudioExistingCoralNarrations(?array $binding,array $canonical): ?ar
         }
         $url=$item['audio']['url']??null;
         if(!is_string($url)
-            ||!preg_match('~^/audio/workshops/[a-z0-9-]+/atelier-coral-v[23]\.mp3$~D',$url)
+            ||!preg_match('~^/audio/workshops/[a-z0-9-]+/atelier-coral-v[234]\.mp3$~D',$url)
             ||!preg_match('/^[a-f0-9]{64}$/D',$item['audio']['sha256']??'')
             ||!preg_match('/^[a-f0-9]{64}$/D',$item['scriptSha256']??''))
             return null;
