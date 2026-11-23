@@ -1994,7 +1994,8 @@ Un Carnet culturel peut traiter l'histoire d'un plat sans répéter sa recette.<
 <?php if($pendingContent===null && $candidateToken==='' && !isset($creation['source_binding'])): ?>
 <details class="guided-group"<?= $aiContentInputForm?' open':'' ?>>
 <summary>Générer une proposition structurée avec l’IA</summary>
-<?php if($aiContentSettings!==null): ?>
+<?php if($aiContentSettings!==null
+    && in_array($createKind,$aiContentSettings['allowed_kinds'],true)): ?>
 <p class="small">Le titre et l’angle ci-dessus servent de brief. Les champs déjà saisis et
 les notes privées ne sont pas transmis. Le résultat restera à relire et à enregistrer.</p>
 <input type="hidden" name="ai_content_request_token" value="<?= cmsEsc($_SESSION['ai_content_intent']) ?>">
