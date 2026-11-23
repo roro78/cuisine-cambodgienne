@@ -152,8 +152,8 @@ test('C2 cultural dossier uses three small, isolated calls and retains exact sup
       seoDescription:'Découvrez les repères documentaires disponibles à propos de Psar Kdam et du poivre de Kampot.',
       summary:'Un bref aperçu du marché aux crabes de Kep fondé sur les informations fournies pour relecture.',
       section_titles:['Le marché aux crabes de Kep','Un lien documentaire avec le poivre de Kampot']},
-    {link:'Ces éléments permettent de distinguer la présentation de Kep des récits qui restent à vérifier.'},
-    {link:'Ces repères décrivent une situation locale et ne suffisent pas à expliquer tous les marchés.'}
+    {paragraph:'Ces éléments permettent de distinguer la présentation de Kep des récits qui restent à vérifier.'},
+    {paragraph:'Ces repères décrivent une situation locale et ne suffisent pas à expliquer tous les marchés.'}
   ];
   const calls=[];
   const provider=ollamaJobProvider({fetcher:async(url,o)=>{
@@ -165,6 +165,11 @@ test('C2 cultural dossier uses three small, isolated calls and retains exact sup
   assert.equal(calls.length,3);
   assert.deepEqual(calls.map(x=>x.options.num_predict),[450,180,180]);
   assert.deepEqual(calls.map(x=>x.options.num_ctx),[4096,2048,2048]);
+  assert.equal(calls.every(x=>!JSON.stringify(x.messages).includes('https://www.wipo.int/')),
+    true,'source URLs remain private notes, never model input');
+  assert.equal(calls.every(x=>!JSON.stringify(x.messages).includes('https://www.mpsez.gov.kh/')),
+    true,'source URLs remain private notes, never model input');
+  assert.deepEqual(calls.slice(1).map(x=>x.format.required),[['paragraph'],['paragraph']]);
   assert.deepEqual(calls[0].messages[1].content.includes('docs/carnets/PLAN-REFONTE-CARNETS.md'),false);
   assert.deepEqual(response.fields.sections.map(x=>x.title),replies[0].section_titles);
   assert.deepEqual(response.fields.sections[0].paragraphs.slice(0,2),facts.slice(0,2));
@@ -203,7 +208,7 @@ test('isolated Kep regression: a raw source URL is not accepted as body prose',a
       seoDescription:'Présentation sourcée du marché aux crabes de Kep et des produits de la mer dans les documents fournis.',
       summary:'Des faits locaux présentés pour être vérifiés par un relecteur avant toute publication.',
       section_titles:['Le marché de Kep','Les produits de la mer à Kep']
-    }:{link:'https://www.mpsez.gov.kh/coastal-industries/coastal-tourisim/tourisim-at-kep-province'};
+    }:{paragraph:'https://www.mpsez.gov.kh/coastal-industries/coastal-tourisim/tourisim-at-kep-province'};
     return new Response(JSON.stringify({done:true,message:{content:JSON.stringify(reply)}}));
   }});
   await assert.rejects(provider(staged),/CULTURE_STAGE_SCHEMA/);
@@ -222,7 +227,7 @@ test('a failing cultural stage does not run later stages or produce a partial dr
       seoDescription:'Les repères culturels déclarés par le contributeur pour le Carnet consacré à Kep.',
       summary:'Une présentation strictement locale qui nécessite une relecture humaine avant tout usage public.',
       section_titles:['Le marché local','Un repère culinaire']} :
-      {link:''};
+      {paragraph:''};
     return new Response(JSON.stringify({done:true,message:{content:JSON.stringify(response)}}));
   }});
   await assert.rejects(provider(staged),/CULTURE_STAGE_SCHEMA/);
