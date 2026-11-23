@@ -1911,6 +1911,14 @@ qui restent à vérifier avant tout enregistrement.</p>
 <p>Relisez et corrigez les champs ci-dessous, puis enregistrez explicitement un brouillon.
 Cette proposition temporaire est valable au plus 30 minutes, tant que cette session reste ouverte.
 Elle reste à compléter et à vérifier avant toute publication.</p>
+<?php if(($pendingContent['candidate']['kind']??'')==='culture'
+    && count($pendingContent['candidate']['fields']['sections']??[])<5): ?>
+<p class="small" role="note"><strong>Trame documentaire courte — pas un Carnet complet.</strong>
+La proposition contient <?= count($pendingContent['candidate']['fields']['sections']??[]) ?> sections.
+Le référentiel Carnets recommande généralement 5 à 7 sections utiles, lorsque les sources le permettent.
+Enrichissez le texte et utilisez le dossier documentaire privé du formulaire pour contrôler les faits
+et leurs sources. L'enregistrement reste un brouillon, sans validation ni publication.</p>
+<?php endif; ?>
 <p class="small"><?= cmsEsc($pendingContent['metadata']['provider_label']) ?> ·
 <?= cmsEsc($pendingContent['metadata']['model_label']) ?> ·
 <?= cmsEsc($pendingContent['metadata']['generated_at']) ?></p>
