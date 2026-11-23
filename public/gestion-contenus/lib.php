@@ -2654,6 +2654,15 @@ function cmsAiContentPrepare(string $private,array $raw,array $catalog,array $cf
     $input=$request['brief'];
     if(!in_array($input['kind'],$settings['allowed_kinds'],true))
         throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
+    // The opt-in culture-only pilot must not silently fall back to the legacy
+    // single giant Ollama call for a context without a documentary dossier.
+    // Reject before reserving a quota or sending anything to the worker.
+    if($settings['allowed_kinds']===['culture'] && $input['kind']==='culture'){
+        $context=$input['context'];
+        if(!preg_match('/^Sources?(?:[^\r\n:]{0,45})[ \t]*:[ \t]*https:\/\//mi',$context)
+            || !preg_match('/^Faits (?:autorisés|documentés|vérifiés)[ \t]*:[ \t]*\S/mi',$context))
+            throw new RuntimeException('AI_CONTENT_EVIDENCE_REQUIRED');
+    }
     cmsAiContentPreflight($private,$input['kind'],$input['title'],$catalog,$id,$expected);
     // Same persistent global ledger/cooldown/lock as briefs, strictest active limit.
     if($reserve)cmsAiBriefReserve($private,$settings['max_attempts_per_day']);
