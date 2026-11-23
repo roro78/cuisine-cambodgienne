@@ -5,6 +5,7 @@ import SiteFooter from '../../components/SiteFooter.astro';
 import { cultureArticles } from '../../data/culture';
 import type { CultureArticle } from '../../data/culture';
 import { imageSrcSet } from '../../utils/images';
+import CultureFeature from '../../components/CultureFeature.astro';
 import CulinaryIcon from '../../components/CulinaryIcon.astro';
 
 export function getStaticPaths() {
@@ -48,7 +49,8 @@ const breadcrumbSchema = {
 ---
 <BaseLayout title={`${article.title} | Culture culinaire cambodgienne`} description={article.seoDescription} image={article.image} imageAlt={article.imageAlt}>
   <SiteHeader />
-  <main class="culture-article editorial-detail culture-detail">
+  <main class:list={["culture-article editorial-detail culture-detail", { "carnet-feature-detail": article.feature }]}>
+    {article.feature ? <CultureFeature article={article} /> : (<>
     <section class="detail-hero-shell detail-hero-shell--culture">
       <header class="culture-article-hero" data-reveal="up">
         <p class="eyebrow"><CulinaryIcon name="story" size={17} /> {article.eyebrow} · {article.readingTime}</p>
@@ -97,6 +99,7 @@ const breadcrumbSchema = {
       ))}
 
     </article>
+    </>)}
 
     {nextCarnets.length > 0 && (
       <nav class="culture-next-stories" aria-label="Poursuivre avec un autre Carnet">

@@ -23,7 +23,8 @@ const slugs = [
   'comprendre-amok',
   'kep-marche-crabe-poivre',
   'prahok-fermentation-umami',
-  'construire-repas-cambodgien'
+  'construire-repas-cambodgien',
+  'sucre-de-palme-kampong-speu'
 ];
 const viewports = [
   { name: 'android', width: 390, height: 844, deviceScaleFactor: 1 },
@@ -51,13 +52,13 @@ async function inspect(view) {
   try {
     const overview = await page.goto(base+'/culture/',{waitUntil:'domcontentloaded'});
     assert.equal(overview?.status(),200,'Carnets index must render');
-    assert.equal(await page.locator('main.v16-journals a.v16-journal-lead-card, main.v16-journals a.v16-journal-card').count(),7,'All 7 Carnets must be discoverable');
+    assert.equal(await page.locator('main.v16-journals a.v16-journal-lead-card, main.v16-journals a.v16-journal-card').count(),slugs.length,'All Carnets must be discoverable');
     assert.equal(await page.locator('main.v16-journals a[href^="/recettes/"], main.v16-journals a[href^="/apprendre/"]').count(),0,'No recipe/workshop CTA in Carnets home');
     const filterButtons = page.locator('[data-carnets-filters] button[data-carnets-filter]');
     await filterButtons.first().waitFor({ state: 'visible' });
     assert.equal(await filterButtons.count(),4,'All + three non-empty universes');
-    assert.equal(await page.locator('[data-carnets-universe]:not([hidden])').count(),7,'All seven stories remain unfiltered by default (offscreen reveal is separate)');
-    for (const [universe,expected] of [['Vie quotidienne',2],['Terroirs et marchés',2],['Mémoire culinaire',3]]) {
+    assert.equal(await page.locator('[data-carnets-universe]:not([hidden])').count(),slugs.length,'All stories remain unfiltered by default');
+    for (const [universe,expected] of [['Vie quotidienne',2],['Terroirs et marchés',3],['Mémoire culinaire',3]]) {
       // Press the exact data value rather than matching translated labels.
       await page.locator('[data-carnets-filter]').evaluateAll((nodes,key) => {
         const target = nodes.find(node => node.getAttribute('data-carnets-filter') === key);
@@ -68,7 +69,7 @@ async function inspect(view) {
       assert.equal(await page.locator('[data-carnets-filter="'+universe+'"]').getAttribute('aria-pressed'),'true','Accessible filter state '+universe);
     }
     await page.locator('[data-carnets-filter="all"]').click();
-    assert.equal(await page.locator('[data-carnets-universe]:not([hidden])').count(),7,'All filter restores seven unfiltered stories');
+    assert.equal(await page.locator('[data-carnets-universe]:not([hidden])').count(),slugs.length,'All filter restores the unfiltered stories');
     assert.equal(await page.locator('[data-carnets-universe][hidden]').count(),0,'No hidden story left after reset');
     await assertNoOverflow(page,'index '+view.name);
     if (view.name==='desktop') await capture(page,'index-desktop');
@@ -82,21 +83,40 @@ async function inspect(view) {
         slug==='le-riz-symbole-de-vie-au-cambodge'?7:slug==='comprendre-le-kroeung'?5:slug==='poivre-de-kampot'?7:6,
         'Chapter count regression: '+slug);
       assert.equal(await page.locator('main.culture-article .culture-related, main.culture-article .rice-workshop-link').count(),0,'Practical funnel leaked: '+slug);
-      assert.equal(await page.locator('main.culture-article a[href^="/recettes/"], main.culture-article a[href^="/apprendre/"]').count(),0,'Recipe/workshop link in cultural article: '+slug);
+      const links = await page.locator('main.culture-article a[href^="/recettes/"], main.culture-article a[href^="/apprendre/"]').evaluateAll(nodes => nodes.map(node => node.getAttribute('href')));
+      const isPalmSugar = slug === 'sucre-de-palme-kampong-speu';
+      assert.deepEqual(links, isPalmSugar ? ['/recettes/chek-ktis/', '/recettes/num-plae-ai/'] : [], 'Related recipes: '+slug);
+      if (isPalmSugar) {
+        const photographs = page.locator('main.culture-article .carnet-feature');
+        assert.equal(await photographs.count(),4,'Four documentary photographs');
+        for (const figure of await photographs.all()) {
+          const photo = figure.locator('img');
+          await photo.scrollIntoViewIfNeeded();
+          await photo.evaluate(image => image.decode());
+          const caption = await figure.locator('figcaption').boundingBox();
+          const bounds = await figure.boundingBox();
+          assert.ok(caption && bounds && caption.x >= bounds.x && caption.x + caption.width <= bounds.x + bounds.width, 'Credit fits within figure');
+          assert.ok((await figure.locator('figcaption').textContent()).includes('Wikimedia Commons'));
+        }
+        assert.equal(await page.locator('.carnet-nav a').count(),6);
+        assert.equal(await page.locator('.carnet-flow li').count(),7);
+        assert.deepEqual(await page.locator('.carnet-geography dd').allTextContents(),['Oudong','Samrong Torng','Ang Snuol']);
+      }
       const otherCarnets = page.locator('main.culture-article nav.culture-next-stories a[href^="/culture/"]');
-      assert.equal(await otherCarnets.count(),['comprendre-le-kroeung','comprendre-amok','prahok-fermentation-umami'].includes(slug)?2:1,
+      assert.equal(await otherCarnets.count(),['poivre-de-kampot','kep-marche-crabe-poivre','sucre-de-palme-kampong-speu','comprendre-le-kroeung','comprendre-amok','prahok-fermentation-umami'].includes(slug)?2:1,
         'Cultural cross-link expected within each non-empty universe: '+slug);
       assert.equal(await page.locator(`main.culture-article nav.culture-next-stories a[href="/culture/${slug}/"]`).count(),0,
         'Current story must not link to itself: '+slug);
       await assertNoOverflow(page,slug+' '+view.name);
-      const img=page.locator('main.culture-article .culture-visual img');
+      const heroImage = isPalmSugar ? 'main.culture-article .carnet-hero img' : 'main.culture-article .culture-visual img';
+      const img=page.locator(heroImage);
       await img.waitFor({state:'attached',timeout:15000});
       // External Wikimedia heroes must be checked as strictly as local assets.
       try {
-        await page.waitForFunction(() => {
-          const el=document.querySelector('main.culture-article .culture-visual img');
+        await page.waitForFunction(selector => {
+          const el=document.querySelector(selector);
           return !!el && el.complete;
-        },null,{timeout:13000});
+        },heroImage,{timeout:13000});
       } catch { /* naturalWidth check reports the image failure below */ }
       const image=await img.evaluate(el => ({src:el.currentSrc,width:el.naturalWidth,height:el.naturalHeight,complete:el.complete}));
       assert.ok(image.complete&&image.width>0&&image.height>0,'Broken hero photo: '+slug+' at '+view.name+' -> '+image.src);

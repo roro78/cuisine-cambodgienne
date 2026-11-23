@@ -8,7 +8,7 @@ const social=readFileSync('src/data/socialCatalog.ts','utf8');
 const plan=readFileSync('docs/carnets/PLAN-REFONTE-CARNETS.md','utf8');
 
 const start=data.indexOf("    slug: 'construire-repas-cambodgien'");
-const end=data.indexOf("\n  }\n];",start);
+const end=data.indexOf("\n  }",start);
 assert.ok(start>=0&&end>start,'C07 must retain its canonical URL');
 const c07=data.slice(start,end);
 
