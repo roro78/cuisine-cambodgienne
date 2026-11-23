@@ -2548,6 +2548,13 @@ function cmsAiContentSettings(array $cfg): ?array {
         if(!is_string($options[$key]??null)
             || !preg_match('/^[a-zA-Z0-9][a-zA-Z0-9._:\/ -]{0,79}$/D',$options[$key]))
             throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
+    // Optional per-family feature gate. Legacy configs without this key retain
+    // all five families; the first controlled C2 rollout sets ['culture'].
+    $allowedKinds=$options['allowed_kinds']??array_keys(cmsCreationKinds());
+    if(!is_array($allowedKinds)||!array_is_list($allowedKinds)||$allowedKinds===[]
+        ||count($allowedKinds)>5||count(array_unique($allowedKinds))!==count($allowedKinds)
+        ||array_diff($allowedKinds,array_keys(cmsCreationKinds())))
+        throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
     $async=($options['mode']??'sync')==='async';
     if(!in_array($options['mode']??'sync',['sync','async'],true))throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
     if($async){
@@ -2558,7 +2565,8 @@ function cmsAiContentSettings(array $cfg): ?array {
     catch(Throwable $e){throw new RuntimeException('AI_CONTENT_UNAVAILABLE');}
     return ['mode'=>$async?'async':'sync','adapter'=>$options['adapter']??null,
         'submit'=>$options['submit']??null,'poll'=>$options['poll']??null,'provider_label'=>$options['provider_label'],
-        'model_label'=>$options['model_label'],'max_attempts_per_day'=>$limit];
+        'model_label'=>$options['model_label'],'max_attempts_per_day'=>$limit,
+        'allowed_kinds'=>$allowedKinds];
 }
 /** One explicit generation intent can be submitted once, including on failure. */
 function cmsAiContentIntent(array &$session,mixed $token): void {
@@ -2644,6 +2652,8 @@ function cmsAiContentPrepare(string $private,array $raw,array $catalog,array $cf
     unset($raw['transmission_review']);
     $request=cmsAiContentRequest($raw,$catalog,$canonical,$guided);
     $input=$request['brief'];
+    if(!in_array($input['kind'],$settings['allowed_kinds'],true))
+        throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
     cmsAiContentPreflight($private,$input['kind'],$input['title'],$catalog,$id,$expected);
     // Same persistent global ledger/cooldown/lock as briefs, strictest active limit.
     if($reserve)cmsAiBriefReserve($private,$settings['max_attempts_per_day']);
@@ -2765,6 +2775,8 @@ function cmsAiContentAsyncPoll(string $private,array &$job,array $catalog,array 
     if($s===null||$s['mode']!=='async'||$s['provider_label']!==$job['provider_label']||$s['model_label']!==$job['model_label'])
         throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
     $r=$job['request'];$id=$job['creation_id'];$expected=$job['expected_version'];
+    if(!in_array($r['brief']['kind']??'', $s['allowed_kinds'],true))
+        throw new RuntimeException('AI_CONTENT_UNAVAILABLE');
     cmsAiContentPreflight($private,$r['brief']['kind'],$r['brief']['title'],$catalog,$id,$expected);
     if($r['brief']['kind']==='atelier'&&($canonical[$r['brief']['reference_id']]['fingerprint']??null)!==($r['reference']['fingerprint']??null))
         throw new RuntimeException('AI_CONTENT_REFERENCE_CHANGED');
