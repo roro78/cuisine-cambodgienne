@@ -113,6 +113,12 @@ PHP;
     httpCheck($status===200,'LOGIN');
     [$status,$html]=$request('/gestion-contenus/?new=1&kind=recette');
     $csrf=httpHidden($html,'csrf');$intent=httpHidden($html,'ai_content_request_token');
+    [$status]=$request('/gestion-contenus/?new=1',['csrf'=>$csrf,'create_save'=>'1',
+        'creation_id'=>'','expected_version'=>'0','kind'=>'culture','title'=>'Carnet HTTP distinct',
+        'angle'=>'Contrôle du formulaire','state'=>'draft',
+        'source_binding'=>['source_id'=>'culture:sucre-de-palme-kampong-speu']]);
+    httpCheck($status===422 && (glob($private.'/editorial-drafts/new-content/c-*.json')?:[])===[],
+        'FORGED_STUDIO_BINDING_REJECTED');
     $fixture=cmsAiContentCandidate('recette',json_encode(contentFixture('recette'),JSON_THROW_ON_ERROR));
     $post=['csrf'=>$csrf,'ai_content_generate'=>'1','ai_content_request_token'=>$intent,
         'creation_id'=>'','expected_version'=>'0','kind'=>'recette','title'=>'Sujet HTTP distinct',

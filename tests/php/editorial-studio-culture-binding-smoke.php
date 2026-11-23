@@ -43,7 +43,7 @@ try{
     for($version=1;$version<=5;$version++){
         $old=$dir.'/'.$v1['id'].'.'.sprintf('%04d',$version).'.json';
         $path=$dir.'/'.$draftId.'.'.sprintf('%04d',$version).'.json';
-        $row=cmsCreationRead($dir,$v1['id'],$version);
+        $row=json_decode(file_get_contents($old),true,32,JSON_THROW_ON_ERROR);
         $row['id']=$draftId;
         $versions[$path]=json_encode($row,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
         file_put_contents($path,$versions[$path]);
