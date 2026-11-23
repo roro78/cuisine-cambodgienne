@@ -769,6 +769,8 @@ if($auth){
                         'atelier_phase_details'=>$_POST['atelier_phase_details']??null,
                         'atelier_scripts'=>$_POST['atelier_scripts']??null
                     ];
+                    if(array_key_exists('source_binding',$_POST))
+                        throw new InvalidArgumentException('STUDIO_BINDING_SERVER_ONLY');
                     if($candidateToken!==''){
                         $pending=cmsAiContentPending($_SESSION,$candidateToken);
                         $saved=cmsAiContentSave($private,$posted,$catalog,$expected,$cid,$pending,$canonicalById);
@@ -814,7 +816,7 @@ if($auth){
     $id=cmsId($_POST['source_id']??($_GET['id']??null));
     if($id!==null && isset($catalog[$id]))$selected=$catalog[$id];
     if($selected)$selectedCanonical=$canonicalById[$selected['id']]??null;
-    if($selected && $selected['kind']==='atelier'){
+    if($selected && in_array($selected['kind'],['atelier','culture'],true)){
         try{$studioLinked=cmsStudioLinkedDraft($creations,$selected['id']);}
         catch(Throwable $e){cmsUnavailable();}
         if($studioLinked!==null && !$newMode && $method==='GET'
@@ -1016,7 +1018,7 @@ $shown=$auth?cmsFilterCatalog($catalog,$latestById,$kind,$q,$status):[];
 $visualPreview=null;$visualReason='';
 if($auth && $newMode && $creation!==null){
     $visualReason='Cette nouvelle page n’a pas encore de gabarit public. Son aperçu de contenu reste disponible ci-dessous ; une conversion Astro vérifiée est nécessaire.';
-    if(isset($creation['source_binding'])){
+    if(isset($creation['source_binding']) && $creation['kind']==='atelier'){
         $visualReason='Aperçu dans le gabarit public indisponible : identité, empreinte ou modèle à vérifier.';
         if($studioSourceCurrent && $studioBoundSource){
             try{
@@ -2222,7 +2224,7 @@ avec validation humaine et tests.</p>
 <?php if($staleDraft): ?>
 La source a changé : comparez les versions avant de poursuivre, sans écraser le brouillon.
 <?php elseif($studioLinked!==null): ?>
-Un brouillon de travail existe déjà pour cet atelier. Retrouvez vos modifications et son guide audio facultatif.
+Un brouillon de travail existe déjà pour cette fiche. Retrouvez vos modifications<?= $selected['kind']==='atelier'?' et le guide audio facultatif':'' ?>.
 <?php elseif($selected['kind']==='atelier'): ?>
 Préparez le brouillon de travail de cet atelier ; vos anciennes versions restent accessibles.
 <?php elseif($latest): ?>
@@ -2467,7 +2469,7 @@ Cette liste n'est ni un calendrier ni une file de validation sociale.</p>
 <p class="small note">Source actualisée depuis le brouillon : relecture nécessaire.</p>
 <?php endif; ?>
 <?php endif; ?>
-<?php $workLinked=$src['kind']==='atelier'?cmsStudioLinkedDraft($creations,$src['id']):null; ?>
+<?php $workLinked=in_array($src['kind'],['atelier','culture'],true)?cmsStudioLinkedDraft($creations,$src['id']):null; ?>
 <a class="btn" data-library-resume href="<?= $workLinked?'?new=1&amp;cid='.cmsEsc($workLinked['id']).'&amp;'.cmsEsc($filtersUrl):'?id='.rawurlencode($src['id']).'&amp;'.cmsEsc($filtersUrl) ?>"><?= $workLinked?'Reprendre le brouillon':($prev?'Voir mes modifications':'Modifier ce contenu') ?></a>
 </div></article>
 <?php endforeach; ?>

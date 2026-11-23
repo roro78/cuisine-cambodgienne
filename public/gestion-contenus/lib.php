@@ -688,7 +688,7 @@ function cmsSave(string $private,array $source,array $fields,int $expected,strin
         $versions=cmsVersions($dir,$id);
         $head=$versions[0]??0;
         if ($head!==$expected)throw new RuntimeException('CONFLICT');
-        if(($source['kind']??null)==='atelier'
+        if(in_array($source['kind']??null,['atelier','culture'],true)
             &&cmsStudioLinkedDraft(cmsCreationList(cmsCreationDir($private)),$id)!==null)
             throw new RuntimeException('STUDIO_LINK_EXISTS');
         $prev=$head ? cmsReadVersion($dir,$id,$head):null;
@@ -1816,8 +1816,70 @@ function cmsStudioSourceBinding(array $source,array $canonical,int $version,?arr
         'legacy_version'=>$version,'legacy_sha256'=>$legacy===null?null:
             hash('sha256',json_encode($legacy,JSON_THROW_ON_ERROR))];
 }
+// Release #251: the V5 public content was exported from this private revision.
+// Only server-reviewed publications may establish a link to an existing draft.
+const CMS_STUDIO_CULTURE_PUBLICATIONS=[
+    'c-99d5dc4bf5fc6f7aafaddd82'=>[
+        'contract'=>'cdc-studio-published-culture-v1',
+        'source_id'=>'culture:sucre-de-palme-kampong-speu',
+        'source_fingerprint'=>'5fd2075fb35f5ba7',
+        'canonical_fingerprint'=>'237a5bca999a2e593cb6158b2cbfcd1161291a97e607a67c3c7575d036214d12',
+        'published_version'=>5,
+        'published_content_sha256'=>'e23b0d55f230a68ed080243eaae97e0b3493abaaeb684bea6f3eb40cb424bb82',
+    ],
+];
+function cmsStudioCultureContentDigest(array $fields): string {
+    $sections=array_map(static fn(array $section):array=>[$section['title'],$section['paragraphs']],
+        $fields['sections']);
+    return hash('sha256',json_encode([$fields['intro'],$sections],
+        JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR));
+}
+function cmsStudioCultureBinding(string $dir,?array $previous,string $slug,
+    array $catalog,array $canonical): ?array {
+    $id=$previous['id']??null;
+    $release=CMS_STUDIO_CULTURE_PUBLICATIONS[$id]??null;
+    $stored=$previous['source_binding']??null;
+    if($release===null){
+        if($stored!==null)throw new RuntimeException('STUDIO_SOURCE_INVALID');
+        return null;
+    }
+    $binding=$release+['draft_id'=>$id];
+    if(($stored!==null && $stored!==$binding) || !cmsStudioBindingCurrent($binding,$catalog,$canonical))
+        throw new RuntimeException('STUDIO_SOURCE_STALE');
+    $revision=$binding['published_version'];
+    $anchor=cmsCreationRead($dir,$id,$revision);
+    if(($anchor['contract']??null)!=='cdc-editorial-new-content-v1'
+        ||($anchor['kind']??null)!=='culture'
+        ||($anchor['slug']??null)!==$slug || $previous['slug']!==$slug
+        ||!hash_equals($binding['published_content_sha256'],cmsStudioCultureContentDigest($anchor['fields'])))
+        throw new RuntimeException('STUDIO_SOURCE_INVALID');
+    if($stored===null){
+        $sourceId=$binding['source_id'];
+        if($previous['version']!==$revision
+            ||$catalog[$sourceId]['fingerprint']!==$binding['source_fingerprint']
+            ||$canonical[$sourceId]['fingerprint']!==$binding['canonical_fingerprint']
+            ||cmsCreationSlug($catalog[$sourceId]['title'])!==$slug)
+            throw new RuntimeException('STUDIO_SOURCE_STALE');
+    }
+    return $binding;
+}
 function cmsStudioBindingCurrent(array $binding,array $catalog,array $canonical): bool {
     $id=$binding['source_id']??'';
+    if(($binding['contract']??null)==='cdc-studio-published-culture-v1'){
+        $draftId=cmsCreationId($binding['draft_id']??null);
+        $release=CMS_STUDIO_CULTURE_PUBLICATIONS[$draftId]??null;
+        if($release===null || $binding!==$release+['draft_id'=>$draftId])return false;
+        // The release hashes prove the original link. Later publications can
+        // change the content hashes while keeping the verified canonical identity.
+        $source=$catalog[$id]??[];
+        $record=$canonical[$id]??[];
+        return ($source['id']??null)===$id && ($source['kind']??null)==='culture'
+            && cmsStudioVisualRoute($source)==='/culture/'.substr($id,8).'/'
+            && preg_match('/^[a-f0-9]{16}$/D',$source['fingerprint']??'')
+            && ($record['id']??null)===$id && ($record['kind']??null)==='culture'
+            && ($record['model']??null)==='culture'
+            && preg_match('/^[a-f0-9]{64}$/D',$record['fingerprint']??'');
+    }
     return is_string($id) && ($binding['contract']??null)==='cdc-studio-published-workshop-v1'
         && ($catalog[$id]['kind']??null)==='atelier'
         && ($catalog[$id]['fingerprint']??null)===($binding['source_fingerprint']??null)
@@ -2059,9 +2121,17 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
         // changed or removed through POST or AI fields.
         if(array_key_exists('source_binding',$posted))
             throw new InvalidArgumentException('STUDIO_BINDING_SERVER_ONLY');
+        if($id!==null && !$previous)throw new RuntimeException('CREATION_NOT_FOUND');
+        if($id===null && $expected!==0)throw new RuntimeException('CREATION_CONFLICT');
+        if($previous && ($previous['version']!==$expected || $previous['kind']!==$kind))
+            throw new RuntimeException('CREATION_CONFLICT');
         $binding=$previous['source_binding']??$sourceBinding;
+        if($kind==='culture'){
+            if($sourceBinding!==null)throw new RuntimeException('STUDIO_SOURCE_INVALID');
+            $binding=cmsStudioCultureBinding($dir,$previous,$slug,$catalog,$canonical);
+        }
         if($binding!==null){
-            if($kind!=='atelier'||$aiBrief!==null||$aiContent!==null
+            if(!in_array($kind,['atelier','culture'],true)||$aiBrief!==null||$aiContent!==null
                 ||!cmsStudioBindingCurrent($binding,$catalog,$canonical)
                 ||($sourceBinding!==null && $sourceBinding!==$binding))
                 throw new RuntimeException('STUDIO_SOURCE_STALE');
@@ -2117,11 +2187,6 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
                 $posted['atelier_scripts']??($previous['atelier_scripts']??null),
                 $fields,$atelierRef,$atelierPhaseDetails)
             :null;
-        if($id!==null && !$previous)throw new RuntimeException('CREATION_NOT_FOUND');
-        if($id===null && $expected!==0)throw new RuntimeException('CREATION_CONFLICT');
-        if($previous && ($previous['version']!==$expected
-            || $previous['kind']!==$kind))
-            throw new RuntimeException('CREATION_CONFLICT');
         if($aiBrief!==null && $previous!==null)
             throw new RuntimeException('CREATION_CONFLICT');
         $origin=$aiContent!==null?'ai':($previous['origin']??($aiBrief!==null?'ai':'manual'));
@@ -2149,6 +2214,11 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
         }
         foreach(cmsCreationDuplicateCheck($kind,$slug,$duplicateCatalog,$all,$id) as $match)
             $similarByTitle[$match['title']]=$match;
+        if($binding!==null && $kind==='culture'){
+            $canonicalSlug=substr($binding['source_id'],strlen('culture:'));
+            foreach(cmsCreationDuplicateCheck($kind,$canonicalSlug,
+                $duplicateCatalog,$all,$id) as $match)$similarByTitle[$match['title']]=$match;
+        }
         $similar=array_values($similarByTitle);
         $id=$id??'c-'.bin2hex(random_bytes(12));
         if($previous===null && isset($all[$id]))throw new RuntimeException('CREATION_CONFLICT');
