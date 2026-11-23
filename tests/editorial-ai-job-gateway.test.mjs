@@ -190,6 +190,26 @@ test('partial, duplicate or unsafe culture evidence rejects before the first mod
   assert.equal(calls,0);
 });
 
+test('isolated Kep regression: a raw source URL is not accepted as body prose',async()=>{
+  const brief={kind:'culture',title:'Kep et Psar Kdam',angle:'Un cas local',
+    objective:'Brouillon culturel privé',
+    context:'Sources : https://www.mpsez.gov.kh/coastal-industries/coastal-tourisim/tourisim-at-kep-province ; https://www.wipo.int/fr/web/lisbon-system/w/news/2021/news_0001\nFaits autorisés : La page territoriale à Kep désigne Psar Kdam comme le marché aux crabes ; Une autre présentation recense les produits de la mer parmi les spécialités culinaires locales'};
+  const staged={...request,brief};
+  let calls=0;
+  const provider=ollamaJobProvider({fetcher:async()=>{
+    calls++;
+    const reply=calls===1?{
+      eyebrow:'Carnet',intro:'Ce dossier présente le marché aux crabes de Kep en s’appuyant sur les seules informations transmises.',
+      seoDescription:'Présentation sourcée du marché aux crabes de Kep et des produits de la mer dans les documents fournis.',
+      summary:'Des faits locaux présentés pour être vérifiés par un relecteur avant toute publication.',
+      section_titles:['Le marché de Kep','Les produits de la mer à Kep']
+    }:{link:'https://www.mpsez.gov.kh/coastal-industries/coastal-tourisim/tourisim-at-kep-province'};
+    return new Response(JSON.stringify({done:true,message:{content:JSON.stringify(reply)}}));
+  }});
+  await assert.rejects(provider(staged),/CULTURE_STAGE_SCHEMA/);
+  assert.equal(calls,2,'the link fails closed; no third call or generated candidate');
+});
+
 test('a failing cultural stage does not run later stages or produce a partial draft',async()=>{
   const brief={kind:'culture',title:'Kep',angle:'Un marché local',objective:'Une proposition privée',
     context:'Sources : https://example.org/kep\nFaits autorisés : Le document identifie un marché aux crabes dans la ville côtière de Kep ; Une autre phrase rappelle le rôle du poivre dans le repas présenté sur la page'};
