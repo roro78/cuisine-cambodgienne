@@ -216,7 +216,7 @@ test('Kep regression: no raw URL, truncated foreign connector, or extra claim ca
   const facts=cultureEvidenceFromBrief(brief).facts;
   assert.deepEqual(candidate.fields.sections.flatMap(x=>x.paragraphs),facts);
   assert.doesNotMatch(candidate.fields.sections.flatMap(x=>x.paragraphs).join(' '),
-    /https?:\\/\\/|daily life|transmission entre générations/i);
+    /https?:|daily life|transmission entre générations/i);
   assert.match(candidate.research_note,/Aucune liaison entre les faits/);
 });
 
