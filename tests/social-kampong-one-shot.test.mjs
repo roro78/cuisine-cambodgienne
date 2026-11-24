@@ -11,13 +11,13 @@ const node = name => workflow.nodes.find(item => item.name === name);
 const next = name => workflow.connections[name].main[0][0].node;
 const hash = value => createHash('sha256').update(value).digest('hex');
 
-function prepare(now) {
+function prepare(now, trigger = manual) {
   class FixedDate extends Date {
     constructor() { super(now); }
   }
   return runInNewContext('(function(){'+node(formatter).parameters.jsCode+'})()', {
     $: () => { throw new Error('manual preparation must never read the automatic selection'); },
-    $prevNode: {name:manual},
+    $prevNode: {name:trigger},
     Date: FixedDate,
     Intl,
   }, {timeout:3000})[0].json;
@@ -57,4 +57,45 @@ test('only the approved asset and verbatim captions go into the 25 November prop
 test('preparation closes at midnight Europe/Paris and refuses a stale launch', () => {
   assert.throws(()=>prepare('2026-11-23T23:59:59+01:00'),/fenetre_preparation_kampong_terminee/);
   assert.throws(()=>prepare('2026-11-26T00:00:00+01:00'),/fenetre_preparation_kampong_terminee/);
+});
+
+const revise = 'Relancer la validation Kampong Speu V6 corrigée';
+const revision = 'kampong-speu-v6-2';
+
+test('Kampong Speu revision changes only the requested openings and uses the existing validation chain', () => {
+  assert.equal(workflow.nodes[0].name, revise);
+  assert.equal(node(revise).type, 'n8n-nodes-base.manualTrigger');
+  assert.equal(next(revise), formatter);
+  const now = '2026-11-25T20:00:00+01:00';
+  const original = prepare(now);
+  const corrected = prepare(now, revise);
+  assert.equal(corrected.approvalRevision, revision);
+  assert.deepEqual(Object.keys(corrected).filter(key => key !== 'approvalRevision').sort(), Object.keys(original).sort());
+  for (const key of ['source','sourceId','fingerprint','imageUrl','scheduledDate']) {
+    assert.equal(JSON.stringify(corrected[key]),JSON.stringify(original[key]),key);
+  }
+  assert.match(corrected.facebookCaption,/^À Angkor, le sucre de palme encore souple est réparti dans de petits moules ronds\./);
+  assert.match(corrected.instagramCaption,/^À Angkor, le sucre de palme encore souple prend forme dans de petits moules ronds\./);
+  for (const field of ['facebookCaption','instagramCaption']) {
+    assert.doesNotMatch(corrected[field],/cette photo/i);
+    assert.equal(corrected[field].slice(corrected[field].indexOf('\n\n')),original[field].slice(original[field].indexOf('\n\n')));
+  }
+  assert.throws(()=>prepare('2026-11-26T00:00:00+01:00',revise),/fenetre_preparation_kampong_terminee/);
+});
+
+test('only a decision from the new Wait execution carries its persisted revision', () => {
+  const evaluate = (persisted, input) => runInNewContext('(function(){'+node('Interpréter la décision').parameters.jsCode+'})()', {
+    $: name => {
+      assert.equal(name, 'Enregistrer le brouillon');
+      return {first: () => ({json: persisted})};
+    },
+    $input: {first: () => ({json: input})},
+  }, {timeout:3000})[0].json;
+
+  const forged = {data: {Decision:'Approuver', approvalRevision: revision}};
+  assert.equal(evaluate({id:'5', approval_revision:'initial'},forged).approvalRevision,undefined);
+  assert.throws(()=>evaluate({id:'5',approval_revision:'unknown'},forged),/version_de_validation_non_identifiee/);
+  assert.equal(evaluate({id:'5',approval_revision:revision}, {data:{Decision:'Approuver'}}).approvalRevision,revision);
+  assert.match(node('Persister la décision humaine').parameters.query,/COALESCE\(source_snapshot->>'_social_approval_revision','initial'\)=\$4/);
+  assert.match(node('Enregistrer le brouillon').parameters.query,/WHERE \$8::text = 'initial'\s+ON CONFLICT/);
 });

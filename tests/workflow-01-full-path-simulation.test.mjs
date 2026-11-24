@@ -108,7 +108,7 @@ test('complete nominal simulation reaches a prepared Resend payload and human fo
   assert.equal(generated.imageUrl, source406.imageUrl);
 
   const parameters = evalExpression(insert.parameters.options.queryReplacement, expressionContext(generated));
-  assert.equal(parameters.length, 7);
+  assert.equal(parameters.length, 8);
   assert.equal(parameters[0], source406.id);
   assert.equal(parameters[1], source406.fingerprint);
   assert.deepEqual(JSON.parse(parameters[2]), source406);
@@ -116,6 +116,7 @@ test('complete nominal simulation reaches a prepared Resend payload and human fo
   assert.equal(parameters[4], generated.facebookCaption);
   assert.equal(parameters[5], generated.instagramCaption);
   assert.equal(parameters[6], source406.imageUrl);
+  assert.equal(parameters[7], 'initial');
   assert.ok(insert.parameters.query.includes('ON CONFLICT (scheduled_date) DO NOTHING RETURNING id,scheduled_date'));
 
   const database = new Map();
@@ -140,6 +141,7 @@ test('complete nominal simulation reaches a prepared Resend payload and human fo
       return { first: () => ({ json: generated }) };
     },
     $execution: { resumeFormUrl: formUrl },
+    $json: {...inserted, approval_revision: 'initial'},
   }));
   assert.equal(payload.from,
     'Cuisine du Cambodge <validation@notifications.cuisine-du-cambodge.com>');
