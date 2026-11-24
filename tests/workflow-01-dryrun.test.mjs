@@ -48,7 +48,7 @@ const select = (sources, history = []) => execute(workflow01, 'Choisir un conten
 
 test('the three workflow exports remain inactive and Workflow 01 has the insert guard', () => {
   for (const w of [workflow01, workflow02, workflow03]) assert.equal(w.active, false);
-  assert.equal(workflow01.nodes.length, 12);
+  assert.equal(workflow01.nodes.filter(node => node.type !== 'n8n-nodes-base.manualTrigger').length, 12);
   assert.equal(get(workflow01, 'Choisir un contenu original').parameters.mode, 'runOnceForAllItems');
 });
 

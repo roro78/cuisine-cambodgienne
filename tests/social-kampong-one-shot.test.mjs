@@ -16,10 +16,8 @@ function prepare(now) {
     constructor() { super(now); }
   }
   return runInNewContext('(function(){'+node(formatter).parameters.jsCode+'})()', {
-    $: name => {
-      assert.equal(name, manual, 'manual preparation must never read the automatic selection');
-      return {isExecuted:true};
-    },
+    $: () => { throw new Error('manual preparation must never read the automatic selection'); },
+    $prevNode: {name:manual},
     Date: FixedDate,
     Intl,
   }, {timeout:3000})[0].json;
