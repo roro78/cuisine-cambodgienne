@@ -14,13 +14,14 @@ const node=(name)=>{
 };
 const execute=(name,context)=>runInNewContext(
   '(function(){\n'+node(name).parameters.jsCode+'\n})()',context,{timeout:1500});
-const img='https://www.cuisine-du-cambodge.com/social-assets/recette-test.jpg';
+const img='https://www.cuisine-du-cambodge.com/social-assets/recette-amok-trey.jpg';
 const source={
- id:'recette:unique-test',kind:'recette',title:'Recette de démonstration',
- url:'https://www.cuisine-du-cambodge.com/recettes/unique-test/',
+ id:'recette:amok-trey',kind:'recette',title:'Recette de démonstration',
+ url:'https://www.cuisine-du-cambodge.com/recettes/amok-trey/',
  summary:'Préparation illustrative pour test à blanc',
  facts:['Une étape de préparation test suffisamment longue pour valider les données.'],
- fingerprint:'abcdefabcdefabcd',imageUrl:img
+ fingerprint:'abcdefabcdefabcd',imageUrl:img,
+ originalImageUrl:'https://www.cuisine-du-cambodge.com/images/cuisine/v19-amok-trey-1440.webp'
 };
 
 test('one-shot: existing selector takes one eligible source and excludes one without photo',()=>{

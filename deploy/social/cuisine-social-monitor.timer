@@ -1,0 +1,11 @@
+[Unit]
+Description=Contrôle des déclenchements et états Meta de Cuisine du Cambodge
+
+[Timer]
+OnCalendar=*-*-* *:02,12,22,32,42,52:00
+Persistent=true
+AccuracySec=30s
+Unit=cuisine-social-monitor.service
+
+[Install]
+WantedBy=timers.target

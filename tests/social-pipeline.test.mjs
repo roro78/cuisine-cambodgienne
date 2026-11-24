@@ -105,7 +105,7 @@ test('Resend email never runs when PostgreSQL draft insertion returns no id', ()
   assert.equal(w.active,false,'Do not activate workflow when modifying export');
 });
 
-test('approval uses email and an explicit form POST; missing action defaults to rejection', () => {
+test('approval uses email and an explicit form POST; missing action cannot record a decision', () => {
   const w=n8n('01-drafts-email-approval.json');
   const approval=w.nodes.find(n=>n.name==='Attendre une décision via formulaire');
   assert.equal(approval.parameters.resume,'form');
@@ -136,7 +136,7 @@ test('Facebook claim preflight drops n8n success:true and refuses invalid rows',
   assert.deepEqual(w.connections['Claim atomique uniquement si validé'].main[0].map(x=>x.node),
     [guard.name]);
   assert.deepEqual(w.connections[guard.name].main[0].map(x=>x.node),
-    ['Publier la photo Facebook']);
+    ['Télécharger le JPEG à vérifier']);
   const run = rows => vm.runInNewContext(
     '(function(){\n'+guard.parameters.jsCode+'\n})()', {
       $input:{all:()=>rows.map(json=>({json}))}
