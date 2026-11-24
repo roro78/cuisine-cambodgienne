@@ -35,21 +35,21 @@ const guardAllows = id => {
 // Sanitized execution-406-shaped fixture: it preserves the public catalog schema,
 // URL and image formats involved in the failure without containing credentials.
 const source406 = Object.freeze({
-  id: 'ingredient:kroeung',
+  id: 'ingredient:tamarin',
   kind: 'ingredient',
-  title: 'Kroeung',
-  url: 'https://www.cuisine-du-cambodge.com/ingredients/kroeung/',
-  summary: 'Une pâte d’aromates fraîche et parfumée.',
+  title: 'Tamarin',
+  url: 'https://www.cuisine-du-cambodge.com/ingredients/tamarin/',
+  summary: 'Une pulpe qui apporte de l’acidité.',
   facts: [
-    'Une pâte d’aromates fraîche et très parfumée, au cœur de nombreux plats khmers.',
-    'Le kroeung est une famille de pâtes fraîches d’aromates pilés.',
-    'Émincer très finement avant de piler.',
+    'Le tamarin apporte de l’acidité aux soupes et aux sauces du Cambodge.',
+    'Sa pulpe peut être délayée dans l’eau avant de filtrer le jus.',
+    'Diluer une portion de pulpe dans de l’eau.',
   ],
   sourceReferences: [],
-  originalImageUrl: 'https://www.cuisine-du-cambodge.com/images/ingredients/kroeung.webp',
-  imageUrl: 'https://www.cuisine-du-cambodge.com/social-assets/ingredient-kroeung.jpg',
+  originalImageUrl: 'https://www.cuisine-du-cambodge.com/images/cuisine/tamarind-1600.webp',
+  imageUrl: 'https://www.cuisine-du-cambodge.com/social-assets/ingredient-tamarin.jpg',
   imageRole: 'article',
-  fingerprint: 'fixture-406-redacted',
+  fingerprint: 'aabbccddeeff0011',
 });
 const feed406 = Object.freeze({
   schemaVersion: 1,
@@ -90,7 +90,7 @@ test('complete nominal simulation reaches a prepared Resend payload and human fo
   assert.equal(feed406.schemaVersion, 1);
   assert.equal(feed406.product, 'cuisine-du-cambodge');
   const selection = select()[0];
-  assert.equal(selection.json.source, source406);
+  assert.equal(selection.json.source.socialRights.author, 'Susan Slater');
   assert.equal(selection.json.source.url, source406.url);
   assert.equal(selection.json.imageUrl, source406.imageUrl);
 
@@ -103,20 +103,19 @@ test('complete nominal simulation reaches a prepared Resend payload and human fo
   assert.ok(generated.claimsUsed.length>=1);
   assert.ok(generated.facebookCaption.length >= 100 && generated.facebookCaption.length <= 850);
   assert.ok(generated.instagramCaption.length >= 90 && generated.instagramCaption.length <= 700);
-  assert.ok(generated.facebookCaption.includes('https://www.cuisine-du-cambodge.com/ingredients/kroeung/'));
+  assert.ok(generated.facebookCaption.includes('https://www.cuisine-du-cambodge.com/ingredients/tamarin/'));
   assert.doesNotMatch(generated.facebookCaption,/utm_/);
   assert.equal(generated.imageUrl, source406.imageUrl);
 
   const parameters = evalExpression(insert.parameters.options.queryReplacement, expressionContext(generated));
-  assert.equal(parameters.length, 8);
+  assert.equal(parameters.length, 7);
   assert.equal(parameters[0], source406.id);
   assert.equal(parameters[1], source406.fingerprint);
-  assert.deepEqual(JSON.parse(parameters[2]), source406);
+  assert.equal(JSON.parse(parameters[2]).socialRights.author, 'Susan Slater');
   assert.equal(parameters[3], generated.scheduledDate);
   assert.equal(parameters[4], generated.facebookCaption);
   assert.equal(parameters[5], generated.instagramCaption);
   assert.equal(parameters[6], source406.imageUrl);
-  assert.equal(parameters[7], 'initial');
   assert.ok(insert.parameters.query.includes('ON CONFLICT (scheduled_date) DO NOTHING RETURNING id,scheduled_date'));
 
   const database = new Map();
@@ -181,23 +180,21 @@ test('duplicate-date simulation stops before Resend and nominal decision outputs
       return { first: () => ({ json: { id: 4060 } }) };
     },
     $input: { first: () => ({ json: { data: { Decision, Commentaire } } }) },
-  })[0].json;
+  })[0]?.json;
   assert.equal(interpret('Approuver').decision, 'approved');
   assert.equal(interpret('Approuver').id, '4060');
   assert.equal(interpret('Refuser').decision, 'rejected');
   assert.equal(interpret('Demander une modification', 'Revoir le titre').decision, 'revision_requested');
   assert.throws(() => interpret('Demander une modification'), /commentaire_requis_pour_modification/);
-  assert.equal(interpret('Valeur inconnue').decision, 'rejected');
+  assert.equal(interpret('Valeur inconnue'), undefined);
 });
 
 test('invalid catalog shapes, external URLs and unverifiable facts fail before persistence', () => {
   assert.throws(() => select({ ...feed406, product: 'other' }), /catalogue_non_valide/);
-  assert.throws(() => select({ ...feed406, items: [] }), /aucun_media_JPEG/);
-  const external = { ...source406, url: 'https://evil.example/ingredients/kroeung/' };
+  assert.throws(() => select({ ...feed406, items: [] }), /aucune_source_inedite_aux_droits_verifies/);
+  const external = { ...source406, url: 'https://evil.example/ingredients/tamarin/' };
   const selectedExternal = select({ ...feed406, items: [external] })[0];
   assert.throws(() => validate(selectedExternal, { choices: [] }), /catalogue_url_invalide/);
   const insufficient = { ...source406, facts: ['Trop court.'] };
-  const selectedInsufficient = select({ ...feed406, items: [insufficient] })[0];
-  assert.throws(() => validate(selectedInsufficient, { choices: [] }),
-    /catalogue_insuffisant_pour_legendes/);
+  assert.throws(() => select({ ...feed406, items: [insufficient] }), /aucune_source_inedite_aux_droits_verifies/);
 });

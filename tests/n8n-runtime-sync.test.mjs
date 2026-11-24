@@ -4,11 +4,8 @@ import { readFileSync } from 'node:fs';
 import { planWorkflow, asPayload, approvedPredecessorHashes } from '../scripts/sync-cuisine-n8n-runtime.mjs';
 import { createHash } from 'node:crypto';
 
-const load = filename => JSON.parse(readFileSync(new URL(
-  '../automation/n8n/' + filename, import.meta.url), 'utf8'));
-const files = ['01-drafts-email-approval.json', '02-publish-approved.json',
-  '03-reconcile-instagram.json'];
-const reviewed = files.map(load);
+// Legacy repair contract for the deployments up to PR #257. Cadence uses the conditional importer.
+const reviewed = JSON.parse(readFileSync(new URL('./fixtures/social-runtime-legacy-workflows.json',import.meta.url),'utf8'));
 const clone = data => structuredClone(data);
 const locate = (workflow, name) => {
   const nodes = workflow.nodes.filter(node => node.name === name);

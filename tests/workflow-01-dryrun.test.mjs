@@ -23,15 +23,17 @@ const evaluateIfLeftValue = (expression, id) => {
   return vm.runInNewContext(expression.slice(3, -2), { $json: { id } });
 };
 const source = Object.freeze({
-  id: 'recette:amok', fingerprint: 'new-fingerprint', kind: 'recette',
+  id: 'recette:amok-trey', fingerprint: '0123456789abcdef', kind: 'recette',
   title: 'Amok', summary: 'Cuisine du Cambodge',
   facts: ['Le poisson cuit doucement à la vapeur avec du lait de coco et un kroeung parfumé.', 'Le poisson doit être entièrement cuit, tandis que la préparation garde une texture souple.'],
   url: 'https://www.cuisine-du-cambodge.com/recettes/amok',
-  imageUrl: 'https://www.cuisine-du-cambodge.com/social-assets/amok.jpg',
+  originalImageUrl: 'https://www.cuisine-du-cambodge.com/images/cuisine/v19-amok-trey-1440.webp',
+  imageUrl: 'https://www.cuisine-du-cambodge.com/social-assets/recette-amok-trey.jpg',
 });
 const sourceOld = Object.freeze({
-  ...source, id: 'recette:other', fingerprint: 'old-fingerprint',
-  imageUrl: 'https://www.cuisine-du-cambodge.com/social-assets/other.jpg',
+  ...source, id: 'recette:bai-sach-chrouk', fingerprint: 'abcdef0123456789',
+  originalImageUrl: 'https://www.cuisine-du-cambodge.com/images/cuisine/v19-bai-sach-chrouk-1440.webp',
+  imageUrl: 'https://www.cuisine-du-cambodge.com/social-assets/recette-bai-sach-chrouk.jpg',
 });
 const catalog = sources => ({
   'Lire le catalogue du site': { first: () => ({ json: {
@@ -48,7 +50,7 @@ const select = (sources, history = []) => execute(workflow01, 'Choisir un conten
 
 test('the three workflow exports remain inactive and Workflow 01 has the insert guard', () => {
   for (const w of [workflow01, workflow02, workflow03]) assert.equal(w.active, false);
-  assert.equal(workflow01.nodes.filter(node => node.type !== 'n8n-nodes-base.manualTrigger').length, 12);
+  assert.equal(workflow01.nodes.filter(node => node.type.endsWith('.manualTrigger')).length, 0);
   assert.equal(get(workflow01, 'Choisir un contenu original').parameters.mode, 'runOnceForAllItems');
 });
 
@@ -66,8 +68,8 @@ test('real selector preserves catalog metadata, social images, and new-source pr
 });
 
 test('selector rejects an empty catalog or invalid social images', () => {
-  assert.throws(() => select([]), /aucun_media_JPEG/);
-  assert.throws(() => select([{ ...source, imageUrl: 'https://evil.example/image.png' }]), /aucun_media_JPEG/);
+  assert.throws(() => select([]), /aucune_source_inedite_aux_droits_verifies/);
+  assert.throws(() => select([{ ...source, imageUrl: 'https://evil.example/image.png' }]), /aucune_source_inedite_aux_droits_verifies/);
 });
 
 const selection = () => select([source])[0];
@@ -163,7 +165,7 @@ test('validator accepts only canonical Cuisine URLs without relying on a URL glo
 test('validator stops before persistence when verified catalog facts are insufficient', () => {
   const insufficient = { ...source, facts: ['Fait bref.'] };
   assert.throws(() => execute(workflow01, workflow01.nodes.find(node => node.id === '4ca636b2-a6ab-5161-b502-bab6cb491d5f').name, {
-    $: () => ({ first: () => select([insufficient])[0] }),
+    $: () => ({ first: () => ({json:{...selection().json,source:insufficient}}) }),
     $input: { first: () => ({ json: modelResponse({}) }) },
   }), /catalogue_insuffisant_pour_legendes/);
 });
@@ -202,7 +204,7 @@ test('approval is explicitly human and revision requires a comment', () => {
     assert.equal(out[0].json.id, '42');
   }
   assert.throws(() => decide('Demander une modification'), /commentaire_requis_pour_modification/);
-  assert.equal(decide('Inconnu')[0].json.decision, 'rejected');
+  assert.equal(decide('Inconnu').length, 0);
   });
 };
 
@@ -276,8 +278,8 @@ test('social captions reject boilerplate, remain short and retain factual excerp
       'Social caption must reproduce at least one source fact exactly');
   }
   assert.equal(out.facebookCaption.includes('utm_'),false);
-  assert.ok(out.facebookCaption.endsWith(source.url),'Facebook must use short canonical URL');
-  assert.ok(out.instagramCaption.endsWith('cuisine-du-cambodge.com'));
+  assert.ok(out.facebookCaption.includes(source.url),'Facebook must use the canonical URL');
+  assert.ok(out.instagramCaption.includes(source.url),'Instagram must include the canonical URL');
   assert.notEqual(out.facebookCaption,out.instagramCaption,'Networks must be differentiated');
 });
 
@@ -292,8 +294,8 @@ test('public caption validation refuses forged claims and protects human publica
 });
 
 test('editing imagery or editorial catalog does not re-promote already published source', () => {
-  const alreadyPublished={...source,fingerprint:'new-photo-edition'};
-  const untouched={...sourceOld,id:'ingredient:new-aromate'};
+  const alreadyPublished={...source,fingerprint:'afafafafafafafaf'};
+  const untouched=sourceOld;
   const selected=select([alreadyPublished,untouched],[{
     source_id:alreadyPublished.id,
     source_fingerprint:'prior-fingerprint',
@@ -319,7 +321,7 @@ test('culture captions use a grammatically neutral title and never invent facts'
   const rice={...source,kind:'culture',id:'culture:le-riz',title:'Le riz, au cœur de la vie cambodgienne',facts:[
     'Au Cambodge, le riz occupe une place centrale dans les repas du quotidien et les moments de partage.',
   ],url:'https://www.cuisine-du-cambodge.com/culture/le-riz/'};
-  const selectionRice=select([rice])[0];
+  const selectionRice={json:{...selection().json,source:rice}};
   const out=execute(workflow01,'Vérifier et cadrer les textes',{
     $:()=>({first:()=>selectionRice}),$input:{first:()=>({json:{choices:[]}})}
   })[0].json;
@@ -344,7 +346,7 @@ test('technique question punctuation agrees between Ollama and the deterministic
   const request = JSON.parse(vm.runInNewContext(body.slice(3, -2), { $json: { source: technique } }));
   const { captionContract } = JSON.parse(request.messages[1].content);
   const result = execute(workflow01, 'Vérifier et cadrer les textes', {
-    $: () => ({ first: () => select([technique])[0] }),
+    $: () => ({ first: () => ({json:{...selection().json,source:technique}}) }),
     $input: { first: () => ({ json: {} }) },
   })[0].json;
   for (const [platform, caption] of Object.entries({

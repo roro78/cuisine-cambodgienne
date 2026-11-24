@@ -1,0 +1,14 @@
+[Unit]
+Description=Surveillance des réseaux sociaux Cuisine du Cambodge
+After=docker.service
+
+[Service]
+Type=oneshot
+User=debian
+Group=debian
+SupplementaryGroups=docker
+StateDirectory=cuisine-social-monitor
+StateDirectoryMode=0700
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/usr/bin/python3 /usr/local/libexec/cuisine-social-monitor/monitor.py watch
+TimeoutStartSec=65

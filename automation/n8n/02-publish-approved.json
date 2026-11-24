@@ -34,7 +34,7 @@
       ],
       "parameters": {
         "operation": "executeQuery",
-        "query": "WITH chosen AS (SELECT id FROM cuisine_social.posts WHERE status='approved' AND human_decision='approved' AND approved_at IS NOT NULL AND decided_at IS NOT NULL AND scheduled_date <= (NOW() AT TIME ZONE 'Europe/Paris')::date AND fb_state='pending' AND ig_state='pending' ORDER BY scheduled_date,id FOR UPDATE SKIP LOCKED LIMIT 1) UPDATE cuisine_social.posts p SET status='publishing',fb_state='submitting',ig_state='creating',publishing_started_at=NOW(),updated_at=NOW() FROM chosen WHERE p.id=chosen.id RETURNING p.*",
+        "query": "WITH chosen AS (SELECT id FROM cuisine_social.posts WHERE status='approved' AND human_decision='approved' AND approved_at IS NOT NULL AND decided_at IS NOT NULL AND source_snapshot->'socialRights'->'approved'='true'::jsonb AND source_snapshot->>'_social_approval_seal'=encode(sha256(convert_to(jsonb_build_array(facebook_caption,instagram_caption,image_url,source_snapshot->'socialRights')::text,'UTF8')),'hex') AND image_url ~ '^https://www[.]cuisine-du-cambodge[.]com/social-assets/[a-z0-9-]+[.]jpg$' AND scheduled_date <= (NOW() AT TIME ZONE 'Europe/Paris')::date AND fb_state='pending' AND ig_state='pending' ORDER BY scheduled_date,id FOR UPDATE SKIP LOCKED LIMIT 1) UPDATE cuisine_social.posts p SET status='publishing',fb_state='submitting',ig_state='creating',publishing_started_at=NOW(),updated_at=NOW() FROM chosen WHERE p.id=chosen.id RETURNING p.*",
         "options": {}
       }
     },
@@ -148,6 +148,66 @@
           "queryReplacement": "={{[String($json.id||''),$('Claim atomique uniquement si validé').first().json.id]}}"
         }
       }
+    },
+    {
+      "id": "cdf47bc1-65aa-484b-b768-5c0302c8cf51",
+      "name": "Télécharger le JPEG à vérifier",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        850,
+        -230
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "={{$json.image_url}}",
+        "options": {
+          "timeout": 15000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "a41f622f-b5fe-4910-97a5-ae30a121838d",
+      "name": "Empreinte du JPEG social",
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 2,
+      "position": [
+        1060,
+        -230
+      ],
+      "parameters": {
+        "action": "hash",
+        "binaryData": true,
+        "binaryPropertyName": "data",
+        "type": "SHA256",
+        "dataPropertyName": "assetSha256",
+        "encoding": "hex"
+      }
+    },
+    {
+      "id": "04c09773-2521-475e-a546-6c1055eddab2",
+      "name": "Confirmer le JPEG et ses droits",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        -230
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const row = $('Vérifier la réservation avant Meta').first().json;\nconst rights = row.source_snapshot?.socialRights;\nif (rights?.approved !== true || !/^[a-f0-9]{64}$/.test(rights.sha256 || '') ||\n    $input.first().json.assetSha256 !== rights.sha256) {\n  throw new Error('jpeg_social_non_conforme_aux_droits');\n}\nreturn [{json:row}];"
+      }
     }
   ],
   "connections": {
@@ -207,6 +267,39 @@
       ]
     },
     "Vérifier la réservation avant Meta": {
+      "main": [
+        [
+          {
+            "node": "Télécharger le JPEG à vérifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Télécharger le JPEG à vérifier": {
+      "main": [
+        [
+          {
+            "node": "Empreinte du JPEG social",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Empreinte du JPEG social": {
+      "main": [
+        [
+          {
+            "node": "Confirmer le JPEG et ses droits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirmer le JPEG et ses droits": {
       "main": [
         [
           {
