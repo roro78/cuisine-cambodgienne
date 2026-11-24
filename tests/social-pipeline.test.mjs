@@ -182,3 +182,22 @@ test('social feed sources favor succinct facts and preserve article originals', 
   assert.match(source,/ingredient\.slug === 'kroeung'/);
   assert.match(sql,/UNIQUE \(scheduled_date\)/);
 });
+
+test('Meta SQL ignores malformed IDs and suppresses empty items before a following HTTP call', () => {
+  const publish = n8n('02-publish-approved.json');
+  const reconcile = n8n('03-reconcile-instagram.json');
+  const sqlFor = (workflow, name) => workflow.nodes.find(node => node.name === name).parameters.query;
+  const numericId = "$1 ~ '^[1-9][0-9]*$'";
+  for (const [workflow, step] of [
+    [publish, 'Sauver le conteneur Instagram'],
+    [reconcile, 'Persister publication Instagram'],
+  ]) {
+    assert.ok(sqlFor(workflow, step).includes(numericId));
+  }
+  const facebook = sqlFor(publish, 'Mémoriser le résultat Facebook');
+  assert.ok(facebook.includes("$1 ~ '^[1-9][0-9]*(_[1-9][0-9]*)?$'"));
+  assert.match(facebook, /SELECT \* FROM recorded$/);
+  const reservation = sqlFor(reconcile, 'Réserver un conteneur à examiner');
+  assert.ok(reservation.includes("instagram_container_id ~ '^[1-9][0-9]*$'"));
+  assert.match(reservation, /SELECT \* FROM reserved$/);
+});

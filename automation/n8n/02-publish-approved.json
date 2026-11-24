@@ -96,7 +96,7 @@
       ],
       "parameters": {
         "operation": "executeQuery",
-        "query": "WITH recorded AS (UPDATE cuisine_social.posts SET fb_state='published',facebook_post_id=$1,updated_at=NOW() WHERE id=$2 AND fb_state='submitting' AND NULLIF(BTRIM($1), '') IS NOT NULL RETURNING *) SELECT * FROM recorded",
+        "query": "WITH recorded AS (UPDATE cuisine_social.posts SET fb_state='published',facebook_post_id=$1,updated_at=NOW() WHERE id=$2 AND fb_state='submitting' AND $1 ~ '^[1-9][0-9]*(_[1-9][0-9]*)?$' RETURNING *) SELECT * FROM recorded",
         "options": {
           "queryReplacement": "={{[String($json.id||$json.post_id||''),$('Claim atomique uniquement si validé').first().json.id]}}"
         }
@@ -143,7 +143,7 @@
       ],
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE cuisine_social.posts SET instagram_container_id=$1,ig_state='container_created',updated_at=NOW() WHERE id=$2 AND ig_state='creating' AND NULLIF(BTRIM($1), '') IS NOT NULL RETURNING id,fb_state,ig_state",
+        "query": "UPDATE cuisine_social.posts SET instagram_container_id=$1,ig_state='container_created',updated_at=NOW() WHERE id=$2 AND ig_state='creating' AND $1 ~ '^[1-9][0-9]*$' RETURNING id,fb_state,ig_state",
         "options": {
           "queryReplacement": "={{[String($json.id||''),$('Claim atomique uniquement si validé').first().json.id]}}"
         }
