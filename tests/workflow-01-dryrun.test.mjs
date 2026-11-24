@@ -328,3 +328,32 @@ test('culture captions use a grammatically neutral title and never invent facts'
   assert.doesNotMatch(out.facebookCaption,/Derrière Le riz/);
   assert.ok(out.facebookCaption.includes(rice.facts[0]));
 });
+
+test('technique question punctuation agrees between Ollama and the deterministic fallback', () => {
+  const technique = {
+    ...source,
+    kind: 'technique',
+    title: 'Comment préparer un bouillon léger ?',
+    url: 'https://www.cuisine-du-cambodge.com/techniques/bouillon-leger-maison/',
+    facts: [
+      'Un bouillon léger est parfumé, filtré, peu gras et peu salé.',
+      'Cette base peut être préparée avec du poulet ou du porc.',
+    ],
+  };
+  const body = get(workflow01, 'Rédiger via Llama sur Ollama').parameters.body;
+  const request = JSON.parse(vm.runInNewContext(body.slice(3, -2), { $json: { source: technique } }));
+  const { captionContract } = JSON.parse(request.messages[1].content);
+  const result = execute(workflow01, 'Vérifier et cadrer les textes', {
+    $: () => ({ first: () => select([technique])[0] }),
+    $input: { first: () => ({ json: {} }) },
+  })[0].json;
+  for (const [platform, caption] of Object.entries({
+    facebook: result.facebookCaption,
+    instagram: result.instagramCaption,
+  })) {
+    assert.equal(caption.split('\n\n')[0], captionContract[platform].openers[0]);
+    assert.doesNotMatch(caption, /\?\s*[:.]/);
+  }
+  assert.notEqual(result.facebookCaption, result.instagramCaption);
+  assert.ok(Array.from(result.claimsUsed).every(fact => technique.facts.includes(fact)));
+});
