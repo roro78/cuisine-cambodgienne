@@ -3219,6 +3219,112 @@ function cmsCalendarApply(string $private,array $catalog,array $selected,string 
     }
 }
 
+/** Catalogue-grounded discovery: ideas and research questions, never claims.
+ * Reuse the existing duplicate checker; human semantic review remains necessary. */
+function cmsCalendarTopicSuggestions(array $catalog,array $canonical,array $guided,array $creations): array {
+    if(count($catalog)>250||count($creations)>250||count($catalog)!==count($canonical))
+        throw new RuntimeException('TOPIC_SOURCE_INVALID');
+    cmsAssertGuidedCoverage($guided,$canonical);
+    $counts=array_fill_keys(array_keys(cmsCreationKinds()),0);
+    foreach(array_merge(array_values($catalog),array_values($creations)) as $record)
+        if(is_string($record['kind']??null)&&isset($counts[$record['kind']]))$counts[$record['kind']]++;
+    $terms=static function(string $value):array{
+        try{$slug=cmsCreationSlug($value);}catch(InvalidArgumentException $e){return [];}
+        return array_values(array_diff(array_unique(explode('-',$slug)),
+            ['un','une','le','la','les','de','du','des','d','l','au','aux','et','en','a','pour','avec','sans']));
+    };
+    $covered=static function(string $kind,string $topic)use($catalog,$creations,$terms):bool{
+        $target=$terms($topic);if(!$target)return true;
+        foreach(array_merge(array_values($catalog),array_values($creations)) as $item){
+            if(($item['kind']??null)!==$kind)continue;
+            $labels=[$item['title']??'',$item['slug']??'',str_contains($item['id']??'',':')?explode(':',$item['id'],2)[1]:''];
+            foreach(['ai_brief','ai_content'] as $key)$labels[]=$item[$key]['input_title']??'';
+            foreach($labels as $label){
+                if(!is_string($label)||$label==='')continue;
+                $other=$terms($label);
+                if(!array_diff($target,$other))return true;
+                // Conservative cultural-topic flag: broad existing Carnets can
+                // cover a named regional dish without repeating the whole name.
+                if($kind==='culture'&&count($target)>1&&strlen($target[0])>=4
+                    &&in_array($target[0],$other,true)&&count(array_intersect($target,$other))/count($target)>=0.5)return true;
+            }
+        }
+        return false;
+    };
+    $ideas=[];
+    $add=static function(string $kind,string $topic,string $title,string $angle,array $refs,int $weight)
+        use(&$ideas,$catalog,$canonical,$creations,$covered):void{
+        if(!$refs||$covered($kind,$topic)||mbLen($title)>180)return;
+        try{
+            $slug=cmsCreationSlug($title);
+            if(cmsCreationDuplicateCheck($kind,$slug,$catalog,$creations,null))return;
+        }catch(InvalidArgumentException $e){return;}
+        $refs=array_values(array_unique($refs));sort($refs,SORT_STRING);$refs=array_slice($refs,0,5);
+        $sources=[];
+        foreach($refs as $id){
+            if(!isset($catalog[$id],$canonical[$id]))throw new RuntimeException('TOPIC_SOURCE_INVALID');
+            $sources[]=['id'=>$id,'title'=>$catalog[$id]['title'],'url'=>$catalog[$id]['url'],
+                'fingerprint'=>$canonical[$id]['fingerprint']];
+        }
+        $key=$kind.':'.$slug;
+        $ideas[$key]=['id'=>substr(hash('sha256',json_encode([$key,$sources],JSON_THROW_ON_ERROR)),0,32),
+            'kind'=>$kind,'title'=>$title,'angle'=>$angle,'sources'=>$sources,'weight'=>$weight,
+            'requires_human_review'=>true,'publication_authorized'=>false];
+    };
+    $ingredients=[];$techniques=[];
+    foreach($catalog as $id=>$source){
+        if(!isset($guided[$id],$canonical[$id])
+            ||($guided[$id]['fingerprint']??null)!==$canonical[$id]['fingerprint']
+            ||($guided[$id]['model']??null)!==$canonical[$id]['model'])throw new RuntimeException('TOPIC_SOURCE_INVALID');
+        $title=$source['title'];
+        if($source['kind']==='ingredient'){
+            $add('recette',$title,'Recette khmère à documenter autour de '.$title,
+                'Identifier un plat khmer inédit utilisant cet ingrédient, vérifier son nom, ses sources et ses proportions avant toute rédaction.',[$id],1);
+            $add('culture',$title,'Usages et transmission : '.$title,
+                'Documenter les usages et gestes au Cambodge à partir de sources fiables, sans inventer de témoignage ni attribuer une origine non établie.',[$id],2);
+        }
+        if($source['kind']!=='recette'||$canonical[$id]['model']!=='recipes')continue;
+        $slug=explode(':',$id,2)[1];$linked=false;
+        foreach($creations as $record)if(($record['kind']??null)==='atelier'
+            &&($record['atelier_reference']['recipeSlug']??null)===$slug){$linked=true;break;}
+        if(!$linked)$add('atelier',$slug,'Atelier pratique : '.$title,
+            'Concevoir la progression pédagogique à partir de la recette canonique, avec gestes, contrôles sensoriels et corrections. Aucun audio généré.',[$id],3);
+        foreach($guided[$id]['fields']['ingredients']??[] as $row){
+            $name=is_array($row)?($row['name']??null):null;
+            if(!is_string($name)||mbLen($name)>80)continue;
+            $key=implode('-',$terms($name));
+            // Skip staples without a distinct editorial angle; short generic labels
+            // are poor candidates. Recurrence across recipes is required below.
+            if($key===''||in_array($key,['eau','sel','sucre','huile','poivre','oeuf','oeufs','riz'],true))continue;
+            $ingredients[$key]['title']=$name;$ingredients[$key]['refs'][$id]=true;
+        }
+        foreach($guided[$id]['fields']['steps']??[] as $step){
+            $name=is_array($step)?($step['title']??null):null;
+            if(!is_string($name)||mbLen($name)>80||count($terms($name))<3)continue;
+            $key=implode('-',$terms($name));$techniques[$key]['title']=$name;$techniques[$key]['refs'][$id]=true;
+        }
+        $add('culture',$slug,'Histoire et usages de '.$title,
+            'Étudier ce plat comme sujet documentaire distinct de la recette : sources, contextes et variations, sans assertion non vérifiée.',[$id],1);
+    }
+    foreach($ingredients as $entry){
+        $refs=array_keys($entry['refs']);if(count($refs)<2)continue;
+        $add('ingredient',$entry['title'],$entry['title'],
+            'Documenter le rôle culinaire, le choix, les usages, les substitutions et la conservation à partir des recettes liées et de sources vérifiées.',$refs,count($refs));
+    }
+    foreach($techniques as $entry){
+        $refs=array_keys($entry['refs']);if(count($refs)<2)continue;
+        $add('technique',$entry['title'],'Technique : '.$entry['title'],
+            'Comparer le geste entre les recettes liées, préciser le contrôle sensoriel et les erreurs à éviter ; vérifier les consignes avant rédaction.',$refs,count($refs));
+    }
+    // Balance the five families according to catalogue + private project counts.
+    // Maximum two suggestions of each family; no filler if a genuine gap is absent.
+    uasort($ideas,static fn(array $a,array $b):int=>($counts[$a['kind']]<=>$counts[$b['kind']])
+        ?:($b['weight']<=>$a['weight'])?:strcmp($a['title'],$b['title'])?:strcmp($a['id'],$b['id']));
+    $out=[];$limits=array_fill_keys(array_keys($counts),0);
+    foreach($ideas as $idea)if($limits[$idea['kind']]<2){$out[]=$idea;$limits[$idea['kind']]++;}
+    return $out;
+}
+
 /** Private visual proposals: no publication, no writes to the public asset tree. */
 function cmsVisualSettings(array $cfg): ?array {
     $v=$cfg['editorial_visuals']??null;

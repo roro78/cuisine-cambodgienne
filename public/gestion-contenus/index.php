@@ -197,6 +197,7 @@ $calendarRuntimeInfo='';$calendarFileHashes=[];
 $calendarWorkshopSettings=null;$calendarWorkshop=null;
 $calendarPreview=null;$calendarPreviewError='';$calendarPreviewIds=[];
 $calendarPreviewWeeks=4;$calendarPreviewCadence=2;$calendarPreviewStart='';
+$calendarTopics=null;$calendarTopicsError='';
 if($calendarMode){
     try{
         $calendarMonth=cmsCalendarMonth($_GET['month']??gmdate('Y-m'));
@@ -237,6 +238,12 @@ if($auth){
     // hide the whole CMS or masquerade as an expired login. Fail closed for the
     // affected view, preserve all private drafts and report a safe diagnostic.
     if($calendarMode){
+        if($method==='GET'&&($_GET['topic_preview']??null)==='1'){
+            try{
+                $topicGuides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);
+                $calendarTopics=cmsCalendarTopicSuggestions($catalog,$canonicalById,$topicGuides,$creations);
+            }catch(Throwable $e){$calendarTopicsError='Catalogue éditorial indisponible ou incohérent. Aucun sujet proposé.';}
+        }
         if($method==='POST'&&isset($_POST['calendar_confirm'])){
             try{
                 $pending=$_SESSION['calendar_confirmation']??null;
@@ -339,6 +346,22 @@ if($auth){
         }
         $createForm=$creation??[];
         $createExpected=(int)($creation['version']??0);
+        if($method==='GET'&&isset($_GET['topic'])&&$cid===null&&count($_GET)===2){
+            try{
+                if(!is_string($_GET['topic'])||!preg_match('/^[a-f0-9]{32}$/D',$_GET['topic']))throw new RuntimeException('TOPIC_STALE');
+                $topicGuides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);
+                $topics=cmsCalendarTopicSuggestions($catalog,$canonicalById,$topicGuides,$creations);$topic=null;
+                foreach($topics as $candidate)if($candidate['id']===$_GET['topic']){$topic=$candidate;break;}
+                if($topic===null)throw new RuntimeException('TOPIC_STALE');
+                $createKind=$topic['kind'];$createForm=['title'=>$topic['title'],'angle'=>$topic['angle'],
+                    'research_note'=>"Pistes de catalogue (non vérifiées comme sources externes) :\n".implode("\n",array_column($topic['sources'],'url'))];
+                $aiContentInputForm=['objective'=>$topic['angle'],'reference_id'=>$topic['sources'][0]['id']];
+                if($createKind==='atelier')$createForm['atelier_reference']=cmsAtelierReferenceClean([
+                    'version'=>1,'recipeSlug'=>explode(':',$topic['sources'][0]['id'],2)[1]],$catalog);
+                $notice='Sujet proposé à partir du catalogue. Vérifiez les variantes et complétez le dossier documentaire ; aucun brouillon ni contenu généré.';
+            }catch(Throwable $e){http_response_code(409);$error='Suggestion indisponible ou devenue obsolète. Retournez dans le calendrier pour actualiser les sujets.';}
+        }
+
         if($method==='POST'&&isset($_POST['export_narrations'])){
             try {
                 if(!$auth||$creation===null||$createKind!=='atelier'
@@ -1371,6 +1394,28 @@ if($method==='GET'&&isset($_GET['plan_preview'])){
     }
 }
 ?>
+<details class="guided-group"<?= isset($_GET['topic_preview'])?' open':'' ?>>
+<summary>Découvrir de nouveaux sujets</summary>
+<p class="small muted">Suggestions fondées sur le catalogue et les projets privés, non sur des faits inventés. Aucun appel IA, enregistrement ou publication. Une proposition n'est pas une preuve d'originalité.</p>
+<form method="get" class="stack">
+<input type="hidden" name="calendar" value="1">
+<input type="hidden" name="month" value="<?= cmsEsc($calendarMonth) ?>">
+<button name="topic_preview" value="1">Proposer des sujets inédits</button>
+</form>
+<?php if($calendarTopicsError!==''): ?><p class="notice" role="alert"><?= cmsEsc($calendarTopicsError) ?></p>
+<?php elseif($calendarTopics!==null): ?>
+<?php if(!$calendarTopics): ?><p>Aucune lacune suffisamment distincte détectée.</p><?php endif; ?>
+<?php foreach($calendarTopics as $topic): ?>
+<article class="panel">
+<strong><?= cmsEsc(cmsCreationKinds()[$topic['kind']]) ?> — <?= cmsEsc($topic['title']) ?></strong>
+<p class="small"><?= cmsEsc($topic['angle']) ?></p>
+<p class="small muted">Références du catalogue à examiner :</p>
+<ul><?php foreach($topic['sources'] as $source): ?><li><a href="<?= cmsEsc($source['url']) ?>" target="_blank" rel="noopener noreferrer"><?= cmsEsc($source['title']) ?></a></li><?php endforeach; ?></ul>
+<a href="?new=1&amp;topic=<?= cmsEsc($topic['id']) ?>">Ouvrir le formulaire de ce sujet</a>
+</article>
+<?php endforeach; ?>
+<?php endif; ?>
+</details>
 <details class="guided-group"<?= isset($_GET['plan_preview'])?' open':'' ?>>
 <summary>Proposer un programme éditorial</summary>
 <p class="small muted">Répartir les brouillons sélectionnés entre les catégories, à partir du lundi

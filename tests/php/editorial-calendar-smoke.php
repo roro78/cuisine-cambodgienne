@@ -183,4 +183,47 @@ try{
     foreach($iterator as $entry){if($entry->isDir())rmdir($entry->getPathname());else unlink($entry->getPathname());}
     rmdir($private);
 }
+// Catalogue discovery: five families, real source identities, no fabricated facts.
+$topicCatalog=[];$topicCanonical=[];$topicGuides=[];
+foreach([
+    ['recette:amok-trey','recette','Amok Trey','recipes'],
+    ['recette:lok-lak','recette','Lok Lak','recipes'],
+    ['recette:soupe-inspiree','recette','Soupe inspirée','recipes'],
+    ['ingredient:tamarin','ingredient','Tamarin','ingredients'],
+    ['culture:comprendre-amok','culture','L’amok, entre patrimoine et tables','culture'],
+    ['atelier:amok-trey','atelier','Atelier Amok Trey','cookingWorkshopGuides'],
+] as [$id,$kind,$title,$model]){
+    $fp=hash('sha256',$id);
+    $topicCatalog[$id]=['id'=>$id,'kind'=>$kind,'title'=>$title,'url'=>'https://www.cuisine-du-cambodge.com/'.explode(':',$id)[1].'/'];
+    $topicCanonical[$id]=['id'=>$id,'model'=>$model,'fingerprint'=>$fp];
+    $topicGuides[$id]=['id'=>$id,'model'=>$model,'fingerprint'=>$fp,'fields'=>$kind==='recette'?
+        ['ingredients'=>[['name'=>'Citronnelle'],['name'=>'Eau']],
+         'steps'=>[['title'=>'Faire revenir les aromates']]]:[]];
+}
+$linkedDraft=idea('c-000000000000000000000020','atelier','Un atelier privé sans titre commun',null);
+$linkedDraft['atelier_reference']=['recipeSlug'=>'lok-lak'];
+$topicRecords=[$linkedDraft];
+$input=json_encode([$topicCatalog,$topicCanonical,$topicGuides,$topicRecords],JSON_THROW_ON_ERROR);
+$topics=cmsCalendarTopicSuggestions($topicCatalog,$topicCanonical,$topicGuides,$topicRecords);
+requireCalendar($topics===cmsCalendarTopicSuggestions($topicCatalog,$topicCanonical,$topicGuides,$topicRecords),'TOPIC_DETERMINISTIC');
+requireCalendar(count(array_unique(array_column($topics,'kind')))===5,'TOPIC_FIVE_FAMILIES');
+requireCalendar(count($topics)<=10&&count(array_unique(array_column($topics,'id')))===count($topics),'TOPIC_BOUNDED');
+foreach($topics as $topic){
+    requireCalendar($topic['requires_human_review']===true&&$topic['publication_authorized']===false,'TOPIC_NO_AUTHORIZATION');
+    foreach($topic['sources'] as $source)requireCalendar($source['fingerprint']===$topicCanonical[$source['id']]['fingerprint'],'TOPIC_REAL_SOURCE');
+    if($topic['kind']==='atelier')requireCalendar($topic['sources'][0]['id']==='recette:soupe-inspiree','TOPIC_EXISTING_ATELIER');
+    if($topic['kind']==='culture')requireCalendar(!str_contains($topic['title'],'Amok'),'TOPIC_CULTURE_VARIANT');
+    if($topic['kind']==='ingredient')requireCalendar($topic['title']==='Citronnelle','TOPIC_RECURRENT_INGREDIENT');
+    if($topic['kind']==='technique')requireCalendar(count($topic['sources'])===3,'TOPIC_RECURRENT_TECHNIQUE');
+}
+requireCalendar($input===json_encode([$topicCatalog,$topicCanonical,$topicGuides,$topicRecords],JSON_THROW_ON_ERROR),'TOPIC_NO_MUTATION');
+$badGuides=$topicGuides;$badGuides['recette:amok-trey']['fingerprint']=str_repeat('0',64);
+$rejected=false;
+try{cmsCalendarTopicSuggestions($topicCatalog,$topicCanonical,$badGuides,$topicRecords);}
+catch(RuntimeException $e){$rejected=$e->getMessage()==='TOPIC_SOURCE_INVALID';}
+requireCalendar($rejected,'TOPIC_STALE_SOURCE');
+$existingIngredient=idea('c-000000000000000000000021','ingredient','La citronnelle en cuisine',null);
+$topics=cmsCalendarTopicSuggestions($topicCatalog,$topicCanonical,$topicGuides,[$linkedDraft,$existingIngredient]);
+requireCalendar(!in_array('ingredient',array_column($topics,'kind'),true),'TOPIC_EXISTING_INGREDIENT');
+echo "CMS_TOPIC_DISCOVERY_PASS\n";
 echo "CMS_CALENDAR_PRIVATE_PASS\n";
