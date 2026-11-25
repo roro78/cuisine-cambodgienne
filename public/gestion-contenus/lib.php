@@ -113,6 +113,35 @@ function cmsFetchPublicIndex(string $name): ?array {
  */
 
 /** Verified public editor manifest; all proposed fields already appear on public pages. */
+/** Read-only recipe presentation bindings; never accepted as editable fields. */
+function cmsGuidedPortionContract(array $item): void {
+    if(!array_key_exists('portionContract',$item))return;
+    $contract=$item['portionContract'];$invalid=static function():never{
+        throw new UnexpectedValueException('GUIDED_PORTION_CONTRACT');};
+    if($item['model']!=='recipes'||!is_array($contract)||count($contract)!==3
+       ||array_diff(array_keys($contract),['version','sourceFingerprint','steps'])
+       ||($contract['version']??null)!==1||($contract['sourceFingerprint']??null)!==$item['fingerprint']
+       ||!is_array($contract['steps']??null)||!array_is_list($contract['steps'])
+       ||count($contract['steps'])<1||count($contract['steps'])>40
+       ||!is_array($item['fields']['steps']??null))$invalid();
+    $previous=-1;
+    foreach($contract['steps'] as $step){
+        if(!is_array($step)||count($step)!==3||array_diff(array_keys($step),['index','sourceText','anchors'])
+           ||!is_int($step['index']??null)||$step['index']<=$previous
+           ||!is_string($step['sourceText']??null)||$step['sourceText']===''||mbLen($step['sourceText'])>9000
+           ||$step['sourceText']!==($item['fields']['steps'][$step['index']]['text']??null)
+           ||!is_array($step['anchors']??null)||!array_is_list($step['anchors'])
+           ||count($step['anchors'])<1||count($step['anchors'])>30)$invalid();
+        $previous=$step['index'];$intervals=[];
+        foreach($step['anchors'] as $anchor){
+            if(!is_string($anchor)||trim($anchor)===''||mbLen($anchor)>300
+               ||substr_count($step['sourceText'],$anchor)!==1)$invalid();
+            $start=strpos($step['sourceText'],$anchor);$intervals[]=[$start,$start+strlen($anchor)];
+        }
+        usort($intervals,static fn(array $a,array $b):int=>$a[0]<=>$b[0]);
+        foreach($intervals as $i=>$interval)if($i>0&&$interval[0]<$intervals[$i-1][1])$invalid();
+    }
+}
 function cmsGuidedSourceList(array $payload,array $canonical): array {
     if(($payload['product']??null)!=='cuisine-du-cambodge'
        || ($payload['schemaVersion']??null)!==1
@@ -153,6 +182,10 @@ function cmsGuidedSourceList(array $payload,array $canonical): array {
            || !hash_equals($canonical[$item['id']]['fingerprint'],$item['fingerprint'])
            || $canonical[$item['id']]['model']!==$item['model'])
             throw new UnexpectedValueException('GUIDED_SOURCE');
+        $allowedItem=['id','model','fingerprint','editable','fields'];
+        if($item['model']==='recipes')$allowedItem[]='portionContract';
+        if(array_diff(array_keys($item),$allowedItem))throw new UnexpectedValueException('GUIDED_SOURCE');
+        cmsGuidedPortionContract($item);
         $kind=explode(':',$item['id'],2)[0];
         if(!in_array($item['model'],$models[$kind]??[],true))
             throw new UnexpectedValueException('GUIDED_TYPE');

@@ -164,6 +164,27 @@ try{
     'schemaVersion'=>1,'dataContract'=>'approved-public-form-fields-v2',
     'items'=>[$guidedRecipe,$guidedWorkshop]],$canon);
   check(count($guide)===2,'Formulaire guidé absent');
+  $withPortions=$guidedRecipe;
+  $withPortions['portionContract']=['version'=>1,'sourceFingerprint'=>$guidedRecipe['fingerprint'],
+      'steps'=>[['index'=>0,'sourceText'=>'Avant la cuisson','anchors'=>['la cuisson']]]];
+  $portionPayload=['product'=>'cuisine-du-cambodge','schemaVersion'=>1,
+      'dataContract'=>'approved-public-form-fields-v2','items'=>[$withPortions]];
+  $portionGuide=cmsGuidedSourceList($portionPayload,$canon);
+  check($portionGuide[$id]['portionContract']===$withPortions['portionContract'],'Contrat portions perdu');
+  foreach(['hash','text','anchor','extra','duplicate','empty'] as $case){
+      $broken=$portionPayload;$contract=&$broken['items'][0]['portionContract'];
+      if($case==='hash')$contract['sourceFingerprint']=str_repeat('b',64);
+      if($case==='text')$contract['steps'][0]['sourceText']='Autre texte';
+      if($case==='anchor')$contract['steps'][0]['anchors']=['absent'];
+      if($case==='extra')$contract['secret']='not allowed';
+      if($case==='duplicate')$contract['steps'][0]['anchors'][]='la cuisson';
+      if($case==='empty')$contract['steps']=[];
+      unset($contract);$blocked=false;
+      try{cmsGuidedSourceList($broken,$canon);}
+      catch(UnexpectedValueException $e){$blocked=$e->getMessage()==='GUIDED_PORTION_CONTRACT';}
+      check($blocked,'Contrat portions invalide accepté '.$case);
+  }
+
   $input=['baseServings'=>'4','prepTime'=>'35 min','cookTime'=>'25 min',
     'ingredients'=>[
       ['quantity'=>'650','unit'=>'g','name'=>'poisson blanc','group'=>'Base'],
@@ -173,6 +194,9 @@ try{
       'cue'=>'La base est homogène']]];
   $json=cmsBuildGuidedPatch($guide[$id],$input);
   $parsed=json_decode($json,true,20,JSON_THROW_ON_ERROR);
+  $portionPatch=json_decode(cmsBuildGuidedPatch($portionGuide[$id],$input),true,20,JSON_THROW_ON_ERROR);
+  check(!isset($portionPatch['portionContract'])&&$portionPatch===$parsed,'Contrat portions éditable');
+
   check($parsed['ingredients'][0]['quantity']===650
      && $parsed['ingredients'][1]['quantity']===250.5,
      'Modification quantité mobile non reconnue');

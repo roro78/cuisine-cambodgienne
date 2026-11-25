@@ -38,16 +38,32 @@ test('reject missing, stale and leaked public indexes',()=>{
  feeds['editorial-guided-fields.json'].items[0].fields={baseServings:4};
  assert.throws(()=>verifyCmsIndexes(feeds),/UNEXPECTED_KEYS/);
 });
-test('legacy live metadata remains blocked with a bounded diagnostic',()=>{
+test('unknown metadata remains blocked with a bounded diagnostic',()=>{
  const feeds=fixture();const item=feeds['editorial-guided-fields.json'].items[0];
  item.portionContract={version:1,sourceFingerprint:sha,steps:[]};
  item['do-not-log-this-key']='do-not-log-this-value';
  assert.throws(()=>verifyCmsIndexes(feeds),error=>{
-  assert.match(error.message,/UNEXPECTED_KEYS guided\.items\[0\] recette:amok-trey extra=2/);
-  assert.match(error.message,/known_extra=portionContract/);
+  assert.match(error.message,/UNEXPECTED_KEYS guided\.items\[0\] recette:amok-trey extra=1/);
+
   assert.doesNotMatch(error.message,/do-not-log-this/);
   return true;
  });
+});
+test('valid portion metadata is read-only and closed, stale or malformed bindings fail',()=>{
+ const feeds=fixture(),item=feeds['editorial-guided-fields.json'].items[0];
+ item.portionContract={version:1,sourceFingerprint:sha,steps:[{index:0,sourceText:'Mélanger',anchors:['Mélanger']}]};
+ assert.deepEqual(verifyCmsIndexes(feeds),{social:1,canonical:1,guided:1});
+ const valid=structuredClone(item.portionContract);
+ for(const mutate of [p=>p.version=2,p=>p.sourceFingerprint='z'.repeat(64),
+   p=>p.steps[0].index=5,p=>p.steps[0].sourceText='Stale',p=>p.steps[0].anchors=['absent'],
+   p=>p.steps[0].anchors=['Mélanger','Mélanger'],p=>p.steps.push(p.steps[0]),p=>p.steps=[]]){
+  item.portionContract=structuredClone(valid);mutate(item.portionContract);
+  assert.throws(()=>verifyCmsIndexes(feeds),/PORTION_CONTRACT_INVALID/);
+ }
+ item.portionContract=structuredClone(valid);item.portionContract.secret='private';
+ assert.throws(()=>verifyCmsIndexes(feeds),/UNEXPECTED_KEYS/);
+ item.portionContract=structuredClone(valid);item.fields.portionContract=valid;
+ assert.throws(()=>verifyCmsIndexes(feeds),/UNEXPECTED_KEYS/);
 });
 test('a future page inherits the same V2 form, and an unregistered page blocks release',()=>{
  const feeds=fixture();
@@ -151,6 +167,26 @@ test('release package includes exactly eleven scoped files and private rollback 
   assert.match(await readFile(join(out,'README.txt'),'utf8'),/BACK UP/);
   assert.ok(packageInfo.files.some(file=>file.path==='gestion-contenus/publication-gap-audit.php'
     &&/^[0-9a-f]{64}$/.test(file.sha256)));
+  const liveDir=join(root,'live'),codeDir=join(root,'studio-code');
+  await mkdir(liveDir);
+  for(const [name,data] of Object.entries(feeds))await writeFile(join(liveDir,name),JSON.stringify(data));
+  // Build contains an additional unpublished catalogue entry: never ship it.
+  for(const [name,data] of Object.entries(feeds)){
+   const copy=structuredClone(data);
+   copy.items.push({...copy.items[0],id:'recette:not-yet-published'});
+   await writeFile(join(dist,name),JSON.stringify(copy));
+  }
+  const targeted=await packageCmsRelease({dist,out:codeDir,liveDir});
+  assert.equal(targeted.contract,'cdc-ovh-studio-code-only-v1');
+  assert.deepEqual(targeted.files.map(x=>x.path),['gestion-contenus/index.php','gestion-contenus/lib.php']);
+  assert.deepEqual(targeted.compatibility.buildOnlyIds,['recette:not-yet-published']);
+  assert.equal(targeted.compatibility.productionIndexes.length,3);
+  await assert.rejects(readFile(join(codeDir,'social-feed.json')),/ENOENT/);
+  await assert.rejects(readFile(join(codeDir,'gestion-contenus/atelier-narrations.json')),/ENOENT/);
+  const changed=structuredClone(feeds['editorial-guided-fields.json']);
+  changed.items[0].fields.intro='Changed';
+  await writeFile(join(liveDir,'editorial-guided-fields.json'),JSON.stringify(changed));
+  await assert.rejects(packageCmsRelease({dist,out:join(root,'blocked'),liveDir}),/LIVE_INDEX_DIVERGENCE/);
   // The eleven-file package must not be accepted after an incomplete transfer.
   await rm(join(out,'gestion-contenus','publication-gap-audit.php'));
   await assert.rejects(cmsReception({dir:out}),/ENOENT|CMS_PHP_FILE_MISSING/);
