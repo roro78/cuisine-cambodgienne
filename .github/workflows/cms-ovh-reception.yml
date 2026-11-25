@@ -82,14 +82,47 @@ jobs:
           CMS_SITE_ORIGIN: https://www.cuisine-du-cambodge.com/
         run: node scripts/check-cms-ovh-readiness.mjs --url "$CMS_SITE_ORIGIN"
 
+      - name: Prepare index-free Studio code package from compatible live catalogue
+        id: studio_only
+        if: steps.ovh.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          umask 077
+          live_dir="$(mktemp -d)"
+          trap 'rm -rf -- "$live_dir"' EXIT
+          for name in social-feed.json editorial-source-index.json editorial-guided-fields.json; do
+            curl --fail --silent --show-error --proto '=https' --max-time 15 --max-filesize 524288 \
+              -H 'Cache-Control: no-cache' "https://www.cuisine-du-cambodge.com/$name" -o "$live_dir/$name"
+          done
+          node scripts/package-cms-ovh-release.mjs dist /tmp/cuisine-ovh-studio-code-only --studio-only "$live_dir"
+          tar -czf cms-ovh-studio-code-only.tar.gz -C /tmp/cuisine-ovh-studio-code-only .
+          sha256sum cms-ovh-studio-code-only.tar.gz > cms-ovh-studio-code-only.sha256
+          echo '### Studio-only package: two PHP files; no index or audio; no deployment' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Studio-only package (download only)
+        if: steps.studio_only.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-ovh-studio-code-only
+          path: |
+            cms-ovh-studio-code-only.tar.gz
+            cms-ovh-studio-code-only.sha256
+          retention-days: 14
+          if-no-files-found: error
+
       - name: Report independent OVH readiness verdict
         if: always()
         env:
           RECEPTION_RESULT: ${{ steps.ovh.outcome }}
+          STUDIO_ONLY_RESULT: ${{ steps.studio_only.outcome }}
         run: |
           if [ "$RECEPTION_RESULT" = success ]; then
             echo '### LIVE OVH CMS: anonymous checks PASS' >> "$GITHUB_STEP_SUMMARY"
             echo 'Authenticated login and editing still need a private human acceptance test.' >> "$GITHUB_STEP_SUMMARY"
+            if [ "$STUDIO_ONLY_RESULT" != success ]; then
+              echo 'Studio-only compatibility/packaging blocked; do not upload the full build as a substitute.' >> "$GITHUB_STEP_SUMMARY"
+            fi
           else
             echo '### LIVE OVH CMS: NOT YET VERIFIED / NOT READY' >> "$GITHUB_STEP_SUMMARY"
             echo 'No upload, deployment, workflow dispatch or social publication was attempted.' >> "$GITHUB_STEP_SUMMARY"

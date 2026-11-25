@@ -7,6 +7,7 @@ import { restoredRecipes } from '../data/restoredRecipes';
 import { workshops } from '../data/workshops';
 import { releasedCookingWorkshopGuides, completeCookingWorkshopCutoverReady } from '../data/cookingWorkshopGuides';
 import { editorialRecordFingerprint } from './editorial-source-index.json';
+import { portionContract } from '../utils/recipePortions';
 
 /**
  * Explicitly public, review-only form fields that already appear on rendered
@@ -19,6 +20,7 @@ interface GuidedItem {
   fingerprint: string;
   editable: boolean;
   fields: Record<string, unknown>;
+  portionContract?: ReturnType<typeof portionContract>;
 }
 export function getGuidedEditorialFields(): GuidedItem[] {
   const out: GuidedItem[] = [];
@@ -60,11 +62,15 @@ export function getGuidedEditorialFields(): GuidedItem[] {
       questions: guide.questions.map(item => ({...item}))
     }
   });
-  for (const recipe of recipes) out.push({
+  for (const recipe of recipes) {
+    const fingerprint = editorialRecordFingerprint('recipes', recipe);
+    const portions = portionContract(recipe, fingerprint);
+    out.push({
     id: 'recette:' + recipe.slug,
     model: 'recipes',
-    fingerprint: editorialRecordFingerprint('recipes', recipe),
+    fingerprint,
     editable: true,
+    ...(portions ? {portionContract: portions} : {}),
     fields: {
       intro: recipe.intro, description: recipe.description, context: recipe.context,
       ...(recipe.beforeYouStart ? {beforeYouStart:recipe.beforeYouStart}:{}),
@@ -91,7 +97,8 @@ export function getGuidedEditorialFields(): GuidedItem[] {
       })),
       steps: recipe.steps.map(step => ({...step}))
     }
-  });
+    });
+  }
   for (const recipe of restoredRecipes) out.push({
     id: 'recette:' + recipe.slug,
     model: 'restoredRecipes',

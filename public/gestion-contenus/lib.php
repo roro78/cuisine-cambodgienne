@@ -113,6 +113,35 @@ function cmsFetchPublicIndex(string $name): ?array {
  */
 
 /** Verified public editor manifest; all proposed fields already appear on public pages. */
+/** Read-only recipe presentation bindings; never accepted as editable fields. */
+function cmsGuidedPortionContract(array $item): void {
+    if(!array_key_exists('portionContract',$item))return;
+    $contract=$item['portionContract'];$invalid=static function():never{
+        throw new UnexpectedValueException('GUIDED_PORTION_CONTRACT');};
+    if($item['model']!=='recipes'||!is_array($contract)||count($contract)!==3
+       ||array_diff(array_keys($contract),['version','sourceFingerprint','steps'])
+       ||($contract['version']??null)!==1||($contract['sourceFingerprint']??null)!==$item['fingerprint']
+       ||!is_array($contract['steps']??null)||!array_is_list($contract['steps'])
+       ||count($contract['steps'])<1||count($contract['steps'])>40
+       ||!is_array($item['fields']['steps']??null))$invalid();
+    $previous=-1;
+    foreach($contract['steps'] as $step){
+        if(!is_array($step)||count($step)!==3||array_diff(array_keys($step),['index','sourceText','anchors'])
+           ||!is_int($step['index']??null)||$step['index']<=$previous
+           ||!is_string($step['sourceText']??null)||$step['sourceText']===''||mbLen($step['sourceText'])>9000
+           ||$step['sourceText']!==($item['fields']['steps'][$step['index']]['text']??null)
+           ||!is_array($step['anchors']??null)||!array_is_list($step['anchors'])
+           ||count($step['anchors'])<1||count($step['anchors'])>30)$invalid();
+        $previous=$step['index'];$intervals=[];
+        foreach($step['anchors'] as $anchor){
+            if(!is_string($anchor)||trim($anchor)===''||mbLen($anchor)>300
+               ||substr_count($step['sourceText'],$anchor)!==1)$invalid();
+            $start=strpos($step['sourceText'],$anchor);$intervals[]=[$start,$start+strlen($anchor)];
+        }
+        usort($intervals,static fn(array $a,array $b):int=>$a[0]<=>$b[0]);
+        foreach($intervals as $i=>$interval)if($i>0&&$interval[0]<$intervals[$i-1][1])$invalid();
+    }
+}
 function cmsGuidedSourceList(array $payload,array $canonical): array {
     if(($payload['product']??null)!=='cuisine-du-cambodge'
        || ($payload['schemaVersion']??null)!==1
@@ -153,6 +182,10 @@ function cmsGuidedSourceList(array $payload,array $canonical): array {
            || !hash_equals($canonical[$item['id']]['fingerprint'],$item['fingerprint'])
            || $canonical[$item['id']]['model']!==$item['model'])
             throw new UnexpectedValueException('GUIDED_SOURCE');
+        $allowedItem=['id','model','fingerprint','editable','fields'];
+        if($item['model']==='recipes')$allowedItem[]='portionContract';
+        if(array_diff(array_keys($item),$allowedItem))throw new UnexpectedValueException('GUIDED_SOURCE');
+        cmsGuidedPortionContract($item);
         $kind=explode(':',$item['id'],2)[0];
         if(!in_array($item['model'],$models[$kind]??[],true))
             throw new UnexpectedValueException('GUIDED_TYPE');
@@ -961,8 +994,74 @@ function cmsRecipeAstroDetailsHtml(mixed $raw,array $fields): string {
 }
 
 
+/** Candidate external visuals, with explicit human-supplied provenance. No
+ * downloads, remote fetches, asset writes, rights grants or publication. */
+function cmsVisualReferencesClean(mixed $raw): ?array {
+    if($raw===null)return null;
+    if(!is_array($raw)||array_diff(array_keys($raw),['version','items'])
+        ||!in_array($raw['version']??null,[1,'1'],true))throw new InvalidArgumentException('VISUAL_REFERENCE_SCHEMA');
+    $items=$raw['items']??[];
+    if(!is_array($items)||!array_is_list($items)||count($items)>8)throw new InvalidArgumentException('VISUAL_REFERENCE_SCHEMA');
+    $out=[];$seen=[];
+    foreach($items as $row){
+        if(!is_array($row)||array_diff(array_keys($row),['caption','source_url','credit','licence','rights_evidence_url','status','checked_on']))
+            throw new InvalidArgumentException('VISUAL_REFERENCE_SCHEMA');
+        $entry=[];
+        foreach(['caption'=>350,'source_url'=>700,'credit'=>250,'licence'=>350,'rights_evidence_url'=>700,'checked_on'=>10] as $key=>$max)
+            $entry[$key]=cmsCreationText($row[$key]??'',$max);
+        $entry['status']=cmsCreationText($row['status']??'pending',20);
+        if(!in_array($entry['status'],['pending','checked_private','rejected'],true))throw new InvalidArgumentException('VISUAL_REFERENCE_STATUS');
+        if(count(array_filter(array_diff_key($entry,['status'=>true]),static fn(string $v):bool=>$v!==''))===0
+            &&$entry['status']==='pending')continue;
+        if($entry['caption']===''||$entry['source_url']==='')throw new InvalidArgumentException('VISUAL_REFERENCE_SOURCE');
+        foreach(['source_url','rights_evidence_url'] as $key){
+            if($entry[$key]==='')continue;
+            $url=parse_url($entry[$key]);
+            if(!is_array($url)||($url['scheme']??null)!=='https'||!is_string($url['host']??null)
+                ||!preg_match('/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/iD',$url['host'])
+                ||isset($url['user'])||isset($url['pass'])||isset($url['port'])||isset($url['query'])||isset($url['fragment']))
+                throw new InvalidArgumentException('VISUAL_REFERENCE_SOURCE');
+        }
+        if($entry['checked_on']!==''&&(!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/D',$entry['checked_on'])
+            ||!checkdate((int)substr($entry['checked_on'],5,2),(int)substr($entry['checked_on'],8,2),(int)substr($entry['checked_on'],0,4))))
+            throw new InvalidArgumentException('VISUAL_REFERENCE_DATE');
+        if($entry['status']==='checked_private'&&($entry['credit']===''||$entry['licence']===''
+            ||$entry['rights_evidence_url']===''||$entry['checked_on']===''))throw new InvalidArgumentException('VISUAL_REFERENCE_RIGHTS');
+        if(isset($seen[$entry['source_url']]))throw new InvalidArgumentException('VISUAL_REFERENCE_DUPLICATE');
+        $seen[$entry['source_url']]=true;$out[]=$entry;
+    }
+    return ['version'=>1,'items'=>$out];
+}
+function cmsVisualReferencesHtml(mixed $raw,string $kind,string $title): string {
+    $rows=is_array($raw)&&is_array($raw['items']??null)?array_slice($raw['items'],0,8):[];
+    $idea=match($kind){
+        'culture'=>'Chercher une photographie documentaire authentique du sujet, avec lieu et contexte vérifiés.',
+        'recette'=>'Chercher une photographie du plat réellement préparé ou de ses ingrédients.',
+        'atelier'=>'Chercher une photographie réelle du geste et des étapes de préparation.',
+        'ingredient'=>'Chercher une photographie identifiant sans ambiguïté cet ingrédient.',
+        default=>'Chercher une photographie réelle du geste ou du résultat technique.'};
+    $html='<details class="guided-group" data-visual-references><summary>Photographies proposées — crédits et droits</summary>'
+        .'<p class="small muted">'.cmsEsc($idea).' '.cmsEsc($title).'</p>'
+        .'<p class="small muted">Enregistrez seulement des pistes privées. Le Studio ne télécharge ni ne vérifie automatiquement les photographies ; une illustration IA ne constitue jamais une preuve documentaire. Aucun droit de publication n’est accordé.</p>'
+        .'<input type="hidden" name="visual_references[version]" value="1">';
+    for($i=0,$count=min(8,max(3,count($rows)+1));$i<$count;$i++){
+        $row=$rows[$i]??[];$base='visual_references[items]['.$i.']';
+        $html.='<fieldset><legend>Photographie candidate '.($i+1).'</legend>';
+        foreach(['caption'=>['Légende / sujet',350],'source_url'=>['Page source HTTPS',700],
+            'credit'=>['Auteur et crédit exact',250],'licence'=>['Licence ou autorisation à vérifier',350],
+            'rights_evidence_url'=>['Lien HTTPS justificatif des droits',700],'checked_on'=>['Date de vérification AAAA-MM-JJ',10]] as $key=>[$label,$max])
+            $html.='<label>'.cmsEsc($label).'<textarea rows="2" maxlength="'.$max.'" name="'.$base.'['.$key.']">'
+                .cmsEsc((string)($row[$key]??'')).'</textarea></label>';
+        $html.='<label>État<select name="'.$base.'[status]">';
+        foreach(['pending'=>'À vérifier','checked_private'=>'Crédit et droits vérifiés manuellement (privé)','rejected'=>'Écartée'] as $key=>$label)
+            $html.='<option value="'.$key.'"'.(($row['status']??'pending')===$key?' selected':'').'>'.cmsEsc($label).'</option>';
+        $html.='</select></label></fieldset>';
+    }
+    return $html.'</details>';
+}
+
 /**
- * C4C1: human-only internal documentary evidence for cultural Carnets.
+ * C4C1: internal documentary evidence for cultural Carnets; verification is human-only.
  * Evidence stays next to the private draft; never part of the provider
  * schema, the public CultureArticle projection or public HTML.
  */
@@ -1024,6 +1123,129 @@ function cmsCultureEvidenceClean(mixed $raw): ?array {
     }
     return ['version'=>1,'items'=>$out];
 }
+/** A free, bounded bibliographic search; no model/API key and no arbitrary URL.
+ * Results remain unverified private evidence in the existing Carnet dossier. */
+function cmsCultureResearchQuery(mixed $raw): string {
+    $query=cmsCreationText($raw,180);
+    if(mbLen($query)<4||!preg_match('/^[\p{L}\p{N} .,’\'\-]+$/uD',$query))
+        throw new InvalidArgumentException('CULTURE_RESEARCH_QUERY');
+    return $query;
+}
+function cmsCultureResearchText(mixed $raw): string {
+    if(!is_string($raw)||strlen($raw)>100000||!preg_match('//u',$raw))return '';
+    $text=html_entity_decode(strip_tags(str_replace(['</jats:p>','</p>'],' ', $raw)),ENT_QUOTES|ENT_HTML5,'UTF-8');
+    return trim((string)preg_replace('/\s+/u',' ',$text));
+}
+function cmsCultureResearchClip(string $s,int $max): string {
+    if(mbLen($s)<=$max)return $s;
+    if(function_exists('mb_substr'))return mb_substr($s,0,$max,'UTF-8');
+    $out='';
+    foreach(preg_split('//u',$s,-1,PREG_SPLIT_NO_EMPTY)?:[] as $char){
+        if(strlen($out.$char)>$max)break;
+        $out.=$char;
+    }
+    return $out;
+}
+function cmsCultureResearchTerms(string $query): array {
+    preg_match_all('/[\p{L}\p{N}]{4,}/u',$query,$matches);
+    $terms=[];
+    foreach($matches[0] as $term){
+        $term=function_exists('mb_strtolower')?mb_strtolower($term,'UTF-8'):strtolower($term);
+        if(!in_array($term,['cambodia','cambodian','cambodge','cambodgien','cambodgienne','khmer','khmère',
+            'culture','cultural','tradition','traditional','traditionnelle','cuisine','food','histoire','history',
+            'dans','pour','avec','entre','autour','from','with','about','carnet'],true))$terms[$term]=true;
+    }
+    return array_keys($terms);
+}
+function cmsCultureResearchMatches(string $text,array $terms): bool {
+    foreach($terms as $term)if(preg_match('/(?<![\p{L}\p{N}])'.preg_quote($term,'/').'(?![\p{L}\p{N}])/iu',$text))return true;
+    return false;
+}
+function cmsCultureResearchCandidates(array $data,string $query): array {
+    $terms=cmsCultureResearchTerms(cmsCultureResearchQuery($query));
+    if(!$terms)throw new InvalidArgumentException('CULTURE_RESEARCH_QUERY');
+    if(($data['status']??null)!=='ok'||($data['message-type']??null)!=='work-list'
+        ||!is_array($data['message']['items']??null)||!array_is_list($data['message']['items'])
+        ||count($data['message']['items'])>8)throw new RuntimeException('CULTURE_RESEARCH_RESPONSE');
+    $items=[];$seen=[];
+    foreach($data['message']['items'] as $work){
+        if(!is_array($work)||($work['type']??null)!=='journal-article')continue;
+        $doi=$work['DOI']??null;
+        if(!is_string($doi)||strlen($doi)>200||!preg_match('~^10\.[0-9]{4,9}/[-._;()/:a-z0-9]+$~iD',$doi))continue;
+        $key=strtolower($doi);if(isset($seen[$key]))continue;
+        $title=cmsCultureResearchText($work['title'][0]??null);
+        $journal=cmsCultureResearchText($work['container-title'][0]??null);
+        $abstract=cmsCultureResearchText($work['abstract']??null);
+        $text=$title.' '.$abstract;
+        // A metadata search is not evidence that an article is about Cambodia.
+        if($title===''||$journal===''||$abstract===''||preg_match('/[\x00-\x1f\x7f]/',$text)
+           ||!preg_match('/\b(?:Cambodia(?:n)?|Cambodge|cambodgien(?:ne)?s?|Khmer(?:s)?|khmère(?:s)?)\b/iu',$text)
+           ||!cmsCultureResearchMatches($text,$terms))continue;
+        $url='https://doi.org/'.implode('/',array_map('rawurlencode',explode('/',$key)));
+        // One short verbatim sentence at most, visibly unverified. Never make
+        // up a quote or truncate a long sentence into a misleading claim.
+        $excerpt='';
+        foreach(preg_split('/(?<=[.!?])\s+/u',$abstract)?:[] as $sentence){
+            $words=preg_split('/\s+/u',trim($sentence),-1,PREG_SPLIT_NO_EMPTY)?:[];
+            if(mbLen($sentence)>=35&&mbLen($sentence)<=350&&count($words)<=25
+                &&preg_match('/[.!?]$/uD',$sentence)&&cmsCultureResearchMatches($sentence,$terms)){
+                $excerpt=$sentence;break;
+            }
+        }
+        $year=$work['published']['date-parts'][0][0]??null;
+        $label=cmsCultureResearchClip($title.' — '.$journal.(is_int($year)?' ('.$year.')':''),200);
+        $claim=$excerpt!==''?$excerpt:'Pertinence et faits à vérifier dans : '.cmsCultureResearchClip($title,250);
+        $note='Repérage Crossref '.gmdate('Y-m-d').' ; '.($excerpt!==''?'court extrait du résumé déposé, à reformuler et recouper. ':'aucune phrase courte pertinente extraite ; lire le texte original. ')
+            .'Vérifier contexte, fiabilité et éventuelles corrections/rétractations. Métadonnées, pas validation documentaire.';
+        $items[]=['claim'=>$claim,'source_label'=>$label,'source_url'=>$url,
+            'checked_on'=>'','note'=>$note,'status'=>'pending'];
+        $seen[$key]=true;if(count($items)>=5)break;
+    }
+    return cmsCultureEvidenceClean(['version'=>1,'items'=>$items])['items'];
+}
+function cmsCultureResearchFetch(string $query,?callable $fetcher=null): array {
+    $query=cmsCultureResearchQuery($query);
+    if(!cmsCultureResearchTerms($query))throw new InvalidArgumentException('CULTURE_RESEARCH_QUERY');
+    $url='https://api.crossref.org/works?'.http_build_query([
+        'query.bibliographic'=>$query.' Cambodia Khmer',
+        'filter'=>'type:journal-article,has-abstract:true','rows'=>8,
+        'select'=>'DOI,title,container-title,abstract,published,type'], '', '&',PHP_QUERY_RFC3986);
+    if($fetcher!==null)$raw=$fetcher($url);
+    else{
+        if(!function_exists('curl_init'))throw new RuntimeException('CULTURE_RESEARCH_UNAVAILABLE');
+        $c=curl_init($url);if($c===false)throw new RuntimeException('CULTURE_RESEARCH_UNAVAILABLE');$raw='';
+        curl_setopt_array($c,[CURLOPT_HTTPGET=>true,CURLOPT_FOLLOWLOCATION=>false,
+            CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2,CURLOPT_CONNECTTIMEOUT=>4,
+            CURLOPT_TIMEOUT=>10,CURLOPT_HTTPHEADER=>['Accept: application/json'],
+            CURLOPT_USERAGENT=>'Cuisine-du-Cambodge-Studio/1.0',
+            CURLOPT_WRITEFUNCTION=>static function($ch,string $chunk)use(&$raw):int{
+                if(strlen($raw)+strlen($chunk)>350000)return 0;
+                $raw.=$chunk;return strlen($chunk);
+            }]);
+        if(defined('CURLOPT_PROTOCOLS_STR'))curl_setopt($c,constant('CURLOPT_PROTOCOLS_STR'),'https');
+        elseif(defined('CURLOPT_PROTOCOLS'))curl_setopt($c,constant('CURLOPT_PROTOCOLS'),CURLPROTO_HTTPS);
+        $ok=curl_exec($c);$status=(int)curl_getinfo($c,CURLINFO_RESPONSE_CODE);curl_close($c);
+        if($ok!==true||$status!==200)throw new RuntimeException('CULTURE_RESEARCH_UNAVAILABLE');
+    }
+    if(!is_string($raw)||strlen($raw)>350000)throw new RuntimeException('CULTURE_RESEARCH_RESPONSE');
+    $data=json_decode($raw,true,32,JSON_THROW_ON_ERROR);
+    if(!is_array($data))throw new RuntimeException('CULTURE_RESEARCH_RESPONSE');
+    return cmsCultureResearchCandidates($data,$query);
+}
+function cmsCultureResearchMerge(mixed $saved,array $candidates): array {
+    $base=cmsCultureEvidenceClean($saved)??['version'=>1,'items'=>[]];
+    $key=static fn(string $url):string=>str_starts_with(strtolower($url),'https://doi.org/')?strtolower($url):$url;
+    $seen=array_fill_keys(array_map($key,array_column($base['items'],'source_url')),true);
+    $added=0;
+    foreach(cmsCultureEvidenceClean(['version'=>1,'items'=>$candidates])['items'] as $item){
+        if($item['status']!=='pending'||$item['checked_on']!=='')throw new RuntimeException('CULTURE_RESEARCH_RESPONSE');
+        $urlKey=$key($item['source_url']);
+        if(isset($seen[$urlKey])||count($base['items'])>=12)continue;
+        $base['items'][]=$item;$seen[$urlKey]=true;$added++;
+    }
+    return ['dossier'=>$base,'added'=>$added];
+}
+
 /** The shared Studio exposes only the private research inputs to the owner. */
 function cmsCultureEvidenceHtml(mixed $raw=null): string {
     $rows=is_array($raw)&&is_array($raw['items']??null)
@@ -2161,6 +2383,7 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
             ?cmsCultureEvidenceClean(
                 $posted['culture_evidence']??($previous['culture_evidence']??null))
             :null;
+        $visualReferences=cmsVisualReferencesClean($posted['visual_references']??($previous['visual_references']??null));
         if($kind!=='technique' && isset($posted['technique_links']))
             throw new InvalidArgumentException('TECHNIQUE_LINKS_SCHEMA');
         $techniqueLinks=$kind==='technique'
@@ -2235,6 +2458,8 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
         if($recipeAstro!==null)$record['recipe_astro']=$recipeAstro;
         if($recipeDetails!==null)$record['recipe_astro_details']=$recipeDetails;
         if($cultureEvidence!==null)$record['culture_evidence']=$cultureEvidence;
+        if($visualReferences!==null&&($visualReferences['items']!==[]||isset($previous['visual_references'])))
+            $record['visual_references']=$visualReferences;
         if($techniqueLinks!==null)$record['technique_links']=$techniqueLinks;
         if($atelierRef!==null)$record['atelier_reference']=$atelierRef;
         if($atelierPhaseDetails!==null)$record['atelier_phase_details']=$atelierPhaseDetails;
@@ -2582,6 +2807,7 @@ function cmsCreationPosted(array $raw): array {
     $posted['recipe_astro']=$raw['recipe_astro']??null;
     $posted['recipe_astro_details']=$raw['recipe_astro_details']??null;
     $posted['culture_evidence']=$raw['culture_evidence']??null;
+    $posted['visual_references']=$raw['visual_references']??null;
     $posted['technique_links']=$raw['technique_links']??null;
     $posted['atelier_reference']=$raw['atelier_reference']??null;
     $posted['atelier_phase_details']=$raw['atelier_phase_details']??null;
@@ -2717,6 +2943,42 @@ function cmsAiContentRequireCultureDossier(string $context): void {
         if(mbLen($fact)<35||mbLen($fact)>450||preg_match('/[\x00-\x1f\x7f]/',$fact))
             $invalid();
     }
+    if(preg_match_all('/^Correspondances[ \t]*:[ \t]*(.*)$/miu',$context,$mapping)>0){
+        if(count($mapping[1])!==1)$invalid();
+        $pairs=$split($mapping[1][0]);
+        if(count($pairs)!==count($facts))$invalid();
+        foreach($pairs as $i=>$pair){
+            if(!preg_match('/^([1-4])=([1-3](?:,[1-3])*)$/D',$pair,$match)
+               ||(int)$match[1]!==$i+1)$invalid();
+            $indices=explode(',',$match[2]);
+            if(count($indices)!==count(array_unique($indices)))$invalid();
+            foreach($indices as $index)if((int)$index>count($sources))$invalid();
+        }
+    }
+}
+
+/** Prepare exactly the checked claims / public URLs for the existing C2 pilot.
+ * No external fetch, provider, quota reservation or disclosure is performed.
+ * The owner must still read the text and confirm the separate transmission. */
+function cmsCultureEvidenceContext(mixed $raw): string {
+    $evidence=cmsCultureEvidenceClean($raw);$facts=[];$sources=[];
+    foreach($evidence['items']??[] as $item){
+        if($item['status']!=='checked')continue;
+        $claim=$item['claim'];$url=$item['source_url'];$parsed=parse_url($url);
+        // Never silently send query parameters or transform claim boundaries.
+        if(!is_array($parsed)||isset($parsed['query'])||str_contains($url,';')
+            ||preg_match('/[;\x00-\x1f\x7f]/',$claim))
+            throw new RuntimeException('AI_CONTENT_EVIDENCE_REQUIRED');
+        if(!isset($sources[$url]))$sources[$url]=count($sources)+1;
+        $facts[$claim][$sources[$url]]=true;
+    }
+    $mapping=[];$i=0;
+    foreach($facts as $indices)$mapping[]=(++$i).'='.implode(',',array_keys($indices));
+    $context='Sources : '.implode('; ',array_keys($sources))."\nFaits autorisés : ".implode('; ',array_keys($facts))
+        ."\nCorrespondances : ".implode('; ',$mapping);
+    if(mbLen($context)>2000)throw new RuntimeException('AI_CONTENT_EVIDENCE_REQUIRED');
+    cmsAiContentRequireCultureDossier($context);
+    return $context;
 }
 
 /** Generate once, validate, and return a session candidate. NO draft is saved. */
@@ -3081,6 +3343,248 @@ function cmsCalendarPlan(array $creations,string $month,
     return ['month'=>$month,'days'=>$days,'undated'=>$undated,'other'=>$other,
        'total'=>$count,'month_count'=>array_sum(array_map('count',$days)),
        'undated_count'=>count($undated)];
+}
+
+/** Read-only editorial schedule preview. Explicitly selected private drafts only;
+ * never create content, mutate dates, call a provider or authorize publication. */
+function cmsCalendarSuggest(array $creations,array $catalog,array $selected,
+    string $start,int $weeks,int $cadence): array {
+    if($weeks<1||$weeks>6||$cadence<1||$cadence>2||count($selected)>250
+        ||count($creations)>250||count(array_filter($selected,'is_string'))!==count($selected)
+        ||count(array_unique($selected))!==count($selected)
+        ||!preg_match('/^20[2-9][0-9]-[0-9]{2}-[0-9]{2}$/D',$start))
+        throw new InvalidArgumentException('CALENDAR_PREVIEW_INPUT');
+    $first=DateTimeImmutable::createFromFormat('!Y-m-d',$start,new DateTimeZone('UTC'));
+    if(!$first||$first->format('Y-m-d')!==$start||$first->format('N')!=='1')
+        throw new InvalidArgumentException('CALENDAR_PREVIEW_INPUT');
+    $end=$first->modify('+'.$weeks.' weeks')->format('Y-m-d');
+    // Reuse the calendar's existing fail-closed data validation.
+    cmsCalendarPlan($creations,substr($start,0,7));
+    $records=[];$counts=array_fill_keys(array_keys(cmsCreationKinds()),0);
+    $occupied=[];$weekly=array_fill(0,$weeks,0);
+    foreach($creations as $item){
+        if(isset($records[$item['id']]))throw new RuntimeException('CALENDAR_CORRUPT_DRAFT');
+        $records[$item['id']]=$item;
+        $date=$item['target_date']??null;
+        if($date!==null&&$date>=$start&&$date<$end){
+            $week=intdiv((int)$first->diff(new DateTimeImmutable($date,new DateTimeZone('UTC')))->days,7);
+            $weekly[$week]++;$occupied[$date]=true;$counts[$item['kind']]++;
+        }
+    }
+    $pool=[];$blocked=[];
+    foreach($selected as $id){
+        if(!cmsCreationId($id)||!isset($records[$id]))
+            throw new InvalidArgumentException('CALENDAR_PREVIEW_INPUT');
+        $item=$records[$id];$reason=null;
+        if(($item['target_date']??null)!==null)$reason='already_dated';
+        elseif(isset($item['source_binding']))$reason='published_binding';
+        elseif($item['kind']==='atelier'&&isset($item['atelier_scripts']))$reason='workshop_narrations';
+        elseif(!is_int($item['version']??null)||$item['version']<1||$item['version']>=9999)
+            $reason='version_unavailable';
+        else{
+            try{
+                // Check both the current title and the original AI input, if any.
+                $titles=[$item['title']];
+                foreach(['ai_brief','ai_content'] as $key){
+                    $original=$item[$key]['input_title']??null;
+                    if(is_string($original))$titles[]=$original;
+                }
+                foreach(array_unique($titles) as $title){
+                    $similar=cmsCreationDuplicateCheck($item['kind'],cmsCreationSlug($title),
+                        $catalog,$records,$id);
+                    if($similar)$reason='similar_title';
+                }
+            }catch(InvalidArgumentException $e){
+                if($e->getMessage()==='CREATION_DUPLICATE')$reason='duplicate';
+                else throw $e;
+            }
+        }
+        if($reason!==null)$blocked[]=['id'=>$id,'title'=>$item['title'],'reason'=>$reason];
+        else $pool[$id]=$item;
+    }
+    $proposals=[];
+    for($week=0;$week<$weeks&&$pool;$week++){
+        // Prefer Monday/Thursday, then remaining weekdays. Respect existing dates.
+        foreach([0,3,1,2,4] as $offset){
+            if(!$pool||$weekly[$week]>=$cadence)break;
+            $date=$first->modify('+'.($week*7+$offset).' days')->format('Y-m-d');
+            if(isset($occupied[$date]))continue;
+            uasort($pool,static function(array $a,array $b)use($counts):int{
+                return ($counts[$a['kind']]<=>$counts[$b['kind']])
+                    ?: (($a['state']==='review'?0:1)<=>($b['state']==='review'?0:1))
+                    ?: strcmp($a['title'],$b['title']) ?: strcmp($a['id'],$b['id']);
+            });
+            $item=reset($pool);unset($pool[$item['id']]);
+            $proposals[]=['id'=>$item['id'],'title'=>$item['title'],'kind'=>$item['kind'],
+                'target_date'=>$date,'state'=>$item['state'],'version'=>$item['version']];
+            $weekly[$week]++;$occupied[$date]=true;$counts[$item['kind']]++;
+        }
+    }
+    usort($proposals,static fn(array $a,array $b):int=>strcmp($a['target_date'],$b['target_date']));
+    return ['proposals'=>$proposals,'blocked'=>$blocked,'remaining'=>count($pool),
+        'publication_authorized'=>false];
+}
+
+/** Confirm exactly the previously displayed dates. Re-read all current drafts
+ * under the existing catalogue writer lock and append date-only revisions.
+ * No content, provenance, public files, audio or approval flag is changed. */
+function cmsCalendarApply(string $private,array $catalog,array $selected,string $start,
+    int $weeks,int $cadence,array $expectedProposals): array {
+    if(!$expectedProposals||count($expectedProposals)>12)
+        throw new InvalidArgumentException('CALENDAR_CONFIRM_INPUT');
+    $dir=cmsCreationDir($private);$lockPath=$dir.'/catalog.lock';
+    if(is_link($lockPath))throw new RuntimeException('CREATION_LOCK');
+    $lock=fopen($lockPath,'c');
+    if(!$lock||!flock($lock,LOCK_EX))throw new RuntimeException('CREATION_LOCK');
+    $staged=[];$installed=[];
+    try{
+        if(!chmod($lockPath,0600))throw new RuntimeException('CREATION_LOCK');
+        $current=cmsCreationList($dir);
+        $now=cmsCalendarSuggest($current,$catalog,$selected,$start,$weeks,$cadence);
+        if($now['proposals']!==$expectedProposals)
+            throw new RuntimeException('CALENDAR_CONFIRM_STALE');
+        // Prepare the whole lot before any revision becomes visible. The same
+        // writer lock protects ordinary edits and Coral version-bound actions.
+        foreach($expectedProposals as $proposal){
+            $old=$current[$proposal['id']];
+            if(($old['contract']??null)!=='cdc-editorial-new-content-v1'
+                ||($old['reviewed']??null)!==false||isset($old['source_binding']))
+                throw new RuntimeException('CALENDAR_CONFIRM_STALE');
+            $next=$old;$next['target_date']=$proposal['target_date'];
+            $next['version']=$old['version']+1;$next['recorded_at']=gmdate('Y-m-d\TH:i:s\Z');
+            $path=$dir.'/'.$old['id'].'.'.sprintf('%04d',$next['version']).'.json';
+            if(file_exists($path)||is_link($path))throw new RuntimeException('CALENDAR_CONFIRM_STALE');
+            $json=json_encode($next,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+            if(strlen($json)>100000)throw new RuntimeException('CREATION_SIZE');
+            $temp=tempnam($dir,'calendar-');
+            if($temp===false)throw new RuntimeException('CREATION_STORE');
+            $staged[$path]=$temp;
+            if(is_link($temp)||!chmod($temp,0600)||file_put_contents($temp,$json,LOCK_EX)!==strlen($json))
+                throw new RuntimeException('CREATION_STORE');
+        }
+        foreach($staged as $path=>$temp){
+            // Never overwrite an existing revision, even on an unexpected filesystem conflict.
+            if(!link($temp,$path))throw new RuntimeException('CREATION_STORE');
+            $installed[]=$path;
+        }
+        return $expectedProposals;
+    }catch(Throwable $e){
+        // Only unlink the new files installed by this attempt; earlier versions
+        // and all other stores are untouched. No automatic retry.
+        $rolledBack=true;
+        foreach($installed as $path)if(!unlink($path))$rolledBack=false;
+        if(!$rolledBack)throw new RuntimeException('CALENDAR_CONFIRM_RECHECK');
+        throw $e;
+    }finally{
+        foreach($staged as $temp)if(is_file($temp))@unlink($temp);
+        flock($lock,LOCK_UN);fclose($lock);
+    }
+}
+
+/** Catalogue-grounded discovery: ideas and research questions, never claims.
+ * Reuse the existing duplicate checker; human semantic review remains necessary. */
+function cmsCalendarTopicSuggestions(array $catalog,array $canonical,array $guided,array $creations): array {
+    if(count($catalog)>250||count($creations)>250||count($catalog)!==count($canonical))
+        throw new RuntimeException('TOPIC_SOURCE_INVALID');
+    cmsAssertGuidedCoverage($guided,$canonical);
+    $counts=array_fill_keys(array_keys(cmsCreationKinds()),0);
+    foreach(array_merge(array_values($catalog),array_values($creations)) as $record)
+        if(is_string($record['kind']??null)&&isset($counts[$record['kind']]))$counts[$record['kind']]++;
+    $terms=static function(string $value):array{
+        try{$slug=cmsCreationSlug($value);}catch(InvalidArgumentException $e){return [];}
+        return array_values(array_diff(array_unique(explode('-',$slug)),
+            ['un','une','le','la','les','de','du','des','d','l','au','aux','et','en','a','pour','avec','sans']));
+    };
+    $covered=static function(string $kind,string $topic)use($catalog,$creations,$terms):bool{
+        $target=$terms($topic);if(!$target)return true;
+        foreach(array_merge(array_values($catalog),array_values($creations)) as $item){
+            if(($item['kind']??null)!==$kind)continue;
+            $labels=[$item['title']??'',$item['slug']??'',str_contains($item['id']??'',':')?explode(':',$item['id'],2)[1]:''];
+            foreach(['ai_brief','ai_content'] as $key)$labels[]=$item[$key]['input_title']??'';
+            foreach($labels as $label){
+                if(!is_string($label)||$label==='')continue;
+                $other=$terms($label);
+                if(!array_diff($target,$other))return true;
+                // Conservative cultural-topic flag: broad existing Carnets can
+                // cover a named regional dish without repeating the whole name.
+                if($kind==='culture'&&count($target)>1&&strlen($target[0])>=4
+                    &&in_array($target[0],$other,true)&&count(array_intersect($target,$other))/count($target)>=0.5)return true;
+            }
+        }
+        return false;
+    };
+    $ideas=[];
+    $add=static function(string $kind,string $topic,string $title,string $angle,array $refs,int $weight)
+        use(&$ideas,$catalog,$canonical,$creations,$covered):void{
+        if(!$refs||$covered($kind,$topic)||mbLen($title)>180)return;
+        try{
+            $slug=cmsCreationSlug($title);
+            if(cmsCreationDuplicateCheck($kind,$slug,$catalog,$creations,null))return;
+        }catch(InvalidArgumentException $e){return;}
+        $refs=array_values(array_unique($refs));sort($refs,SORT_STRING);$refs=array_slice($refs,0,5);
+        $sources=[];
+        foreach($refs as $id){
+            if(!isset($catalog[$id],$canonical[$id]))throw new RuntimeException('TOPIC_SOURCE_INVALID');
+            $sources[]=['id'=>$id,'title'=>$catalog[$id]['title'],'url'=>$catalog[$id]['url'],
+                'fingerprint'=>$canonical[$id]['fingerprint']];
+        }
+        $key=$kind.':'.$slug;
+        $ideas[$key]=['id'=>substr(hash('sha256',json_encode([$key,$sources],JSON_THROW_ON_ERROR)),0,32),
+            'kind'=>$kind,'title'=>$title,'angle'=>$angle,'sources'=>$sources,'weight'=>$weight,
+            'requires_human_review'=>true,'publication_authorized'=>false];
+    };
+    $ingredients=[];$techniques=[];
+    foreach($catalog as $id=>$source){
+        if(!isset($guided[$id],$canonical[$id])
+            ||($guided[$id]['fingerprint']??null)!==$canonical[$id]['fingerprint']
+            ||($guided[$id]['model']??null)!==$canonical[$id]['model'])throw new RuntimeException('TOPIC_SOURCE_INVALID');
+        $title=$source['title'];
+        if($source['kind']==='ingredient'){
+            $add('recette',$title,'Recette khmère à documenter autour de '.$title,
+                'Identifier un plat khmer inédit utilisant cet ingrédient, vérifier son nom, ses sources et ses proportions avant toute rédaction.',[$id],1);
+            $add('culture',$title,'Usages et transmission : '.$title,
+                'Documenter les usages et gestes au Cambodge à partir de sources fiables, sans inventer de témoignage ni attribuer une origine non établie.',[$id],2);
+        }
+        if($source['kind']!=='recette'||$canonical[$id]['model']!=='recipes')continue;
+        $slug=explode(':',$id,2)[1];$linked=false;
+        foreach($creations as $record)if(($record['kind']??null)==='atelier'
+            &&($record['atelier_reference']['recipeSlug']??null)===$slug){$linked=true;break;}
+        if(!$linked)$add('atelier',$slug,'Atelier pratique : '.$title,
+            'Concevoir la progression pédagogique à partir de la recette canonique, avec gestes, contrôles sensoriels et corrections. Aucun audio généré.',[$id],3);
+        foreach($guided[$id]['fields']['ingredients']??[] as $row){
+            $name=is_array($row)?($row['name']??null):null;
+            if(!is_string($name)||mbLen($name)>80)continue;
+            $key=implode('-',$terms($name));
+            // Skip staples without a distinct editorial angle; short generic labels
+            // are poor candidates. Recurrence across recipes is required below.
+            if($key===''||in_array($key,['eau','sel','sucre','huile','poivre','oeuf','oeufs','riz'],true))continue;
+            $ingredients[$key]['title']=$name;$ingredients[$key]['refs'][$id]=true;
+        }
+        foreach($guided[$id]['fields']['steps']??[] as $step){
+            $name=is_array($step)?($step['title']??null):null;
+            if(!is_string($name)||mbLen($name)>80||count($terms($name))<3)continue;
+            $key=implode('-',$terms($name));$techniques[$key]['title']=$name;$techniques[$key]['refs'][$id]=true;
+        }
+        $add('culture',$slug,'Histoire et usages de '.$title,
+            'Étudier ce plat comme sujet documentaire distinct de la recette : sources, contextes et variations, sans assertion non vérifiée.',[$id],1);
+    }
+    foreach($ingredients as $entry){
+        $refs=array_keys($entry['refs']);if(count($refs)<2)continue;
+        $add('ingredient',$entry['title'],$entry['title'],
+            'Documenter le rôle culinaire, le choix, les usages, les substitutions et la conservation à partir des recettes liées et de sources vérifiées.',$refs,count($refs));
+    }
+    foreach($techniques as $entry){
+        $refs=array_keys($entry['refs']);if(count($refs)<2)continue;
+        $add('technique',$entry['title'],'Technique : '.$entry['title'],
+            'Comparer le geste entre les recettes liées, préciser le contrôle sensoriel et les erreurs à éviter ; vérifier les consignes avant rédaction.',$refs,count($refs));
+    }
+    // Balance the five families according to catalogue + private project counts.
+    // Maximum two suggestions of each family; no filler if a genuine gap is absent.
+    uasort($ideas,static fn(array $a,array $b):int=>($counts[$a['kind']]<=>$counts[$b['kind']])
+        ?:($b['weight']<=>$a['weight'])?:strcmp($a['title'],$b['title'])?:strcmp($a['id'],$b['id']));
+    $out=[];$limits=array_fill_keys(array_keys($counts),0);
+    foreach($ideas as $idea)if($limits[$idea['kind']]<2){$out[]=$idea;$limits[$idea['kind']]++;}
+    return $out;
 }
 
 /** Private visual proposals: no publication, no writes to the public asset tree. */

@@ -81,7 +81,21 @@ export function cultureEvidenceFromBrief(brief){
     throw Error('CULTURE_EVIDENCE_REQUIRED');
   const checksLine=brief.context.match(/^Points à vérifier\s*:\s*(.+)$/mi);
   const checks=checksLine?checksLine[1].split(/\s*;\s*/u).filter(Boolean).slice(0,5):[];
-  return {sources,facts,checks};
+  const mappingLines=[...brief.context.matchAll(/^Correspondances[ \t]*:[ \t]*(.*)$/gmiu)];
+  let attribution;
+  if(mappingLines.length){
+    const pairs=mappingLines[0][1].split(';').map(x=>x.trim()).filter(Boolean);
+    if(mappingLines.length!==1||pairs.length!==facts.length)throw Error('CULTURE_EVIDENCE_REQUIRED');
+    attribution=pairs.map((pair,i)=>{
+      const match=pair.match(/^([1-4])=([1-3](?:,[1-3])*)$/);
+      if(!match||Number(match[1])!==i+1)throw Error('CULTURE_EVIDENCE_REQUIRED');
+      const indices=match[2].split(',').map(Number);
+      if(new Set(indices).size!==indices.length||indices.some(n=>n>sources.length))
+        throw Error('CULTURE_EVIDENCE_REQUIRED');
+      return indices;
+    });
+  }
+  return {sources,facts,checks,...(attribution?{attribution}:{})};
 }
 const culturePlanSchema={
   type:'object',additionalProperties:false,
@@ -144,6 +158,9 @@ export async function stagedCultureCandidate(request,call,evidence){
     ...evidence.sources,
     'Faits transmis pour contrôle éditorial :',
     ...evidence.facts,
+    ...(evidence.attribution?['Correspondances déclarées (fait → sources, numéros dans les listes ci-dessus) :',
+      ...evidence.attribution.map((indices,i)=>(i+1)+'='+indices.join(','))]:
+      ['Correspondance fait/source non renseignée : vérifier chaque attribution.']),
     'Points de vérification :',...evidence.checks,
     'Aucune liaison entre les faits n’est créée automatiquement. Les titres, le chapô, le résumé et le SEO générés restent à vérifier manuellement. Aucun visa de publication.'
   ].join('\n');

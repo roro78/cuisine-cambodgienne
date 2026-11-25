@@ -60,6 +60,92 @@ try{
     carnetCheck(hash_file('sha256',cmsCreationDir($root).'/'.$old['id'].'.0001.json')
         ===$oldHash && !isset(cmsCreationRead(cmsCreationDir($root),$old['id'],1)['culture_evidence']),
         'IMMUTABLE_HISTORY');
+    // The new research action only prepares pending entries from a bounded
+    // simulated Crossref response. No provider or real network is called here.
+    $article=['type'=>'journal-article','DOI'=>'10.1234/example','title'=>['Weaving study in Cambodia'],
+        'container-title'=>['Synthetic journal fixture'],'published'=>['date-parts'=>[[2026]]],
+        'abstract'=>'<jats:p>Cambodian weaving is documented in this explicitly synthetic research example.</jats:p>'];
+    $response=['status'=>'ok','message-type'=>'work-list','message'=>['items'=>[
+        $article,array_replace($article,['DOI'=>'10.1234/EXAMPLE']),
+        array_replace($article,['DOI'=>'invalid']),
+        array_replace($article,['DOI'=>'10.1234/unrelated','title'=>['Weaving in Finland'],
+            'abstract'=>'A completely unrelated weaving study in Finland.']),
+        array_replace($article,['DOI'=>'10.1234/no-extract','abstract'=>'A long sentence about Cambodian weaving '.str_repeat('and context ',30).'ends here.'])
+    ]]];
+    $calls=0;
+    $research=cmsCultureResearchFetch('weaving',static function(string $url)use($response,&$calls):string{
+        $calls++;
+        carnetCheck(str_starts_with($url,'https://api.crossref.org/works?')
+            &&str_contains($url,'weaving%20Cambodia%20Khmer')&&!str_contains($url,'INTERNAL_RESEARCH_NOTE'),'RESEARCH_REQUEST_SCOPE');
+        return json_encode($response,JSON_THROW_ON_ERROR);
+    });
+    carnetCheck($calls===1&&count($research)===2,'RESEARCH_RELEVANCE_AND_DUPLICATES');
+    carnetCheck($research[0]['claim']==='Cambodian weaving is documented in this explicitly synthetic research example.'
+        &&$research[0]['source_url']==='https://doi.org/10.1234/example'
+        &&$research[0]['status']==='pending'&&$research[0]['checked_on']==='','RESEARCH_EXACT_EXCERPT_NOT_VERIFIED');
+    carnetCheck(str_starts_with($research[1]['claim'],'Pertinence et faits à vérifier')
+        &&$research[1]['status']==='pending','RESEARCH_NO_INVENTED_CLAIM');
+    $merged=cmsCultureResearchMerge($v2['culture_evidence'],$research);
+    carnetCheck($merged['added']===2&&array_slice($merged['dossier']['items'],0,2)===$v2['culture_evidence']['items']
+        &&cmsCreationRead(cmsCreationDir($root),$old['id'])===$v2,'RESEARCH_NO_MUTATION');
+    carnetCheck(cmsCultureResearchMerge($merged['dossier'],$research)['added']===0,'RESEARCH_REPLAY_NO_DUPLICATE');
+    $blocked=false;
+    try{cmsCultureEvidenceContext($merged['dossier']);}catch(RuntimeException $e){$blocked=$e->getMessage()==='AI_CONTENT_EVIDENCE_REQUIRED';}
+    carnetCheck($blocked,'RESEARCH_PENDING_NEVER_FEEDS_GENERATION');
+    $blocked=false;try{cmsCultureResearchFetch('https://example.org',static function():never{throw new Exception('unexpected call');});}
+    catch(InvalidArgumentException $e){$blocked=true;}
+    carnetCheck($blocked,'RESEARCH_NO_ARBITRARY_URL');
+    $dossier=$v2['culture_evidence'];
+    $blocked=false;
+    try{cmsCultureEvidenceContext($dossier);}catch(RuntimeException $e){$blocked=$e->getMessage()==='AI_CONTENT_EVIDENCE_REQUIRED';}
+    carnetCheck($blocked,'DOSSIER_INCOMPLETE_NO_CONTEXT');
+    $dossier['items'][1]['claim']='Premier constat documentaire suffisamment précis pour le contrôle.';
+    $dossier['items'][]=['claim'=>'Deuxième constat documentaire suffisamment précis à transmettre.',
+        'source_label'=>'Libellé privé non transmis','source_url'=>'https://example.org/notice',
+        'status'=>'checked','checked_on'=>'2026-11-25','note'=>'PRIVATE_NOTE_EXCLUDED'];
+    $context=cmsCultureEvidenceContext($dossier);
+    carnetCheck(str_contains($context,'Sources : https://example.edu/documents/fiche; https://example.org/notice')
+        &&str_contains($context,'Faits autorisés : Premier constat')
+        &&str_contains($context,'Correspondances : 1=1; 2=2')
+        &&!str_contains($context,'Point culturel à vérifier')&&!str_contains($context,'PRIVATE_NOTE_EXCLUDED')
+        &&!str_contains($context,'Libellé privé non transmis'),'DOSSIER_ONLY_CHECKED_CLAIMS');
+    cmsAiContentRequireCultureDossier($context);
+    $blocked=false;
+    try{cmsAiContentRequireCultureDossier(str_replace('2=2','2=3',$context));}
+    catch(RuntimeException $e){$blocked=$e->getMessage()==='AI_CONTENT_EVIDENCE_REQUIRED';}
+    carnetCheck($blocked,'DOSSIER_ATTRIBUTION_BOUND_TO_SOURCES');
+
+    $unsafe=$dossier;$unsafe['items'][2]['source_url']='https://example.org/notice?private=excluded';
+    $blocked=false;
+    try{cmsCultureEvidenceContext($unsafe);}catch(RuntimeException $e){$blocked=$e->getMessage()==='AI_CONTENT_EVIDENCE_REQUIRED';}
+    carnetCheck($blocked,'DOSSIER_QUERY_REJECTED');
+    $unsafe=$dossier;$unsafe['items'][2]['claim']='Un premier morceau; un autre morceau de fait.';
+    $blocked=false;
+    try{cmsCultureEvidenceContext($unsafe);}catch(RuntimeException $e){$blocked=$e->getMessage()==='AI_CONTENT_EVIDENCE_REQUIRED';}
+    carnetCheck($blocked,'DOSSIER_DELIMITER_REJECTED');
+    $photo=['caption'=>'Photo documentaire candidate à vérifier','source_url'=>'https://example.org/photo',
+        'credit'=>'Auteur d’essai','licence'=>'Licence à contrôler','rights_evidence_url'=>'https://example.org/rights',
+        'status'=>'checked_private','checked_on'=>'2026-11-25'];
+    $ref=cmsVisualReferencesClean(['version'=>1,'items'=>[$photo]]);
+    $photoInput=$input;$photoInput['title']='Autre sujet documentaire et visuel inédit';
+    $photoInput['visual_references']=$ref;
+    $photoDraft=cmsCreationSave($root,$photoInput,[],0);
+    carnetCheck($photoDraft['visual_references']===$ref&&$photoDraft['reviewed']===false,'PHOTO_PRIVATE_RECORD');
+    $photoProjection=json_encode(cmsCultureAstroDraftProjection($photoDraft),JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
+    carnetCheck(!str_contains($photoProjection,'example.org/photo')&&!str_contains($photoProjection,'Auteur d’essai'),'PHOTO_EXCLUDED_FROM_PUBLIC');
+    $photoHash=hash_file('sha256',cmsCreationDir($root).'/'.$photoDraft['id'].'.0001.json');
+    unset($photoInput['visual_references']);
+    $photoV2=cmsCreationSave($root,$photoInput,[],1,$photoDraft['id']);
+    carnetCheck($photoV2['visual_references']===$ref&&hash_file('sha256',cmsCreationDir($root).'/'.$photoDraft['id'].'.0001.json')===$photoHash,'PHOTO_HISTORY_AND_LEGACY');
+    foreach([['credit'=>''],['licence'=>''],['checked_on'=>'2026-02-30'],['source_url'=>'https://example.org/photo?token=test'],['rights_evidence_url'=>'http://example.org/rights']] as $bad){
+        $unsafe=['version'=>1,'items'=>[array_replace($photo,$bad)]];$blocked=false;
+        try{cmsVisualReferencesClean($unsafe);}catch(InvalidArgumentException $e){$blocked=str_starts_with($e->getMessage(),'VISUAL_REFERENCE_');}
+        carnetCheck($blocked,'PHOTO_UNVERIFIED_NOT_CHECKED');
+    }
+    $unsafe=['version'=>1,'items'=>[$photo,$photo]];$blocked=false;
+    try{cmsVisualReferencesClean($unsafe);}catch(InvalidArgumentException $e){$blocked=$e->getMessage()==='VISUAL_REFERENCE_DUPLICATE';}
+    carnetCheck($blocked,'PHOTO_DUPLICATE');
+    carnetCheck(!str_contains(cmsVisualReferencesHtml(['items'=>[array_replace($photo,['caption'=>'<script>test</script>'])]],'culture','Sujet'),'<script>'),'PHOTO_HTML_ESCAPED');
     $report=cmsAstroPublicationGapReport($v2);
     carnetCheck($report['culture_evidence_count']===2
         && $report['culture_claims_marked_checked']===1

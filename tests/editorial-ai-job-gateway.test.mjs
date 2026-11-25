@@ -139,6 +139,7 @@ test('C2 cultural outline makes one bounded call and preserves only supplied fac
   ];
   const context='Source consultée le 22/11/2026 : '+sources.join(' ; ')+'\n'
     +'Faits autorisés : '+facts.join(' ; ')+'\n'
+    +'Correspondances : 1=1 ; 2=1 ; 3=1 ; 4=2\n'
     +'Points à vérifier : Ne pas inventer de témoignages ; Ne pas étendre ce cas à tous les marchés';
   const documented={...request,brief:{
     kind:'culture',title:'Kep et Psar Kdam',angle:'Un cas local sans extrapolation',
@@ -146,6 +147,10 @@ test('C2 cultural outline makes one bounded call and preserves only supplied fac
   const pack=cultureEvidenceFromBrief(documented.brief);
   assert.deepEqual(pack.sources,sources);
   assert.deepEqual(pack.facts,facts);
+  assert.deepEqual(pack.attribution,[[1],[1],[1],[2]]);
+  for(const invalid of ['1=1 ; 2=1 ; 3=3 ; 4=2','1=1 ; 2=1 ; 3=1 ; 4=2,2','1=1 ; 2=1']){
+    assert.throws(()=>cultureEvidenceFromBrief({...documented.brief,context:context.replace('1=1 ; 2=1 ; 3=1 ; 4=2',invalid)}),/CULTURE_EVIDENCE_REQUIRED/);
+  }
   const replies=[
     {eyebrow:'Carnet du Cambodge',
       intro:'À Kep, deux sources documentaires permettent de présenter plusieurs repères sur Psar Kdam sans inventer de reportage.',
@@ -160,6 +165,8 @@ test('C2 cultural outline makes one bounded call and preserves only supplied fac
     return new Response(JSON.stringify({done:true,message:{content:JSON.stringify(replies[calls.length-1])}}));
   }});
   const response=JSON.parse(await provider(documented));
+  assert.match(response.research_note,/Correspondances déclarées/);
+  assert.match(response.research_note,/4=2/);
   assert.equal(calls.length,1);
   assert.deepEqual(calls.map(x=>x.options.num_predict),[450]);
   assert.deepEqual(calls.map(x=>x.options.num_ctx),[4096]);

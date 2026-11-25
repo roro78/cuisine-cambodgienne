@@ -28,7 +28,7 @@ test('public guided fields match full canonical source versions without leaking 
    assert.ok(original,'unknown page '+item.id);
    assert.equal(item.fingerprint,original.fingerprint,'full-record digest mismatch for '+item.id);
    assert.equal(item.model,original.model);
-   assert.deepEqual(Object.keys(item).sort(),['editable','fields','fingerprint','id','model']);
+   assert.deepEqual(Object.keys(item).sort(),['editable','fields','fingerprint','id','model',...(item.id==='recette:amok-trey'?['portionContract']:[])]);
    assert.ok(['recette','atelier','culture','ingredient','technique'].includes(item.id.split(':')[0]));
    assert.equal(item.editable,true);
    if(item.model==='cookingWorkshopGuides'){
@@ -40,6 +40,15 @@ test('public guided fields match full canonical source versions without leaking 
   assert.ok(recipe);
   assert.ok(recipe.fields.ingredients.some(x=>x.scalable===false));
   assert.ok(recipe.fields.steps.some(x=>x.cue));
+  assert.equal(recipe.portionContract.version,1);
+  assert.equal(recipe.portionContract.sourceFingerprint,recipe.fingerprint);
+  assert.deepEqual(recipe.portionContract.steps.map(x=>[x.index,x.anchors]),[
+    [0,['1 c. à soupe','250 ml','3 c. à soupe']],
+    [3,['quatre ramequins']],
+    [4,['la cuillerée de lait de coco réservée']]
+  ]);
+  for(const step of recipe.portionContract.steps)
+    assert.equal(step.sourceText,recipe.fields.steps[step.index].text);
   for(const id of ['culture:le-riz-symbole-de-vie-au-cambodge','ingredient:kroeung',
     'technique:bouillon-leger-maison']){
     assert.ok(payload.items.some(x=>x.id===id),'guided coverage '+id);

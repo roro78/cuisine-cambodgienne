@@ -132,6 +132,14 @@ if($method==='POST'){
             ['csrf','export_narrations','creation_id','expected_version']))) {
         http_response_code(422);exit('Action invalide.');
     }
+    if(isset($_POST['culture_research']) && (count($_POST)!==7||array_diff(array_keys($_POST),
+        ['csrf','culture_research','creation_id','expected_version','research_query','research_consent','research_token']))) {
+        http_response_code(422);exit('Action invalide.');
+    }
+    if(isset($_POST['calendar_confirm']) && (count($_POST)!==3
+        ||array_diff(array_keys($_POST),['csrf','calendar_confirm','calendar_token']))) {
+        http_response_code(422);exit('Action invalide.');
+    }
     if(isset($_POST['tts_action'])&&count(array_intersect(['tts_action','create_save','ai_brief_generate','ai_content_generate',
         'ai_content_discard','review_action','culinary_action','save','studio_transition','export_review','visual_action','coral_prepare','prepare_next_workshop','final_review_action','correction_action','login','logout'],array_keys($_POST)))!==1){
         http_response_code(422);exit('Action invalide.');
@@ -173,7 +181,7 @@ $filtersUrl=http_build_query($filters,'','&',PHP_QUERY_RFC3986);
 $newMode=isset($_GET['new']) || ($method==='POST'
     && (isset($_POST['tts_action']) || isset($_POST['visual_action']) || isset($_POST['create_save']) || isset($_POST['ai_brief_generate'])
         || isset($_POST['ai_content_generate']) || isset($_POST['ai_content_discard'])
-        || isset($_POST['review_action']) || isset($_POST['culinary_action']) || isset($_POST['final_review_action']) || isset($_POST['correction_action']) || isset($_POST['export_narrations'])));
+        || isset($_POST['review_action']) || isset($_POST['culinary_action']) || isset($_POST['final_review_action']) || isset($_POST['correction_action']) || isset($_POST['export_narrations']) || isset($_POST['culture_research'])));
 $createKind=is_string($_POST['kind']??null)?$_POST['kind']:
     (is_string($_GET['kind']??null)?$_GET['kind']:'recette');
 if(!isset(cmsCreationKinds()[$createKind]))$createKind='recette';
@@ -191,6 +199,9 @@ $calendarMonth=gmdate('Y-m');$calendarKind='all';$calendarStatus='all';
 $calendarPlan=null;$calendarPrev='';$calendarNext='';$calendarError='';
 $calendarRuntimeInfo='';$calendarFileHashes=[];
 $calendarWorkshopSettings=null;$calendarWorkshop=null;
+$calendarPreview=null;$calendarPreviewError='';$calendarPreviewIds=[];
+$calendarPreviewWeeks=4;$calendarPreviewCadence=2;$calendarPreviewStart='';
+$calendarTopics=null;$calendarTopicsError='';
 if($calendarMode){
     try{
         $calendarMonth=cmsCalendarMonth($_GET['month']??gmdate('Y-m'));
@@ -226,10 +237,40 @@ if($auth){
         $creationDir=cmsCreationDir($private);
         $creations=cmsCreationList($creationDir);
     }catch(Throwable $e){cmsUnavailable();}
-    // A calendar is only a READ-ONLY view. A failure in its projection must not
+    // The calendar view is read-only except for the explicit date confirmation.
+    // A failure in its projection must not
     // hide the whole CMS or masquerade as an expired login. Fail closed for the
     // affected view, preserve all private drafts and report a safe diagnostic.
     if($calendarMode){
+        if($method==='GET'&&($_GET['topic_preview']??null)==='1'){
+            try{
+                $topicGuides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);
+                $calendarTopics=cmsCalendarTopicSuggestions($catalog,$canonicalById,$topicGuides,$creations);
+            }catch(Throwable $e){$calendarTopicsError='Catalogue éditorial indisponible ou incohérent. Aucun sujet proposé.';}
+        }
+        if($method==='POST'&&isset($_POST['calendar_confirm'])){
+            try{
+                $pending=$_SESSION['calendar_confirmation']??null;
+                if($_POST['calendar_confirm']!=='1'||!is_array($pending)
+                    ||!is_string($_POST['calendar_token']??null)
+                    ||!hash_equals($pending['token'],$_POST['calendar_token'])
+                    ||$pending['expires']<time()
+                    ||$pending['start']!==(new DateTimeImmutable('next monday',new DateTimeZone('Europe/Paris')))->format('Y-m-d'))
+                    throw new RuntimeException('CALENDAR_CONFIRM_STALE');
+                unset($_SESSION['calendar_confirmation']);
+                $saved=cmsCalendarApply($private,$catalog,$pending['selected'],$pending['start'],
+                    $pending['weeks'],$pending['cadence'],$pending['proposals']);
+                $_SESSION['calendar_saved_count']=count($saved);
+                header('Location: ?calendar=1&month='.substr($saved[0]['target_date'],0,7),true,303);exit;
+            }catch(Throwable $e){
+                http_response_code(409);
+                $error='Dates non confirmées ou résultat incertain. Vérifiez le calendrier actuel et préparez une nouvelle proposition. Aucun contenu publié.';
+            }
+        }
+        if(isset($_SESSION['calendar_saved_count'])){
+            $notice=(int)$_SESSION['calendar_saved_count'].' date(s) enregistrée(s) dans les brouillons privés. Aucune publication autorisée.';
+            unset($_SESSION['calendar_saved_count']);
+        }
         try{
             $s=cmsCoralSettings($cfg);
             if(($s['workshop_complete_qualified']??false)===true){
@@ -309,6 +350,65 @@ if($auth){
         }
         $createForm=$creation??[];
         $createExpected=(int)($creation['version']??0);
+        if($method==='POST'&&isset($_POST['culture_research'])){
+            try{
+                if(!$auth||$creation===null||$createKind!=='culture'||isset($creation['source_binding'])
+                   ||($_POST['culture_research']??null)!=='1'||($_POST['research_consent']??null)!=='1'
+                   ||($_POST['creation_id']??null)!==$creation['id']
+                   ||(string)$creation['version']!==($_POST['expected_version']??null)
+                   ||array_diff(array_keys($_GET),['new','cid'])
+                   ||($_GET['cid']??null)!==$creation['id']
+                   ||!is_string($_POST['research_token']??null)
+                   ||!is_string($_SESSION['culture_research_token']??null)
+                   ||!hash_equals($_SESSION['culture_research_token'],$_POST['research_token']))
+                    throw new RuntimeException('CULTURE_RESEARCH_STALE');
+                $query=cmsCultureResearchQuery($_POST['research_query']??null);
+                unset($_SESSION['culture_research_token']); // One explicit search per form.
+                if(time()-(int)($_SESSION['culture_research_last']??0)<30)
+                    throw new RuntimeException('CULTURE_RESEARCH_COOLDOWN');
+                if(count($creation['culture_evidence']['items']??[])>=12)
+                    throw new RuntimeException('CULTURE_RESEARCH_FULL');
+                $_SESSION['culture_research_last']=time();
+                $candidates=cmsCultureResearchFetch($query);
+                $latestSaved=cmsCreationRead($creationDir,$creation['id']);
+                if($latestSaved!==$creation)throw new RuntimeException('CULTURE_RESEARCH_STALE');
+                $merged=cmsCultureResearchMerge($creation['culture_evidence']??null,$candidates);
+                $createForm['culture_evidence']=$merged['dossier'];
+                $notice=$merged['added']>0
+                    ?$merged['added'].' piste(s) documentaire(s) ajoutée(s) au formulaire, À VÉRIFIER. Relisez puis enregistrez la nouvelle version privée. Aucun fait n’est validé.'
+                    :'Aucune nouvelle piste documentaire suffisamment pertinente. Le dossier enregistré reste inchangé.';
+            }catch(Throwable $e){
+                http_response_code(422);
+                $error='Recherche documentaire indisponible, non autorisée, trop récente ou dossier obsolète/complet. Aucun brouillon modifié.';
+            }
+        }
+        if($method==='GET'&&isset($_GET['topic'])&&$cid===null&&count($_GET)===2){
+            try{
+                if(!is_string($_GET['topic'])||!preg_match('/^[a-f0-9]{32}$/D',$_GET['topic']))throw new RuntimeException('TOPIC_STALE');
+                $topicGuides=cmsGuidedSourceList(cmsGetGuidedFields()??[],$canonicalById);
+                $topics=cmsCalendarTopicSuggestions($catalog,$canonicalById,$topicGuides,$creations);$topic=null;
+                foreach($topics as $candidate)if($candidate['id']===$_GET['topic']){$topic=$candidate;break;}
+                if($topic===null)throw new RuntimeException('TOPIC_STALE');
+                $createKind=$topic['kind'];$createForm=['title'=>$topic['title'],'angle'=>$topic['angle'],
+                    'research_note'=>"Pistes de catalogue (non vérifiées comme sources externes) :\n".implode("\n",array_column($topic['sources'],'url'))];
+                $aiContentInputForm=['objective'=>$topic['angle'],'reference_id'=>$topic['sources'][0]['id']];
+                if($createKind==='atelier')$createForm['atelier_reference']=cmsAtelierReferenceClean([
+                    'version'=>1,'recipeSlug'=>explode(':',$topic['sources'][0]['id'],2)[1]],$catalog);
+                $notice='Sujet proposé à partir du catalogue. Vérifiez les variantes et complétez le dossier documentaire ; aucun brouillon ni contenu généré.';
+            }catch(Throwable $e){http_response_code(409);$error='Suggestion indisponible ou devenue obsolète. Retournez dans le calendrier pour actualiser les sujets.';}
+        }
+
+        if($method==='GET'&&($_GET['dossier_context']??null)==='1'&&count($_GET)===3){
+            try{
+                if($creation===null||$createKind!=='culture'||isset($creation['source_binding']))
+                    throw new RuntimeException('AI_CONTENT_EVIDENCE_REQUIRED');
+                $aiContentInputForm=['objective'=>$creation['angle'],
+                    'context'=>cmsCultureEvidenceContext($creation['culture_evidence']??null)];
+                $notice='Contexte préparé à partir des faits vérifiés enregistrés. Relisez les seules informations proposées avant toute transmission.';
+            }catch(Throwable $e){
+                http_response_code(422);$error='Dossier insuffisant ou incompatible : enregistrez deux à quatre faits vérifiés (35 à 450 caractères chacun) et une à trois sources HTTPS publiques sans paramètres. Aucun appel IA.';
+            }
+        }
         if($method==='POST'&&isset($_POST['export_narrations'])){
             try {
                 if(!$auth||$creation===null||$createKind!=='atelier'
@@ -764,6 +864,7 @@ if($auth){
                         'recipe_astro'=>$_POST['recipe_astro']??null,
                         'recipe_astro_details'=>$_POST['recipe_astro_details']??null,
                         'culture_evidence'=>$_POST['culture_evidence']??null,
+                        'visual_references'=>$_POST['visual_references']??null,
                         'technique_links'=>$_POST['technique_links']??null,
                         'atelier_reference'=>$_POST['atelier_reference']??null,
                         'atelier_phase_details'=>$_POST['atelier_phase_details']??null,
@@ -1313,6 +1414,119 @@ $monthGridStart=$monthFirst->modify('-'.$monthOffset.' days');
 $monthCellCount=(int)(ceil(($monthOffset+(int)$monthFirst->format('t'))/7)*7);
 $monthToday=(new DateTimeImmutable('now',new DateTimeZone('Europe/Paris')))->format('Y-m-d');
 ?>
+<?php
+// Explicit opt-in to a read-only preview. Only a bounded session receipt is stored.
+$calendarPreviewStart=(new DateTimeImmutable('next monday',new DateTimeZone('Europe/Paris')))->format('Y-m-d');
+$calendarPreviewEligible=array_filter($creations,static fn(array $item):bool=>
+    ($item['target_date']??null)===null&&!isset($item['source_binding'])
+        &&!($item['kind']==='atelier'&&isset($item['atelier_scripts'])));
+if($method==='GET'&&isset($_GET['plan_preview'])){
+    unset($_SESSION['calendar_confirmation']);
+    try{
+        $weeksRaw=$_GET['plan_weeks']??'4';$cadenceRaw=$_GET['plan_cadence']??'2';
+        $idsRaw=$_GET['plan_ids']??[];
+        if(!is_string($weeksRaw)||!preg_match('/^[1-6]$/D',$weeksRaw)
+            ||!is_string($cadenceRaw)||!preg_match('/^[12]$/D',$cadenceRaw)
+            ||!is_array($idsRaw)||!array_is_list($idsRaw)||count($idsRaw)>250)
+            throw new InvalidArgumentException('CALENDAR_PREVIEW_INPUT');
+        $calendarPreviewWeeks=(int)$weeksRaw;$calendarPreviewCadence=(int)$cadenceRaw;
+        $calendarPreview=cmsCalendarSuggest($creations,$catalog,$idsRaw,
+            $calendarPreviewStart,$calendarPreviewWeeks,$calendarPreviewCadence);
+        $calendarPreviewIds=$idsRaw;
+        if($calendarPreview['proposals'])$_SESSION['calendar_confirmation']=[
+            'token'=>bin2hex(random_bytes(24)),'expires'=>time()+900,'selected'=>$idsRaw,
+            'start'=>$calendarPreviewStart,'weeks'=>$calendarPreviewWeeks,'cadence'=>$calendarPreviewCadence,
+            'proposals'=>$calendarPreview['proposals']];
+    }catch(Throwable $ignored){
+        $calendarPreviewError='Impossible de préparer cette proposition. Rouvrez le calendrier et sélectionnez des projets actuels.';
+    }
+}
+?>
+<details class="guided-group"<?= isset($_GET['topic_preview'])?' open':'' ?>>
+<summary>Découvrir de nouveaux sujets</summary>
+<p class="small muted">Suggestions fondées sur le catalogue et les projets privés, non sur des faits inventés. Aucun appel IA, enregistrement ou publication. Une proposition n'est pas une preuve d'originalité.</p>
+<form method="get" class="stack">
+<input type="hidden" name="calendar" value="1">
+<input type="hidden" name="month" value="<?= cmsEsc($calendarMonth) ?>">
+<button name="topic_preview" value="1">Proposer des sujets inédits</button>
+</form>
+<?php if($calendarTopicsError!==''): ?><p class="notice" role="alert"><?= cmsEsc($calendarTopicsError) ?></p>
+<?php elseif($calendarTopics!==null): ?>
+<?php if(!$calendarTopics): ?><p>Aucune lacune suffisamment distincte détectée.</p><?php endif; ?>
+<?php foreach($calendarTopics as $topic): ?>
+<article class="panel">
+<strong><?= cmsEsc(cmsCreationKinds()[$topic['kind']]) ?> — <?= cmsEsc($topic['title']) ?></strong>
+<p class="small"><?= cmsEsc($topic['angle']) ?></p>
+<p class="small muted">Références du catalogue à examiner :</p>
+<ul><?php foreach($topic['sources'] as $source): ?><li><a href="<?= cmsEsc($source['url']) ?>" target="_blank" rel="noopener noreferrer"><?= cmsEsc($source['title']) ?></a></li><?php endforeach; ?></ul>
+<a href="?new=1&amp;topic=<?= cmsEsc($topic['id']) ?>">Ouvrir le formulaire de ce sujet</a>
+</article>
+<?php endforeach; ?>
+<?php endif; ?>
+</details>
+<details class="guided-group"<?= isset($_GET['plan_preview'])?' open':'' ?>>
+<summary>Proposer un programme éditorial</summary>
+<p class="small muted">Répartir les brouillons sélectionnés entre les catégories, à partir du lundi
+<?= cmsEsc($calendarPreviewStart) ?>. Les dates existantes restent intactes.
+La prévisualisation ne modifie aucune date. Aucune génération IA ou publication.</p>
+<?php if(!$calendarPreviewEligible): ?>
+<p class="small muted">Aucun brouillon non daté à sélectionner. Créez un projet depuis le Studio.</p>
+<?php else: ?>
+<form method="get" class="stack">
+<input type="hidden" name="calendar" value="1">
+<input type="hidden" name="month" value="<?= cmsEsc($calendarMonth) ?>">
+<input type="hidden" name="calendar_kind" value="<?= cmsEsc($calendarKind) ?>">
+<input type="hidden" name="calendar_status" value="<?= cmsEsc($calendarStatus) ?>">
+<input type="hidden" name="plan_preview" value="1">
+<label>Nombre de semaines<select name="plan_weeks">
+<?php for($n=1;$n<=6;$n++): ?>
+<option value="<?= $n ?>"<?= $calendarPreviewWeeks===$n?' selected':'' ?>><?= $n ?></option>
+<?php endfor; ?>
+</select></label>
+<label>Projets maximum par semaine<select name="plan_cadence">
+<?php foreach([1,2] as $n): ?>
+<option value="<?= $n ?>"<?= $calendarPreviewCadence===$n?' selected':'' ?>><?= $n ?></option>
+<?php endforeach; ?>
+</select></label>
+<fieldset><legend>Choisir les brouillons à planifier</legend>
+<?php foreach($calendarPreviewEligible as $item): ?>
+<p><label><input type="checkbox" name="plan_ids[]" value="<?= cmsEsc($item['id']) ?>"
+<?= in_array($item['id'],$calendarPreviewIds,true)?' checked':'' ?>>
+<?= cmsEsc($item['title']) ?> · <?= cmsEsc(cmsCreationKinds()[$item['kind']]) ?></label></p>
+<?php endforeach; ?>
+</fieldset>
+<button type="submit">Prévisualiser les dates</button>
+</form>
+<?php endif; ?>
+<?php if($calendarPreviewError!==''): ?>
+<p role="alert" class="notice"><?= cmsEsc($calendarPreviewError) ?></p>
+<?php elseif($calendarPreview!==null): ?>
+<h3>Proposition à valider</h3>
+<?php if(!$calendarPreview['proposals']): ?><p>Aucune date proposée.</p><?php endif; ?>
+<?php foreach($calendarPreview['proposals'] as $proposal): ?>
+<p><time datetime="<?= cmsEsc($proposal['target_date']) ?>"><?= cmsEsc($proposal['target_date']) ?></time> —
+<a href="?new=1&amp;cid=<?= cmsEsc($proposal['id']) ?>"><?= cmsEsc($proposal['title']) ?></a>
+· <?= cmsEsc(cmsCreationKinds()[$proposal['kind']]) ?></p>
+<?php endforeach; ?>
+<?php $previewReasons=['already_dated'=>'Date déjà renseignée','published_binding'=>'Fiche publique liée',
+'duplicate'=>'Doublon détecté','similar_title'=>'Titre proche : vérification nécessaire',
+'workshop_narrations'=>'Atelier avec narrations : dates à gérer dans la fiche',
+'version_unavailable'=>'Version non disponible']; ?>
+<?php foreach($calendarPreview['blocked'] as $blocked): ?>
+<p class="small muted"><?= cmsEsc($blocked['title']) ?> — <?= cmsEsc($previewReasons[$blocked['reason']]) ?></p>
+<?php endforeach; ?>
+<p class="small muted"><?= (int)$calendarPreview['remaining'] ?> projet(s) sans créneau disponible.
+Les dates déjà enregistrées et les projets écartés ne seront pas modifiés.</p>
+<?php if($calendarPreview['proposals']&&isset($_SESSION['calendar_confirmation'])): ?>
+<form method="post" action="?calendar=1&amp;month=<?= cmsEsc($calendarMonth) ?>" class="stack">
+<input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
+<input type="hidden" name="calendar_token" value="<?= cmsEsc($_SESSION['calendar_confirmation']['token']) ?>">
+<button name="calendar_confirm" value="1">Enregistrer les <?= count($calendarPreview['proposals']) ?> dates proposées</button>
+<p class="small muted">Uniquement les dates affichées, dans de nouvelles versions privées. Aucune validation éditoriale ni publication. Proposition valable 15 minutes.</p>
+</form>
+<?php endif; ?>
+<?php endif; ?>
+</details>
 <div class="calendar-month" aria-label="Grille mensuelle <?= cmsEsc($calendarMonth) ?>">
 <div class="calendar-weekdays">
 <?php foreach(['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'] as $weekday): ?>
@@ -1502,6 +1716,23 @@ Vous pouvez créer le contenu manuellement ci-dessous.</p>
 <?php endif; ?>
 </details>
 <?php endif; ?>
+<?php if($creation!==null&&$createKind==='culture'&&!isset($creation['source_binding'])&&$pendingContent===null&&$candidateToken===''): ?>
+<details class="guided-group" id="cms-research"<?= isset($_POST['culture_research'])?' open':'' ?>>
+<summary>Rechercher automatiquement des sources documentaires</summary>
+<p class="small muted">Recherche bibliographique gratuite dans Crossref, avec DOI et résumés déposés. Les extraits et pistes sont proposés dans le dossier privé, jamais marqués vérifiés. Vérifiez leur pertinence, les sources originales et reformulez les faits en français. Enregistrez vos modifications avant cette recherche.</p>
+<form method="post" class="stack" action="?new=1&amp;cid=<?= cmsEsc($creation['id']) ?>#cms-research">
+<input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
+<input type="hidden" name="creation_id" value="<?= cmsEsc($creation['id']) ?>">
+<input type="hidden" name="expected_version" value="<?= (int)$creation['version'] ?>">
+<?php $_SESSION['culture_research_token']??=bin2hex(random_bytes(24)); ?>
+<input type="hidden" name="research_token" value="<?= cmsEsc($_SESSION['culture_research_token']) ?>">
+<label>Mots-clés publics (en français ou anglais ; « Cambodia Khmer » est ajouté à la requête)
+<input type="text" name="research_query" maxlength="180" required value="<?= cmsEsc($creation['title']) ?>"></label>
+<label><input type="checkbox" name="research_consent" value="1" required> J’autorise l’envoi de ces seuls mots-clés publics à Crossref. Aucune note ni brouillon privé transmis.</label>
+<button name="culture_research" value="1">Rechercher les sources</button>
+</form>
+</details>
+<?php endif; ?>
 <form method="post" class="stack" id="cms-new-editor" data-studio-edit>
 <input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
 <input type="hidden" name="creation_id" value="<?= cmsEsc($creation['id']??'') ?>">
@@ -1523,6 +1754,9 @@ Un Carnet culturel peut traiter l'histoire d'un plat sans répéter sa recette.<
 <?php if($pendingContent===null && $candidateToken==='' && !isset($creation['source_binding'])): ?>
 <details class="guided-group"<?= $aiContentInputForm?' open':'' ?>>
 <summary>Générer une proposition structurée avec l’IA</summary>
+<?php if($creation!==null&&$createKind==='culture'&&isset($creation['culture_evidence'])): ?>
+<p class="small"><a href="?new=1&amp;cid=<?= cmsEsc($creation['id']) ?>&amp;dossier_context=1#cms-general">Préparer le contexte à partir du dossier vérifié</a> — utilise seulement les faits vérifiés et les liens du dossier enregistré ; relisez-les avant toute transmission. Enregistrez vos corrections au préalable.</p>
+<?php endif; ?>
 <?php if($aiContentSettings!==null
     && in_array($createKind,$aiContentSettings['allowed_kinds'],true)): ?>
 <p class="small">Le titre et l’angle ci-dessus servent de brief. Les champs déjà saisis et
@@ -1632,6 +1866,7 @@ vérification de sa recette et de ses six phases. Aucun visa n'est repris.</p>
     false) ?>
 <?php if($publishedCoral!==null): ?></details><?php endif; ?>
 <?php endif; ?>
+<?= cmsVisualReferencesHtml($createForm['visual_references']??null,$createKind,(string)($createForm['title']??'')) ?>
 <details class="guided-group"><summary>Notes et calendrier — facultatifs</summary>
 <label>Notes de recherche privées (jamais publiées)
 <textarea name="research_note" rows="3" maxlength="3000"><?= cmsEsc((string)($createForm['research_note']??'')) ?></textarea></label>
