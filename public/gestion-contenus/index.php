@@ -191,6 +191,8 @@ $calendarMonth=gmdate('Y-m');$calendarKind='all';$calendarStatus='all';
 $calendarPlan=null;$calendarPrev='';$calendarNext='';$calendarError='';
 $calendarRuntimeInfo='';$calendarFileHashes=[];
 $calendarWorkshopSettings=null;$calendarWorkshop=null;
+$calendarPreview=null;$calendarPreviewError='';$calendarPreviewIds=[];
+$calendarPreviewWeeks=4;$calendarPreviewCadence=2;$calendarPreviewStart='';
 if($calendarMode){
     try{
         $calendarMonth=cmsCalendarMonth($_GET['month']??gmdate('Y-m'));
@@ -1313,6 +1315,81 @@ $monthGridStart=$monthFirst->modify('-'.$monthOffset.' days');
 $monthCellCount=(int)(ceil(($monthOffset+(int)$monthFirst->format('t'))/7)*7);
 $monthToday=(new DateTimeImmutable('now',new DateTimeZone('Europe/Paris')))->format('Y-m-d');
 ?>
+<?php
+// Explicit opt-in to a read-only preview. No POST, persistence or provider call.
+$calendarPreviewStart=(new DateTimeImmutable('next monday',new DateTimeZone('Europe/Paris')))->format('Y-m-d');
+$calendarPreviewEligible=array_filter($creations,static fn(array $item):bool=>
+    ($item['target_date']??null)===null&&!isset($item['source_binding']));
+if(isset($_GET['plan_preview'])){
+    try{
+        $weeksRaw=$_GET['plan_weeks']??'4';$cadenceRaw=$_GET['plan_cadence']??'2';
+        $idsRaw=$_GET['plan_ids']??[];
+        if(!is_string($weeksRaw)||!preg_match('/^[1-6]$/D',$weeksRaw)
+            ||!is_string($cadenceRaw)||!preg_match('/^[12]$/D',$cadenceRaw)
+            ||!is_array($idsRaw)||!array_is_list($idsRaw)||count($idsRaw)>250)
+            throw new InvalidArgumentException('CALENDAR_PREVIEW_INPUT');
+        $calendarPreviewWeeks=(int)$weeksRaw;$calendarPreviewCadence=(int)$cadenceRaw;
+        $calendarPreview=cmsCalendarSuggest($creations,$catalog,$idsRaw,
+            $calendarPreviewStart,$calendarPreviewWeeks,$calendarPreviewCadence);
+        $calendarPreviewIds=$idsRaw;
+    }catch(Throwable $ignored){
+        $calendarPreviewError='Impossible de préparer cette proposition. Rouvrez le calendrier et sélectionnez des projets actuels.';
+    }
+}
+?>
+<details class="guided-group"<?= isset($_GET['plan_preview'])?' open':'' ?>>
+<summary>Proposer un programme éditorial</summary>
+<p class="small muted">Répartir les brouillons sélectionnés entre les catégories, à partir du lundi
+<?= cmsEsc($calendarPreviewStart) ?>. Les dates existantes restent intactes.
+Aucune génération IA, validation ou publication.</p>
+<?php if(!$calendarPreviewEligible): ?>
+<p class="small muted">Aucun brouillon non daté à sélectionner. Créez un projet depuis le Studio.</p>
+<?php else: ?>
+<form method="get" class="stack">
+<input type="hidden" name="calendar" value="1">
+<input type="hidden" name="month" value="<?= cmsEsc($calendarMonth) ?>">
+<input type="hidden" name="calendar_kind" value="<?= cmsEsc($calendarKind) ?>">
+<input type="hidden" name="calendar_status" value="<?= cmsEsc($calendarStatus) ?>">
+<input type="hidden" name="plan_preview" value="1">
+<label>Nombre de semaines<select name="plan_weeks">
+<?php for($n=1;$n<=6;$n++): ?>
+<option value="<?= $n ?>"<?= $calendarPreviewWeeks===$n?' selected':'' ?>><?= $n ?></option>
+<?php endfor; ?>
+</select></label>
+<label>Projets maximum par semaine<select name="plan_cadence">
+<?php foreach([1,2] as $n): ?>
+<option value="<?= $n ?>"<?= $calendarPreviewCadence===$n?' selected':'' ?>><?= $n ?></option>
+<?php endforeach; ?>
+</select></label>
+<fieldset><legend>Choisir les brouillons à planifier</legend>
+<?php foreach($calendarPreviewEligible as $item): ?>
+<p><label><input type="checkbox" name="plan_ids[]" value="<?= cmsEsc($item['id']) ?>"
+<?= in_array($item['id'],$calendarPreviewIds,true)?' checked':'' ?>>
+<?= cmsEsc($item['title']) ?> · <?= cmsEsc(cmsCreationKinds()[$item['kind']]) ?></label></p>
+<?php endforeach; ?>
+</fieldset>
+<button type="submit">Prévisualiser les dates</button>
+</form>
+<?php endif; ?>
+<?php if($calendarPreviewError!==''): ?>
+<p role="alert" class="notice"><?= cmsEsc($calendarPreviewError) ?></p>
+<?php elseif($calendarPreview!==null): ?>
+<h3>Proposition à valider</h3>
+<?php if(!$calendarPreview['proposals']): ?><p>Aucune date proposée.</p><?php endif; ?>
+<?php foreach($calendarPreview['proposals'] as $proposal): ?>
+<p><time datetime="<?= cmsEsc($proposal['target_date']) ?>"><?= cmsEsc($proposal['target_date']) ?></time> —
+<a href="?new=1&amp;cid=<?= cmsEsc($proposal['id']) ?>"><?= cmsEsc($proposal['title']) ?></a>
+· <?= cmsEsc(cmsCreationKinds()[$proposal['kind']]) ?></p>
+<?php endforeach; ?>
+<?php $previewReasons=['already_dated'=>'Date déjà renseignée','published_binding'=>'Fiche publique liée',
+'duplicate'=>'Doublon détecté','similar_title'=>'Titre proche : vérification nécessaire']; ?>
+<?php foreach($calendarPreview['blocked'] as $blocked): ?>
+<p class="small muted"><?= cmsEsc($blocked['title']) ?> — <?= cmsEsc($previewReasons[$blocked['reason']]) ?></p>
+<?php endforeach; ?>
+<p class="small muted"><?= (int)$calendarPreview['remaining'] ?> projet(s) sans créneau disponible.
+Pour accepter une date, ouvrez le projet et enregistrez-la dans « Notes et calendrier ».</p>
+<?php endif; ?>
+</details>
 <div class="calendar-month" aria-label="Grille mensuelle <?= cmsEsc($calendarMonth) ?>">
 <div class="calendar-weekdays">
 <?php foreach(['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'] as $weekday): ?>
