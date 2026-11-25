@@ -38,6 +38,17 @@ test('reject missing, stale and leaked public indexes',()=>{
  feeds['editorial-guided-fields.json'].items[0].fields={baseServings:4};
  assert.throws(()=>verifyCmsIndexes(feeds),/UNEXPECTED_KEYS/);
 });
+test('legacy live metadata remains blocked with a bounded diagnostic',()=>{
+ const feeds=fixture();const item=feeds['editorial-guided-fields.json'].items[0];
+ item.portionContract={version:1,sourceFingerprint:sha,steps:[]};
+ item['do-not-log-this-key']='do-not-log-this-value';
+ assert.throws(()=>verifyCmsIndexes(feeds),error=>{
+  assert.match(error.message,/UNEXPECTED_KEYS guided\.items\[0\] recette:amok-trey extra=2/);
+  assert.match(error.message,/known_extra=portionContract/);
+  assert.doesNotMatch(error.message,/do-not-log-this/);
+  return true;
+ });
+});
 test('a future page inherits the same V2 form, and an unregistered page blocks release',()=>{
  const feeds=fixture();
  const contentId='recette:future-recipe';

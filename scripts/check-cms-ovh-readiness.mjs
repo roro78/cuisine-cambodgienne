@@ -15,9 +15,15 @@ const sensitiveKeys=new Set(['audioScript','sources','sourceReferences','culinar
   'github_token','password_hash','secret','private_config','service_role','access_token']);
 function plain(x){return x!==null&&typeof x==='object'&&!Array.isArray(x);}
 function fail(reason){throw new Error(reason);}
-function requireKeys(item,allowed,required=allowed){
-  if(!plain(item) || Object.keys(item).some(k=>!allowed.includes(k))
-    || required.some(k=>!(k in item)))fail('UNEXPECTED_KEYS');
+function requireKeys(item,allowed,required=allowed,location='unknown'){
+  if(!plain(item))fail('UNEXPECTED_KEYS '+location+' non_object');
+  const extra=Object.keys(item).filter(k=>!allowed.includes(k));
+  const missing=required.filter(k=>!Object.hasOwn(item,k));
+  // Diagnostic only: never log arbitrary keys or field values from remote JSON.
+  // The known legacy public portion contract remains blocked pending reconciliation.
+  if(extra.length||missing.length)fail('UNEXPECTED_KEYS '+location
+    +' extra='+extra.length+' missing='+missing.join(',')
+    +(extra.includes('portionContract')?' known_extra=portionContract':''));
 }
 export function verifyCmsIndexes(feeds) {
   const [social,canonical,guided]=names.map(n=>feeds[n]);
@@ -40,8 +46,9 @@ export function verifyCmsIndexes(feeds) {
     socialIds.add(item.id);
   }
   const canonicalById=new Map;
-  for(const item of canonical.items){
-    requireKeys(item,['id','kind','model','fingerprint']);
+  for(const [position,item] of canonical.items.entries()){
+    const keys=['id','kind','model','fingerprint'];
+    requireKeys(item,keys,keys,'canonical.items['+position+']');
     if(!socialIds.has(item.id)||canonicalById.has(item.id)
       || item.kind!==item.id.split(':')[0]
       || !/^[0-9a-f]{64}$/.test(item.fingerprint)
@@ -51,8 +58,10 @@ export function verifyCmsIndexes(feeds) {
   }
   if(canonicalById.size!==socialIds.size)fail('CANONICAL_MISSING_ID');
   const guidedIds=new Set;
-  for(const item of guided.items){
-    requireKeys(item,['id','model','fingerprint','editable','fields']);
+  for(const [position,item] of guided.items.entries()){
+    const keys=['id','model','fingerprint','editable','fields'];
+    const location='guided.items['+position+']'+(socialIds.has(item?.id)?' '+item.id:'');
+    requireKeys(item,keys,keys,location);
     const base=canonicalById.get(item.id);
     if(!base || guidedIds.has(item.id) || item.model!==base.model
        || item.fingerprint!==base.fingerprint || typeof item.editable!=='boolean'
@@ -86,7 +95,7 @@ export function verifyCmsIndexes(feeds) {
       workshops:['steps'],
       cookingWorkshopGuides:['finalPreparation','learningGoal','phases']
     };
-    requireKeys(item.fields,allowed[item.model],required[item.model]);
+    requireKeys(item.fields,allowed[item.model],required[item.model],location+' fields model='+item.model);
     const fields=JSON.stringify(item.fields);
     for(const key of sensitiveKeys)if(fields.includes('"'+key+'":'))fail('GUIDED_PRIVATE_FIELDS');
   }

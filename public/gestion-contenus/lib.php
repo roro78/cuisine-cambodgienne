@@ -3116,11 +3116,22 @@ function cmsCalendarSuggest(array $creations,array $catalog,array $selected,
         $item=$records[$id];$reason=null;
         if(($item['target_date']??null)!==null)$reason='already_dated';
         elseif(isset($item['source_binding']))$reason='published_binding';
+        elseif($item['kind']==='atelier'&&isset($item['atelier_scripts']))$reason='workshop_narrations';
+        elseif(!is_int($item['version']??null)||$item['version']<1||$item['version']>=9999)
+            $reason='version_unavailable';
         else{
             try{
-                $similar=cmsCreationDuplicateCheck($item['kind'],cmsCreationSlug($item['title']),
-                    $catalog,$records,$id);
-                if($similar)$reason='similar_title';
+                // Check both the current title and the original AI input, if any.
+                $titles=[$item['title']];
+                foreach(['ai_brief','ai_content'] as $key){
+                    $original=$item[$key]['input_title']??null;
+                    if(is_string($original))$titles[]=$original;
+                }
+                foreach(array_unique($titles) as $title){
+                    $similar=cmsCreationDuplicateCheck($item['kind'],cmsCreationSlug($title),
+                        $catalog,$records,$id);
+                    if($similar)$reason='similar_title';
+                }
             }catch(InvalidArgumentException $e){
                 if($e->getMessage()==='CREATION_DUPLICATE')$reason='duplicate';
                 else throw $e;
@@ -3143,13 +3154,69 @@ function cmsCalendarSuggest(array $creations,array $catalog,array $selected,
             });
             $item=reset($pool);unset($pool[$item['id']]);
             $proposals[]=['id'=>$item['id'],'title'=>$item['title'],'kind'=>$item['kind'],
-                'target_date'=>$date,'state'=>$item['state']];
+                'target_date'=>$date,'state'=>$item['state'],'version'=>$item['version']];
             $weekly[$week]++;$occupied[$date]=true;$counts[$item['kind']]++;
         }
     }
     usort($proposals,static fn(array $a,array $b):int=>strcmp($a['target_date'],$b['target_date']));
     return ['proposals'=>$proposals,'blocked'=>$blocked,'remaining'=>count($pool),
         'publication_authorized'=>false];
+}
+
+/** Confirm exactly the previously displayed dates. Re-read all current drafts
+ * under the existing catalogue writer lock and append date-only revisions.
+ * No content, provenance, public files, audio or approval flag is changed. */
+function cmsCalendarApply(string $private,array $catalog,array $selected,string $start,
+    int $weeks,int $cadence,array $expectedProposals): array {
+    if(!$expectedProposals||count($expectedProposals)>12)
+        throw new InvalidArgumentException('CALENDAR_CONFIRM_INPUT');
+    $dir=cmsCreationDir($private);$lockPath=$dir.'/catalog.lock';
+    if(is_link($lockPath))throw new RuntimeException('CREATION_LOCK');
+    $lock=fopen($lockPath,'c');
+    if(!$lock||!flock($lock,LOCK_EX))throw new RuntimeException('CREATION_LOCK');
+    $staged=[];$installed=[];
+    try{
+        if(!chmod($lockPath,0600))throw new RuntimeException('CREATION_LOCK');
+        $current=cmsCreationList($dir);
+        $now=cmsCalendarSuggest($current,$catalog,$selected,$start,$weeks,$cadence);
+        if($now['proposals']!==$expectedProposals)
+            throw new RuntimeException('CALENDAR_CONFIRM_STALE');
+        // Prepare the whole lot before any revision becomes visible. The same
+        // writer lock protects ordinary edits and Coral version-bound actions.
+        foreach($expectedProposals as $proposal){
+            $old=$current[$proposal['id']];
+            if(($old['contract']??null)!=='cdc-editorial-new-content-v1'
+                ||($old['reviewed']??null)!==false||isset($old['source_binding']))
+                throw new RuntimeException('CALENDAR_CONFIRM_STALE');
+            $next=$old;$next['target_date']=$proposal['target_date'];
+            $next['version']=$old['version']+1;$next['recorded_at']=gmdate('Y-m-d\TH:i:s\Z');
+            $path=$dir.'/'.$old['id'].'.'.sprintf('%04d',$next['version']).'.json';
+            if(file_exists($path)||is_link($path))throw new RuntimeException('CALENDAR_CONFIRM_STALE');
+            $json=json_encode($next,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+            if(strlen($json)>100000)throw new RuntimeException('CREATION_SIZE');
+            $temp=tempnam($dir,'calendar-');
+            if($temp===false)throw new RuntimeException('CREATION_STORE');
+            $staged[$path]=$temp;
+            if(is_link($temp)||!chmod($temp,0600)||file_put_contents($temp,$json,LOCK_EX)!==strlen($json))
+                throw new RuntimeException('CREATION_STORE');
+        }
+        foreach($staged as $path=>$temp){
+            // Never overwrite an existing revision, even on an unexpected filesystem conflict.
+            if(!link($temp,$path))throw new RuntimeException('CREATION_STORE');
+            $installed[]=$path;
+        }
+        return $expectedProposals;
+    }catch(Throwable $e){
+        // Only unlink the new files installed by this attempt; earlier versions
+        // and all other stores are untouched. No automatic retry.
+        $rolledBack=true;
+        foreach($installed as $path)if(!unlink($path))$rolledBack=false;
+        if(!$rolledBack)throw new RuntimeException('CALENDAR_CONFIRM_RECHECK');
+        throw $e;
+    }finally{
+        foreach($staged as $temp)if(is_file($temp))@unlink($temp);
+        flock($lock,LOCK_UN);fclose($lock);
+    }
 }
 
 /** Private visual proposals: no publication, no writes to the public asset tree. */

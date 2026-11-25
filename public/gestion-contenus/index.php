@@ -132,6 +132,10 @@ if($method==='POST'){
             ['csrf','export_narrations','creation_id','expected_version']))) {
         http_response_code(422);exit('Action invalide.');
     }
+    if(isset($_POST['calendar_confirm']) && (count($_POST)!==3
+        ||array_diff(array_keys($_POST),['csrf','calendar_confirm','calendar_token']))) {
+        http_response_code(422);exit('Action invalide.');
+    }
     if(isset($_POST['tts_action'])&&count(array_intersect(['tts_action','create_save','ai_brief_generate','ai_content_generate',
         'ai_content_discard','review_action','culinary_action','save','studio_transition','export_review','visual_action','coral_prepare','prepare_next_workshop','final_review_action','correction_action','login','logout'],array_keys($_POST)))!==1){
         http_response_code(422);exit('Action invalide.');
@@ -228,10 +232,34 @@ if($auth){
         $creationDir=cmsCreationDir($private);
         $creations=cmsCreationList($creationDir);
     }catch(Throwable $e){cmsUnavailable();}
-    // A calendar is only a READ-ONLY view. A failure in its projection must not
+    // The calendar view is read-only except for the explicit date confirmation.
+    // A failure in its projection must not
     // hide the whole CMS or masquerade as an expired login. Fail closed for the
     // affected view, preserve all private drafts and report a safe diagnostic.
     if($calendarMode){
+        if($method==='POST'&&isset($_POST['calendar_confirm'])){
+            try{
+                $pending=$_SESSION['calendar_confirmation']??null;
+                if($_POST['calendar_confirm']!=='1'||!is_array($pending)
+                    ||!is_string($_POST['calendar_token']??null)
+                    ||!hash_equals($pending['token'],$_POST['calendar_token'])
+                    ||$pending['expires']<time()
+                    ||$pending['start']!==(new DateTimeImmutable('next monday',new DateTimeZone('Europe/Paris')))->format('Y-m-d'))
+                    throw new RuntimeException('CALENDAR_CONFIRM_STALE');
+                unset($_SESSION['calendar_confirmation']);
+                $saved=cmsCalendarApply($private,$catalog,$pending['selected'],$pending['start'],
+                    $pending['weeks'],$pending['cadence'],$pending['proposals']);
+                $_SESSION['calendar_saved_count']=count($saved);
+                header('Location: ?calendar=1&month='.substr($saved[0]['target_date'],0,7),true,303);exit;
+            }catch(Throwable $e){
+                http_response_code(409);
+                $error='Dates non confirmées ou résultat incertain. Vérifiez le calendrier actuel et préparez une nouvelle proposition. Aucun contenu publié.';
+            }
+        }
+        if(isset($_SESSION['calendar_saved_count'])){
+            $notice=(int)$_SESSION['calendar_saved_count'].' date(s) enregistrée(s) dans les brouillons privés. Aucune publication autorisée.';
+            unset($_SESSION['calendar_saved_count']);
+        }
         try{
             $s=cmsCoralSettings($cfg);
             if(($s['workshop_complete_qualified']??false)===true){
@@ -1316,11 +1344,13 @@ $monthCellCount=(int)(ceil(($monthOffset+(int)$monthFirst->format('t'))/7)*7);
 $monthToday=(new DateTimeImmutable('now',new DateTimeZone('Europe/Paris')))->format('Y-m-d');
 ?>
 <?php
-// Explicit opt-in to a read-only preview. No POST, persistence or provider call.
+// Explicit opt-in to a read-only preview. Only a bounded session receipt is stored.
 $calendarPreviewStart=(new DateTimeImmutable('next monday',new DateTimeZone('Europe/Paris')))->format('Y-m-d');
 $calendarPreviewEligible=array_filter($creations,static fn(array $item):bool=>
-    ($item['target_date']??null)===null&&!isset($item['source_binding']));
-if(isset($_GET['plan_preview'])){
+    ($item['target_date']??null)===null&&!isset($item['source_binding'])
+        &&!($item['kind']==='atelier'&&isset($item['atelier_scripts'])));
+if($method==='GET'&&isset($_GET['plan_preview'])){
+    unset($_SESSION['calendar_confirmation']);
     try{
         $weeksRaw=$_GET['plan_weeks']??'4';$cadenceRaw=$_GET['plan_cadence']??'2';
         $idsRaw=$_GET['plan_ids']??[];
@@ -1332,6 +1362,10 @@ if(isset($_GET['plan_preview'])){
         $calendarPreview=cmsCalendarSuggest($creations,$catalog,$idsRaw,
             $calendarPreviewStart,$calendarPreviewWeeks,$calendarPreviewCadence);
         $calendarPreviewIds=$idsRaw;
+        if($calendarPreview['proposals'])$_SESSION['calendar_confirmation']=[
+            'token'=>bin2hex(random_bytes(24)),'expires'=>time()+900,'selected'=>$idsRaw,
+            'start'=>$calendarPreviewStart,'weeks'=>$calendarPreviewWeeks,'cadence'=>$calendarPreviewCadence,
+            'proposals'=>$calendarPreview['proposals']];
     }catch(Throwable $ignored){
         $calendarPreviewError='Impossible de préparer cette proposition. Rouvrez le calendrier et sélectionnez des projets actuels.';
     }
@@ -1341,7 +1375,7 @@ if(isset($_GET['plan_preview'])){
 <summary>Proposer un programme éditorial</summary>
 <p class="small muted">Répartir les brouillons sélectionnés entre les catégories, à partir du lundi
 <?= cmsEsc($calendarPreviewStart) ?>. Les dates existantes restent intactes.
-Aucune génération IA, validation ou publication.</p>
+La prévisualisation ne modifie aucune date. Aucune génération IA ou publication.</p>
 <?php if(!$calendarPreviewEligible): ?>
 <p class="small muted">Aucun brouillon non daté à sélectionner. Créez un projet depuis le Studio.</p>
 <?php else: ?>
@@ -1382,12 +1416,22 @@ Aucune génération IA, validation ou publication.</p>
 · <?= cmsEsc(cmsCreationKinds()[$proposal['kind']]) ?></p>
 <?php endforeach; ?>
 <?php $previewReasons=['already_dated'=>'Date déjà renseignée','published_binding'=>'Fiche publique liée',
-'duplicate'=>'Doublon détecté','similar_title'=>'Titre proche : vérification nécessaire']; ?>
+'duplicate'=>'Doublon détecté','similar_title'=>'Titre proche : vérification nécessaire',
+'workshop_narrations'=>'Atelier avec narrations : dates à gérer dans la fiche',
+'version_unavailable'=>'Version non disponible']; ?>
 <?php foreach($calendarPreview['blocked'] as $blocked): ?>
 <p class="small muted"><?= cmsEsc($blocked['title']) ?> — <?= cmsEsc($previewReasons[$blocked['reason']]) ?></p>
 <?php endforeach; ?>
 <p class="small muted"><?= (int)$calendarPreview['remaining'] ?> projet(s) sans créneau disponible.
-Pour accepter une date, ouvrez le projet et enregistrez-la dans « Notes et calendrier ».</p>
+Les dates déjà enregistrées et les projets écartés ne seront pas modifiés.</p>
+<?php if($calendarPreview['proposals']&&isset($_SESSION['calendar_confirmation'])): ?>
+<form method="post" action="?calendar=1&amp;month=<?= cmsEsc($calendarMonth) ?>" class="stack">
+<input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
+<input type="hidden" name="calendar_token" value="<?= cmsEsc($_SESSION['calendar_confirmation']['token']) ?>">
+<button name="calendar_confirm" value="1">Enregistrer les <?= count($calendarPreview['proposals']) ?> dates proposées</button>
+<p class="small muted">Uniquement les dates affichées, dans de nouvelles versions privées. Aucune validation éditoriale ni publication. Proposition valable 15 minutes.</p>
+</form>
+<?php endif; ?>
 <?php endif; ?>
 </details>
 <div class="calendar-month" aria-label="Grille mensuelle <?= cmsEsc($calendarMonth) ?>">

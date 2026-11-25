@@ -130,4 +130,57 @@ foreach([
     catch(InvalidArgumentException $e){$rejected=$e->getMessage()==='CALENDAR_PREVIEW_INPUT';}
     requireCalendar($rejected,'PREVIEW_INVALID_INPUT');
 }
+// Grouped confirmation against real append-only private files.
+$private=sys_get_temp_dir().'/cdc-calendar-'.bin2hex(random_bytes(8));
+mkdir($private,0700);
+try{
+    $catalog=[];
+    $form=['kind'=>'culture','title'=>'Projet culturel inédit','angle'=>'Origine à vérifier',
+        'summary'=>'Dossier privé','research_note'=>'Source à vérifier','fields'=>[],
+        'target_date'=>'','state'=>'draft'];
+    $a=cmsCreationSave($private,$form,$catalog,0);
+    $form['kind']='ingredient';$form['title']='Une fiche de fruit inédit';
+    $b=cmsCreationSave($private,$form,$catalog,0);
+    $dir=cmsCreationDir($private);
+    $firstPath=$dir.'/'.$a['id'].'.0001.json';$secondPath=$dir.'/'.$b['id'].'.0001.json';
+    $hashes=[hash_file('sha256',$firstPath),hash_file('sha256',$secondPath)];
+    $ids=[$a['id'],$b['id']];$start='2026-11-30';
+    $pending=cmsCalendarSuggest(cmsCreationList($dir),$catalog,$ids,$start,1,2)['proposals'];
+    requireCalendar(count($pending)===2,'GROUP_PREVIEW');
+    $tampered=$pending;$tampered[0]['target_date']='2026-12-02';
+    foreach([$tampered,array_reverse($pending)] as $bad){
+        $rejected=false;
+        try{cmsCalendarApply($private,$catalog,$ids,$start,1,2,$bad);}
+        catch(RuntimeException $e){$rejected=$e->getMessage()==='CALENDAR_CONFIRM_STALE';}
+        requireCalendar($rejected,'GROUP_REJECT_CHANGED_PROPOSAL');
+        requireCalendar(cmsCreationVersions($dir,$a['id'])===[1]
+            &&cmsCreationVersions($dir,$b['id'])===[1],'GROUP_NO_PARTIAL_WRITE');
+    }
+    requireCalendar(cmsCalendarApply($private,$catalog,$ids,$start,1,2,$pending)===$pending,'GROUP_APPLY');
+    foreach($pending as $proposal){
+        $old=cmsCreationRead($dir,$proposal['id'],1);$new=cmsCreationRead($dir,$proposal['id']);
+        requireCalendar($new['version']===2&&$new['target_date']===$proposal['target_date']
+            &&$new['reviewed']===false,'GROUP_DATE_ONLY');
+        foreach(['version','target_date','recorded_at'] as $key){unset($old[$key],$new[$key]);}
+        requireCalendar($old===$new,'GROUP_PRESERVE_ALL_OTHER_FIELDS');
+    }
+    requireCalendar($hashes===[hash_file('sha256',$firstPath),hash_file('sha256',$secondPath)],'GROUP_OLD_BYTES');
+    $rejected=false;
+    try{cmsCalendarApply($private,$catalog,$ids,$start,1,2,$pending);}
+    catch(RuntimeException $e){$rejected=$e->getMessage()==='CALENDAR_CONFIRM_STALE';}
+    requireCalendar($rejected&&cmsCreationVersions($dir,$a['id'])===[2,1],'GROUP_REPLAY');
+    $form['kind']='culture';$form['title']='Troisième sujet documentaire';
+    $c=cmsCreationSave($private,$form,$catalog,0);
+    $more=cmsCalendarSuggest(cmsCreationList($dir),$catalog,[$c['id']],$start,2,2)['proposals'];
+    $form['summary']='Correction humaine concurrente';
+    cmsCreationSave($private,$form,$catalog,1,$c['id']);
+    $rejected=false;
+    try{cmsCalendarApply($private,$catalog,[$c['id']],$start,2,2,$more);}
+    catch(RuntimeException $e){$rejected=$e->getMessage()==='CALENDAR_CONFIRM_STALE';}
+    requireCalendar($rejected&&cmsCreationRead($dir,$c['id'])['target_date']===null,'GROUP_EDIT_CONFLICT');
+}finally{
+    $iterator=new RecursiveIteratorIterator(new RecursiveDirectoryIterator($private,FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::CHILD_FIRST);
+    foreach($iterator as $entry){if($entry->isDir())rmdir($entry->getPathname());else unlink($entry->getPathname());}
+    rmdir($private);
+}
 echo "CMS_CALENDAR_PRIVATE_PASS\n";
