@@ -60,6 +60,41 @@ try{
     carnetCheck(hash_file('sha256',cmsCreationDir($root).'/'.$old['id'].'.0001.json')
         ===$oldHash && !isset(cmsCreationRead(cmsCreationDir($root),$old['id'],1)['culture_evidence']),
         'IMMUTABLE_HISTORY');
+    // The new research action only prepares pending entries from a bounded
+    // simulated Crossref response. No provider or real network is called here.
+    $article=['type'=>'journal-article','DOI'=>'10.1234/example','title'=>['Weaving study in Cambodia'],
+        'container-title'=>['Synthetic journal fixture'],'published'=>['date-parts'=>[[2026]]],
+        'abstract'=>'<jats:p>Cambodian weaving is documented in this explicitly synthetic research example.</jats:p>'];
+    $response=['status'=>'ok','message-type'=>'work-list','message'=>['items'=>[
+        $article,array_replace($article,['DOI'=>'10.1234/EXAMPLE']),
+        array_replace($article,['DOI'=>'invalid']),
+        array_replace($article,['DOI'=>'10.1234/unrelated','title'=>['Weaving in Finland'],
+            'abstract'=>'A completely unrelated weaving study in Finland.']),
+        array_replace($article,['DOI'=>'10.1234/no-extract','abstract'=>'A long sentence about Cambodian weaving '.str_repeat('and context ',30).'ends here.'])
+    ]]];
+    $calls=0;
+    $research=cmsCultureResearchFetch('weaving',static function(string $url)use($response,&$calls):string{
+        $calls++;
+        carnetCheck(str_starts_with($url,'https://api.crossref.org/works?')
+            &&str_contains($url,'weaving%20Cambodia%20Khmer')&&!str_contains($url,'INTERNAL_RESEARCH_NOTE'),'RESEARCH_REQUEST_SCOPE');
+        return json_encode($response,JSON_THROW_ON_ERROR);
+    });
+    carnetCheck($calls===1&&count($research)===2,'RESEARCH_RELEVANCE_AND_DUPLICATES');
+    carnetCheck($research[0]['claim']==='Cambodian weaving is documented in this explicitly synthetic research example.'
+        &&$research[0]['source_url']==='https://doi.org/10.1234/example'
+        &&$research[0]['status']==='pending'&&$research[0]['checked_on']==='','RESEARCH_EXACT_EXCERPT_NOT_VERIFIED');
+    carnetCheck(str_starts_with($research[1]['claim'],'Pertinence et faits à vérifier')
+        &&$research[1]['status']==='pending','RESEARCH_NO_INVENTED_CLAIM');
+    $merged=cmsCultureResearchMerge($v2['culture_evidence'],$research);
+    carnetCheck($merged['added']===2&&array_slice($merged['dossier']['items'],0,2)===$v2['culture_evidence']['items']
+        &&cmsCreationRead(cmsCreationDir($root),$old['id'])===$v2,'RESEARCH_NO_MUTATION');
+    carnetCheck(cmsCultureResearchMerge($merged['dossier'],$research)['added']===0,'RESEARCH_REPLAY_NO_DUPLICATE');
+    $blocked=false;
+    try{cmsCultureEvidenceContext($merged['dossier']);}catch(RuntimeException $e){$blocked=$e->getMessage()==='AI_CONTENT_EVIDENCE_REQUIRED';}
+    carnetCheck($blocked,'RESEARCH_PENDING_NEVER_FEEDS_GENERATION');
+    $blocked=false;try{cmsCultureResearchFetch('https://example.org',static function():never{throw new Exception('unexpected call');});}
+    catch(InvalidArgumentException $e){$blocked=true;}
+    carnetCheck($blocked,'RESEARCH_NO_ARBITRARY_URL');
     $dossier=$v2['culture_evidence'];
     $blocked=false;
     try{cmsCultureEvidenceContext($dossier);}catch(RuntimeException $e){$blocked=$e->getMessage()==='AI_CONTENT_EVIDENCE_REQUIRED';}
@@ -71,9 +106,15 @@ try{
     $context=cmsCultureEvidenceContext($dossier);
     carnetCheck(str_contains($context,'Sources : https://example.edu/documents/fiche; https://example.org/notice')
         &&str_contains($context,'Faits autorisés : Premier constat')
+        &&str_contains($context,'Correspondances : 1=1; 2=2')
         &&!str_contains($context,'Point culturel à vérifier')&&!str_contains($context,'PRIVATE_NOTE_EXCLUDED')
         &&!str_contains($context,'Libellé privé non transmis'),'DOSSIER_ONLY_CHECKED_CLAIMS');
     cmsAiContentRequireCultureDossier($context);
+    $blocked=false;
+    try{cmsAiContentRequireCultureDossier(str_replace('2=2','2=3',$context));}
+    catch(RuntimeException $e){$blocked=$e->getMessage()==='AI_CONTENT_EVIDENCE_REQUIRED';}
+    carnetCheck($blocked,'DOSSIER_ATTRIBUTION_BOUND_TO_SOURCES');
+
     $unsafe=$dossier;$unsafe['items'][2]['source_url']='https://example.org/notice?private=excluded';
     $blocked=false;
     try{cmsCultureEvidenceContext($unsafe);}catch(RuntimeException $e){$blocked=$e->getMessage()==='AI_CONTENT_EVIDENCE_REQUIRED';}

@@ -1061,7 +1061,7 @@ function cmsVisualReferencesHtml(mixed $raw,string $kind,string $title): string 
 }
 
 /**
- * C4C1: human-only internal documentary evidence for cultural Carnets.
+ * C4C1: internal documentary evidence for cultural Carnets; verification is human-only.
  * Evidence stays next to the private draft; never part of the provider
  * schema, the public CultureArticle projection or public HTML.
  */
@@ -1123,6 +1123,129 @@ function cmsCultureEvidenceClean(mixed $raw): ?array {
     }
     return ['version'=>1,'items'=>$out];
 }
+/** A free, bounded bibliographic search; no model/API key and no arbitrary URL.
+ * Results remain unverified private evidence in the existing Carnet dossier. */
+function cmsCultureResearchQuery(mixed $raw): string {
+    $query=cmsCreationText($raw,180);
+    if(mbLen($query)<4||!preg_match('/^[\p{L}\p{N} .,’\'\-]+$/uD',$query))
+        throw new InvalidArgumentException('CULTURE_RESEARCH_QUERY');
+    return $query;
+}
+function cmsCultureResearchText(mixed $raw): string {
+    if(!is_string($raw)||strlen($raw)>100000||!preg_match('//u',$raw))return '';
+    $text=html_entity_decode(strip_tags(str_replace(['</jats:p>','</p>'],' ', $raw)),ENT_QUOTES|ENT_HTML5,'UTF-8');
+    return trim((string)preg_replace('/\s+/u',' ',$text));
+}
+function cmsCultureResearchClip(string $s,int $max): string {
+    if(mbLen($s)<=$max)return $s;
+    if(function_exists('mb_substr'))return mb_substr($s,0,$max,'UTF-8');
+    $out='';
+    foreach(preg_split('//u',$s,-1,PREG_SPLIT_NO_EMPTY)?:[] as $char){
+        if(strlen($out.$char)>$max)break;
+        $out.=$char;
+    }
+    return $out;
+}
+function cmsCultureResearchTerms(string $query): array {
+    preg_match_all('/[\p{L}\p{N}]{4,}/u',$query,$matches);
+    $terms=[];
+    foreach($matches[0] as $term){
+        $term=function_exists('mb_strtolower')?mb_strtolower($term,'UTF-8'):strtolower($term);
+        if(!in_array($term,['cambodia','cambodian','cambodge','cambodgien','cambodgienne','khmer','khmère',
+            'culture','cultural','tradition','traditional','traditionnelle','cuisine','food','histoire','history',
+            'dans','pour','avec','entre','autour','from','with','about','carnet'],true))$terms[$term]=true;
+    }
+    return array_keys($terms);
+}
+function cmsCultureResearchMatches(string $text,array $terms): bool {
+    foreach($terms as $term)if(preg_match('/(?<![\p{L}\p{N}])'.preg_quote($term,'/').'(?![\p{L}\p{N}])/iu',$text))return true;
+    return false;
+}
+function cmsCultureResearchCandidates(array $data,string $query): array {
+    $terms=cmsCultureResearchTerms(cmsCultureResearchQuery($query));
+    if(!$terms)throw new InvalidArgumentException('CULTURE_RESEARCH_QUERY');
+    if(($data['status']??null)!=='ok'||($data['message-type']??null)!=='work-list'
+        ||!is_array($data['message']['items']??null)||!array_is_list($data['message']['items'])
+        ||count($data['message']['items'])>8)throw new RuntimeException('CULTURE_RESEARCH_RESPONSE');
+    $items=[];$seen=[];
+    foreach($data['message']['items'] as $work){
+        if(!is_array($work)||($work['type']??null)!=='journal-article')continue;
+        $doi=$work['DOI']??null;
+        if(!is_string($doi)||strlen($doi)>200||!preg_match('~^10\.[0-9]{4,9}/[-._;()/:a-z0-9]+$~iD',$doi))continue;
+        $key=strtolower($doi);if(isset($seen[$key]))continue;
+        $title=cmsCultureResearchText($work['title'][0]??null);
+        $journal=cmsCultureResearchText($work['container-title'][0]??null);
+        $abstract=cmsCultureResearchText($work['abstract']??null);
+        $text=$title.' '.$abstract;
+        // A metadata search is not evidence that an article is about Cambodia.
+        if($title===''||$journal===''||$abstract===''||preg_match('/[\x00-\x1f\x7f]/',$text)
+           ||!preg_match('/\b(?:Cambodia(?:n)?|Cambodge|cambodgien(?:ne)?s?|Khmer(?:s)?|khmère(?:s)?)\b/iu',$text)
+           ||!cmsCultureResearchMatches($text,$terms))continue;
+        $url='https://doi.org/'.implode('/',array_map('rawurlencode',explode('/',$key)));
+        // One short verbatim sentence at most, visibly unverified. Never make
+        // up a quote or truncate a long sentence into a misleading claim.
+        $excerpt='';
+        foreach(preg_split('/(?<=[.!?])\s+/u',$abstract)?:[] as $sentence){
+            $words=preg_split('/\s+/u',trim($sentence),-1,PREG_SPLIT_NO_EMPTY)?:[];
+            if(mbLen($sentence)>=35&&mbLen($sentence)<=350&&count($words)<=25
+                &&preg_match('/[.!?]$/uD',$sentence)&&cmsCultureResearchMatches($sentence,$terms)){
+                $excerpt=$sentence;break;
+            }
+        }
+        $year=$work['published']['date-parts'][0][0]??null;
+        $label=cmsCultureResearchClip($title.' — '.$journal.(is_int($year)?' ('.$year.')':''),200);
+        $claim=$excerpt!==''?$excerpt:'Pertinence et faits à vérifier dans : '.cmsCultureResearchClip($title,250);
+        $note='Repérage Crossref '.gmdate('Y-m-d').' ; '.($excerpt!==''?'court extrait du résumé déposé, à reformuler et recouper. ':'aucune phrase courte pertinente extraite ; lire le texte original. ')
+            .'Vérifier contexte, fiabilité et éventuelles corrections/rétractations. Métadonnées, pas validation documentaire.';
+        $items[]=['claim'=>$claim,'source_label'=>$label,'source_url'=>$url,
+            'checked_on'=>'','note'=>$note,'status'=>'pending'];
+        $seen[$key]=true;if(count($items)>=5)break;
+    }
+    return cmsCultureEvidenceClean(['version'=>1,'items'=>$items])['items'];
+}
+function cmsCultureResearchFetch(string $query,?callable $fetcher=null): array {
+    $query=cmsCultureResearchQuery($query);
+    if(!cmsCultureResearchTerms($query))throw new InvalidArgumentException('CULTURE_RESEARCH_QUERY');
+    $url='https://api.crossref.org/works?'.http_build_query([
+        'query.bibliographic'=>$query.' Cambodia Khmer',
+        'filter'=>'type:journal-article,has-abstract:true','rows'=>8,
+        'select'=>'DOI,title,container-title,abstract,published,type'], '', '&',PHP_QUERY_RFC3986);
+    if($fetcher!==null)$raw=$fetcher($url);
+    else{
+        if(!function_exists('curl_init'))throw new RuntimeException('CULTURE_RESEARCH_UNAVAILABLE');
+        $c=curl_init($url);if($c===false)throw new RuntimeException('CULTURE_RESEARCH_UNAVAILABLE');$raw='';
+        curl_setopt_array($c,[CURLOPT_HTTPGET=>true,CURLOPT_FOLLOWLOCATION=>false,
+            CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2,CURLOPT_CONNECTTIMEOUT=>4,
+            CURLOPT_TIMEOUT=>10,CURLOPT_HTTPHEADER=>['Accept: application/json'],
+            CURLOPT_USERAGENT=>'Cuisine-du-Cambodge-Studio/1.0',
+            CURLOPT_WRITEFUNCTION=>static function($ch,string $chunk)use(&$raw):int{
+                if(strlen($raw)+strlen($chunk)>350000)return 0;
+                $raw.=$chunk;return strlen($chunk);
+            }]);
+        if(defined('CURLOPT_PROTOCOLS_STR'))curl_setopt($c,constant('CURLOPT_PROTOCOLS_STR'),'https');
+        elseif(defined('CURLOPT_PROTOCOLS'))curl_setopt($c,constant('CURLOPT_PROTOCOLS'),CURLPROTO_HTTPS);
+        $ok=curl_exec($c);$status=(int)curl_getinfo($c,CURLINFO_RESPONSE_CODE);curl_close($c);
+        if($ok!==true||$status!==200)throw new RuntimeException('CULTURE_RESEARCH_UNAVAILABLE');
+    }
+    if(!is_string($raw)||strlen($raw)>350000)throw new RuntimeException('CULTURE_RESEARCH_RESPONSE');
+    $data=json_decode($raw,true,32,JSON_THROW_ON_ERROR);
+    if(!is_array($data))throw new RuntimeException('CULTURE_RESEARCH_RESPONSE');
+    return cmsCultureResearchCandidates($data,$query);
+}
+function cmsCultureResearchMerge(mixed $saved,array $candidates): array {
+    $base=cmsCultureEvidenceClean($saved)??['version'=>1,'items'=>[]];
+    $key=static fn(string $url):string=>str_starts_with(strtolower($url),'https://doi.org/')?strtolower($url):$url;
+    $seen=array_fill_keys(array_map($key,array_column($base['items'],'source_url')),true);
+    $added=0;
+    foreach(cmsCultureEvidenceClean(['version'=>1,'items'=>$candidates])['items'] as $item){
+        if($item['status']!=='pending'||$item['checked_on']!=='')throw new RuntimeException('CULTURE_RESEARCH_RESPONSE');
+        $urlKey=$key($item['source_url']);
+        if(isset($seen[$urlKey])||count($base['items'])>=12)continue;
+        $base['items'][]=$item;$seen[$urlKey]=true;$added++;
+    }
+    return ['dossier'=>$base,'added'=>$added];
+}
+
 /** The shared Studio exposes only the private research inputs to the owner. */
 function cmsCultureEvidenceHtml(mixed $raw=null): string {
     $rows=is_array($raw)&&is_array($raw['items']??null)
@@ -2820,6 +2943,18 @@ function cmsAiContentRequireCultureDossier(string $context): void {
         if(mbLen($fact)<35||mbLen($fact)>450||preg_match('/[\x00-\x1f\x7f]/',$fact))
             $invalid();
     }
+    if(preg_match_all('/^Correspondances[ \t]*:[ \t]*(.*)$/miu',$context,$mapping)>0){
+        if(count($mapping[1])!==1)$invalid();
+        $pairs=$split($mapping[1][0]);
+        if(count($pairs)!==count($facts))$invalid();
+        foreach($pairs as $i=>$pair){
+            if(!preg_match('/^([1-4])=([1-3](?:,[1-3])*)$/D',$pair,$match)
+               ||(int)$match[1]!==$i+1)$invalid();
+            $indices=explode(',',$match[2]);
+            if(count($indices)!==count(array_unique($indices)))$invalid();
+            foreach($indices as $index)if((int)$index>count($sources))$invalid();
+        }
+    }
 }
 
 /** Prepare exactly the checked claims / public URLs for the existing C2 pilot.
@@ -2834,9 +2969,13 @@ function cmsCultureEvidenceContext(mixed $raw): string {
         if(!is_array($parsed)||isset($parsed['query'])||str_contains($url,';')
             ||preg_match('/[;\x00-\x1f\x7f]/',$claim))
             throw new RuntimeException('AI_CONTENT_EVIDENCE_REQUIRED');
-        $facts[$claim]=true;$sources[$url]=true;
+        if(!isset($sources[$url]))$sources[$url]=count($sources)+1;
+        $facts[$claim][$sources[$url]]=true;
     }
-    $context='Sources : '.implode('; ',array_keys($sources))."\nFaits autorisés : ".implode('; ',array_keys($facts));
+    $mapping=[];$i=0;
+    foreach($facts as $indices)$mapping[]=(++$i).'='.implode(',',array_keys($indices));
+    $context='Sources : '.implode('; ',array_keys($sources))."\nFaits autorisés : ".implode('; ',array_keys($facts))
+        ."\nCorrespondances : ".implode('; ',$mapping);
     if(mbLen($context)>2000)throw new RuntimeException('AI_CONTENT_EVIDENCE_REQUIRED');
     cmsAiContentRequireCultureDossier($context);
     return $context;

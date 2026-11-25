@@ -132,6 +132,10 @@ if($method==='POST'){
             ['csrf','export_narrations','creation_id','expected_version']))) {
         http_response_code(422);exit('Action invalide.');
     }
+    if(isset($_POST['culture_research']) && (count($_POST)!==7||array_diff(array_keys($_POST),
+        ['csrf','culture_research','creation_id','expected_version','research_query','research_consent','research_token']))) {
+        http_response_code(422);exit('Action invalide.');
+    }
     if(isset($_POST['calendar_confirm']) && (count($_POST)!==3
         ||array_diff(array_keys($_POST),['csrf','calendar_confirm','calendar_token']))) {
         http_response_code(422);exit('Action invalide.');
@@ -177,7 +181,7 @@ $filtersUrl=http_build_query($filters,'','&',PHP_QUERY_RFC3986);
 $newMode=isset($_GET['new']) || ($method==='POST'
     && (isset($_POST['tts_action']) || isset($_POST['visual_action']) || isset($_POST['create_save']) || isset($_POST['ai_brief_generate'])
         || isset($_POST['ai_content_generate']) || isset($_POST['ai_content_discard'])
-        || isset($_POST['review_action']) || isset($_POST['culinary_action']) || isset($_POST['final_review_action']) || isset($_POST['correction_action']) || isset($_POST['export_narrations'])));
+        || isset($_POST['review_action']) || isset($_POST['culinary_action']) || isset($_POST['final_review_action']) || isset($_POST['correction_action']) || isset($_POST['export_narrations']) || isset($_POST['culture_research'])));
 $createKind=is_string($_POST['kind']??null)?$_POST['kind']:
     (is_string($_GET['kind']??null)?$_GET['kind']:'recette');
 if(!isset(cmsCreationKinds()[$createKind]))$createKind='recette';
@@ -346,6 +350,38 @@ if($auth){
         }
         $createForm=$creation??[];
         $createExpected=(int)($creation['version']??0);
+        if($method==='POST'&&isset($_POST['culture_research'])){
+            try{
+                if(!$auth||$creation===null||$createKind!=='culture'||isset($creation['source_binding'])
+                   ||($_POST['culture_research']??null)!=='1'||($_POST['research_consent']??null)!=='1'
+                   ||($_POST['creation_id']??null)!==$creation['id']
+                   ||(string)$creation['version']!==($_POST['expected_version']??null)
+                   ||array_diff(array_keys($_GET),['new','cid'])
+                   ||($_GET['cid']??null)!==$creation['id']
+                   ||!is_string($_POST['research_token']??null)
+                   ||!is_string($_SESSION['culture_research_token']??null)
+                   ||!hash_equals($_SESSION['culture_research_token'],$_POST['research_token']))
+                    throw new RuntimeException('CULTURE_RESEARCH_STALE');
+                $query=cmsCultureResearchQuery($_POST['research_query']??null);
+                unset($_SESSION['culture_research_token']); // One explicit search per form.
+                if(time()-(int)($_SESSION['culture_research_last']??0)<30)
+                    throw new RuntimeException('CULTURE_RESEARCH_COOLDOWN');
+                if(count($creation['culture_evidence']['items']??[])>=12)
+                    throw new RuntimeException('CULTURE_RESEARCH_FULL');
+                $_SESSION['culture_research_last']=time();
+                $candidates=cmsCultureResearchFetch($query);
+                $latestSaved=cmsCreationRead($creationDir,$creation['id']);
+                if($latestSaved!==$creation)throw new RuntimeException('CULTURE_RESEARCH_STALE');
+                $merged=cmsCultureResearchMerge($creation['culture_evidence']??null,$candidates);
+                $createForm['culture_evidence']=$merged['dossier'];
+                $notice=$merged['added']>0
+                    ?$merged['added'].' piste(s) documentaire(s) ajoutée(s) au formulaire, À VÉRIFIER. Relisez puis enregistrez la nouvelle version privée. Aucun fait n’est validé.'
+                    :'Aucune nouvelle piste documentaire suffisamment pertinente. Le dossier enregistré reste inchangé.';
+            }catch(Throwable $e){
+                http_response_code(422);
+                $error='Recherche documentaire indisponible, non autorisée, trop récente ou dossier obsolète/complet. Aucun brouillon modifié.';
+            }
+        }
         if($method==='GET'&&isset($_GET['topic'])&&$cid===null&&count($_GET)===2){
             try{
                 if(!is_string($_GET['topic'])||!preg_match('/^[a-f0-9]{32}$/D',$_GET['topic']))throw new RuntimeException('TOPIC_STALE');
@@ -1678,6 +1714,23 @@ Une demande échouée peut compter dans la limite ; vérifiez les projets avant 
 <p class="small muted">L’assistance IA n’est pas disponible pour le moment.
 Vous pouvez créer le contenu manuellement ci-dessous.</p>
 <?php endif; ?>
+</details>
+<?php endif; ?>
+<?php if($creation!==null&&$createKind==='culture'&&!isset($creation['source_binding'])&&$pendingContent===null&&$candidateToken===''): ?>
+<details class="guided-group" id="cms-research"<?= isset($_POST['culture_research'])?' open':'' ?>>
+<summary>Rechercher automatiquement des sources documentaires</summary>
+<p class="small muted">Recherche bibliographique gratuite dans Crossref, avec DOI et résumés déposés. Les extraits et pistes sont proposés dans le dossier privé, jamais marqués vérifiés. Vérifiez leur pertinence, les sources originales et reformulez les faits en français. Enregistrez vos modifications avant cette recherche.</p>
+<form method="post" class="stack" action="?new=1&amp;cid=<?= cmsEsc($creation['id']) ?>#cms-research">
+<input type="hidden" name="csrf" value="<?= cmsEsc($_SESSION['csrf']) ?>">
+<input type="hidden" name="creation_id" value="<?= cmsEsc($creation['id']) ?>">
+<input type="hidden" name="expected_version" value="<?= (int)$creation['version'] ?>">
+<?php $_SESSION['culture_research_token']??=bin2hex(random_bytes(24)); ?>
+<input type="hidden" name="research_token" value="<?= cmsEsc($_SESSION['culture_research_token']) ?>">
+<label>Mots-clés publics (en français ou anglais ; « Cambodia Khmer » est ajouté à la requête)
+<input type="text" name="research_query" maxlength="180" required value="<?= cmsEsc($creation['title']) ?>"></label>
+<label><input type="checkbox" name="research_consent" value="1" required> J’autorise l’envoi de ces seuls mots-clés publics à Crossref. Aucune note ni brouillon privé transmis.</label>
+<button name="culture_research" value="1">Rechercher les sources</button>
+</form>
 </details>
 <?php endif; ?>
 <form method="post" class="stack" id="cms-new-editor" data-studio-edit>
