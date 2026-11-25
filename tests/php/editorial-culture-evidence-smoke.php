@@ -60,6 +60,51 @@ try{
     carnetCheck(hash_file('sha256',cmsCreationDir($root).'/'.$old['id'].'.0001.json')
         ===$oldHash && !isset(cmsCreationRead(cmsCreationDir($root),$old['id'],1)['culture_evidence']),
         'IMMUTABLE_HISTORY');
+    $dossier=$v2['culture_evidence'];
+    $blocked=false;
+    try{cmsCultureEvidenceContext($dossier);}catch(RuntimeException $e){$blocked=$e->getMessage()==='AI_CONTENT_EVIDENCE_REQUIRED';}
+    carnetCheck($blocked,'DOSSIER_INCOMPLETE_NO_CONTEXT');
+    $dossier['items'][1]['claim']='Premier constat documentaire suffisamment précis pour le contrôle.';
+    $dossier['items'][]=['claim'=>'Deuxième constat documentaire suffisamment précis à transmettre.',
+        'source_label'=>'Libellé privé non transmis','source_url'=>'https://example.org/notice',
+        'status'=>'checked','checked_on'=>'2026-11-25','note'=>'PRIVATE_NOTE_EXCLUDED'];
+    $context=cmsCultureEvidenceContext($dossier);
+    carnetCheck(str_contains($context,'Sources : https://example.edu/documents/fiche; https://example.org/notice')
+        &&str_contains($context,'Faits autorisés : Premier constat')
+        &&!str_contains($context,'Point culturel à vérifier')&&!str_contains($context,'PRIVATE_NOTE_EXCLUDED')
+        &&!str_contains($context,'Libellé privé non transmis'),'DOSSIER_ONLY_CHECKED_CLAIMS');
+    cmsAiContentRequireCultureDossier($context);
+    $unsafe=$dossier;$unsafe['items'][2]['source_url']='https://example.org/notice?private=excluded';
+    $blocked=false;
+    try{cmsCultureEvidenceContext($unsafe);}catch(RuntimeException $e){$blocked=$e->getMessage()==='AI_CONTENT_EVIDENCE_REQUIRED';}
+    carnetCheck($blocked,'DOSSIER_QUERY_REJECTED');
+    $unsafe=$dossier;$unsafe['items'][2]['claim']='Un premier morceau; un autre morceau de fait.';
+    $blocked=false;
+    try{cmsCultureEvidenceContext($unsafe);}catch(RuntimeException $e){$blocked=$e->getMessage()==='AI_CONTENT_EVIDENCE_REQUIRED';}
+    carnetCheck($blocked,'DOSSIER_DELIMITER_REJECTED');
+    $photo=['caption'=>'Photo documentaire candidate à vérifier','source_url'=>'https://example.org/photo',
+        'credit'=>'Auteur d’essai','licence'=>'Licence à contrôler','rights_evidence_url'=>'https://example.org/rights',
+        'status'=>'checked_private','checked_on'=>'2026-11-25'];
+    $ref=cmsVisualReferencesClean(['version'=>1,'items'=>[$photo]]);
+    $photoInput=$input;$photoInput['title']='Autre sujet documentaire et visuel inédit';
+    $photoInput['visual_references']=$ref;
+    $photoDraft=cmsCreationSave($root,$photoInput,[],0);
+    carnetCheck($photoDraft['visual_references']===$ref&&$photoDraft['reviewed']===false,'PHOTO_PRIVATE_RECORD');
+    $photoProjection=json_encode(cmsCultureAstroDraftProjection($photoDraft),JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
+    carnetCheck(!str_contains($photoProjection,'example.org/photo')&&!str_contains($photoProjection,'Auteur d’essai'),'PHOTO_EXCLUDED_FROM_PUBLIC');
+    $photoHash=hash_file('sha256',cmsCreationDir($root).'/'.$photoDraft['id'].'.0001.json');
+    unset($photoInput['visual_references']);
+    $photoV2=cmsCreationSave($root,$photoInput,[],1,$photoDraft['id']);
+    carnetCheck($photoV2['visual_references']===$ref&&hash_file('sha256',cmsCreationDir($root).'/'.$photoDraft['id'].'.0001.json')===$photoHash,'PHOTO_HISTORY_AND_LEGACY');
+    foreach([['credit'=>''],['licence'=>''],['checked_on'=>'2026-02-30'],['source_url'=>'https://example.org/photo?token=test'],['rights_evidence_url'=>'http://example.org/rights']] as $bad){
+        $unsafe=['version'=>1,'items'=>[array_replace($photo,$bad)]];$blocked=false;
+        try{cmsVisualReferencesClean($unsafe);}catch(InvalidArgumentException $e){$blocked=str_starts_with($e->getMessage(),'VISUAL_REFERENCE_');}
+        carnetCheck($blocked,'PHOTO_UNVERIFIED_NOT_CHECKED');
+    }
+    $unsafe=['version'=>1,'items'=>[$photo,$photo]];$blocked=false;
+    try{cmsVisualReferencesClean($unsafe);}catch(InvalidArgumentException $e){$blocked=$e->getMessage()==='VISUAL_REFERENCE_DUPLICATE';}
+    carnetCheck($blocked,'PHOTO_DUPLICATE');
+    carnetCheck(!str_contains(cmsVisualReferencesHtml(['items'=>[array_replace($photo,['caption'=>'<script>test</script>'])]],'culture','Sujet'),'<script>'),'PHOTO_HTML_ESCAPED');
     $report=cmsAstroPublicationGapReport($v2);
     carnetCheck($report['culture_evidence_count']===2
         && $report['culture_claims_marked_checked']===1

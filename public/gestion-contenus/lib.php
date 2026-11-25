@@ -961,6 +961,72 @@ function cmsRecipeAstroDetailsHtml(mixed $raw,array $fields): string {
 }
 
 
+/** Candidate external visuals, with explicit human-supplied provenance. No
+ * downloads, remote fetches, asset writes, rights grants or publication. */
+function cmsVisualReferencesClean(mixed $raw): ?array {
+    if($raw===null)return null;
+    if(!is_array($raw)||array_diff(array_keys($raw),['version','items'])
+        ||!in_array($raw['version']??null,[1,'1'],true))throw new InvalidArgumentException('VISUAL_REFERENCE_SCHEMA');
+    $items=$raw['items']??[];
+    if(!is_array($items)||!array_is_list($items)||count($items)>8)throw new InvalidArgumentException('VISUAL_REFERENCE_SCHEMA');
+    $out=[];$seen=[];
+    foreach($items as $row){
+        if(!is_array($row)||array_diff(array_keys($row),['caption','source_url','credit','licence','rights_evidence_url','status','checked_on']))
+            throw new InvalidArgumentException('VISUAL_REFERENCE_SCHEMA');
+        $entry=[];
+        foreach(['caption'=>350,'source_url'=>700,'credit'=>250,'licence'=>350,'rights_evidence_url'=>700,'checked_on'=>10] as $key=>$max)
+            $entry[$key]=cmsCreationText($row[$key]??'',$max);
+        $entry['status']=cmsCreationText($row['status']??'pending',20);
+        if(!in_array($entry['status'],['pending','checked_private','rejected'],true))throw new InvalidArgumentException('VISUAL_REFERENCE_STATUS');
+        if(count(array_filter(array_diff_key($entry,['status'=>true]),static fn(string $v):bool=>$v!==''))===0
+            &&$entry['status']==='pending')continue;
+        if($entry['caption']===''||$entry['source_url']==='')throw new InvalidArgumentException('VISUAL_REFERENCE_SOURCE');
+        foreach(['source_url','rights_evidence_url'] as $key){
+            if($entry[$key]==='')continue;
+            $url=parse_url($entry[$key]);
+            if(!is_array($url)||($url['scheme']??null)!=='https'||!is_string($url['host']??null)
+                ||!preg_match('/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/iD',$url['host'])
+                ||isset($url['user'])||isset($url['pass'])||isset($url['port'])||isset($url['query'])||isset($url['fragment']))
+                throw new InvalidArgumentException('VISUAL_REFERENCE_SOURCE');
+        }
+        if($entry['checked_on']!==''&&(!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/D',$entry['checked_on'])
+            ||!checkdate((int)substr($entry['checked_on'],5,2),(int)substr($entry['checked_on'],8,2),(int)substr($entry['checked_on'],0,4))))
+            throw new InvalidArgumentException('VISUAL_REFERENCE_DATE');
+        if($entry['status']==='checked_private'&&($entry['credit']===''||$entry['licence']===''
+            ||$entry['rights_evidence_url']===''||$entry['checked_on']===''))throw new InvalidArgumentException('VISUAL_REFERENCE_RIGHTS');
+        if(isset($seen[$entry['source_url']]))throw new InvalidArgumentException('VISUAL_REFERENCE_DUPLICATE');
+        $seen[$entry['source_url']]=true;$out[]=$entry;
+    }
+    return ['version'=>1,'items'=>$out];
+}
+function cmsVisualReferencesHtml(mixed $raw,string $kind,string $title): string {
+    $rows=is_array($raw)&&is_array($raw['items']??null)?array_slice($raw['items'],0,8):[];
+    $idea=match($kind){
+        'culture'=>'Chercher une photographie documentaire authentique du sujet, avec lieu et contexte vérifiés.',
+        'recette'=>'Chercher une photographie du plat réellement préparé ou de ses ingrédients.',
+        'atelier'=>'Chercher une photographie réelle du geste et des étapes de préparation.',
+        'ingredient'=>'Chercher une photographie identifiant sans ambiguïté cet ingrédient.',
+        default=>'Chercher une photographie réelle du geste ou du résultat technique.'};
+    $html='<details class="guided-group" data-visual-references><summary>Photographies proposées — crédits et droits</summary>'
+        .'<p class="small muted">'.cmsEsc($idea).' '.cmsEsc($title).'</p>'
+        .'<p class="small muted">Enregistrez seulement des pistes privées. Le Studio ne télécharge ni ne vérifie automatiquement les photographies ; une illustration IA ne constitue jamais une preuve documentaire. Aucun droit de publication n’est accordé.</p>'
+        .'<input type="hidden" name="visual_references[version]" value="1">';
+    for($i=0,$count=min(8,max(3,count($rows)+1));$i<$count;$i++){
+        $row=$rows[$i]??[];$base='visual_references[items]['.$i.']';
+        $html.='<fieldset><legend>Photographie candidate '.($i+1).'</legend>';
+        foreach(['caption'=>['Légende / sujet',350],'source_url'=>['Page source HTTPS',700],
+            'credit'=>['Auteur et crédit exact',250],'licence'=>['Licence ou autorisation à vérifier',350],
+            'rights_evidence_url'=>['Lien HTTPS justificatif des droits',700],'checked_on'=>['Date de vérification AAAA-MM-JJ',10]] as $key=>[$label,$max])
+            $html.='<label>'.cmsEsc($label).'<textarea rows="2" maxlength="'.$max.'" name="'.$base.'['.$key.']">'
+                .cmsEsc((string)($row[$key]??'')).'</textarea></label>';
+        $html.='<label>État<select name="'.$base.'[status]">';
+        foreach(['pending'=>'À vérifier','checked_private'=>'Crédit et droits vérifiés manuellement (privé)','rejected'=>'Écartée'] as $key=>$label)
+            $html.='<option value="'.$key.'"'.(($row['status']??'pending')===$key?' selected':'').'>'.cmsEsc($label).'</option>';
+        $html.='</select></label></fieldset>';
+    }
+    return $html.'</details>';
+}
+
 /**
  * C4C1: human-only internal documentary evidence for cultural Carnets.
  * Evidence stays next to the private draft; never part of the provider
@@ -2161,6 +2227,7 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
             ?cmsCultureEvidenceClean(
                 $posted['culture_evidence']??($previous['culture_evidence']??null))
             :null;
+        $visualReferences=cmsVisualReferencesClean($posted['visual_references']??($previous['visual_references']??null));
         if($kind!=='technique' && isset($posted['technique_links']))
             throw new InvalidArgumentException('TECHNIQUE_LINKS_SCHEMA');
         $techniqueLinks=$kind==='technique'
@@ -2235,6 +2302,8 @@ function cmsCreationSave(string $private,array $posted,array $catalog,
         if($recipeAstro!==null)$record['recipe_astro']=$recipeAstro;
         if($recipeDetails!==null)$record['recipe_astro_details']=$recipeDetails;
         if($cultureEvidence!==null)$record['culture_evidence']=$cultureEvidence;
+        if($visualReferences!==null&&($visualReferences['items']!==[]||isset($previous['visual_references'])))
+            $record['visual_references']=$visualReferences;
         if($techniqueLinks!==null)$record['technique_links']=$techniqueLinks;
         if($atelierRef!==null)$record['atelier_reference']=$atelierRef;
         if($atelierPhaseDetails!==null)$record['atelier_phase_details']=$atelierPhaseDetails;
@@ -2582,6 +2651,7 @@ function cmsCreationPosted(array $raw): array {
     $posted['recipe_astro']=$raw['recipe_astro']??null;
     $posted['recipe_astro_details']=$raw['recipe_astro_details']??null;
     $posted['culture_evidence']=$raw['culture_evidence']??null;
+    $posted['visual_references']=$raw['visual_references']??null;
     $posted['technique_links']=$raw['technique_links']??null;
     $posted['atelier_reference']=$raw['atelier_reference']??null;
     $posted['atelier_phase_details']=$raw['atelier_phase_details']??null;
@@ -2717,6 +2787,26 @@ function cmsAiContentRequireCultureDossier(string $context): void {
         if(mbLen($fact)<35||mbLen($fact)>450||preg_match('/[\x00-\x1f\x7f]/',$fact))
             $invalid();
     }
+}
+
+/** Prepare exactly the checked claims / public URLs for the existing C2 pilot.
+ * No external fetch, provider, quota reservation or disclosure is performed.
+ * The owner must still read the text and confirm the separate transmission. */
+function cmsCultureEvidenceContext(mixed $raw): string {
+    $evidence=cmsCultureEvidenceClean($raw);$facts=[];$sources=[];
+    foreach($evidence['items']??[] as $item){
+        if($item['status']!=='checked')continue;
+        $claim=$item['claim'];$url=$item['source_url'];$parsed=parse_url($url);
+        // Never silently send query parameters or transform claim boundaries.
+        if(!is_array($parsed)||isset($parsed['query'])||str_contains($url,';')
+            ||preg_match('/[;\x00-\x1f\x7f]/',$claim))
+            throw new RuntimeException('AI_CONTENT_EVIDENCE_REQUIRED');
+        $facts[$claim]=true;$sources[$url]=true;
+    }
+    $context='Sources : '.implode('; ',array_keys($sources))."\nFaits autorisés : ".implode('; ',array_keys($facts));
+    if(mbLen($context)>2000)throw new RuntimeException('AI_CONTENT_EVIDENCE_REQUIRED');
+    cmsAiContentRequireCultureDossier($context);
+    return $context;
 }
 
 /** Generate once, validate, and return a session candidate. NO draft is saved. */

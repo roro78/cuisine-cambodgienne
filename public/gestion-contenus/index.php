@@ -362,6 +362,17 @@ if($auth){
             }catch(Throwable $e){http_response_code(409);$error='Suggestion indisponible ou devenue obsolète. Retournez dans le calendrier pour actualiser les sujets.';}
         }
 
+        if($method==='GET'&&($_GET['dossier_context']??null)==='1'&&count($_GET)===3){
+            try{
+                if($creation===null||$createKind!=='culture'||isset($creation['source_binding']))
+                    throw new RuntimeException('AI_CONTENT_EVIDENCE_REQUIRED');
+                $aiContentInputForm=['objective'=>$creation['angle'],
+                    'context'=>cmsCultureEvidenceContext($creation['culture_evidence']??null)];
+                $notice='Contexte préparé à partir des faits vérifiés enregistrés. Relisez les seules informations proposées avant toute transmission.';
+            }catch(Throwable $e){
+                http_response_code(422);$error='Dossier insuffisant ou incompatible : enregistrez deux à quatre faits vérifiés (35 à 450 caractères chacun) et une à trois sources HTTPS publiques sans paramètres. Aucun appel IA.';
+            }
+        }
         if($method==='POST'&&isset($_POST['export_narrations'])){
             try {
                 if(!$auth||$creation===null||$createKind!=='atelier'
@@ -817,6 +828,7 @@ if($auth){
                         'recipe_astro'=>$_POST['recipe_astro']??null,
                         'recipe_astro_details'=>$_POST['recipe_astro_details']??null,
                         'culture_evidence'=>$_POST['culture_evidence']??null,
+                        'visual_references'=>$_POST['visual_references']??null,
                         'technique_links'=>$_POST['technique_links']??null,
                         'atelier_reference'=>$_POST['atelier_reference']??null,
                         'atelier_phase_details'=>$_POST['atelier_phase_details']??null,
@@ -1689,6 +1701,9 @@ Un Carnet culturel peut traiter l'histoire d'un plat sans répéter sa recette.<
 <?php if($pendingContent===null && $candidateToken==='' && !isset($creation['source_binding'])): ?>
 <details class="guided-group"<?= $aiContentInputForm?' open':'' ?>>
 <summary>Générer une proposition structurée avec l’IA</summary>
+<?php if($creation!==null&&$createKind==='culture'&&isset($creation['culture_evidence'])): ?>
+<p class="small"><a href="?new=1&amp;cid=<?= cmsEsc($creation['id']) ?>&amp;dossier_context=1#cms-general">Préparer le contexte à partir du dossier vérifié</a> — utilise seulement les faits vérifiés et les liens du dossier enregistré ; relisez-les avant toute transmission. Enregistrez vos corrections au préalable.</p>
+<?php endif; ?>
 <?php if($aiContentSettings!==null
     && in_array($createKind,$aiContentSettings['allowed_kinds'],true)): ?>
 <p class="small">Le titre et l’angle ci-dessus servent de brief. Les champs déjà saisis et
@@ -1798,6 +1813,7 @@ vérification de sa recette et de ses six phases. Aucun visa n'est repris.</p>
     false) ?>
 <?php if($publishedCoral!==null): ?></details><?php endif; ?>
 <?php endif; ?>
+<?= cmsVisualReferencesHtml($createForm['visual_references']??null,$createKind,(string)($createForm['title']??'')) ?>
 <details class="guided-group"><summary>Notes et calendrier — facultatifs</summary>
 <label>Notes de recherche privées (jamais publiées)
 <textarea name="research_note" rows="3" maxlength="3000"><?= cmsEsc((string)($createForm['research_note']??'')) ?></textarea></label>
