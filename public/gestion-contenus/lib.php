@@ -3083,6 +3083,75 @@ function cmsCalendarPlan(array $creations,string $month,
        'undated_count'=>count($undated)];
 }
 
+/** Read-only editorial schedule preview. Explicitly selected private drafts only;
+ * never create content, mutate dates, call a provider or authorize publication. */
+function cmsCalendarSuggest(array $creations,array $catalog,array $selected,
+    string $start,int $weeks,int $cadence): array {
+    if($weeks<1||$weeks>6||$cadence<1||$cadence>2||count($selected)>250
+        ||count($creations)>250||count(array_filter($selected,'is_string'))!==count($selected)
+        ||count(array_unique($selected))!==count($selected)
+        ||!preg_match('/^20[2-9][0-9]-[0-9]{2}-[0-9]{2}$/D',$start))
+        throw new InvalidArgumentException('CALENDAR_PREVIEW_INPUT');
+    $first=DateTimeImmutable::createFromFormat('!Y-m-d',$start,new DateTimeZone('UTC'));
+    if(!$first||$first->format('Y-m-d')!==$start||$first->format('N')!=='1')
+        throw new InvalidArgumentException('CALENDAR_PREVIEW_INPUT');
+    $end=$first->modify('+'.$weeks.' weeks')->format('Y-m-d');
+    // Reuse the calendar's existing fail-closed data validation.
+    cmsCalendarPlan($creations,substr($start,0,7));
+    $records=[];$counts=array_fill_keys(array_keys(cmsCreationKinds()),0);
+    $occupied=[];$weekly=array_fill(0,$weeks,0);
+    foreach($creations as $item){
+        if(isset($records[$item['id']]))throw new RuntimeException('CALENDAR_CORRUPT_DRAFT');
+        $records[$item['id']]=$item;
+        $date=$item['target_date']??null;
+        if($date!==null&&$date>=$start&&$date<$end){
+            $week=intdiv((int)$first->diff(new DateTimeImmutable($date,new DateTimeZone('UTC')))->days,7);
+            $weekly[$week]++;$occupied[$date]=true;$counts[$item['kind']]++;
+        }
+    }
+    $pool=[];$blocked=[];
+    foreach($selected as $id){
+        if(!cmsCreationId($id)||!isset($records[$id]))
+            throw new InvalidArgumentException('CALENDAR_PREVIEW_INPUT');
+        $item=$records[$id];$reason=null;
+        if(($item['target_date']??null)!==null)$reason='already_dated';
+        elseif(isset($item['source_binding']))$reason='published_binding';
+        else{
+            try{
+                $similar=cmsCreationDuplicateCheck($item['kind'],cmsCreationSlug($item['title']),
+                    $catalog,$records,$id);
+                if($similar)$reason='similar_title';
+            }catch(InvalidArgumentException $e){
+                if($e->getMessage()==='CREATION_DUPLICATE')$reason='duplicate';
+                else throw $e;
+            }
+        }
+        if($reason!==null)$blocked[]=['id'=>$id,'title'=>$item['title'],'reason'=>$reason];
+        else $pool[$id]=$item;
+    }
+    $proposals=[];
+    for($week=0;$week<$weeks&&$pool;$week++){
+        // Prefer Monday/Thursday, then remaining weekdays. Respect existing dates.
+        foreach([0,3,1,2,4] as $offset){
+            if(!$pool||$weekly[$week]>=$cadence)break;
+            $date=$first->modify('+'.($week*7+$offset).' days')->format('Y-m-d');
+            if(isset($occupied[$date]))continue;
+            uasort($pool,static function(array $a,array $b)use($counts):int{
+                return ($counts[$a['kind']]<=>$counts[$b['kind']])
+                    ?: (($a['state']==='review'?0:1)<=>($b['state']==='review'?0:1))
+                    ?: strcmp($a['title'],$b['title']) ?: strcmp($a['id'],$b['id']);
+            });
+            $item=reset($pool);unset($pool[$item['id']]);
+            $proposals[]=['id'=>$item['id'],'title'=>$item['title'],'kind'=>$item['kind'],
+                'target_date'=>$date,'state'=>$item['state']];
+            $weekly[$week]++;$occupied[$date]=true;$counts[$item['kind']]++;
+        }
+    }
+    usort($proposals,static fn(array $a,array $b):int=>strcmp($a['target_date'],$b['target_date']));
+    return ['proposals'=>$proposals,'blocked'=>$blocked,'remaining'=>count($pool),
+        'publication_authorized'=>false];
+}
+
 /** Private visual proposals: no publication, no writes to the public asset tree. */
 function cmsVisualSettings(array $cfg): ?array {
     $v=$cfg['editorial_visuals']??null;
