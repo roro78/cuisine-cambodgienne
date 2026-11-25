@@ -120,9 +120,13 @@ contentCheck($request['reference']['recipe_fields']['ingredients']===$guided[$re
 contentCheck($request['reference']['fingerprint']===$canonical[$recipe]['fingerprint'],'SOURCE_TRACE');
 $badCatalog=$catalog;$badCatalog[$recipe]['private_secret']='PRIVATE_CONFIG_MUST_NOT_LEAVE';
 $badGuided=$guided;$badGuided[$recipe]['unrelated_private']='PRIVATE_DRAFT_MUST_NOT_LEAVE';
-$request=cmsAiContentRequest($input,$badCatalog,$canonical,$badGuided);
+// Guided metadata is now a closed contract (including the optional bound
+// portionContract). An unknown top-level key must fail before provider input.
+contentFails(static fn()=>cmsAiContentRequest($input,$badCatalog,$canonical,$badGuided),'AI_CONTENT_REFERENCE');
+// The public catalogue is independently projected; unrelated data never leaves.
+$request=cmsAiContentRequest($input,$badCatalog,$canonical,$guided);
 contentCheck(!str_contains(contentJson($request),'MUST_NOT_LEAVE'),'NO_WHOLE_OBJECT_EXPORT');
-foreach(['sources','audioScript','audioUrl','review','image'] as $key)
+foreach(['sources','audioScript','audioUrl','review','image','portionContract'] as $key)
     contentCheck(!array_key_exists($key,$request['reference']['recipe_fields']),'PUBLIC_REFERENCE_ALLOWLIST');
 $input['semantic_review']='0';
 contentFails(static fn()=>cmsAiContentRequest($input,$catalog,$canonical,$guided),'AI_BRIEF_REVIEW_REQUIRED');
