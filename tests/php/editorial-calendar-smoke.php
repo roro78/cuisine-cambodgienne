@@ -89,4 +89,45 @@ $unsafe['c-000000000000000000000001']['title']='<script>alert(1)</script>';
 $plan=cmsCalendarPlan($unsafe,'2026-11');
 requireCalendar(str_contains(cmsEsc($plan['days']['2026-11-01'][0]['title']),
     '&lt;script&gt;'),'ESCAPED_TITLES');
+// Schedule preview: existing dates are capacity, not permission to publish.
+$scheduled=idea('c-000000000000000000000010','recette','Soupe de poisson','2026-11-30');
+$review=idea('c-000000000000000000000011','culture','Les poteries de Kampong Chhnang',null,'review');
+$ingredient=idea('c-000000000000000000000012','ingredient','Le galanga',null);
+$culture=idea('c-000000000000000000000013','culture','La récolte du riz',null);
+$duplicate=idea('c-000000000000000000000014','ingredient','Poivre de Kampot',null);
+$bound=idea('c-000000000000000000000015','culture','Une fiche publique liée',null);
+$bound['source_binding']=['source_id'=>'culture:fiche-liee'];
+$unselected=idea('c-000000000000000000000016','atelier','Brouillon de test non sélectionné',null);
+$near=idea('c-000000000000000000000017','technique','Préparer le porc caramélisé',null);
+$existing=[['id'=>'ingredient:poivre-de-kampot','kind'=>'ingredient','title'=>'Poivre de Kampot'],
+    ['id'=>'technique:porc-caramelise','kind'=>'technique','title'=>'Cuisiner le porc caramélisé']];
+$records=[$scheduled,$review,$ingredient,$culture,$duplicate,$bound,$unselected,$near];
+$selected=array_column([$scheduled,$review,$ingredient,$culture,$duplicate,$bound,$near],'id');
+$before=json_encode($records,JSON_THROW_ON_ERROR);
+$preview=cmsCalendarSuggest($records,$existing,$selected,'2026-11-30',2,2);
+requireCalendar(array_column($preview['proposals'],'id')===[$review['id'],$ingredient['id'],$culture['id']],
+    'PREVIEW_BALANCE_REVIEW_PRIORITY');
+requireCalendar(array_column($preview['proposals'],'target_date')===['2026-12-03','2026-12-07','2026-12-10'],
+    'PREVIEW_EXISTING_CAPACITY_YEAR_MONTH');
+requireCalendar(array_column($preview['blocked'],'reason')===['already_dated','duplicate','published_binding','similar_title'],
+    'PREVIEW_BLOCKED_IDENTITIES');
+requireCalendar($preview['publication_authorized']===false&&$preview['remaining']===0
+    &&json_encode($records,JSON_THROW_ON_ERROR)===$before,'PREVIEW_NO_MUTATION');
+requireCalendar(cmsCalendarSuggest($records,$existing,$selected,'2026-11-30',1,1)['remaining']===3,
+    'PREVIEW_FULL_WEEK');
+requireCalendar(cmsCalendarSuggest($records,$existing,[],'2026-11-30',2,2)['proposals']===[],
+    'PREVIEW_EXPLICIT_SELECTION');
+foreach([
+    [[$review['id'],$review['id']],'2026-11-30',2,2],
+    [['c-000000000000000000000099'],'2026-11-30',2,2],
+    [[$review['id']],'2026-12-01',2,2],
+    [[$review['id']],'2026-11-30',7,2],
+    [[$review['id']],'2026-11-30',2,3],
+    [[[]],'2026-11-30',2,2],
+] as [$ids,$start,$weeks,$cadence]){
+    $rejected=false;
+    try{cmsCalendarSuggest($records,$existing,$ids,$start,$weeks,$cadence);}
+    catch(InvalidArgumentException $e){$rejected=$e->getMessage()==='CALENDAR_PREVIEW_INPUT';}
+    requireCalendar($rejected,'PREVIEW_INVALID_INPUT');
+}
 echo "CMS_CALENDAR_PRIVATE_PASS\n";
