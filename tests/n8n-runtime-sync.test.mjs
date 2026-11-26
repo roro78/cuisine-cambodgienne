@@ -361,7 +361,7 @@ test('workflow 01 upgrades only exact prior editorial code and Ollama prompt', (
   const before=clone(live);
   const plan=planWorkflow(live,reviewed[0],0);
   assert.deepEqual(plan.changes,[
-    'Rédiger via Llama sur Ollama: deterministic-generation prompt',
+    'Rédiger via Llama sur Ollama: choose among reviewed editorial angles',
     'Vérifier et cadrer les textes: deterministic verified-facts formatter'
   ]);
   assert.deepEqual(live,before,'Read-only preflight must not change previous live object');

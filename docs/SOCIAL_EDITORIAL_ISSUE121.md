@@ -26,3 +26,11 @@ Toutes les autres versions restent refusées (fail-closed). Le script reste dry-
 **Aucune publication, email, activation, modification PostgreSQL, credential ou déploiement OVH n'est déclenché par cette PR.**
 
 Après validation utilisateur : présenter trois aperçus ingrédients/recettes/culture avec photo, revoir la justesse photographique et éditoriale, puis planifier la migration contrôlée.
+
+## Révision du 26 novembre 2026
+
+Les douze JPEG `-v20261126.jpg` sont des recadrages plein cadre des originaux autorisés. La version précédente reste accessible à son URL habituelle pour les décisions déjà scellées. Le sélecteur 01 conserve le contrat du flux public et pointe les nouvelles propositions vers les nouvelles URL, avec leur SHA-256 et l’empreinte des originaux. Les JPEG des illustrations internes portent le type de source numérique IPTC `trainedAlgorithmicMedia`. Le formulaire et le journal privé conservent la provenance. Les légendes publiques conservent l’attribution CC BY-SA des photos tierces.
+
+Chaque sujet dispose de deux angles relus. Les phrases de référence sont conservées avec chaque angle et contrôlées contre l’empreinte et les faits du catalogue. Ollama choisit un angle par réseau. Le formateur accepte uniquement ces deux identifiants et conserve les preuves de chaque texte dans le brouillon. Une réponse invalide ou un modèle indisponible entraîne le choix des angles de repli. Si le catalogue évolue, les angles relus deviennent inéligibles et le repli factuel existant s’applique.
+
+Livraison uniquement après vérification des douze URL en HTTPS, de leurs empreintes, de la restauration isolée et des contrôles réels sur Orvekio. Le changement du 01 porte sur le sélecteur, le prompt et le formateur. Les définitions 02 et 03, le calendrier, le sceau et les décisions enregistrées restent hors du lot. Les tests locaux n’émettent aucune demande Resend ou Meta.

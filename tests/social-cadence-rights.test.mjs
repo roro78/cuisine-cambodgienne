@@ -29,7 +29,7 @@ const take = (items, history=[]) => call(draft,'Choisir un contenu original',{
   $input:{all:()=>history.map(json=>({json}))},
 });
 
-test('daily drafting validates the provenance and appends the same non-model credit on both networks',()=>{
+test('daily drafting keeps private rights, credits third-party photos and omits internal production credits',()=>{
   for (const entry of samples) {
     const selected=take([entry])[0];
     const rights=selected.json.source.socialRights;
@@ -48,8 +48,9 @@ test('daily drafting validates the provenance and appends the same non-model cre
     })[0].json;
     assert.notEqual(result.facebookCaption,result.instagramCaption);
     for (const c of [result.facebookCaption,result.instagramCaption]) {
-      assert.ok(c.includes(entry.url));
-      assert.ok(c.endsWith(rights.credit));
+      assert.equal(c.endsWith(rights.credit), !rights.generated);
+      if (rights.generated) assert.doesNotMatch(c, /Illustration créée|Provenance|credits-photos/i);
+      else assert.ok(c.includes(entry.url));
       assert.ok(c.includes(entry.facts[0]));
     }
   }
@@ -87,4 +88,88 @@ test('retired one-off nodes are absent and a new human approval binds captions, 
   assert.match(sentence,/CASE WHEN \$1='approved'/);
   assert.match(claim,/status='approved' AND human_decision='approved'/);
   assert.match(get(draft,'Attendre une décision via formulaire').parameters.formDescription,/socialRights\.credit/);
+});
+
+test('all twelve reviewed sources use verified square assets and accept only grounded Ollama selections', async () => {
+  const {build}=await import('esbuild');
+  const {default:sharp}=await import('sharp');
+  const {createHash}=await import('node:crypto');
+  const {readdirSync}=await import('node:fs');
+  const bundle=await build({
+    entryPoints:[new URL('../src/data/socialCatalog.ts',import.meta.url).pathname],
+    platform:'node',format:'esm',bundle:true,write:false,logLevel:'error',
+  });
+  const {getSocialCatalog}=await import('data:text/javascript;base64,'+
+    Buffer.from(bundle.outputFiles[0].text).toString('base64'));
+  const revision='-v20261126.jpg';
+  const directory=new URL('../public/social-assets/',import.meta.url);
+  const assets=readdirSync(directory).filter(file=>file.endsWith(revision));
+  assert.equal(assets.length,12);
+  const catalog=getSocialCatalog();
+  const families=new Set();
+  const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+
+  for (const asset of assets) {
+    const source=catalog.find(item=>item.imageUrl?.endsWith('/'+asset.replace(revision,'.jpg')));
+    assert.ok(source,asset);
+    families.add(source.kind);
+    const selected=take([source])[0];
+    const {editorialOptions,imageUrl}=selected.json;
+    const rights=selected.json.source.socialRights;
+    assert.equal(imageUrl,site+'/social-assets/'+asset);
+    assert.equal(editorialOptions.length,2);
+    const bytes=readFileSync(new URL(asset,directory));
+    const metadata=await sharp(bytes).metadata();
+    assert.deepEqual([metadata.format,metadata.width,metadata.height],['jpeg',1080,1080]);
+    assert.equal(Boolean(metadata.xmp?.includes('trainedAlgorithmicMedia')),rights.generated);
+    assert.equal(sha(bytes),rights.sha256);
+    assert.equal(sha(readFileSync(new URL('../public'+rights.path,import.meta.url))),rights.originalSha256);
+    for (const top of [0,1064]) {
+      const strip=await sharp(bytes).extract({left:0,top,width:1080,height:16}).png().toBuffer();
+      const {channels}=await sharp(strip).stats();
+      assert.ok(channels.slice(0,3).some(channel=>channel.stdev>6),'uniform edge: '+asset);
+    }
+
+    const request=get(draft,'Rédiger via Llama sur Ollama');
+    assert.equal(request.onError,'continueRegularOutput');
+    const payload=JSON.parse(runInNewContext(request.parameters.body.slice(3,-2),{$json:selected.json}));
+    assert.equal(payload.model,'llama3.2:latest');
+    assert.equal(JSON.parse(payload.messages[1].content).options.length,2);
+    const evaluate=(input,selection=selected)=>call(draft,'Vérifier et cadrer les textes',{
+      $:()=>({first:()=>selection}),$input:{first:()=>({json:input})},
+    })[0].json;
+    const answer=value=>({choices:[{message:{content:JSON.stringify(value)}}]});
+    const chosen=evaluate(answer({facebook:1,instagram:0}));
+    assert.equal(chosen.generationMode,'ollama_borne');
+    assert.ok(chosen.facebookCaption.startsWith(editorialOptions[1].facebook+'\n\n'));
+    assert.ok(chosen.instagramCaption.startsWith(editorialOptions[0].instagram+'\n\n'));
+    assert.notEqual(chosen.facebookCaption,chosen.instagramCaption);
+    assert.ok(chosen.claimsUsed.every(fact=>source.facts.includes(fact)));
+    assert.deepEqual(Array.from(chosen.source.socialEditorial.facebookFacts),Array.from(editorialOptions[1].facts));
+    assert.deepEqual(Array.from(chosen.source.socialEditorial.instagramFacts),Array.from(editorialOptions[0].facts));
+    assert.equal(chosen.source.socialRights.credit,rights.credit);
+    for (const caption of [chosen.facebookCaption,chosen.instagramCaption]) {
+      assert.equal(caption.endsWith(rights.credit),!rights.generated);
+      if (rights.generated) assert.doesNotMatch(caption,/Illustration créée|Provenance|credits-photos/);
+    }
+
+    const offline=evaluate({error:'offline'});
+    assert.equal(offline.modelValidation,'ollama_indisponible');
+    assert.equal(offline.generationMode,'catalogue_deterministe');
+    assert.ok(offline.facebookCaption.startsWith(editorialOptions[0].facebook));
+    assert.ok(offline.instagramCaption.startsWith(editorialOptions[1].instagram));
+    for (const value of [
+      {facebook:2,instagram:0},{facebook:0,instagram:'0'},
+      {facebook:1,instagram:0,caption:'Une anecdote fabriquée'},
+    ]) {
+      const rejected=evaluate(answer(value));
+      assert.equal(rejected.modelValidation,'schema_invalide');
+      assert.equal(rejected.facebookCaption,offline.facebookCaption);
+      assert.equal(rejected.instagramCaption,offline.instagramCaption);
+    }
+    const modified={...source,fingerprint:'0'.repeat(16)};
+    assert.equal(take([modified])[0].json.editorialOptions.length,0);
+    assert.throws(()=>take([source],[{source_id:source.id}]),/droits_verifies/);
+  }
+  assert.deepEqual([...families].sort(),['atelier','culture','ingredient','recette','technique']);
 });
