@@ -134,6 +134,12 @@ test('all twelve reviewed sources use verified square assets and accept only gro
     assert.equal(request.onError,'continueRegularOutput');
     const payload=JSON.parse(runInNewContext(request.parameters.body.slice(3,-2),{$json:selected.json}));
     assert.equal(payload.model,'llama3.2:latest');
+    const schema=payload.response_format.json_schema.schema;
+    assert.equal(payload.response_format.type,'json_schema');
+    assert.equal(schema.additionalProperties,false);
+    assert.deepEqual(schema.required,['facebook','instagram']);
+    assert.deepEqual(schema.properties.facebook.enum,[0,1]);
+    assert.deepEqual(schema.properties.instagram.enum,[0,1]);
     assert.equal(JSON.parse(payload.messages[1].content).options.length,2);
     const evaluate=(input,selection=selected)=>call(draft,'Vérifier et cadrer les textes',{
       $:()=>({first:()=>selection}),$input:{first:()=>({json:input})},

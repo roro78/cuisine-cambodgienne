@@ -58,7 +58,8 @@ async function qualify() {
       $: () => ({first: () => selection}),
       $input: {first: () => ({json})},
     });
-    assert.equal(output.modelValidation, 'valide_transmis', id);
+    assert.equal(output.modelValidation, 'valide_transmis',
+      id + ' · réponse Ollama ' + String(json.choices?.[0]?.message?.content).slice(0,160));
     assert.equal(output.generationMode, 'ollama_borne', id);
     assert.ok(output.claimsUsed.every(fact => source.facts.includes(fact)), id);
     assert.notEqual(output.facebookCaption, output.instagramCaption, id);
