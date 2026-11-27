@@ -11,7 +11,7 @@ const call = (workflow,name,context) => runInNewContext('(function(){'+get(workf
 const site = 'https://www.cuisine-du-cambodge.com';
 const sample = (kind,slug,path) => ({
   id:kind+':'+slug, kind, fingerprint:'1234123412341234', title:'Cuisine cambodgienne',
-  url:site+'/'+kind+'/'+slug+'/',
+  url:site+'/'+(kind==='ingredient'?'ingredients':kind)+'/'+slug+'/',
   facts:['Les bords des petits morceaux restent fermes quand on les coupe avant le service.'],
   originalImageUrl:site+'/images/cuisine/'+path,
   imageUrl:site+'/social-assets/'+kind+'-'+slug+'.jpg',
@@ -37,7 +37,7 @@ test('daily drafting keeps private rights, credits third-party photos and omits 
     assert.match(rights.sha256,/^[a-f\d]{64}$/);
     assert.ok(rights.license && rights.author && rights.original && rights.adaptation);
     if (entry.kind==='ingredient'||entry.kind==='culture') {
-      assert.match(rights.credit,/CC BY-SA.*Original : https:\/\/commons\.wikimedia\.org/);
+      assert.match(rights.credit,/(?:CC BY-SA|CC0).*Original : https:\/\/commons\.wikimedia\.org/);
       assert.equal(rights.generated,false);
     } else {
       assert.match(rights.credit,/Illustration créée avec l’IA/);
@@ -47,13 +47,35 @@ test('daily drafting keeps private rights, credits third-party photos and omits 
       $:()=>({first:()=>selected}),$input:{first:()=>({json:{choices:[]}})},
     })[0].json;
     assert.notEqual(result.facebookCaption,result.instagramCaption);
-    for (const c of [result.facebookCaption,result.instagramCaption]) {
-      assert.equal(c.endsWith(rights.credit), !rights.generated);
-      if (rights.generated) assert.doesNotMatch(c, /Illustration créée|Provenance|credits-photos/i);
-      else assert.ok(c.includes(entry.url));
-      assert.ok(c.includes(entry.facts[0]));
+    const needsCredit = !rights.generated && rights.license !== 'CC0 1.0';
+    assert.equal(result.facebookCaption.endsWith(rights.credit), needsCredit && !rights.facebookCreditPath);
+    assert.equal(result.instagramCaption.endsWith(rights.credit), needsCredit);
+    if (rights.facebookCreditPath) {
+      assert.ok(result.facebookCaption.endsWith(entry.url+'#credit-photo'));
+      assert.ok(result.instagramCaption.includes(entry.url));
+    }
+    for (const caption of [result.facebookCaption,result.instagramCaption]) {
+      if (!needsCredit) assert.doesNotMatch(caption, /Illustration créée|Provenance|credits-photos|Granger|CC0/i);
+      assert.ok(caption.includes(entry.facts[0]));
     }
   }
+});
+
+
+test('Facebook credits use only the reviewed article link and Instagram keeps the complete attribution',()=>{
+  const selected=take([samples[1]])[0];
+  const run = selection=>call(draft,'Vérifier et cadrer les textes',{
+    $:()=>({first:()=>selection}), $input:{first:()=>({json:{error:'offline'}})},
+  })[0].json;
+  assert.ok(run(selected).facebookCaption.endsWith(samples[1].url+'#credit-photo'));
+  const rights=selected.json.source.socialRights;
+  const wrongArticle={json:{...selected.json,source:{...selected.json.source,
+    socialRights:{...rights,facebookCreditPath:'/ingredients/poivre-de-kampot/#credit-photo'}}}};
+  assert.ok(run(wrongArticle).facebookCaption.endsWith(rights.credit));
+  assert.ok(run(selected).instagramCaption.endsWith(rights.credit));
+  const oldLicense=take([sample('ingredient','prahok','prahok-1600.webp')])[0];
+  assert.ok(run(oldLicense).facebookCaption.endsWith(oldLicense.json.source.socialRights.credit));
+  assert.ok(run(oldLicense).instagramCaption.endsWith(oldLicense.json.source.socialRights.credit));
 });
 
 test('a reserved date, already-used source and unverified asset are excluded before Ollama',()=>{
@@ -101,16 +123,19 @@ test('all twelve reviewed sources use verified square assets and accept only gro
   });
   const {getSocialCatalog}=await import('data:text/javascript;base64,'+
     Buffer.from(bundle.outputFiles[0].text).toString('base64'));
-  const revision='-v20261126.jpg';
   const directory=new URL('../public/social-assets/',import.meta.url);
-  const assets=readdirSync(directory).filter(file=>file.endsWith(revision));
+  const kep='culture-kep-marche-crabe-poivre';
+  const files=readdirSync(directory);
+  assert.ok(files.includes(kep+'-v20261126.jpg')); // Preserve the old approval asset.
+  const assets=files.filter(file=>file.endsWith('-v20261126.jpg') && file!==kep+'-v20261126.jpg');
+  assets.push(kep+'-v20261127.jpg');
   assert.equal(assets.length,12);
   const catalog=getSocialCatalog();
   const families=new Set();
   const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 
   for (const asset of assets) {
-    const source=catalog.find(item=>item.imageUrl?.endsWith('/'+asset.replace(revision,'.jpg')));
+    const source=catalog.find(item=>item.imageUrl?.endsWith('/'+asset.replace(/-v2026112[67]\.jpg$/,'.jpg')));
     assert.ok(source,asset);
     families.add(source.kind);
     const selected=take([source])[0];
@@ -154,9 +179,14 @@ test('all twelve reviewed sources use verified square assets and accept only gro
     assert.deepEqual(Array.from(chosen.source.socialEditorial.facebookFacts),Array.from(editorialOptions[1].facts));
     assert.deepEqual(Array.from(chosen.source.socialEditorial.instagramFacts),Array.from(editorialOptions[0].facts));
     assert.equal(chosen.source.socialRights.credit,rights.credit);
-    for (const caption of [chosen.facebookCaption,chosen.instagramCaption]) {
-      assert.equal(caption.endsWith(rights.credit),!rights.generated);
-      if (rights.generated) assert.doesNotMatch(caption,/Illustration créée|Provenance|credits-photos/);
+    const needsCredit = !rights.generated && rights.license !== 'CC0 1.0';
+    assert.equal(chosen.facebookCaption.endsWith(rights.credit), needsCredit && !rights.facebookCreditPath);
+    assert.equal(chosen.instagramCaption.endsWith(rights.credit), needsCredit);
+    if (asset.startsWith(kep)) {
+      assert.equal(rights.author,'Mx. Granger');
+      assert.equal(rights.license,'CC0 1.0');
+      assert.equal(selected.json.source.originalImageUrl,site+'/images/cuisine/kep-crab-market-1280.webp');
+      assert.match(rights.credit,/Kep_Crab_Market\.jpg/);
     }
 
     const offline=evaluate({error:'offline'});
