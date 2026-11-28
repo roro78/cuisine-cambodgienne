@@ -118,7 +118,7 @@
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
-        "body": "={{JSON.stringify({image_url:$('Claim atomique uniquement si validé').first().json.image_url,caption:$('Claim atomique uniquement si validé').first().json.instagram_caption})}}",
+        "body": "={{(()=>{const r=$('Claim atomique uniquement si validé').first().json;const a=/^https:\\/\\/www\\.cuisine-du-cambodge\\.com\\/social-assets\\/((?:recette-(?:amok-trey|lok-lak|bai-sach-chrouk|num-banh-chok)|atelier-(?:lok-lak-de-la-poele-a-l-assiette|num-banh-chok-sauce-et-herbes-fraiches|bai-sach-chrouk-porc-riz-et-pickles)|technique-pickles-carotte-concombre|ingredient-(?:tamarin|poivre-de-kampot|prahok))-v20261126\\.jpg)$/.exec(r.image_url)?.[1];const u=a?\"https://raw.githubusercontent.com/roro78/cuisine-cambodgienne/93ffd3eea5e0724af226263f8c69571d769cb153/public/social-assets/\"+a:r.image_url;return JSON.stringify({image_url:u,caption:r.instagram_caption});})()}}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -160,7 +160,7 @@
       ],
       "parameters": {
         "method": "GET",
-        "url": "={{$json.image_url}}",
+        "url": "={{(()=>{const r=$('Claim atomique uniquement si validé').first().json;const a=/^https:\\/\\/www\\.cuisine-du-cambodge\\.com\\/social-assets\\/((?:recette-(?:amok-trey|lok-lak|bai-sach-chrouk|num-banh-chok)|atelier-(?:lok-lak-de-la-poele-a-l-assiette|num-banh-chok-sauce-et-herbes-fraiches|bai-sach-chrouk-porc-riz-et-pickles)|technique-pickles-carotte-concombre|ingredient-(?:tamarin|poivre-de-kampot|prahok))-v20261126\\.jpg)$/.exec(r.image_url)?.[1];const u=a?\"https://raw.githubusercontent.com/roro78/cuisine-cambodgienne/93ffd3eea5e0724af226263f8c69571d769cb153/public/social-assets/\"+a:r.image_url;return u;})()}}",
         "options": {
           "timeout": 15000,
           "redirect": {
