@@ -177,6 +177,7 @@ jobs:
           node --test --test-concurrency=1 \
             tests/social-pipeline.test.mjs \
             tests/social-instagram-image-routing.test.mjs \
+            tests/social-content-addressed-media.test.mjs \
             tests/n8n-runtime-sync.test.mjs \
             tests/social-full-path-offline.test.mjs \
             tests/social-cadence-rights.test.mjs \
