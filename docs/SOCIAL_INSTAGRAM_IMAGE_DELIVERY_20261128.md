@@ -56,3 +56,42 @@ L'adresse est un exemple, pas un service existant. Chaque requête GET vérifie 
 - Reprise Instagram sécurisée et non automatique des écritures ambiguës : chantier suivant, distinct de ce package.
 
 Ce lot ne contient ni serveur HTTP ni modification Traefik/n8n/PostgreSQL. La recette hors réseau utilise les fichiers réels et une fixture de nouveau sujet ; le prochain cycle reste indépendant. Aucun redéploiement de Kep ou de Lok Lak.
+
+## Candidat Orvekio en attente de réception externe
+
+Le VPS dispose de Traefik et d'une image Nginx. Le Nginx existant expose un
+chemin TikTok partagé. Le candidat `deploy/social/media/` définit donc un
+service Cuisine distinct, sur un réseau dédié relié à Traefik et sans port
+hôte. Il reprend le domaine HTTPS existant et isole
+`/cdc-social-media/sha256/`. Seuls les fichiers JPEG portant un nom SHA-256
+sont servis par GET ou HEAD. Le manifeste, la configuration et les autres
+volumes restent hors de la racine exposée.
+
+Une fois le périmètre et le rollback autorisés selon le
+[runbook](OVH-DEPLOYMENT-RUNBOOK.md) :
+
+1. Relever les routeurs actifs et leurs empreintes, le résolveur TLS,
+   le réseau et les versions réelles. Préparer le retour à l'état initial
+   et vérifier qu'il retire uniquement le service et le raccordement
+   Cuisine. La déclaration persistante du raccordement Traefik est à
+   intégrer au circuit de maintenance du VPS pour survivre à sa recréation.
+2. Générer le paquet avec le sélecteur et le catalogue du même SHA. Garder
+   le manifeste hors du volume servi. Après avoir vérifié le répertoire
+   dédié, ajouter les objets par empreinte avec
+   `node scripts/install-social-media-assets.mjs BUNDLE_DIR ASSETS_DIR`.
+   Chaque lien apparaît après écriture et vérification complètes. Un objet
+   existant et conforme est réutilisé. Une incohérence bloque le lot.
+3. Démarrer uniquement le service statique avec l'image Nginx déjà
+   qualifiée et épinglée. Garder les configurations des autres services,
+   leurs réseaux et l'URL actuelle du 02. Vérifier le certificat, les deux
+   profils et tous les SHA-256 avec `probe-social-media.mjs`, y compris Kep V2.
+   Vérifier les refus du manifeste, d'un nom inconnu et d'une méthode d'écriture.
+4. Recevoir le transport à part. Contrôler que chaque approbation en attente
+   cible un objet disponible avant de changer le 02. L'inventaire du catalogue
+   courant peut exclure un JPEG d'une version antérieure encore approuvée.
+   Vérifier de nouveau les droits et l'empreinte de ces objets avant un ajout.
+
+Le rollback du candidat retire sa route en arrêtant son seul conteneur et
+déconnecte son raccordement dédié. Le répertoire privé et ses empreintes
+sont conservés pour comparaison. Une recette de l'URL ne déclenche aucune
+écriture Meta. La réception de l'ingestion réelle attend un cycle approuvé.
