@@ -1,0 +1,46 @@
+services:
+  cuisine-social-media:
+    image: ${CDC_SOCIAL_MEDIA_IMAGE:?Use the reviewed Nginx image digest}
+    entrypoint: ["nginx", "-g", "daemon off;"]
+    user: "101:101"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+    pids_limit: 32
+    mem_limit: 64m
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,uid=101,gid=101,mode=0700,size=8m
+    volumes:
+      - type: bind
+        source: ./nginx.conf
+        target: /etc/nginx/nginx.conf
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${CDC_SOCIAL_MEDIA_ASSETS:?Use the directory of verified JPEGs}
+        target: /srv/cuisine-social-media/cdc-social-media/sha256
+        read_only: true
+        bind:
+          create_host_path: false
+    networks: [ingress]
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: cdc-social-media-ingress
+      traefik.http.routers.cdc-social-media.rule: "Host(`n8n.orvekio.com`) && PathPrefix(`/cdc-social-media/sha256/`) && (Method(`GET`) || Method(`HEAD`))"
+      traefik.http.routers.cdc-social-media.entrypoints: websecure
+      traefik.http.routers.cdc-social-media.tls: "true"
+      traefik.http.routers.cdc-social-media.tls.certresolver: mytlschallenge
+      traefik.http.routers.cdc-social-media.service: cdc-social-media
+      traefik.http.services.cdc-social-media.loadbalancer.server.port: "8080"
+
+networks:
+  ingress:
+    name: cdc-social-media-ingress
+    external: true

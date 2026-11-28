@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url';
 import sharp from 'sharp';
 import {selectQualifiedMedia,loadLocalSocialMedia,createSocialMediaBundle} from '../scripts/package-social-media.mjs';
 import {probeSocialMedia} from '../scripts/probe-social-media.mjs';
+import {installSocialMediaAssets} from '../scripts/install-social-media-assets.mjs';
 
 const publicDir=fileURLToPath(new URL('../public/',import.meta.url));
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
@@ -80,6 +81,43 @@ test('generic packager accepts a future already-qualified fixture without a name
   const saved=await readFile(join(f.outputDir,'manifest.json'));
   await assert.rejects(createSocialMediaBundle(f),{code:'EEXIST'});
   assert.deepEqual(await readFile(join(f.outputDir,'manifest.json')),saved);
+});
+
+test('staging installs qualified JPEGs atomically and tolerates concurrent reruns',async t=>{
+  const f=await future(t);
+  const manifest=await createSocialMediaBundle(f);
+  const entry=manifest.entries[0];
+  const destination=join(f.dir,'served');
+  await mkdir(destination);
+  const legacy='a'.repeat(64)+'.jpg';
+  await writeFile(join(destination,legacy),'historic');
+  const results=await Promise.all([
+    installSocialMediaAssets(f.outputDir,destination),
+    installSocialMediaAssets(f.outputDir,destination),
+  ]);
+  assert.deepEqual(results.map(x=>x.added).sort(),[0,1]);
+  assert.deepEqual(await readFile(join(destination,entry.sha256+'.jpg')),f.bytes);
+  assert.equal(await readFile(join(destination,legacy),'utf8'),'historic');
+  assert.equal((await stat(join(destination,entry.sha256+'.jpg'))).mode & 0o777,0o644);
+  assert.deepEqual(await installSocialMediaAssets(f.outputDir,destination),{added:0,verified:1});
+  assert.equal((await readdir(destination)).length,2);
+});
+
+test('staging rejects changed bytes and symlinks without replacing served objects',async t=>{
+  const f=await future(t);
+  const manifest=await createSocialMediaBundle(f);
+  const entry=manifest.entries[0];
+  const destination=join(f.dir,'served');
+  await mkdir(destination);
+  const staged=join(f.outputDir,entry.path);
+  const served=join(destination,entry.sha256+'.jpg');
+  await writeFile(staged,Buffer.alloc(entry.bytes));
+  await assert.rejects(installSocialMediaAssets(f.outputDir,destination),/media_digest_mismatch/);
+  assert.deepEqual(await readdir(destination),[]);
+  await writeFile(staged,f.bytes);
+  await symlink(staged,served);
+  await assert.rejects(installSocialMediaAssets(f.outputDir,destination),/media_file_invalid/);
+  assert.deepEqual(await readFile(staged),f.bytes);
 });
 
 test('wrong digest, unapproved rights, foreign URL, and changed original fail before creating output',async t=>{
