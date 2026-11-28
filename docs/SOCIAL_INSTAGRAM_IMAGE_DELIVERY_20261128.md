@@ -21,3 +21,38 @@ Le miroir GitHub est un contournement opérationnel, pas un service média quali
 5. Pour les erreurs Instagram après Facebook, distinguer rejet de création explicite et résultat ambigu. Ne reprendre que si la réservation exclusive, l'approbation scellée et l'absence de doublon sont établies. Aucun rejeu Facebook. En cas d'incertitude, revue manuelle. Tester l'idempotence, les écritures concurrentes et l'échec après une réponse Meta.
 
 Ne pas publier Kep v2 ou Lok Lak pour la recette. Ne pas modifier le runtime partagé avant comparaison exacte des versions et sauvegarde/restauration vérifiée. Le présent lot n'installe aucun composant, ne crée aucune publication et ne déclenche aucun workflow.
+
+## Préparation générique hors production
+
+Le dépôt possède déjà `scripts/build-social-assets.mjs`, le catalogue typé `src/data/socialCatalog.ts`, les droits qualifiés du sélecteur 01 et les tests Sharp. Le routage Traefik existant est documenté pour le worker Coral ; cela ne prouve pas que le reverse proxy et le réseau réels sont adaptés à une route média publique. Ne pas modifier le routeur Coral, n8n ou les autres projets pour ce lot.
+
+Le nouveau packager **réutilise le sélecteur 01 réel**, appliqué indépendamment à chaque source du catalogue local. Les sources sans droits vérifiés sont exclues, même si le feed prétend fournir des droits. Le choix quotidien et l'historique ne sont pas modifiés : le packager ne sélectionne aucun post à publier.
+
+Depuis un checkout du SHA qualifié, avec les dépendances existantes :
+
+```bash
+node scripts/package-social-media.mjs /tmp/cdc-social-media-new
+```
+
+Le dossier de sortie doit être inexistant, hors racine publique. Il contient :
+
+- `assets/<sha256>.jpg` : les octets **identiques** au JPEG approuvable, sans réencodage, avec contrôle de la source, du SHA-256 du JPEG et de son original, du format, des dimensions 1080 × 1080 et du décodage intégral. Aucune liste de noms de transport supplémentaire ; un futur JPEG éligible sera traité par le même mécanisme.
+- `manifest.json` : inventaire privé des entrées qualifiées et exclues. N'exposer que le sous-dossier `assets/`, jamais le manifeste ni l'arborescence du VPS. Aucune clé, légende, approbation ou donnée PostgreSQL ne transite dans ce lot.
+- Le packager ne transforme pas un média non qualifié en média autorisé. Il ne rend pas encore le registre des droits ou les angles éditoriaux automatiquement extensibles.
+
+Une fois **un endpoint HTTPS effectivement qualifié**, avec accord distinct pour toute installation ou route nouvelle, vérifier depuis une machine extérieure :
+
+```bash
+node scripts/probe-social-media.mjs /tmp/cdc-social-media-new/manifest.json https://hote-medias-valide.example/sha256/
+```
+
+L'adresse est un exemple, pas un service existant. Chaque requête GET vérifie HTTP 200 sans redirection, MIME JPEG, longueur bornée et SHA-256, avec un agent standard puis le profil Meta-ExternalAgent. Aucun jeton ni appel Meta, aucun retry automatique. Ce profil ne représente pas une preuve d'accès depuis les serveurs Meta.
+
+### Conditions restantes avant bascule
+
+- Qualification réelle de la cause OVH et du candidat Traefik (ou d'une solution existante mieux adaptée) : lectures de configuration et mesures disque/CPU, capacité et exposition strictement limitées à une route statique de lecture. Ne pas ouvrir de port direct, ajouter de stockage payant, exposer de volume privé ni affaiblir les protections existantes. Vérifier conditions de service, disponibilité, rétention, permissions et restauration. 
+- Transfert des seuls JPEG qualifiés, en chemins immuables, sans écrasement ; comparer les empreintes locales/distantes. Anciennes URL conservées. Tester les refus de chemins non média et de fichier non qualifié, les deux profils HTTP et au moins un média hors des onze noms actuels.
+- Adapter **ensuite** le transport du 02 à une URL déterministe construite à partir du SHA-256 déjà scellé (pas du texte d'Ollama ni d'un hôte issu du feed). Tester les deux branches anciennes/nouvelles, les échecs de disponibilité **avant** les écritures Meta, le contrat d'approbation et la correspondance entre l'URL vérifiée et celle effectivement envoyée à chaque réseau. Ne pas modifier un brouillon approuvé. Le correctif actuellement déployé reste en service jusqu'à réception du remplacement. Les nouveaux médias doivent rester inéligibles tant que leurs droits et leur transport ne sont pas qualifiés.
+- Reprise Instagram sécurisée et non automatique des écritures ambiguës : chantier suivant, distinct de ce package.
+
+Ce lot ne contient ni serveur HTTP ni modification Traefik/n8n/PostgreSQL. La recette hors réseau utilise les fichiers réels et une fixture de nouveau sujet ; le prochain cycle reste indépendant. Aucun redéploiement de Kep ou de Lok Lak.
