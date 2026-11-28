@@ -6,7 +6,7 @@
  * Usage: N8N_API_KEY=<runner secret> node scripts/sync-cuisine-n8n-runtime.mjs [--apply]
  *
  * All plans are computed/validated before the first PUT. The only authorized mutations
- * are reviewed SQL guards, Code-node input access and the draft-insert email gate.
+ * are reviewed workflow guards, editorial fields and the draft-insert email gate.
  * If any live node differs from its known reviewed predecessor, fail closed.
  */
 import assert from 'node:assert/strict';
@@ -29,6 +29,11 @@ export const approvedPredecessorHashes = Object.freeze({
   validatorCodeIntermediate: 'f60c925bc7752bb3e4f842ed5eed439eef94bdd7c9fdbc6bcd9cb18547967f9c',
   editorialPromptPrevious: '4a5b94ea6e0335d52212ee0f58ebc24f7e45e3ab9e0fda2a84fa68052799c46b',
   editorialPromptSyntaxRepair: 'b3221459894c8b2fab620d95fce46f1adcb99dde682126a2c8f54857dce1681a',
+  editorialNov26Selector: '6dca9618f8104dffef6dd6b54f8c749c95b23b1cd09f6a74148d7d28029cd85e',
+  editorialNov26Validator: '918830695a222ff633edf904886fcdd44ad84f22b01364db12e3ad995256d78c',
+  cadenceSelector: '3deab0db88fbd527ad0e3a59300145bbeba63685cacfbf7a61342ecec0231e70',
+  cadencePrompt: '0a70f4f1d642f23d39cf97c59f5fd67f82ab53208a7ab0d4f47ead9354832bb7',
+  cadenceValidator: '01cd554a81d9aec40ab43b53a8ce9016c16f73b4a73e9170e59f3cd5c6a05aaa',
   editorialValidatorPrevious: '7d77b62fecff17a9cdae33c6053fc1e6ca457badfc21f3f0a3aa7fa793a48189',
   insertGuardExpression: '3ba19c03fc1213967bb285126dc60d7fbd4b5af4280afa663daee862e301007a',
   decisionIntermediate: '0b8a0a7fb3141e0fe6cee4a23a18423ae2c530e747532efa5eb2d08894f2e4a5',
@@ -120,7 +125,10 @@ export function planWorkflow(live, reviewed, index) {
       existing.parameters.jsCode === target.parameters.jsCode.replace(
         'const fresh=!p; // An edited image or caption must not make a previously published source new.',
         'const fresh=!p||p.fingerprint!==s.fingerprint;');
-    const result = allowIntermediate || allowSelectorPredecessor
+    const allowCadenceSelector = index === 0 && name === 'Choisir un contenu original' &&
+      [approvedPredecessorHashes.cadenceSelector, approvedPredecessorHashes.editorialNov26Selector]
+        .includes(sha256(existing.parameters.jsCode));
+    const result = allowIntermediate || allowSelectorPredecessor || allowCadenceSelector
       ? { changed: true, value: target.parameters.jsCode }
       : guarded(existing.parameters.jsCode, target.parameters.jsCode, patches, name);
     if (result.changed) {
@@ -204,6 +212,7 @@ export function planWorkflow(live, reviewed, index) {
     const promptHash = sha256(prompt.parameters.body);
     const allowedPromptPredecessors = [
       approvedPredecessorHashes.promptBody,
+      approvedPredecessorHashes.cadencePrompt,
       approvedPredecessorHashes.editorialPromptPrevious,
       approvedPredecessorHashes.editorialPromptSyntaxRepair,
       sha256(currentEditorialPrompt),
@@ -215,7 +224,15 @@ export function planWorkflow(live, reviewed, index) {
       promptPredecessor, promptName);
     if (promptResult.changed) {
       prompt.parameters.body = promptResult.value;
-      changes.push(promptName + ': deterministic-generation prompt');
+      changes.push(promptName + ': choose among reviewed editorial angles');
+    }
+    if (prompt.onError !== reviewedPrompt.onError ||
+        prompt.parameters.options?.timeout !== reviewedPrompt.parameters.options?.timeout) {
+      assert.equal(prompt.onError, undefined, 'Unexpected Ollama error policy');
+      assert.equal(prompt.parameters.options?.timeout, undefined, 'Unexpected Ollama timeout');
+      prompt.onError = reviewedPrompt.onError;
+      prompt.parameters.options = {...prompt.parameters.options, timeout:reviewedPrompt.parameters.options.timeout};
+      changes.push(promptName + ': bounded timeout and catalogue fallback');
     }
 
     const validatorName = 'Vérifier et cadrer les textes';
@@ -225,7 +242,11 @@ export function planWorkflow(live, reviewed, index) {
     // The original predecessor hash remains authorized and all other hashes fail closed.
     const validatorHash = sha256(validator.parameters.jsCode);
     const currentEditorialValidator = "const s=$('Choisir un contenu original').first().json;\nconst clean=value=>String(value??'').replace(/\\s+/g,' ').trim();\nconst source=s?.source||{},title=clean(source.title),rawFacts=Array.isArray(source.facts)?source.facts:[];\nconst facts=rawFacts.map(raw=>({raw,text:clean(raw)})).filter(f=>f.text.length>0);\nif(!title||!facts.length||!facts.some(f=>f.text.length>=50))throw Error('catalogue_insuffisant_pour_legendes');\nconst pageUrl=clean(source.url);\nif(typeof source.url!=='string'||!/^https:\\/\\/www\\.cuisine-du-cambodge\\.com\\/[a-z0-9][a-z0-9\\/_-]*\\/?$/i.test(pageUrl))throw Error('catalogue_url_invalide');\nconst verified=[];for(const fact of facts)if(!verified.some(item=>item.text===fact.text))verified.push(fact);\nconst factByText=new Map(verified.map(fact=>[fact.text,fact]));\n// Approaches are deliberately modest; all concrete culinary claims below must be catalog excerpts.\nconst intros={\n  recette:{facebook:['Envie de cuisiner '+title+' ?',title+' : on passe en cuisine.'],instagram:[title+', à cuisiner et à partager.','Au menu : '+title+'.']},\n  ingredient:{facebook:['Et si on parlait de '+title+' ?',title+' : des saveurs à découvrir.'],instagram:['Les parfums de '+title+'.','À la découverte de '+title+'.']},\n  culture:{facebook:['Derrière '+title+', il y a des histoires à découvrir.','Parlons de '+title+'.'],instagram:['Une histoire autour de '+title+'.','À découvrir : '+title+'.']},\n  atelier:{facebook:[title+' : place à la pratique.','On explore ensemble '+title+'.'],instagram:['Le geste du jour : '+title+'.','En cuisine avec '+title+'.']},\n  technique:{facebook:[title+' : tout est dans le geste.','On parle technique : '+title+'.'],instagram:['Un geste à connaître : '+title+'.','Zoom sur '+title+'.']}\n};\nconst openings=intros[source.kind]||{facebook:['Et si on parlait de '+title+' ?'],instagram:['À découvrir : '+title+'.']};\nconst phrases={facebook:{openers:openings.facebook,closers:['À lire sur notre site :','Pour aller plus loin :']},instagram:{openers:openings.instagram,closers:['Pour en savoir plus, rendez-vous sur notre site.','La suite est à découvrir sur notre site.']}};\nconst fbTail='\\n\\n'+pageUrl,igTail='\\n\\ncuisine-du-cambodge.com';\n// Avoid dumping raw ingredient lists, preparation times or numbered instructions into the feed.\nconst editorial=verified.filter(f=>!/^Préparation\\s*:|^Ingrédients\\s*:|^Étape\\s*:|^Cuisson\\s*:/i.test(f.text));\nconst pool=editorial.some(f=>f.text.length>=50)?editorial:verified;\nconst pick=(intro,closer,tail,max,count)=>{\n  const out=[];let size=intro.length+closer.length+tail.length+8;\n  for(const fact of pool){\n    if(fact.text.length<25||fact.text.length>430)continue;\n    if(out.length>=count)break;\n    if(size+fact.text.length+2>max)continue;\n    out.push(fact);size+=fact.text.length+2;\n  }\n  return out;\n};\nconst assemble=(intro,middle,closer,tail)=>[intro,...middle.map(f=>f.text),closer].join('\\n\\n')+tail;\nconst fallbackFb=pick(phrases.facebook.openers[0],phrases.facebook.closers[0],fbTail,850,3);\nconst fallbackIg=pick(phrases.instagram.openers[0],phrases.instagram.closers[0],igTail,700,2);\nconst fallbackFacebook=assemble(phrases.facebook.openers[0],fallbackFb,phrases.facebook.closers[0],fbTail);\nconst fallbackInstagram=assemble(phrases.instagram.openers[0],fallbackIg,phrases.instagram.closers[0],igTail);\nif(!fallbackFb.length||!fallbackIg.length||fallbackFacebook.length<100||fallbackFacebook.length>850||\n  fallbackInstagram.length<90||fallbackInstagram.length>700)throw Error('catalogue_insuffisant_pour_legendes');\nconst validateCaption=(value,contract,tail,min,max)=>{\n  if(typeof value!=='string')return{ok:false,reason:'schema_invalide'};\n  if(/(?:https?:\\/\\/|www\\.|[a-z0-9-]+\\.(?:com|fr|org|net)\\b)/i.test(value))return{ok:false,reason:'url_interdite'};\n  const blocks=String(value).replace(/\\r/g,'').split(/\\n+/).map(clean).filter(Boolean);\n  if(blocks.length<3||!contract.openers.includes(blocks[0])||\n    !contract.closers.includes(blocks[blocks.length-1]))return{ok:false,reason:'texte_non_verifiable'};\n  const middle=blocks.slice(1,-1);\n  if(!middle.length||middle.some(block=>!factByText.has(block))||\n    new Set(middle).size!==middle.length)return{ok:false,reason:'texte_non_verifiable'};\n  const text=blocks.join('\\n\\n')+tail;\n  if(text.length<min||text.length>max)return{ok:false,reason:'plages_non_conformes'};\n  return{ok:true,text,facts:middle.map(block=>factByText.get(block))};\n};\nconst input=$input.first().json||{},raw=String(input.choices?.[0]?.message?.content??'').trim().replace(/^\\x60{3}(?:json)?\\s*/i,'').replace(/\\s*\\x60{3}$/,'');\nlet modelValidation='absent';\nif(raw){\n  try{\n    const value=JSON.parse(raw),claims=value?.claimsUsed;\n    if(!value||typeof value!=='object'||typeof value.facebookCaption!=='string'||\n      typeof value.instagramCaption!=='string'||!Array.isArray(claims)||!claims.length)\n      modelValidation='schema_invalide';\n    else if(claims.some(claim=>typeof claim!=='string'||!rawFacts.includes(claim))||\n      new Set(claims).size!==claims.length)modelValidation='preuves_non_verifiables';\n    else{\n      const fb=validateCaption(value.facebookCaption,phrases.facebook,fbTail,100,850);\n      const ig=validateCaption(value.instagramCaption,phrases.instagram,igTail,90,700);\n      if(!fb.ok||!ig.ok)modelValidation=!fb.ok?fb.reason:ig.reason;\n      else{\n        const usedRaw=[...new Set([...fb.facts,...ig.facts].map(f=>f.raw))],claimSet=new Set(claims);\n        if(usedRaw.length!==claimSet.size||usedRaw.some(f=>!claimSet.has(f)))\n          modelValidation='preuves_non_verifiables';\n        else return[{json:{...s,facebookCaption:fb.text,instagramCaption:ig.text,\n          claimsUsed:usedRaw,generationMode:'ollama_borne',modelValidation:'valide_transmis'}}];\n      }\n    }\n  }catch{modelValidation='json_invalide'}\n}\nconst fallbackUsed=[...new Set([...fallbackFb,...fallbackIg].map(f=>f.raw))];\nreturn[{json:{...s,facebookCaption:fallbackFacebook,instagramCaption:fallbackInstagram,\n  claimsUsed:fallbackUsed,generationMode:'catalogue_deterministe',modelValidation}}];";
-    const validatorPredecessor = validator.parameters.jsCode === currentEditorialValidator
+    const validatorPredecessor = validatorHash === approvedPredecessorHashes.editorialNov26Validator
+      ? approvedPredecessorHashes.editorialNov26Validator
+      : validatorHash === approvedPredecessorHashes.cadenceValidator
+      ? approvedPredecessorHashes.cadenceValidator
+      : validator.parameters.jsCode === currentEditorialValidator
       ? sha256(currentEditorialValidator)
       : validatorHash === approvedPredecessorHashes.editorialValidatorPrevious
         ? approvedPredecessorHashes.editorialValidatorPrevious

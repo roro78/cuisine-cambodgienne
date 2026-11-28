@@ -19,6 +19,19 @@ export function getStaticPaths() {
 }
 
 const { ingredient } = Astro.props;
+const photoCredits: Record<string, { name: string; author: string; source: string }> = {
+  tamarin: {
+    name: 'Tamarind fruit (Tamarindus indica)',
+    author: 'Susan Slater',
+    source: 'https://commons.wikimedia.org/wiki/File:Tamarind_fruit_(Tamarindus_indica).jpg',
+  },
+  'poivre-de-kampot': {
+    name: 'Kampot Pepper',
+    author: 'Thalias',
+    source: 'https://commons.wikimedia.org/wiki/File:Kampot_Pepper.jpg',
+  },
+};
+const photoCredit = photoCredits[ingredient.slug];
 const glossary = getGlossaryEntries([
   ingredient.slug,
   ...(ingredient.slug === 'kroeung' ? ['combava', 'galanga', 'citronnelle', 'curcuma'] : []),
@@ -108,7 +121,16 @@ const breadcrumbSchema = {
 
       <figure class="guide-visual" data-parallax="0.07">
         <img src={ingredient.image} srcset={imageSrcSet(ingredient.image, ingredient.imageWidths)} sizes="(max-width: 900px) 100vw, 52vw" alt={ingredient.imageAlt} width={ingredient.imageWidth} height={ingredient.imageHeight} decoding="async" />
-        <figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption>
+        {photoCredit ? (
+          <figcaption id="credit-photo">
+            {photoCredit.name} · {photoCredit.author}, Wikimedia Commons ·
+            <a href={photoCredit.source}>Photo originale</a> ·
+            <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> ·
+            Version sociale recadrée au format carré et diffusée sous la même licence.
+          </figcaption>
+        ) : (
+          <figcaption>Photographie illustrative · crédits et licence en bas de page.</figcaption>
+        )}
       </figure>
     </section>
 

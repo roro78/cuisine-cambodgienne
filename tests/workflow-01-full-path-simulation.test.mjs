@@ -90,9 +90,10 @@ test('complete nominal simulation reaches a prepared Resend payload and human fo
   assert.equal(feed406.schemaVersion, 1);
   assert.equal(feed406.product, 'cuisine-du-cambodge');
   const selection = select()[0];
+  const revisedImage = source406.imageUrl.replace('.jpg', '-v20261126.jpg');
   assert.equal(selection.json.source.socialRights.author, 'Susan Slater');
   assert.equal(selection.json.source.url, source406.url);
-  assert.equal(selection.json.imageUrl, source406.imageUrl);
+  assert.equal(selection.json.imageUrl, revisedImage);
 
   const generated = validate(selection, {
     choices: [{ message: { content: '{not valid JSON' } }],
@@ -105,7 +106,7 @@ test('complete nominal simulation reaches a prepared Resend payload and human fo
   assert.ok(generated.instagramCaption.length >= 90 && generated.instagramCaption.length <= 700);
   assert.ok(generated.facebookCaption.includes('https://www.cuisine-du-cambodge.com/ingredients/tamarin/'));
   assert.doesNotMatch(generated.facebookCaption,/utm_/);
-  assert.equal(generated.imageUrl, source406.imageUrl);
+  assert.equal(generated.imageUrl, revisedImage);
 
   const parameters = evalExpression(insert.parameters.options.queryReplacement, expressionContext(generated));
   assert.equal(parameters.length, 7);
@@ -115,7 +116,7 @@ test('complete nominal simulation reaches a prepared Resend payload and human fo
   assert.equal(parameters[3], generated.scheduledDate);
   assert.equal(parameters[4], generated.facebookCaption);
   assert.equal(parameters[5], generated.instagramCaption);
-  assert.equal(parameters[6], source406.imageUrl);
+  assert.equal(parameters[6], revisedImage);
   assert.ok(insert.parameters.query.includes('ON CONFLICT (scheduled_date) DO NOTHING RETURNING id,scheduled_date'));
 
   const database = new Map();
@@ -147,7 +148,7 @@ test('complete nominal simulation reaches a prepared Resend payload and human fo
   assert.deepEqual(Array.from(payload.to), ['validation@example.com']);
   assert.match(payload.subject, /Cuisine du Cambodge/);
   assert.match(payload.text, new RegExp(source406.title));
-  assert.ok(payload.text.includes(source406.imageUrl));
+  assert.ok(payload.text.includes(revisedImage));
   assert.ok(payload.text.includes(generated.facebookCaption));
   assert.ok(payload.text.includes(generated.instagramCaption));
   assert.ok(payload.text.includes(formUrl));

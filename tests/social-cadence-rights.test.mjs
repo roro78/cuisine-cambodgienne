@@ -11,7 +11,7 @@ const call = (workflow,name,context) => runInNewContext('(function(){'+get(workf
 const site = 'https://www.cuisine-du-cambodge.com';
 const sample = (kind,slug,path) => ({
   id:kind+':'+slug, kind, fingerprint:'1234123412341234', title:'Cuisine cambodgienne',
-  url:site+'/'+kind+'/'+slug+'/',
+  url:site+'/'+(kind==='ingredient'?'ingredients':kind)+'/'+slug+'/',
   facts:['Les bords des petits morceaux restent fermes quand on les coupe avant le service.'],
   originalImageUrl:site+'/images/cuisine/'+path,
   imageUrl:site+'/social-assets/'+kind+'-'+slug+'.jpg',
@@ -29,7 +29,7 @@ const take = (items, history=[]) => call(draft,'Choisir un contenu original',{
   $input:{all:()=>history.map(json=>({json}))},
 });
 
-test('daily drafting validates the provenance and appends the same non-model credit on both networks',()=>{
+test('daily drafting keeps private rights, credits third-party photos and omits internal production credits',()=>{
   for (const entry of samples) {
     const selected=take([entry])[0];
     const rights=selected.json.source.socialRights;
@@ -37,7 +37,7 @@ test('daily drafting validates the provenance and appends the same non-model cre
     assert.match(rights.sha256,/^[a-f\d]{64}$/);
     assert.ok(rights.license && rights.author && rights.original && rights.adaptation);
     if (entry.kind==='ingredient'||entry.kind==='culture') {
-      assert.match(rights.credit,/CC BY-SA.*Original : https:\/\/commons\.wikimedia\.org/);
+      assert.match(rights.credit,/(?:CC BY-SA|CC0).*Original : https:\/\/commons\.wikimedia\.org/);
       assert.equal(rights.generated,false);
     } else {
       assert.match(rights.credit,/Illustration créée avec l’IA/);
@@ -47,12 +47,35 @@ test('daily drafting validates the provenance and appends the same non-model cre
       $:()=>({first:()=>selected}),$input:{first:()=>({json:{choices:[]}})},
     })[0].json;
     assert.notEqual(result.facebookCaption,result.instagramCaption);
-    for (const c of [result.facebookCaption,result.instagramCaption]) {
-      assert.ok(c.includes(entry.url));
-      assert.ok(c.endsWith(rights.credit));
-      assert.ok(c.includes(entry.facts[0]));
+    const needsCredit = !rights.generated && rights.license !== 'CC0 1.0';
+    assert.equal(result.facebookCaption.endsWith(rights.credit), needsCredit && !rights.facebookCreditPath);
+    assert.equal(result.instagramCaption.endsWith(rights.credit), needsCredit);
+    if (rights.facebookCreditPath) {
+      assert.ok(result.facebookCaption.endsWith(entry.url+'#credit-photo'));
+      assert.ok(result.instagramCaption.includes(entry.url));
+    }
+    for (const caption of [result.facebookCaption,result.instagramCaption]) {
+      if (!needsCredit) assert.doesNotMatch(caption, /Illustration créée|Provenance|credits-photos|Granger|CC0/i);
+      assert.ok(caption.includes(entry.facts[0]));
     }
   }
+});
+
+
+test('Facebook credits use only the reviewed article link and Instagram keeps the complete attribution',()=>{
+  const selected=take([samples[1]])[0];
+  const run = selection=>call(draft,'Vérifier et cadrer les textes',{
+    $:()=>({first:()=>selection}), $input:{first:()=>({json:{error:'offline'}})},
+  })[0].json;
+  assert.ok(run(selected).facebookCaption.endsWith(samples[1].url+'#credit-photo'));
+  const rights=selected.json.source.socialRights;
+  const wrongArticle={json:{...selected.json,source:{...selected.json.source,
+    socialRights:{...rights,facebookCreditPath:'/ingredients/poivre-de-kampot/#credit-photo'}}}};
+  assert.ok(run(wrongArticle).facebookCaption.endsWith(rights.credit));
+  assert.ok(run(selected).instagramCaption.endsWith(rights.credit));
+  const oldLicense=take([sample('ingredient','prahok','prahok-1600.webp')])[0];
+  assert.ok(run(oldLicense).facebookCaption.endsWith(oldLicense.json.source.socialRights.credit));
+  assert.ok(run(oldLicense).instagramCaption.endsWith(oldLicense.json.source.socialRights.credit));
 });
 
 test('a reserved date, already-used source and unverified asset are excluded before Ollama',()=>{
@@ -87,4 +110,102 @@ test('retired one-off nodes are absent and a new human approval binds captions, 
   assert.match(sentence,/CASE WHEN \$1='approved'/);
   assert.match(claim,/status='approved' AND human_decision='approved'/);
   assert.match(get(draft,'Attendre une décision via formulaire').parameters.formDescription,/socialRights\.credit/);
+});
+
+test('all twelve reviewed sources use verified square assets and accept only grounded Ollama selections', async () => {
+  const {build}=await import('esbuild');
+  const {default:sharp}=await import('sharp');
+  const {createHash}=await import('node:crypto');
+  const {readdirSync}=await import('node:fs');
+  const bundle=await build({
+    entryPoints:[new URL('../src/data/socialCatalog.ts',import.meta.url).pathname],
+    platform:'node',format:'esm',bundle:true,write:false,logLevel:'error',
+  });
+  const {getSocialCatalog}=await import('data:text/javascript;base64,'+
+    Buffer.from(bundle.outputFiles[0].text).toString('base64'));
+  const directory=new URL('../public/social-assets/',import.meta.url);
+  const kep='culture-kep-marche-crabe-poivre';
+  const files=readdirSync(directory);
+  assert.ok(files.includes(kep+'-v20261126.jpg')); // Preserve the old approval asset.
+  const assets=files.filter(file=>file.endsWith('-v20261126.jpg') && file!==kep+'-v20261126.jpg');
+  assets.push(kep+'-v20261127.jpg');
+  assert.equal(assets.length,12);
+  const catalog=getSocialCatalog();
+  const families=new Set();
+  const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+
+  for (const asset of assets) {
+    const source=catalog.find(item=>item.imageUrl?.endsWith('/'+asset.replace(/-v2026112[67]\.jpg$/,'.jpg')));
+    assert.ok(source,asset);
+    families.add(source.kind);
+    const selected=take([source])[0];
+    const {editorialOptions,imageUrl}=selected.json;
+    const rights=selected.json.source.socialRights;
+    assert.equal(imageUrl,site+'/social-assets/'+asset);
+    assert.equal(editorialOptions.length,2);
+    const bytes=readFileSync(new URL(asset,directory));
+    const metadata=await sharp(bytes).metadata();
+    assert.deepEqual([metadata.format,metadata.width,metadata.height],['jpeg',1080,1080]);
+    assert.equal(Boolean(metadata.xmp?.includes('trainedAlgorithmicMedia')),rights.generated);
+    assert.equal(sha(bytes),rights.sha256);
+    assert.equal(sha(readFileSync(new URL('../public'+rights.path,import.meta.url))),rights.originalSha256);
+    for (const top of [0,1064]) {
+      const strip=await sharp(bytes).extract({left:0,top,width:1080,height:16}).png().toBuffer();
+      const {channels}=await sharp(strip).stats();
+      assert.ok(channels.slice(0,3).some(channel=>channel.stdev>6),'uniform edge: '+asset);
+    }
+
+    const request=get(draft,'Rédiger via Llama sur Ollama');
+    assert.equal(request.onError,'continueRegularOutput');
+    const payload=JSON.parse(runInNewContext(request.parameters.body.slice(3,-2),{$json:selected.json}));
+    assert.equal(payload.model,'llama3.2:latest');
+    const schema=payload.response_format.json_schema.schema;
+    assert.equal(payload.response_format.type,'json_schema');
+    assert.equal(schema.additionalProperties,false);
+    assert.deepEqual(schema.required,['facebook','instagram']);
+    assert.deepEqual(schema.properties.facebook.enum,[0,1]);
+    assert.deepEqual(schema.properties.instagram.enum,[0,1]);
+    assert.equal(JSON.parse(payload.messages[1].content).options.length,2);
+    const evaluate=(input,selection=selected)=>call(draft,'Vérifier et cadrer les textes',{
+      $:()=>({first:()=>selection}),$input:{first:()=>({json:input})},
+    })[0].json;
+    const answer=value=>({choices:[{message:{content:JSON.stringify(value)}}]});
+    const chosen=evaluate(answer({facebook:1,instagram:0}));
+    assert.equal(chosen.generationMode,'ollama_borne');
+    assert.ok(chosen.facebookCaption.startsWith(editorialOptions[1].facebook+'\n\n'));
+    assert.ok(chosen.instagramCaption.startsWith(editorialOptions[0].instagram+'\n\n'));
+    assert.notEqual(chosen.facebookCaption,chosen.instagramCaption);
+    assert.ok(chosen.claimsUsed.every(fact=>source.facts.includes(fact)));
+    assert.deepEqual(Array.from(chosen.source.socialEditorial.facebookFacts),Array.from(editorialOptions[1].facts));
+    assert.deepEqual(Array.from(chosen.source.socialEditorial.instagramFacts),Array.from(editorialOptions[0].facts));
+    assert.equal(chosen.source.socialRights.credit,rights.credit);
+    const needsCredit = !rights.generated && rights.license !== 'CC0 1.0';
+    assert.equal(chosen.facebookCaption.endsWith(rights.credit), needsCredit && !rights.facebookCreditPath);
+    assert.equal(chosen.instagramCaption.endsWith(rights.credit), needsCredit);
+    if (asset.startsWith(kep)) {
+      assert.equal(rights.author,'Mx. Granger');
+      assert.equal(rights.license,'CC0 1.0');
+      assert.equal(selected.json.source.originalImageUrl,site+'/images/cuisine/kep-crab-market-1280.webp');
+      assert.match(rights.credit,/Kep_Crab_Market\.jpg/);
+    }
+
+    const offline=evaluate({error:'offline'});
+    assert.equal(offline.modelValidation,'ollama_indisponible');
+    assert.equal(offline.generationMode,'catalogue_deterministe');
+    assert.ok(offline.facebookCaption.startsWith(editorialOptions[0].facebook));
+    assert.ok(offline.instagramCaption.startsWith(editorialOptions[1].instagram));
+    for (const value of [
+      {facebook:2,instagram:0},{facebook:0,instagram:'0'},
+      {facebook:1,instagram:0,caption:'Une anecdote fabriquée'},
+    ]) {
+      const rejected=evaluate(answer(value));
+      assert.equal(rejected.modelValidation,'schema_invalide');
+      assert.equal(rejected.facebookCaption,offline.facebookCaption);
+      assert.equal(rejected.instagramCaption,offline.instagramCaption);
+    }
+    const modified={...source,fingerprint:'0'.repeat(16)};
+    assert.equal(take([modified])[0].json.editorialOptions.length,0);
+    assert.throws(()=>take([source],[{source_id:source.id}]),/droits_verifies/);
+  }
+  assert.deepEqual([...families].sort(),['atelier','culture','ingredient','recette','technique']);
 });

@@ -37,7 +37,7 @@ test('one-shot: existing selector takes one eligible source and excludes one wit
  const result=execute('Choisir un contenu original',context);
  assert.equal(result.length,1);
  assert.equal(result[0].json.sourceId,source.id);
- assert.equal(result[0].json.imageUrl,img);
+ assert.equal(result[0].json.imageUrl,img.replace('.jpg','-v20261126.jpg'));
  assert.equal(result[0].json.fingerprint,source.fingerprint);
 });
 
